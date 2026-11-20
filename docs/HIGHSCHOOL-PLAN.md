@@ -211,8 +211,8 @@ Notation: **P 2.2** = *Physics* Section 2.2; **CP**, **A**, **AT**, **C1** as in
 | 0.5 | Graphs, straight lines and slope (`graphs-and-slope`) | AT 2.1, 4.1, 3.3; P 2.3 | graphing-lines | `18-01/derivative-as-slope` |
 | 0.6 | Quadratics and power laws (`quadratics-and-power-laws`) | AT 2.5, 5.1, 5.2, 5.8 | graphing-quadratics | `8-01/universal-gravitation` |
 | 0.7 | Angles, radians and trigonometry (`angles-and-trigonometry`) | AT 7.1, 7.2, 7.3, 8.1; CP 6.1 | trig-tour | `18-01/derivatives-of-sine-and-cosine` |
-| 0.8 | Vectors (`vectors`) | CP 2.2, 3.2, 3.3; P 5.1, 5.2; AT 10.8 | vector-addition | `8-01/vectors`, `18-02/dot-product` |
-| 0.9 | Exponentials and logarithms (`exponentials-and-logarithms`) | AT 6.1, 6.3, 6.5, 6.7 | — | `18-01/exponentials-and-logarithms` |
+| 0.8 | Vectors (`introducing-vectors`) | CP 2.2, 3.2, 3.3; P 5.1, 5.2; AT 10.8 | vector-addition | `8-01/vectors`, `18-02/dot-product` |
+| 0.9 | Exponentials and logarithms (`exponentials-and-logs`) | AT 6.1, 6.3, 6.5, 6.7 | — | `18-01/exponentials-and-logarithms` |
 | 0.10 | Rates of change and area under a graph (`rates-of-change-and-area`) | C1 2.1; P 2.4; CP 2.8 | calculus-grapher | `18-01/derivative-as-slope`, `18-01/definite-integrals` |
 | 0.11 | **Towards the universe:** from atoms to the observable universe (`towards-the-universe-scales`) | A 1.4, 1.6, 1.7, 1.8; N: "Overview - NASA Science" (universe) | — | `8-286/homogeneous-expansion` |
 | 0.P | Practice set (`hs-0-practice`) | covers 0.1–0.11 | | |
@@ -246,7 +246,7 @@ Notation: **P 2.2** = *Physics* Section 2.2; **CP**, **A**, **AT**, **C1** as in
 | 2.8 | Inclined planes (`inclined-planes`) | P 5.4; CP 4.5 | — | `8-01/contact-forces` |
 | 2.9 | Centripetal force (`centripetal-force`) | P 6.2; CP 6.3 | — | `8-01/newtons-second-law-circular-motion` |
 | 2.10 | Torque and balance (`torque-and-balance`) | P 6.3; CP 9.1, 9.2 | — | `8-01/torque-and-angular-acceleration` |
-| 2.11 | Newton's law of gravitation (`universal-gravitation`) | P 7.2; CP 6.5; A 3.3 | gravity-force-lab-basics | `8-01/universal-gravitation` |
+| 2.11 | Newton's law of gravitation (`newtons-law-of-gravitation`) | P 7.2; CP 6.5; A 3.3 | gravity-force-lab-basics | `8-01/universal-gravitation` |
 | 2.12 | Kepler's laws and orbits (`keplers-laws-and-orbits`) | P 7.1; CP 6.6; A 3.1, 3.4, 3.5 | keplers-laws | `8-902/orbits-and-epicycles` |
 | 2.13 | **Towards the universe:** weighing the Sun and the Galaxy with orbits (`towards-the-universe-weighing-with-orbits`) | A 3.6, 25.3; N: "Dark Matter - NASA Science" | gravity-and-orbits | `fundamentals-of-dark-matter/rotation-curves` |
 | 2.P | Practice set (`hs-2-practice`) | covers 2.1–2.13 | | |
@@ -259,8 +259,8 @@ Notation: **P 2.2** = *Physics* Section 2.2; **CP**, **A**, **AT**, **C1** as in
 | 3.3 | Gravitational potential energy (`gravitational-potential-energy`) | CP 7.3, 7.4 | — | `8-01/potential-energy` |
 | 3.4 | Conservation of energy (`conservation-of-energy`) | P 9.2; CP 7.5, 7.6 | energy-skate-park-basics | `8-01/energy-conservation` |
 | 3.5 | Power (`power`) | P 9.1; CP 7.7 | — | `8-01/work-and-kinetic-energy` |
-| 3.6 | Momentum and impulse (`momentum-and-impulse`) | P 8.1; CP 8.1, 8.2 | — | `8-01/momentum-and-impulse` |
-| 3.7 | Conservation of momentum (`conservation-of-momentum`) | P 8.2; CP 8.3 | — | `8-01/conservation-of-momentum` |
+| 3.6 | Momentum and impulse (`what-is-momentum`) | P 8.1; CP 8.1, 8.2 | — | `8-01/momentum-and-impulse` |
+| 3.7 | Conservation of momentum (`momentum-is-conserved`) | P 8.2; CP 8.3 | — | `8-01/conservation-of-momentum` |
 | 3.8 | Collisions (`collisions`) | P 8.3; CP 8.4, 8.5 | collision-lab | `8-01/elastic-collisions`, `8-01/types-of-collision` |
 | 3.9 | Rockets (`rockets`) | CP 8.7 | — | `8-01/rocket-equation` |
 | 3.10 | Rotation and angular momentum (`angular-momentum`) | CP 10.1, 10.3, 10.5 | — | `8-01/angular-momentum-point-particle` |
@@ -291,19 +291,21 @@ Radiation as heat transfer (CP 14.7) is moved to 7.2, because it needs light and
 | 5.1 | Oscillations and simple harmonic motion (`simple-harmonic-motion`) | P 5.5; CP 16.2, 16.3, 16.6 | masses-and-springs | `8-03/harmonic-oscillator` |
 | 5.2 | The pendulum and energy in oscillations (`the-pendulum`) | CP 16.4, 16.5 | pendulum-lab | `8-03/harmonic-oscillator` |
 | 5.3 | Waves: speed, frequency, wavelength (`waves`) | P 13.1, 13.2; CP 16.9 | wave-on-a-string | `8-03/travelling-waves-reflection` |
-| 5.4 | Superposition and standing waves (`standing-waves`) | P 13.3; CP 16.10, 17.5 | wave-on-a-string | `8-03/standing-waves-fourier-series` |
+| 5.4 | Superposition and standing waves (`superposition-and-standing-waves`) | P 13.3; CP 16.10, 17.5 | wave-on-a-string | `8-03/standing-waves-fourier-series` |
 | 5.5 | Sound and intensity (`sound`) | P 14.1, 14.2; CP 16.11, 17.1, 17.2, 17.3 | sound-waves | `8-03/sound-waves` |
 | 5.6 | The Doppler effect for sound (`doppler-effect-sound`) | P 14.3; CP 17.4 | — | `8-286/doppler-effect` |
 | 5.7 | Resonance (`resonance`) | P 14.4; CP 16.7, 16.8 | — | `8-03/driven-oscillators-resonance` |
 | 5.8 | Light and the electromagnetic spectrum (`electromagnetic-spectrum`) | P 15.1, 15.2; CP 24.3; A 5.1, 5.2; N: "Electromagnetic Spectrum - Introduction" (Imagine the Universe) | — | `8-03/electromagnetic-waves` |
 | 5.9 | Reflection and refraction (`reflection-and-refraction`) | P 16.1, 16.2; CP 25.1–25.5 | bending-light | `8-03/two-dimensional-waves-snells-law` |
 | 5.10 | Lenses and telescopes (`lenses-and-telescopes`) | P 16.3; CP 25.6, 26.5; A 6.1 | geometric-optics | `8-03/diffraction-resolution` |
-| 5.11 | Interference and diffraction (`interference-and-diffraction`) | P 17.1, 17.2; CP 27.1–27.6 | wave-interference | `8-02/interference-and-diffraction`, `8-03/diffraction-resolution` |
+| 5.11 | Interference and diffraction (`interference-and-diffraction-of-light`) | P 17.1, 17.2; CP 27.1–27.6 | wave-interference | `8-02/interference-and-diffraction`, `8-03/diffraction-resolution` |
 | 5.12 | Polarization (`polarization`) | CP 27.8 | — | `8-03/polarization-polarizers` |
 | 5.13 | **Towards the universe:** redshift, stretched light from moving sources (`towards-the-universe-redshift`) | A 5.6, 26.5 | — | `8-286/doppler-effect`, `8-286/cosmological-redshift` |
 | 5.P | Practice set (`hs-5-practice`) | covers 5.1–5.13 | | |
 
 5.8 introduces light as a wave "family" sorted by wavelength; what is waving (electric and magnetic fields) comes in 6.12, the same order as OpenStax *Physics*.
+
+5.4 covers superposition and standing waves on strings; standing waves of sound in air columns (open and closed pipes) belong to 5.5 (decided 2026-11-20 after the 5.4 review).
 
 ### Block 6 — Electricity and magnetism (`hs-6`)
 | # | Lesson (slug) | Sources | ⚛ PhET | Leads to |
@@ -311,15 +313,15 @@ Radiation as heat transfer (CP 14.7) is moved to 7.2, because it needs light and
 | 6.1 | Electric charge (`electric-charge`) | P 18.1; CP 18.1, 18.2 | — | `8-02/fields-gravitational-and-electric` |
 | 6.2 | Coulomb's law (`coulombs-law`) | P 18.2; CP 18.3 | coulombs-law | `8-02/fields-gravitational-and-electric` |
 | 6.3 | The electric field (`electric-field`) | P 18.3; CP 18.4, 18.5, 18.7 | charges-and-fields | `8-02/fields-gravitational-and-electric`, `8-02/gauss-law` |
-| 6.4 | Electric potential and voltage (`electric-potential`) | P 18.4; CP 19.1, 19.2, 19.3, 19.4 | charges-and-fields | `8-02/electric-potential` |
+| 6.4 | Electric potential and voltage (`electric-potential-and-voltage`) | P 18.4; CP 19.1, 19.2, 19.3, 19.4 | charges-and-fields | `8-02/electric-potential` |
 | 6.5 | Capacitors (`capacitors`) | P 18.5; CP 19.5, 19.6, 19.7 | — | `8-02/capacitors-and-dielectrics` |
 | 6.6 | Current, resistance and Ohm's law (`current-and-ohms-law`) | P 19.1; CP 20.1, 20.2, 20.3 | ohms-law | `8-02/dc-circuits` |
 | 6.7 | Series and parallel circuits (`series-and-parallel`) | P 19.2, 19.3; CP 21.1, 21.2, 21.3 | circuit-construction-kit-dc | `8-02/dc-circuits` |
 | 6.8 | Electric power and energy (`electric-power`) | P 19.4; CP 20.4, 20.5 | — | `8-02/dc-circuits` |
-| 6.9 | Magnetic fields and magnetic force (`magnetic-fields`) | P 20.1; CP 22.1–22.5, 22.7 | magnets-and-electromagnets | `8-02/magnetic-fields` |
+| 6.9 | Magnetic fields and magnetic force (`magnetic-fields-and-force`) | P 20.1; CP 22.1–22.5, 22.7 | magnets-and-electromagnets | `8-02/magnetic-fields` |
 | 6.10 | Magnetic fields from currents (`fields-from-currents`) | CP 22.9, 22.10 | magnets-and-electromagnets | `8-02/biot-savart-law`, `8-02/ampere-law` |
 | 6.11 | Electromagnetic induction (`electromagnetic-induction`) | P 20.2, 20.3; CP 23.1, 23.2, 23.3, 23.5, 23.7 | faradays-law | `8-02/faradays-law` |
-| 6.12 | Electromagnetic waves (`electromagnetic-waves`) | CP 24.1, 24.2, 24.4 | — | `8-02/maxwell-equations-and-em-waves` |
+| 6.12 | Electromagnetic waves (`light-as-an-electromagnetic-wave`) | CP 24.1, 24.2, 24.4 | — | `8-02/maxwell-equations-and-em-waves` |
 | 6.13 | **Towards the universe:** why gravity, not electricity, rules the cosmos (`towards-the-universe-why-gravity-rules`) | CP 18.3, 33.2; P 23.1; A 20.4 | — | `8-286/newtons-static-universe` |
 | 6.P | Practice set (`hs-6-practice`) | covers 6.1–6.13 | | |
 
@@ -353,7 +355,7 @@ Radiation as heat transfer (CP 14.7) is moved to 7.2, because it needs light and
 | 8.9 | Black holes (`black-holes`) | A 24.5, 24.6, 24.7; N: "Black Holes - NASA Science" | — | `8-033/schwarzschild-black-holes`, `8-286/falling-into-a-black-hole` |
 | 8.10 | Measuring cosmic distances (`cosmic-distances`) | A 19.1, 19.2, 19.3, 26.4 | — | `8-902/observational-cosmology-distances`, `8-286/luminosity-and-redshift` |
 | 8.11 | Galaxies and Hubble's law (`galaxies-and-hubbles-law`) | A 26.1, 26.2, 26.3, 26.5; N: "Galaxies - NASA Science" | — | `8-286/homogeneous-expansion`, `8-902/cosmological-principle-expansion` |
-| 8.12 | The age of the universe (`age-of-the-universe`) | A 29.1; N: "WMAP Overview - NASA Science" | — | `8-286/age-of-the-universe` |
+| 8.12 | The age of the universe (`how-old-is-the-universe`) | A 29.1; N: "WMAP Overview - NASA Science" | — | `8-286/age-of-the-universe` |
 | 8.13 | The Big Bang (`the-big-bang`) | A 29.2, 29.3; CP 34.1; N: "The Big Bang - NASA Science" | — | `8-286/friedmann-equation`, `8-286/radiation-dominated-universe` |
 | 8.14 | The first elements (`the-first-elements`) | A 29.3 | — | `8-902/big-bang-nucleosynthesis` |
 | 8.15 | The cosmic microwave background (`cosmic-microwave-background`) | A 29.4; N: "COBE (Cosmic Background Explorer) - NASA Science", "WMAP - NASA Science", "Planck - NASA Science" | blackbody-spectrum | `8-286/cmb-spectrum`, `8-902/cmb-anisotropies` |
