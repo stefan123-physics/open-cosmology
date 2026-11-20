@@ -150,10 +150,8 @@ export default function About() {
         paid features on MIT-based content. MIT and the course instructors do not endorse this site.
       </p>
       <p>
-        Other material under its own licence: the PhET simulations (CC BY-NC 4.0, see Sources above), the open textbook used for
-        the dark matter course (CC BY-NC 4.0, see Sources above), and the social media icons in the footer, which are drawn from{" "}
-        <a href="https://fontawesome.com">Font Awesome</a> Free 6 by Fonticons, Inc., licensed under{" "}
-        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> and included here as inline SVG.
+        Other material under its own licence: the PhET simulations (CC BY-NC 4.0, see Sources above), and the open textbook used for
+        the dark matter course (CC BY-NC 4.0, see Sources above).
       </p>
       <p>
         <Link href="/courses">Go to the programme →</Link>

@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible, EB_Garamond, Lexend, Source_Serif_4 } from "next/font/google";
 import localFont from "next/font/local";
 import Link from "next/link";
-import { SocialIcons } from "@/components/SocialIcons";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 // The High School's colours, only under html[data-site="highschool"] (/highschool pages); after globals.css on purpose.
@@ -187,9 +186,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </li>
                 </ul>
               </div>
-            </div>
-            <div className="footer-social">
-              <SocialIcons />
             </div>
             <p className="footer-colophon">
               Site content licensed <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. Course

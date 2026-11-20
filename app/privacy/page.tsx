@@ -80,9 +80,9 @@ export default function Privacy() {
 
       <h2 id="nothing-else">Nothing loaded from other sites</h2>
       <p>
-        Fonts, formulas, graphs, search, the PhET simulations and the social media icons in the footer are all served from this
+        Fonts, formulas, graphs, search, the PhET simulations are all served from this
         site itself, so opening a page does not contact any other company. Links to other sites (MIT OpenCourseWare, PhET, arXiv,
-        GitHub, the social media profiles in the footer and others) are only followed when you click them, and they open in a new
+        GitHub and others) are only followed when you click them, and they open in a new
         tab without telling the other site which page you came from; those sites then have their own privacy policies.
       </p>
       <p>
