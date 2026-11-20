@@ -264,7 +264,7 @@ Notation: **P 2.2** = *Physics* Section 2.2; **CP**, **A**, **AT**, **C1** as in
 | 3.8 | Collisions (`collisions`) | P 8.3; CP 8.4, 8.5 | collision-lab | `8-01/elastic-collisions`, `8-01/types-of-collision` |
 | 3.9 | Rockets (`rockets`) | CP 8.7 | — | `8-01/rocket-equation` |
 | 3.10 | Rotation and angular momentum (`angular-momentum`) | CP 10.1, 10.3, 10.5 | — | `8-01/angular-momentum-point-particle` |
-| 3.11 | Orbital energy and escape speed (`escape-speed`) | A 3.5; CP 6.6 | — | `8-01/potential-energy` |
+| 3.11 | Orbital energy and escape speed (`escape-speed`) | A 3.5; CP 6.6 | `my-solar-system` | `8-01/potential-energy` |
 | 3.12 | **Towards the universe:** will an expanding ball of matter stop? (`towards-the-universe-expanding-ball`) | A 29.1, 29.2; CP 34.4 | — | `8-286/expanding-sphere`, `8-286/friedmann-equation` |
 | 3.P | Practice set (`hs-3-practice`) | covers 3.1–3.12 | | |
 

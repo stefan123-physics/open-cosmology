@@ -15,7 +15,7 @@ Owner decision, 2026-11-19: Open Cosmology High School keeps Open Cosmology's fo
 
 Each selector in `theme-highschool.css` wraps the site attribute in `:where()`, so it has exactly the specificity of the university rule it replaces. It wins only because it comes later. The **high-contrast** reading option (`html[data-contrast="high"]`) is slightly more specific and still overrides both palettes; that is intended.
 
-Components must use the variables (`var(--accent)` etc.), never a hex value, so they follow whichever palette is active. The only fixed colours are the "space" drawings in lessons (night-sky diagrams), the social brand colours and the yellow "highlight links" marker, which are the same on both sites.
+Components must use the variables (`var(--accent)` etc.), never a hex value, so they follow whichever palette is active. The only fixed colours are the "space" drawings in lessons (night-sky diagrams) and the yellow "highlight links" marker, which are the same on both sites.
 
 The homepage animation (Newton's cannon, `components/NewtonHero.tsx`) is a night sky on the university site. Here `theme-highschool.css` redraws it on a notebook page in light mode (white paper, light-blue ruling, a red margin line, a blue-ink Earth and a red-pen path) and on a plum notebook page in dark mode (faint lilac ruling, a rose margin line, lilac-white stars, a light-blue Earth and a mint path). The ruling lines have no stroke of their own, so without the high-school theme they are invisible and the night sky is unchanged. The path is at least 5.2:1 on its background (11.5:1 in dark mode), and the Earth's outline at least 6.9:1.
 
@@ -44,7 +44,6 @@ Every pair was computed with the WCAG formula; none fails.
 - Text (≥ 4.5:1), on `--bg`, `--bg-soft` and `--card`: `--fg`, `--fg-soft`, `--muted`, `--link`, `--link-visited`, `--link-hover`, `--gold-text`, `--accent`, `--good`, `--bad`, `--cosmo`. The lowest are 5.6:1 (light, `--bad` on `--bg-soft`) and 7.3:1 (dark, `--muted` on `--card`).
 - `--on-accent` on `--accent`: 7.0 (light) and 10.2 (dark). Good/bad text on their soft backgrounds, and the reverse (quiz letters): at least 5.4:1.
 - Controls and graph colours (≥ 3:1), on `--bg` and `--card`: `--control` 4.2 / 4.2, `--gold` 3.5 / 11.1, `--plot-1` … `--plot-5` at least 4.6 (light) and 8.1 (dark).
-- Footer social icons (≥ 3:1 on `--bg-soft`): all pass in light mode. In dark mode, LinkedIn's `#0a66c2` is 2.9:1 on the plum footer, so the high-school theme uses LinkedIn's lighter blue `#378fe9` (5.0:1).
 
 Links still need their underline: the link colour differs from body text by 2.3:1 (light) and 1.4:1 (dark), as on the university site.
 

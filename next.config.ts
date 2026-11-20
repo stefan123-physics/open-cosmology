@@ -35,6 +35,9 @@ const common = [
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: { "/**": ["./content/**/*"] },
+  // Some lesson pages (many formulas and graphs) take over 60 s to prerender on a busy local machine (owner
+  // decision 2026-11-20); 180 s stops the build from failing there.
+  staticPageGenerationTimeout: 180,
   env: { NEXT_PUBLIC_BUILD_VERSION: buildVersion },
   async headers() {
     return [
