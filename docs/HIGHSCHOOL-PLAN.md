@@ -146,6 +146,24 @@ Sims are hosted locally (unmodified, pinned versions, `public/phet/manifest.json
 
 **2026-11-20:** all 34 sims named below are installed in `public/phet/` (pinned versions with checksums in `manifest.json`), 99 MB in all. PhET's licence page and Terms of Use were read that day: CC BY-NC 4.0, and no clause about AI (AGENTS.md, "The High School").
 
+**Extra sims for lessons that had none (added 2026-11-20, 46 sims and 130 MB in all).** Each was confirmed as an HTML5 sim on PhET's site. The fit is a suggestion: when writing the lesson, open the sim and check that it really shows what the lesson needs, and add it to the table in §4.
+
+| Lesson | New sim (version) | Why |
+|---|---|---|
+| 0.4 Solving and rearranging formulas | `equality-explorer` (1.2.7) | Solving an equation as keeping a balance level |
+| 2.10 Torque and balance | `balancing-act` (1.3.9) | Mass times distance on each side of a lever |
+| 3.11 Orbital energy and escape speed | `my-solar-system` (1.3.18) | Launch speed decides a closed or an open orbit |
+| 4.2 Temperature and thermal energy | `gases-intro` (1.1.9) | Temperature linked to the speed of particles |
+| 4.9 Entropy and the second law | `diffusion` (1.1.9) | Two gases mix and do not un-mix |
+| 5.7 Resonance | `normal-modes` (1.0.19) | Natural frequencies of coupled masses |
+| 5.8 Light and the electromagnetic spectrum | `molecules-and-light` (1.5.35) | Microwave, infrared, visible and UV light acting on molecules |
+| 6.1 Electric charge | `balloons-and-static-electricity` (1.5.28) | Charging by rubbing; like and unlike charges |
+| 6.5 Capacitors | `capacitor-lab-basics` (1.6.41) | Plate area, gap, charge and stored energy |
+| 7.3 The photoelectric effect | `photoelectric-effect` (1.0.0, a first release) | The effect itself |
+| 7.9 Half-life and dating | `alpha-decay`, `beta-decay` (1.0.2 each) | Many nuclei decaying, with a half-life graph |
+
+Sims already hosted that also fit a lesson without one: `collision-lab` (3.7), `energy-skate-park-basics` (3.2, 3.3), `energy-forms-and-changes` (4.7), `circuit-construction-kit-dc` (6.8), `models-of-the-hydrogen-atom` (7.5), `build-a-nucleus` (8.4), `blackbody-spectrum` (8.5), `gravity-and-orbits` (2.9), `forces-and-motion-basics` (2.6, its Friction screen). Not usable: The Moving Man, Forces and Motion (full), Ramp, Torque, Radioactive Dating Game, Nuclear Fission, Resonance, Lasers and Radio Waves exist only as Java/Flash, not HTML5.
+
 ---
 
 ## 4. The lesson list
