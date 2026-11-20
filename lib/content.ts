@@ -184,8 +184,20 @@ export function loadSite(contentDir = CONTENT_DIR): Site {
   // Two people can then write different blocks at the same time (docs/TWO-PC-WORKFLOW.md): a lesson may already
   // name an earlier lesson that is still being written elsewhere, with a warning instead of an error.
   const planned = new Map<string, PlannedLesson>();
+  const listed = new Map<string, string>();
   for (const c of courses)
-    for (const s of c.syllabus) if (s.slug && !pageBySlug.has(s.slug)) planned.set(s.slug, { course: c, entry: s, slug: s.slug });
+    for (const s of c.syllabus) {
+      if (!s.slug) continue;
+      const where = `${c.id} lesson ${s.lecture}`;
+      // A slug in a lesson list must be free: not used by a page of another course, nor by another lesson list.
+      const taken = pageBySlug.get(s.slug);
+      if (taken && taken.course !== c.id)
+        problems.push({ level: "error", file: `content/${c.slug}/_course.json`, message: `${where}: slug "${s.slug}" is already used by ${taken.file}; choose another slug` });
+      if (listed.has(s.slug))
+        problems.push({ level: "error", file: `content/${c.slug}/_course.json`, message: `${where}: slug "${s.slug}" is also listed for ${listed.get(s.slug)}` });
+      listed.set(s.slug, where);
+      if (!pageBySlug.has(s.slug)) planned.set(s.slug, { course: c, entry: s, slug: s.slug });
+    }
 
   // Prerequisite graph
   const dependents = new Map<string, string[]>();
