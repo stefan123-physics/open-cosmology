@@ -238,3 +238,10 @@ Copy each prompt into the chat at the right moment. The first run (2026-11-15) u
 - Fix anything you report from the device and screen-reader tests above.
 
 Just say **"continue writing content"** whenever you want more pages.
+
+## 13. High School, PC 1 (Blocks 0–4), added 2026-11-20
+
+- [ ] **Siyavula licence footers.** 98 of Siyavula's 560 section pages show only "this site is covered by a closed copyright license. All rights reserved" in their footer, while the others say "released under … Creative Commons Attribution"; Siyavula's terms say only material clearly marked with a Creative Commons licence may be reused. The scan of every section page is in `docs/siyavula-licences.tsv`. Affected chapters: Maths equations and inequalities (Gr 10, 11), probability (Gr 10–12); Physical Sciences classification of matter, electric circuits (Gr 10–12), longitudinal waves, quantitative aspects of chemical change, the lithosphere. Until you decide, PC 1 cites only pages with the CC BY footer. (PC 2 mentions the same check as OWNER-TODO §6 on its side; merge the two items when both are on main.)
+- [x] **University page with a wrong slide number** (fixed 2026-11-20): `calcs/8.286/inflation-overview.yaml` (`doublings`, `doublings-guth`) cites slide 10 of 8.286 Lecture 1; the figures are on slides 4–5 (found by the review of lesson 0.9). Say if PC 1 may fix it on main.
+- [ ] **Practice-set label:** the content check requires a `set:` number on every problem set, so the High School practice sets have `set: 1` and some lists may call them "Problem Set 1". Decide whether High School sets should be named "Practice set" instead (a small change in `lib/content.ts`, `setName`).
+- [ ] **Try Block 0 on a phone:** `/highschool/hs-0` and its practice set (answer boxes, hints, the score), in the High School colours, light and dark.
