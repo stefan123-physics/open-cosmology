@@ -77,7 +77,38 @@ Content lives in `content/hs/hs-N/<slug>.mdx` with a `_course.json` per block (o
 
 ## 2. Sources and licences
 
-### 2.1 Books (checked on openstax.org, 2026-11-18)
+### 2.0 The sources from 2026-11-20 (owner decision; replaces §2.1)
+
+OpenStax may not be used (flag F-OS, AGENTS.md Writing rules 10). On 2026-11-20 the owner chose these sources instead, after a check of each one's licence and terms for any AI or text-and-data-mining clause (AGENTS.md Writing rules 11). A source is usable only if its licence allows adaptation into CC BY-NC-SA (CC BY, CC BY-NC, CC BY-NC-SA, CC0 or public domain) and nothing restricts AI use.
+
+| Block | Main source | Support |
+|---|---|---|
+| 0 Maths toolkit | Siyavula *Everything Maths* Grades 10–12 (CC BY) | Stitz–Zeager *Precalculus* (CC BY-NC-SA), CLP Calculus 1 (UBC, CC BY-NC-SA 4.0), MIT RES.18-005 *Highlights of Calculus* (Strang), MIT BLOSSOMS maths lessons |
+| 1 Motion, 2 Forces and gravity, 3 Energy and momentum | Siyavula *Everything Science* Physical Sciences Grades 10–12 (CC BY) | MIT 8.01SC (Dourmashkin's notes, simplified to this level), MIT BLOSSOMS (free fall, friction, equilibrium, circular motion, momentum) |
+| 4 Matter and heat | Siyavula (ideal gases, kinetic molecular theory) | OpenLearn energy course, MIT RES.8-010 *Introduction to Statistical Physics* (entropy). The thinnest block: density, pressure, specific heat, phase changes and conduction have no strong open source yet |
+| 5 Waves, sound and light | Siyavula (pulses, waves, sound, Doppler, EM radiation, geometrical optics, wavefronts) | MIT RES.8-009 *Introduction to Oscillations and Waves* (high-school level) |
+| 6 Electricity and magnetism | Siyavula (electrostatics, magnetism, electromagnetism, circuits, electrodynamics) | MIT 8.02, simplified |
+| 7 Atoms and radiation | Siyavula (the atom, photoelectric effect, emission spectra) | MIT 22.01 (decay, half-life, radiation and health), MIT RES.HS-001 Chandra Astrophysics Institute (light, colour, spectra), NASA *Imagine the Universe*, OpenLearn *Classical to quantum physics* |
+| 8 Modern physics and cosmology | NASA science pages (public domain) | ESO press releases and captions (CC BY 4.0), OpenLearn *Galaxies, stars and planets* and *Unsolved problems in cosmology*, MIT 8.20 *Introduction to Special Relativity*, MIT BLOSSOMS *Galaxies and Dark Matter*, and this site's own 8.286 lessons |
+
+**Topic checklist:** the CvTE *Syllabus centraal examen natuurkunde vwo* (examenblad.nl) shows what VWO requires. It is all rights reserved: list its topics in our own words only, never adapt or translate its text, and read it by hand rather than feeding the PDF to an AI tool. It does not reach the Big Bang, the CMB or dark matter, which come from NASA and ESO.
+
+**Conditions per source:**
+- **Siyavula:** CC BY 3.0 for all textbook content on siyavula.com (checked 2026-11-20 on the Grade 10 contents page; its terms and conditions have no AI clause and allow remixing with attribution). Cite the online pages (siyavula.com/read/…), not the printed or branded PDFs, which are reported to be CC BY-ND. Never use Siyavula's logos, brand or the name "Everything Science" as branding; embedded videos and simulations from others are not covered.
+- **MIT OCW:** CC BY-NC-SA 4.0; its terms allow non-commercial AI use. Never reuse anything marked "excluded from our Creative Commons license" or "All rights reserved", and never the commercial textbooks some courses assign (8.20 uses French and Resnick).
+- **MIT BLOSSOMS** (web.mit.edu/blossoms): CC BY-NC-SA 3.0 US, no AI clause; third-party items are listed in each lesson's credits and are not reused.
+- **OpenLearn:** CC BY-NC-SA 4.0, no AI clause; third-party figures excluded.
+- **Stitz–Zeager, CLP Calculus:** CC BY-NC-SA; check each book's front matter before first use.
+- **NASA:** public domain, but never the insignia, and never phrase AI-assisted text as "according to NASA": cite NASA pages as sources consulted.
+- **ESO:** only CC BY 4.0 items (press releases, captions, pictures of the week, blog posts), and its licence asks to say when AI was used on its content: a lesson that uses ESO text says so in its credits.
+
+**Ruled out (do not use):** Khan Academy and CK-12 (their terms bar using content for AI), the Institute of Physics' IOPSpark (robots.txt `ai-train=no` and blocks AI crawlers), Wikiwijs and Stercollecties (blocks AI crawlers, and its VWO material is CC BY-SA), Wikipedia, Wikibooks and Benjamin Crowell's *Light and Matter* (CC BY-SA: no NC adaptation), *Active Prelude to Calculus* (CC BY-SA), ESA and CERN text (no adaptation allowed), the Particle Adventure, Isaac Physics, natuurkunde.nl / NiNa modules (all rights reserved), BCcampus physics books (adapted from OpenStax), Springer books (Springer reserves AI use and blocks AI crawlers). LibreTexts and OpenStax stay forbidden.
+
+**Still to verify before first use:** the Siyavula Grade 11 and 12 pages (same statement expected); *Body Physics* (Open Oregon, reported CC BY-NC-SA 4.0) as a possible Block 4 source, after checking its front matter for OpenStax material; Murphy, *Energy and Human Ambitions on a Finite Planet* (CC BY-NC) for Blocks 3–4.
+
+The per-lesson sources in §4 still name the old OpenStax sections and must be replaced lesson by lesson from the table above when each lesson is written.
+
+### 2.1 Books (checked on openstax.org, 2026-11-18; no longer used, see §2.0)
 
 | Key | Book | Authors (senior) | Licence | Used for |
 |---|---|---|---|---|
@@ -380,7 +411,7 @@ Rough size: ~113 lessons at Open Cosmology's pace (12 unattended runs wrote ~400
 
 | # | Flag | Proposal |
 |---|---|---|
-| **F-OS** | **Open, blocks all lesson work (2026-11-20).** OpenStax's books may not be "ingested" into generative AI without OpenStax's written permission, which covers reading their pages in an AI session even with training off. All 45 OpenStax-based lessons of Blocks 0 to 3 were deleted (AGENTS.md "Sources"). | The owner decides: (a) ask OpenStax for permission with a Content Reuse Request (say an AI assistant would read the text to help rewrite it, and that it already did for the removed lessons), keep the reply in the repo, switch off Claude model training, new session; or (b) choose other sources whose licence and terms allow AI use (check each one's licence page and any AI or text-mining clause first). Until then, no lessons are written and the lesson lists and sources in §2 and §4 are on hold. |
+| **F-OS** | **Decided 2026-11-20: option (b), new sources in §2.0.** Original flag: OpenStax's books may not be "ingested" into generative AI without OpenStax's written permission, which covers reading their pages in an AI session even with training off. All 45 OpenStax-based lessons of Blocks 0 to 3 were deleted (AGENTS.md "Sources"). | The owner decides: (a) ask OpenStax for permission with a Content Reuse Request (say an AI assistant would read the text to help rewrite it, and that it already did for the removed lessons), keep the reply in the repo, switch off Claude model training, new session; or (b) choose other sources whose licence and terms allow AI use (check each one's licence page and any AI or text-mining clause first). Until then, no lessons are written and the lesson lists and sources in §2 and §4 are on hold. |
 | **F1** | The three books you named have no algebra, trigonometry or logarithms chapters, which Block 0 needs. | Add OpenStax *Algebra and Trigonometry 2e* and one section of *Calculus Volume 1* (both CC BY-NC-SA 4.0) as sources for Block 0 only. Alternative: write Block 0 from the books' appendices (A Appendix C, D; CP 1.2–1.4) plus our own explanations, citing less. |
 | **F2** | Open Cosmology **forbids** OpenStax (its `check-content.ts` rejects it, and its AGENTS.md says "Never use OpenStax"). | Fine here because the sites are separate, but it means AGENTS.md, CONTENT_GUIDE.md and the reviewer must be rewritten on this point, not just copied. No change to Open Cosmology. |
 | **F3** | Licences differ: *Physics* is CC BY 4.0; *College Physics 2e* and *Astronomy 2e* are CC BY-NC-SA 4.0. | Both allow our CC BY-NC-SA 4.0. Each page names the licence of each source it uses. |
@@ -398,6 +429,7 @@ Rough size: ~113 lessons at Open Cosmology's pace (12 unattended runs wrote ~400
 | Date | Decision |
 |---|---|
 | 2026-11-20 | OpenStax stopped (owner): its books may not be read by AI tools without its permission. All 45 lessons of Blocks 0 to 3, with practice sets, calcs, reviews and page-scoped symbol meanings, were deleted; code, design, lesson lists, general symbols and PhET sims were kept; the site text no longer says it is based on OpenStax. New sources: flag F-OS. |
+| 2026-11-20 | New sources (owner, F-OS decided): Siyavula *Everything Science* and *Everything Maths* Grades 10–12 (CC BY) as the main source for Blocks 0–7, with MIT OCW and BLOSSOMS, OpenLearn, Stitz–Zeager and CLP Calculus as support, and NASA and ESO for Block 8; the CvTE VWO syllabus as a topic checklist only. Every source's licence and AI terms were checked first (§2.0). Lessons may be written again, from these sources. |
 | 2026-11-18 | Plan approved by the owner. The flags in §7 were not answered one by one, so the skeleton follows each proposal: F1 *Algebra and Trigonometry 2e* and *Calculus Volume 1* for Block 0; F4 English at VWO level; F5 all 113 lessons; F6 the Vercel address to start; F10 `leadsTo` as `{ course, slug }`. Any of these can still change. |
 | 2026-11-18 | Skeleton: one glossary page (`/symbols`); from Open Cosmology's symbol glossary only the 112 general meanings are kept; the value registry (`calcs/values.yaml`) starts empty; the "Where this leads" links are checked against a snapshot of opencosmology.eu's search index (`data/university-lessons.json`), refreshed by `npm run sync:university` and checked weekly by `.github/workflows/links.yml`. |
 | 2026-11-19 | Own colours for the high school (owner): light "school notebook" (notebook blue, pencil yellow), dark "aubergine" (warm plum, mint; replaced a first green "chalkboard" the same day), in `app/theme-highschool.css`, scoped to `<html data-site="highschool">`; `globals.css` keeps the university palette unchanged, so a later integration leaves opencosmology.eu's colours as they are (docs/THEME.md). Fonts, header, footer and layout stay shared. |
