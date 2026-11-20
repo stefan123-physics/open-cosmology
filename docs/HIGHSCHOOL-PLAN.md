@@ -186,7 +186,7 @@ Sims are hosted locally (unmodified, pinned versions, `public/phet/manifest.json
 | 3.11 Orbital energy and escape speed | `my-solar-system` (1.3.18) | Launch speed decides a closed or an open orbit |
 | 4.2 Temperature and thermal energy | `gases-intro` (1.1.9) | Temperature linked to the speed of particles |
 | 4.9 Entropy and the second law | `diffusion` (1.1.9) | Two gases mix and do not un-mix |
-| 5.7 Resonance | `normal-modes` (1.0.19) | Natural frequencies of coupled masses |
+| 5.7 Resonance | `wave-on-a-string` (1.2.6), in place of the suggested `normal-modes` (1.0.19) | A string driven at one end resonates near its harmonics; damping lowers the response (normal-modes has no driving force) |
 | 5.8 Light and the electromagnetic spectrum | `molecules-and-light` (1.5.35) | Microwave, infrared, visible and UV light acting on molecules |
 | 6.1 Electric charge | `balloons-and-static-electricity` (1.5.28) | Charging by rubbing; like and unlike charges |
 | 6.5 Capacitors | `capacitor-lab-basics` (1.6.41) | Plate area, gap, charge and stored energy |
@@ -294,7 +294,7 @@ Radiation as heat transfer (CP 14.7) is moved to 7.2, because it needs light and
 | 5.4 | Superposition and standing waves (`superposition-and-standing-waves`) | P 13.3; CP 16.10, 17.5 | wave-on-a-string | `8-03/standing-waves-fourier-series` |
 | 5.5 | Sound and intensity (`sound`) | P 14.1, 14.2; CP 16.11, 17.1, 17.2, 17.3 | sound-waves | `8-03/sound-waves` |
 | 5.6 | The Doppler effect for sound (`doppler-effect-sound`) | P 14.3; CP 17.4 | — | `8-286/doppler-effect` |
-| 5.7 | Resonance (`resonance`) | P 14.4; CP 16.7, 16.8 | — | `8-03/driven-oscillators-resonance` |
+| 5.7 | Resonance (`resonance`) | P 14.4; CP 16.7, 16.8 | wave-on-a-string | `8-03/driven-oscillators-resonance` |
 | 5.8 | Light and the electromagnetic spectrum (`electromagnetic-spectrum`) | P 15.1, 15.2; CP 24.3; A 5.1, 5.2; N: "Electromagnetic Spectrum - Introduction" (Imagine the Universe) | — | `8-03/electromagnetic-waves` |
 | 5.9 | Reflection and refraction (`reflection-and-refraction`) | P 16.1, 16.2; CP 25.1–25.5 | bending-light | `8-03/two-dimensional-waves-snells-law` |
 | 5.10 | Lenses and telescopes (`lenses-and-telescopes`) | P 16.3; CP 25.6, 26.5; A 6.1 | geometric-optics | `8-03/diffraction-resolution` |
