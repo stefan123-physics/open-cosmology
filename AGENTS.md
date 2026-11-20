@@ -183,6 +183,27 @@ Auto-inserted on every page (don't add manually): prerequisites box, "On this pa
     - treat the licence as CC BY-NC-SA 4.0 (the *Physics* preface says both CC BY and CC BY-NC-SA), credit the book and OpenStax on every page, never use the OpenStax name or logo as endorsement, and never reuse figures credited to other copyright holders;
     - rewrite in your own words as for MIT; never paste whole chapters.
     Where OpenStax may be used (a separate high-school site, a course here, or fact-checking only) is not decided yet; until it is, `content:check` still rejects OpenStax in this site's pages (`FORBIDDEN_SOURCES` in `scripts/check-content.ts`).
+11. **AI terms of every other source** (owner decision 2026-11-20; checked that day on each provider's own pages, not legal advice). Before using a **new** source, read its licence and terms for any clause about AI, LLMs, "ingesting", text and data mining (TDM) or scraping, and add it to this list. Never train or fine-tune any AI model on any source.
+
+    | Source | Used for | AI terms | Rule |
+    |---|---|---|---|
+    | MIT OpenCourseWare | 524 lessons | Terms of use (updated 2026-08-11) have "Permitted Use of AI Training": allowed with attribution, non-commercial only, models shared CC BY-NC-SA | Allowed: read and rewrite as now |
+    | Ferreras, *Fundamentals of Dark Matter* (UCL Press) | Year 5 `Ferreras` course | CC BY-NC 4.0 (copyright page of the PDF and the UCL Discovery record, both read); no AI or TDM clause; UCL Press's AI guidance says reuse "is covered by the Creative Commons licence" | Allowed. Credit author and publisher, indicate changes, never use the book's third-party figures. UCL Press asks (not requires) to be told when the book is used to teach a course |
+    | OpenLearn, *Unsolved problems in cosmology* (planned) | not used yet | CC BY-NC-SA 4.0; no AI clause in OpenLearn or OU terms | Allowed; its figures are third-party |
+    | PhET | simulations | CC BY-NC 4.0; licence page and Terms of Use (1.0, 2026-09-20) have no AI clause | Allowed (see "The High School") |
+    | NASA | facts, values | US public domain; NASA's media guidelines: never the NASA insignia with AI output or AI training, never phrase AI output as "according to NASA" or imply NASA review | Allowed: cite NASA pages by title as now; no insignia |
+    | arXiv preprints | 12 papers | Personal and research use allowed; no AI clause; each paper has its author's licence | Allowed: prefer the arXiv version of a paper |
+    | **ACS** (Chem. Rev.) | 1 citation (Pauling 1928) | "AI ingestion counts as content use"; a standard licence is for human reading only | **Cite only. Never paste, upload or fetch the article into an AI session** |
+    | **Springer Nature**, **Oxford University Press** (MNRAS) | 1 citation (Foundations of Physics) and 2 MNRAS papers (cited via arXiv) | Both reserve all TDM rights, including AI, under EU DSM Art. 4(3) | **Cite only**; use the arXiv or open-access version if the text is needed |
+    | **IOP / AAS** (ApJ) | 4 citations | IOP's TDM policy: never use its publications to "train, pre-train, fine-tune, adapt, evaluate" AI; non-commercial TDM with conditions; CC BY articles free | **Cite only** for pre-2021 (non-CC BY) ApJ papers; CC BY articles allowed |
+    | **APS** (Phys. Rev., PRL, RMP) | 4 citations | TDM needs a written agreement with APS; CC BY articles exempt; no reader AI rule | **Cite only**; the public abstract may be read |
+    | EDP Sciences (A&A), Royal Society, JPS (JPSJ) | 1, 2 and 1 citations | No AI or TDM policy found (A&A pages blocked); general copyright, short extracts allowed (Royal Society) | Cite only; read open versions (arXiv, CC BY) where they exist |
+    | NIST (CODATA, DLMF, Chemistry WebBook) | constants, data | No AI clause in terms; Standard Reference Data and DLMF: no bulk copying; WebBook robots.txt `ai-train=no`, `ai-input=yes` | Allowed for looking up values; no bulk download |
+    | PDG (CC BY 4.0), MacTutor (CC BY-SA 4.0), ATNF/CSIRO, Newton Project | data, history | No AI clause | Allowed for looking up facts and values |
+    | IAEA AMDC | 1 citation | **Not verified**: its terms of use block automated reading | Look up values only until the owner has checked the terms (OWNER-TODO.md §6) |
+    | Feynman Lectures, David Tong's notes | fact-checking only, cited nowhere | robots.txt: `ai-train=no`; Feynman's own terms not readable | Fact-check by hand only; never fetch them into an AI session |
+
+    In short: citing a paper and stating its result or a number from it in your own words is fine for every source above; what the strict publishers (bold) forbid is putting the article's text into an AI tool. The review files show these papers were cited from their bibliographic record or public abstract, not read in full (e.g. reviews/8.06/born-oppenheimer-approximation.md: Pauling "paywalled and was not read"). Keep it that way.
 
 ## Source workflow (how pages were made)
 
