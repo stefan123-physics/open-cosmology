@@ -38,8 +38,12 @@ export type Site = {
   courseBySlug: Map<string, Course>;
   /** slug → slugs of pages that list it as a prerequisite */
   dependents: Map<string, string[]>;
+  /** slug → a lesson in a syllabus with a fixed slug that has no page yet (High School lesson lists) */
+  planned: Map<string, PlannedLesson>;
   problems: Problem[];
 };
+
+export type PlannedLesson = { course: Course; entry: SyllabusEntry; slug: string };
 
 export type Problem = { level: "error" | "warning"; file: string; message: string };
 
@@ -176,12 +180,21 @@ export function loadSite(contentDir = CONTENT_DIR): Site {
   const courseById = new Map(courses.map((c) => [c.id, c]));
   const courseBySlug = new Map(courses.map((c) => [c.slug, c]));
 
+  // Lessons that are planned but not written yet: syllabus entries with a fixed slug (the High School lesson lists).
+  // Two people can then write different blocks at the same time (docs/TWO-PC-WORKFLOW.md): a lesson may already
+  // name an earlier lesson that is still being written elsewhere, with a warning instead of an error.
+  const planned = new Map<string, PlannedLesson>();
+  for (const c of courses)
+    for (const s of c.syllabus) if (s.slug && !pageBySlug.has(s.slug)) planned.set(s.slug, { course: c, entry: s, slug: s.slug });
+
   // Prerequisite graph
   const dependents = new Map<string, string[]>();
   for (const p of pages) {
     for (const pre of p.prerequisites) {
       if (!pageBySlug.has(pre)) {
-        problems.push({ level: "error", file: p.file, message: `unknown prerequisite "${pre}"` });
+        if (planned.has(pre))
+          problems.push({ level: "warning", file: p.file, message: `prerequisite "${pre}" is planned but not written yet (shown as "coming")` });
+        else problems.push({ level: "error", file: p.file, message: `unknown prerequisite "${pre}"` });
         continue;
       }
       if (pre === p.slug) {
@@ -218,7 +231,7 @@ export function loadSite(contentDir = CONTENT_DIR): Site {
     problems.push({ level: "error", file: pageBySlug.get(cycle[0])!.file, message: `prerequisite cycle: ${cycle.join(" → ")}` });
   }
 
-  return { years, courses, pages, pageBySlug, courseById, courseBySlug, dependents, problems };
+  return { years, courses, pages, pageBySlug, courseById, courseBySlug, dependents, planned, problems };
 }
 
 function findCycles(pages: Page[]): string[][] {

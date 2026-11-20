@@ -53,7 +53,7 @@ export default function Home() {
       )}
 
       <ContinueCard
-        pages={orderedPages(site).filter(isLesson).map((p) => ({ slug: p.slug, title: p.title, href: p.href, course: p.course, prerequisites: p.prerequisites }))}
+        pages={orderedPages(site).filter(isLesson).map((p) => ({ slug: p.slug, title: p.title, href: p.href, course: p.course, prerequisites: p.prerequisites.filter((s) => site.pageBySlug.has(s)) }))}
       />
 
       <section id="cosmology" className="home-section">

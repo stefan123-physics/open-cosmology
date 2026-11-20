@@ -20,13 +20,30 @@ if (!course) {
   process.exit(1);
 }
 const lecture = Number(lectureArg);
-const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const entry = course.syllabus.find((s) => s.lecture === lecture);
+const highschool = course.kind === "highschool";
+if (highschool && !entry?.slug) {
+  console.error(`${courseId} has no lesson ${lecture} with a slug in its lesson list (_course.json)`);
+  process.exit(1);
+}
+// High School lessons take the slug fixed in the block's lesson list (docs/HIGHSCHOOL-PLAN.md §4).
+const slug = highschool ? entry!.slug! : title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 if (site.pageBySlug.has(slug)) {
   console.error(`Slug "${slug}" already exists`);
   process.exit(1);
 }
 const order = Math.max(0, ...course.pages.filter((p) => p.lecture === lecture).map((p) => p.order)) + 1;
-const entry = course.syllabus.find((s) => s.lecture === lecture);
+const lastLesson = Math.max(...course.syllabus.map((s) => s.lecture));
+// High School: the main source is one of docs/HIGHSCHOOL-PLAN.md §2.0 (Siyavula, MIT, OpenLearn, NASA, ESO …); never OpenStax.
+const sourceLines = highschool
+  ? `source:
+  title: "" # main source, from docs/HIGHSCHOOL-PLAN.md §2.0, e.g. "Siyavula, Everything Science Grade 10, Chapter 21: Motion in one dimension"
+  url: https://www.siyavula.com/read/za/physical-sciences/grade-10 # replace with the exact page
+  readings: []`
+  : `source:
+  title: ${JSON.stringify(`MIT ${course.ocwNumber} ${course.unit} ${lecture}${entry ? `: ${entry.title}` : ""}`)}
+  url: ${entry?.url ?? course.url}
+  readings: []`;
 const dir = fs
   .readdirSync(CONTENT_DIR)
   .map((y) => path.join(CONTENT_DIR, y, courseId))
@@ -42,13 +59,10 @@ lecture: ${lecture}
 order: ${order}
 summary: ""
 prerequisites: []
-source:
-  title: ${JSON.stringify(`MIT ${course.ocwNumber} ${course.unit} ${lecture}${entry ? `: ${entry.title}` : ""}`)}
-  url: ${entry?.url ?? course.url}
-  readings: []
+${sourceLines}
 license: CC BY-NC-SA 4.0
 references: {}
-leadsTo: []
+leadsTo: []${highschool ? `\ntowards: ${lecture === lastLesson}` : ""}
 quiz:
   - question: ""
     choices: ["", ""]

@@ -108,6 +108,11 @@ for (const page of site.pages) {
       const p = site.pageBySlug.get(pre);
       if (p && p.yearNumber !== HIGHSCHOOL_YEAR) err(page.file, `prerequisite "${pre}" is not a High School lesson`);
       else if (p && comparePages(site)(p, page) > 0) err(page.file, `prerequisite "${pre}" comes later in the High School`);
+      // A planned lesson (not written yet, e.g. by the other PC, docs/TWO-PC-WORKFLOW.md) must also come earlier.
+      const pl = !p ? site.planned.get(pre) : undefined;
+      if (pl && pl.course.kind !== "highschool") err(page.file, `prerequisite "${pre}" is not a High School lesson`);
+      else if (pl && (pl.course.order > block.order || (pl.course.order === block.order && pl.entry.lecture >= page.lecture)))
+        err(page.file, `prerequisite "${pre}" (lesson ${pl.course.block}.${pl.entry.lecture}) comes later in the High School`);
     }
     if (page.kind === "lesson") {
       const entry = block.syllabus.find((e) => e.lecture === page.lecture);

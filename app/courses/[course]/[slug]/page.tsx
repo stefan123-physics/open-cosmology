@@ -60,7 +60,6 @@ export default async function TopicPage({ params }: { params: Promise<Params> })
   if (!found) notFound();
   const { site, page, course } = found;
 
-  const prerequisites = page.prerequisites.map((s) => site.pageBySlug.get(s)!);
   const fullPath = readingPath(site, page.slug);
   const directDependents = (site.dependents.get(page.slug) ?? []).map((s) => site.pageBySlug.get(s)!);
   const cosmology = course.role === "cosmology" ? [] : cosmologyDestinations(site, page);
@@ -84,6 +83,17 @@ What is wrong (and, if you know, what it should be):
   /** "8.286 · Lecture 3": where a linked page sits in the programme. */
   const where = (p: { course: string; lecture: number }) =>
     `${p.course} · ${site.courseById.get(p.course)?.unit ?? "Lecture"} ${p.lecture}`;
+
+  // Written prerequisites link to their page; a planned one (named in a lesson list, not written yet: possible while
+  // two people write different blocks, docs/TWO-PC-WORKFLOW.md) links to its row on the block page, marked "coming".
+  const prerequisites = page.prerequisites.flatMap((s) => {
+    const p = site.pageBySlug.get(s);
+    if (p) return [{ slug: p.slug, href: p.href, title: p.title, sub: where(p) }];
+    const pl = site.planned.get(s);
+    if (!pl) return [];
+    const label = pl.course.kind === "highschool" ? `${pl.course.block}.${pl.entry.lecture}` : `${pl.entry.lecture}`;
+    return [{ slug: s, href: `${pl.course.href}#sec-${String(pl.entry.lecture).replace(".", "-")}`, title: pl.entry.title, sub: `${pl.course.ocwNumber} · ${pl.course.unit} ${label} · coming, not written yet` }];
+  });
 
   const quiz = page.quiz.map((q) => ({
     question: renderInlineTex(q.question),
@@ -159,7 +169,7 @@ What is wrong (and, if you know, what it should be):
             <LinkBars>
               {prerequisites.map((p) => (
                 <li key={p.slug}>
-                  <LinkBar href={p.href} title={p.title} sub={where(p)} />
+                  <LinkBar href={p.href} title={p.title} sub={p.sub} />
                 </li>
               ))}
             </LinkBars>
