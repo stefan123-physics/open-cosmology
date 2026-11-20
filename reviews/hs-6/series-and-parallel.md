@@ -90,3 +90,28 @@ Recomputed by hand; `pytest tests/calc -k series-and-parallel`: 36 passed. `npm 
 8. Left for the owner (licence question, not a page fix): whether the Siyavula section pages carry the CC BY 3.0 notice is recorded in AGENTS.md from the contents page; re-verifying it is an owner decision across all High School pages.
 
 Checks: `npm run calc:test -- -k series-and-parallel`: 42 passed. `npm run content:check`: 0 error(s); the page's only warning is the planned prerequisite `conservation-of-energy`. Status set to reviewed.
+
+## Re-sourcing (2026-11-20)
+docs/siyavula-licences.tsv marks every Siyavula electric-circuits section of Grades 10 to 12 as ARR (closed copyright, All rights reserved), so all Siyavula citations were removed. No Siyavula URL is left on the page or in its calcs file.
+
+- Main source: was Siyavula Gr 10, 17.4 Series resistors; now MIT 8.02T Course Notes Chapter 7, Direct-Current Circuits (formerly reading4). `cite="mit"` now means this chapter. All readings removed (`readings: []`): Gr 10 17.1, 17.2, 17.5, Gr 11 11.2 and Gr 12 10.3 (all ARR).
+- Formula citations (all checked in the local text of the Chapter 7 PDF):
+  - Junction rule: Sec. 7.4, Eq. (7.4.1), two-branch form Eq. (7.3.4) (was reading4, same location).
+  - Loop rule: Sec. 7.4, Eq. (7.4.2) (was reading4).
+  - Voltages in series: Sec. 7.3, Eq. (7.3.1) (was Siyavula 17.4).
+  - Resistors in series: Sec. 7.3, Eqs. (7.3.2) and (7.3.3) (was 17.4).
+  - Resistors in parallel: Sec. 7.3, Eqs. (7.3.5) and (7.3.6) (was 17.5).
+  - Two resistors in parallel, product over sum: Sec. 7.3, unnumbered equation after Eq. (7.3.6) (was 17.5).
+  - Terminal voltage V = emf - Ir: Sec. 7.2, Eq. (7.2.5) (was Gr 12 10.3).
+  - Current I = emf/(R + r): Sec. 7.2, Eq. (7.2.7) (was reading4).
+- Calcs: all 42 `source` fields now cite mit with an equation of Chapter 7 (7.2.4 to 7.2.7, 7.3.1 to 7.3.6, 7.4.1 to 7.4.4); no `shown` text changed.
+- Circuit-symbols table: kept, uncited. It is standard notation described in our own words (MIT 7.1 shows only source, resistor and switch symbols; bulb, ammeter and voltmeter symbols are general convention). Meter placement rests on lesson 6.6 and MIT 7.5.
+- Wording checked against the ARR Siyavula texts and rephrased where it followed them in idea order or wording:
+  - Wires: "every point along one wire ... is at the same potential" (close to Siyavula 17.5) now follows MIT 7.2 (wire resistance negligible, potential nearly constant along a wire).
+  - Series definition and bullets (Siyavula 17.4 structure: one path, current the same, voltages add, resistance increases) rewritten along MIT 7.1 and 7.3 (joined end to end without branches; current conservation; sum of voltage drops).
+  - Parallel definition and same-voltage bullet (Siyavula 17.5: start and end points the same) rewritten along MIT 7.1 and 7.3 (connected across the same potential difference).
+  - Combinations paragraph reworded.
+  - emf and internal resistance: "the materials inside the battery have some resistance of their own" (close to Gr 12 10.3) and the "lost volts ... nothing is lost" sentence (close to Gr 12 10.3) rephrased; emf now described as MIT's charge pump doing work per coulomb (Sec. 7.2, Eq. 7.2.1).
+- Numbers, worked examples and quiz unchanged (own examples, none taken from Siyavula). status stays reviewed.
+
+Checks: `npm run calc:test -- -k series-and-parallel`: 42 passed. `npm run content:check`: 0 error(s); the page's only warning is the planned prerequisite `conservation-of-energy`.

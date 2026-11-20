@@ -101,3 +101,20 @@ All recomputed independently; `npm run calc:test -k electric-power`: 37 passed.
 10. `quiz: 1` added to `quiz-double-current`. `quiz: 2` and `quiz: 4` make calc:test fail (it compares quiz 2 in SI units against choices in kWh; quiz 4 has word choices), so those entries carry a comment instead.
 
 Checks: `npm run calc:test -- -k electric-power`: 43 passed. `npm run content:check`: no errors for this page; its only warnings are the two planned prerequisites (`power`, `conservation-of-energy`). The one error in the whole check (symbol x scoped to "capacitors") belongs to another lesson. Status set to reviewed.
+
+## Re-sourcing (2026-11-20)
+
+Reason: docs/siyavula-licences.tsv marks Siyavula Physical Sciences Gr 11, 11.3 Power and energy (the former main source) as ARR (closed copyright, All rights reserved). Siyavula allows reuse only of material clearly marked with a Creative Commons licence, so every citation of it was removed.
+
+- Main source: now MIT 8.02T Course Notes, Chapter 6, Section 6.3 (Electrical Energy and Power), formerly reading1. `cite="mit"` now means the MIT notes. Siyavula Gr 12, 5.5 Power (CCBY in the TSV) moved from reading2 to reading1.
+- E = QV: reading1 -> mit, Sec. 6.3 (ΔU = Δq ΔV).
+- E = VIt: was Siyavula 11.3 Electrical energy -> mit, Sec. 6.3 with Δq = I Δt (Eq. 6.3.1).
+- P = VI: was Siyavula 11.3 Electrical power -> mit, Eq. (6.3.1). The second display of P = IV now also cites mit, Eq. (6.3.1).
+- P = I²R = V²/R: was Siyavula 11.3 Equivalent forms -> mit, Eq. (6.3.2) (checked in the local copy of the notes).
+- Joule 1841: the date came only from the ARR page; dropped. The term "Joule heating" stays as general knowledge, named after Joule, without a citation.
+- Cost of electrical energy: the Formula cited the ARR page's Worked example 14; removed. Cost = kWh × price is now a plain sentence without a citation (general knowledge).
+- 1 kWh = 3.6 × 10⁶ J: unchanged, Siyavula Gr 12 5.5 (CCBY; the kilowatt-hour and 3 600 000 J are on that page), now reading1.
+- calcs/hs-6/electric-power.yaml: every `source` updated the same way (Sec. 11.3 Electrical power / Electrical energy -> mit Sec. 6.3, Eq. (6.3.1); Equivalent forms -> mit Sec. 6.3, Eq. (6.3.2); reading1 -> mit; reading2 -> reading1; the three cost entries and the €28 saving -> reading1, Sec. 5.5, the kilowatt-hour). No number or `shown` text changed.
+- Other Siyavula links checked: Gr 12 5.5 Power and Gr 12 11.3 Alternating current (`siy-ac`) are CCBY rows in the TSV. The Natural Sciences Gr 7 chapter 15 page (`siy-eff`) is not in the TSV; its footer was fetched with curl on 2026-11-20 and reads "Creative Commons Attribution License", and its text does describe useful and wasted energy and efficiency. Its URL was updated to the address it redirects to (/read/za/natural-sciences/grade-7/...).
+- Wording: the page text was compared with the ARR page; no sentence, definition or example follows it (its worked examples use 5 V / 2 Ω, 15 Ω / 4 A, series networks and a 900 W microwave at 61.6 c/kWh; the page's examples are its own).
+- Checks: `npm run calc:test -- -k electric-power` 43 passed; `npm run content:check` 0 error(s), the page's only warnings are the two planned prerequisites (power, conservation-of-energy). Status stays reviewed.

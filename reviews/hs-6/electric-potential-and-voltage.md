@@ -94,3 +94,17 @@ Recomputed by hand (and the calcs suite passes):
 8. Not this page: the 1.60 × 10⁻¹⁹ C on lesson 6.3 is fixed there.
 
 Checks: calc:test -k electric-potential-and-voltage: 31 passed. content:check: no errors on this page once sym-electric-potential-and-voltage-fix.json is applied (tested on a temporary copy of data/symbols.json, then restored); only the four "planned prerequisite" warnings remain. Status set to reviewed.
+
+## Re-sourcing (2026-11-20)
+
+The main source, Siyavula Physical Sciences Grade 10, 17.1 "Potential difference and emf" (/read/za/physical-sciences/grade-10/electric-circuits/17-electric-circuits-01), is marked ARR (closed copyright, all rights reserved) in docs/siyavula-licences.tsv, so it was removed from the page and its calcs file.
+
+- Frontmatter: `source` is now MIT 8.02T Course Notes Chapter 3: Electric Potential (Liao, Dourmashkin and Belcher), formerly reading2. `readings` keeps only Siyavula Grade 12, 12.2 The photoelectric effect (CCBY row in the TSV), still reading1.
+- Formula "Potential difference (voltage)" V = W/q: was mit "Sec. 17.1" (Siyavula); now mit "Sec. 3.1, Eqs. (3.1.9) and (3.1.10): work per unit charge" (8.02T Ch. 3 p. 3: the potential difference is the work done per unit charge; U = q0 V).
+- Formula "The volt" 1 V = 1 J/C: was mit "Sec. 17.1"; now mit "Eq. (3.1.11)" (1 volt = 1 joule/coulomb).
+- Every former cite="reading2" (8.02T Ch. 3) is now cite="mit", same locations (Eqs. 3.1.6, 3.1.10, 3.2.1, 3.3.3, 3.3.5, Sec. 3.2).
+- calcs/hs-6/electric-potential-and-voltage.yaml: quiz-voltage, work-voltage and work-larger-charge moved from {cite: mit, at: 'Sec. 17.1'} to {cite: mit, at: 'Sec. 3.1, Eqs. (3.1.9) and (3.1.10)'}; every {cite: reading2} became {cite: mit}. No shown text or number changed.
+- Wording check against the ARR page: its definition ("work done per unit charge", volt = joule per coulomb, named after Volta) is standard textbook content; the page's sentences, the battery examples, the "other way round" note and the worked examples do not follow its wording or examples. Nothing rephrased.
+- The only Siyavula URL left on the page is the 12.2 photoelectric effect section, a CCBY row.
+
+Checks: `npm run calc:test -- -k electric-potential-and-voltage` 31 passed; `npm run content:check` 0 error(s), the page has only the four "planned prerequisite" warnings. Status stays reviewed.
