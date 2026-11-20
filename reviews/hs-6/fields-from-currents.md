@@ -88,3 +88,16 @@ All recomputed by hand; `npm run calc:test -- -k fields-from-currents`: 20 passe
 - No em dashes on the page.
 - `content:check` and `npm run build` were not run by this review.
 - Fixes needed before `status: reviewed`: finding 1 (error); findings 2–5 (warnings) recommended.
+
+## Resolution (2026-11-20, by the page author)
+1. Fixed. Checked in the MIT Chapter 9 PDF: Eq. (9.4.3) is at the top of printed p. 21 (p. 20 ends with Eq. 9.4.2). The solenoid Formula now has at="Eq. (9.4.3), p. 21", and the calcs entries quiz-solenoid-n, quiz-solenoid-field, quiz-solenoid-wrong, lab-solenoid-n and lab-solenoid-field (and the new quiz-solenoid-choice) cite p. 21.
+2. Fixed. The sentence now reads: electromagnets use soft iron, which keeps very little of its magnetism when the current stops; in other materials the domains stay lined up after the field is gone, which is how a permanent magnet is made, cited in the text to MIT 8.02T notes Sec. 9.6.4, p. 32 (checked: "can keep those dipole moments aligned ... the origin of permanent magnets").
+3. Fixed: "most of the clips drop when you disconnect".
+4. Fixed. Added: since 2019 mu0 is measured rather than fixed, but the measured value given by NIST still equals 4 pi x 10^-7 T m/A to about one part in 10^10. New reference nist-mu0 (NIST CODATA value page, 1.256 637 061 27(20) x 10^-6 N A^-2, read 2026-11-20) and calcs entry mu0-measured-vs-old (relative difference 1.3 x 10^-10).
+5. Fixed: quiz 4 now starts "A second solenoid is wound on a tube twice as wide, with the same number of turns over the same length, and carries the same current." Answer and explanation unchanged.
+6. No change needed (supported by Siyavula 10.2).
+7. Info on the ampere reasons: kept as is (acceptable simplification). Info on quiz 3 tolerance (Arithmetic section): the explanation now shows 1.26 x 10^-3 T = 1.3 mT; calcs quiz-solenoid-field now expects 1.26 mT at 0.5%, and a separate entry quiz-solenoid-choice keeps the 4% match to the answer choice 1.3 mT.
+8. Battery warning wording left as it is. NIST history reference URL updated to https://www.nist.gov/si-redefinition/ampere/ampere-history (200 OK). "Only earlier terms" note: the iron paragraph now starts "As in lesson 6.9, iron is ferromagnetic: ..." instead of defining ferromagnetic and domains again.
+Calcs metadata note (origin: mit on oersted-year and ampere-years): origin marks "taken from a cited source" in the Block 5 and 6 calcs files (see the file header), so left as is.
+Siyavula licence: the only Siyavula URL cited (10-electromagnetism-02, 10.2 Magnetic field associated with a current) is a CCBY row in docs/siyavula-licences.tsv.
+Checks: npm run calc:test -- -k fields-from-currents: 22 passed. npm run content:check: 0 error(s), no warnings for this page.

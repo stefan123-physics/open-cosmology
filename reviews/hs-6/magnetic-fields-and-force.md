@@ -83,3 +83,18 @@ All recomputed by hand:
 - Writer's open point 1 (PhET): "Field Meter" and "Flip Polarity" exist in the sim (UI strings `fieldMeter`, `Flip Polarity`); "field lines" do not (finding 2). The sim also has two screens "Bar Magnet" and "Electromagnet", so the bracket about the electromagnet screen is accurate.
 - Writer's open point 2 (monopole callout uncited): acceptable, see "Where this leads".
 - Writer's open point 3 (second leadsTo to 8.286): acceptable, see "Where this leads".
+
+## Resolution (2026-11-20, by the page author)
+
+- 1 (warning, quiz 3 "ion"): fixed. The question now reads "A proton moves east ...". Answer, explanation and calcs unchanged.
+- 2 (warning, Try it): fixed. The text no longer speaks of field lines in the sim: it says the sim shows the field as a grid of small compass needles that point away from the north pole and round to the south pole, like the field lines of the lesson; the field meter and Flip Polarity parts stay; added "Turn on the Earth to see why the magnetic pole in the Arctic is a south pole."
+- 3 (warning, motor): fixed. Now "the loop would only turn until its flat face is at right angles to the field, rock back and forth, and stop".
+- 4 (info, gauss): fixed. Now "A unit that is still often used, although it is not an SI unit, is the gauss", following MIT Sec. 8.2. The shown strings in the calcs file ("1 T = 10^4 gauss", "about half a gauss") are unchanged.
+- 5 (info, nail and either pole): no change; the reviewer judged it correct standard physics.
+- 6 (info, "down to a single atom"): left as is. It is true for the magnetic atoms (iron, nickel, cobalt) the paragraph is about, and the point of the sentence (no lone pole at any size) is the one 8.286 Lecture 22 builds on; the reviewer judged it fine at this level.
+- 7 (info, cyclotrons): left as is. Standard, correct (non-relativistic) consequence of T being independent of v; the reviewer asked for no change.
+- 8 (info, two like poles): no change; correct.
+- "Only earlier terms", kinetic energy: fixed. `kinetic-energy` (lesson 3.2) added to `prerequisites`.
+- Siyavula licences: all four Siyavula pages the lesson cites (Gr 10 15.2, 15.3, 15.4; Gr 12 11.2) are CCBY rows in docs/siyavula-licences.tsv.
+
+Checks: `npm run calc:test -- -k magnetic-fields-and-force`: 34 passed. `npm run content:check`: 0 error(s); for this page only the expected "planned but not written yet" prerequisite warnings (Blocks 1 to 3, other PC).
