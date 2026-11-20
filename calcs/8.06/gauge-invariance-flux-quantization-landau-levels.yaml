@@ -1,0 +1,528 @@
+# Calculations on content/year-3/8.06/gauge-invariance-flux-quantization-landau-levels.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 14 transcripts L14.1-L14.4 (no lecture notes on OCW for chapter 5).
+# Gaussian units throughout. Page's own worked example: an electron at B = 1e5 G (10 T) with e = 4.803e-10 esu,
+# m = 9.109e-28 g, c = 2.998e10 cm/s, hbar = 1.0546e-27 erg s, 1 eV = 1.602e-12 erg, k_B = 8.617e-5 eV/K.
+# Exact SI values for the flux quantum: h = 6.62607015e-34 J s, e = 1.602176634e-19 C (CODATA, exact since 2019).
+
+page: content/year-3/8.06/gauge-invariance-flux-quantization-landau-levels.mdx
+calcs:
+  # ---------------------------------------------------------------- gauge invariance (L14.1, L14.2)
+  - id: gauge-keeps-E
+    kind: identity
+    where: 'gauge transformation: with A'' = A + ∇Λ and Φ'' = Φ − (1/c)∂Λ/∂t, the field −∂Φ''/∂x − (1/c)∂A''_x/∂t equals −∂Φ/∂x − (1/c)∂A_x/∂t (the mixed derivatives of Λ cancel); checked with Λ = sin(x) t² and a sample point'
+    formula: -(deriv('-(1/cc)*2*sin(s)*t0', 's', x0)) - (1/cc)*deriv('cos(x0)*s**2', 's', t0)
+    equals: (1/cc)*2*cos(x0)*t0 - (1/cc)*2*cos(x0)*t0
+    samples: {cc: [1.0, 3.0], x0: [0.4, 1.3], t0: [0.7, 2.0]}
+    tolerance: 1e-6
+    shown: ['\vec A'' = \vec A + \nabla\Lambda, \qquad \Phi'' = \Phi - \frac{1}{c}\,\frac{\partial\Lambda}{\partial t}']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: mit
+
+  - id: p-dot-A-product-rule
+    kind: identity
+    where: 'L14.1 p. 2: p·(Aψ) = (ħ/i)(∇·A)ψ + A·pψ is the product rule; 1D check d/dx(A ψ) = A′ψ + Aψ′ with A = 1 + x², ψ = sin x'
+    formula: deriv('(1 + s**2)*sin(s)', 's', x0)
+    equals: 2*x0*sin(x0) + (1 + x0**2)*cos(x0)
+    samples: {x0: [0.3, 1.7]}
+    tolerance: 1e-6
+    shown: ['\vec p\cdot\left(\vec A\,\psi\right) = \frac{\hbar}{i}\,(\nabla\cdot\vec A)\,\psi + \vec A\cdot\vec p\,\psi']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: mit
+
+  - id: divergence-term-coefficient
+    kind: identity
+    where: 'L14.1 p. 3: −(q/2mc)(ħ/i)(∇·A) = +(iħq/2mc)(∇·A), since −1/i = i (checked as the imaginary coefficients: −(1/(2mc))·q·ħ·(−1) = qħ/(2mc))'
+    formula: -(qq/(2*mm*cc))*hb*(-1)
+    equals: hb*qq/(2*mm*cc)
+    samples: {qq: [1.0, -2.0], mm: [1.0, 3.0], cc: [1.0, 2.5], hb: [1.0, 0.4]}
+    tolerance: 1e-12
+    shown: ['H = \frac{p^2}{2m} + \frac{i\hbar q}{2mc}\,(\nabla\cdot\vec A) - \frac{q}{mc}\,\vec A\cdot\vec p + \frac{q^2}{2mc^2}\,A^2 + q\Phi']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: covariant-cancellation
+    kind: identity
+    where: 'L14.1 p. 4: (ħ/i)·(iq/ħc)∇Λ = (q/c)∇Λ, the term that cancels −(q/c)∇Λ from A'' = A + ∇Λ'
+    formula: hb*(qq/(hb*cc))*gl
+    equals: qq/cc*gl
+    samples: {hb: [1.0, 0.3], qq: [1.0, -1.5], cc: [1.0, 2.0], gl: [0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['The first term on the left is $\frac{q}{c}(\nabla\Lambda)U\psi$, which cancels the first term on the right']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  - id: covariant-identity-1d
+    kind: identity
+    where: 'covariant derivative identity, 1D check of the real factor: with U = e^(iθ(x)), θ = qΛ/ħc, d/dx(U ψ)/U = iθ′ψ + ψ′; the phase derivative (ħ/i)·iθ′ = ħθ′ = (q/c)Λ′. Check (ħ/i)(iθ′) − (q/c)Λ′ = 0 for Λ = x³, θ = qΛ/(ħc)'
+    formula: hb*deriv('qq*s**3/(hb*cc)', 's', x0) - qq/cc*3*x0**2
+    equals: 0*x0
+    samples: {hb: [1.0, 0.5], qq: [1.0, 2.0], cc: [1.0, 3.0], x0: [0.5, 1.2]}
+    tolerance: 1e-6
+    shown: ['\left(\frac{\hbar}{i}\nabla - \frac{q}{c}\,\vec A''\right)(U\psi) = U\left(\frac{\hbar}{i}\nabla - \frac{q}{c}\,\vec A\right)\psi']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: schrodinger-time-part
+    kind: identity
+    where: 'L14.1 p. 5: −c·(ħ/i)·∂/∂(ct) = −(ħ/i)∂/∂t = iħ ∂/∂t, and −c·(q/c)Φ = −qΦ (coefficients: −(1/i) = i, checked as −c·(1/c)·(−1) = 1)'
+    formula: -cc*(1/cc)*(-1)
+    equals: 1 + 0*cc
+    samples: {cc: [1.0, 2.998]}
+    tolerance: 1e-12
+    shown: ['-c\left(\frac{\hbar}{i}\,\frac{\partial}{\partial(ct)} + \frac{q}{c}\,\Phi\right)\psi = \frac{1}{2m}\left(\frac{\hbar}{i}\nabla - \frac{q}{c}\,\vec A\right)^2\psi']
+    source: {cite: reading1, at: 'p. 5'}
+    origin: mit
+
+  - id: p-not-invariant
+    kind: identity
+    where: 'gauge-invariant observables: (ħ/i) d/dx(e^(iθ)ψ) = e^(iθ)[(ħ/i)ψ′ + ħθ′ψ] with θ = qΛ/ħc, so ⟨ψ′|p|ψ′⟩ gains (q/c)⟨Λ′⟩; check ħθ′ = (q/c)Λ′ for Λ = sin x'
+    formula: hb*deriv('qq*sin(s)/(hb*cc)', 's', x0)
+    equals: qq/cc*cos(x0)
+    samples: {hb: [1.0, 0.2], qq: [1.0, -1.0], cc: [1.0, 2.0], x0: [0.3, 2.1]}
+    tolerance: 1e-6
+    shown: ['\langle\psi''|\vec p|\psi''\rangle = \langle\psi|\vec p|\psi\rangle + \frac{q}{c}\,\langle\psi|\nabla\Lambda|\psi\rangle']
+    source: {cite: reading2, at: 'p. 1'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the torus (L14.2)
+  - id: torus-curl
+    kind: identity
+    where: 'L14.2 p. 3: A_y = B₀x, A_x = 0 gives ∂_x A_y − ∂_y A_x = B₀'
+    formula: deriv('b0*s', 's', x0) - 0
+    equals: b0 + 0*x0
+    samples: {b0: [0.5, 2.0], x0: [0.3, 1.1]}
+    tolerance: 1e-8
+    shown: ['A_y = B_0\,x, \qquad A_x = 0']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: mit
+
+  - id: torus-gauge-parameter
+    kind: identity
+    where: 'L14.2 p. 4: Λ = B₀L_x y has ∂Λ/∂y = B₀L_x, so B₀(x + L_x) = B₀x + ∂Λ/∂y'
+    formula: b0*x0 + deriv('b0*lx*s', 's', y0)
+    equals: b0*(x0 + lx)
+    samples: {b0: [0.5, 2.0], lx: [1.0, 3.0], x0: [0.2, 0.9], y0: [0.4, 1.5]}
+    tolerance: 1e-8
+    shown: ['B_0\,(x + L_x) = B_0\,x + \frac{\partial\Lambda}{\partial y} \quad\Rightarrow\quad \Lambda = B_0\,L_x\,y']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: mit
+
+  - id: flux-quantum-2pi-hbar
+    kind: identity
+    where: 'L14.2 p. 5: qB₀L_xL_y/ħc = 2πn gives B₀L_xL_y = n 2πħc/q = n hc/q, with h = 2πħ (transcript garbled: "2 pi n ... hc over q n")'
+    formula: 2*pi*nn*hb*cc/qq
+    equals: nn*(2*pi*hb)*cc/qq
+    samples: {nn: [1, 3], hb: [1.0, 0.5], cc: [1.0, 2.0], qq: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['\Phi_B = B_0\,L_x\,L_y = n\,\frac{2\pi\hbar c}{q} = n\,\Phi_0, \qquad \Phi_0 = \frac{hc}{q}']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: mit
+
+  - id: phi0-quoted
+    kind: fact
+    where: 'L14.2 p. 6: Zwiebach quotes Φ₀ ≈ 2.068e-15 Wb = 2.068e-7 Mx for q = e (this is h/2e; see phi0-slip)'
+    value: '2.068e-15'
+    shown: ['Zwiebach quotes $\Phi_0 \approx 2.068 \times 10^{-15}$ webers, or $2.068 \times 10^{-7}$ maxwells']
+    source: {cite: reading2, at: 'p. 6'}
+    origin: slip
+
+  - id: weber-maxwell
+    where: 'L14.2 p. 6: 1 Wb = 1 T m² = 1e4 G × 1e4 cm² = 1e8 Mx, so 2.068e-15 Wb = 2.068e-7 Mx'
+    inputs: {}
+    formula: 1e4*1e4
+    expected: '1e8'
+    shown: ['and 1 Wb is $10^{8}$ Mx, so the two figures agree with each other']
+    source: {cite: reading2, at: 'p. 6'}
+    origin: mit
+
+  - id: phi0-slip
+    where: 'slip: h/2e in SI with exact h and e, the value Zwiebach quotes'
+    inputs: {}
+    formula: 6.62607015e-34/(2*1.602176634e-19)
+    expected: '2.068e-15'
+    shown: ['The value quoted is $h/2e$, the flux quantum of superconductors']
+    source: {cite: codata, at: 'magnetic flux quantum h/2e'}
+    origin: slip
+
+  - id: phi0-si
+    where: 'h/e in SI with exact h and e'
+    inputs: {}
+    formula: 6.62607015e-34/1.602176634e-19
+    expected: '4.136e-15'
+    shown: ['which is $h/e \approx 4.136 \times 10^{-15}$ Wb in SI units']
+    source: {cite: codata, at: 'h and e'}
+    origin: page-own
+
+  - id: phi0-gaussian
+    where: 'hc/e in Gaussian units, G cm² (h = 6.62607015e-27 erg s, c = 2.99792458e10 cm/s, e = 4.80320471e-10 esu)'
+    inputs: {}
+    formula: 6.62607015e-27*2.99792458e10/4.80320471e-10
+    expected: '4.136e-7'
+    shown: ['The formula $hc/q$ with $q = e$ gives twice as much: $\Phi_0 = hc/e \approx 4.136 \times 10^{-7}$ G cm²']
+    source: {cite: codata, at: 'h and e'}
+    origin: page-own
+
+  - id: phi0-gaussian-rounded
+    where: 'hc/e rounded to 3 figures, G cm² (summary, flashcard, quiz)'
+    inputs: {}
+    formula: 6.62607015e-27*2.99792458e10/4.80320471e-10
+    expected: '4.14e-7'
+    shown: ['For $q = e$, $\Phi_0 = hc/e \approx 4.14 \times 10^{-7}$ G cm² ($h/e$ in SI units', '$\\Phi_0 \\approx 4.14 \\times 10^{-7}$ G cm² (4.14 × 10⁻¹⁵ Wb)', 'With $\\Phi_0 = hc/e \\approx 4.14 \\times 10^{-7}$ G cm², about how many']
+    source: {cite: codata, at: 'h and e'}
+    origin: page-own
+
+  - id: phi0-si-rounded
+    where: 'flashcard: h/e rounded, Wb'
+    inputs: {}
+    formula: 6.62607015e-34/1.602176634e-19
+    expected: '4.14e-15'
+    shown: ['G cm² (4.14 × 10⁻¹⁵ Wb)']
+    source: {cite: codata, at: 'h and e'}
+    origin: page-own
+
+  - id: earth-field
+    kind: fact
+    where: 'L14.2 p. 6: the Earth''s magnetic field is about half a gauss'
+    value: '0.5'
+    shown: ['the Earth''s magnetic field is about half a gauss']
+    source: {cite: reading2, at: 'p. 6'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Landau levels (L14.3)
+  - id: cyclotron-classical
+    kind: identity
+    where: 'L14.3 p. 1: circular orbit, m v²/r = (q/c) v B gives ω = v/r = qB/mc'
+    formula: (qq/cc*vv*bb/mm)/vv
+    equals: qq*bb/(mm*cc)
+    samples: {qq: [1.0, 2.0], cc: [1.0, 3.0], vv: [0.5, 2.0], bb: [1.0, 4.0], mm: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['\omega_c = \frac{qB}{mc}']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: mit
+
+  - id: landau-gauge-curl
+    kind: identity
+    where: 'L14.3 p. 1: A = (−By, 0, 0) gives ∂_x A_y − ∂_y A_x = 0 − (−B) = B'
+    formula: 0 - deriv('-bb*s', 's', y0)
+    equals: bb + 0*y0
+    samples: {bb: [0.5, 3.0], y0: [0.2, 1.4]}
+    tolerance: 1e-8
+    shown: ['For the vector potential choose the **Landau gauge**, $\vec A = (-By, 0, 0)$']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: mit
+
+  - id: landau-complete-square
+    kind: identity
+    where: 'L14.3 pp. 2-3: (ħk + qBy/c)²/2m = ½ m ω_c² (y − y₀)² with ω_c = qB/mc and y₀ = −ħkc/qB'
+    formula: (hb*kk + qq*bb*yy/cc)**2/(2*mm)
+    equals: 0.5*mm*(qq*bb/(mm*cc))**2*(yy - (-hb*kk*cc/(qq*bb)))**2
+    samples: {hb: [1.0, 0.6], kk: [-1.5, 0.8], qq: [1.0, 2.0], bb: [1.0, 3.0], yy: [0.3, -1.2], cc: [1.0, 2.0], mm: [1.0, 1.7]}
+    tolerance: 1e-10
+    shown: ['\frac{p_y^2}{2m} + \frac{1}{2m}\left(\hbar k_x + \frac{qB}{c}\,y\right)^2 = \frac{p_y^2}{2m} + \frac{1}{2}\,m\,\omega_c^2\,(y - y_0)^2, \qquad y_0 = -\frac{\hbar k_x c}{qB}']
+    source: {cite: reading3, at: 'pp. 2–3'}
+    origin: mit
+
+  - id: magnetic-length
+    kind: identity
+    where: 'L14.3 p. 3: √(ħ/mω_c) with ω_c = qB/mc equals √(ħc/qB)'
+    formula: sqrt(hb/(mm*qq*bb/(mm*cc)))
+    equals: sqrt(hb*cc/(qq*bb))
+    samples: {hb: [1.0, 0.4], mm: [1.0, 2.0], qq: [1.0, 3.0], bb: [0.5, 2.0], cc: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['\ell_B = \sqrt{\frac{\hbar}{m\omega_c}} = \sqrt{\frac{\hbar c}{qB}}, \qquad y_0 = -k_x\,\ell_B^2']
+    source: {cite: reading3, at: 'pp. 3–4'}
+    origin: mit
+
+  - id: orbit-centre
+    kind: identity
+    where: 'L14.3 p. 4: y₀ = −ħk c/qB = −k ℓ_B²'
+    formula: -hb*kk*cc/(qq*bb)
+    equals: -kk*(hb*cc/(qq*bb))
+    samples: {hb: [1.0, 0.4], kk: [-1.0, 2.0], qq: [1.0, 3.0], bb: [0.5, 2.0], cc: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['The units work: $k_x$ is an inverse length']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: plot-ground-normalized
+    kind: identity
+    where: 'plot: the lowest-level density e^(−(y+k)²)/√π (y in units of ℓ_B) integrates to 1'
+    formula: integrate('exp(-(s + kk)**2)/sqrt(pi)', 's', -12, 12)
+    equals: 1 + 0*kk
+    samples: {kk: [-1.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['|χ|² = e^(−(y − y₀)²/ℓ_B²)/(√π ℓ_B)']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: plot-first-normalized
+    kind: identity
+    where: 'plot: the next-level density 2(y+k)² e^(−(y+k)²)/√π integrates to 1'
+    formula: integrate('2*(s + kk)**2*exp(-(s + kk)**2)/sqrt(pi)', 's', -12, 12)
+    equals: 1 + 0*kk
+    samples: {kk: [-1.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['and 2((y − y₀)/ℓ_B)² times that']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- finite sample (L14.4)
+  - id: degeneracy-forms
+    kind: identity
+    where: 'L14.4 p. 2: L_xL_y/(2πℓ_B²) with ℓ_B² = ħc/qB equals B L_xL_y/(2πħc/q)'
+    formula: lx*ly/(2*pi*hb*cc/(qq*bb))
+    equals: bb*lx*ly/(2*pi*hb*cc/qq)
+    samples: {lx: [1.0, 3.0], ly: [2.0, 0.5], hb: [1.0, 0.3], cc: [1.0, 2.0], qq: [1.0, 2.0], bb: [0.5, 4.0]}
+    tolerance: 1e-12
+    shown: ['N = \frac{L_x\,L_y}{2\pi\,\ell_B^2} = \frac{B\,L_x\,L_y}{2\pi\hbar c/q} = \frac{\Phi_B}{\Phi_0}']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: mit
+
+  - id: edge-count
+    kind: identity
+    where: 'L14.4 p. 2: y₀ = −k ℓ_B² with k = 2πN_x/L_x reaches L_y when |N_x| = L_xL_y/(2πℓ_B²)'
+    formula: 2*pi*(lx*ly/(2*pi*l2))*l2/lx
+    equals: ly
+    samples: {lx: [1.0, 3.0], ly: [2.0, 0.5], l2: [0.01, 0.2]}
+    tolerance: 1e-12
+    shown: ['$L_y = 2\pi|N_x|\,\ell_B^2/L_x$']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: mit
+
+  - id: zwiebach-5-million
+    where: 'L14.4 p. 2 (slip): 1 G cm² divided by Zwiebach''s rounded 2e-7 G cm² gives 5 million'
+    inputs: {}
+    formula: 1/2e-7
+    expected: '5e6'
+    shown: ['and gets about 5 million states']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: slip
+
+  - id: correct-2-4-million
+    where: 'L14.4 p. 2 corrected: 1 G cm² / (hc/e) = 1/4.1357e-7'
+    inputs: {}
+    formula: 1/(6.62607015e-27*2.99792458e10/4.80320471e-10)
+    expected: '2.4e6'
+    shown: ['G cm² it is about 2.4 million states', 'for 1 G through 1 cm², about 2.4 million']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: page-own
+
+  - id: quiz-24-million
+    where: 'quiz 4: 1 mm² = 0.01 cm² at 1000 G: Φ = 10 G cm², Φ_B/Φ₀ = 10/(hc/e) ≈ 2.4e7'
+    inputs: {}
+    formula: 1000*0.01/(6.62607015e-27*2.99792458e10/4.80320471e-10)
+    expected: '2.4e7'
+    quiz: 3
+    shown: ['\\approx 2.4 \\times 10^{7}$, some 24 million states']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: page-own
+
+  - id: quiz-gauss-tesla
+    where: 'quiz 4: 1000 G = 0.1 T'
+    inputs: {}
+    formula: 1000/1e4
+    expected: '0.1'
+    shown: ['a field of 1,000 G (0.1 T)']
+    source: {cite: reading2, at: 'p. 6'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-gauss-tesla
+    where: 'example: 1e5 G = 10 T (1 T = 1e4 G)'
+    inputs: {}
+    formula: 1e5/1e4
+    expected: '10'
+    shown: ['in a field $B = 10^{5}$ G (10 T)']
+    source: {cite: reading2, at: 'p. 6'}
+    origin: page-own
+
+  - id: ex-omega-c
+    where: 'example (a): ω_c = eB/mc in rad/s'
+    inputs: {}
+    formula: 4.803e-10*1e5/(9.109e-28*2.998e10)
+    expected: '1.76e12'
+    shown: ['\approx 1.76 \times 10^{12}$ per second']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: page-own
+
+  - id: ex-frequency
+    where: 'example (a): ω_c/2π in GHz'
+    inputs: {}
+    formula: 4.803e-10*1e5/(9.109e-28*2.998e10)/(2*pi)/1e9
+    expected: '280'
+    tolerance: '1'
+    shown: ['a frequency $\omega_c/2\pi$ of about 280 GHz']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: page-own
+
+  - id: ex-spacing-erg
+    where: 'example (a): ħω_c in erg'
+    inputs: {}
+    formula: 1.0546e-27*4.803e-10*1e5/(9.109e-28*2.998e10)
+    expected: '1.855e-15'
+    shown: ['\approx 1.855 \times 10^{-15}$ erg']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-spacing-mev
+    where: 'example (a): ħω_c in meV'
+    inputs: {}
+    formula: 1.0546e-27*4.803e-10*1e5/(9.109e-28*2.998e10)/1.602e-12*1e3
+    expected: '1.16'
+    shown: ['or about 1.16 meV']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-kT
+    where: 'example (a): k_B T at 4.2 K in meV'
+    inputs: {}
+    formula: 8.617e-5*4.2*1e3
+    expected: '0.362'
+    shown: ['$k_BT \approx 0.362$ meV']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-ratio
+    where: 'example (a): ħω_c / k_B T at 4.2 K'
+    inputs: {}
+    formula: (1.0546e-27*4.803e-10*1e5/(9.109e-28*2.998e10)/1.602e-12)/(8.617e-5*4.2)
+    expected: '3.2'
+    shown: ['only about 3.2 times the thermal energy']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-lB-squared
+    where: 'example (b): ℓ_B² = ħc/eB in cm²'
+    inputs: {}
+    formula: 1.0546e-27*2.998e10/(4.803e-10*1e5)
+    expected: '6.58e-13'
+    shown: ['\approx 6.58 \times 10^{-13}$ cm²']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: ex-lB-cm
+    where: 'example (b): ℓ_B in cm'
+    inputs: {}
+    formula: sqrt(1.0546e-27*2.998e10/(4.803e-10*1e5))
+    expected: '8.11e-7'
+    shown: ['$\ell_B \approx 8.11 \times 10^{-7}$ cm, about 8.1 nm']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: ex-lB-nm
+    where: 'example (b): ℓ_B in nm (1 cm = 1e7 nm)'
+    inputs: {}
+    formula: sqrt(1.0546e-27*2.998e10/(4.803e-10*1e5))*1e7
+    expected: '8.1'
+    shown: ['cm, about 8.1 nm. A state']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: ex-phi0
+    where: 'example (c): Φ₀ = 2πħc/e with the example''s constants, G cm²'
+    inputs: {}
+    formula: 2*pi*1.0546e-27*2.998e10/4.803e-10
+    expected: '4.136e-7'
+    shown: ['With $\Phi_0 = hc/e = 2\pi\hbar c/e \approx 4.136 \times 10^{-7}$ G cm², a square centimetre']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  - id: ex-states-per-cm2
+    where: 'example (c): B/Φ₀ per cm²'
+    inputs: {}
+    formula: 1e5/(2*pi*1.0546e-27*2.998e10/4.803e-10)
+    expected: '2.42e11'
+    shown: ['\approx 2.42 \times 10^{11}$ flux quanta']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: page-own
+
+  - id: ex-states-from-lB
+    where: 'example (c): 1/(2πℓ_B²) per cm², the same number'
+    inputs: {}
+    formula: 1/(2*pi*1.0546e-27*2.998e10/(4.803e-10*1e5))
+    expected: '2.42e11'
+    shown: ['holds about $2.42 \times 10^{11}$ states per cm²']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: page-own
+
+  - id: ex-torus-flux
+    where: 'example (d): Φ = 1e5 G × 1e-8 cm² in G cm²'
+    inputs: {}
+    formula: 1e5*(1e-4)**2
+    expected: '1e-3'
+    shown: ['and $\Phi_B = 10^{5} \times 10^{-8} = 10^{-3}$ G cm²']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  - id: ex-torus-quanta
+    where: 'example (d): Φ_B/Φ₀ on the 1 μm torus'
+    inputs: {}
+    formula: 1e-3/(2*pi*1.0546e-27*2.998e10/4.803e-10)
+    expected: '2418'
+    tolerance: '1'
+    shown: ['about 2,418 flux quanta']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  - id: ex-torus-step
+    where: 'example (d): the field step Φ₀/area in G'
+    inputs: {}
+    formula: (2*pi*1.0546e-27*2.998e10/4.803e-10)/1e-8
+    expected: '41.4'
+    shown: ['in steps of about 41.4 G (4.1 mT)']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  - id: ex-torus-step-mT
+    where: 'example (d): 41.4 G in mT (1 G = 0.1 mT)'
+    inputs: {}
+    formula: (2*pi*1.0546e-27*2.998e10/4.803e-10)/1e-8*0.1
+    expected: '4.1'
+    shown: ['G (4.1 mT): tiny next to 10 T']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: monopole-charge
+    kind: fact
+    where: 'callout: the monopole charge g = e/2α, quoted from Guth''s notes by the substitute lecturer (Scott Hughes) in 8.286 Lecture 22 (transcript p. 22)'
+    value: '0.5'
+    shown: ['$g = e/2\alpha$, where $\alpha = e^2/\hbar c$']
+    source: {cite: guth22, at: 'p. 22'}
+    origin: mit
+
+  - id: monopole-flux
+    kind: identity
+    where: 'callout: 4πg with g = e/2α and α = e²/ħc equals 2πħc/e = hc/e'
+    formula: 4*pi*ee/(2*ee**2/(hb*cc))
+    equals: 2*pi*hb*cc/ee
+    samples: {ee: [1.0, 4.8], hb: [1.0, 0.3], cc: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['$4\pi g = 2\pi e/\alpha = 2\pi\hbar c/e$']
+    source: {cite: guth22, at: 'p. 22'}
+    origin: page-own
+
+  - id: dirac-1931
+    kind: fact
+    where: 'callout: Dirac''s monopole quantization paper, 1931'
+    value: '1931'
+    shown: ['Dirac showed in 1931']
+    source: {cite: dirac, at: 'Proc. R. Soc. Lond. A 133, 60'}
+    origin: page-own
+
+  - id: wu-yang-1975
+    kind: fact
+    where: 'callout: Wu and Yang''s two-patch description of the monopole, 1975'
+    value: '1975'
+    shown: ['due to Wu and Yang in 1975']
+    source: {cite: wuyang, at: 'Phys. Rev. D 12, 3845'}
+    origin: page-own
+
+  - id: ex-torus-nearest
+    where: 'example (d): the nearest allowed field, n = 2418 quanta of Φ₀/area (example constants), in G'
+    inputs: {}
+    formula: 2418*(2*pi*1.0546e-27*2.998e10/4.803e-10)/1e-8
+    expected: '100010'
+    shown: ['with $n = 2418$, is about 100,010 G']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own

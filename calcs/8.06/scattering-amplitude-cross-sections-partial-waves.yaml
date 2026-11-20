@@ -1,0 +1,545 @@
+# Calculations on content/year-3/8.06/scattering-amplitude-cross-sections-partial-waves.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 19 transcripts L19.1-L19.4 and lecture notes chapter 7
+# ("Scattering"), pp. 133-138, eqs. (7.1.1)-(7.2.9).
+# Spherical Bessel functions in closed form (x = ρ):
+#   j0 = sin x/x, j1 = sin x/x² − cos x/x, j2 = (3/x³ − 1/x) sin x − (3/x²) cos x,
+#   j3 = (15/x⁴ − 6/x²) sin x − (15/x³ − 1/x) cos x, j4 = (105/x⁵ − 45/x³ + 1/x) sin x − (105/x⁴ − 10/x²) cos x,
+#   n1 = −cos x/x² − sin x/x.
+# Complex exponentials are checked through their real and imaginary parts (the harness has no complex numbers).
+# Page's own worked example: |f(θ)| = f0(1 + c cos θ), f0 = 5 fm, c = 0.4; beam 1e8 /s, foil 1e22 nuclei/cm², detector 0.01 sr at 90°.
+
+page: content/year-3/8.06/scattering-amplitude-cross-sections-partial-waves.mdx
+calcs:
+  # ---------------------------------------------------------------- setting up (L19.1, L19.2)
+  - id: franck-hertz-year
+    kind: fact
+    where: 'L19.1 p. 3: the Franck-Hertz experiment, 1914 (notes p. 134, footnote 1)'
+    value: '1914'
+    shown: ['experiment of Franck and Hertz in 1914']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: bohr-year
+    kind: fact
+    where: 'L19.1 p. 3: Bohr''s theory of the atom, one year earlier, 1913'
+    value: '1913'
+    shown: ['Bohr''s theory of the atom (1913)']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: reduced-mass-identical
+    kind: identity
+    where: 'L19.1 p. 4: two identical particles of mass M have reduced mass M·M/(M + M) = M/2'
+    formula: mm*mm/(mm + mm)
+    equals: mm/2
+    samples: {mm: [1.0, 938.27]}
+    tolerance: 1e-12
+    shown: ['For two identical particles of mass $M$ the reduced mass is $M/2$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  - id: plane-wave-free-solution
+    kind: identity
+    where: 'notes p. 135: e^(i k·r) with k·k = k² solves (∇² + k²)ψ = 0; real part cos(kx x + ky y + kz z + φ): ∇² gives −(kx² + ky² + kz²) cos, checked along a line with second derivatives in each direction'
+    formula: deriv('cos(kx*s + ky*yy + kz*zz + ph)', 's', xx, 2) + deriv('cos(kx*xx + ky*s + kz*zz + ph)', 's', yy, 2) + deriv('cos(kx*xx + ky*yy + kz*s + ph)', 's', zz, 2)
+    equals: -(kx**2 + ky**2 + kz**2)*cos(kx*xx + ky*yy + kz*zz + ph)
+    samples: {kx: [0.3, 1.1], ky: [0.7, -0.4], kz: [1.2, 0.5], xx: [0.4, 1.3], yy: [-0.6, 0.9], zz: [1.1, 0.2], ph: [0.0, 1.5707963]}
+    tolerance: 1e-6
+    shown: ['every plane wave $e^{i\vec k\cdot\vec r}$ with $\vec k\cdot\vec k = k^2$ solves the equation']
+    source: {cite: reading5, at: 'p. 135'}
+    origin: mit
+
+  - id: radial-laplacian
+    kind: identity
+    where: 'L19.2 p. 3: for a radial function ∇²g = g″ + (2/r)g′ = (1/r)(rg)″; test function g = r²e^(−r)'
+    formula: deriv('s**3*exp(-s)', 's', rr, 2)/rr
+    equals: deriv('s**2*exp(-s)', 's', rr, 2) + 2/rr*deriv('s**2*exp(-s)', 's', rr, 1)
+    samples: {rr: [0.5, 1.7, 4.0]}
+    tolerance: 1e-6
+    shown: ['\nabla^2 g(r) = \frac{1}{r}\,\frac{d^2}{dr^2}\big(r\,g(r)\big)']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: mit
+
+  - id: spherical-wave-solution
+    kind: identity
+    where: 'eq. (7.1.7): (∇² + k²)(e^(ikr)/r) = 0 for r ≠ 0; with the radial rule, (1/r)(cos(kr + φ))″ + k² cos(kr + φ)/r = 0 (φ = 0: real part, φ = π/2: minus the imaginary part)'
+    formula: deriv('cos(kk*s + ph)', 's', rr, 2)/rr + kk**2*cos(kk*rr + ph)/rr + 1
+    equals: 1
+    samples: {kk: [1.0, 2.5, 0.7], rr: [0.8, 3.0, 5.5], ph: [0.0, 1.5707963, 0.0]}
+    tolerance: 1e-6
+    shown: ['\left(\nabla^2 + k^2\right)\frac{e^{ikr}}{r} = 0 \qquad (r \neq 0)', 'two derivatives give $-k^2e^{ikr}$']
+    source: {cite: reading5, at: 'eq. (7.1.7), p. 135'}
+    origin: mit
+
+  - id: plane-spherical-failure
+    kind: identity
+    where: 'eq. (7.1.6) and page: (∇² + k²)e^(ikr) = 2ik e^(ikr)/r; real parts with a phase φ: (1/r)(r cos(kr + φ))″ + k² cos(kr + φ) = −2k sin(kr + φ)/r'
+    formula: deriv('s*cos(kk*s + ph)', 's', rr, 2)/rr + kk**2*cos(kk*rr + ph)
+    equals: -2*kk*sin(kk*rr + ph)/rr
+    samples: {kk: [1.0, 2.5, 0.7], rr: [0.8, 3.0, 5.5], ph: [0.0, 1.5707963, 0.4]}
+    tolerance: 1e-6
+    shown: ['the same rule leaves $2ik\,e^{ikr}/r$ over']
+    source: {cite: reading5, at: 'eq. (7.1.6), p. 135'}
+    origin: page-own
+
+  - id: sphere-probability
+    kind: identity
+    where: 'L19.2 p. 3: |e^(ikr)/r|² times the sphere area 4πr² is the same for every r'
+    formula: (1/rr)**2*4*pi*rr**2
+    equals: 4*pi
+    samples: {rr: [1.0, 2.0, 1000.0]}
+    tolerance: 1e-12
+    shown: ['$|\psi|^2$ times its area $4\pi r^2$, so the wave must fall off like $1/r$']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: mit
+
+  # ---------------------------------------------------------------- cross sections (L19.3, notes p. 136)
+  - id: cross-section-units
+    kind: units
+    where: 'L19.3 p. 2: (particles per time)/(particles per area per time) is an area'
+    inputs: {T: 1 s, area: 1 m**2}
+    terms: ['(1/T)/(1/(area*T))', 'area']
+    unit: 'm**2'
+    shown: ['the ratio is an **area**']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: incident-flux
+    kind: identity
+    where: 'eq. (7.1.11): Im(ψ* dψ/dz) for ψ = e^(ikz) = cos kz + i sin kz is cos·(k cos) + sin·(k sin) = k'
+    formula: cos(kk*zz)*kk*cos(kk*zz) + sin(kk*zz)*kk*sin(kk*zz)
+    equals: kk
+    samples: {kk: [0.5, 2.0], zz: [0.3, 4.1]}
+    tolerance: 1e-12
+    shown: ['\vec J_{in} = \frac{\hbar}{m}\,\text{Im}\left(\psi_{in}^*\,\nabla\psi_{in}\right) = \frac{\hbar k}{m}\,\hat z']
+    source: {cite: reading5, at: 'eq. (7.1.11), p. 136'}
+    origin: mit
+
+  - id: box-count
+    kind: identity
+    where: 'eq. (7.1.12): |f e^(ikr)/r|² r² dΩ dr = |f|² dΩ dr'
+    formula: (ff/rr)**2*rr**2*dom*dr
+    equals: ff**2*dom*dr
+    samples: {ff: [0.3, 2.0], rr: [10.0, 1000.0], dom: [0.01, 0.2], dr: [0.1, 0.02]}
+    tolerance: 1e-12
+    shown: ['dn = |\psi_s|^2\,d^3r = \left|f(\theta, \phi)\,\frac{e^{ikr}}{r}\right|^2 r^2\,d\Omega\,dr = |f(\theta, \phi)|^2\,d\Omega\,dr']
+    source: {cite: reading5, at: 'eq. (7.1.12), p. 136'}
+    origin: mit
+
+  - id: rate-and-cross-section
+    kind: identity
+    where: 'notes p. 136: dn/dt = |f|²dΩ dr/(dr/v) = v|f|²dΩ, and dividing by the flux v gives dσ = |f|²dΩ'
+    formula: ((ff**2*dom*dr)/(dr/vv))/vv
+    equals: ff**2*dom
+    samples: {ff: [0.3, 2.0], dom: [0.01, 0.2], dr: [0.1, 0.02], vv: [3.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['\frac{d\sigma}{d\Omega} = |f(\theta, \phi)|^2']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: mit
+
+  # ---------------------------------------------------------------- free particle in spherical coordinates (L19.4)
+  - id: radial-equation-l1
+    kind: identity
+    where: 'eq. (7.2.3) for l = 1: u = ρ j1 = sin ρ/ρ − cos ρ satisfies −u″ + 2u/ρ² = u'
+    formula: -deriv('sin(s)/s - cos(s)', 's', rho, 2) + 2/rho**2*(sin(rho)/rho - cos(rho))
+    equals: sin(rho)/rho - cos(rho)
+    samples: {rho: [0.7, 2.3, 6.1]}
+    tolerance: 1e-6
+    shown: ['ρj₁(ρ) = sin ρ/ρ − cos ρ']
+    source: {cite: reading5, at: 'eqs. (7.2.3)-(7.2.4), p. 137'}
+    origin: page-own
+
+  - id: radial-equation-l2
+    kind: identity
+    where: 'eq. (7.2.3) for l = 2: u = ρ j2 = (3/ρ² − 1) sin ρ − (3/ρ) cos ρ satisfies −u″ + 6u/ρ² = u'
+    formula: -deriv('(3/s**2 - 1)*sin(s) - 3*cos(s)/s', 's', rho, 2) + 6/rho**2*((3/rho**2 - 1)*sin(rho) - 3*cos(rho)/rho)
+    equals: (3/rho**2 - 1)*sin(rho) - 3*cos(rho)/rho
+    samples: {rho: [0.9, 2.3, 6.1]}
+    tolerance: 1e-6
+    shown: ['ρj₂(ρ) = (3/ρ² − 1)sin ρ − (3/ρ)cos ρ']
+    source: {cite: reading5, at: 'eqs. (7.2.3)-(7.2.4), p. 137'}
+    origin: page-own
+
+  - id: radial-equation-n1
+    kind: identity
+    where: 'eq. (7.2.4): the singular solution for l = 1, u = ρ n1 = −cos ρ/ρ − sin ρ, also satisfies −u″ + 2u/ρ² = u'
+    formula: -deriv('-cos(s)/s - sin(s)', 's', rho, 2) + 2/rho**2*(-cos(rho)/rho - sin(rho))
+    equals: -cos(rho)/rho - sin(rho)
+    samples: {rho: [0.7, 2.3, 6.1]}
+    tolerance: 1e-6
+    shown: ['u_{El}(\rho) = A_l\,\rho\,j_l(\rho) + B_l\,\rho\,n_l(\rho)']
+    source: {cite: reading5, at: 'eq. (7.2.4), p. 137'}
+    origin: page-own
+
+  - id: k-drops-out
+    kind: identity
+    where: 'eqs. (7.2.2)-(7.2.3): u(r) = ρ j1(ρ) with ρ = kr satisfies −u″ + 2u/r² = k²u for every k'
+    formula: -deriv('sin(kk*s)/(kk*s) - cos(kk*s)', 's', rr, 2) + 2/rr**2*(sin(kk*rr)/(kk*rr) - cos(kk*rr))
+    equals: kk**2*(sin(kk*rr)/(kk*rr) - cos(kk*rr))
+    samples: {kk: [0.5, 1.0, 3.0], rr: [1.3, 2.0, 0.9]}
+    tolerance: 1e-6
+    shown: ['and $k$ has disappeared: a solution for one $k$ is a solution for all']
+    source: {cite: reading5, at: 'eq. (7.2.3), p. 137'}
+    origin: mit
+
+  - id: j1-far
+    kind: limit
+    where: 'eq. (7.2.5) for l = 1: ρ j1 − sin(ρ − π/2) = sin ρ/ρ → 0'
+    inputs: {}
+    formula: sin(rho)/rho - cos(rho) + 2
+    limit: sin(rho - pi/2) + 2
+    vary: {rho: [100.5, 10000.5, 1000000.5]}
+    tolerance: 1e-5
+    shown: ['\rho\,j_l(\rho) \to \sin\left(\rho - \frac{l\pi}{2}\right), \qquad \rho\,n_l(\rho) \to -\cos\left(\rho - \frac{l\pi}{2}\right) \qquad (\rho \gg 1)']
+    source: {cite: reading5, at: 'eq. (7.2.5), p. 137'}
+    origin: mit
+
+  - id: j2-far
+    kind: limit
+    where: 'eq. (7.2.5) for l = 2: ρ j2 → sin(ρ − π) = −sin ρ'
+    inputs: {}
+    formula: (3/rho**2 - 1)*sin(rho) - 3*cos(rho)/rho + 2
+    limit: sin(rho - pi) + 2
+    vary: {rho: [100.5, 10000.5, 1000000.5]}
+    tolerance: 1e-5
+    shown: ['shifted by lπ/2 for each unit of l']
+    source: {cite: reading5, at: 'eq. (7.2.5), p. 137'}
+    origin: mit
+
+  - id: n1-far
+    kind: limit
+    where: 'eq. (7.2.6) for l = 1: ρ n1 = −cos ρ/ρ − sin ρ → −cos(ρ − π/2) = −sin ρ'
+    inputs: {}
+    formula: -cos(rho)/rho - sin(rho) + 2
+    limit: -cos(rho - pi/2) + 2
+    vary: {rho: [100.5, 10000.5, 1000000.5]}
+    tolerance: 1e-5
+    shown: ['$\rho\,n_l \to -\cos(\rho - l\pi/2)$ far away']
+    source: {cite: reading5, at: 'eq. (7.2.6), p. 137'}
+    origin: mit
+
+  - id: j1-near
+    kind: limit
+    where: 'page caption: ρ j_l grows like ρ^(l+1) near the origin; for l = 1, ρ j1/ρ² → 1/3'
+    inputs: {}
+    formula: (sin(rho)/rho - cos(rho))/rho**2
+    limit: 1/3
+    vary: {rho: [0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['(ρj_l grows like ρ^(l+1))']
+    source: {cite: reading5, at: 'p. 137'}
+    origin: page-own
+
+  - id: j2-near
+    kind: limit
+    where: 'page caption and quiz 3: for l = 2, ρ j2/ρ³ → 1/15, so j_l(0) = 0 for l ≥ 1'
+    inputs: {}
+    formula: ((3/rho**2 - 1)*sin(rho) - 3*cos(rho)/rho)/rho**3
+    limit: 1/15
+    vary: {rho: [0.3, 0.1, 0.05]}
+    tolerance: 1e-3
+    shown: ['grows like $\\rho^{l+1}$, so $j_l(0) = 0$ for $l \\geq 1$']
+    source: {cite: reading5, at: 'p. 137'}
+    origin: page-own
+
+  - id: j0-origin
+    kind: limit
+    where: 'quiz 3: j0(0) = lim sin ρ/ρ = 1'
+    inputs: {}
+    formula: sin(rho)/rho
+    limit: 1
+    vary: {rho: [0.1, 0.01, 0.001]}
+    tolerance: 1e-6
+    shown: ['while $j_l(0) = 1$ for $l = 0$']
+    source: {cite: reading5, at: 'p. 137'}
+    origin: page-own
+
+  - id: y00
+    kind: identity
+    where: 'eq. (7.2.8) and quiz 3: √(4π) Y00 = √(4π)·√(1/4π) = 1, and in general √(4π)√(2l+1) Y_l0 = (2l + 1)P_l'
+    formula: sqrt(4*pi)*sqrt(2*ll + 1)*sqrt((2*ll + 1)/(4*pi))
+    equals: 2*ll + 1
+    samples: {ll: [0, 1, 2, 7]}
+    tolerance: 1e-12
+    shown: ['$\sqrt{4\pi}\sqrt{2l+1}\,Y_{l0} = (2l+1)P_l(\cos\theta)$']
+    source: {cite: reading5, at: 'eq. (7.2.8), p. 137'}
+    origin: page-own
+
+  - id: legendre-norm
+    kind: identity
+    where: 'page: ∫₋₁¹ P_l² du = 2/(2l + 1), checked for l = 1 (P1 = u) and l = 2 (P2 = (3u² − 1)/2) through a weight w: (2/3)w + (2/5)(1 − w)'
+    formula: ww*integrate('s**2', 's', -1, 1) + (1 - ww)*integrate('((3*s**2 - 1)/2)**2', 's', -1, 1)
+    equals: ww*2/3 + (1 - ww)*2/5
+    samples: {ww: [1, 0]}
+    tolerance: 1e-9
+    shown: ['$\int_{-1}^{1}P_l^2\,du = 2/(2l+1)$']
+    source: {cite: reading5, at: 'p. 137'}
+    origin: page-own
+
+  - id: bessel-integral-l0
+    kind: identity
+    where: 'eq. (7.2.8) for l = 0: (1/2)∫₋₁¹ e^(ixu) du = (1/2)∫ cos(xu) du = sin x/x = j0(x)'
+    formula: integrate('cos(xx*s)', 's', -1, 1)/2
+    equals: sin(xx)/xx
+    samples: {xx: [0.3, 2.0, 7.5]}
+    tolerance: 1e-9
+    shown: ['j_l(x) = \frac{1}{2i^l}\int_{-1}^{1}e^{ixu}\,P_l(u)\,du']
+    source: {cite: reading5, at: 'eq. (7.2.8), p. 137'}
+    origin: mit
+
+  - id: bessel-integral-l1
+    kind: identity
+    where: 'eq. (7.2.8) for l = 1: (1/2i)∫₋₁¹ e^(ixu) u du = (1/2)∫ u sin(xu) du = sin x/x² − cos x/x = j1(x)'
+    formula: integrate('s*sin(xx*s)', 's', -1, 1)/2
+    equals: sin(xx)/xx**2 - cos(xx)/xx
+    samples: {xx: [0.3, 2.0, 7.5]}
+    tolerance: 1e-9
+    shown: ['Y_{l0}(\theta) = \sqrt{\frac{2l+1}{4\pi}}\,P_l(\cos\theta), \qquad j_l(x)']
+    source: {cite: reading5, at: 'eq. (7.2.8), p. 137'}
+    origin: mit
+
+  - id: plane-wave-expansion-real
+    kind: identity
+    where: 'eq. (7.2.9) as Σ(2l + 1)iˡ P_l(u) j_l(x), real part: cos(xu) = j0 − 5 j2 P2 + 9 j4 P4 − …; at x = 0.5 the omitted l = 6 term is below 2e-7'
+    formula: sin(xx)/xx - 5*((3/xx**3 - 1/xx)*sin(xx) - 3*cos(xx)/xx**2)*(3*uu**2 - 1)/2 + 9*((105/xx**5 - 45/xx**3 + 1/xx)*sin(xx) - (105/xx**4 - 10/xx**2)*cos(xx))*(35*uu**4 - 30*uu**2 + 3)/8
+    equals: cos(xx*uu)
+    samples: {xx: [0.5, 0.5, 0.5], uu: [1.0, 0.3, -0.8]}
+    tolerance: 1e-5
+    shown: ['e^{ikz} = \sqrt{4\pi}\sum_{l=0}^{\infty}\sqrt{2l+1}\;i^l\,Y_{l0}(\theta)\,j_l(kr)']
+    source: {cite: reading5, at: 'eq. (7.2.9), p. 138'}
+    origin: mit
+
+  - id: plane-wave-expansion-imag
+    kind: identity
+    where: 'eq. (7.2.9), imaginary part: sin(xu) = 3 j1 P1 − 7 j3 P3 + …; at x = 0.3 the omitted l = 5 term is below 3e-6'
+    formula: 3*(sin(xx)/xx**2 - cos(xx)/xx)*uu - 7*((15/xx**4 - 6/xx**2)*sin(xx) - (15/xx**3 - 1/xx)*cos(xx))*(5*uu**3 - 3*uu)/2
+    equals: sin(xx*uu)
+    samples: {xx: [0.3, 0.3, 0.3], uu: [1.0, 0.5, -0.7]}
+    tolerance: 1e-4
+    shown: ['the coefficients of the notes'' sum are $a_l = (2l+1)\,i^l$ when it is written with $P_l$']
+    source: {cite: reading5, at: 'eq. (7.2.9), p. 138'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example (page's own)
+  - id: barn-in-fm2
+    kind: value
+    where: 'example: 1 b = 1e-28 m² = 100 fm²'
+    inputs: {}
+    formula: 1e-28*meter**2
+    expected: '100 fm**2'
+    tolerance: '0.001%'
+    shown: ['Use 1 barn = 1 b = $10^{-28}$ m² = 100 fm²']
+    source: {cite: reading5, at: 'p. 136'}
+    origin: page-own
+
+  - id: f0-squared
+    kind: value
+    where: 'example (a): f0² = (5 fm)² = 25 fm² = 0.25 b'
+    inputs: {f0: 5 fm}
+    formula: f0**2
+    expected: '0.25 barn'
+    shown: ['with $f_0^2 = 25$ fm² = 0.25 b']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: page-own
+
+  - id: dsdo-forward
+    kind: value
+    where: 'example (a): at θ = 0, f0²(1 + 0.4)² = 0.49 b/sr'
+    inputs: {f0: 5 fm, cc: 0.4}
+    formula: f0**2*(1 + cc*cos(0))**2
+    expected: '0.49 barn'
+    shown: ['$0.25 \times 1.4^2 = 0.49$ b/sr']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: page-own
+
+  - id: dsdo-side
+    kind: value
+    where: 'example (a): at θ = 90°, f0²(1 + 0.4 cos 90°)² = 0.25 b/sr'
+    inputs: {f0: 5 fm, cc: 0.4}
+    formula: f0**2*(1 + cc*cos(pi/2))**2
+    expected: '0.25 barn'
+    shown: ['At $90°$: $0.25$ b/sr']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: page-own
+
+  - id: dsdo-backward
+    kind: value
+    where: 'example (a): at θ = 180°, f0²(1 − 0.4)² = 0.09 b/sr'
+    inputs: {f0: 5 fm, cc: 0.4}
+    formula: f0**2*(1 + cc*cos(pi))**2
+    expected: '0.09 barn'
+    shown: ['$0.25 \times 0.6^2 = 0.09$ b/sr']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: page-own
+
+  - id: forward-backward-ratio
+    kind: value
+    where: 'example (a): 0.49/0.09 = 5.44, "more than five times"'
+    inputs: {}
+    formula: (1.4/0.6)**2
+    expected: '5.44'
+    shown: ['Forward scattering is more than five times as likely']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: page-own
+
+  - id: sigma-integral
+    kind: identity
+    where: 'example (b): 2π∫₋₁¹(1 + cu)² du = 2π(2 + 2c²/3) = 4π(1 + c²/3)'
+    formula: 2*pi*integrate('(1 + cc*s)**2', 's', -1, 1)
+    equals: 4*pi*(1 + cc**2/3)
+    samples: {cc: [0.4, 0.0, 1.3]}
+    tolerance: 1e-9
+    shown: ['= 4\pi f_0^2\left(1 + \frac{c^2}{3}\right)$']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: one-plus-c2-over-3
+    kind: value
+    where: 'example (b): 1 + 0.4²/3 = 1.0533'
+    inputs: {cc: 0.4}
+    formula: 1 + cc**2/3
+    expected: '1.0533'
+    shown: ['$4\pi \times 25 \times 1.0533$ fm²']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: sigma-total-fm2
+    kind: value
+    where: 'example (b): σ = 4π(5 fm)²(1 + 0.16/3) = 330.9 fm²'
+    inputs: {f0: 5 fm, cc: 0.4}
+    formula: 4*pi*f0**2*(1 + cc**2/3)
+    expected: '330.9 fm**2'
+    shown: ['about 330.9 fm²']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: sigma-total-barn
+    kind: value
+    where: 'example (b): 330.9 fm² = 3.31 b'
+    inputs: {f0: 5 fm, cc: 0.4}
+    formula: 4*pi*f0**2*(1 + cc**2/3)
+    expected: '3.31 barn'
+    shown: ['or 3.31 b']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: forward-hemisphere-integral
+    kind: identity
+    where: 'example (b): 2π∫₀¹(1 + cu)² du = 2π(1 + c + c²/3)'
+    formula: 2*pi*integrate('(1 + cc*s)**2', 's', 0, 1)
+    equals: 2*pi*(1 + cc + cc**2/3)
+    samples: {cc: [0.4, 0.0, 1.3]}
+    tolerance: 1e-9
+    shown: ['$2\pi f_0^2\left(1 + c + \frac{c^2}{3}\right)$']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: forward-numerator
+    kind: value
+    where: 'example (b): 1 + 0.4 + 0.16/3 = 1.4533'
+    inputs: {cc: 0.4}
+    formula: 1 + cc + cc**2/3
+    expected: '1.4533'
+    shown: ['gives $1.4533/2.1067$']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: forward-denominator
+    kind: value
+    where: 'example (b): 2 + 2·0.16/3 = 2.1067'
+    inputs: {cc: 0.4}
+    formula: 2 + 2*cc**2/3
+    expected: '2.1067'
+    shown: ['$1.4533/2.1067$, about 0.690']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: forward-fraction
+    kind: value
+    where: 'example (b): forward fraction (1 + c + c²/3)/(2 + 2c²/3) = 0.690, 69%'
+    inputs: {cc: 0.4}
+    formula: (1 + cc + cc**2/3)/(2 + 2*cc**2/3)
+    expected: '0.690'
+    shown: ['So 69% of the scattered neutrons go forwards']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: dsdo-90-cm2
+    kind: value
+    where: 'example (c): 25 fm² = 2.5e-25 cm²'
+    inputs: {}
+    formula: 25*fm**2
+    expected: '2.5e-25 cm**2'
+    shown: ['$d\sigma/d\Omega = 25$ fm² $= 2.5 \times 10^{-25}$ cm² at $90°$']
+    source: {cite: reading5, at: 'eq. (7.1.13), p. 136'}
+    origin: page-own
+
+  - id: detector-rate
+    kind: value
+    where: 'example (c): rate = 1e8 /s × 1e22 /cm² × 2.5e-25 cm² × 0.01 = 2500 /s'
+    inputs: {beam: 1e8 1/s, foil: 1e22 1/cm**2, dsdo: 25 fm**2, dom: 0.01}
+    formula: beam*foil*dsdo*dom
+    expected: '2500 1/s'
+    tolerance: '0.001%'
+    shown: ['which is 2500 neutrons per second']
+    source: {cite: reading5, at: 'eq. (7.1.10), p. 136'}
+    origin: page-own
+
+  - id: sigma-cm2
+    kind: value
+    where: 'example (c): σ = 330.9 fm² = 3.309e-24 cm²'
+    inputs: {f0: 5 fm, cc: 0.4}
+    formula: 4*pi*f0**2*(1 + cc**2/3)
+    expected: '3.309e-24 cm**2'
+    shown: ['$N\sigma = 10^{22} \times 3.309 \times 10^{-24}$']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: scattered-fraction
+    kind: value
+    where: 'example (c): Nσ = 1e22 /cm² × 3.309e-24 cm² = 0.033 (3.3%)'
+    inputs: {foil: 1e22 1/cm**2, f0: 5 fm, cc: 0.4}
+    formula: foil*4*pi*f0**2*(1 + cc**2/3)
+    expected: '0.033'
+    shown: ['about 0.033: some', '3.3% of the beam']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: scattered-rate
+    kind: value
+    where: 'example (c): 1e8 /s × 0.0331 = 3.3e6 /s'
+    inputs: {beam: 1e8 1/s, foil: 1e22 1/cm**2, f0: 5 fm, cc: 0.4}
+    formula: beam*foil*4*pi*f0**2*(1 + cc**2/3)
+    expected: '3.3e6 1/s'
+    shown: ['$3.3 \times 10^{6}$ neutrons per second']
+    source: {cite: reading5, at: 'eq. (7.1.14), p. 136'}
+    origin: page-own
+
+  - id: example-givens
+    kind: fact
+    where: 'example: fast neutrons; f0 = 5 fm, c = 0.4, beam 1e8 /s, foil 1e22 nuclei per cm², detector 0.01 sr (chosen values, not a real nucleus)'
+    value: '5'
+    shown: ['with $f_0 = 5$ fm and $c = 0.4$', 'A beam of $10^{8}$ neutrons per second crosses the foil, which has $10^{22}$ nuclei per cm²', 'covering 0.01 sr at $\theta = 90°$']
+    source: {cite: reading5, at: 'p. 136'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: thomson-cross-section
+    kind: value
+    where: 'callout: σ_T = (8π/3) r_e² with r_e = 2.8179403205e-15 m (CODATA 2022) gives 6.6525e-29 m²'
+    inputs: {r_e: 2.8179403205e-15 m}
+    formula: 8*pi/3*r_e**2
+    expected: '6.65e-29 m**2'
+    shown: ['$\sigma_T \approx 6.65 \times 10^{-29}$ m²']
+    source: {cite: codata-thomson, at: 'σ_e'}
+    origin: page-own
+
+  - id: thomson-in-barn
+    kind: value
+    where: 'callout: 6.6525e-29 m² = 0.665 b'
+    inputs: {r_e: 2.8179403205e-15 m}
+    formula: 8*pi/3*r_e**2
+    expected: '0.665 barn'
+    shown: ['about 0.665 b: $8\pi/3$ times the square of the classical electron radius']
+    source: {cite: codata-re, at: 'r_e'}
+    origin: page-own

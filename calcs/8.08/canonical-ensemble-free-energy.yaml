@@ -1,0 +1,272 @@
+# Calculations on content/year-4/8.08/canonical-ensemble-free-energy.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005, Wen) Lecture Notes, Chapter I "Canonical Ensemble" (handwritten scan). Page numbers
+# are Wen's handwritten numbers (pp. 1-7 and 9-12; there is no p. 8): this page covers pp. 1-4, points 1 to 4.
+# The notes quote no numbers on these pages.
+# Page's own examples: a three-level molecule (0, 0.020 eV, 0.050 eV) at 300 K; the plot of (x e^(1-x))^N for
+# N = 10, 100, 1000; quiz 2, a two-level system with eps/k_BT = ln 3.
+# Constants: k_B (exact, 2019 SI).
+
+page: content/year-4/8.08/canonical-ensemble-free-energy.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations (pp. 1-4)
+  - id: ideal-bath-temperature
+    kind: identity
+    where: 'formula "Entropy of an ideal heat bath": S = E/T has dS/dE = 1/T (numerical derivative)'
+    formula: deriv('t/TT', 't', EE)
+    equals: 1/TT
+    samples: {TT: [0.5, 2.0, 7.0], EE: [0.3, 5.0, 1.1]}
+    tolerance: 1e-6
+    shown: ['S_{\text{bath}}(E) = \frac{E}{T}']
+    source: {cite: reading1, at: 'p. 1, point 1'}
+    origin: mit
+
+  - id: boltzmann-ratio
+    kind: identity
+    where: 'formula "States of the whole with the system in state n": the ratio of bath states for two system states is e^(-(E1 - E2)/kT), independent of E_tot'
+    formula: exp((Et - E1)/kT)/exp((Et - E2)/kT)
+    equals: exp(-(E1 - E2)/kT)
+    samples: {Et: [10.0, 30.0], E1: [0.5, 2.0], E2: [0.0, 1.0], kT: [0.7, 3.0]}
+    tolerance: 1e-9
+    shown: ['1\cdot\Gamma_{\text{bath}}(E_{\text{tot}} - E_n) = e^{(E_{\text{tot}} - E_n)/k_BT}']
+    source: {cite: reading1, at: 'p. 2, point 2'}
+    origin: mit
+
+  - id: model-minimum
+    kind: identity
+    where: 'text "How sharp is the peak?": A(E) = E - N kT ln E has zero slope at E = N kT'
+    formula: deriv('t - NN*kT*log(t)', 't', NN*kT) + 1
+    equals: 1
+    samples: {NN: [10.0, 100.0], kT: [0.5, 2.0]}
+    tolerance: 1e-5
+    shown: ['is smallest at $\bar E = Nk_BT$']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: model-distribution
+    kind: identity
+    where: 'text "How sharp is the peak?": exp(-(A(E) - A_min)/kT) with A = E - N kT ln E equals (x e^(1-x))^N, x = E/(N kT)'
+    formula: exp(-((xx*NN*kT - NN*kT*log(xx*NN*kT)) - (NN*kT - NN*kT*log(NN*kT)))/kT)
+    equals: (xx*exp(1 - xx))**NN
+    samples: {xx: [0.5, 1.0, 1.7], NN: [10.0, 30.0, 7.0], kT: [0.5, 2.0, 1.3]}
+    tolerance: 1e-9
+    shown: ['= (x\,e^{1 - x})^N$']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: entropy-from-A
+    kind: identity
+    where: 'formula "Entropy from the free energy": for the three-level system, -dA/dT with A = -T ln Q (k_B = 1) equals (E - A)/T and -sum P ln P'
+    formula: -deriv('-t*log(1 + exp(-e1/t) + exp(-e2/t))', 't', TT)
+    equals: ((e1*exp(-e1/TT) + e2*exp(-e2/TT))/(1 + exp(-e1/TT) + exp(-e2/TT)) + TT*log(1 + exp(-e1/TT) + exp(-e2/TT)))/TT
+    samples: {e1: [0.5, 1.0], e2: [1.5, 3.0], TT: [0.4, 1.3]}
+    tolerance: 1e-6
+    shown: ['= 0 + (-S) = -S']
+    source: {cite: reading1, at: 'p. 4, point 4a'}
+    origin: mit
+
+  - id: energy-from-A
+    kind: identity
+    where: 'formula "Mean energy from the partition function": -d ln Q/d beta equals A - T dA/dT (three-level system, k_B = 1)'
+    formula: -deriv('log(1 + exp(-b*e1) + exp(-b*e2))', 'b', 1/TT)
+    equals: -TT*log(1 + exp(-e1/TT) + exp(-e2/TT)) - TT*deriv('-t*log(1 + exp(-e1/t) + exp(-e2/t))', 't', TT)
+    samples: {e1: [0.5, 1.0], e2: [1.5, 3.0], TT: [0.4, 1.3]}
+    tolerance: 1e-6
+    shown: ['= -\frac{\partial}{\partial\beta}\ln Q = k_BT^2\,\frac{\partial}{\partial T}\left(-\frac{A}{k_BT}\right) = A - T\,\frac{\partial A}{\partial T}']
+    source: {cite: reading1, at: 'p. 4, point 4b'}
+    origin: mit
+
+  # ---------------------------------------------------------------- plot caption
+  - id: width-N10
+    where: 'plot caption: relative standard deviation 1/sqrt(N + 1) for N = 10 (gamma distribution of shape N + 1)'
+    inputs: {}
+    formula: 1/sqrt(10 + 1)
+    expected: '0.30'
+    shown: ['about 0.30, 0.10 and 0.03 for N = 10, 100 and 1000']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: width-N100
+    where: 'plot caption: 1/sqrt(N + 1) for N = 100'
+    inputs: {}
+    formula: 1/sqrt(100 + 1)
+    expected: '0.10'
+    shown: ['about 0.30, 0.10 and 0.03']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: width-N1000
+    where: 'plot caption: 1/sqrt(N + 1) for N = 1000'
+    inputs: {}
+    formula: 1/sqrt(1000 + 1)
+    expected: '0.03'
+    shown: ['0.10 and 0.03 for N']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: width-macroscopic
+    where: 'plot caption: 1/sqrt(N + 1) for N = 1e22, about 1e-11'
+    inputs: {}
+    formula: 1/sqrt(1e22 + 1)
+    expected: '1e-11'
+    tolerance: 1e-13
+    shown: ['about 10⁻¹¹ for a macroscopic N = 10²²']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: width-variance-check
+    kind: identity
+    where: 'plot caption: for P(E) proportional to E^N e^(-E/kT) (kT = 1), the variance is N + 1 and the mean N + 1, so sd/mean = 1/sqrt(N + 1)'
+    formula: integrate('t**2*t**NN*exp(-t)', 't', 0, 200)/integrate('t**NN*exp(-t)', 't', 0, 200) - (integrate('t*t**NN*exp(-t)', 't', 0, 200)/integrate('t**NN*exp(-t)', 't', 0, 200))**2
+    equals: NN + 1
+    samples: {NN: [10.0, 30.0]}
+    tolerance: 1e-5
+    shown: ['close to the peak Ē = Nk_BT, is 1/√(N + 1)']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: three-level molecule at 300 K
+  - id: ex-kT
+    where: 'worked example, step "The Boltzmann factors": k_B T at 300 K in eV'
+    inputs: {T: 300 K}
+    formula: k_B*T
+    expected: 0.025852 eV
+    shown: ['$k_BT = 0.025852$ eV']
+    source: {cite: reading1, at: 'p. 2, point 2'}
+    origin: page-own
+
+  - id: ex-x1
+    where: 'worked example: 0.020 eV / k_B T'
+    inputs: {E1: 0.020 eV, T: 300 K}
+    formula: E1/(k_B*T)
+    expected: '0.7736'
+    shown: ['e^{-0.7736} = 0.4613']
+    source: {cite: reading1, at: 'p. 2, point 2'}
+    origin: page-own
+
+  - id: ex-f1
+    where: 'worked example: Boltzmann factor of the 0.020 eV level'
+    inputs: {E1: 0.020 eV, T: 300 K}
+    formula: exp(-E1/(k_B*T))
+    expected: '0.4613'
+    shown: ['e^{-0.7736} = 0.4613']
+    source: {cite: reading1, at: 'p. 2, point 2'}
+    origin: page-own
+
+  - id: ex-x2
+    where: 'worked example: 0.050 eV / k_B T'
+    inputs: {E2: 0.050 eV, T: 300 K}
+    formula: E2/(k_B*T)
+    expected: '1.9341'
+    shown: ['e^{-1.9341} = 0.1446']
+    source: {cite: reading1, at: 'p. 2, point 2'}
+    origin: page-own
+
+  - id: ex-f2
+    where: 'worked example: Boltzmann factor of the 0.050 eV level'
+    inputs: {E2: 0.050 eV, T: 300 K}
+    formula: exp(-E2/(k_B*T))
+    expected: '0.1446'
+    shown: ['e^{-1.9341} = 0.1446']
+    source: {cite: reading1, at: 'p. 2, point 2'}
+    origin: page-own
+
+  - id: ex-Q
+    where: 'worked example: Q = 1 + 0.4613 + 0.1446'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: 1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T))
+    expected: '1.6059'
+    shown: ['so $Q = 1.6059$']
+    source: {cite: reading1, at: 'p. 2, point 3'}
+    origin: page-own
+
+  - id: ex-P0
+    where: 'worked example, step "Probabilities and mean energy": ground state'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: 1/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))
+    expected: '0.623'
+    shown: ['$P_n = 0.623$, $0.287$ and $0.090$']
+    source: {cite: reading1, at: 'p. 2, point 3'}
+    origin: page-own
+
+  - id: ex-P1
+    where: 'worked example: middle state'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: exp(-E1/(k_B*T))/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))
+    expected: '0.287'
+    shown: ['$P_n = 0.623$, $0.287$ and $0.090$']
+    source: {cite: reading1, at: 'p. 2, point 3'}
+    origin: page-own
+
+  - id: ex-P2
+    where: 'worked example: top state'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: exp(-E2/(k_B*T))/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))
+    expected: '0.090'
+    shown: ['$P_n = 0.623$, $0.287$ and $0.090$']
+    source: {cite: reading1, at: 'p. 2, point 3'}
+    origin: page-own
+
+  - id: ex-Ebar
+    where: 'worked example: mean energy'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: (E1*exp(-E1/(k_B*T)) + E2*exp(-E2/(k_B*T)))/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))
+    expected: 0.01025 eV
+    shown: ['$= 0.01025$ eV, about $0.40\,k_BT$']
+    source: {cite: reading1, at: 'p. 4, point 4b'}
+    origin: page-own
+
+  - id: ex-Ebar-over-kT
+    where: 'worked example: mean energy in units of k_B T'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: (E1*exp(-E1/(k_B*T)) + E2*exp(-E2/(k_B*T)))/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))/(k_B*T)
+    expected: '0.40'
+    shown: ['about $0.40\,k_BT$']
+    source: {cite: reading1, at: 'p. 4, point 4b'}
+    origin: page-own
+
+  - id: ex-A
+    where: 'worked example, step "Free energy and entropy": A = -k_B T ln Q (in eV, magnitude; the page shows the minus sign)'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: k_B*T*log(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))
+    expected: 0.01225 eV
+    shown: ['\ln 1.6059$ eV $= -0.01225$ eV']
+    source: {cite: reading1, at: 'p. 3, point b'}
+    origin: page-own
+
+  - id: ex-S
+    where: 'worked example: S/k_B = (E - A)/k_B T'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: ((E1*exp(-E1/(k_B*T)) + E2*exp(-E2/(k_B*T)))/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T))) + k_B*T*log(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T))))/(k_B*T)
+    expected: '0.870'
+    shown: ['(0.01025 + 0.01225)/0.025852 = 0.870']
+    source: {cite: reading1, at: 'p. 4, point 4a'}
+    origin: page-own
+
+  - id: ex-S-check
+    where: 'worked example, step "The check": -sum P ln P with the rounded probabilities'
+    inputs: {}
+    formula: -(0.623*log(0.623) + 0.287*log(0.287) + 0.090*log(0.090))
+    expected: '0.870'
+    shown: ['0.090\ln 0.090) = 0.870$']
+    source: {cite: reading1, at: 'p. 4, point 4a'}
+    origin: page-own
+
+  - id: ex-TS
+    where: 'worked example: T S = E - A in eV'
+    inputs: {E1: 0.020 eV, E2: 0.050 eV, T: 300 K}
+    formula: (E1*exp(-E1/(k_B*T)) + E2*exp(-E2/(k_B*T)))/(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T))) + k_B*T*log(1 + exp(-E1/(k_B*T)) + exp(-E2/(k_B*T)))
+    expected: 0.0225 eV
+    shown: ['worth $TS = 0.0225$ eV']
+    source: {cite: reading1, at: 'p. 4, point 4b'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-two-level
+    where: 'quiz 2: upper-state probability with eps/k_BT = ln 3'
+    inputs: {}
+    formula: exp(-log(3))/(1 + exp(-log(3)))
+    expected: '0.25'
+    quiz: 1
+    shown: ['so $Q = 4/3$ and the upper state has probability $(1/3)/(4/3) = 0.25$']
+    source: {cite: reading1, at: 'p. 2, point 3'}
+    origin: page-own

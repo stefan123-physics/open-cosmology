@@ -1,0 +1,462 @@
+# Calculations on content/year-4/8.07/spherical-shell-circular-hole.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 7, "A Spherical Shell of Charge with a Circular Hole" (Guth, typed,
+# October 8, 2012), eqs. (7.1)-(7.25), pp. 1-4. The notes quote no numbers.
+# Legendre polynomials written out: P0 = 1, P1 = x, P2 = (3x^2 - 1)/2, P3 = (5x^3 - 3x)/2, P4 = (35x^4 - 30x^2 + 3)/8.
+# Page's own example: R = 10 cm, Q = 1.0 nC (charge of the full shell, sigma0 = Q/(4 pi R^2)), hole alpha = 60 deg.
+# Exact potential on the axis (page's own, from rings): V(z) = Q (1 + cos a)/(4 pi eps0) / (|R + z| + sqrt(R^2 + z^2 - 2 R z cos a)).
+
+page: content/year-4/8.07/spherical-shell-circular-hole.mdx
+calcs:
+  # ---------------------------------------------------------------- azimuthal symmetry (p. 1)
+  - id: traceless-l2
+    kind: identity
+    where: 'the l = 2 example after eq. (7.3): (z_i z_j - delta_ij/3) n_i n_j = cos^2 th - 1/3 = (2/3) P2(cos th)'
+    formula: cos(th)**2 - 1/3
+    equals: 2/3*(3*cos(th)**2 - 1)/2
+    samples: {th: [0.2, 1.1, 2.7]}
+    tolerance: 1e-12
+    shown: ['which is $\frac23 P_2(\cos\theta)$']
+    source: {cite: reading1, at: 'eq. (7.3)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- inside and outside (p. 2)
+  - id: continuity-one-coefficient
+    kind: identity
+    where: 'eqs. (7.6)-(7.7): with B_out = R^(2l+1) A_in, R^(l+1) A_in = R^(-l) B_out, and inside and outside agree at r = R'
+    formula: RR**(-LL)*(RR**(2*LL + 1)*AA)
+    equals: RR**(LL + 1)*AA
+    samples: {RR: [0.1, 2.0, 0.7], LL: [0, 1, 3], AA: [1.0, -2.5, 0.3]}
+    tolerance: 1e-12
+    shown: ['Thus $B_{\ell,\text{out}} = R^{2\ell + 1}A_{\ell,\text{in}}$']
+    source: {cite: reading1, at: 'eqs. (7.6)-(7.7)'}
+    origin: mit
+
+  - id: shortcut-same
+    kind: identity
+    where: 'eq. (7.2prime): A_l r^l/R^(l+1) at r = R equals B_l R^l/r^(l+1) at r = R when B_l = A_l'
+    formula: AA*RR**LL/RR**(LL + 1)
+    equals: AA*RR**LL/RR**(LL + 1)
+    samples: {RR: [0.1, 2.0], LL: [0, 2], AA: [1.0, -2.5]}
+    tolerance: 1e-12
+    shown: ['continuity says simply $B_{\ell,\text{out}} = A_{\ell,\text{in}}$']
+    source: {cite: reading1, at: 'eq. (7.2prime), p. 3'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the jump (p. 3)
+  - id: jump-derivatives
+    kind: identity
+    where: 'eq. (7.14): minus the outside derivative plus the inside derivative of the two series terms at r = R (numerical derivatives)'
+    formula: -deriv('RR**LL/s**(LL + 1)', 's', RR) + deriv('s**LL/RR**(LL + 1)', 's', RR)
+    equals: (LL + 1)*RR**LL/RR**(LL + 2) + LL*RR**(LL - 1)/RR**(LL + 1)
+    samples: {RR: [0.7, 1.3, 2.0], LL: [1, 2, 4]}
+    tolerance: 1e-6
+    shown: ['Outside, $R^\ell/r^{\ell + 1}$ gives $-(\ell + 1)R^\ell/R^{\ell + 2}$']
+    source: {cite: reading1, at: 'eq. (7.14)'}
+    origin: mit
+
+  - id: jump-simplified
+    kind: identity
+    where: 'eq. (7.15): (l + 1) R^l/R^(l+2) + l R^(l-1)/R^(l+1) = (2l + 1)/R^2'
+    formula: (LL + 1)*RR**LL/RR**(LL + 2) + LL*RR**(LL - 1)/RR**(LL + 1)
+    equals: (2*LL + 1)/RR**2
+    samples: {RR: [0.1, 2.0, 0.7], LL: [0, 1, 5]}
+    tolerance: 1e-12
+    shown: ['Both terms carry $1/R^2$, and they add up to $2\ell + 1$:']
+    source: {cite: reading1, at: 'eq. (7.15)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- orthogonality (pp. 3-4)
+  - id: orthogonality-norm
+    kind: value
+    where: 'eq. (7.16) for l = l prime = 2: the integral of P2^2 from -1 to 1 is 2/5'
+    inputs: {}
+    formula: integrate('((3*s**2 - 1)/2)**2', 's', -1, 1)
+    expected: '0.4'
+    tolerance: 1e-9
+    shown: ['use the orthogonality of the Legendre polynomials (notes p. 3):']
+    source: {cite: reading1, at: 'eq. (7.16)'}
+    origin: mit
+
+  - id: orthogonality-zero
+    kind: value
+    where: 'eq. (7.16) for l = 1, l prime = 2: the integral of P1 P2 from -1 to 1 vanishes (checked as that plus 1)'
+    inputs: {}
+    formula: integrate('s*(3*s**2 - 1)/2', 's', -1, 1) + 1
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['Only the term with $\ell = \ell''$ survives']
+    source: {cite: reading1, at: 'eq. (7.16)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the integral (p. 4)
+  - id: prefactor
+    kind: identity
+    where: 'eq. (7.19): R^2 sigma0/(2 eps0) with sigma0 = Q/(4 pi R^2) equals Q/(8 pi eps0)'
+    formula: RR**2*(QQ/(4*pi*RR**2))/(2*ee)
+    equals: QQ/(8*pi*ee)
+    samples: {RR: [0.1, 2.0], QQ: [1.0, 3.0], ee: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['With $\sigma_0 = Q/(4\pi R^2)$ (notes p. 4):']
+    source: {cite: reading1, at: 'eq. (7.19)'}
+    origin: mit
+
+  - id: identity-l1
+    kind: identity
+    where: 'eq. (7.20) for l = 1: dP2/dx - dP0/dx = 3 P1'
+    formula: deriv('(3*s**2 - 1)/2', 's', xx) - 0
+    equals: 3*xx
+    samples: {xx: [-0.6, 0.2, 0.9]}
+    tolerance: 1e-6
+    shown: ['$dP_2/dx - dP_0/dx = 3x - 0 = 3P_1$']
+    source: {cite: reading1, at: 'eq. (7.20)'}
+    origin: mit
+
+  - id: identity-l2
+    kind: identity
+    where: 'eq. (7.20) for l = 2: dP3/dx - dP1/dx = 5 P2'
+    formula: deriv('(5*s**3 - 3*s)/2', 's', xx) - 1
+    equals: 5*(3*xx**2 - 1)/2
+    samples: {xx: [-0.6, 0.2, 0.9]}
+    tolerance: 1e-6
+    shown: ['To integrate a Legendre polynomial, write it as a difference of derivatives of its neighbours:']
+    source: {cite: reading1, at: 'eq. (7.20)'}
+    origin: mit
+
+  - id: identity-l3
+    kind: identity
+    where: 'eq. (7.20) for l = 3: dP4/dx - dP2/dx = 7 P3'
+    formula: deriv('(35*s**4 - 30*s**2 + 3)/8', 's', xx) - deriv('(3*s**2 - 1)/2', 's', xx)
+    equals: 7*(5*xx**3 - 3*xx)/2
+    samples: {xx: [-0.6, 0.2, 0.9]}
+    tolerance: 1e-6
+    shown: ['It holds for every $\ell \ge 0$ if one defines (notes p. 4)']
+    source: {cite: reading1, at: 'eq. (7.20)'}
+    origin: mit
+
+  - id: p-minus-one
+    kind: identity
+    where: 'eq. (7.23): P_l(-1) = (-1)^l for l = 2, 3, 4 (P2(-1) + P3(-1) + P4(-1) = 1 - 1 + 1)'
+    formula: (3*xx**2 - 1)/2 + (5*xx**3 - 3*xx)/2 + (35*xx**4 - 30*xx**2 + 3)/8
+    equals: 1
+    samples: {xx: [-1.0]}
+    tolerance: 1e-12
+    shown: ['so $P_{\ell + 1}(-1)$ and $P_{\ell - 1}(-1)$ are equal and cancel']
+    source: {cite: reading1, at: 'eq. (7.23)'}
+    origin: mit
+
+  - id: coefficient-l1
+    kind: identity
+    where: 'eqs. (7.19) and (7.24a) for l = 1: the integral of P1 from -1 to c equals (P2(c) - P0(c))/3'
+    formula: integrate('s', 's', -1, cc)
+    equals: ((3*cc**2 - 1)/2 - 1)/3
+    samples: {cc: [0.5, -0.3, 0.9]}
+    tolerance: 1e-9
+    shown: ['For $\ell > 0$ the indices $\ell + 1$ and $\ell - 1$ differ by 2']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: mit
+
+  - id: coefficient-l2
+    kind: identity
+    where: 'eqs. (7.19) and (7.24a) for l = 2: the integral of P2 from -1 to c equals (P3(c) - P1(c))/5'
+    formula: integrate('(3*s**2 - 1)/2', 's', -1, cc)
+    equals: ((5*cc**3 - 3*cc)/2 - cc)/5
+    samples: {cc: [0.5, -0.3, 0.9]}
+    tolerance: 1e-9
+    shown: ['Then the integral is a difference of values at the limits:']
+    source: {cite: reading1, at: 'eq. (7.22)'}
+    origin: mit
+
+  - id: coefficient-l3
+    kind: identity
+    where: 'eqs. (7.19) and (7.24a) for l = 3: the integral of P3 from -1 to c equals (P4(c) - P2(c))/7'
+    formula: integrate('(5*s**3 - 3*s)/2', 's', -1, cc)
+    equals: ((35*cc**4 - 30*cc**2 + 3)/8 - (3*cc**2 - 1)/2)/7
+    samples: {cc: [0.5, -0.3, 0.9]}
+    tolerance: 1e-9
+    shown: ['Putting the coefficients into the series gives the final answer (notes p. 4):']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: mit
+
+  - id: coefficient-l0
+    kind: identity
+    where: 'eq. (7.24b): the integral of P0 from -1 to c is P1(c) + 1'
+    formula: integrate('1 + 0*s', 's', -1, cc)
+    equals: cc + 1
+    samples: {cc: [0.5, -0.3, 0.9]}
+    tolerance: 1e-9
+    shown: ['For $\ell = 0$ the convention $P_{-1} = 0$ leaves $P_1(\cos\alpha) - P_1(-1) = \cos\alpha + 1$:']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- checks (page's own)
+  - id: no-hole
+    kind: identity
+    where: 'section "Checking the answer": at alpha = 0 the l = 0 bracket is P1(1) + 1 = 2, so the term is 2Q/(8 pi eps0 r>) = Q/(4 pi eps0 r>)'
+    formula: (cc + 1)*QQ/(8*pi*ee*rr)
+    equals: QQ/(4*pi*ee*rr)
+    samples: {cc: [1.0, 1.0], QQ: [1.0, 2.0], ee: [1.0, 0.3], rr: [0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['$2Q/(8\pi\varepsilon_0 r_{>}) = Q/(4\pi\varepsilon_0 r_{>})$']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: charge-on-shell
+    kind: identity
+    where: 'section "Checking the answer": sigma0 times the area below the cap, 2 pi R^2 (1 + cos a), is Q (1 + cos a)/2 (area by integrating over theta from alpha to pi)'
+    formula: QQ/(4*pi*RR**2)*integrate('2*pi*RR**2*sin(t)', 't', aa, pi)
+    equals: QQ*(1 + cos(aa))/2
+    samples: {QQ: [1.0, 2.0, 0.5], RR: [0.1, 1.5, 0.7], aa: [0.3, 1.0472, 2.0]}
+    tolerance: 1e-9
+    shown: ['which is $Q(1 + \cos\alpha)/2$']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own
+
+  - id: far-field
+    kind: identity
+    where: 'section "Checking the answer": the l = 0 term outside, A0~/r, is the potential of the charge Q (1 + cos a)/2'
+    formula: QQ*(1 + cos(aa))/(8*pi*ee*rr)
+    equals: (QQ*(1 + cos(aa))/2)/(4*pi*ee*rr)
+    samples: {QQ: [1.0, 2.0], ee: [1.0, 0.3], aa: [0.5, 2.0], rr: [3.0, 10.0]}
+    tolerance: 1e-12
+    shown: ['exactly the potential of that charge']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example (page's own): R = 10 cm, Q = 1.0 nC, alpha = 60 deg
+  - id: ex-sigma0
+    where: 'worked example: sigma0 = Q/(4 pi R^2)'
+    inputs: {Q: 1.0 nC, R: 10 cm}
+    formula: Q/(4*pi*R**2)
+    expected: 7.96e-9 C/m**2
+    shown: ['\approx 7.96 \times 10^{-9}$ C/m²']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  - id: ex-charge
+    where: 'worked example: charge on the shell Q (1 + cos 60 deg)/2'
+    inputs: {Q: 1.0 nC, c: 0.5}
+    formula: Q*(1 + c)/2
+    expected: 0.75 nC
+    shown: ['is $Q(1 + \cos\alpha)/2 = 0.75$ nC']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own
+
+  - id: ex-cap-charge
+    where: 'worked example: charge the missing cap would hold, Q (1 - cos 60 deg)/2'
+    inputs: {Q: 1.0 nC, c: 0.5}
+    formula: Q*(1 - c)/2
+    expected: 0.25 nC
+    shown: ['the missing cap would have held 0.25 nC']
+    source: {cite: reading1, at: 'eq. (7.12)'}
+    origin: page-own
+
+  - id: ex-centre-potential
+    where: 'worked example: V(0) = Q (1 + cos a)/(8 pi eps0 R)'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q*(1 + c)/(8*pi*eps0*R)
+    expected: 67.4 V
+    shown: ['(8\pi\varepsilon_0 R) \approx 67.4$ V', 'the centre is at 67.4 V']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own
+
+  - id: ex-prefactor
+    where: 'worked example: Q/(8 pi eps0)'
+    inputs: {Q: 1.0 nC, eps0: 8.8541878128e-12 F/m}
+    formula: Q/(8*pi*eps0)
+    expected: 4.49 V*m
+    shown: ['$Q/(8\pi\varepsilon_0) = 4.49$ V m']
+    source: {cite: reading1, at: 'eq. (7.19)'}
+    origin: page-own
+
+  - id: ex-P2
+    where: 'worked example: P2(1/2) = (3/4 - 1)/2'
+    inputs: {x: 0.5}
+    formula: (3*x**2 - 1)/2
+    expected: '-0.125'
+    shown: ['$P_2 = \frac12\left(3 \cdot \frac14 - 1\right) = -\frac18$']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: ex-P3
+    where: 'worked example: P3(1/2) = (5/8 - 3/2)/2 = -7/16'
+    inputs: {x: 0.5}
+    formula: (5*x**3 - 3*x)/2
+    expected: '-0.4375'
+    shown: ['$P_3 = \frac12\left(5 \cdot \frac18 - 3 \cdot \frac12\right) = -\frac{7}{16}$']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: ex-A0
+    where: 'worked example: A0~ = Q (1 + cos a)/(8 pi eps0)'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q*(1 + c)/(8*pi*eps0)
+    expected: 6.74 V*m
+    shown: ['$\tilde A_0 = 4.49 \times \frac32 \approx 6.74$ V m']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own
+
+  - id: ex-A1
+    where: 'worked example: A1~ = Q/(8 pi eps0 3) (P2(c) - P0(c))'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q/(8*pi*eps0*3)*((3*c**2 - 1)/2 - 1)
+    expected: -1.69 V*m
+    shown: ['$\tilde A_1 = \frac{4.49}{3}\left(-\frac18 - 1\right) \approx -1.69$ V m']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: ex-A2
+    where: 'worked example: A2~ = Q/(8 pi eps0 5) (P3(c) - P1(c))'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q/(8*pi*eps0*5)*((5*c**3 - 3*c)/2 - c)
+    expected: -0.843 V*m
+    shown: ['\approx -0.843$ V m']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: ex-field-centre
+    where: 'worked example: E_z at the centre = -A1~/R^2'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: -Q/(8*pi*eps0*3)*((3*c**2 - 1)/2 - 1)/R**2
+    expected: 169 V/m
+    shown: ['$E_z = -\tilde A_1/R^2 \approx 169$ V/m', 'a field of 169 V/m towards the hole']
+    source: {cite: reading1, at: 'eq. (7.10)'}
+    origin: page-own
+
+  - id: ex-field-direct
+    where: 'worked example: the same field directly, sigma0 sin^2(a)/(4 eps0) (z component of the field of the rings at the centre)'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q/(4*pi*R**2)*(1 - c**2)/(4*eps0)
+    expected: 169 V/m
+    shown: ['the field points towards the hole, away from the charge on the far side']
+    source: {cite: reading1, at: 'eq. (7.10)'}
+    origin: page-own
+
+  - id: ex-dipole
+    where: 'worked example: p = 4 pi eps0 R A1~ = -3QR/16'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: 4*pi*eps0*R*Q/(8*pi*eps0*3)*((3*c**2 - 1)/2 - 1)
+    expected: -1.9e-11 C*m
+    shown: ['$p = 4\pi\varepsilon_0 R\tilde A_1 = -3QR/16 \approx -1.9 \times 10^{-11}$ C m']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: ex-dipole-direct
+    kind: identity
+    where: 'worked example: directly, the sum of z dq over the rings, integral of R cos t sigma0 2 pi R^2 sin t from alpha to pi, is -Q R sin^2(a)/4'
+    formula: integrate('RR*cos(t)*QQ/(4*pi*RR**2)*2*pi*RR**2*sin(t)', 't', aa, pi)
+    equals: -QQ*RR*sin(aa)**2/4
+    samples: {QQ: [1.0, 2.0, 0.5], RR: [0.1, 1.5, 0.7], aa: [0.3, 1.0472, 2.0]}
+    tolerance: 1e-9
+    shown: ['gives $p = -\frac14 QR\sin^2\alpha$, the same']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: ex-axis-formula
+    kind: identity
+    where: 'worked example: the exact potential on the axis, sigma0 R^2/(2 eps0) times the integral over x of 1/sqrt(R^2 + z^2 - 2 R z x) from -1 to cos a, equals Q(1 + cos a)/(4 pi eps0)/(|R + z| + sqrt(R^2 + z^2 - 2 R z cos a)) (above, below, inside and outside)'
+    formula: QQ/(4*pi*RR**2)*RR**2/(2*ee)*integrate('1/sqrt(RR**2 + zz**2 - 2*RR*zz*s)', 's', -1, cos(aa))
+    equals: QQ*(1 + cos(aa))/(4*pi*ee)/(abs(RR + zz) + sqrt(RR**2 + zz**2 - 2*RR*zz*cos(aa)))
+    samples: {QQ: [1.0, 1.0, 2.0, 1.0], ee: [1.0, 1.0, 0.5, 1.0], RR: [1.0, 1.0, 2.0, 1.0], zz: [0.5, -0.4, 3.0, -2.5], aa: [1.0472, 0.6, 2.0, 1.2]}
+    tolerance: 1e-8
+    shown: ['$V(z) = \frac{Q(1 + \cos\alpha)}{4\pi\varepsilon_0}\cdot\frac{1}{|R + z| + \sqrt{R^2 + z^2 - 2Rz\cos\alpha}}$']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: ex-axis-hole
+    where: 'worked example: exact potential at the centre of the hole, z = R'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m, z: 10 cm}
+    formula: Q*(1 + c)/(4*pi*eps0)/(abs(R + z) + sqrt(R**2 + z**2 - 2*R*z*c))
+    expected: 44.9 V
+    shown: ['In the centre of the hole, $z = R$, this is 44.9 V']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: ex-axis-south
+    where: 'worked example: exact potential at the south pole, z = -R'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m, z: -10 cm}
+    formula: Q*(1 + c)/(4*pi*eps0)/(abs(R + z) + sqrt(R**2 + z**2 - 2*R*z*c))
+    expected: 77.8 V
+    shown: ['at the south pole, $z = -R$, it is 77.8 V']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: ex-three-terms-hole
+    where: 'worked example: first three terms of the series at z = R, (A0~ + A1~ + A2~)/R'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q/(8*pi*eps0*R)*((1 + c) + ((3*c**2 - 1)/2 - 1)/3 + ((5*c**3 - 3*c)/2 - c)/5)
+    expected: 42.1 V
+    shown: ['$67.4 - 16.9 - 8.4 \approx 42.1$ V']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: ex-three-terms-south
+    where: 'worked example: first three terms of the series at z = -R, (A0~ - A1~ + A2~)/R'
+    inputs: {Q: 1.0 nC, R: 10 cm, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q/(8*pi*eps0*R)*((1 + c) - ((3*c**2 - 1)/2 - 1)/3 + ((5*c**3 - 3*c)/2 - c)/5)
+    expected: 75.8 V
+    shown: ['$67.4 + 16.9 - 8.4 \approx 75.8$ V']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the plot (V in volts, z in cm)
+  - id: plot-exact-numerator
+    where: 'plot, solid curve: Q (1 + cos a)/(4 pi eps0) in V cm'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q*(1 + c)/(4*pi*eps0)
+    expected: 1348.13 V*cm
+    tolerance: 0.01 V*cm
+    shown: ['{ expr: "1348.13/(abs(10 + z)']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: plot-series-inside
+    kind: identity
+    where: 'plot, dashed curve inside: 67.4066 - 16.8517 (z/10) - 8.42583 (z/10)^2 equals sum of A_l~ z^l/R^(l+1) for l <= 2, with A_l~ in V cm (A0~ = 674.066, A1~ = -168.517, A2~ = -84.2583) and R = 10'
+    formula: 67.4066 - 16.8517*(zz/10) - 8.42583*(zz/10)**2
+    equals: 674.066/10 - 168.517*zz/100 - 84.2583*zz**2/1000
+    samples: {zz: [-7.0, 0.0, 4.0, 10.0]}
+    tolerance: 1e-9
+    shown: ['ℓ = 0, 1 and 2 (dashed)']
+    source: {cite: reading1, at: 'eq. (7.25)'}
+    origin: page-own
+
+  - id: plot-A0-vcm
+    where: 'plot: A0~ in V cm'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m}
+    formula: Q*(1 + c)/(8*pi*eps0)
+    expected: 674.066 V*cm
+    tolerance: 0.01 V*cm
+    shown: ['674.066/abs(z)']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own
+
+  - id: plot-A1R-vcm2
+    where: 'plot: -A1~ R in V cm^2 (outside dipole term), R = 10 cm'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m, R: 10 cm}
+    formula: -Q/(8*pi*eps0*3)*((3*c**2 - 1)/2 - 1)*R
+    expected: 1685.17 V*cm**2
+    tolerance: 0.02 V*cm**2
+    shown: ['1685.17*z/abs(z)^3']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  - id: plot-A2R2-vcm3
+    where: 'plot: -A2~ R^2 in V cm^3 (outside quadrupole term), R = 10 cm'
+    inputs: {Q: 1.0 nC, c: 0.5, eps0: 8.8541878128e-12 F/m, R: 10 cm}
+    formula: -Q/(8*pi*eps0*5)*((5*c**3 - 3*c)/2 - c)*R**2
+    expected: 8425.83 V*cm**3
+    tolerance: 0.1 V*cm**3
+    shown: ['8425.83/abs(z)^3']
+    source: {cite: reading1, at: 'eq. (7.24a)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-half-shell
+    where: 'quiz 3: R = 20 cm, Q = 2 nC, alpha = 90 deg: V(0) = Q (1 + cos a)/(8 pi eps0 R)'
+    inputs: {Q: 2 nC, R: 20 cm, c: 0, eps0: 8.8541878128e-12 F/m}
+    formula: Q*(1 + c)/(8*pi*eps0*R)
+    expected: 44.9 V
+    quiz: 2
+    shown: ['89.9 V would be the full shell']
+    source: {cite: reading1, at: 'eq. (7.24b)'}
+    origin: page-own

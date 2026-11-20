@@ -1,0 +1,266 @@
+# Calculations on content/year-4/8.07/wave-equation-group-velocity.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 14, "Electromagnetic Waves" (Guth, typeset slides, Lecture 35,
+# December 7, 2012), slides 1-7, eqs. (1)-(13) on this page. The slides quote no numbers.
+# Slips: eq. (3), last line, has single primes (v^2 g1', v^2 g2'), corrected to g1'', g2''; eq. (12) has +i in the
+# prefactor's exponent, corrected to -i (entry packet-phase).
+# Page's own worked example: a plasma with nu_p = 9 MHz, a pulse at nu = 15 MHz, 300 km of plasma; c = 2.998e8 m/s.
+
+page: content/year-4/8.07/wave-equation-group-velocity.mdx
+calcs:
+  # ---------------------------------------------------------------- the wave equation
+  - id: right-moving-solves
+    kind: identity
+    where: 'slide 2, eqs. (3)-(4): g(z - vt) with g = exp(-u^2) solves f_zz - f_tt/v^2 = 0 (checked with 1 added)'
+    formula: deriv('exp(-(z - VV*TT)**2)', 'z', ZZ, 2) - deriv('exp(-(ZZ - VV*t)**2)', 't', TT, 2)/VV**2 + 1
+    equals: 1
+    samples: {ZZ: [0.3, 1.1, -0.6], TT: [0.2, 0.5, 1.0], VV: [0.7, 1.5, 3.0]}
+    tolerance: 1e-5
+    shown: ['That is the one-dimensional **wave equation** (slide 2)']
+    source: {cite: reading1, at: 'slide 2, eq. (4)'}
+    origin: mit
+
+  - id: left-moving-solves
+    kind: identity
+    where: 'slide 2, eq. (2): g2(z + vt) with g2 = sin(u) + u^3 also solves it (checked with 1 added)'
+    formula: deriv('sin(z + VV*TT) + (z + VV*TT)**3', 'z', ZZ, 2) - deriv('sin(ZZ + VV*t) + (ZZ + VV*t)**3', 't', TT, 2)/VV**2 + 1
+    equals: 1
+    samples: {ZZ: [0.3, 1.1, -0.6], TT: [0.2, 0.5, 1.0], VV: [0.7, 1.5, 3.0]}
+    tolerance: 1e-4
+    shown: ['Waves can just as well move to the left, as $g(z + vt)$']
+    source: {cite: reading1, at: 'slide 2, eq. (2)'}
+    origin: mit
+
+  - id: second-time-derivative
+    kind: identity
+    where: 'slide 2, eq. (3), last line (the slip): d^2/dt^2 g1(z - vt) = v^2 g1''(z - vt), a second derivative; g1 = cos'
+    formula: deriv('cos(ZZ - VV*t)', 't', TT, 2)
+    equals: -VV**2*cos(ZZ - VV*TT)
+    samples: {ZZ: [0.3, 1.1], TT: [0.2, 1.0], VV: [0.7, 3.0]}
+    tolerance: 1e-4
+    shown: ["[The slide's last line has single primes; two time derivatives give second derivatives, $g_1''$ and $g_2''$, as written here.]"]
+    source: {cite: reading1, at: 'slide 2, eq. (3)'}
+    origin: slip
+
+  - id: quiz-not-a-solution
+    kind: identity
+    where: 'quiz 1: f = sin z cos(v t^2), v = 2: f_zz - f_tt/v^2 = sin z [sin(2t^2) + (4t^2 - 1) cos(2t^2)], not zero'
+    formula: deriv('sin(z)*cos(2*TT**2)', 'z', ZZ, 2) - deriv('sin(ZZ)*cos(2*t**2)', 't', TT, 2)/4
+    equals: sin(ZZ)*(sin(2*TT**2) + (4*TT**2 - 1)*cos(2*TT**2))
+    samples: {ZZ: [0.3, 1.1, -0.6], TT: [0.2, 0.5, 1.0]}
+    tolerance: 1e-4
+    shown: ['contains a term $-2v\\sin(vt^2)\\sin z$ that']
+    source: {cite: reading1, at: 'slide 2, eq. (4)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- sinusoidal waves
+  - id: sinusoid-forms-agree
+    kind: identity
+    where: 'slide 3, eq. (5): k(z - vt) = kz - omega t with omega = v k'
+    formula: KK*(ZZ - VV*TT)
+    equals: KK*ZZ - (VV*KK)*TT
+    samples: {KK: [0.5, 3.0], ZZ: [0.3, -1.2], TT: [0.4, 2.0], VV: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['= A\cos\left[kz - \omega t + \delta\right]']
+    source: {cite: reading1, at: 'slide 3, eq. (5)'}
+    origin: mit
+
+  - id: v-is-lambda-nu
+    kind: identity
+    where: 'section "Sinusoidal waves": lambda nu = (2 pi/k)(omega/2 pi) = omega/k = v'
+    formula: (2*pi/KK)*(WW/(2*pi))
+    equals: WW/KK
+    samples: {KK: [0.5, 3.0], WW: [1.0, 7.0]}
+    tolerance: 1e-12
+    shown: ['so $v = \lambda/T = \lambda\nu$']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  - id: euler-real-part
+    kind: identity
+    where: 'slide 4, eqs. (7)-(8): Re[A e^{i delta} e^{i theta}] = A cos(theta + delta), written with real parts'
+    formula: AA*cos(DD)*cos(TH) - AA*sin(DD)*sin(TH)
+    equals: AA*cos(TH + DD)
+    samples: {AA: [0.5, 2.0], DD: [0.3, 1.7], TH: [-0.4, 2.2]}
+    tolerance: 1e-12
+    shown: ['and a complex amplitude $\tilde A = Ae^{i\delta}$, which holds both the amplitude and the phase']
+    source: {cite: reading1, at: 'slide 4, eq. (7)'}
+    origin: mit
+
+  - id: quiz-wavelength
+    kind: value
+    where: 'quiz 2: lambda = 2 pi/k with k = 4 pi per metre (m)'
+    formula: 2*pi/(4*pi)
+    expected: '0.5'
+    shown: ['$\\lambda = 2\\pi/k = 2\\pi/4\\pi = 0.5$ m']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  - id: quiz-phase-velocity
+    kind: value
+    where: 'quiz 2: v = omega/k = 600 pi/4 pi (m/s)'
+    formula: 600*pi/(4*pi)
+    expected: '150'
+    shown: ['$v = \\omega/k = 600\\pi/4\\pi = 150$ m/s']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  - id: quiz-frequency
+    kind: value
+    where: 'quiz 2: nu = omega/2 pi = 600 pi/2 pi (Hz), and lambda nu = 0.5 x 300 = 150 m/s'
+    formula: 600*pi/(2*pi)
+    expected: '300'
+    shown: ['$\\nu = \\omega/2\\pi = 300$ Hz']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- group velocity
+  - id: expansion-rearranged
+    kind: identity
+    where: 'slide 5, eq. (11): omega0 + w1 (k - k0) = omega0 - k0 w1 + k w1'
+    formula: W0 + W1*(KK - K0)
+    equals: W0 - K0*W1 + KK*W1
+    samples: {W0: [1.0, 5.0], W1: [0.3, 2.0], KK: [0.5, 4.0], K0: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['= \omega(k_0) - k_0\,\frac{d\omega}{dk} + k\,\frac{d\omega}{dk} + \cdots']
+    source: {cite: reading1, at: 'slide 5, eq. (11)'}
+    origin: mit
+
+  - id: packet-phase
+    kind: identity
+    where: 'slide 6, eq. (12): the phase kz - omega(k) t, with the linear omega(k), equals -(omega0 - k0 w1) t + k (z - w1 t); so the prefactor is e^{-i[...]t} (the slide has +i)'
+    formula: -(W0 - K0*W1)*TT + KK*(ZZ - W1*TT)
+    equals: KK*ZZ - (W0 + W1*(KK - K0))*TT
+    samples: {W0: [1.0, 5.0], W1: [0.3, 2.0], KK: [0.5, 4.0], K0: [1.0, 3.0], ZZ: [0.2, -1.5], TT: [0.7, 2.0]}
+    tolerance: 1e-12
+    shown: ["[The slide's prefactor has $+i$ in the exponent; with $e^{-i\\omega t}$ in (10) it is $-i$, as written here."]
+    source: {cite: reading1, at: 'slide 6, eq. (12)'}
+    origin: slip
+
+  - id: plot-velocities
+    kind: value
+    where: 'wave-packet plot: cos 5(z - 2t) has phase velocity 2 (= 10/5) while the envelope exp(-(z - t)^2/4) moves at 1'
+    formula: 10/5
+    expected: '2'
+    shown: ['the crests inside at the phase velocity 2']
+    source: {cite: reading1, at: 'slide 7'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: plasma
+  - id: plasma-dispersion-group
+    kind: identity
+    where: 'worked example: for omega = sqrt(omega_p^2 + c^2 k^2) (c = 1), d omega/dk = c^2 k/omega'
+    formula: deriv('sqrt(WP**2 + k**2)', 'k', KK, 1)
+    equals: KK/sqrt(WP**2 + KK**2)
+    samples: {WP: [0.5, 2.0, 1.0], KK: [0.3, 1.5, 4.0]}
+    tolerance: 1e-6
+    shown: ['so $v_{\text{group}} = d\omega/dk = c^2k/\omega = c \times 12/15 = 0.8c$']
+    source: {cite: reading1, at: 'slide 6, eq. (13)'}
+    origin: page-own
+
+  - id: plasma-ck
+    kind: value
+    where: 'worked example: ck/2 pi = sqrt(15^2 - 9^2) (MHz)'
+    formula: sqrt(15**2 - 9**2)
+    expected: '12'
+    tolerance: 1e-9
+    shown: ['= 2\pi\sqrt{15^2 - 9^2}$ MHz $= 2\pi \times 12$ MHz']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: plasma-wavelength
+    kind: value
+    where: 'worked example: lambda = c/(12 MHz) (m)'
+    formula: 2.998e8/1.2e7
+    expected: '25'
+    tolerance: 0.05
+    shown: ['= 2.998 \times 10^8/1.2 \times 10^7 \approx 25$ m']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  - id: vacuum-wavelength
+    kind: value
+    where: 'worked example: lambda = c/(15 MHz) in vacuum (m)'
+    formula: 2.998e8/1.5e7
+    expected: '20'
+    tolerance: 0.05
+    shown: ['longer than the 20 m the same frequency has in vacuum']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  - id: plasma-wavelength-summary
+    kind: value
+    where: 'summary: the wavelength in the plasma (m)'
+    formula: 2.998e8/1.2e7
+    expected: '25'
+    tolerance: 0.05
+    shown: ['a wavelength of about 25 m']
+    source: {cite: reading1, at: 'slide 3, eq. (6)'}
+    origin: page-own
+
+  - id: plasma-phase-velocity
+    kind: value
+    where: 'worked example and summary: v_phase/c = omega/ck = 15/12'
+    formula: 15/12
+    expected: '1.25'
+    shown: ['$v_{\text{phase}} = \omega/k = c \times 15/12 = 1.25c$', '$v_{\text{phase}} = 1.25c$, $v_{\text{group}} = 0.8c$']
+    source: {cite: reading1, at: 'slide 7'}
+    origin: page-own
+
+  - id: plasma-group-velocity
+    kind: value
+    where: 'worked example: v_group/c = ck/omega = 12/15'
+    formula: 12/15
+    expected: '0.8'
+    shown: ['c \times 12/15 = 0.8c']
+    source: {cite: reading1, at: 'slide 6, eq. (13)'}
+    origin: page-own
+
+  - id: plasma-product
+    kind: value
+    where: 'worked example: v_phase v_group/c^2 = 1.25 x 0.8'
+    formula: 1.25*0.8
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['Notice $v_{\text{phase}}\,v_{\text{group}} = c^2$.']
+    source: {cite: reading1, at: 'slide 7'}
+    origin: page-own
+
+  - id: quiz-plasma-phase
+    kind: value
+    where: 'quiz 4: v_phase/c = 1/sqrt(1 - (9/15)^2) = 1/0.8'
+    formula: 1/sqrt(1 - (9/15)**2)
+    expected: '1.25'
+    tolerance: 1e-9
+    shown: ['= c/\\sqrt{1 - (9/15)^2} = c/0.8 = 1.25c$']
+    source: {cite: reading1, at: 'slide 7'}
+    origin: page-own
+
+  - id: quiz-plasma-group
+    kind: value
+    where: 'quiz 4: v_group = c^2/v_phase = c/1.25 (in units of c); 0.6c (= 9/15) and c are wrong choices'
+    formula: 1/1.25
+    expected: '0.8'
+    tolerance: 1e-9
+    shown: ['= c^2/v_{\\text{phase}} = 0.8c$']
+    source: {cite: reading1, at: 'slide 6, eq. (13)'}
+    origin: page-own
+
+  - id: crossing-time
+    kind: value
+    where: 'worked example and summary: t = 3e5 m/(0.8 x 2.998e8 m/s) (s)'
+    formula: 3e5/(0.8*2.998e8)
+    expected: '1.25e-3'
+    tolerance: 5e-6
+    shown: ['$t = 3 \times 10^5/(0.8 \times 2.998 \times 10^8) = 1.25 \times 10^{-3}$ s', 'takes 1.25 ms to cross 300 km']
+    source: {cite: reading1, at: 'slide 6, eq. (13)'}
+    origin: page-own
+
+  - id: crossing-time-vacuum
+    kind: value
+    where: 'worked example: 3e5 m/2.998e8 m/s in ms; 1.25/1.00 = a quarter longer'
+    formula: 3e5/2.998e8*1e3
+    expected: '1.00'
+    tolerance: 0.005
+    shown: ['a quarter longer than the 1.00 ms light needs in vacuum']
+    source: {cite: reading1, at: 'slide 6, eq. (13)'}
+    origin: page-own

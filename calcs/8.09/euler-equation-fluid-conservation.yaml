@@ -1,0 +1,113 @@
+# Calculations on content/year-4/8.09/euler-equation-fluid-conservation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Sections 6.2.2-6.2.3, pp. 112-115, eqs. (6.30)-(6.51).
+# The notes quote no numbers here. Slips: eq. (6.49), first expression, lacks a minus sign (d(delta V) = -delta m d rho/rho^2);
+# eq. (6.51) has (1/rho) d rho/dt on the right where dividing (6.50) by rho delta V gives (1/rho) dP/dt.
+# Page's own examples: water jet (1000 kg/m^3, 5 m/s, 2 cm^2); isothermal air (R' = 287 J/(kg K), 288 K, density doubled).
+
+page: content/year-4/8.09/euler-equation-fluid-conservation.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations
+  - id: vorticity-identity
+    kind: identity
+    where: 'eq. (6.35): x component of v x (curl v) = d(v^2/2)/dx - (v.grad) v_x, for the 2D field v = (x^2 y, x + y^3) at sample points'
+    formula: (XX + YY**3)*(1 - XX**2)
+    equals: (deriv('((x**2*YY)**2 + (x + YY**3)**2)/2', 'x', XX)) - (XX**2*YY*2*XX*YY + (XX + YY**3)*XX**2)
+    samples: {XX: [0.3, 1.1, -0.5], YY: [0.7, -0.4, 1.3]}
+    tolerance: 1e-6
+    shown: ['\vec v\times\vec\Omega = \vec v\times(\nabla\times\vec v) = \nabla(v^2/2) - (\vec v\cdot\nabla)\vec v']
+    source: {cite: reading1, at: 'Section 6.2.2, eq. (6.35), p. 113'}
+    origin: mit
+
+  - id: momentum-rearranged
+    kind: identity
+    where: 'eqs. (6.40)-(6.41) in 1D: -v d(rho v)/dx - rho v dv/dx = -d(rho v^2)/dx, for rho = 2 + sin x, v = 1 + x^2'
+    formula: -(1 + XX**2)*deriv('(2 + sin(x))*(1 + x**2)', 'x', XX) - (2 + sin(XX))*(1 + XX**2)*2*XX
+    equals: -deriv('(2 + sin(x))*(1 + x**2)**2', 'x', XX)
+    samples: {XX: [0.3, 1.1, -0.5]}
+    tolerance: 1e-6
+    shown: ['\frac{\partial}{\partial t}\left(\rho v_i\right) + \frac{\partial P}{\partial x_i} + \frac{\partial}{\partial x_j}\left(\rho v_iv_j\right) = f_i']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.41), p. 113'}
+    origin: mit
+
+  - id: internal-energy-isothermal
+    kind: identity
+    where: 'eq. (6.49) for P = c rho: integral of c/rho from rho0 to rho is c ln(rho/rho0) (checked by differentiating with respect to rho)'
+    formula: deriv('CC*log(r/R0)', 'r', RR)
+    equals: CC*RR/RR**2
+    samples: {CC: [82656.0, 1.0], R0: [1.2, 1.0], RR: [2.4, 0.7]}
+    tolerance: 1e-6
+    shown: ['$U = \int_{\rho_0}^{\rho}R''T\,d\rho''/\rho'' = R''T\ln(\rho/\rho_0)$']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.49), p. 115'}
+    origin: page-own
+
+  - id: internal-energy-adiabatic
+    kind: identity
+    where: 'plot: for P = P0 (rho/rho0)^gamma, d/drho of (P0/rho0)((rho/rho0)^(gamma-1) - 1)/(gamma - 1) equals P/rho^2 (units P0 = rho0 = 1)'
+    formula: deriv('(r**(GG - 1) - 1)/(GG - 1)', 'r', RR)
+    equals: RR**GG/RR**2
+    samples: {GG: [1.4, 1.67], RR: [0.7, 2.5]}
+    tolerance: 1e-6
+    shown: ['giving ((ρ/ρ₀)^(γ−1) − 1)/(γ − 1)']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.49), p. 115'}
+    origin: page-own
+
+  - id: bernoulli-division
+    kind: identity
+    where: 'eq. (6.51) slip: dividing the right side of (6.50), (dP/dt + rho dPhi/dt) delta V, by rho delta V gives (1/rho) dP/dt + dPhi/dt'
+    formula: (DP + RHO*DPHI)*DV/(RHO*DV)
+    equals: DP/RHO + DPHI
+    samples: {DP: [3.0, -1.5], RHO: [1000.0, 1.2], DPHI: [0.4, 2.0], DV: [1.0e-6, 0.01]}
+    tolerance: 1e-9
+    shown: ['[The notes print $\partial\rho/\partial t$ in the first term on the right']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.51), p. 115'}
+    origin: slip
+
+  # ---------------------------------------------------------------- water jet
+  - id: jet-momentum-flux
+    kind: value
+    where: 'worked example and quiz 3: rho v^2 = 1000 x 5^2 (Pa)'
+    formula: 1000*5**2
+    expected: '25000'
+    shown: ['$\rho v^2 = 1000 \times 5^2 = 25{,}000$ Pa', '$T_{xx} - P = \\rho v^2 = 1000 \\times 25 = 25{,}000$ Pa']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.42), p. 114'}
+    origin: page-own
+
+  - id: jet-force
+    kind: value
+    where: 'worked example and quiz 3: rho v^2 A = 25000 Pa x 2e-4 m^2 (N)'
+    formula: 25000*2e-4
+    expected: '5'
+    shown: ['$\rho v^2A = 25{,}000 \times 2 \times 10^{-4} = 5$ N', '$\\rho v^2A = 25{,}000 \\times 2 \\times 10^{-4} = 5$ N']
+    quiz: 2
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.43), p. 114'}
+    origin: page-own
+
+  - id: jet-weight-equivalent
+    kind: value
+    where: 'worked example: 5 N is the weight of about half a kilogram (kg, g = 9.81 m/s^2)'
+    formula: 5/9.81
+    expected: '0.5'
+    tolerance: 0.02
+    shown: ['about the weight of half a kilogram']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.43), p. 114'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- isothermal gas
+  - id: rprime-t
+    kind: value
+    where: 'worked example: R''T = 287 x 288 (J/kg)'
+    formula: 287*288
+    expected: '82656'
+    shown: ['$R''T = 287 \times 288 = 82{,}656$ J/kg']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.49), p. 115'}
+    origin: page-own
+
+  - id: u-doubled
+    kind: value
+    where: 'worked example: U = 82656 ln 2 (J/kg)'
+    formula: 82656*log(2)
+    expected: '57300'
+    tolerance: 50
+    shown: ['$U = 82{,}656 \times \ln 2 \approx 57{,}300$ J/kg, about 57 kJ per kilogram']
+    source: {cite: reading1, at: 'Section 6.2.3, eq. (6.49), p. 115'}
+    origin: page-own

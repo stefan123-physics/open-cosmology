@@ -1,0 +1,225 @@
+# Calculations on content/year-4/8.09/fixed-points-two-dimensions.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 7 (Stewart, typed), Section 7.3, printed pp. 164-173.
+# MIT numbers: the competition model (7.48) and its fixed points and eigenvalues (p. 170); the example H of (7.53).
+# Page's own: the damped-pendulum worked example (q = 2), its spiral plot, the double-well example, the quiz.
+
+page: content/year-4/8.09/fixed-points-two-dimensions.mdx
+calcs:
+  # ---------------------------------------------------------------- eigenvalues from trace and determinant
+  - id: eigen-formula
+    kind: identity
+    where: 'formula "Eigenvalues of a 2 x 2 matrix", eq. (7.43): lambda_+ + lambda_- = tau and lambda_+ lambda_- = Delta = ad - bc (checked on the product, real case)'
+    formula: ((a + d) + sqrt((a + d)**2 - 4*(a*d - b*c)))/2 * ((a + d) - sqrt((a + d)**2 - 4*(a*d - b*c)))/2
+    equals: a*d - b*c
+    samples: {a: [1.0, -3.0, 0.5], b: [2.0, -6.0, 1.0], c: [3.0, 0.0, 1.0], d: [-4.0, -1.0, 2.0]}
+    tolerance: 1e-9
+    shown: ['\Delta \equiv \det M = ad - bc']
+    source: {cite: reading1, at: 'p. 166, eqs. (7.42), (7.43)'}
+    origin: slip
+
+  - id: quiz1-discriminant
+    where: 'quiz 1 explanation: tau^2 - 4 Delta for tau = 1, Delta = 2'
+    inputs: {tau: 1, Delta: 2}
+    formula: tau**2 - 4*Delta
+    expected: '-7'
+    shown: ['\\tau^2 - 4\\Delta = 1 - 8 = -7 < 0']
+    source: {cite: reading1, at: 'pp. 168-169 (the page''s own numbers)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- damped pendulum (worked example, quiz 2, plots)
+  - id: pendulum-boundary
+    where: 'worked example and quiz 2: tau^2 = 4 Delta with tau = -1/q, Delta = 1 gives q = 1/2'
+    inputs: {}
+    formula: 1/sqrt(4*1)
+    expected: '0.5'
+    shown: ['that is $q > \frac12$', '$q = \\frac12$: critical damping']
+    source: {cite: reading1, at: 'pp. 168-169 (the page''s own example)'}
+    origin: page-own
+
+  - id: bottom-real-part
+    where: 'worked example "Eigenvalues for q = 2": real part tau/2 = -1/(2q)'
+    inputs: {q: 2}
+    formula: -1/(2*q)
+    expected: '-0.25'
+    shown: ['= -0.25 \pm 0.968i$']
+    source: {cite: reading1, at: 'p. 166, eq. (7.43) (the page''s own example)'}
+    origin: page-own
+
+  - id: bottom-imag-part
+    where: 'same: imaginary part sqrt(4 - 1/q^2)/2'
+    inputs: {q: 2}
+    formula: sqrt(4 - 1/q**2)/2
+    expected: '0.968'
+    shown: ['= -0.25 \pm 0.968i$', 'turns at angular frequency 0.968']
+    source: {cite: reading1, at: 'p. 166, eq. (7.43) (the page''s own example)'}
+    origin: page-own
+
+  - id: top-plus
+    where: 'worked example "The top": lambda_+ for q = 2'
+    inputs: {q: 2}
+    formula: (-1/q + sqrt(1/q**2 + 4))/2
+    expected: '0.781'
+    shown: ['= 0.781$ and $-1.281$']
+    source: {cite: reading1, at: 'p. 166, eq. (7.43) (the page''s own example)'}
+    origin: page-own
+
+  - id: top-minus
+    where: 'same: lambda_-'
+    inputs: {q: 2}
+    formula: (-1/q - sqrt(1/q**2 + 4))/2
+    expected: '-1.281'
+    shown: ['= 0.781$ and $-1.281$']
+    source: {cite: reading1, at: 'p. 166, eq. (7.43) (the page''s own example)'}
+    origin: page-own
+
+  - id: spiral-plot-theta
+    kind: identity
+    where: 'spiral plot: theta = e^(-t/4)(cos wt + sin wt/(4w)), w = sqrt(15)/4, solves theta_ddot + theta_dot/2 + theta = 0 (numerical derivatives)'
+    formula: deriv('exp(-s/4)*(cos(0.96825*s) + 0.25820*sin(0.96825*s))', 's', t0, 2) + 0.5*deriv('exp(-s/4)*(cos(0.96825*s) + 0.25820*sin(0.96825*s))', 's', t0) + exp(-t0/4)*(cos(0.96825*t0) + 0.25820*sin(0.96825*t0))
+    equals: '0'
+    samples: {t0: [0.3, 2.0, 7.5]}
+    tolerance: 1e-4
+    shown: ['{ x: "exp(-s/4)*(cos(0.96825*s) + 0.25820*sin(0.96825*s))"']
+    source: {cite: reading1, at: 'p. 168 (the page''s own example)'}
+    origin: page-own
+
+  - id: spiral-plot-omega
+    kind: identity
+    where: 'spiral plot: omega = theta_dot = -(1/w) e^(-t/4) sin wt'
+    formula: deriv('exp(-s/4)*(cos(0.96825*s) + 0.25820*sin(0.96825*s))', 's', t0)
+    equals: -1.03280*exp(-t0/4)*sin(0.96825*t0)
+    samples: {t0: [0.3, 2.0, 7.5]}
+    tolerance: 1e-4
+    shown: ['y: "-1.03280*exp(-s/4)*sin(0.96825*s)"', 'ω = θ̇ = −1.033 e^(−t/4) sin 0.968t']
+    source: {cite: reading1, at: 'p. 168 (the page''s own example)'}
+    origin: page-own
+
+  - id: spiral-constants
+    where: 'spiral plot caption: 1/(4w) with w = sqrt(15)/4'
+    inputs: {}
+    formula: 1/(4*sqrt(15)/4)
+    expected: '0.258'
+    shown: ['(cos 0.968t + 0.258 sin 0.968t)']
+    source: {cite: reading1, at: 'p. 168 (the page''s own example)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the competition model (p. 170)
+  - id: comp-fixed-points
+    kind: identity
+    where: 'eq. (7.49): each listed point is a fixed point of (7.48) (sum of |f_x| + |f_y| vanishes)'
+    formula: abs(x*(3 - x - 2*y)) + abs(y*(2 - y - x))
+    equals: '0'
+    samples: {x: [0, 0, 3, 1], y: [0, 2, 0, 1]}
+    tolerance: 1e-12
+    shown: ['\vec x_* \in \{(0, 0),\ (0, 2),\ (3, 0),\ (1, 1)\}']
+    source: {cite: reading1, at: 'p. 170, eq. (7.49)'}
+    origin: mit
+
+  - id: comp-sheep-trace
+    where: 'at (0, 2): M = [[-1, 0], [-2, -2]], trace -3'
+    inputs: {x: 0, y: 2}
+    formula: (3 - 2*x - 2*y) + (2 - x - 2*y)
+    expected: '-3'
+    shown: ['At $(0, 2)$, $\tau = -3$, $\Delta = 2$']
+    source: {cite: reading1, at: 'p. 170'}
+    origin: mit
+
+  - id: comp-sheep-det
+    where: 'at (0, 2): determinant 2, eigenvalues -1, -2'
+    inputs: {x: 0, y: 2}
+    formula: (3 - 2*x - 2*y)*(2 - x - 2*y) - (-2*x)*(-y)
+    expected: '2'
+    shown: ['At $(0, 2)$, $\tau = -3$, $\Delta = 2$']
+    source: {cite: reading1, at: 'p. 170'}
+    origin: mit
+
+  - id: comp-rabbit-eigen
+    kind: identity
+    where: 'at (3, 0): M = [[-3, -6], [0, -1]] is triangular, eigenvalues -3 and -1 (trace and determinant)'
+    formula: (3 - 2*x - 2*y) + (2 - x - 2*y) + 100*((3 - 2*x - 2*y)*(2 - x - 2*y) - (-2*x)*(-y))
+    equals: (-1 - 3) + 100*3
+    samples: {x: [3], y: [0]}
+    tolerance: 1e-12
+    shown: ['At $(3, 0)$, $\lambda = -1, -3$']
+    source: {cite: reading1, at: 'p. 170'}
+    origin: mit
+
+  - id: comp-saddle-plus
+    where: 'at (1, 1): M = [[-1, -2], [-1, -1]], lambda_+ = -1 + sqrt(2)'
+    inputs: {}
+    formula: (-2 + sqrt(4 - 4*(1 - 2)))/2
+    expected: '0.414'
+    shown: ['At $(1, 1)$, $\lambda = -1 \pm \sqrt2$']
+    source: {cite: reading1, at: 'p. 170'}
+    origin: mit
+
+  # ---------------------------------------------------------------- conserved H (eqs. 7.50-7.56)
+  - id: h-construction
+    kind: identity
+    where: 'formula (7.50) as corrected on the page: for the divergence-free field f = (y, ax - x^2), dH/dy = f_x (numerical derivative of the constructed H, x0 = y0 = 0)'
+    formula: deriv('(yy**2/2) - (a*x**2/2 - x**3/3)', 'yy', y)
+    equals: y
+    samples: {a: [2, 1.5], x: [0.7, -0.4], y: [1.3, 0.2]}
+    tolerance: 1e-6
+    shown: ['H(x, y) = \int_{y_0}^{y} f_x(x, y'')\,dy'' - \int_{x_0}^{x} f_y(x'', y_0)\,dx''']
+    source: {cite: reading1, at: 'p. 172, eq. (7.50)'}
+    origin: slip
+
+  - id: h-construction-x
+    kind: identity
+    where: 'same: -dH/dx = f_y = ax - x^2'
+    formula: -deriv('(y**2/2) - (a*xx**2/2 - xx**3/3)', 'xx', x)
+    equals: a*x - x**2
+    samples: {a: [2, 1.5], x: [0.7, -0.4], y: [1.3, 0.2]}
+    tolerance: 1e-6
+    shown: ['H = \frac{y^2}{2} - \frac{ax^2}{2} + \frac{x^3}{3}']
+    source: {cite: reading1, at: 'p. 172, eq. (7.53)'}
+    origin: mit
+
+  - id: h-second-derivative-center
+    where: 'example: d2H/dx2 = -a + 2x at x = a equals a (p. 173, eq. 7.56)'
+    inputs: {a: 2}
+    formula: -a + 2*a
+    expected: '2'
+    shown: ['both second derivatives are positive ($a$ and 1)']
+    source: {cite: reading1, at: 'p. 173, eq. (7.56)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- double well (worked example, quiz 4, plot)
+  - id: well-curvature-center
+    where: 'double well and quiz 4: d2H/dx2 = -1 + 3x^2 at x = 1'
+    inputs: {x: 1}
+    formula: -1 + 3*x**2
+    expected: '2'
+    shown: ['and $2$ at $x = \pm1$']
+    source: {cite: reading1, at: 'pp. 172-173 (the page''s own example)'}
+    origin: page-own
+
+  - id: well-bottom-energy
+    where: 'double well: H at the centres'
+    inputs: {x: 1}
+    formula: -x**2/2 + x**4/4
+    expected: '-0.25'
+    shown: ['where $H = -\frac14$']
+    source: {cite: reading1, at: 'pp. 172-173 (the page''s own example)'}
+    origin: page-own
+
+  - id: separatrix-shape
+    kind: identity
+    where: 'double well: on H = 0, y^2 = x^2 - x^4/2, i.e. y = x sqrt(1 - x^2/2)'
+    formula: 2*(x**2/2 - x**4/4)
+    equals: (x*sqrt(1 - x**2/2))**2
+    samples: {x: [0.3, 1.0, 1.3]}
+    tolerance: 1e-12
+    shown: ['$y = \pm x\sqrt{1 - x^2/2}$']
+    source: {cite: reading1, at: 'pp. 172-173 (the page''s own example)'}
+    origin: page-own
+
+  - id: separatrix-reach
+    where: 'double well: the separatrix reaches x = sqrt(2); plot caption'
+    inputs: {}
+    formula: sqrt(2)
+    expected: '1.41'
+    shown: ['$x = \pm\sqrt2 = \pm1.41$', 'reaches x = ±1.41']
+    source: {cite: reading1, at: 'pp. 172-173 (the page''s own example)'}
+    origin: page-own

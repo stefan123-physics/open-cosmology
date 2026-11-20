@@ -1,0 +1,235 @@
+# Calculations on content/year-4/8.07/separation-of-variables-cartesian.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 5, "Image Charge Method; Separation of Variables" (handwritten scan),
+# pp. 64-65 (Guth) and pp. 63-5, 63-6 (second hand); the pipe example is Griffiths, Introduction to Electrodynamics,
+# 3rd ed., Example 3.5 (pp. 134-136), which the notes cite without working it. The notes quote no numbers.
+# Page's own example: a grounded pipe of cross-section a = 2.0 cm by b = 1.0 cm with its end at 100 V; potential on the
+# axis (y = a/2, z = b/2). Lengths in the series below are in cm, potentials in volts. Series sums are written out
+# term by term (n, m odd; sign sin(n pi/2) sin(m pi/2)).
+
+page: content/year-4/8.07/separation-of-variables-cartesian.mdx
+calcs:
+  # ---------------------------------------------------------------- the three cases (p. 65)
+  - id: case-exponential
+    kind: identity
+    where: 'list "Three possibilities", case 1: X = exp(-alpha x) has X''''/X = alpha^2 (numerical second derivative); the same for exp(+alpha x)'
+    formula: deriv('exp(-AA*t)', 't', xx, 2)/exp(-AA*xx)
+    equals: AA**2
+    samples: {AA: [1.0, 2.5, 0.4], xx: [0.3, -0.5, 2.0]}
+    tolerance: 1e-5
+    shown: ['$C_1 = \alpha^2 > 0$. Then $X$ is a combination of']
+    source: {cite: reading1, at: 'p. 65'}
+    origin: mit
+
+  - id: case-sinh
+    kind: identity
+    where: 'case 1: sinh(alpha x) also has X''''/X = alpha^2'
+    formula: deriv('sinh(AA*t)', 't', xx, 2)/sinh(AA*xx)
+    equals: AA**2
+    samples: {AA: [1.0, 2.5, 0.4], xx: [0.3, -0.5, 2.0]}
+    tolerance: 1e-5
+    shown: ['or equivalently of $\sinh\alpha x$ and $\cosh\alpha x$']
+    source: {cite: reading1, at: 'p. 65'}
+    origin: mit
+
+  - id: case-sine
+    kind: identity
+    where: 'case 2: X = sin(alpha x) has X''''/X = -alpha^2'
+    formula: deriv('sin(AA*t)', 't', xx, 2)/sin(AA*xx)
+    equals: -AA**2
+    samples: {AA: [1.0, 2.5, 0.4], xx: [0.3, -0.5, 2.0]}
+    tolerance: 1e-5
+    shown: ['$C_1 = -\alpha^2 < 0$. Then $X$ is a combination of']
+    source: {cite: reading1, at: 'p. 65'}
+    origin: mit
+
+  - id: case-line
+    kind: identity
+    where: 'case 3: X = A + B x has X'''' = 0 (checked as X'''' + 1 = 1)'
+    formula: deriv('AA + BB*t', 't', xx, 2) + 1
+    equals: 1
+    samples: {AA: [1.0, -2.0], BB: [0.5, 3.0], xx: [0.3, 2.0]}
+    tolerance: 1e-6
+    shown: ['$C_1 = 0$. Then $X = A + Bx$.']
+    source: {cite: reading1, at: 'p. 65'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the pipe (Griffiths Example 3.5)
+  - id: pipe-mode-laplace
+    kind: identity
+    where: 'formula "The general solution in the pipe": each term exp(-pi sqrt((n/a)^2 + (m/b)^2) x) sin(n pi y/a) sin(m pi z/b) satisfies Laplace''s equation, i.e. C1 + C2 + C3 = 0 (second derivatives divided by the term, plus 1, equals 1)'
+    formula: deriv('exp(-pi*sqrt((nn/aa)**2 + (mm/bb)**2)*t)', 't', xx, 2)/exp(-pi*sqrt((nn/aa)**2 + (mm/bb)**2)*xx) + deriv('sin(nn*pi*t/aa)', 't', yy, 2)/sin(nn*pi*yy/aa) + deriv('sin(mm*pi*t/bb)', 't', zz, 2)/sin(mm*pi*zz/bb) + 1
+    equals: 1
+    samples: {nn: [1, 3, 2], mm: [1, 1, 5], aa: [2.0, 2.0, 1.0], bb: [1.0, 1.0, 3.0], xx: [0.5, 0.2, 0.1], yy: [0.7, 0.3, 0.2], zz: [0.4, 0.3, 0.5]}
+    tolerance: 1e-4
+    shown: ['Then $C_1 = -C_2 - C_3$ is positive']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: pipe-orthogonality
+    kind: identity
+    where: 'text before "The coefficients": the integral of sin(n pi y/a) sin(n'' pi y/a) over 0..a is a/2 if n = n'' and 0 otherwise (checked as integral + 1 with the delta term)'
+    formula: integrate('sin(nn*pi*t/aa)*sin(pp*pi*t/aa)', 't', 0, aa) + 1
+    equals: 1 + ee*aa/2
+    samples: {nn: [1, 2, 3, 3], pp: [1, 3, 3, 5], ee: [1, 0, 1, 0], aa: [2.0, 2.0, 1.0, 1.5]}
+    tolerance: 1e-9
+    shown: ['the orthogonality of the sines picks out one term']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: pipe-coefficients-constant
+    kind: identity
+    where: 'text after "The coefficients": for constant V0, (4/ab) V0 times the two sine integrals is 16 V0/(pi^2 n m) for odd n, m'
+    formula: 4/(aa*bb)*VV*integrate('sin(nn*pi*t/aa)', 't', 0, aa)*integrate('sin(mm*pi*t/bb)', 't', 0, bb)
+    equals: 16*VV/(pi**2*nn*mm)
+    samples: {nn: [1, 3, 5], mm: [1, 1, 3], aa: [2.0, 2.0, 1.5], bb: [1.0, 1.0, 0.7], VV: [100.0, 1.0, 3.0]}
+    tolerance: 1e-9
+    shown: ['$c_{nm} = 16V_0/(\pi^2 nm)$ when $n$ and $m$ are both odd']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: pipe-coefficients-even
+    kind: identity
+    where: 'and zero when n is even (checked as integral + 1)'
+    formula: integrate('sin(nn*pi*t/aa)', 't', 0, aa) + 1
+    equals: 1
+    samples: {nn: [2, 4], aa: [2.0, 1.0]}
+    tolerance: 1e-9
+    shown: ['and zero otherwise. By the uniqueness theorem']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: the pipe 2.0 cm x 1.0 cm at 100 V
+  - id: ex-first-coefficient
+    where: 'worked example "The terms at the centre": 16 x 100 V/pi^2'
+    inputs: {V0: 100 V}
+    formula: 16*V0/pi**2
+    expected: 162.1 V
+    shown: ['V $\approx 162.1$ V']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-first-rate
+    where: 'worked example: decay rate of the first term, pi sqrt(1/4 + 1), per cm'
+    formula: pi*sqrt(1/4 + 1)
+    expected: '3.51'
+    shown: ['$\pi\sqrt{1/4 + 1} \approx 3.51$ per cm']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-first-term
+    where: 'worked example: first term at x = 1.0 cm'
+    formula: (1600/pi**2)*exp(-pi*sqrt(1/4 + 1)*1.0)
+    expected: '4.84'
+    shown: ['about 4.84 V']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-term-31
+    where: 'worked example "The next terms": n = 3, m = 1 term at the centre, x = 1.0 cm (sign sin(3 pi/2) = -1)'
+    formula: -(1600/pi**2)/3*exp(-pi*sqrt(9/4 + 1)*1.0)
+    expected: '-0.19'
+    shown: ['it contributes about $-0.19$ V']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-term-13
+    where: 'worked example: n = 1, m = 3 term at the centre, x = 1.0 cm'
+    formula: -(1600/pi**2)/3*exp(-pi*sqrt(1/4 + 9)*1.0)
+    expected: '-0.004'
+    shown: ['contributes only about $-0.004$ V']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-sum
+    where: 'worked example: the series at the centre, x = 1.0 cm (n, m = 1, 3, 5; the terms left out are below 3e-4 V)'
+    formula: (1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*1.0)/1 - exp(-pi*sqrt(1/4 + 9)*1.0)/3 + exp(-pi*sqrt(1/4 + 25)*1.0)/5 - exp(-pi*sqrt(9/4 + 1)*1.0)/3 + exp(-pi*sqrt(9/4 + 9)*1.0)/9 - exp(-pi*sqrt(9/4 + 25)*1.0)/15 + exp(-pi*sqrt(25/4 + 1)*1.0)/5 - exp(-pi*sqrt(25/4 + 9)*1.0)/15 + exp(-pi*sqrt(25/4 + 25)*1.0)/25)
+    expected: '4.65'
+    shown: ['Summing the series gives about 4.65 V']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-decay-length
+    where: 'worked example "How far it reaches": 1/(pi sqrt(1/4 + 1)) cm'
+    formula: 1/(pi*sqrt(1/4 + 1))
+    expected: '0.285'
+    shown: ['about 0.285 cm. Within']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: ex-at-2cm
+    where: 'worked example: the potential on the axis at x = 2 cm (first two terms; the rest are far smaller)'
+    formula: (1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*2.0) - exp(-pi*sqrt(9/4 + 1)*2.0)/3 - exp(-pi*sqrt(1/4 + 9)*2.0)/3)
+    expected: '0.14'
+    shown: ['at 2 cm it is down to about 0.14 V']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: plot-truncation
+    where: 'plot caption: at x = 0.25 cm the sixteen terms n, m = 1, 3, 5, 7 differ from the sum up to n, m = 15 by less than 1% (per cent shown; about 0.58)'
+    formula: 100*abs((1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*0.25)/1 - exp(-pi*sqrt(1/4 + 9)*0.25)/3 + exp(-pi*sqrt(1/4 + 25)*0.25)/5 - exp(-pi*sqrt(1/4 + 49)*0.25)/7 + exp(-pi*sqrt(1/4 + 81)*0.25)/9 - exp(-pi*sqrt(1/4 + 121)*0.25)/11 + exp(-pi*sqrt(1/4 + 169)*0.25)/13 - exp(-pi*sqrt(1/4 + 225)*0.25)/15 - exp(-pi*sqrt(9/4 + 1)*0.25)/3 + exp(-pi*sqrt(9/4 + 9)*0.25)/9 - exp(-pi*sqrt(9/4 + 25)*0.25)/15 + exp(-pi*sqrt(9/4 + 49)*0.25)/21 - exp(-pi*sqrt(9/4 + 81)*0.25)/27 + exp(-pi*sqrt(9/4 + 121)*0.25)/33 - exp(-pi*sqrt(9/4 + 169)*0.25)/39 + exp(-pi*sqrt(9/4 + 225)*0.25)/45 + exp(-pi*sqrt(25/4 + 1)*0.25)/5 - exp(-pi*sqrt(25/4 + 9)*0.25)/15 + exp(-pi*sqrt(25/4 + 25)*0.25)/25 - exp(-pi*sqrt(25/4 + 49)*0.25)/35 + exp(-pi*sqrt(25/4 + 81)*0.25)/45 - exp(-pi*sqrt(25/4 + 121)*0.25)/55 + exp(-pi*sqrt(25/4 + 169)*0.25)/65 - exp(-pi*sqrt(25/4 + 225)*0.25)/75 - exp(-pi*sqrt(49/4 + 1)*0.25)/7 + exp(-pi*sqrt(49/4 + 9)*0.25)/21 - exp(-pi*sqrt(49/4 + 25)*0.25)/35 + exp(-pi*sqrt(49/4 + 49)*0.25)/49 - exp(-pi*sqrt(49/4 + 81)*0.25)/63 + exp(-pi*sqrt(49/4 + 121)*0.25)/77 - exp(-pi*sqrt(49/4 + 169)*0.25)/91 + exp(-pi*sqrt(49/4 + 225)*0.25)/105 + exp(-pi*sqrt(81/4 + 1)*0.25)/9 - exp(-pi*sqrt(81/4 + 9)*0.25)/27 + exp(-pi*sqrt(81/4 + 25)*0.25)/45 - exp(-pi*sqrt(81/4 + 49)*0.25)/63 + exp(-pi*sqrt(81/4 + 81)*0.25)/81 - exp(-pi*sqrt(81/4 + 121)*0.25)/99 + exp(-pi*sqrt(81/4 + 169)*0.25)/117 - exp(-pi*sqrt(81/4 + 225)*0.25)/135 - exp(-pi*sqrt(121/4 + 1)*0.25)/11 + exp(-pi*sqrt(121/4 + 9)*0.25)/33 - exp(-pi*sqrt(121/4 + 25)*0.25)/55 + exp(-pi*sqrt(121/4 + 49)*0.25)/77 - exp(-pi*sqrt(121/4 + 81)*0.25)/99 + exp(-pi*sqrt(121/4 + 121)*0.25)/121 - exp(-pi*sqrt(121/4 + 169)*0.25)/143 + exp(-pi*sqrt(121/4 + 225)*0.25)/165 + exp(-pi*sqrt(169/4 + 1)*0.25)/13 - exp(-pi*sqrt(169/4 + 9)*0.25)/39 + exp(-pi*sqrt(169/4 + 25)*0.25)/65 - exp(-pi*sqrt(169/4 + 49)*0.25)/91 + exp(-pi*sqrt(169/4 + 81)*0.25)/117 - exp(-pi*sqrt(169/4 + 121)*0.25)/143 + exp(-pi*sqrt(169/4 + 169)*0.25)/169 - exp(-pi*sqrt(169/4 + 225)*0.25)/195 - exp(-pi*sqrt(225/4 + 1)*0.25)/15 + exp(-pi*sqrt(225/4 + 9)*0.25)/45 - exp(-pi*sqrt(225/4 + 25)*0.25)/75 + exp(-pi*sqrt(225/4 + 49)*0.25)/105 - exp(-pi*sqrt(225/4 + 81)*0.25)/135 + exp(-pi*sqrt(225/4 + 121)*0.25)/165 - exp(-pi*sqrt(225/4 + 169)*0.25)/195 + exp(-pi*sqrt(225/4 + 225)*0.25)/225) - (1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*0.25)/1 - exp(-pi*sqrt(1/4 + 9)*0.25)/3 + exp(-pi*sqrt(1/4 + 25)*0.25)/5 - exp(-pi*sqrt(1/4 + 49)*0.25)/7 - exp(-pi*sqrt(9/4 + 1)*0.25)/3 + exp(-pi*sqrt(9/4 + 9)*0.25)/9 - exp(-pi*sqrt(9/4 + 25)*0.25)/15 + exp(-pi*sqrt(9/4 + 49)*0.25)/21 + exp(-pi*sqrt(25/4 + 1)*0.25)/5 - exp(-pi*sqrt(25/4 + 9)*0.25)/15 + exp(-pi*sqrt(25/4 + 25)*0.25)/25 - exp(-pi*sqrt(25/4 + 49)*0.25)/35 - exp(-pi*sqrt(49/4 + 1)*0.25)/7 + exp(-pi*sqrt(49/4 + 9)*0.25)/21 - exp(-pi*sqrt(49/4 + 25)*0.25)/35 + exp(-pi*sqrt(49/4 + 49)*0.25)/49))/((1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*0.25)/1 - exp(-pi*sqrt(1/4 + 9)*0.25)/3 + exp(-pi*sqrt(1/4 + 25)*0.25)/5 - exp(-pi*sqrt(1/4 + 49)*0.25)/7 + exp(-pi*sqrt(1/4 + 81)*0.25)/9 - exp(-pi*sqrt(1/4 + 121)*0.25)/11 + exp(-pi*sqrt(1/4 + 169)*0.25)/13 - exp(-pi*sqrt(1/4 + 225)*0.25)/15 - exp(-pi*sqrt(9/4 + 1)*0.25)/3 + exp(-pi*sqrt(9/4 + 9)*0.25)/9 - exp(-pi*sqrt(9/4 + 25)*0.25)/15 + exp(-pi*sqrt(9/4 + 49)*0.25)/21 - exp(-pi*sqrt(9/4 + 81)*0.25)/27 + exp(-pi*sqrt(9/4 + 121)*0.25)/33 - exp(-pi*sqrt(9/4 + 169)*0.25)/39 + exp(-pi*sqrt(9/4 + 225)*0.25)/45 + exp(-pi*sqrt(25/4 + 1)*0.25)/5 - exp(-pi*sqrt(25/4 + 9)*0.25)/15 + exp(-pi*sqrt(25/4 + 25)*0.25)/25 - exp(-pi*sqrt(25/4 + 49)*0.25)/35 + exp(-pi*sqrt(25/4 + 81)*0.25)/45 - exp(-pi*sqrt(25/4 + 121)*0.25)/55 + exp(-pi*sqrt(25/4 + 169)*0.25)/65 - exp(-pi*sqrt(25/4 + 225)*0.25)/75 - exp(-pi*sqrt(49/4 + 1)*0.25)/7 + exp(-pi*sqrt(49/4 + 9)*0.25)/21 - exp(-pi*sqrt(49/4 + 25)*0.25)/35 + exp(-pi*sqrt(49/4 + 49)*0.25)/49 - exp(-pi*sqrt(49/4 + 81)*0.25)/63 + exp(-pi*sqrt(49/4 + 121)*0.25)/77 - exp(-pi*sqrt(49/4 + 169)*0.25)/91 + exp(-pi*sqrt(49/4 + 225)*0.25)/105 + exp(-pi*sqrt(81/4 + 1)*0.25)/9 - exp(-pi*sqrt(81/4 + 9)*0.25)/27 + exp(-pi*sqrt(81/4 + 25)*0.25)/45 - exp(-pi*sqrt(81/4 + 49)*0.25)/63 + exp(-pi*sqrt(81/4 + 81)*0.25)/81 - exp(-pi*sqrt(81/4 + 121)*0.25)/99 + exp(-pi*sqrt(81/4 + 169)*0.25)/117 - exp(-pi*sqrt(81/4 + 225)*0.25)/135 - exp(-pi*sqrt(121/4 + 1)*0.25)/11 + exp(-pi*sqrt(121/4 + 9)*0.25)/33 - exp(-pi*sqrt(121/4 + 25)*0.25)/55 + exp(-pi*sqrt(121/4 + 49)*0.25)/77 - exp(-pi*sqrt(121/4 + 81)*0.25)/99 + exp(-pi*sqrt(121/4 + 121)*0.25)/121 - exp(-pi*sqrt(121/4 + 169)*0.25)/143 + exp(-pi*sqrt(121/4 + 225)*0.25)/165 + exp(-pi*sqrt(169/4 + 1)*0.25)/13 - exp(-pi*sqrt(169/4 + 9)*0.25)/39 + exp(-pi*sqrt(169/4 + 25)*0.25)/65 - exp(-pi*sqrt(169/4 + 49)*0.25)/91 + exp(-pi*sqrt(169/4 + 81)*0.25)/117 - exp(-pi*sqrt(169/4 + 121)*0.25)/143 + exp(-pi*sqrt(169/4 + 169)*0.25)/169 - exp(-pi*sqrt(169/4 + 225)*0.25)/195 - exp(-pi*sqrt(225/4 + 1)*0.25)/15 + exp(-pi*sqrt(225/4 + 9)*0.25)/45 - exp(-pi*sqrt(225/4 + 25)*0.25)/75 + exp(-pi*sqrt(225/4 + 49)*0.25)/105 - exp(-pi*sqrt(225/4 + 81)*0.25)/135 + exp(-pi*sqrt(225/4 + 121)*0.25)/165 - exp(-pi*sqrt(225/4 + 169)*0.25)/195 + exp(-pi*sqrt(225/4 + 225)*0.25)/225))
+    expected: '0.5'
+    tolerance: '0.5'
+    shown: ['the terms left out change it by less than 1%']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: plot-first-term
+    where: 'plot caption: at x = 1 cm the first term alone exceeds the series by about 4% (per cent)'
+    formula: 100*((1600/pi**2)*exp(-pi*sqrt(1/4 + 1)*1.0) - (1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*1.0)/1 - exp(-pi*sqrt(1/4 + 9)*1.0)/3 + exp(-pi*sqrt(1/4 + 25)*1.0)/5 - exp(-pi*sqrt(1/4 + 49)*1.0)/7 - exp(-pi*sqrt(9/4 + 1)*1.0)/3 + exp(-pi*sqrt(9/4 + 9)*1.0)/9 - exp(-pi*sqrt(9/4 + 25)*1.0)/15 + exp(-pi*sqrt(9/4 + 49)*1.0)/21 + exp(-pi*sqrt(25/4 + 1)*1.0)/5 - exp(-pi*sqrt(25/4 + 9)*1.0)/15 + exp(-pi*sqrt(25/4 + 25)*1.0)/25 - exp(-pi*sqrt(25/4 + 49)*1.0)/35 - exp(-pi*sqrt(49/4 + 1)*1.0)/7 + exp(-pi*sqrt(49/4 + 9)*1.0)/21 - exp(-pi*sqrt(49/4 + 25)*1.0)/35 + exp(-pi*sqrt(49/4 + 49)*1.0)/49))/((1600/pi**2)*(exp(-pi*sqrt(1/4 + 1)*1.0)/1 - exp(-pi*sqrt(1/4 + 9)*1.0)/3 + exp(-pi*sqrt(1/4 + 25)*1.0)/5 - exp(-pi*sqrt(1/4 + 49)*1.0)/7 - exp(-pi*sqrt(9/4 + 1)*1.0)/3 + exp(-pi*sqrt(9/4 + 9)*1.0)/9 - exp(-pi*sqrt(9/4 + 25)*1.0)/15 + exp(-pi*sqrt(9/4 + 49)*1.0)/21 + exp(-pi*sqrt(25/4 + 1)*1.0)/5 - exp(-pi*sqrt(25/4 + 9)*1.0)/15 + exp(-pi*sqrt(25/4 + 25)*1.0)/25 - exp(-pi*sqrt(25/4 + 49)*1.0)/35 - exp(-pi*sqrt(49/4 + 1)*1.0)/7 + exp(-pi*sqrt(49/4 + 9)*1.0)/21 - exp(-pi*sqrt(49/4 + 25)*1.0)/35 + exp(-pi*sqrt(49/4 + 49)*1.0)/49))
+    expected: '4'
+    shown: ['within about 4% of the series at x = 1 cm']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- classification (p. 63-5) and quizzes
+  - id: quiz-classify
+    kind: identity
+    where: 'quiz 2: A = 4, B = 4, C = 1 give B^2 - 4AC = 0 (checked as + 1)'
+    formula: 4**2 - 4*4*1 + 1
+    equals: 1
+    samples: {kk: [1]}
+    tolerance: 1e-12
+    shown: ['$B^2 - 4AC = 16 - 16 = 0$']
+    source: {cite: reading1, at: 'p. 63-5'}
+    origin: page-own
+
+  - id: quiz-decay-length
+    where: 'quiz 3: 1/(pi sqrt(1/a^2 + 1/b^2)) for a = 2.0 cm, b = 1.0 cm, in cm'
+    formula: 1/(pi*sqrt(1/2.0**2 + 1/1.0**2))
+    expected: '0.285'
+    quiz: 2
+    shown: ['"About 0.285 cm"']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: quiz-rate
+    where: 'quiz 3 explanation: pi sqrt(0.25 + 1) per cm'
+    formula: pi*sqrt(0.25 + 1)
+    expected: '3.51'
+    shown: ['per cm $\\approx 3.51$ per cm']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: quiz-a-over-pi
+    where: 'quiz 3 distractor: a/pi with a = 2.0 cm'
+    formula: 2.0/pi
+    expected: '0.637'
+    shown: ['"About 0.637 cm"']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: quiz-b-over-pi
+    where: 'quiz 3 distractor: b/pi with b = 1.0 cm'
+    formula: 1.0/pi
+    expected: '0.318'
+    shown: ['"About 0.318 cm"']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own
+
+  - id: quiz-half
+    where: 'quiz 3 distractor: half the right answer'
+    formula: 0.5/(pi*sqrt(1/2.0**2 + 1/1.0**2))
+    expected: '0.142'
+    shown: ['"About 0.142 cm"']
+    source: {cite: griffiths, at: 'Example 3.5'}
+    origin: page-own

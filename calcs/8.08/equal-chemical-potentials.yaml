@@ -1,0 +1,599 @@
+# Calculations on content/year-4/8.08/equal-chemical-potentials.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005, Wen) Lecture Notes, Chapter IV "Grand Canonical Ensemble" (handwritten scan). Page
+# numbers are Wen's handwritten numbers, top right (pp. 28-35; the PDF has them in the order 28, 30, 29, 31-35): this page
+# covers pp. 31-35, point 4 (a) to (d).
+# Wen's own numbers (origin: mit): O2 at 300 K, g m/k_B T = 1.3e-4 per metre and e^-1.3 = 0.27 at 10 km (p. 32);
+# 2H = H2 + 436 kJ/mol at 1 atm and 300 K in cgs units with his constants k_B = 1.38e-16 erg/K, m_p = 1.68e-24 g,
+# 1 atm = 1e6 dyn/cm^2 (p. 35). Here hbar = 1.0546e-27 erg s and 1 eV = 1.602e-12 erg.
+# Page's own examples: the O2/N2 ratio at 10 km (Wen's open question), a UF6 centrifuge, adsorption of N2 on sites with
+# eps0 = -0.5 eV, the Saha equation at n = 1e9 m^-3, the 1D Ising wall densities, the quizzes.
+# Constants: k_B, hbar (exact 2019 SI); 1 u = 1.66053907e-27 kg, m_e = 9.1093837e-31 kg (CODATA 2018), g = 9.80665 m/s^2.
+
+page: content/year-4/8.08/equal-chemical-potentials.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations (pp. 31-35)
+  - id: mu-ideal-gas
+    kind: identity
+    where: 'formula "Chemical potential of an ideal gas": d/dN of N kT (ln(N lam^3/V) - 1) equals kT ln(n lam^3)'
+    formula: deriv('TT*x*(log(x*lam**3/VV) - 1)', 'x', NN)
+    equals: TT*log(NN/VV*lam**3)
+    samples: {TT: [1.0, 2.0], NN: [10.0, 300.0], VV: [50.0, 1000.0], lam: [0.2, 0.7]}
+    tolerance: 1e-5
+    shown: ['= k_BT\left[\ln(n_1\lambda^3) - 1\right] + k_BT']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: mit
+
+  - id: omega-ideal-gas
+    kind: identity
+    where: 'formula "Omega of the ideal gas": N kT (mu/kT - 1) - mu N = -N kT = -kT (V/lam^3) e^(mu/kT) with N = (V/lam^3) e^(mu/kT)'
+    formula: (VV/lam**3*exp(mu/TT))*TT*(mu/TT - 1) - mu*(VV/lam**3*exp(mu/TT))
+    equals: -TT*VV/lam**3*exp(mu/TT)
+    samples: {TT: [1.0, 2.0], VV: [50.0, 1000.0], lam: [0.2, 0.7], mu: [-3.0, -0.5]}
+    tolerance: 1e-9
+    shown: ['= -Nk_BT = -k_BT\,\frac{V}{\lambda^3}\,e^{\mu/k_BT}']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: mit
+
+  - id: region-2-density
+    kind: identity
+    where: 'formula "Region 2": mu = kT ln(n2 lam^3) + V0 solved for n2 gives e^((mu - V0)/kT)/lam^3, and n2/n1 = e^(-V0/kT)'
+    formula: (exp((mu - V0)/TT)/lam**3)/(exp(mu/TT)/lam**3)
+    equals: exp(-V0/TT)
+    samples: {TT: [1.0, 2.0], lam: [0.2, 0.7], mu: [-3.0, -0.5], V0: [0.3, 2.0]}
+    tolerance: 1e-12
+    shown: ['\frac{n_2}{n_1} = e^{-V_0/k_BT}']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: mit
+
+  - id: site-occupation
+    kind: identity
+    where: 'formula "Fraction of sites filled": e^(-(e0 - mu)/kT)/(1 + same) = 1/(1 + (kT/(lam^3 P)) e^(e0/kT)) with mu = kT ln(P lam^3/kT)'
+    formula: exp(-(e0 - TT*log(PP*lam**3/TT))/TT)/(1 + exp(-(e0 - TT*log(PP*lam**3/TT))/TT))
+    equals: 1/(1 + TT/(lam**3*PP)*exp(e0/TT))
+    samples: {TT: [1.0, 2.0], lam: [0.2, 0.7], PP: [0.5, 30.0], e0: [-3.0, 0.5]}
+    tolerance: 1e-9
+    shown: ['= \frac{1}{1 + \frac{k_BT}{\lambda^3P}\,e^{\epsilon_0/k_BT}}']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: mit
+
+  - id: reaction-minimum
+    kind: identity
+    where: 'formula "Equilibrium of a reaction": for A_tot = A_H(N_H) + A_H2(N_H2) with N_H = N0 - 2 s, N_H2 = s, dA_tot/ds = 0 at the s where 2 mu_H - mu_H2 = 0 (kT = 1, V = 1, lam = 1, eps_H = 0, eps_H2 = -e0): check that at the mass-action solution the derivative vanishes'
+    formula: deriv('(N0 - 2*x)*(log(N0 - 2*x) - 1) + x*(log(x/c2) - 1) - x*e0', 'x', ss)
+    equals: (-2*log(N0 - 2*ss) + log(ss/c2) - e0)
+    samples: {N0: [10.0, 4.0], ss: [2.0, 1.2], c2: [1.0, 0.3536], e0: [1.0, 3.0]}
+    tolerance: 1e-5
+    shown: ['\delta A_{\text{tot}} = \sum_i\delta N_i\,\frac{\partial A_i}{\partial N_i} = 0']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: lambda-H2-ratio
+    kind: identity
+    where: 'formula "Atoms and molecules of hydrogen": lam_H2^3/lam_H^6 with lam_H2 = lam_H/sqrt(2) equals 1/(2^(3/2) lam_H^3)'
+    formula: (lam/sqrt(2))**3/lam**6
+    equals: 1/(2**1.5*lam**3)
+    samples: {lam: [0.3, 1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['\frac{1}{\left(2\pi\hbar^2/mk_BT\right)^{3/2}}\cdot\frac{1}{2^{3/2}}']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: mit
+
+  # ---------------------------------------------------------------- atmosphere (p. 32)
+  - id: wen-O2-rate
+    where: 'section "The atmosphere": Wen, g m_O2/k_B(300 K) per metre (32 u)'
+    inputs: {g: 9.80665 m/s**2, m: 5.31373e-26 kg, T: 300 K}
+    formula: g*m/(k_B*T)
+    expected: 1.3e-4 1/m
+    shown: ['$gm_{\text{O}_2}/k_B(300\text{ K}) = 1.3 \times 10^{-4}$ per metre']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: mit
+
+  - id: wen-O2-rate-km
+    where: 'section "The atmosphere": the same per km'
+    inputs: {g: 9.80665 m/s**2, m: 5.31373e-26 kg, T: 300 K, L: 1000 m}
+    formula: g*m*L/(k_B*T)
+    expected: '0.13'
+    shown: ['or 0.13 per km']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: mit
+
+  - id: wen-O2-ratio
+    where: 'section "The atmosphere": Wen, e^-1.3 at 10 km'
+    inputs: {}
+    formula: exp(-1.3)
+    expected: '0.27'
+    shown: ['$e^{-1.3} = 0.27$ of its value']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: mit
+
+  - id: O2-rate-unrounded
+    where: 'section "The atmosphere": unrounded rate'
+    inputs: {g: 9.80665 m/s**2, m: 5.31373e-26 kg, T: 300 K}
+    formula: g*m/(k_B*T)
+    expected: 1.26e-4 1/m
+    shown: ['the rate is $1.26 \times 10^{-4}$ per metre and the ratio 0.28']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: page-own
+
+  - id: O2-ratio-unrounded
+    where: 'section "The atmosphere": unrounded ratio at 10 km'
+    inputs: {g: 9.80665 m/s**2, m: 5.31373e-26 kg, T: 300 K, h: 10000 m}
+    formula: exp(-g*m*h/(k_B*T))
+    expected: '0.28'
+    shown: ['per metre and the ratio 0.28']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: page-own
+
+  - id: O2-N2-factor
+    where: 'section "The atmosphere": e^(-(m_O2 - m_N2) g h/kT) with 4 u, 10 km, 300 K'
+    inputs: {g: 9.80665 m/s**2, dm: 6.64216e-27 kg, T: 300 K, h: 10000 m}
+    formula: exp(-dm*g*h/(k_B*T))
+    expected: '0.85'
+    shown: ['that factor is 0.85 at 10 km, giving 0.21']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: page-own
+
+  - id: O2-N2-ratio
+    where: 'section "The atmosphere": (1/4) times that factor'
+    inputs: {g: 9.80665 m/s**2, dm: 6.64216e-27 kg, T: 300 K, h: 10000 m}
+    formula: 0.25*exp(-dm*g*h/(k_B*T))
+    expected: '0.21'
+    shown: ['at 10 km, giving 0.21']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: page-own
+
+  - id: homosphere
+    kind: fact
+    where: 'section "The atmosphere": turbulent mixing keeps the composition uniform up to the turbopause, about 100 km'
+    value: '100 km'
+    shown: ['keep the air mixed up to about 100 km']
+    source: {ref: 'Standard atmospheric science: the homosphere extends to the turbopause at about 100 km'}
+    origin: later-data
+
+  # ---------------------------------------------------------------- worked example: centrifuge
+  - id: cf-heavy
+    where: 'worked example, step "Each isotope separately": m v^2/2kT for 352 u at 600 m/s, 300 K'
+    inputs: {m: 5.84510e-25 kg, v: 600 m/s, T: 300 K}
+    formula: m*v**2/(2*k_B*T)
+    expected: '25.4'
+    shown: ['/(2 \times 4.142 \times 10^{-21}) = 25.4$']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: page-own
+
+  - id: cf-heavy-exp
+    where: 'worked example: e^25.4 is about 1e11'
+    inputs: {}
+    formula: exp(25.4)
+    expected: '1e11'
+    tolerance: 50%
+    shown: ['$e^{25.4} \approx 10^{11}$ times']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: page-own
+
+  - id: cf-dm
+    where: 'worked example, step "The ratio": Delta m v^2/2kT with Delta m = 3 u'
+    inputs: {m: 4.98162e-27 kg, v: 600 m/s, T: 300 K}
+    formula: m*v**2/(2*k_B*T)
+    expected: '0.216'
+    shown: ['$\Delta m\,v^2/2k_BT = 0.216$']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: page-own
+
+  - id: cf-factor
+    where: 'worked example: e^0.216'
+    inputs: {m: 4.98162e-27 kg, v: 600 m/s, T: 300 K}
+    formula: exp(m*v**2/(2*k_B*T))
+    expected: '1.24'
+    shown: ['so the factor is $e^{0.216} = 1.24$']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: page-own
+
+  - id: cf-percent
+    where: 'worked example: enrichment in per cent'
+    inputs: {m: 4.98162e-27 kg, v: 600 m/s, T: 300 K}
+    formula: 100*(exp(m*v**2/(2*k_B*T)) - 1)
+    expected: '24'
+    shown: ['enriched in ²³⁵U by 24% relative to the wall']
+    source: {cite: reading1, at: 'p. 31, point 4a'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- adsorption plot (N2, eps0 = -0.5 eV)
+  - id: P0-300
+    where: 'adsorption plot: P0 = (kT/lam^3) e^(eps0/kT) at 300 K, N2 (28 u), eps0 = -0.5 eV'
+    inputs: {m: 4.64951e-26 kg, T: 300 K, e0: -0.5 eV}
+    formula: k_B*T/sqrt(2*pi*hbar**2/(m*k_B*T))**3*exp(e0/(k_B*T))
+    expected: 2.39 kPa
+    shown: ['is 2.39 kPa at 300 K']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: page-own
+
+  - id: P0-300-plot
+    where: 'adsorption plot expression x/(x + 2.388), P0 in kPa at 300 K'
+    inputs: {m: 4.64951e-26 kg, T: 300 K, e0: -0.5 eV}
+    formula: k_B*T/sqrt(2*pi*hbar**2/(m*k_B*T))**3*exp(e0/(k_B*T))
+    expected: 2.388 kPa
+    shown: ['{ expr: "x/(x + 2.388)", label: "300 K" }']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: page-own
+
+  - id: P0-350
+    where: 'adsorption plot: P0 at 350 K'
+    inputs: {m: 4.64951e-26 kg, T: 350 K, e0: -0.5 eV}
+    formula: k_B*T/sqrt(2*pi*hbar**2/(m*k_B*T))**3*exp(e0/(k_B*T))
+    expected: 55.6 kPa
+    shown: ['and 55.6 kPa at 350 K']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: page-own
+
+  - id: P0-350-plot
+    where: 'adsorption plot expression x/(x + 55.63)'
+    inputs: {m: 4.64951e-26 kg, T: 350 K, e0: -0.5 eV}
+    formula: k_B*T/sqrt(2*pi*hbar**2/(m*k_B*T))**3*exp(e0/(k_B*T))
+    expected: 55.63 kPa
+    shown: ['{ expr: "x/(x + 55.63)", label: "350 K", dash: true }']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: page-own
+
+  - id: cover-300
+    where: 'adsorption plot caption: coverage at 101325 Pa and 300 K in per cent'
+    inputs: {P: 101.325 kPa, P0: 2.388 kPa}
+    formula: 100*P/(P + P0)
+    expected: '98'
+    shown: ['98% of the sites are filled at 300 K']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: page-own
+
+  - id: cover-350
+    where: 'adsorption plot caption: coverage at 101325 Pa and 350 K in per cent'
+    inputs: {P: 101.325 kPa, P0: 55.63 kPa}
+    formula: 100*P/(P + P0)
+    expected: '65'
+    shown: ['but only 65% at 350 K']
+    source: {cite: reading1, at: 'pp. 32-33, point 4b'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Wen's hydrogen numbers (p. 35, cgs)
+  - id: wen-eps0-erg
+    where: 'Wen: 436 kJ/mol per molecule in erg (N_A = 6.022e23)'
+    inputs: {}
+    formula: 436e3/6.022e23*1e7
+    expected: '7.24e-12'
+    shown: ['$\epsilon_0 = 7.24 \times 10^{-12}$ erg $= 4.5$ eV']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: wen-eps0-eV
+    where: 'Wen: the same in eV'
+    inputs: {}
+    formula: 436e3/6.022e23/1.602e-19
+    expected: '4.5'
+    shown: ['erg $= 4.5$ eV per molecule']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: wen-atm
+    where: 'Wen: 1 atm = 10.1 N/cm^2'
+    inputs: {}
+    formula: 101325/1e4
+    expected: '10.1'
+    shown: ['($10.1$ N/cm², about $10^6$ dyn/cm²)']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: wen-nH2
+    where: 'Wen: n_H2 = P/k_B T with P = 1e6 dyn/cm^2, k_B = 1.38e-16 erg/K, T = 300 K, in cm^-3'
+    inputs: {}
+    formula: 1e6/(1.38e-16*300)
+    expected: '2.4e19'
+    shown: ['$n_{\text{H}_2} = P/k_BT = 2.4 \times 10^{19}$ cm⁻³']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: wen-eps-over-kT
+    where: 'Wen: eps0/k_B T rounded to 175'
+    inputs: {}
+    formula: 436e3/6.022e23*1e7/(1.38e-16*300)
+    expected: '175'
+    tolerance: 0.5
+    shown: ['With $\epsilon_0/k_BT = 175$']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: eps-over-kT-unrounded
+    where: 'remark: unrounded eps0/kT = 174.9'
+    inputs: {}
+    formula: 436e3/6.022e23*1e7/(1.38e-16*300)
+    expected: '174.9'
+    shown: ['(Rounding $\epsilon_0/k_BT = 174.9$ to 175']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: page-own
+
+  - id: wen-prefactor
+    where: 'Wen: (m kT/2 pi hbar^2)^(3/2)/2^(3/2) in cm^-3 with m = 1.68e-24 g, hbar = 1.0546e-27 erg s'
+    inputs: {}
+    formula: (1.68e-24*1.38e-16*300/(2*pi*1.0546e-27**2))**1.5/2**1.5
+    expected: '3.5e23'
+    shown: ['= 3.5\times10^{23}\ \text{cm}^{-3}\,e^{-175}']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: wen-ratio
+    where: 'Wen: 3.5e23 e^-175 in cm^-3'
+    inputs: {}
+    formula: (1.68e-24*1.38e-16*300/(2*pi*1.0546e-27**2))**1.5/2**1.5*exp(-175)
+    expected: '3.5e-53'
+    shown: ['= 3.5\times10^{-53}\ \text{cm}^{-3}, \qquad']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: wen-nH
+    where: 'Wen: n_H = sqrt(2.4e19 x 3.5e-53) cm^-3'
+    inputs: {}
+    formula: sqrt(2.4e19*3.5e-53)
+    expected: '2.9e-17'
+    shown: ['\ \text{cm}^{-3} = 2.9\times10^{-17}\ \text{cm}^{-3}']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: mit
+
+  - id: nH-volume
+    where: 'text: one atom per 1/n_H cm^3'
+    inputs: {}
+    formula: 1/2.9e-17
+    expected: '3.4e16'
+    shown: ['one free atom in about $3.4 \times 10^{16}$ cm³']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: page-own
+
+  - id: nH-cube
+    where: 'text: side of a cube of 3.4e16 cm^3 in km (more than 3 km)'
+    inputs: {}
+    formula: (3.4e16*1e-6)**(1/3)/1e3
+    expected: '3.2'
+    shown: ['a cube more than 3 km on a side']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: page-own
+
+  - id: ratio-unrounded
+    where: 'remark: n_H^2/n_H2 with the unrounded exponent'
+    inputs: {}
+    formula: (1.68e-24*1.38e-16*300/(2*pi*1.0546e-27**2))**1.5/2**1.5*exp(-436e3/6.022e23*1e7/(1.38e-16*300))
+    expected: '3.9e-53'
+    shown: ['smaller than the unrounded $3.9 \times 10^{-53}$ cm⁻³']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: page-own
+
+  - id: rounding-percent
+    where: 'remark: 1 - e^-(175 - 174.88) in per cent'
+    inputs: {}
+    formula: 100*(1 - exp(-(175 - 436e3/6.022e23*1e7/(1.38e-16*300))))
+    expected: '11'
+    shown: ['makes the result 11% smaller']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: page-own
+
+  - id: nH-unrounded
+    where: 'remark: n_H with the unrounded exponent'
+    inputs: {}
+    formula: sqrt(1e6/(1.38e-16*300)*(1.68e-24*1.38e-16*300/(2*pi*1.0546e-27**2))**1.5/2**1.5*exp(-436e3/6.022e23*1e7/(1.38e-16*300)))
+    expected: '3.1e-17'
+    shown: ['$n_{\text{H}}$ becomes $3.1 \times 10^{-17}$ cm⁻³']
+    source: {cite: reading1, at: 'p. 35, point 4c'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: Saha, n = 1e9 m^-3
+  - id: saha-rhs-3500
+    where: 'worked example, step "The numbers": e^(-13.6 eV/kT)/(n lam_e^3) at 3500 K'
+    inputs: {me: 9.1093837e-31 kg, T: 3500 K, n: 1e9 1/m**3, X: 13.6 eV}
+    formula: (me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n
+    expected: '0.0131'
+    shown: ['At 3,500 K the right side is 0.0131']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-x-3500
+    where: 'worked example: x from x^2/(1 - x) = R at 3500 K'
+    inputs: {me: 9.1093837e-31 kg, T: 3500 K, n: 1e9 1/m**3, X: 13.6 eV}
+    formula: (-(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n + sqrt(((me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n)**2 + 4*(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n))/2
+    expected: '0.11'
+    shown: ['so $x = 0.11$']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-rhs-4000
+    where: 'worked example: right side at 4000 K'
+    inputs: {me: 9.1093837e-31 kg, T: 4000 K, n: 1e9 1/m**3, X: 13.6 eV}
+    formula: (me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n
+    expected: '4.47'
+    shown: ['at 4,000 K it is 4.47 and $x = 0.84$']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-x-4000
+    where: 'worked example: x at 4000 K'
+    inputs: {me: 9.1093837e-31 kg, T: 4000 K, n: 1e9 1/m**3, X: 13.6 eV}
+    formula: (-(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n + sqrt(((me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n)**2 + 4*(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n))/2
+    expected: '0.84'
+    shown: ['it is 4.47 and $x = 0.84$']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-half
+    where: 'worked example: temperature where x = 1/2, i.e. R = 1/2'
+    inputs: {}
+    formula: solve('(1.79986565e14*t)**1.5*exp(-157821.446/t)/1e9 - 0.5', 't', 3000, 5000)
+    expected: '3800'
+    tolerance: 50
+    shown: ['Half the hydrogen is ionised at about 3,800 K']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-chi-over-kT
+    where: 'worked example: 13.6 eV/kT at the half-ionisation temperature 3797 K'
+    inputs: {T: 3796.7 K, X: 13.6 eV}
+    formula: X/(k_B*T)
+    expected: '41.6'
+    shown: ['There $\epsilon_0/k_BT = 41.6$']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-factor
+    where: 'worked example: 1/(n lam_e^3) at 3797 K, about 6e17'
+    inputs: {me: 9.1093837e-31 kg, T: 3796.7 K, n: 1e9 1/m**3}
+    formula: (me*k_B*T/(2*pi*hbar**2))**1.5/n
+    expected: '6e17'
+    shown: ['about $6 \times 10^{17}$ at 3,800 K']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-plot-const
+    where: 'Saha plot expression: m_e k_B/(2 pi hbar^2) in 1/(m^2 K)'
+    inputs: {me: 9.1093837e-31 kg}
+    formula: me*k_B/(2*pi*hbar**2)
+    expected: 1.7999e14 1/(m**2*K)
+    shown: ['(1.7999e14*x)^1.5*exp(-157821/x)/1e9) + sqrt(']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-plot-chi
+    where: 'Saha plot expression: 13.6 eV/k_B in K'
+    inputs: {X: 13.6 eV}
+    formula: X/k_B
+    expected: 157821 K
+    shown: ['(-((1.7999e14*x)^1.5*exp(-157821/x)/1e9)']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-plot-4500
+    where: 'Saha plot caption: almost fully ionised at 4500 K (x = 0.998)'
+    inputs: {me: 9.1093837e-31 kg, T: 4500 K, n: 1e9 1/m**3, X: 13.6 eV}
+    formula: (-(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n + sqrt(((me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n)**2 + 4*(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n))/2
+    expected: '1.0'
+    shown: ['the gas goes from almost fully ionised to almost neutral between about 4,500 K and 3,000 K']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  - id: saha-plot-3000
+    where: 'Saha plot caption: almost neutral at 3000 K (x = 0.0024)'
+    inputs: {me: 9.1093837e-31 kg, T: 3000 K, n: 1e9 1/m**3, X: 13.6 eV}
+    formula: (-(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n + sqrt(((me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n)**2 + 4*(me*k_B*T/(2*pi*hbar**2))**1.5*exp(-X/(k_B*T))/n))/2
+    expected: '0.0'
+    tolerance: 0.005
+    shown: ['passing x = 1/2 near 3,800 K']
+    source: {cite: reading1, at: 'p. 34, point 4c'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Ising chain (p. 35)
+  - id: wall-cost
+    kind: identity
+    where: 'text: flipping one bond from aligned (-J) to opposite (+J) costs 2J'
+    formula: (+JJ) - (-JJ)
+    equals: 2*JJ
+    samples: {JJ: [0.5, 1.0]}
+    tolerance: 1e-12
+    shown: ['Each costs $2J$, since one bond goes from $-J$ to $+J$']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: mit
+
+  - id: wall-exact
+    kind: identity
+    where: 'our check: the probability that a link is a wall, e^(-bJ)/(e^(bJ) + e^(-bJ)), equals 1/(1 + e^(2bJ))'
+    formula: exp(-bb*JJ)/(exp(bb*JJ) + exp(-bb*JJ))
+    equals: 1/(1 + exp(2*bb*JJ))
+    samples: {bb: [0.5, 2.0], JJ: [0.3, 1.0]}
+    tolerance: 1e-12
+    shown: ['A link is then a wall with probability $1/(1 + e^{2J/k_BT})$']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own
+
+  - id: ising-approx-05
+    where: 'Ising plot caption: e^(-2J/kT) at kT = 0.5 J'
+    inputs: {}
+    formula: exp(-2/0.5)
+    expected: '0.0183'
+    shown: ['(0.0183 and 0.0180 at k_BT = 0.5J']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own
+
+  - id: ising-exact-05
+    where: 'Ising plot caption: 1/(1 + e^(2J/kT)) at kT = 0.5 J'
+    inputs: {}
+    formula: 1/(1 + exp(2/0.5))
+    expected: '0.0180'
+    shown: ['0.0183 and 0.0180 at k_BT']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own
+
+  - id: ising-domain-05
+    where: 'Ising plot caption and quiz 4: mean domain length 1 + e^(2J/kT) at kT = 0.5 J (about 55)'
+    inputs: {}
+    formula: 1 + exp(2/0.5)
+    expected: '56'
+    shown: ['domains about 56 links long']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own
+
+  - id: ising-approx-1
+    where: 'Ising plot caption: e^(-2J/kT) at kT = J'
+    inputs: {}
+    formula: exp(-2)
+    expected: '0.135'
+    shown: ['(0.135 and 0.119 at k_BT = J)']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own
+
+  - id: ising-exact-1
+    where: 'Ising plot caption: 1/(1 + e^2) at kT = J'
+    inputs: {}
+    formula: 1/(1 + exp(2))
+    expected: '0.119'
+    shown: ['0.135 and 0.119 at']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- facts quoted from other courses
+  - id: guth-4000K
+    kind: fact
+    where: 'leadsTo and cosmology callout: Guth quotes about 4,000 K for recombination (8.286 Lecture 17, page temperature-and-decoupling)'
+    value: 4,000 K
+    shown: ['Guth quotes about 4,000 K as the temperature at which the hydrogen of the early universe became neutral, and notes that it depends on the density: the law']
+    source: {cite: mit8286-l17, at: 'recombination'}
+    origin: mit
+
+  - id: bbn-007MeV
+    kind: fact
+    where: 'leadsTo: deuterium survives once kT is about 0.07 MeV (8.902 Lecture 20, page big-bang-nucleosynthesis)'
+    value: 0.07 MeV
+    shown: ['until the universe has cooled to about 0.07 MeV']
+    source: {cite: mit8902-l20, at: 'deuterium bottleneck'}
+    origin: mit
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-step
+    where: 'quiz 1: n2/n1 = e^-2'
+    inputs: {}
+    formula: exp(-2)
+    expected: '0.14'
+    quiz: 0
+    shown: ['$n_2/n_1 = e^{-V_0/k_BT} = e^{-2} \\approx 0.14$']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: page-own
+
+  - id: quiz-step-wrong
+    where: 'quiz 1, wrong choice: e^2'
+    inputs: {}
+    formula: exp(2)
+    expected: '7.4'
+    shown: ['"$e^{2} \\approx 7.4$"']
+    source: {cite: reading1, at: 'p. 32, point 4a'}
+    origin: page-own
+
+  - id: quiz-domain
+    where: 'quiz 4: 1 + e^4'
+    inputs: {}
+    formula: 1 + exp(4)
+    expected: '55.6'
+    tolerance: 0.5
+    quiz: 3
+    shown: ['so a domain spans $1 + e^4 \\approx 55.6$ links']
+    source: {cite: reading1, at: 'p. 35, point 4d'}
+    origin: page-own

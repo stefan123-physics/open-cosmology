@@ -1,0 +1,340 @@
+# Calculations on content/year-4/8.08/superfluid-symmetry-breaking-phonons.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005), Supplement 2 "Quantum Theory for Interacting Bosons": Wen's typed book chapter 4
+# "Boson systems", sections 4.9-4.14. Page numbers are the printed page numbers of the chapter (28-54 = PDF pages 1-27);
+# equation numbers are Wen's. Wen sets hbar = 1.
+# The notes quote no numbers. Page's own numbers: the three plots, the worked example (rubidium-87 condensate with
+# g n0 = k_B x 100 nK) and quiz 2 (g n0 = k_B x 50 nK).
+# Notation in the formulas: UU = U, VV = V-bar (or g), rr = |phi|^2, gg = g, n0 = n_0, dn = delta n, th = theta,
+# xk = |k|^2/2m, BB = g n_0, aa, bb = coefficients of the toy energy function.
+
+page: content/year-4/8.08/superfluid-symmetry-breaking-phonons.mdx
+calcs:
+  # ---------------------------------------------------------------- the quantum phase transition (section 4.10, p. 45)
+  - id: ground-state-stationary
+    kind: identity
+    where: 'formula "Classical ground state and its energy": d/dρ of Uρ + ½V̄ρ² vanishes at ρ = |φ|² = -U/V̄'
+    formula: deriv('UU*t + 0.5*VV*t**2', 't', -UU/VV)
+    equals: 0
+    samples: {UU: [-0.5, -1.0, -2.0], VV: [1.0, 0.5, 3.0]}
+    tolerance: 1e-6
+    shown: ['\sqrt{-U/\bar V}, & U < 0']
+    source: {cite: reading1, at: '§4.10, p. 45, eqn (4.10.1)'}
+    origin: mit
+
+  - id: ground-state-energy
+    kind: identity
+    where: 'same formula: u at ρ = -U/V̄ is -U²/2V̄'
+    formula: UU*(-UU/VV) + 0.5*VV*(-UU/VV)**2
+    equals: -0.5*UU**2/VV
+    samples: {UU: [-0.5, -1.0, -2.0], VV: [1.0, 0.5, 3.0]}
+    tolerance: 1e-12
+    shown: ['-\frac12U^2/\bar V, & U < 0']
+    source: {cite: reading1, at: '§4.10, p. 45, eqn (4.10.2)'}
+    origin: mit
+
+  - id: second-derivative-jump
+    kind: identity
+    where: 'text and quiz 1: for U < 0, ∂u/∂U = -U/V̄ and ∂²u/∂U² = -1/V̄; for U > 0 both are 0, so only the second derivative jumps'
+    formula: deriv('-0.5*t**2/VV', 't', UU)
+    equals: -UU/VV
+    samples: {UU: [-0.5, -1.0, -2.0], VV: [1.0, 0.5, 3.0]}
+    tolerance: 1e-6
+    shown: ['while $\partial^2u/\partial U^2$ jumps from $0$ to $-1/\bar V$']
+    source: {cite: reading1, at: '§4.10, p. 46'}
+    origin: mit
+
+  - id: plot1-minimum
+    where: 'first plot caption: with V̄ = 1, U = -0.8, the minima lie at |φ| = √0.8'
+    formula: sqrt(0.8)
+    expected: '0.894'
+    shown: ['at U = −0.8 they are at ±0.894']
+    source: {cite: reading1, at: '§4.10, p. 45, eqn (4.10.1)'}
+    origin: page-own
+
+  - id: plot1-depth
+    where: 'first plot caption: u = -U²/2V̄ = -0.32'
+    formula: -0.5*0.8**2
+    expected: '-0.32'
+    shown: ['with u = −0.32']
+    source: {cite: reading1, at: '§4.10, p. 45, eqn (4.10.2)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- two mechanisms (section 4.11, pp. 46-48)
+  - id: splitting-minima
+    kind: identity
+    where: 'section "Continuous transitions break a symmetry": bx² + x⁴ is stationary at x = ±√(-b/2) for b < 0'
+    formula: deriv('bb*t**2 + t**4', 't', sqrt(-bb/2))
+    equals: 0
+    samples: {bb: [-0.2, -1.0, -3.0]}
+    tolerance: 1e-6
+    shown: ['at $\pm\sqrt{-b/2}$']
+    source: {cite: reading1, at: '§4.11, p. 47, Fig. 4.10'}
+    origin: page-own
+
+  - id: plot2-minimum
+    where: 'second plot caption: lower minimum of 0.2x - x² + x⁴ (root of 0.2 - 2x + 4x³ = 0 near -0.75)'
+    formula: solve('0.2 - 2*t + 4*t**3', 't', -1, -0.5)
+    expected: '-0.75'
+    shown: ['the lower minimum is at x = −0.75']
+    source: {cite: reading1, at: '§4.11, p. 46, eqn (4.11.1)'}
+    origin: page-own
+
+  - id: plot2-depth
+    where: 'second plot caption: E at that minimum'
+    formula: 0.2*(-0.7526186) - 0.7526186**2 + 0.7526186**4
+    expected: '-0.396'
+    shown: ['with E = −0.396']
+    source: {cite: reading1, at: '§4.11, p. 46, eqn (4.11.1)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- sound waves (section 4.12, pp. 49-50)
+  - id: linearised-cubic
+    kind: identity
+    where: 'formula "Linearized equation": with real φ0, |φ0 + δ|²(φ0 + δ) has linear part 2φ0²δ + φ0²δ*; checked on the real part with δ = a + ib, where the linear part is 3φ0²a'
+    formula: deriv('((p0 + t)**2 + bi**2)*(p0 + t)', 't', 0)
+    equals: 3*p0**2
+    samples: {p0: [0.5, 1.0, 2.0], bi: [0.0, 0.0, 0.0]}
+    tolerance: 1e-6
+    shown: ['i\,\delta\dot\phi = \left(-\frac{1}{2m}\partial_x^2 - U\right)\delta\phi - U\,\delta\phi^*']
+    source: {cite: reading1, at: '§4.12, p. 49'}
+    origin: mit
+
+  - id: dispersion-from-wave-equation
+    kind: identity
+    where: 'formula "Dispersion of sound": a plane wave in eqn (4.12.4) gives ω² = (k²/2m)(k²/2m - 2U), and with U = -g n0 this is (k²/2m)(k²/2m + 2 g n0)'
+    formula: xk*(xk - 2*UU)
+    equals: xk*(xk + 2*(-UU))
+    samples: {xk: [0.1, 1.0, 4.0], UU: [-0.3, -1.0, -2.5]}
+    tolerance: 1e-12
+    shown: ['\omega_k = \sqrt{\frac{|k|^2}{2m}\left(\frac{|k|^2}{2m} - 2U\right)}']
+    source: {cite: reading1, at: '§4.12, p. 50, eqn (4.12.5)'}
+    origin: mit
+
+  - id: sound-speed-limit
+    kind: limit
+    where: 'same formula: ω/|k| tends to √(g n0/m) as k → 0 (units m = 1, g n0 = 2)'
+    inputs: {}
+    formula: sqrt((kk**2/2)*(kk**2/2 + 2*2))/kk
+    limit: sqrt(2)
+    vary: {kk: [0.1, 0.01, 0.001]}
+    tolerance: 1e-3
+    shown: ['\omega_k \approx v|k|, \quad v = \sqrt{\frac{-U}{m}} = \sqrt{\frac{gn_0}{m}}']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: mit
+
+  - id: plot3-crossover
+    where: 'third plot caption: at x = 1 (k²/2m = g n0), ω = √(1·(1 + 2)) = √3 g n0'
+    formula: sqrt(1*(1 + 2))
+    expected: '1.732'
+    shown: ['where ω = √3 gn₀/ħ']
+    source: {cite: reading1, at: '§4.12, p. 50, eqn (4.12.5)'}
+    origin: page-own
+
+  - id: plot3-slope
+    where: 'third plot caption: the sound line in units where k²/2m = x² and g n0 = 1 has slope √2'
+    formula: sqrt(2)
+    expected: '1.414'
+    shown: ['so √2 in these units']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Bogoliubov (section 4.14, pp. 52-54)
+  - id: gradient-density-phase
+    kind: identity
+    where: 'formula "Lagrangian for sound waves": for φ = √n e^(iθ), |∂xφ|² = (∂x n)²/4n + n(∂xθ)²; checked with n = 2 + sin x, θ = 0.3x²'
+    formula: deriv('sqrt(2 + sin(t))*cos(0.3*t**2)', 't', xx)**2 + deriv('sqrt(2 + sin(t))*sin(0.3*t**2)', 't', xx)**2
+    equals: cos(xx)**2/(4*(2 + sin(xx))) + (2 + sin(xx))*(0.6*xx)**2
+    samples: {xx: [0.3, 1.1, 2.5]}
+    tolerance: 1e-5
+    shown: ['- \frac{n_0(\partial_x\theta)^2}{2m} - \frac{(\partial_x\delta n)^2}{8mn_0}']
+    source: {cite: reading1, at: '§4.14, p. 52, eqn (4.14.1)'}
+    origin: mit
+
+  - id: potential-quadratic
+    kind: identity
+    where: 'same formula: U n + g n²/2 with n = n0 + δn and U = -g n0 is a constant plus g δn²/2 (no linear term)'
+    formula: (-gg*n0)*(n0 + dn) + 0.5*gg*(n0 + dn)**2
+    equals: -0.5*gg*n0**2 + 0.5*gg*dn**2
+    samples: {gg: [0.5, 1.0, 2.0], n0: [1.0, 3.0, 0.4], dn: [0.1, -0.5, 0.2]}
+    tolerance: 1e-12
+    shown: ['- \frac g2\delta n^2\right]']
+    source: {cite: reading1, at: '§4.14, p. 52, eqn (4.14.1)'}
+    origin: mit
+
+  - id: complex-fluctuation
+    kind: identity
+    where: 'formula "Complex fluctuation and its Lagrangian": g n0 |δφ|² + g n0 Re(δφ²) with δφ = δn/(2√n0) + i√n0 θ equals g δn²/2 (the θ² terms cancel)'
+    formula: gg*n0*((dn/(2*sqrt(n0)))**2 + n0*th**2) + gg*n0*((dn/(2*sqrt(n0)))**2 - n0*th**2)
+    equals: 0.5*gg*dn**2
+    samples: {gg: [0.5, 1.0, 2.0], n0: [1.0, 3.0, 0.4], dn: [0.1, -0.5, 0.2], th: [0.3, 1.0, -0.7]}
+    tolerance: 1e-12
+    shown: ['in $\theta$ they cancel, and in $\delta n$ they add up to $\frac g2\delta n^2$']
+    source: {cite: reading1, at: '§4.14, p. 52, eqn (4.14.2)'}
+    origin: mit
+
+  - id: bogoliubov-norm
+    kind: identity
+    where: 'formula "The coefficients and the oscillator energy": u² - v² = 1 with A = |k|²/2m + g n0, B = g n0, E = √(A² - B²)'
+    formula: ((xk + BB)/(2*sqrt((xk + BB)**2 - BB**2)) + 0.5) - ((xk + BB)/(2*sqrt((xk + BB)**2 - BB**2)) - 0.5)
+    equals: 1
+    samples: {xk: [0.1, 1.0, 4.0], BB: [0.3, 1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['a_k = u_k\,\delta\varphi_k + v_k\,\delta\varphi^*_{-k}, \qquad |u_k|^2 - |v_k|^2 = 1']
+    source: {cite: reading1, at: '§4.14, p. 53, eqn (4.14.5)'}
+    origin: mit
+
+  - id: bogoliubov-diagonal
+    kind: identity
+    where: 'same formula: E(u² + v²) = A, so E a*a reproduces the diagonal term A|δφ_k|²'
+    formula: sqrt((xk + BB)**2 - BB**2)*(2*(xk + BB)/(2*sqrt((xk + BB)**2 - BB**2)))
+    equals: xk + BB
+    samples: {xk: [0.1, 1.0, 4.0], BB: [0.3, 1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['the energy terms of (4.14.3) become $\sum_kE_ka_k^*a_k$']
+    source: {cite: reading1, at: '§4.14, p. 53, eqns (4.14.6) and (4.14.7)'}
+    origin: mit
+
+  - id: bogoliubov-offdiagonal
+    kind: identity
+    where: 'same formula: 2E u v = B, so E a*a reproduces the coupling (B/2)(δφ₋ₖδφₖ + c.c.) of each pair k, -k'
+    formula: 2*sqrt((xk + BB)**2 - BB**2)*sqrt((xk + BB)/(2*sqrt((xk + BB)**2 - BB**2)) + 0.5)*sqrt((xk + BB)/(2*sqrt((xk + BB)**2 - BB**2)) - 0.5)
+    equals: BB
+    samples: {xk: [0.1, 1.0, 4.0], BB: [0.3, 1.0, 2.5]}
+    tolerance: 1e-9
+    shown: ['v_k = \sqrt{\frac{\frac{|k|^2}{2m} + gn_0}{2E_k} - \frac12}']
+    source: {cite: reading1, at: '§4.14, p. 53, eqn (4.14.7)'}
+    origin: mit
+
+  - id: bogoliubov-equals-sound
+    kind: identity
+    where: 'text: E_k² = (k²/2m + g n0)² - (g n0)² = (k²/2m)(k²/2m + 2 g n0), the dispersion of eqn (4.12.5)'
+    formula: (xk + BB)**2 - BB**2
+    equals: xk*(xk + 2*BB)
+    samples: {xk: [0.1, 1.0, 4.0], BB: [0.3, 1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['Multiplying out, $E_k^2 = \frac{|k|^2}{2m}\left(\frac{|k|^2}{2m} + 2gn_0\right)$']
+    source: {cite: reading1, at: '§4.14, p. 54'}
+    origin: mit
+
+  - id: oscillator-from-ak
+    kind: identity
+    where: 'text: E|a|² with a = (X + iP)/√2 is P²/2M + KX²/2 with M = 1/E, K = E'
+    formula: EE*((XX/sqrt(2))**2 + (PP/sqrt(2))**2)
+    equals: PP**2/(2*(1/EE)) + EE*XX**2/2
+    samples: {EE: [0.5, 1.0, 3.0], XX: [0.2, -1.0, 2.5], PP: [1.1, 0.4, -0.9]}
+    tolerance: 1e-12
+    shown: ['an oscillator of mass $M_k = 1/E_k$ and spring constant $K_k = E_k$']
+    source: {cite: reading1, at: '§4.14, p. 54'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: rubidium-87, g n0 = k_B x 100 nK
+  - id: ex-gn0
+    where: 'worked example (a): g n0 = k_B × 100 nK'
+    inputs: {T: 100 nK}
+    formula: k_B*T
+    expected: 1.381e-30 J
+    shown: ['$gn_0 = 1.380649 \times 10^{-23}$ J/K $\times 10^{-7}$ K $= 1.381 \times 10^{-30}$ J']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: ex-rb-mass
+    where: 'worked example: mass of a rubidium-87 atom, 86.909 u'
+    inputs: {M: 86.909 u}
+    formula: M
+    expected: 1.443e-25 kg
+    shown: ['(mass $m = 1.443 \times 10^{-25}$ kg)']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: ex-speed
+    where: 'worked example (a): v = √(g n0/m)'
+    inputs: {T: 100 nK, m: 1.443e-25 kg}
+    formula: sqrt(k_B*T/m)
+    expected: 3.09e-3 m/s
+    shown: ['m/s $= 3.09 \times 10^{-3}$ m/s']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: ex-speed-air
+    where: 'worked example (a): sound in air (343 m/s at 20 °C) is some hundred thousand times faster'
+    inputs: {T: 100 nK, m: 1.443e-25 kg, vair: 343 m/s}
+    formula: vair/sqrt(k_B*T/m)
+    expected: '1.1e5'
+    tolerance: 0.2e5
+    shown: ['some hundred thousand times slower than sound in air']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: ex-k-crossover
+    where: 'worked example (b): k = √(2 m g n0)/ħ'
+    inputs: {T: 100 nK, m: 1.443e-25 kg}
+    formula: sqrt(2*m*k_B*T)/hbar
+    expected: 5.99e6 1/m
+    shown: ['at $k = \sqrt{2mgn_0}/\hbar = 5.99 \times 10^6$ m⁻¹']
+    source: {cite: reading1, at: '§4.12, p. 50, eqn (4.12.5)'}
+    origin: page-own
+
+  - id: ex-wavelength
+    where: 'worked example (b): 2π/k'
+    inputs: {T: 100 nK, m: 1.443e-25 kg}
+    formula: 2*pi*hbar/sqrt(2*m*k_B*T)
+    expected: 1.05 um
+    shown: ['The wavelength is $2\pi/k = 1.05$ μm']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: ex-energy-K
+    where: 'worked example (c): ħω = √3 g n0 at the crossover, in nK'
+    inputs: {T: 100 nK}
+    formula: sqrt(3)*T
+    expected: 173 nK
+    shown: ['equal to $k_B \times 173$ nK']
+    source: {cite: reading1, at: '§4.12, p. 50, eqn (4.12.5)'}
+    origin: page-own
+
+  - id: ex-energy-J
+    where: 'worked example (c): the same in joules'
+    inputs: {T: 100 nK}
+    formula: sqrt(3)*k_B*T
+    expected: 2.39e-30 J
+    shown: ['or $2.39 \times 10^{-30}$ J']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: ex-frequency
+    where: 'worked example (c): frequency E/h'
+    inputs: {T: 100 nK}
+    formula: sqrt(3)*k_B*T/(2*pi*hbar)
+    expected: 3.61 kHz
+    shown: ['a frequency of $3.61$ kHz']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 2: g n0 = k_B x 50 nK
+  - id: quiz-gn0
+    where: 'quiz 2 explanation: g n0 = k_B × 50 nK'
+    inputs: {T: 50 nK}
+    formula: k_B*T
+    expected: 6.90e-31 J
+    shown: ['$gn_0 = 1.380649 \\times 10^{-23} \\times 5 \\times 10^{-8}$ J $= 6.90 \\times 10^{-31}$ J']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: quiz-speed
+    where: 'quiz 2: v = √(g n0/m) with g n0 = k_B × 50 nK, m = 1.443e-25 kg'
+    inputs: {T: 50 nK, m: 1.443e-25 kg}
+    formula: sqrt(k_B*T/m)
+    expected: 2.19e-3 m/s
+    shown: ['m/s $= 2.19 \\times 10^{-3}$ m/s']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own
+
+  - id: quiz-speed-mm
+    where: 'quiz 2: the marked choice, about 2.2 mm/s'
+    inputs: {T: 50 nK, m: 1.443e-25 kg}
+    formula: sqrt(k_B*T/m)
+    expected: 2.2 mm/s
+    quiz: 2
+    shown: ['"About $2.2$ mm/s"']
+    source: {cite: reading1, at: '§4.12, p. 50'}
+    origin: page-own

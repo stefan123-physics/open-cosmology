@@ -1,0 +1,118 @@
+---
+title: "Projection matrices and least squares"
+slug: projection-matrices-least-squares
+course: "18.06"
+lecture: 16
+order: 1
+summary: "P = A(AᵀA)⁻¹Aᵀ keeps what is in the column space and kills what is perpendicular to it: if b = Ax then Pb = b, and if b is in N(Aᵀ) then Pb = 0. Every b splits as b = p + e, with p = Pb in C(A) and e = (I − P)b in N(Aᵀ); I − P is the projection onto the perpendicular space. Least squares fits the points (1, 1), (2, 2), (3, 2) by the line b = C + Dt by minimizing ‖Ax − b‖² = e₁² + e₂² + e₃², the sum of squared vertical errors (linear regression; outliers can distort it). The normal equations AᵀAx̂ = Aᵀb are 3C + 6D = 5 and 6C + 14D = 11, the same equations calculus gives by setting the partial derivatives to zero. They give D = 1/2, C = 2/3: the best line is 2/3 + t/2. The points on the line are p = (7/6, 5/3, 13/6), and e = b − p = (−1/6, 1/3, −1/6) is perpendicular to p and to both columns, (1, 1, 1) and (1, 2, 3). AᵀA is invertible when A has independent columns: AᵀAx = 0 gives xᵀAᵀAx = ‖Ax‖² = 0, so Ax = 0 and x = 0. Columns that are perpendicular unit vectors, orthonormal, are certainly independent, and then AᵀA = I: the subject of the next lecture."
+prerequisites: [projections-onto-subspaces]
+source:
+  title: "MIT 18.06 Lecture 16: Projection matrices and least squares"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-16-projection-matrices-and-least-squares/
+  readings:
+    - title: "18.06 Lecture 16 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/b05d83bbdd6bcc995f2f8002093010c6_osh80YCg_GM.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 17
+    why: "Orthonormal vectors, orthogonal matrices and Gram–Schmidt."
+quiz:
+  - question: "If $b$ is perpendicular to the column space of $A$, then $Pb$ is…"
+    choices: ["$b$", "$0$", "$-b$", "undefined"]
+    answer: 1
+    explanation: "Such a $b$ is in $N(A^T)$, so $A^Tb = 0$ and $Pb = A(A^TA)^{-1}A^Tb = 0$."
+  - question: "What does least squares minimize when fitting a line $C + Dt$ to points $(t_i, b_i)$?"
+    choices: ["The sum of perpendicular distances to the line", "The largest error", "The sum of squared vertical errors $\\sum (C + Dt_i - b_i)^2$", "The sum of absolute errors"]
+    answer: 2
+    explanation: "The errors are the components of $e = b - Ax$; least squares minimizes $\\|e\\|^2$."
+  - question: "In the proof that $A^TA$ is invertible, why does $x^TA^TAx = 0$ force $Ax = 0$?"
+    choices: ["$A$ is square", "$x^TA^TAx = \\|Ax\\|^2$, a length squared", "$A^TA$ is symmetric", "$x$ is a unit vector"]
+    answer: 1
+    explanation: "$x^TA^TAx = (Ax)^T(Ax)$, which is zero only for the zero vector. Independent columns then give $x = 0$."
+flashcards:
+  - front: "The two parts of $b$"
+    back: "$b = p + e$, with $p = Pb$ in $C(A)$ and $e = (I - P)b$ in $N(A^T)$; $I - P$ is also a projection."
+  - front: "Normal equations"
+    back: "$A^TA\\hat x = A^Tb$: the least-squares solution of $Ax = b$, the same equations as setting the partial derivatives of $\\|Ax - b\\|^2$ to zero."
+  - front: "When is $A^TA$ invertible?"
+    back: "When $A$ has independent columns: $A^TAx = 0 \\Rightarrow \\|Ax\\|^2 = 0 \\Rightarrow Ax = 0 \\Rightarrow x = 0$. (Conversely, dependent columns give $Ax = 0$ and so $A^TAx = 0$ with $x \\ne 0$.)"
+status: reviewed
+---
+
+This lecture recaps the projection matrix, then works the best straight line through three points completely (transcript, pp. 1, 4). It continues [projections onto subspaces](/courses/18-06/projections-onto-subspaces).
+
+## What P does
+
+$P = A(A^TA)^{-1}A^T$ projects $b$ to the nearest point in the column space (transcript, p. 1). Check the two extreme cases (pp. 1–3):
+
+<Formula label="The two extreme cases" tex="b \text{ in } N(A^T): \; Pb = A(A^TA)^{-1}A^Tb = 0; \qquad b = Ax: \; Pb = A(A^TA)^{-1}A^TAx = Ax = b" cite="reading1" at="pp. 2–3" />
+
+Vectors perpendicular to the column space are exactly those in $N(A^T)$, so $A^Tb = 0$ kills them; a vector in the column space has the form $Ax$, and the $A^TA$ cancels against its inverse (pp. 2–3). A typical $b$ has a part in each (pp. 3–4):
+
+<Formula label="Two projections" tex="b = p + e, \qquad p = Pb, \qquad e = (I - P)b" cite="reading1" at="pp. 3–4" />
+
+$I - P$ is the projection onto the perpendicular space $N(A^T)$: it is symmetric, and $(I - P)^2 = I - P$ (p. 4).
+
+## The best straight line
+
+Back to the points $(t, b) = (1, 1)$, $(2, 2)$, $(3, 2)$ (transcript, p. 4). A line $C + Dt$ through all three would need $C + D = 1$, $C + 2D = 2$, $C + 3D = 2$: that is $Ax = b$ with $A$ having columns $(1, 1, 1)$ and $(1, 2, 3)$, $x = (C, D)$ and $b = (1, 2, 2)$, which has no solution (p. 5). (Strang says $b$ is "one, two, three" at one point; it is $(1, 2, 2)$.) The columns are independent, a basis for the column space, but $b$ is not in it (p. 5).
+
+**Best** means: make the errors $e_1, e_2, e_3$, the vertical distances from the points to the line, small in the sense of the sum of squares (pp. 5–7):
+
+<Formula label="Least squares" tex="\text{minimize } \|Ax - b\|^2 = \|e\|^2 = e_1^2 + e_2^2 + e_3^2" cite="reading1" at="pp. 5–7" />
+
+This is **linear regression** (p. 7). Statisticians are wary of the squares when there are **outliers**: one point far off, perhaps a mistake, has a giant squared error that can turn the whole fit topsy-turvy (pp. 7–8). Least squares is still the most used method (p. 8).
+
+**Two pictures** (pp. 8–9). In the plane of the data, the points $p_1, p_2, p_3$ on the line lie above or below the given $b_1, b_2, b_3$, with the errors between. In $\mathrm{R}^3$, $p = (p_1, p_2, p_3)$ is the closest point to $b = (1, 2, 2)$ in the column space: a line goes through the $p$'s, so $p$ is a combination of the columns (pp. 8–9).
+
+**The numbers** (pp. 9–12). Strang ventures to call the normal equations the most important equation in statistics and estimation (p. 9):
+
+<Formula label="The normal equations" tex="A^TA = \begin{pmatrix} 3 & 6 \\ 6 & 14 \end{pmatrix}, \quad A^Tb = \begin{pmatrix} 5 \\ 11 \end{pmatrix}: \qquad 3C + 6D = 5, \quad 6C + 14D = 11" cite="reading1" at="pp. 9–10" />
+
+$A^TA$ is symmetric and invertible, and later in the course it will be called positive definite (p. 10). **Calculus gives the same equations** (pp. 10–11): the total squared error
+
+<Formula label="The error as a function of C and D" tex="E = (C + D - 1)^2 + (C + 2D - 2)^2 + (C + 3D - 2)^2" cite="reading1" at="pp. 10–11" />
+
+is minimized where $\partial E/\partial C = 0$ and $\partial E/\partial D = 0$, and these partial derivatives are linear in $C$ and $D$ (p. 11). Eliminating, $2D = 1$, so $D = \frac{1}{2}$, and $3C + 3 = 5$ gives $C = \frac{2}{3}$ (p. 11):
+
+<Formula label="The best line" tex="b = \frac{2}{3} + \frac{1}{2}t" cite="reading1" at="p. 11" />
+
+At $t = 1, 2, 3$ the line gives $p = (\frac{7}{6}, \frac{5}{3}, \frac{13}{6})$, and the errors are (pp. 12–13)
+
+<Formula label="Projection and error" tex="b = p + e: \qquad \begin{pmatrix} 1 \\ 2 \\ 2 \end{pmatrix} = \begin{pmatrix} 7/6 \\ 5/3 \\ 13/6 \end{pmatrix} + \begin{pmatrix} -1/6 \\ 1/3 \\ -1/6 \end{pmatrix}" cite="reading1" at="pp. 12–13" />
+
+(Strang first takes the errors with the opposite signs and fixes them so that $p + e = b$, pp. 12–13.) Two checks (pp. 13–14): $p^Te = -\frac{7}{36} + \frac{20}{36} - \frac{13}{36} = 0$, and $e$ is perpendicular to the **whole** column space, for instance to $(1, 1, 1)$ and to $(1, 2, 3)$: $-1 + 4 - 3 = 0$ (in sixths). The two pictures are the same problem: $C$ and $D$ are the combination of the columns that gives $p$ (p. 14).
+
+## Why AᵀA is invertible
+
+The claim: **if $A$ has independent columns, $A^TA$ is invertible** (transcript, p. 15). Suppose $A^TAx = 0$; the goal is $x = 0$ (pp. 15–16). The idea: multiply by $x^T$ (pp. 16–17):
+
+<Formula label="The proof" tex="x^TA^TAx = (Ax)^T(Ax) = \|Ax\|^2 = 0 \;\Rightarrow\; Ax = 0 \;\Rightarrow\; x = 0" cite="reading1" at="pp. 16–17" />
+
+A length squared is zero only for the zero vector, so $Ax = 0$; independent columns then leave only $x = 0$ in the nullspace (p. 17).
+
+**Looking ahead** (pp. 18–19). Columns are certainly independent if they are **perpendicular unit vectors**, such as $(1, 0, 0)$, $(0, 1, 0)$, $(0, 0, 1)$; then $A^TA = I$. Such vectors are **orthonormal**. Strang's favourite pair is $(\cos\theta, \sin\theta)$ and $(-\sin\theta, \cos\theta)$ (p. 18). Why they are so good, and how to make a basis orthonormal, comes next (p. 19).
+
+<WorkedExample title="A best line of your own">
+<Problem>
+Fit the points $(t, b) = (0, 1)$, $(1, 3)$, $(2, 4)$, $(3, 4)$ by a line $C + Dt$ in the least-squares sense; find $p$, $e$ and the total squared error.
+</Problem>
+<Step title="Normal equations">
+$A$ has columns $(1, 1, 1, 1)$ and $(0, 1, 2, 3)$. $A^TA = \begin{pmatrix} 4 & 6 \\ 6 & 14 \end{pmatrix}$ and $A^Tb = (12, 23)$: $4C + 6D = 12$, $6C + 14D = 23$.
+</Step>
+<Step title="Solve">
+The determinant is $56 - 36 = 20$. $C = (12 \cdot 14 - 6 \cdot 23)/20 = \frac{30}{20} = 1.5$ and $D = (4 \cdot 23 - 6 \cdot 12)/20 = 1$. The best line is $b = 1.5 + t$.
+</Step>
+<Step title="Projection and error">
+$p = (1.5, 2.5, 3.5, 4.5)$ and $e = b - p = (-0.5, 0.5, 0.5, -0.5)$. Check: $e$ adds to 0 (perpendicular to the first column) and $0 + 0.5 + 1 - 1.5 = 0$ (second column). The total squared error is $4 \times 0.25 = 1$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $Pb = b$ for $b$ in $C(A)$, $Pb = 0$ for $b$ in $N(A^T)$; $b = Pb + (I - P)b$.
+- Least squares minimizes $\|Ax - b\|^2$; the normal equations $A^TA\hat x = A^Tb$ are also what calculus gives.
+- For $(1, 1)$, $(2, 2)$, $(3, 2)$ the best line is $\frac{2}{3} + \frac{1}{2}t$, with $e = (-\frac{1}{6}, \frac{1}{3}, -\frac{1}{6})$ perpendicular to the column space.
+- $A^TA$ is invertible when $A$ has independent columns (and only then, since $Ax = 0$ gives $A^TAx = 0$: the page's own remark); orthonormal columns give $A^TA = I$.

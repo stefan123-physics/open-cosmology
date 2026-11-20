@@ -1,0 +1,143 @@
+---
+title: Symmetric matrices and positive definiteness
+slug: symmetric-matrices-positive-definite
+course: "18.06"
+lecture: 25
+order: 1
+summary: "A real symmetric matrix (A = Aᵀ) has real eigenvalues, and its eigenvectors can be chosen perpendicular (with a repeated eigenvalue there is a whole plane to choose from), and there is a full set of them. Made into unit vectors they form an orthogonal matrix Q, so A = SΛS⁻¹ becomes A = QΛQᵀ: the spectral theorem, or in mechanics the principal axis theorem. Why real: from Ax = λx, conjugate and transpose to get x̄ᵀA = λ̄x̄ᵀ (this uses A = Aᵀ and A real), multiply by x and compare with x̄ᵀAx = λx̄ᵀx; since x̄ᵀx = |x₁|² + ⋯ + |xₙ|² > 0, λ = λ̄. For complex matrices the good ones (real eigenvalues, perpendicular eigenvectors) have Āᵀ = A. Written out, A = λ₁q₁q₁ᵀ + λ₂q₂q₂ᵀ + ⋯: a combination of perpendicular projection matrices. For a symmetric matrix the signs of the pivots are the signs of the eigenvalues: as many positive pivots as positive eigenvalues, which is a safe way to count them. Positive definite matrices are the symmetric ones with all eigenvalues positive, equivalently all pivots positive, equivalently all upper-left sub-determinants positive. Strang's example (5 2; 2 3) has pivots 5 and 11/5, sub-determinants 5 and 11, and eigenvalues 4 ± √5; (−1 0; 0 −3) has a positive determinant but is not positive definite."
+prerequisites: [diagonalization-and-powers, projection-matrices-least-squares]
+source:
+  title: "MIT 18.06 Lecture 25: Symmetric matrices and positive definiteness"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-25-symmetric-matrices-and-positive-definiteness/
+  readings:
+    - title: "18.06 Lecture 25 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/e92d794482d7b331dfa7f9324f2f5150_UCc9q_cAhho.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 26
+    why: "Complex matrices: the length x̄ᵀx and the Hermitian matrices Āᵀ = A met here, then the Fourier matrix."
+  - course: "18.06"
+    lecture: 27
+    why: "Positive definite matrices continue: the tests, the quadratic form xᵀAx and minima."
+quiz:
+  - question: "Which factorisation does every real symmetric matrix have?"
+    choices: ["$A = LU$ with $L = U^T$ always", "$A = S\\Lambda S^{-1}$ with complex $\\Lambda$", "$A = Q\\Lambda Q^T$ with $Q$ orthogonal and $\\Lambda$ real diagonal", "$A = QR$ with $R$ diagonal"]
+    answer: 2
+    explanation: "The spectral theorem: real eigenvalues in $\\Lambda$ and orthonormal eigenvectors in $Q$, so $S^{-1} = Q^{-1} = Q^T$."
+  - question: "In the proof that $\\lambda$ is real, why may we cancel $\\bar x^Tx$?"
+    choices: ["Because $x$ is real", "Because $\\bar x^Tx = 1$ by definition", "Because $A$ is invertible", "Because $\\bar x^Tx = |x_1|^2 + \\cdots + |x_n|^2 > 0$ for $x \\neq 0$"]
+    answer: 3
+    explanation: "Each $\\bar x_ix_i = a^2 + b^2$ for $x_i = a + ib$: the imaginary parts cancel and the sum is positive."
+  - question: "A $4 \\times 4$ symmetric matrix has pivots $3, -1, 2, 5$. How many of its eigenvalues are positive?"
+    choices: ["4", "1", "It cannot be known without computing them", "3"]
+    answer: 3
+    explanation: "For symmetric matrices the signs of the pivots match the signs of the eigenvalues: three positive pivots, three positive eigenvalues."
+  - question: "Why is $\\begin{pmatrix} -1 & 0 \\\\ 0 & -3 \\end{pmatrix}$ not positive definite, although its determinant is positive?"
+    choices: ["It is not symmetric", "Its first upper-left sub-determinant, $-1$, is negative", "Its trace is zero", "Its determinant is too small"]
+    answer: 1
+    explanation: "All the upper-left sub-determinants must be positive, not only the whole one. Here the pivots and eigenvalues are $-1$ and $-3$."
+flashcards:
+  - front: "Spectral theorem"
+    back: "A real symmetric $A$ has real eigenvalues and orthonormal eigenvectors: $A = Q\\Lambda Q^T = \\lambda_1q_1q_1^T + \\cdots + \\lambda_nq_nq_n^T$."
+  - front: "Length squared of a complex vector"
+    back: "$\\bar x^Tx = |x_1|^2 + \\cdots + |x_n|^2$, not $x^Tx$."
+  - front: "Good complex matrices"
+    back: "$\\bar A^T = A$: real eigenvalues and perpendicular eigenvectors, the complex version of symmetric."
+  - front: "Pivots and eigenvalues of a symmetric matrix"
+    back: "Same signs: the number of positive pivots equals the number of positive eigenvalues. Their products both equal $\\det A$ (without row exchanges)."
+  - front: "Positive definite (three equivalent tests)"
+    back: "Symmetric with all eigenvalues $> 0$; or all pivots $> 0$; or all upper-left sub-determinants $> 0$."
+status: reviewed
+---
+
+Symmetric matrices, $A = A^T$, are "the most important class" of matrices (transcript, p. 1). Having learned to look at a matrix through its [eigenvalues and eigenvectors](/courses/18-06/diagonalization-and-powers), the question for each special kind is what it says about them, as Markov matrices always have eigenvalue 1 (p. 1).
+
+## Real eigenvalues, perpendicular eigenvectors
+
+The two main facts for a real symmetric matrix (p. 1):
+
+1. the **eigenvalues are real** (so the complex eigenvalues of rotations cannot happen);
+2. the **eigenvectors are perpendicular** (orthogonal).
+
+Strang proves the first and leaves the second to the book (p. 1). The second needs care. For the identity every vector is an eigenvector, so "are perpendicular" really means **can be chosen** perpendicular (pp. 1–2). When the eigenvalues are all different, each has one line of eigenvectors and the lines are perpendicular; when one is repeated there is a whole plane of eigenvectors, in which perpendicular ones can be chosen. There is also a full set of them (p. 2).
+
+## The spectral theorem
+
+The usual diagonalisation is $A = S\Lambda S^{-1}$ (p. 2). For a symmetric matrix the eigenvectors can be scaled to length one as well as made perpendicular: orthonormal. So the eigenvector matrix deserves the letter $Q$, and for orthonormal columns $Q^{-1} = Q^T$ (p. 3):
+
+<Formula label="Spectral theorem" tex="A = Q\Lambda Q^{-1} = Q\Lambda Q^T" cite="reading1" at="pp. 3–4" />
+
+This is "one of the famous theorems of linear algebra": every symmetric matrix factors as an orthogonal matrix times a diagonal matrix times its transpose (p. 3). Conversely, any such product is symmetric, since transposing $Q\Lambda Q^T$ gives it back (pp. 3–4). The name comes from the **spectrum**, the set of eigenvalues, as light is broken into pure colours; in mechanics it is the **principal axis theorem**: along the right axes a material's directions do not couple (p. 4).
+
+## Why the eigenvalues are real
+
+Start from $Ax = \lambda x$, allowing $\lambda$ and $x$ to be complex (p. 4). Taking the complex conjugate of everything (change $a + ib$ to $a - ib$; products conjugate factor by factor) and using that $A$ is real gives $A\bar x = \bar\lambda\bar x$ (p. 5). This already shows that complex eigenvalues of a real matrix come in pairs $\lambda$, $\bar\lambda$ (p. 5). Now transpose, and use symmetry, $A^T = A$ (p. 5):
+
+<Formula label="Conjugate and transpose" tex="\bar x^TA^T = \bar x^T\bar\lambda \quad\Rightarrow\quad \bar x^TA = \bar\lambda\,\bar x^T" cite="reading1" at="p. 5" />
+
+Multiply this on the right by $x$, and multiply the original equation on the left by $\bar x^T$ (pp. 5–6). The left sides are the same, so the right sides are equal (p. 7):
+
+<Formula label="The comparison" tex="\bar x^TAx = \lambda\,\bar x^Tx \quad\text{and}\quad \bar x^TAx = \bar\lambda\,\bar x^Tx \quad\Rightarrow\quad \lambda = \bar\lambda" cite="reading1" at="pp. 6–7" />
+
+A number equal to its own conjugate has no imaginary part: $\lambda$ is real (p. 7). The cancellation needs $\bar x^Tx \neq 0$. For a complex vector this is the right quantity, the length squared (pp. 7–9):
+
+<Formula label="Length squared of a complex vector" tex="\bar x^Tx = \bar x_1x_1 + \bar x_2x_2 + \cdots + \bar x_nx_n, \qquad (a - ib)(a + ib) = a^2 + b^2" cite="reading1" at="pp. 8–9" />
+
+The imaginary parts $iab$ and $-iab$ cancel, so the sum is positive for every $x \neq 0$ (pp. 8–9). Plain $x^Tx$ would not do: "multiply numbers by their conjugates" (p. 9). The next lecture builds on this (p. 9).
+
+**Complex matrices** (pp. 9–10). Where was symmetry used? If $A$ were complex, the step above would have produced $\bar A^T$. The proof works whenever $\bar A^T = A$. So the "good" matrices, with real eigenvalues and perpendicular eigenvectors, are those with $A = A^T$ if real and $\bar A^T = A$ if complex; nearly all applications have real matrices, where this is just symmetry (p. 10).
+
+## A sum of projections
+
+Multiply out $Q\Lambda Q^T$ as columns times rows (p. 11):
+
+<Formula label="Spectral sum" tex="A = \lambda_1q_1q_1^T + \lambda_2q_2q_2^T + \cdots + \lambda_nq_nq_n^T" cite="reading1" at="pp. 11–12" />
+
+Each $q_iq_i^T$, a unit column times its row, is a **projection matrix** (the $aa^T/a^Ta$ of chapter 4 with $a^Ta = 1$): it is symmetric, and its square is itself because $q_i^Tq_i = 1$ (p. 12). Every symmetric matrix is a combination of mutually perpendicular projection matrices, another way to state the spectral theorem (p. 12).
+
+## Signs of pivots and eigenvalues
+
+Once the eigenvalues are known to be real, the next question is their signs, which decide stability for differential equations (pp. 12–13). Computing all 50 eigenvalues of a $50 \times 50$ matrix is a real job; the textbook method, the roots of $\det(A - \lambda I)$, is a very bad way numerically, fine for $2 \times 2$ and $3 \times 3$ but highly unreliable at that size (p. 13). Strang recalls that some 20 or 30 years earlier nobody really knew how to do it (p. 13). Pivots, though, are computed safely and quickly, and for symmetric matrices (p. 14):
+
+<Formula label="Pivots and eigenvalues" tex="\text{number of positive pivots} = \text{number of positive eigenvalues} \qquad (A = A^T)" cite="reading1" at="p. 14" />
+
+If 28 of 50 pivots are positive, 28 eigenvalues are positive (p. 14). Shifting to $A - 7I$ moves every eigenvalue down by 7, so its pivots count the eigenvalues above 7: a start on computing eigenvalues (p. 14). The pivots are not the eigenvalues. Their products agree, since both give $\det A$ (the pivots when there are no row exchanges), but that says nothing about the individual numbers; the sign rule does (p. 14).
+
+## Positive definite matrices
+
+Positive definite matrices are an excellent subclass of the symmetric ones, the next section of the book (p. 15). They are symmetric with **all eigenvalues positive**, and by the sign rule, **all pivots positive**, which is the good way to test (pp. 15–16). Strang's example (pp. 15–16):
+
+<Formula label="Strang's example" tex="A = \begin{pmatrix} 5 & 2 \\ 2 & 3 \end{pmatrix}: \quad \text{pivots } 5,\ \tfrac{11}{5}; \qquad \lambda^2 - 8\lambda + 11 = 0,\ \lambda = 4 \pm \sqrt5" cite="reading1" at="pp. 15–16" />
+
+(Strang reads the matrix aloud as "five three two two": diagonal 5 and 3, as the trace 8 confirms, and off-diagonal 2, as the determinant $15 - 4 = 11$ confirms.) The second pivot is $\det A/5 = 11/5$, because the product of the pivots is the determinant (p. 16). Both eigenvalues are positive, as $4 - \sqrt5 \approx 1.76$ shows, but the pivots were simpler (p. 16).
+
+The determinant is positive too, but that alone is not enough: $\begin{pmatrix} -1 & 0 \\ 0 & -3 \end{pmatrix}$ has determinant $3$, yet its pivots and eigenvalues are $-1$ and $-3$ (p. 17). The test needs all the **upper-left sub-determinants**, starting from the $1 \times 1$ in the corner (pp. 17–18):
+
+<Formula label="Determinant test" tex="A = A^T \text{ is positive definite if and only if all } n \text{ upper-left determinants are positive}" cite="reading1" at="pp. 17–18" />
+
+The example passes ($5 > 0$, $11 > 0$); the diagonal one fails at $-1$ (p. 18). Pivots from the first week, determinants from the middle and eigenvalues from the last weeks come together here, for symmetric matrices (p. 18). The climax of the course, Strang says, will bring them together for $n \times n$ matrices that need not be symmetric (p. 18).
+
+<WorkedExample title="A symmetric matrix taken apart">
+<Problem>
+(a) Find the spectral factorisation $Q\Lambda Q^T$ of $A = \begin{pmatrix} 6 & 2 \\ 2 & 9 \end{pmatrix}$ and write $A$ as a sum of projections. Check it by the pivots. (b) How many positive eigenvalues does $C = \begin{pmatrix} 1 & 3 \\ 3 & 1 \end{pmatrix}$ have? Answer by pivots, then check.
+</Problem>
+<Step title="(a) Eigenvalues and eigenvectors">
+Trace $15$, determinant $54 - 4 = 50$: $\lambda^2 - 15\lambda + 50 = (\lambda - 10)(\lambda - 5)$. $A - 10I = \begin{pmatrix} -4 & 2 \\ 2 & -1 \end{pmatrix}$ gives $(1, 2)$; $A - 5I = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}$ gives $(2, -1)$. They are perpendicular; normalised, $q_1 = (1, 2)/\sqrt5$ and $q_2 = (2, -1)/\sqrt5$. So $Q = \frac{1}{\sqrt5}\begin{pmatrix} 1 & 2 \\ 2 & -1 \end{pmatrix}$ and $\Lambda = \begin{pmatrix} 10 & 0 \\ 0 & 5 \end{pmatrix}$.
+</Step>
+<Step title="(a) Sum of projections">
+$10q_1q_1^T = \frac{10}{5}\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix} = \begin{pmatrix} 2 & 4 \\ 4 & 8 \end{pmatrix}$ and $5q_2q_2^T = \begin{pmatrix} 4 & -2 \\ -2 & 1 \end{pmatrix}$. Their sum is $\begin{pmatrix} 6 & 2 \\ 2 & 9 \end{pmatrix} = A$. The pivots are $6$ and $50/6 = 25/3$, both positive, like both eigenvalues: $A$ is positive definite (sub-determinants $6$ and $50$).
+</Step>
+<Step title="(b) Counting by pivots">
+Elimination: first pivot $1$, second $1 - 3 \cdot 3 = -8$. One positive and one negative pivot, so one positive eigenvalue. Check: $\lambda^2 - 2\lambda - 8 = (\lambda - 4)(\lambda + 2)$, eigenvalues $4$ and $-2$; the product of the pivots, $-8$, is their product.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Real symmetric $A$: real eigenvalues, orthonormal eigenvectors (chosen so when eigenvalues repeat), $A = Q\Lambda Q^T$.
+- Proof of real $\lambda$: compare $\bar x^TAx$ two ways; it needs $A = A^T$ and $\bar x^Tx > 0$. Complex analogue: $\bar A^T = A$.
+- $A = \sum \lambda_iq_iq_i^T$, a combination of perpendicular projections.
+- Signs of pivots = signs of eigenvalues, for symmetric matrices.
+- Positive definite: all eigenvalues $> 0$ ⇔ all pivots $> 0$ ⇔ all upper-left determinants $> 0$.

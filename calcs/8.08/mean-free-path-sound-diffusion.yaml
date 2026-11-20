@@ -1,0 +1,371 @@
+# Calculations on content/year-4/8.08/mean-free-path-sound-diffusion.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter IX notes, "Transport" (Wen, handwritten scan). Page numbers are Wen's
+# handwritten numbers, top right (93-111 = PDF pages 1-19; the numbering skips 112, so 113-126 = PDF pages 20-33);
+# this page uses pp. 93-101. The notes quote no numbers on these pages.
+# Page's own example: argon (39.95 u, hard-ball radius 0.18 nm) at 300 K and 101325 Pa: density, cross-section, mean
+# free path, effusion flux, mean speed sqrt(2kT/m), D = lambda vbar/6, sound speed, spreading, damping of sound.
+# Constants: k_B (exact 2019 SI); atomic mass unit 1.66054e-27 kg (CODATA).
+
+page: content/year-4/8.08/mean-free-path-sound-diffusion.mdx
+calcs:
+  # ---------------------------------------------------------------- effusion (p. 94)
+  - id: boltzmann-normalization
+    kind: identity
+    where: 'formula "Boltzmann distribution of momenta": C (2 pi m kT)^(3/2) = n, i.e. the integral of C exp(-p^2/2mkT) d^3p is n (radial integral)'
+    formula: nn*(2*pi*mm*TT)**-1.5*integrate('4*pi*p**2*exp(-p**2/(2*mm*TT))', 'p', 0, 40*sqrt(mm*TT))
+    equals: nn
+    samples: {nn: [1.0, 3.0, 0.5], mm: [1.0, 0.5, 2.0], TT: [1.0, 2.0, 0.3]}
+    tolerance: 1e-6
+    shown: ['C = n\,(2\pi mk_BT)^{-3/2}']
+    source: {cite: reading1, at: 'p. 94'}
+    origin: mit
+
+  - id: effusion-flux
+    kind: identity
+    where: 'formula "Flux of effusion": C times the p_x integral over p_x > 0 of (p_x/m) exp(-p_x^2/2mkT) times two Gaussian integrals (2 pi m kT) equals n sqrt(kT/2 pi m)'
+    formula: nn*(2*pi*mm*TT)**-1.5*(2*pi*mm*TT)*integrate('p/mm*exp(-p**2/(2*mm*TT))', 'p', 0, 40*sqrt(mm*TT))
+    equals: nn*sqrt(TT/(2*pi*mm))
+    samples: {nn: [1.0, 3.0, 0.5], mm: [1.0, 0.5, 2.0], TT: [1.0, 2.0, 0.3]}
+    tolerance: 1e-6
+    shown: ['= n\sqrt{\frac{k_BT}{2\pi m}}']
+    source: {cite: reading1, at: 'p. 94'}
+    origin: mit
+
+  - id: effusion-quarter-mean-speed
+    kind: identity
+    where: 'text: n sqrt(kT/2 pi m) = (1/4) n <|v|> with <|v|> = sqrt(8 kT/pi m)'
+    formula: 0.25*nn*sqrt(8*TT/(pi*mm))
+    equals: nn*sqrt(TT/(2*pi*mm))
+    samples: {nn: [1.0, 3.0, 0.5], mm: [1.0, 0.5, 2.0], TT: [1.0, 2.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['it is the textbook $\frac{1}{4} n\langle|\vec v|\rangle$']
+    source: {cite: reading1, at: 'p. 94'}
+    origin: page-own
+
+  - id: quiz-effusion-mass
+    where: 'quiz 2: the flux goes as m^(-1/2), so four times the mass halves it'
+    inputs: {}
+    formula: 4**-0.5
+    expected: '0.5'
+    shown: ['Four times the mass halves the flux.']
+    source: {cite: reading1, at: 'p. 94'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- hydrodynamics and sound (pp. 96-97)
+  - id: adiabatic-invariant
+    kind: identity
+    where: 'text p. 96: with T = P/(n k), n T^(-3/2) is n^(5/2) P^(-3/2) (k = 1), and (n^(5/2) P^(-3/2))^(-2/3) = P n^(-5/3)'
+    formula: (nn*(PP/nn)**-1.5)**(-2/3)
+    equals: PP*nn**(-5/3)
+    samples: {nn: [1.0, 2.0, 0.4], PP: [1.0, 3.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['$n(n/P)^{3/2} = n^{5/2}P^{-3/2}$ is conserved, which is the same as $P\rho^{-5/3}$']
+    source: {cite: reading1, at: 'p. 96, point 3'}
+    origin: mit
+
+  - id: linearized-adiabatic
+    kind: identity
+    where: 'formula "Linearized equations": d/dt (P rho^-gamma) = 0 to first order gives dP/P0 = gamma drho/rho0 (checked with a numerical derivative along a line P = P0 + gamma (P0/rho0) e, rho = rho0 + e)'
+    formula: deriv('(P0 + gg*P0/r0*e)*(r0 + e)**(-gg)', 'e', 0)
+    equals: 0
+    samples: {P0: [1.0, 2.0], r0: [1.0, 0.5], gg: [1.6667, 1.4]}
+    tolerance: 1e-6
+    shown: ['\frac{\delta P}{P_0} = \gamma\,\frac{\delta\rho}{\rho_0}']
+    source: {cite: reading1, at: 'p. 97'}
+    origin: mit
+
+  - id: sound-speed
+    kind: identity
+    where: 'formula "Sound waves": gamma P0/rho0 = gamma kT/m with P0 = n kT, rho0 = m n'
+    formula: gg*(nn*TT)/(mm*nn)
+    equals: gg*TT/mm
+    samples: {gg: [1.6667, 1.4], nn: [1.0, 5.0], TT: [1.0, 2.0], mm: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['c = \sqrt{\frac{\gamma P_0}{\rho_0}} = \sqrt{\frac{\gamma k_BT}{m}}']
+    source: {cite: reading1, at: 'p. 97'}
+    origin: mit
+
+  # ---------------------------------------------------------------- diffusion and random walk (pp. 98-100)
+  - id: point-source-normalized
+    kind: identity
+    where: 'formula "Point source spreading": the Gaussian N (4 pi D t)^(-3/2) exp(-r^2/4Dt) holds N particles (radial integral, N = 1)'
+    formula: integrate('4*pi*r**2*exp(-r**2/(4*DD*tt))', 'r', 0, 30*sqrt(DD*tt))/(4*pi*DD*tt)**1.5
+    equals: 1
+    samples: {DD: [1.0, 0.3, 2.0], tt: [1.0, 2.0, 0.25]}
+    tolerance: 1e-6
+    shown: ['Each curve has area 1']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: mit
+
+  - id: point-source-solves-diffusion
+    kind: identity
+    where: 'formula "Point source spreading": n = (4 pi D t)^(-3/2) exp(-r^2/4Dt) obeys dn/dt = D lap n, where for this Gaussian lap n = n (r^2/(4 D^2 t^2) - 3/(2 D t)) (time derivative taken numerically at r = 1.3)'
+    formula: deriv('(4*pi*DD*s)**-1.5*exp(-1.69/(4*DD*s))', 's', tt)
+    equals: DD*(4*pi*DD*tt)**-1.5*exp(-1.69/(4*DD*tt))*(1.69/(4*DD**2*tt**2) - 3/(2*DD*tt))
+    samples: {DD: [1.0, 0.3], tt: [1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['a Gaussian that widens with time']
+    source: {cite: reading1, at: 'p. 99'}
+    origin: mit
+
+  - id: mean-square-6Dt
+    kind: identity
+    where: 'formula "Mean square displacement": the integral of r^2 over the Gaussian is 6 D t'
+    formula: integrate('4*pi*r**4*exp(-r**2/(4*DD*tt))', 'r', 0, 30*sqrt(DD*tt))/(4*pi*DD*tt)**1.5
+    equals: 6*DD*tt
+    samples: {DD: [1.0, 0.3, 2.0], tt: [1.0, 2.0, 0.25]}
+    tolerance: 1e-6
+    shown: ['= 4Dt\times\frac{3}{2} = 6Dt']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: mit
+
+  - id: gaussian-moment
+    kind: identity
+    where: 'text p. 100: the integral of x^2 exp(-x^2) over the whole line is sqrt(pi)/2'
+    formula: zz*integrate('x**2*exp(-x**2)', 'x', -12, 12)
+    equals: zz*sqrt(pi)/2
+    samples: {zz: [1.0]}
+    tolerance: 1e-6
+    shown: ['$\int dx\,x^2e^{-x^2} = \frac{1}{2}\sqrt\pi$']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: mit
+
+  - id: plot-peak
+    kind: identity
+    where: 'plot caption: r^2 exp(-r^2/4Dt) peaks at r = 2 sqrt(D t) (derivative zero there)'
+    formula: deriv('x**2*exp(-x**2/(4*DD*tt))', 'x', 2*sqrt(DD*tt))
+    equals: 0
+    samples: {DD: [1.0, 1.0, 1.0], tt: [0.25, 1.0, 4.0]}
+    tolerance: 1e-6
+    shown: ['peaks at r = 2√(Dt): at 1, 2 and 4 for Dt = 0.25, 1 and 4']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: page-own
+
+  - id: random-walk-alpha
+    kind: identity
+    where: 'text p. 100: the Gaussian (pi alpha)^(-3/2) exp(-x^2/alpha) has mean square 3 alpha/2, equal to N lambda^2 for alpha = 2 N lambda^2/3'
+    formula: integrate('4*pi*r**4*exp(-r**2/aa)', 'r', 0, 30*sqrt(aa))/(pi*aa)**1.5
+    equals: 1.5*aa
+    samples: {aa: [1.0, 0.4, 3.0]}
+    tolerance: 1e-6
+    shown: ['Its mean square is $\frac{3}{2}\alpha$']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: mit
+
+  - id: random-walk-D
+    kind: identity
+    where: 'formula "Diffusion constant of a random walk": alpha = 2 N lambda^2/3 = 4 D t with t = N tau gives D = lambda^2/(6 tau) = lambda vbar/6 with vbar = lambda/tau'
+    formula: (2*NN*ll**2/3)/(4*NN*tau)
+    equals: ll*(ll/tau)/6
+    samples: {NN: [10.0, 100.0], ll: [1.0, 0.3], tau: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['D = \frac{\lambda^2}{6\tau} = \frac{\lambda\bar v}{6}']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: mit
+
+  # ---------------------------------------------------------------- damping of sound (p. 101)
+  - id: damped-dispersion
+    kind: identity
+    where: 'formula "Dispersion relation with damping": omega = a - i b with b = D k^2/2 and a = sqrt(c^2 k^2 - b^2) solves -omega^2 + c^2 k^2 - i omega D k^2 = 0 (real part shown; the imaginary part is 2ab - aDk^2 = 0); for small D, a = ck to first order'
+    formula: -((sqrt(cc**2*kk**2 - (DD*kk**2/2)**2))**2 - (DD*kk**2/2)**2) + cc**2*kk**2 - (DD*kk**2/2)*DD*kk**2
+    equals: 0
+    samples: {cc: [1.0, 2.0], kk: [1.0, 0.5], DD: [0.01, 0.1]}
+    tolerance: 1e-9
+    shown: ['\Gamma = \frac{Dk^2}{2}']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: mit
+
+  - id: damping-rate-lambda
+    kind: identity
+    where: 'text: Gamma = D k^2/2 with D = lambda vbar/6 is lambda vbar k^2/12'
+    formula: (ll*vb/6)*kk**2/2
+    equals: ll*vb*kk**2/12
+    samples: {ll: [1.0, 0.2], vb: [1.0, 3.0], kk: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['$\Gamma = \lambda\bar vk^2/12$']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: argon at 300 K
+  - id: ex-density
+    where: 'worked example "Density...": n = P/kT'
+    inputs: {P: 101325 Pa, T: 300 K}
+    formula: P/(k_B*T)
+    expected: 2.45e25 m**-3
+    shown: ['\approx 2.45 \times 10^{25}$ m⁻³']
+    source: {cite: reading1, at: 'p. 93'}
+    origin: page-own
+
+  - id: ex-sigma
+    where: 'worked example: sigma = 4 pi r^2, r = 0.18 nm'
+    inputs: {r: 0.18 nm}
+    formula: 4*pi*r**2
+    expected: 4.07e-19 m**2
+    shown: ['\approx 4.07 \times 10^{-19}$ m²']
+    source: {cite: reading1, at: 'p. 93'}
+    origin: page-own
+
+  - id: ex-mfp
+    where: 'worked example: lambda = 1/(sigma n)'
+    inputs: {P: 101325 Pa, T: 300 K, r: 0.18 nm}
+    formula: 1/(4*pi*r**2*P/(k_B*T))
+    expected: 1.00e-7 m
+    shown: ['\approx 1.00 \times 10^{-7}$ m, about 100 nm']
+    source: {cite: reading1, at: 'p. 93'}
+    origin: page-own
+
+  - id: ex-spacing-ratio
+    where: 'worked example: lambda over the spacing n^(-1/3)'
+    inputs: {P: 101325 Pa, T: 300 K, r: 0.18 nm}
+    formula: (1/(4*pi*r**2*P/(k_B*T)))/(P/(k_B*T))**(-1/3)
+    expected: '30'
+    tolerance: 2
+    shown: ['some 30 times the spacing between atoms']
+    source: {cite: reading1, at: 'p. 93'}
+    origin: page-own
+
+  - id: ex-effusion
+    where: 'worked example: effusion flux n sqrt(kT/2 pi m)'
+    inputs: {P: 101325 Pa, T: 300 K, m: 6.6335e-26 kg}
+    formula: P/(k_B*T)*sqrt(k_B*T/(2*pi*m))
+    expected: 2.44e27 m**-2/s
+    shown: ['about $2.44 \times 10^{27}$ atoms per m² per second']
+    source: {cite: reading1, at: 'p. 94'}
+    origin: page-own
+
+  - id: ex-mass
+    where: 'worked example: m = 39.95 u'
+    inputs: {u: 1.66054e-27 kg}
+    formula: 39.95*u
+    expected: 6.63e-26 kg
+    shown: ['$m = 39.95 \times 1.6605 \times 10^{-27} \approx 6.63 \times 10^{-26}$ kg']
+    source: {cite: reading1, at: 'p. 98'}
+    origin: page-own
+
+  - id: ex-vbar
+    where: 'worked example: vbar = sqrt(2kT/m)'
+    inputs: {T: 300 K, m: 6.6335e-26 kg}
+    formula: sqrt(2*k_B*T/m)
+    expected: 353 m/s
+    shown: ['$\bar v = \sqrt{2k_BT/m} \approx 353$ m/s']
+    source: {cite: reading1, at: 'p. 98'}
+    origin: page-own
+
+  - id: ex-D
+    where: 'worked example: D = lambda vbar/6'
+    inputs: {lam: 1.004e-7 m, vb: 353.4 m/s}
+    formula: lam*vb/6
+    expected: 5.9e-6 m**2/s
+    shown: ['$D = \lambda\bar v/6 \approx 5.9 \times 10^{-6}$ m²/s']
+    source: {cite: reading1, at: 'p. 98'}
+    origin: page-own
+
+  - id: ex-sound
+    where: 'worked example: c = sqrt(5kT/3m)'
+    inputs: {T: 300 K, m: 6.6335e-26 kg}
+    formula: sqrt(5*k_B*T/(3*m))
+    expected: 323 m/s
+    shown: ['$c = \sqrt{5k_BT/3m} \approx 323$ m/s']
+    source: {cite: reading1, at: 'p. 97'}
+    origin: page-own
+
+  - id: ex-spread-1s
+    where: 'worked example "Spreading": sqrt(6 D t) after 1 s'
+    inputs: {D: 5.913e-6 m**2/s, t: 1 s}
+    formula: sqrt(6*D*t)
+    expected: 6.0 mm
+    shown: ['about 6.0 mm after one second']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: page-own
+
+  - id: ex-spread-1h
+    where: 'worked example "Spreading": sqrt(6 D t) after 1 hour'
+    inputs: {D: 5.913e-6 m**2/s, t: 3600 s}
+    formula: sqrt(6*D*t)
+    expected: 36 cm
+    shown: ['36 cm after an hour (3600 times the time, 60 times the distance)']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: page-own
+
+  - id: ex-sqrt-3600
+    where: 'worked example: sqrt(3600)'
+    inputs: {}
+    formula: sqrt(3600)
+    expected: '60'
+    shown: ['60 times the distance']
+    source: {cite: reading1, at: 'p. 100'}
+    origin: page-own
+
+  - id: ex-k-1khz
+    where: 'worked example "Damping of sound": k = 2 pi f/c at 1 kHz'
+    inputs: {f: 1000 Hz, c: 322.6 m/s}
+    formula: 2*pi*f/c
+    expected: 19.5 m**-1
+    shown: ['$k = 2\pi f/c \approx 19.5$ m⁻¹']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-gamma-1khz
+    where: 'worked example: Gamma = D k^2/2 at 1 kHz'
+    inputs: {D: 5.913e-6 m**2/s, k: 19.477 m**-1}
+    formula: D*k**2/2
+    expected: 1.1e-3 s**-1
+    shown: ['\Gamma = Dk^2/2 \approx 1.1 \times 10^{-3}$ s⁻¹']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-decay-time-1khz
+    where: 'worked example: decay time 1/Gamma at 1 kHz'
+    inputs: {G: 1.1216e-3 s**-1}
+    formula: 1/G
+    expected: 890 s
+    tolerance: 5 s
+    shown: ['about 890 s to decay']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-decay-distance-1khz
+    where: 'worked example: distance c/Gamma at 1 kHz'
+    inputs: {G: 1.1216e-3 s**-1, c: 322.6 m/s}
+    formula: c/G
+    expected: 290 km
+    tolerance: 5 km
+    shown: ['some 290 km']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-gamma-100khz
+    where: 'worked example: Gamma at 100 kHz (k 100 times larger, Gamma 10^4 times larger)'
+    inputs: {D: 5.913e-6 m**2/s, k: 1947.7 m**-1}
+    formula: D*k**2/2
+    expected: 11 s**-1
+    shown: ['about 11 s⁻¹']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-distance-100khz
+    where: 'worked example: c/Gamma at 100 kHz'
+    inputs: {G: 11.216 s**-1, c: 322.6 m/s}
+    formula: c/G
+    expected: 29 m
+    shown: ['the wave dies within about 29 m']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-lambda-k
+    where: 'worked example: lambda k at 100 kHz'
+    inputs: {lam: 1.004e-7 m, k: 1947.7 m**-1}
+    formula: lam*k
+    expected: '2e-4'
+    shown: ['$\lambda k \approx 2 \times 10^{-4}$']
+    source: {cite: reading1, at: 'p. 101'}
+    origin: page-own
+
+  - id: ex-mfp-sqrt2
+    where: 'remark after the worked example: lambda/sqrt(2) for moving collision partners (review finding)'
+    inputs: {lam: 1.004e-7 m}
+    formula: lam/sqrt(2)
+    expected: 71 nm
+    shown: ['the mean free path would be about 71 nm']
+    source: {cite: reading1, at: 'p. 93'}
+    origin: page-own

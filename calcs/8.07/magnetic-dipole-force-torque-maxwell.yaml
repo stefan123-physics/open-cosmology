@@ -1,0 +1,239 @@
+# Calculations on content/year-4/8.07/magnetic-dipole-force-torque-maxwell.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 11, "Magnetic Dipoles and Magnetic Fields in Matter" (Guth, handwritten
+# slides, Lecture 26, November 9, 2012), slides 15-23 on this page. No numbered equations and no quoted numbers apart
+# from the coefficients 4 pi/3 and 8 pi/3.
+# Page's own worked example: a long wire along z with I = 10 A; a magnet m = 0.2 A m^2 at (s, 0, 0), s = 0.05 m,
+# (a) m along +y, (b) m along +x. mu0/2pi = 2e-7 T m/A.
+
+page: content/year-4/8.07/magnetic-dipole-force-torque-maxwell.mdx
+calcs:
+  # ---------------------------------------------------------------- the delta-function coefficients
+  - id: coefficient-2-over-3
+    kind: identity
+    where: 'slide 19: (mu0/4pi)(8 pi/3) = 2 mu0/3, the coefficient of slide 5 written inside the bracket'
+    formula: MU/(4*pi)*(8*pi/3)
+    equals: 2*MU/3
+    samples: {MU: [1.2566e-6, 1.0]}
+    tolerance: 1e-12
+    shown: ['2\mu_0/3 = (\mu_0/4\pi)(8\pi/3)']
+    source: {cite: reading1, at: 'slide 19'}
+    origin: mit
+
+  - id: trace-of-delta-term
+    kind: value
+    where: 'remark after slide 20: the trace of (4 pi/3) delta_ij is 3 x 4 pi/3 = 4 pi, the trace of -d_i d_j (1/r) = 4 pi delta^3 (coefficient of delta^3)'
+    formula: 3*(4*pi/3)/pi
+    expected: '4'
+    shown: ['so it is a third of $4\pi$ on each diagonal entry']
+    source: {cite: reading1, at: 'slide 20'}
+    origin: page-own
+
+  - id: divergence-coefficient
+    kind: value
+    where: 'slide 20: -4 pi + 4 pi/3 = -8 pi/3 (in units of pi)'
+    formula: (-4*pi + 4*pi/3)/pi
+    expected: '-2.66667'
+    tolerance: 1e-5
+    shown: ['= -4\pi\left(\vec m \cdot \nabla\right)\delta^3(\vec r) + \frac{4\pi}{3}\left(\vec m \cdot \nabla\right)\delta^3(\vec r) = -\frac{8\pi}{3}']
+    source: {cite: reading1, at: 'slide 20'}
+    origin: mit
+
+  - id: curl-coefficient-sum
+    kind: value
+    where: 'slides 21-22: -4 pi/3 - 8 pi/3 = -4 pi; times mu0/4pi gives -mu0 (in units of pi)'
+    formula: (-4*pi/3 - 8*pi/3)/pi
+    expected: '-4'
+    tolerance: 1e-9
+    shown: ['and the two add up to $-4\pi\,\vec m \times \nabla\delta^3$']
+    source: {cite: reading1, at: 'slide 22'}
+    origin: mit
+
+  - id: electric-divergence-sum
+    kind: value
+    where: 'slide 23: the divergences of the electric field terms add, -8 pi/3 - 4 pi/3 = -4 pi (in units of pi)'
+    formula: (-8*pi/3 - 4*pi/3)/pi
+    expected: '-4'
+    tolerance: 1e-9
+    shown: ['$-\frac{8\pi}{3} - \frac{4\pi}{3} = -4\pi$']
+    source: {cite: reading1, at: 'slide 23'}
+    origin: mit
+
+  # ---------------------------------------------------------------- derivatives away from the origin
+  - id: second-derivative-diagonal
+    kind: identity
+    where: 'slide 20, away from the origin: d/dx (x/r^3) = (1 - 3 x^2/r^2)/r^3'
+    formula: deriv('x/(x**2 + YY**2 + ZZ**2)**1.5', 'x', XX, 1)
+    equals: (1 - 3*XX**2/(XX**2 + YY**2 + ZZ**2))/(XX**2 + YY**2 + ZZ**2)**1.5
+    samples: {XX: [0.3, 1.2, -0.7], YY: [0.5, -0.4, 0.9], ZZ: [0.2, 0.8, 0.6]}
+    tolerance: 1e-6
+    shown: ['\frac{\delta_{ij} - 3\hat r_i\hat r_j}{r^3} + \frac{4\pi}{3}\,\delta_{ij}\,\delta^3(\vec r)']
+    source: {cite: reading1, at: 'slide 20'}
+    origin: mit
+
+  - id: second-derivative-offdiagonal
+    kind: identity
+    where: 'slide 20, away from the origin: d/dx (y/r^3) = -3 x y/r^5, the off-diagonal entry (delta_ij = 0)'
+    formula: deriv('YY/(x**2 + YY**2 + ZZ**2)**1.5', 'x', XX, 1)
+    equals: -3*XX*YY/(XX**2 + YY**2 + ZZ**2)**2.5
+    samples: {XX: [0.3, 1.2, -0.7], YY: [0.5, -0.4, 0.9], ZZ: [0.2, 0.8, 0.6]}
+    tolerance: 1e-6
+    shown: ['Guth recalls an identity for the second derivatives of $1/r$ (slide 20)']
+    source: {cite: reading1, at: 'slide 20'}
+    origin: mit
+
+  - id: divergence-of-g-away
+    kind: identity
+    where: 'slides 20-21: away from the origin the divergence of G = (3(m.r)r - m)/r^3 vanishes; m = z-hat, G = (3 x z, 3 y z, 3 z^2 - r^2)/r^5 (checked with 1 added)'
+    formula: deriv('3*x*ZZ/(x**2 + YY**2 + ZZ**2)**2.5', 'x', XX, 1) + deriv('3*y*ZZ/(XX**2 + y**2 + ZZ**2)**2.5', 'y', YY, 1) + deriv('(2*z**2 - XX**2 - YY**2)/(XX**2 + YY**2 + z**2)**2.5', 'z', ZZ, 1) + 1
+    equals: 1
+    samples: {XX: [0.3, 1.2, -0.7], YY: [0.5, -0.4, 0.9], ZZ: [0.2, 0.8, 0.6]}
+    tolerance: 1e-6
+    shown: ['Away from the origin both are easy, and both sides vanish.']
+    source: {cite: reading1, at: 'slide 20'}
+    origin: page-own
+
+  - id: curl-of-g-away
+    kind: identity
+    where: 'slides 21-22: away from the origin the curl of G vanishes; z component dG_y/dx - dG_x/dy for m = z-hat (checked with 1 added)'
+    formula: deriv('3*YY*ZZ/(x**2 + YY**2 + ZZ**2)**2.5', 'x', XX, 1) - deriv('3*XX*ZZ/(XX**2 + y**2 + ZZ**2)**2.5', 'y', YY, 1) + 1
+    equals: 1
+    samples: {XX: [0.3, 1.2, -0.7], YY: [0.5, -0.4, 0.9], ZZ: [0.2, 0.8, 0.6]}
+    tolerance: 1e-6
+    shown: ['which is symmetric in $j$ and $k$ and gives zero (slide 21)']
+    source: {cite: reading1, at: 'slide 21'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: example-mu0-i-over-2pi
+    kind: value
+    where: 'worked example: mu0 I/2pi = 2e-7 x 10 (T m)'
+    formula: 2e-7*10
+    expected: '2e-6'
+    shown: ['2 \times 10^{-7} \times 10 = 2 \times 10^{-6}']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-field
+    kind: value
+    where: 'worked example: B = 2e-6 / 0.05 (T)'
+    formula: 2e-6/0.05
+    expected: '4.0e-5'
+    shown: ['2 \times 10^{-6}/0.05 = 4.0 \times 10^{-5}']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-field-microtesla
+    kind: value
+    where: 'summary: the same field in microtesla'
+    formula: 2e-6/0.05*1e6
+    expected: '40'
+    tolerance: 1e-9
+    shown: ['($B = 40$ μT)']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-energy
+    kind: value
+    where: 'worked example (a): U = -m B = -0.2 x 4.0e-5 (J)'
+    formula: -0.2*4.0e-5
+    expected: '-8.0e-6'
+    shown: ['0.2 \times 4.0 \times 10^{-5} = -8.0']
+    source: {cite: reading1, at: 'slide 17'}
+    origin: page-own
+
+  - id: example-energy-microjoule
+    kind: value
+    where: 'summary: U in microjoules'
+    formula: -0.2*4.0e-5*1e6
+    expected: '-8.0'
+    shown: ['$U = -8.0$ μJ']
+    source: {cite: reading1, at: 'slide 17'}
+    origin: page-own
+
+  - id: example-force
+    kind: value
+    where: 'worked example (a) and quiz 2: m mu0 I/(2 pi s^2) = 0.2 x 2e-6 / 0.0025 (N)'
+    formula: 0.2*2e-6/0.05**2
+    expected: '1.6e-4'
+    shown: ['0.2 \times 2 \times 10^{-6}/0.0025 = 1.6']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-force-gradient-a
+    kind: identity
+    where: 'worked example (a): d/dx of x/(x^2 + y^2) at (s, 0) is -1/s^2, so grad(m.B) = -m mu0 I/(2 pi s^2) x-hat'
+    formula: deriv('x/(x**2 + 0**2)', 'x', SS, 1)
+    equals: -1/SS**2
+    samples: {SS: [0.05, 1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['whose gradient at $(s, 0, 0)$ is $-\frac{m\mu_0 I}{2\pi s^2}\,\hat x$']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-force-gradient-b
+    kind: identity
+    where: 'worked example (b): d/dy of -y/(x^2 + y^2) at (s, 0) is -1/s^2, so grad(m.B) = -m mu0 I/(2 pi s^2) y-hat = -1.6e-4 N y-hat'
+    formula: deriv('-y/(SS**2 + y**2)', 'y', 0, 1)
+    equals: -1/SS**2
+    samples: {SS: [0.05, 1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['changes along $y$, and its gradient at the magnet is $-1.6 \times 10^{-4}\,\hat y$ N']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-force-check
+    kind: identity
+    where: 'worked example check: (m.grad)B in (b) is m dB_y/dx at (s, 0), with B_y = (mu0 I/2pi) x/(x^2 + y^2): d/dx = -1/s^2 times mu0 I/2pi'
+    formula: deriv('x/(x**2 + 0**2)', 'x', SS, 1)*2e-6*0.2
+    equals: -0.2*2e-6/SS**2
+    samples: {SS: [0.05, 1.0]}
+    tolerance: 1e-6
+    shown: ['again $-1.6']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: example-torque
+    kind: value
+    where: 'worked example (b): tau = m B = 0.2 x 4.0e-5 (N m), along z-hat'
+    formula: 0.2*4.0e-5
+    expected: '8.0e-6'
+    shown: ['8.0 \times 10^{-6}\,\hat z']
+    source: {cite: reading1, at: 'slide 19'}
+    origin: page-own
+
+  - id: example-torque-summary
+    kind: value
+    where: 'summary: the torque in (b)'
+    formula: 0.2*4.0e-5
+    expected: '8.0e-6'
+    shown: ['it feels a torque of $8.0 \times 10^{-6}$ N m']
+    source: {cite: reading1, at: 'slide 19'}
+    origin: page-own
+
+  - id: example-force-summary
+    kind: value
+    where: 'summary: the force in (a)'
+    formula: 0.2*2e-6/0.05**2
+    expected: '1.6e-4'
+    shown: ['feels $1.6 \times 10^{-4}$ N toward the wire']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-force
+    kind: value
+    where: 'quiz 2: F = -m mu0 I/2 pi s^2 = -0.2 x 2e-6/0.0025 (N)'
+    formula: -0.2*2e-6/0.05**2
+    expected: '-1.6e-4'
+    shown: ['= -0.2 \\times 2 \\times 10^{-6}/0.0025 = -1.6 \\times 10^{-4}$ N']
+    source: {cite: reading1, at: 'slide 16'}
+    origin: page-own
+
+  - id: quiz-energy-distractor
+    kind: value
+    where: 'quiz 2, wrong choice: |U| = m mu0 I/(2 pi s) = 0.2 x 2e-6/0.05 (J), offered as a force'
+    formula: 0.2*2e-6/0.05
+    expected: '8.0e-6'
+    shown: ['$8.0 \\times 10^{-6}$ is the energy in joules']
+    source: {cite: reading1, at: 'slide 17'}
+    origin: page-own

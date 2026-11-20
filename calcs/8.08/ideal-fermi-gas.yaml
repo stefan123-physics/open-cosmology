@@ -1,0 +1,403 @@
+# Calculations on content/year-4/8.08/ideal-fermi-gas.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter VIII notes, "The Fermi Gas" (Wen, handwritten scan). Page numbers are Wen's
+# handwritten numbers, top right (76-92 = PDF pages 1-13 and 15-18; PDF page 14 is an unnumbered homework sketch).
+# This page uses pp. 76-81 (PDF pages 1-6). Only p. 76 carries a circled number (point 1). The notes quote no numbers
+# on these pages. Identities use units hbar = m = k_B = 1 unless stated.
+# Page's own example: a spin-polarized gas of potassium-40 atoms, n = 1.0e19 m^-3, m = 39.964 u = 6.636e-26 kg.
+
+page: content/year-4/8.08/ideal-fermi-gas.mdx
+calcs:
+  # ---------------------------------------------------------------- grand partition function (p. 76)
+  - id: qg-factorizes
+    kind: identity
+    where: 'formula "Grand partition function of free fermions": for three states, the sum over all 8 sets of occupation numbers of exp(-sum x_k n_k) equals the product of (1 + exp(-x_k)), x_k = beta(eps_k - mu)'
+    formula: 1 + exp(-x1) + exp(-x2) + exp(-x3) + exp(-x1-x2) + exp(-x1-x3) + exp(-x2-x3) + exp(-x1-x2-x3)
+    equals: (1 + exp(-x1))*(1 + exp(-x2))*(1 + exp(-x3))
+    samples: {x1: [0.3, -1.0, 2.0], x2: [1.5, 0.2, -0.5], x3: [-0.7, 3.0, 0.9]}
+    tolerance: 1e-12
+    shown: ['the sum over all sets splits into a product of independent sums']
+    source: {cite: reading1, at: 'p. 76'}
+    origin: mit
+
+  - id: n-from-omega
+    kind: identity
+    where: 'formula "Number of particles": -d/dmu of -kT ln(1 + exp(-(eps - mu)/kT)) is 1/(exp((eps - mu)/kT) + 1) (numerical derivative)'
+    formula: deriv('TT*log(1 + exp(-(ee - x)/TT))', 'x', mu)
+    equals: 1/(exp((ee - mu)/TT) + 1)
+    samples: {TT: [1.0, 0.3, 2.0], ee: [1.0, 2.0, 0.5], mu: [0.5, 2.2, -1.0]}
+    tolerance: 1e-6
+    shown: ['The mean number of particles is minus the derivative with respect to $\mu$']
+    source: {cite: reading1, at: 'p. 77'}
+    origin: mit
+
+  - id: fd-half
+    kind: identity
+    where: 'text: the Fermi-Dirac occupation is exactly 1/2 at eps = mu (checked as n + 1 = 1.5)'
+    formula: 1/(exp(0*TT) + 1) + 1
+    equals: 1.5
+    samples: {TT: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['it is exactly $\frac12$ at $\epsilon_k = \mu$']
+    source: {cite: reading1, at: 'p. 77'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- equation of state (p. 77)
+  - id: deps-dv
+    kind: identity
+    where: 'formula "How the energies depend on the volume": d/dV of C V^(-2/3) is -(2/3) eps/V (numerical derivative)'
+    formula: deriv('cc*x**(-2/3)', 'x', VV)
+    equals: -2/3*cc*VV**(-2/3)/VV
+    samples: {cc: [1.0, 3.5, 0.2], VV: [1.0, 8.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['\frac{\partial\epsilon_k}{\partial V} = -\frac23\,\frac{\epsilon_k}{V}']
+    source: {cite: reading1, at: 'p. 77'}
+    origin: mit
+
+  - id: plot1-caption-agree
+    kind: identity
+    where: 'plot caption (occupation): for x = (eps - mu)/kT several units above 0, 1/(e^x + 1) and e^(-x) agree (relative difference below 1% at x = 5)'
+    formula: (exp(-xx) - 1/(exp(xx) + 1))/exp(-xx) + 1
+    equals: 1
+    samples: {xx: [5.0, 6.0]}
+    tolerance: 0.01
+    shown: ['For states several k_BT above μ the two curves agree']
+    source: {cite: reading1, at: 'p. 78'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- high-temperature limit (p. 78)
+  - id: classical-ratio
+    kind: identity
+    where: 'formula "The classical limit": (2/3) <eps> with Boltzmann weights is kT (radial integrals, hbar = m = 1, eps = k^2/2)'
+    formula: 2/3*integrate('k**4/2*exp(-k**2/(2*TT))', 'k', 0, 40*sqrt(TT))/integrate('k**2*exp(-k**2/(2*TT))', 'k', 0, 40*sqrt(TT))
+    equals: TT
+    samples: {TT: [1.0, 0.25, 3.0]}
+    tolerance: 1e-6
+    shown: ['= \frac23\langle\epsilon_k\rangle = \frac23\,\frac{-\partial I/\partial\beta}{I} = \frac1\beta = k_BT']
+    source: {cite: reading1, at: 'p. 78'}
+    origin: mit
+
+  - id: i-beta-power
+    kind: identity
+    where: 'formula "The classical limit": I(beta) = integral d^3k exp(-beta k^2/2) is proportional to beta^(-3/2) (ratio I(b)/I(2b) = 2^(3/2))'
+    formula: integrate('4*pi*k**2*exp(-bb*k**2/2)', 'k', 0, 60/sqrt(bb))/integrate('4*pi*k**2*exp(-2*bb*k**2/2)', 'k', 0, 60/sqrt(bb))
+    equals: 2**1.5
+    samples: {bb: [1.0, 0.3, 4.0]}
+    tolerance: 1e-6
+    shown: ['Writing $I(\beta) = \int d^3k\,e^{-\beta\epsilon_k} \propto \beta^{-3/2}$']
+    source: {cite: reading1, at: 'p. 78'}
+    origin: mit
+
+  # ---------------------------------------------------------------- zero temperature (pp. 78-79)
+  - id: kf-count
+    kind: identity
+    where: 'formula "Fermi wave vector, one spin state": the volume of the sphere over (2 pi)^3 is k_F^3/(6 pi^2)'
+    formula: 4*pi/3*kf**3/(2*pi)**3
+    equals: kf**3/(6*pi**2)
+    samples: {kf: [1.0, 2.5, 0.3]}
+    tolerance: 1e-12
+    shown: ['= \frac{1}{(2\pi)^3}\,\frac{4\pi}{3}k_F^3 = \frac{k_F^3}{6\pi^2}']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: mit
+
+  - id: p-zero-integral
+    kind: identity
+    where: 'formula "Pressure at zero temperature": (2/3) integral over k < kF of (hbar^2 k^2/2m) d^3k/(2 pi)^3 = hbar^2 kF^5/(30 pi^2 m) (hbar = 1, m = mm)'
+    formula: 2/3*integrate('4*pi*k**2*k**2/(2*mm)', 'k', 0, kf)/(2*pi)**3
+    equals: kf**5/(30*pi**2*mm)
+    samples: {kf: [1.0, 2.0, 0.5], mm: [1.0, 3.0, 0.7]}
+    tolerance: 1e-9
+    shown: ['\int_0^{k_F}4\pi k^4\,dk = \frac{\hbar^2k_F^5}{30\pi^2m}']
+    source: {cite: reading1, at: 'p. 78'}
+    origin: mit
+
+  - id: p-zero-density
+    kind: identity
+    where: 'formula "Fermi pressure": with kF = (6 pi^2 n)^(1/3), hbar^2 kF^5/(30 pi^2 m) = (6 pi^2)^(5/3)/(15 pi^2) (hbar^2 n^(2/3)/2m) n = (2/5) n epsF (hbar = 1)'
+    formula: (6*pi**2*nn)**(5/3)/(30*pi**2*mm)
+    equals: 0.4*nn*(6*pi**2*nn)**(2/3)/(2*mm)
+    samples: {nn: [1.0, 0.2, 5.0], mm: [1.0, 2.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['P = \frac{(6\pi^2)^{5/3}}{15\pi^2}\,\frac{\hbar^2n^{2/3}}{2m}\,n = \frac25\,n\epsilon_F']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: mit
+
+  - id: p-zero-wen-form
+    kind: identity
+    where: 'formula "Fermi pressure": Wen''s boxed form (6 pi^2)^(5/3)/(15 pi^2) hbar^2 n^(2/3)/(2m) n equals hbar^2 kF^5/(30 pi^2 m)'
+    formula: (6*pi**2)**(5/3)/(15*pi**2)*nn**(2/3)/(2*mm)*nn
+    equals: (6*pi**2*nn)**(5/3)/(30*pi**2*mm)
+    samples: {nn: [1.0, 0.2, 5.0], mm: [1.0, 2.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['V^{5/3}P = \frac{(6\pi^2)^{5/3}\hbar^2}{30\pi^2m}\,N^{5/3}']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: mit
+
+  - id: plot2-classical
+    kind: identity
+    where: 'plot caption (P-V): in units of P0 = (2/5) n0 epsF0 at V0, the classical isotherm N kT/V is (5/2)(T/T_F)/(V/V0) (kB = 1)'
+    formula: (NN*TT/(xx*V0))/(0.4*NN/V0*TF)
+    equals: 2.5*(TT/TF)/xx
+    samples: {NN: [1.0, 10.0], TT: [0.5, 2.0], xx: [1.0, 2.5], V0: [1.0, 3.0], TF: [1.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['so the classical curve is (5/2)(T/T_F)/(V/V₀)']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: nlambda3-tf
+    kind: identity
+    where: 'text: for one spin state n lambda^3 = (4/(3 sqrt(pi))) (T_F/T)^(3/2), with n = kF^3/(6 pi^2), lambda = sqrt(2 pi/T), T_F = kF^2/2 (hbar = m = k_B = 1)'
+    formula: kf**3/(6*pi**2)*(2*pi/TT)**1.5
+    equals: 4/(3*sqrt(pi))*(kf**2/2/TT)**1.5
+    samples: {kf: [1.0, 2.0, 0.4], TT: [1.0, 5.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['$n\lambda^3 = \frac{4}{3\sqrt\pi}\,(T_F/T)^{3/2}$, with $T_F = \epsilon_F/k_B$']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: classical-condition-direction
+    kind: identity
+    where: 'formula "Condition for the classical limit": sqrt(2 m kT)/hbar compared with n^(1/3): sqrt(2mkT)/hbar / kF = sqrt(T/T_F), so the classical condition kT >> eps_F is sqrt(2mkT)/hbar >> kF (the notes write <<); checked as the identity (sqrt(2T)/kf)^2 = T/T_F'
+    formula: (sqrt(2*TT)/kf)**2
+    equals: TT/(kf**2/2)
+    samples: {kf: [1.0, 2.0], TT: [3.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['(The notes write the first inequality the other way round, $\ll$']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: slip
+
+  # ---------------------------------------------------------------- high-temperature expansion (pp. 80-81)
+  - id: gauss-lambda
+    kind: identity
+    where: 'formula "Grand potential and free energy at high temperature": integral d^3k/(2 pi)^3 exp(-beta k^2/2m) = lambda^-3 with lambda = sqrt(2 pi hbar^2/m kT) (hbar = 1)'
+    formula: integrate('4*pi*k**2*exp(-k**2/(2*mm*TT))', 'k', 0, 60*sqrt(mm*TT))/(2*pi)**3
+    equals: (2*pi/(mm*TT))**(-1.5)
+    samples: {mm: [1.0, 0.5, 3.0], TT: [1.0, 2.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['\int\frac{d^3k}{(2\pi)^3}\,e^{-\beta\epsilon_k} = \lambda^{-3}" cite']
+    source: {cite: reading1, at: 'p. 80'}
+    origin: mit
+
+  - id: gauss-two-beta
+    kind: identity
+    where: 'text: integral d^3k/(2 pi)^3 exp(-2 beta eps) = 2^(-3/2) lambda^-3'
+    formula: integrate('4*pi*k**2*exp(-2*k**2/(2*mm*TT))', 'k', 0, 60*sqrt(mm*TT))/(2*pi)**3
+    equals: 2**(-1.5)*(2*pi/(mm*TT))**(-1.5)
+    samples: {mm: [1.0, 0.5, 3.0], TT: [1.0, 2.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['$\int\frac{d^3k}{(2\pi)^3}e^{-2\beta\epsilon_k} = 2^{-3/2}\lambda^{-3}$']
+    source: {cite: reading1, at: 'p. 80'}
+    origin: mit
+
+  - id: fugacity-inversion
+    kind: identity
+    where: 'formula "Fugacity in terms of the density": z = x + x^2/2^(3/2) solves x = z - z^2/2^(3/2) to second order (checked at x = 1e-3, where the relative remainder is about x^2/4)'
+    formula: (xx + xx**2/2**1.5) - (xx + xx**2/2**1.5)**2/2**1.5
+    equals: xx
+    samples: {xx: [0.001, 0.0005]}
+    tolerance: 1e-6
+    shown: ['z = n\lambda^3 + \frac{(n\lambda^3)^2}{2^{3/2}}, \qquad \mu = k_BT\ln z']
+    source: {cite: reading1, at: 'p. 80'}
+    origin: mit
+
+  - id: free-energy-correction
+    kind: identity
+    where: 'formula "Free energy with the first quantum correction": the exact A/(N kT) = ln z - f_5/2(z)/x, with x = f_3/2(z) (series to z^6), agrees with ln x - 1 + x/2^(5/2) to second order (checked at z = 0.002, relative tolerance 1e-5)'
+    formula: log(zz) - (zz - zz**2/2**2.5 + zz**3/3**2.5 - zz**4/4**2.5)/(zz - zz**2/2**1.5 + zz**3/3**1.5 - zz**4/4**1.5)
+    equals: log(zz - zz**2/2**1.5 + zz**3/3**1.5) - 1 + (zz - zz**2/2**1.5)/2**2.5
+    samples: {zz: [0.002, 0.001]}
+    tolerance: 1e-5
+    shown: ['A = Nk_BT\left(\ln n\lambda^3 - 1 + \frac12\,\frac{n\lambda^3}{2^{3/2}}\right)']
+    source: {cite: reading1, at: 'p. 81'}
+    origin: mit
+
+  - id: pressure-correction
+    kind: identity
+    where: 'formula "Pressure with the quantum correction": -dA/dV of N kT (ln(N lam^3/V) - 1 + N lam^3/(2^(5/2) V)) (numerical derivative)'
+    formula: -deriv('NN*TT*(log(NN*lam**3/x) - 1 + NN*lam**3/(2**2.5*x))', 'x', VV)
+    equals: NN*TT/VV + TT*NN**2*lam**3/(2**2.5*VV**2)
+    samples: {NN: [10.0, 3.0], TT: [1.0, 2.0], lam: [0.3, 0.5], VV: [20.0, 7.0]}
+    tolerance: 1e-6
+    shown: ['P = -\frac{\partial A}{\partial V} = \frac{Nk_BT}{V} + k_BT\,\frac{N^2\lambda^3}{2^{5/2}V^2}']
+    source: {cite: reading1, at: 'p. 81'}
+    origin: mit
+
+  - id: half-of-two-three-halves
+    kind: identity
+    where: 'text: (1/2) n lambda^3/2^(3/2) = n lambda^3/2^(5/2)'
+    formula: 0.5/2**1.5
+    equals: 1/2**2.5
+    samples: {dd: [1.0]}
+    tolerance: 1e-12
+    shown: ['$PV/(Nk_BT) = 1 + n\lambda^3/2^{5/2}$, a positive second virial coefficient']
+    source: {cite: reading1, at: 'p. 81'}
+    origin: mit
+
+  # ---------------------------------------------------------------- quiz 3
+  - id: quiz-prefactor
+    where: 'quiz 3 explanation and worked example: 4/(3 sqrt(pi))'
+    inputs: {}
+    formula: 4/(3*sqrt(pi))
+    expected: '0.752'
+    shown: ['$\\frac{4}{3\\sqrt\\pi} = 0.752$', '= 0.752 \times (0.428/2.0)^{3/2}']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: quiz-third-power
+    where: 'quiz 3 explanation: (1/3)^(3/2)'
+    inputs: {}
+    formula: (1/3)**1.5
+    expected: '0.192'
+    shown: ['$(1/3)^{3/2} = 0.192$']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: quiz-nlambda3
+    where: 'quiz 3: n lambda^3 at T = 3 T_F'
+    inputs: {}
+    formula: 4/(3*sqrt(pi))*(1/3)**1.5
+    expected: '0.14'
+    shown: ['so $n\\lambda^3 \\approx 0.14$']
+    quiz: 2
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: quiz-correction
+    where: 'quiz 3 explanation: n lambda^3/2^(5/2) at T = 3 T_F'
+    inputs: {}
+    formula: 4/(3*sqrt(pi))*(1/3)**1.5/2**2.5
+    expected: '0.026'
+    shown: ['$n\\lambda^3/2^{5/2} \\approx 0.026$']
+    source: {cite: reading1, at: 'p. 81'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: potassium-40
+  - id: ex-mass
+    where: 'worked example: m = 39.964 u'
+    inputs: {mu_K: 39.96399848, u: 1.66053906660e-27 kg}
+    formula: mu_K*u
+    expected: 6.636e-26 kg
+    shown: ['$m = 6.636 \times 10^{-26}$ kg']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-kf
+    where: 'worked example (a): kF = (6 pi^2 n)^(1/3)'
+    inputs: {n: 1.0e19 m**-3}
+    formula: (6*pi**2*n)**(1/3)
+    expected: 8.40e6 m**-1
+    shown: ['\approx 8.40 \times 10^6$ m⁻¹']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-epsf
+    where: 'worked example (a): eps_F = hbar^2 kF^2/2m'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg}
+    formula: hbar**2*(6*pi**2*n)**(2/3)/(2*mK)
+    expected: 5.91e-30 J
+    shown: ['\approx 5.91 \times 10^{-30}$ J']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-tf
+    where: 'worked example (a): T_F = eps_F/k_B'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg}
+    formula: hbar**2*(6*pi**2*n)**(2/3)/(2*mK)/k_B
+    expected: 0.43 microkelvin
+    shown: ['$T_F = \epsilon_F/k_B \approx 0.43$ μK']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-tf-unrounded
+    where: 'worked example (b): T_F unrounded'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg}
+    formula: hbar**2*(6*pi**2*n)**(2/3)/(2*mK)/k_B
+    expected: 0.428 microkelvin
+    shown: ['(0.428/2.0)^{3/2}']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-lambda
+    where: 'worked example (b): lambda at 2.0 microK'
+    inputs: {mK: 6.636e-26 kg, T: 2.0 microK}
+    formula: sqrt(2*pi*hbar**2/(mK*k_B*T))
+    expected: 0.195 micrometer
+    shown: ['\approx 0.195$ μm']
+    source: {cite: reading1, at: 'p. 80'}
+    origin: page-own
+
+  - id: ex-nlambda3
+    where: 'worked example (b): n lambda^3'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg, T: 2.0 microK}
+    formula: n*(2*pi*hbar**2/(mK*k_B*T))**1.5
+    expected: '0.074'
+    shown: ['so $n\lambda^3 \approx 0.074$']
+    source: {cite: reading1, at: 'p. 80'}
+    origin: page-own
+
+  - id: ex-nlambda3-check
+    where: 'worked example (b): 0.752 (0.428/2.0)^(3/2) gives the same n lambda^3'
+    inputs: {}
+    formula: 0.752*(0.428/2.0)**1.5
+    expected: '0.074'
+    tolerance: '0.0006'
+    shown: ['with $T_F$ unrounded, gives the same']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-correction
+    where: 'worked example (b): n lambda^3/2^(5/2)'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg, T: 2.0 microK}
+    formula: n*(2*pi*hbar**2/(mK*k_B*T))**1.5/2**2.5
+    expected: '0.013'
+    shown: ['$n\lambda^3/2^{5/2} \approx 0.013$']
+    source: {cite: reading1, at: 'p. 81'}
+    origin: page-own
+
+  - id: ex-correction-percent
+    where: 'worked example (b): the correction in percent'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg, T: 2.0 microK}
+    formula: 100*n*(2*pi*hbar**2/(mK*k_B*T))**1.5/2**2.5
+    expected: '1.3'
+    shown: ['the gas pushes about 1.3% harder']
+    source: {cite: reading1, at: 'p. 81'}
+    origin: page-own
+
+  - id: ex-t-over-tf
+    where: 'worked example (b): T/T_F, "almost five times"'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg, T: 2.0 microK}
+    formula: T/(hbar**2*(6*pi**2*n)**(2/3)/(2*mK)/k_B)
+    expected: '4.7'
+    shown: ['With $T$ almost five times $T_F$']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-p-zero
+    where: 'worked example (c): P = (2/5) n eps_F'
+    inputs: {n: 1.0e19 m**-3, mK: 6.636e-26 kg}
+    formula: 0.4*n*hbar**2*(6*pi**2*n)**(2/3)/(2*mK)
+    expected: 2.4e-11 Pa
+    shown: ['\approx 2.4 \times 10^{-11}$ Pa']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  - id: ex-thinner-than-air
+    where: 'worked example (c): "millions of times thinner than air": air at 1 atm and 293 K has P/kT molecules per m^3, about 2.5e6 times n'
+    inputs: {P: 101325 Pa, T: 293 K, n: 1.0e19 m**-3}
+    formula: P/(k_B*T)/n
+    expected: 2.5e6
+    tolerance: 20%
+    shown: ['millions of times thinner than air']
+    source: {cite: reading1, at: 'p. 79'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: seven-eighths
+    kind: identity
+    where: 'callout: the integral of x^3/(e^x + 1) is 7/8 of the integral of x^3/(e^x - 1) (pi^4/15)'
+    formula: integrate('x**3/(exp(x) + 1)', 'x', 1e-9, 80)/(pi**4/15)
+    equals: 7/8
+    samples: {dd: [1.0]}
+    tolerance: 1e-6
+    shown: ['gives exactly $7/8$ as much energy per spin state']
+    source: {cite: reading1, at: 'p. 77'}
+    origin: page-own

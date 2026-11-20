@@ -1,0 +1,129 @@
+---
+title: Stacking blocks and Taylor series
+slug: taylor-series
+course: "18.01"
+lecture: 38
+order: 1
+summary: "Blocks stacked from the top down, each pushed out as far as balance allows, lean out past a table edge by 1 + ½ + ⅓ + ⋯ half-lengths: the harmonic series, so the overhang can be as large as you like, but only with an astronomical number of blocks. Then power series Σ aₙxⁿ: inside a radius of convergence they behave like polynomials and can be added, multiplied, differentiated and integrated term by term. Taylor's formula aₙ = f⁽ⁿ⁾(0)/n! turns functions into series: eˣ = Σ xⁿ/n!, and the odd and even powers with alternating signs give sin x and cos x."
+prerequisites: [infinite-series, linear-and-quadratic-approximations]
+source:
+  title: "MIT 18.01 Lecture 38: Taylor's Series"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-38-taylors-series/
+  readings:
+    - title: "18.01 Lecture 37 notes: Taylor Series (the notes for this lecture)"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec37/
+    - title: "18.01 Lecture 38 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/wOHrNt9ScYs.pdf
+    - title: "18.01 Lecture 36 notes, pp. 5–7: Playing with Blocks"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec36/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.286"
+    lecture: 9
+    why: "Expanding sin θ and cos θ in their Taylor series shows that a closed universe starts out growing like a flat one, a ∝ t^(2/3)."
+quiz:
+  - question: "In the block-stacking recurrence, $C_{N+1} = C_N + \\ldots$"
+    choices: ["$\\frac{1}{N}$", "$\\frac{1}{N + 1}$", "$\\frac{1}{2^N}$", "$1$"]
+    answer: 1
+    explanation: "The new bottom block's centre is 1 unit past $C_N$; the weighted average of $N$ blocks at $C_N$ and one at $C_N + 1$ is $C_N + \\frac{1}{N + 1}$."
+  - question: "By Taylor's formula, the coefficient of $x^n$ in the series for $f$ is…"
+    choices: ["$f^{(n)}(0)$", "$\\frac{f^{(n)}(0)}{n!}$", "$\\frac{f(0)}{n!}$", "$n!\\,f^{(n)}(0)$"]
+    answer: 1
+    explanation: "Differentiating $n$ times and setting $x = 0$ leaves $n!\\,a_n = f^{(n)}(0)$."
+  - question: "$\\sin x = $"
+    choices: ["$1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots$", "$x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots$", "$x + \\frac{x^3}{3!} + \\frac{x^5}{5!} + \\cdots$", "$1 + x + \\frac{x^2}{2!} + \\cdots$"]
+    answer: 1
+    explanation: "Odd powers with alternating signs; the cosine has the even powers, and $e^x$ all powers with plus signs."
+  - question: "Integrating $\\frac{1}{1 + u} = 1 - u + u^2 - \\cdots$ from 0 to $x$ gives…"
+    choices: ["$\\ln(1 + x) = x - \\frac{x^2}{2} + \\frac{x^3}{3} - \\cdots$", "$\\tan^{-1}x$", "$e^{-x}$", "$\\frac{1}{(1 + x)^2}$"]
+    answer: 0
+    explanation: "Power series can be integrated term by term inside the radius of convergence, here $|x| < 1$."
+flashcards:
+  - front: "Taylor's formula"
+    back: "$f(x) = \\sum_{n=0}^\\infty\\frac{f^{(n)}(0)}{n!}x^n$, with $0! = 1$."
+  - front: "Three basic Taylor series"
+    back: "$e^x = \\sum\\frac{x^n}{n!}$; $\\sin x = x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots$; $\\cos x = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots$."
+  - front: "Radius of convergence"
+    back: "A power series $\\sum a_nx^n$ converges for $|x| < R$, with terms shrinking geometrically, and diverges for $|x| > R$; inside, it can be manipulated like a polynomial."
+  - front: "Stacking blocks"
+    back: "Building from the top, $N$ blocks on a table can lean past its edge by $1 + \\frac{1}{2} + \\cdots + \\frac{1}{N}$ half-lengths: unbounded, but growing only like $\\ln N$."
+status: reviewed
+---
+
+The last lecture of new material has two parts: a stack of blocks that makes divergence visible, and power series, which turn all the functions of the course into infinite polynomials (transcript, pp. 1, 6).
+
+## How far can a stack of blocks lean?
+
+Can identical blocks be stacked so that the top one sticks out entirely beyond the bottom one, with no visible support (transcript, p. 1)? Either there is a limit to how far the stack can lean, which would be an interesting number, or there is none, which would be just as interesting: this is the difference between convergence and divergence (p. 1). The trick is to build **from the top down**, pushing each new block out as far as balance allows: the edge of each block must sit under the centre of mass of all the blocks above it (pp. 1–2; notes for Lecture 36, pp. 5–6). Building greedily from the bottom up does badly (p. 3).
+
+Let a block have length 2 units, and measure from the left end of the top block. Its centre is at $C_1 = 1$, so the second block goes under it with its edge at 1, and its centre at 2 (p. 2). If the top $N$ blocks have their centre of mass at $C_N$, the next block's centre is at $C_N + 1$, and the centre of mass of all $N + 1$ is the weighted average (pp. 3–4; notes for Lecture 36, p. 6):
+
+<Formula label="Centre of mass of the stack" tex="C_{N+1} = \frac{N\,C_N + (C_N + 1)}{N + 1} = C_N + \frac{1}{N + 1}" cite="reading2" at="p. 4" />
+
+Starting from $C_1 = 1$: $C_2 = 1 + \frac{1}{2}$, $C_3 = 1 + \frac{1}{2} + \frac{1}{3}$, and in general $C_N = 1 + \frac{1}{2} + \cdots + \frac{1}{N}$, the harmonic sum $S_N$ of the [previous lecture](/courses/18-01/infinite-series) (p. 4). Since $\ln N < S_N$, it grows without bound: with enough blocks the stack can reach as far as you like (p. 5). But since $S_N$ grows only like $\ln N$, it takes a great many. To lean across the two lab tables in the lecture hall, 26 units less the 2 the first block already gives, so 24 units, the lecture takes $\ln N \approx 24$, so $N \approx e^{24}$ blocks, and at 3 cm each a stack about $8 \times 10^8$ m tall, twice the distance to the Moon (p. 5; notes for Lecture 36, p. 7). This is a rough estimate: with the sharper $S_N \approx \ln N + 0.577$, about $1.5 \times 10^{10}$ blocks, or $4.5 \times 10^8$ m, would do; either way, beyond the Moon. (The transcript writes the bound as "$S_N < S_N + 1$" where it means $S_N < \ln N + 1$, p. 5.) Turned on its side, the stack's outline is a logarithmic curve (p. 6). Infinity is not just one thing: it comes with a rate of growth (p. 6).
+
+## Power series
+
+The first power series is the geometric series. To see why it sums to $\frac{1}{1 - x}$: if $1 + x + x^2 + \cdots = S$, multiply by $x$ and subtract, leaving $1 = S - Sx$ (transcript, pp. 6–7). The argument assumes $S$ exists. At $x = 1$ it would say $\infty - \infty = \infty - \infty$, which means nothing; it works exactly when the series converges, $|x| < 1$ (p. 7).
+
+In general a power series $\sum_{n=0}^\infty a_nx^n$ has a **radius of convergence** $R$ (pp. 7–8; notes, p. 1):
+
+<Formula label="Radius of convergence" tex="\sum_{n=0}^{\infty} a_n x^n \;\text{ converges for } |x| < R, \qquad \text{diverges for } |x| > R" cite="reading2" at="pp. 7–8" />
+
+Inside, the terms $a_nx^n$ shrink geometrically fast; outside, they do not even tend to 0, so the cut-off is easy to see; the borderline $|x| = R$ is delicate and avoided here (p. 8). A power series is a function of $x$: for each $x$ it is a number (p. 10).
+
+Inside the radius of convergence, power series obey the same rules as polynomials: add, multiply, substitute, divide, and above all differentiate and integrate term by term (p. 9; notes, pp. 1–2):
+
+<Formula label="Term-by-term calculus" tex="\frac{d}{dx}\sum_{n=0}^\infty a_nx^n = a_1 + 2a_2x + 3a_3x^2 + \cdots, \qquad \int\sum_{n=0}^\infty a_nx^n\,dx = c + a_0x + \frac{a_1x^2}{2} + \frac{a_2x^3}{3} + \cdots" cite="reading2" at="p. 9" />
+
+Like decimal expansions for numbers, they put all the functions of the course into one flexible, computable form (p. 9). The notes show the tools at work (notes, pp. 1–2): substituting $x = -u$ in the geometric series gives $\frac{1}{1 + u} = 1 - u + u^2 - \cdots$, and integrating that gives
+
+<Formula label="Two series by integration" tex="\ln(1 + x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots, \qquad \tan^{-1}x = x - \frac{x^3}{3} + \frac{x^5}{5} - \cdots \quad (|x| < 1)" cite="reading1" at="p. 2" />
+
+the second from $\frac{1}{1 + v^2} = 1 - v^2 + v^4 - \cdots$. Differentiating the geometric series gives $\frac{1}{(1 - x)^2} = 1 + 2x + 3x^2 + \cdots$, which also follows by multiplying the series by itself (notes, p. 2).
+
+## Taylor's formula
+
+Which coefficients does a given function have? If $f(x) = a_0 + a_1x + a_2x^2 + \cdots$, differentiate $n$ times: every term below $x^n$ disappears, and setting $x = 0$ kills every term above it, leaving $f^{(n)}(0) = n!\,a_n$ (transcript, pp. 10–11; notes, p. 3):
+
+<Formula label="Taylor's formula" tex="f(x) = \sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}\,x^n, \qquad n! = n(n - 1)\cdots 2 \cdot 1, \quad 0! = 1" cite="reading2" at="pp. 10–11" />
+
+The convention $0! = 1$ makes the formula work for $n = 0$ (p. 11). For $f = e^x$ every derivative is $e^x$, which is 1 at 0, so (p. 11; notes, p. 3)
+
+<Formula label="The exponential series" tex="e^x = \sum_{n=0}^{\infty}\frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots, \qquad e = 1 + 1 + \frac{1}{2!} + \frac{1}{3!} + \frac{1}{4!} + \cdots" cite="reading2" at="p. 11" />
+
+our first honest formula for $e$, and the way the exponential is actually computed (p. 11). The derivatives of $\cos x$ at 0 cycle through $1, 0, -1, 0$ (notes, pp. 3–4), and the notes get the sine series by differentiating the cosine series (p. 4), giving (transcript, pp. 11–12)
+
+<Formula label="Sine and cosine" tex="\sin x = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots, \qquad \cos x = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \cdots" cite="reading2" at="pp. 11–12" />
+
+The exponential has all powers, the sine the odd powers with alternating signs, the cosine the even ones: one family, easier to remember together (p. 12). They complete the linear and quadratic approximations from early in the course, $\sin x \approx x$ and $\cos x \approx 1 - \frac{x^2}{2}$ (p. 11; notes, p. 4). The notes add the binomial series, $(1 + x)^a = 1 + ax + \frac{a(a - 1)}{2!}x^2 + \cdots$, and series about another base point $b$, in powers of $x - b$, used for instance for $\sqrt x$ about $b = 1$ (notes, pp. 4–5).
+
+<WorkedExample title="Series at work">
+<Problem>
+(a) Estimate $e$ from the first six terms of its series. (b) Estimate $\sin 0.5$ from three terms. (c) Estimate $\ln 1.5$ from four terms of the series for $\ln(1 + x)$. (d) How many blocks does it take for the centre of mass of the stack, $C_N$, to reach 4 units, two block lengths?
+</Problem>
+<Step title="(a) e">
+$1 + 1 + \frac{1}{2} + \frac{1}{6} + \frac{1}{24} + \frac{1}{120} \approx 2.7167$, against $e \approx 2.71828$: the factorials make the terms shrink fast.
+</Step>
+<Step title="(b) sin 0.5">
+$0.5 - \frac{0.125}{6} + \frac{0.03125}{120} \approx 0.5 - 0.020833 + 0.000260 = 0.479427$, against the true 0.479426.
+</Step>
+<Step title="(c) ln 1.5">
+$0.5 - \frac{0.25}{2} + \frac{0.125}{3} - \frac{0.0625}{4} \approx 0.4010$, against the true 0.4055: with $x = 0.5$ the terms shrink only like $0.5^n/n$, so convergence is slower.
+</Step>
+<Step title="(d) The stack">
+We need $1 + \frac{1}{2} + \cdots + \frac{1}{N} \ge 4$. The sum is about 3.995 for $N = 30$ and 4.027 for $N = 31$, so 31 blocks are needed, consistent with $\ln N < S_N < \ln N + 1$ ($\ln 31 \approx 3.43$).
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology" title="A closed universe starts out flat">
+A closed universe filled with matter follows $ct = \alpha(\theta - \sin\theta)$ and $a/\sqrt k = \alpha(1 - \cos\theta)$. Near the Big Bang, $\theta$ is small, and the first terms of the Taylor series, $\sin\theta \approx \theta - \frac{\theta^3}{6}$ and $\cos\theta \approx 1 - \frac{\theta^2}{2}$, give $ct \approx \frac{\alpha\theta^3}{6}$ and $a/\sqrt k \approx \frac{\alpha\theta^2}{2}$. Eliminating $\theta$, $a \propto t^{2/3}$: early on it grows just like a flat universe.
+</Callout>
+
+## Summary
+
+- $N$ blocks stacked from the top on a table can lean out past its edge by $1 + \frac{1}{2} + \cdots + \frac{1}{N}$ half-lengths: without limit, but only like $\ln N$.
+- A power series $\sum a_nx^n$ converges for $|x| < R$ and diverges for $|x| > R$; inside, it behaves like a polynomial, including term-by-term differentiation and integration.
+- Taylor's formula: $a_n = \frac{f^{(n)}(0)}{n!}$.
+- $e^x = \sum\frac{x^n}{n!}$; $\sin x$ takes the odd powers and $\cos x$ the even powers, with alternating signs and the same factorials; $\ln(1 + x)$ and $\tan^{-1}x$ follow by integration.

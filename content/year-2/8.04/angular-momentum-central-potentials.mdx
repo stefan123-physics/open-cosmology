@@ -1,0 +1,158 @@
+---
+title: Central potentials and angular momentum
+slug: angular-momentum-central-potentials
+course: "8.04"
+lecture: 20
+order: 1
+summary: "In a central potential the Schrödinger equation's angular part is the square of the angular momentum. The components of angular momentum obey [L̂x, L̂y] = iħL̂z and its cycles, so no two can be measured together, but L̂² commutes with each of them. Their joint eigenstates have L̂z = ħm with integer m, and the angular equation for m = 0 is Legendre's equation, whose polynomial solutions quantize L̂² as ħ²ℓ(ℓ + 1)."
+prerequisites: [levinson-resonances-breit-wigner]
+source:
+  title: "MIT 8.04 Lectures 20–21: Quantum Mechanics in 3D and Central Potentials (lecture notes, sections 1–3)"
+  url: https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/mit8_04s16_lecnotes20_21/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.04"
+    lecture: 21
+    why: "Associated Legendre functions, spherical harmonics and the radial equation."
+quiz:
+  - question: "What is $[\\hat L_y, \\hat L_z]$?"
+    choices: ["$i\\hbar\\hat L_x$", "$-i\\hbar\\hat L_x$", "$0$", "$i\\hbar\\hat L_y$"]
+    answer: 0
+    explanation: "The algebra is cyclic: $[\\hat L_x, \\hat L_y] = i\\hbar\\hat L_z$ becomes $[\\hat L_y, \\hat L_z] = i\\hbar\\hat L_x$ under $x \\to y \\to z \\to x$."
+  - question: "Can a state be a simultaneous eigenstate of $\\hat L_x$ and $\\hat L_y$ with nonzero eigenvalues?"
+    choices: ["No: the commutators force all three components to annihilate it", "Yes, always", "Only for spin", "Only when the potential is central"]
+    answer: 0
+    explanation: "Acting with $[\\hat L_x, \\hat L_y] = i\\hbar\\hat L_z$ on such a state gives $\\hat L_z\\psi = 0$, and the other two commutators then give zero eigenvalues for $\\hat L_x$ and $\\hat L_y$ too."
+  - question: "Why must $m$ in $e^{im\\phi}$ be an integer?"
+    choices: ["The eigenfunction must return to its value when $\\phi$ increases by $2\\pi$", "Because $\\hat L_z$ is Hermitian", "Because of Legendre's equation", "Because $l$ is an integer"]
+    answer: 0
+    explanation: "$\\phi$ and $\\phi + 2\\pi$ are the same point, so $e^{2\\pi im} = 1$."
+  - question: "In a state with $l = 2$, how does the size of the angular momentum compare with the largest possible $L_z$?"
+    choices: ["$\\sqrt6\\,\\hbar \\approx 2.45\\hbar$, more than the largest $L_z = 2\\hbar$", "Both are $2\\hbar$", "$\\sqrt6\\,\\hbar$, less than $L_z$", "$6\\hbar$"]
+    answer: 0
+    explanation: "$\\hat L^2 = \\hbar^2l(l + 1) = 6\\hbar^2$; the angular momentum never points exactly along $z$, since $L_x$ and $L_y$ cannot both vanish."
+flashcards:
+  - front: "Angular momentum algebra"
+    back: "$[\\hat L_x, \\hat L_y] = i\\hbar\\hat L_z$, $[\\hat L_y, \\hat L_z] = i\\hbar\\hat L_x$, $[\\hat L_z, \\hat L_x] = i\\hbar\\hat L_y$; $\\hat L^2$ commutes with all three."
+  - front: "L̂z and L̂² in spherical coordinates"
+    back: "$\\hat L_z = \\frac{\\hbar}{i}\\frac{\\partial}{\\partial\\phi}$ and $\\hat L^2 = -\\hbar^2\\left(\\frac{1}{\\sin\\theta}\\frac{\\partial}{\\partial\\theta}\\sin\\theta\\frac{\\partial}{\\partial\\theta} + \\frac{1}{\\sin^2\\theta}\\frac{\\partial^2}{\\partial\\phi^2}\\right)$."
+  - front: "Legendre polynomials"
+    back: "Solutions of $\\frac{d}{dx}\\left((1 - x^2)\\frac{dP_l}{dx}\\right) + l(l + 1)P_l = 0$ regular at $x = \\pm1$, with $l = 0, 1, 2, \\dots$; $P_0 = 1$, $P_1 = x$, $P_2 = \\frac12(3x^2 - 1)$."
+status: reviewed
+---
+
+Quantum mechanics now moves to three dimensions. When the potential depends only on the distance from a centre, the angular part of the problem is governed by angular momentum, a new observable with surprising properties. This page covers the notes' first three sections up to the Legendre polynomials (notes pp. 1–9); the next page continues with the associated Legendre functions and the radial equation. (MIT's material for Lectures 20 and 21 is one set of lecture notes by Zwiebach; this page follows their order in its own words, with its own worked example. The notes' figure is not reproduced. The notes write the angular momentum number as a script ℓ; in formulas this page writes it as $l$, which read-aloud can say.)
+
+## Momentum generates translations
+
+Angular momentum will generate rotations, just as momentum generates translations. To see the latter, apply the exponential of $\hat p = \frac{\hbar}{i}\frac{d}{dx}$ to a wavefunction and recognize the Taylor series (notes p. 1):
+
+<Formula label="Momentum generates translations" tex="e^{i\hat pa/\hbar}\psi(x) = e^{a\frac{d}{dx}}\psi(x) = \psi(x) + a\psi'(x) + \frac{a^2}{2!}\psi''(x) + \cdots = \psi(x + a)" cite="mit" at="notes p. 1, eqs. (1.1)–(1.3)" />
+
+The operator shifts the whole wavefunction, by $-a$. Angular momentum comes in two kinds: **orbital**, from motion about a point, and **spin**, which even point particles carry; much of the mathematics is shared (notes p. 2).
+
+## Central potentials
+
+In three dimensions $\hat{\vec x} = (\hat x, \hat y, \hat z)$ and $\hat{\vec p} = \frac{\hbar}{i}\nabla$, with $[\hat x, \hat p_x] = [\hat y, \hat p_y] = [\hat z, \hat p_z] = i\hbar$ and all other commutators of coordinates and momenta zero (notes p. 2, eqs. (1.4)–(1.5)). A potential is **central** if it depends only on the distance $r$ from the origin, $V(\vec r) = V(r)$: it is spherically symmetric (notes p. 2). The equation $-\frac{\hbar^2}{2m}\nabla^2\psi + V(r)\psi = E\psi$ then calls for spherical coordinates, in which (notes p. 2)
+
+<Formula label="Laplacian in spherical coordinates" tex="\nabla^2 = \frac1r\frac{\partial^2}{\partial r^2}r + \frac{1}{r^2}\left(\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\sin\theta\frac{\partial}{\partial\theta} + \frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\phi^2}\right)" cite="mit" at="notes p. 2, eq. (1.8)" />
+
+The notes set two goals (notes p. 3). First, the angular bracket is $-\hat L^2/\hbar^2$, with $\hat L^2 = \hat L_x^2 + \hat L_y^2 + \hat L_z^2$, so that the equation becomes (eqs. (1.10)–(1.13))
+
+<Formula label="Schrödinger equation in a central potential" tex="-\frac{\hbar^2}{2m}\frac1r\frac{\partial^2}{\partial r^2}\left(r\psi\right) + \frac{\hat L^2}{2mr^2}\psi + V(r)\psi = E\psi" cite="mit" at="notes p. 3, eq. (1.13)" />
+
+Second, the same equation describes two particles whose interaction depends only on their separation, $V(|\vec r_1 - \vec r_2|)$, such as the proton and electron of hydrogen (eq. (1.14)); that reduction is not carried out in these notes.
+
+## The angular momentum operators
+
+Classically $\vec L = \vec r \times \vec p$. The quantum operators copy it (notes p. 3):
+
+<Formula label="Angular momentum operators" tex="\hat L_x = \hat y\hat p_z - \hat z\hat p_y, \qquad \hat L_y = \hat z\hat p_x - \hat x\hat p_z, \qquad \hat L_z = \hat x\hat p_y - \hat y\hat p_x" cite="mit" at="notes p. 3, eq. (2.2)" />
+
+There is no ordering ambiguity, since each product pairs a coordinate with a momentum along a different axis, and these commute. Each component is Hermitian: $(\hat y\hat p_z)^\dagger = \hat p_z\hat y = \hat y\hat p_z$, and so on, so all three are observables (notes p. 4, eqs. (2.3)–(2.5)).
+
+**Commutators** (notes p. 4). In $[\hat L_x, \hat L_y]$ only $\hat z$ and $\hat p_z$ fail to commute, so only two terms survive: $\hat y[\hat p_z, \hat z]\hat p_x + \hat x[\hat z, \hat p_z]\hat p_y = i\hbar(\hat x\hat p_y - \hat y\hat p_x)$ (eqs. (2.6)–(2.7)). Cycling $x \to y \to z \to x$ gives the rest, the **algebra of angular momentum** (notes p. 4):
+
+<Formula label="Algebra of angular momentum" tex="\left[\hat L_x, \hat L_y\right] = i\hbar\hat L_z, \qquad \left[\hat L_y, \hat L_z\right] = i\hbar\hat L_x, \qquad \left[\hat L_z, \hat L_x\right] = i\hbar\hat L_y" cite="mit" at="notes p. 4, eq. (2.9)" />
+
+Commutators of angular momenta give angular momenta, with no coordinates or momenta left. Spin operators cannot be written with coordinates and momenta (their simplest form is two-by-two matrices), yet obey exactly the same algebra (notes p. 5, eq. (2.10)).
+
+**No two components together** (notes pp. 5–6). Suppose $\psi_0$ were an eigenstate of both $\hat L_x$ and $\hat L_y$, with eigenvalues $\lambda_x$ and $\lambda_y$. The first commutator acting on it gives $i\hbar\hat L_z\psi_0 = (\lambda_x\lambda_y - \lambda_y\lambda_x)\psi_0 = 0$; then the other two give $\lambda_x = \lambda_y = 0$ (eqs. (2.11)–(2.13)). Only the trivial state annihilated by all three components escapes, so no two components can be measured together.
+
+**$\hat L^2$ commutes with each component** (notes p. 6). Using $[A, BC] = [A, B]C + B[A, C]$,
+
+<Formula label="L̂² commutes with L̂z" tex="\left[\hat L_z, \hat L^2\right] = \left[\hat L_z, \hat L_x\right]\hat L_x + \hat L_x\left[\hat L_z, \hat L_x\right] + \left[\hat L_z, \hat L_y\right]\hat L_y + \hat L_y\left[\hat L_z, \hat L_y\right] = 0" cite="mit" at="notes p. 6, eq. (2.14)" />
+
+since the four terms are $i\hbar(\hat L_y\hat L_x + \hat L_x\hat L_y - \hat L_x\hat L_y - \hat L_y\hat L_x)$. (In the last line of the notes' eq. (2.14) the fourth term has its two operators in the wrong order; the result, zero, stands.) $\hat L^2$ is a **Casimir operator**: it commutes with all three components. So $\hat L_z$ and $\hat L^2$ can share eigenstates.
+
+**In spherical coordinates** (notes p. 6). With $x = r\sin\theta\cos\phi$, $y = r\sin\theta\sin\phi$, $z = r\cos\theta$ (eq. (2.15)), the chain rule gives $\frac{\partial}{\partial\phi} = x\frac{\partial}{\partial y} - y\frac{\partial}{\partial x}$, so (eqs. (2.16)–(2.18))
+
+<Formula label="L̂z and L̂² in spherical coordinates" tex="\hat L_z = \frac{\hbar}{i}\frac{\partial}{\partial\phi}, \qquad \hat L^2 = -\hbar^2\left(\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\sin\theta\frac{\partial}{\partial\theta} + \frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\phi^2}\right)" cite="mit" at="notes p. 6, eqs. (2.18)–(2.19)" />
+
+$\hat L_z$ is like a momentum along the circle of $\phi$, confirming that it generates rotations about the $z$ axis; $\hat L^2$ is the angular part of the Laplacian, as promised.
+
+## Eigenstates of L̂z and L̂²
+
+Look for functions $\psi_{l m}(\theta, \phi)$ with (notes p. 7)
+
+<Formula label="Joint eigenvalue equations" tex="\hat L_z\psi_{l m} = \hbar m\,\psi_{l m}, \qquad \hat L^2\psi_{l m} = \hbar^2l(l + 1)\,\psi_{l m}" cite="mit" at="notes p. 7, eq. (3.1)" />
+
+with $m$ and $l$ real and unit-free. The eigenvalues of $\hat L^2$ cannot be negative, since $(\psi, \hat L^2\psi) = (\hat L_x\psi, \hat L_x\psi) + (\hat L_y\psi, \hat L_y\psi) + (\hat L_z\psi, \hat L_z\psi) \ge 0$ (eqs. (3.2)–(3.3)), and $l(l + 1)$ covers all non-negative values as $l \ge 0$ (notes p. 7).
+
+**The $\phi$ part** (notes p. 7). $\frac{\hbar}{i}\frac{\partial\psi}{\partial\phi} = \hbar m\psi$ gives $\psi_{l m} = e^{im\phi}P_l^m(\theta)$. The angles $\phi$ and $\phi + 2\pi$ are the same point, so $e^{2\pi im} = 1$ and (eqs. (3.4)–(3.8))
+
+<Formula label="m is an integer" tex="\psi_{l m}(\theta, \phi) = e^{im\phi}\,P_l^m(\theta), \qquad m \in \mathbb{Z}" cite="mit" at="notes p. 7, eqs. (3.5) and (3.8)" />
+
+(A footnote in the notes adds that requiring a sign change after $2\pi$ instead does not give a consistent set of states.)
+
+**The $\theta$ part** (notes p. 8). Inserting $e^{im\phi}$ into the $\hat L^2$ equation and writing $x = \cos\theta$, so that $\sin\theta\frac{d}{d\theta} = -(1 - x^2)\frac{d}{dx}$, gives the equation for the **associated Legendre functions** (eqs. (3.9)–(3.15)):
+
+<Formula label="Associated Legendre equation" tex="\frac{d}{dx}\left(\left(1 - x^2\right)\frac{dP_l^m}{dx}\right) + \left(l(l + 1) - \frac{m^2}{1 - x^2}\right)P_l^m(x) = 0" cite="mit" at="notes p. 8, eq. (3.15)" />
+
+## Legendre's equation and the quantization of ℓ
+
+For $m = 0$ this is **Legendre's equation** for $P_l(x)$ (notes p. 8, eq. (3.16)). With a power series $\sum a_kx^k$, regular at $x = 0$, the coefficient of $x^k$ gives (notes p. 9)
+
+<Formula label="Recursion for Legendre's equation" tex="a_{k+2} = -\frac{l(l + 1) - k(k + 1)}{(k + 1)(k + 2)}\,a_k" cite="mit" at="notes p. 9, eqs. (3.18)–(3.19)" />
+
+Unless the series stops, it diverges at $x = \pm1$, that is at $\theta = 0$ or $\pi$. It stops if $l(l + 1) = k(k + 1)$ for some integer $k \ge 0$: take $l = k$, and $P_l$ is a polynomial of degree $l$. So (notes p. 9)
+
+<Formula label="Quantization of ℓ" tex="l = 0, 1, 2, 3, \dots" cite="mit" at="notes p. 9, eq. (3.20)" />
+
+just as $m$ was quantized. The **Legendre polynomials** follow from Rodrigues' formula (the notes spell it "Rodriguez") or a generating function, and have definite parity (notes p. 9):
+
+<Formula label="Rodrigues' formula and the first Legendre polynomials" tex="P_l(x) = \frac{1}{2^l\,l!}\frac{d^l}{dx^l}\left(x^2 - 1\right)^l; \qquad P_0 = 1, \quad P_1 = x, \quad P_2 = \frac12\left(3x^2 - 1\right)" cite="mit" at="notes p. 9, eqs. (3.21) and (3.23)" />
+
+<Plot variable="x" domain={[-1, 1]} range={[-1.2, 1.4]} xLabel="x = cos θ" yLabel="P_ℓ(x)"
+  curves={[
+    { expr: "x", label: "ℓ = 1" },
+    { expr: "(3*x^2 - 1)/2", label: "ℓ = 2", dash: true },
+    { expr: "(5*x^3 - 3*x)/2", label: "ℓ = 3" }
+  ]}
+  caption="The Legendre polynomials P₁, P₂ and P₃, computed from Rodrigues' formula (P₃ = (5x³ − 3x)/2 is the page's addition). Each P_ℓ has ℓ zeros between −1 and 1 and parity (−1)^ℓ; all equal 1 at x = 1." />
+
+<WorkedExample title="Checking the Legendre machinery">
+<Problem>
+(a) Check that $P_2 = \frac12(3x^2 - 1)$ solves Legendre's equation with $l = 2$. (b) Build the $l = 2$ solution from the recursion starting with $a_0 = 1$. (c) Get $P_2$ from Rodrigues' formula. (d) For $l = 2$, compare $\sqrt{\langle\hat L^2\rangle}$ with the largest possible $L_z$.
+</Problem>
+<Step title="(a) Direct check">
+In expanded form the equation is $(1 - x^2)P'' - 2xP' + l(l + 1)P = 0$. With $P_2' = 3x$ and $P_2'' = 3$: $3(1 - x^2) - 6x^2 + 6 \cdot \frac12(3x^2 - 1) = 3 - 9x^2 + 9x^2 - 3 = 0$.
+</Step>
+<Step title="(b) Recursion">
+Taking $a_1 = 0$ (the even series), $a_2 = -\frac{6 - 0}{1 \times 2}a_0 = -3$, and $a_4 = -\frac{6 - 6}{3 \times 4}a_2 = 0$: the series stops at $1 - 3x^2 = -2P_2$.
+</Step>
+<Step title="(c) Rodrigues">
+$\frac{1}{8}\frac{d^2}{dx^2}(x^4 - 2x^2 + 1) = \frac18(12x^2 - 4) = \frac12(3x^2 - 1)$.
+</Step>
+<Step title="(d) Never along the axis">
+$\hat L^2 = \hbar^2l(l + 1) = 6\hbar^2$, so the size is $\sqrt6\,\hbar \approx 2.45\hbar$, more than the largest $L_z = l\hbar = 2\hbar$ (the next page shows that $|m| \le l$). The angular momentum never lies exactly along $z$: that would make $L_x$ and $L_y$ both zero, which the algebra forbids.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Momentum generates translations, $e^{i\hat pa/\hbar}\psi(x) = \psi(x + a)$; angular momentum generates rotations.
+- In a central potential the angular part of $\nabla^2$ is $-\hat L^2/(\hbar^2r^2)$.
+- $[\hat L_x, \hat L_y] = i\hbar\hat L_z$ and cycles: no two components share nontrivial eigenstates, but $\hat L^2$ commutes with all three.
+- Joint eigenstates of $\hat L_z$ and $\hat L^2$ are $e^{im\phi}P_l^m(\cos\theta)$ with integer $m$; regularity of Legendre's equation forces $l = 0, 1, 2, \dots$ and the Legendre polynomials.

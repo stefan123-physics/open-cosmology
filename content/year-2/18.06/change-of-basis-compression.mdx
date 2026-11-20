@@ -1,0 +1,140 @@
+---
+title: Change of basis and image compression
+slug: change-of-basis-compression
+course: "18.06"
+lecture: 31
+order: 1
+summary: "Image compression is a change of basis. A 512 × 512 gray-scale image is a vector x in Rⁿ with n = 512², each pixel a value from 0 to 255 (8 bits). The standard basis, one pixel at a time, ignores that neighbouring pixels are nearly equal; a better basis contains the all-ones vector, which alone carries a blank board, and vectors like (1, −1, 1, −1, …) or half ones and half minus ones. JPEG cuts the image into 8 × 8 blocks of 64 pixels and changes each block to the Fourier basis: a lossless step x → c. The lossy step throws away coefficients below a threshold, keeping ĉ with many zeros, perhaps 3 of 64, a compression of about 21 to 1. Video also uses the correlation between successive frames (prediction and correction). Wavelets compete with Fourier: the 8 Haar wavelets are the all-ones vector, four ones and four minus ones, two-by-two blocks and pairs (1, −1); the checkerboard vector is the sum of the last four. Changing basis means solving P = Wc, so c = W⁻¹P. A good basis must be fast (FFT; wavelet columns orthogonal, so W⁻¹ is Wᵀ after normalising) and must compress well (a few basis vectors close to the signal). The same transformation has matrix A in one basis and B in another, and they are similar, B = M⁻¹AM, with M the change-of-basis matrix. Column j of A holds the coefficients of T(vⱼ); in an eigenvector basis T(vⱼ) = λⱼvⱼ and A = Λ, the perfect but too expensive basis."
+prerequisites: [linear-transformations-matrices, complex-matrices-fft, similar-matrices-jordan-form]
+source:
+  title: "MIT 18.06 Lecture 31: Change of basis; image compression"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-31-change-of-basis-image-compression/
+  readings:
+    - title: "18.06 Lecture 31 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/ab1c275d516e1878176ce956af1bf246_0h43aV4aH7I.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 33
+    why: "Left and right inverses and the pseudoinverse (Lecture 32 is a quiz review)."
+quiz:
+  - question: "Why is the standard pixel basis poor for compression?"
+    choices: ["It ignores that neighbouring pixels have nearly the same value, so no few pixels can stand for the image", "It is not a basis", "It is not orthogonal", "It needs complex numbers"]
+    answer: 0
+    explanation: "Throwing away 90% of the pixel values darkens the picture. In a good basis most of the signal sits in a few coefficients."
+  - question: "Which step of JPEG loses information?"
+    choices: ["Cutting the image into 8 × 8 blocks", "The change to the Fourier basis", "Throwing away the small coefficients (thresholding)", "Reconstructing the image from the coefficients"]
+    answer: 2
+    explanation: "The change of basis is lossless: 64 numbers in, 64 out. Setting small coefficients to zero is where information is lost."
+  - question: "In the 8-point Haar wavelet basis, how is the checkerboard vector $(1, -1, 1, -1, 1, -1, 1, -1)$ written?"
+    choices: ["As the sum of the four shortest wavelets $(1, -1, 0, \\dots)$, $(0, 0, 1, -1, 0, \\dots)$, …", "It is not in the span", "As the all-ones vector minus twice the second wavelet", "As the second wavelet"]
+    answer: 0
+    explanation: "Each pair $(1, -1)$ is one of the last four wavelets, and their sum gives the checkerboard."
+  - question: "A transformation has matrix $A$ in one basis and $B$ in another. How are they related?"
+    choices: ["$B = A^T$", "$B = A^{-1}$", "$B = M^{-1}AM$ with $M$ the change-of-basis matrix", "They are equal"]
+    answer: 2
+    explanation: "Matrices of the same transformation in different bases are similar."
+flashcards:
+  - front: "Change of basis"
+    back: "Columns of $W$ = new basis vectors. Old coordinates $x$, new coordinates $c$: $x = Wc$, $c = W^{-1}x$."
+  - front: "Two requirements for a good basis (compression)"
+    back: "Fast: $W$ and $W^{-1}$ quick to apply (FFT, orthogonal wavelets). Good: a few basis vectors come close to the signal."
+  - front: "Lossless vs lossy"
+    back: "Change of basis $x \\to c$: lossless. Thresholding $c \\to \\hat c$ (dropping small coefficients): lossy, where the compression happens."
+  - front: "Same transformation, two bases"
+    back: "Matrices $A$ and $B$ are similar: $B = M^{-1}AM$. In the eigenvector basis the matrix is $\\Lambda$."
+status: reviewed
+---
+
+Near the end of the course, this lecture mixes the linear algebra of a **change of basis** with an application where changing basis is exactly what is done: compressing signals and images (transcript, p. 1). Then it returns to the chapter's theme, the link between a [linear transformation](/courses/18-06/linear-transformations-matrices) and its matrix in given coordinates (p. 1). Strang notes that these very lectures reach viewers compressed, and that his motion looks jerky because moving needs many bits while the board does not (pp. 1–2).
+
+## An image is a long vector
+
+Satellites, climate and combustion computations and sensors of every kind produce overwhelming amounts of data (p. 2). Some compression is **lossless**, using redundancy; the subject here is **lossy** compression (p. 2). A gray-scale image is made of pixels, perhaps $512 \times 512 = 2^9 \times 2^9$, each a gray level from 0 to 255, which is $2^8$ values: 8 bits (p. 2). So the image is a vector (pp. 2–3)
+
+<Formula label="An image as a vector" tex="x \in \mathbf{R}^n, \qquad n = 512^2" cite="reading1" at="p. 2" />
+
+three times as long for colour. It cannot be sent without compression (p. 3).
+
+## A better basis than the pixels
+
+The current basis is the **standard basis**: one pixel at a time (p. 3). Neighbouring pixels have nearly equal values, the blue of a shirt, the board, and these strong correlations make compression possible (p. 3). For a blank board, listing every pixel makes no sense: the standard basis is "lousy" there (p. 4). Better basis vectors (pp. 4–5):
+
+- the vector of **all ones**, which alone carries a solid image;
+- the **checkerboard** $(1, -1, 1, -1, \dots)$, which alone carries a checkerboard image;
+- half ones and half minus ones, for an image darker on one side.
+
+We are free to choose the basis, and which one is "a billion-dollar decision" (p. 5).
+
+## JPEG: Fourier basis, then thresholding
+
+JPEG (the Joint Photographic Experts Group standard) uses, in Strang's words, the **Fourier basis**, starting with the all-ones vector (the DC vector, to electrical engineers); he points back to the [Fourier matrix](/courses/18-06/complex-matrices-fft) without going into details (pp. 3, 5). (Strictly, JPEG uses the discrete cosine transform, a real basis of cosines from the Fourier family.) It cuts the image into $8 \times 8$ blocks and changes basis in each block, in 64-dimensional space (pp. 5–6). Two steps (pp. 6–7):
+
+<Formula label="Compression in two steps" tex="x \;\to\; c \;\to\; \hat c \qquad (\text{first change of basis, lossless; then thresholding, lossy})" cite="reading1" at="pp. 6–7" />
+
+The first step is lossless: 64 pixels in, 64 coefficients out (p. 6). The second, **thresholding**, sets to zero every coefficient below a threshold chosen so the eye can hardly see the difference (p. 7). The coefficient of the all-ones vector is usually large and kept; the high-frequency checkerboard is barely present in a smooth image (p. 7). The image is rebuilt from the few remaining terms, each coefficient times its basis vector $w_i$ (p. 7):
+
+<Formula label="Reconstruction" tex="\hat x = \sum_{\text{kept } i} \hat c_i\,w_i" cite="reading1" at="p. 7" />
+
+With 3 of 64 terms left, the compression is about 21 to 1 (p. 7). Strang adds two stories, as of 1999. The FBI digitised its fingerprint files and compresses them, so that a match takes minutes instead of a week (p. 8). And video is a sequence of highly correlated images: one predicts the next frame from the last and codes only the small correction (pp. 8–9).
+
+## Wavelets
+
+The competition for Fourier is **wavelets** (p. 9). The simplest set in $\mathbf{R}^8$ (pp. 9–10):
+
+<Formula label="Haar wavelet basis of R⁸" tex="\begin{aligned} &(1, 1, 1, 1, 1, 1, 1, 1), \quad (1, 1, 1, 1, -1, -1, -1, -1), \\ &(1, 1, -1, -1, 0, 0, 0, 0), \quad (0, 0, 0, 0, 1, 1, -1, -1), \\ &(1, -1, 0, 0, 0, 0, 0, 0) \text{ and the same pair } (1, -1) \text{ moved to positions } 3\text{–}4,\ 5\text{–}6,\ 7\text{–}8 \end{aligned}" cite="reading1" at="pp. 9–10" />
+
+The fast checkerboard vector of the Fourier basis is the sum of the last four wavelets (p. 10). The linear algebra is the transform step: given pixel values $P = (P_1, \dots, P_8)$ along a row, find $c_1, \dots, c_8$ with (pp. 10–12)
+
+<Formula label="Transform step" tex="P = c_1w_1 + \cdots + c_8w_8 = Wc, \qquad c = W^{-1}P" cite="reading1" at="pp. 11–12" />
+
+where the columns of the wavelet matrix $W$ are the basis vectors (p. 11).
+
+**What makes a basis good** (pp. 12–14). First, it must be **fast**: multiplying by $W$ and by $W^{-1}$ quickly. The Fourier basis has the FFT, and wavelets have a fast wavelet transform (p. 12). The Haar wavelets use only ones, minus ones and zeros, and they are **orthogonal**: for example, the first two have dot product $4 - 4 = 0$ (p. 13). Divided by their lengths ($\sqrt8$, $\sqrt4$, $\sqrt2$), they are orthonormal and $W^{-1} = W^T$ (pp. 13–14). Second, it must **compress well**: a few basis vectors must come close to the signal. The fastest choice, no change at all, fails this: dropping 90% of the pixel values leaves a dark picture, while dropping $c_5, \dots, c_8$ in the wavelet basis removes only small blips (p. 14). In this lecture, recorded in 1999 (the 18.06 videos on OCW date from then), Strang says that JPEG 2000, then the coming standard, would include wavelets, and that the FBI uses smoother wavelets than these jumpy ones (p. 15).
+
+## Same transformation, different bases
+
+With the new basis vectors in the columns of $W$, a vector with old coordinates $x$ has new coordinates $c$ (p. 15):
+
+<Formula label="Change of coordinates" tex="x = Wc" cite="reading1" at="p. 15" />
+
+Now take a linear transformation $T$ of eight-dimensional space, a rotation say (p. 16). In a first basis $v_1, \dots, v_8$ it has matrix $A$; in a second basis $w_1, \dots, w_8$ it has matrix $B$. The answer, which Strang admits this compressed part of the lecture jumps to, is that they are **similar** (p. 17):
+
+<Formula label="Matrices in two bases" tex="B = M^{-1}AM" cite="reading1" at="p. 17" />
+
+with $M$ the change-of-basis matrix, the $W$ above (pp. 17–18). Changing the basis gives every vector new coordinates and every transformation a new matrix (pp. 17–18).
+
+**Recap of the matrix** (pp. 18–19). $T$ is known once $T(v_1), \dots, T(v_8)$ are known, because every $x$ is $c_1v_1 + \cdots + c_8v_8$ and $T(x) = c_1T(v_1) + \cdots + c_8T(v_8)$ (pp. 18–19). Write each output in the basis; the coefficients fill the columns of $A$, 64 numbers in all (p. 19):
+
+<Formula label="Columns of A" tex="T(v_1) = a_{11}v_1 + a_{21}v_2 + \cdots + a_{81}v_8, \qquad T(v_2) = a_{12}v_1 + a_{22}v_2 + \cdots + a_{82}v_8" cite="reading1" at="p. 19" />
+
+(Strang says "$a_{11}$ down to $a_{18}$" for the first column and "$a_{21}$ down to $a_{28}$" for the next; the first column runs from $a_{11}$ to $a_{81}$, the second from $a_{12}$ to $a_{82}$.)
+
+**The best basis** (pp. 19–20). If the basis vectors are eigenvectors, $T(v_i) = \lambda_iv_i$: the first output is already $\lambda_1$ times the first basis vector, so the first column is $\lambda_1$ and zeros, and so on (p. 20):
+
+<Formula label="Eigenvector basis" tex="T(v_i) = \lambda_iv_i \quad\Rightarrow\quad A = \Lambda" cite="reading1" at="p. 20" />
+
+That would be the perfect basis for image processing too, but finding the eigenvectors of the pixel data would be too expensive, so a cheaper good basis, wavelets or Fourier, is used instead (p. 20).
+
+<WorkedExample title="Four pixels in a wavelet basis">
+<Problem>
+(a) Use the four Haar wavelets $w_1 = (1, 1, 1, 1)$, $w_2 = (1, 1, -1, -1)$, $w_3 = (1, -1, 0, 0)$, $w_4 = (0, 0, 1, -1)$ to transform the pixel row $P = (7, 5, 2, 2)$, then keep only the two largest coefficients. (b) The projection onto the $45°$ line has matrix $A = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}$ in the basis $(1, 1)/\sqrt2$, $(1, -1)/\sqrt2$ (here the eigenvector basis plays the role of the first basis). Find its matrix in the standard basis by a change of basis.
+</Problem>
+<Step title="(a) Coefficients">
+The wavelets are orthogonal, so $c_i = w_i^TP/w_i^Tw_i$: $c_1 = 16/4 = 4$, $c_2 = (12 - 4)/4 = 2$, $c_3 = (7 - 5)/2 = 1$, $c_4 = (2 - 2)/2 = 0$. Check: $4w_1 + 2w_2 + w_3 = (4 + 2 + 1,\ 4 + 2 - 1,\ 4 - 2,\ 4 - 2) = (7, 5, 2, 2)$.
+</Step>
+<Step title="(a) Compression">
+Keep $c_1 = 4$ and $c_2 = 2$: $\hat P = 4w_1 + 2w_2 = (6, 6, 2, 2)$. Two numbers instead of four (and $c_4$ was zero anyway); the error $(1, -1, 0, 0)$ is exactly $c_3w_3$, the one wavelet dropped.
+</Step>
+<Step title="(b) Change of basis">
+Put the new basis in $M = \frac{1}{\sqrt2}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$, orthogonal and symmetric, so $M^{-1} = M$. The standard-basis matrix is $MAM^{-1} = \frac12\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} = \frac12\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}$, the familiar projection matrix of the last lecture: similar to $A$, as promised.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- An image is a vector with one coordinate per pixel; neighbouring pixels are correlated, so the pixel basis is wasteful.
+- Compression = lossless change of basis ($x = Wc$) + lossy thresholding of small coefficients.
+- Fourier (JPEG) and wavelets compete; a good basis is fast (orthogonal, FFT) and compresses well.
+- The matrices of one transformation in two bases are similar, $B = M^{-1}AM$; in the eigenvector basis the matrix is $\Lambda$.

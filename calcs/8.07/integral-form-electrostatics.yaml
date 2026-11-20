@@ -1,0 +1,100 @@
+# Calculations on content/year-4/8.07/integral-form-electrostatics.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012, Guth) Lecture Notes 3, "Integral Formulation of Basic Equations" (handwritten notes
+# for Lecture 6, September 17, 2012), pp. 1-3; no numbered equations, results boxed.
+# Page's own worked example: an infinite line with lambda = 2.0 nC/m; potential difference between r = 1 cm and 5 cm.
+# eps0 is CODATA 2018 (not in calcs/constants.yaml).
+
+page: content/year-4/8.07/integral-form-electrostatics.mdx
+calcs:
+  # ---------------------------------------------------------------- worked example: infinite line of charge
+  - id: line-coefficient
+    where: 'worked example step "The field from Gauss''s law" and plot caption: lambda/(2 pi eps0) for lambda = 2.0 nC/m'
+    inputs: {lam: 2.0e-9 C/m, eps0: 8.8541878128e-12 F/m}
+    formula: lam / (2 * pi * eps0)
+    expected: 35.95 V
+    shown: ['With the numbers, $\lambda/(2\pi\varepsilon_0) = 35.95$ V', 'with λ/2πε₀ = 35.95 V']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  - id: line-potential-difference
+    where: 'worked example steps "The potential from the line integral" and "Another path", plot caption, quiz 2: V(1 cm) - V(5 cm) = (lambda/2 pi eps0) ln 5'
+    inputs: {lam: 2.0e-9 C/m, eps0: 8.8541878128e-12 F/m, ra: 1 cm, rb: 5 cm}
+    formula: lam / (2 * pi * eps0) * log(rb / ra)
+    expected: 57.9 V
+    shown: ['35.95\text{ V} \times \ln 5 \approx 57.9$ V', 'gives the same $57.9$ V as before', 'At 5 cm it is 57.9 V lower', 'About 57.9 V']
+    quiz: 1
+    source: {cite: reading1, at: 'pp. 1-3'}
+    origin: page-own
+
+  - id: ln-five
+    where: 'quiz 2 explanation: ln 5'
+    inputs: {}
+    formula: log(5)
+    expected: '1.609'
+    shown: ['\\ln(5) \\approx 35.95 \\times 1.609']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  - id: quiz-distractor-log10
+    where: 'quiz 2 distractor and explanation: the base-10 logarithm instead of ln, (lambda/2 pi eps0) log10 5'
+    inputs: {lam: 2.0e-9 C/m, eps0: 8.8541878128e-12 F/m}
+    formula: lam / (2 * pi * eps0) * log10(5)
+    expected: 25.1 V
+    shown: ['About 25.1 V', '25.1 V comes from using the base-10 logarithm']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  - id: quiz-distractor-no-log
+    where: 'quiz 2 distractor and explanation: lambda/(2 pi eps0) without the logarithm, rounded to 36.0 V'
+    inputs: {lam: 2.0e-9 C/m, eps0: 8.8541878128e-12 F/m}
+    formula: lam / (2 * pi * eps0)
+    expected: 36.0 V
+    shown: ['About 36.0 V', '36.0 V from forgetting the logarithm']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- derivations
+  - id: line-integral-log
+    kind: identity
+    where: 'worked example "The potential from the line integral": the integral of lambda/(2 pi eps0 r'') dr'' from r0 to r is (lambda/2 pi eps0) ln(r/r0); checked with lambda/(2 pi eps0) = 1'
+    formula: integrate('1/s', 's', 1, 5)
+    equals: log(5)
+    samples: {kk: [1.0]}
+    tolerance: 1e-9
+    shown: ['$V(r) = V(r_0) - (\lambda/2\pi\varepsilon_0)\ln(r/r_0)$']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  - id: line-charge-integral-finite
+    kind: identity
+    where: 'worked example "The integral over the charge diverges": the integral of dz/sqrt(r^2 + z^2) from -Z to Z is 2 asinh(Z/r); checked at r = 1, Z = 50'
+    formula: integrate('1/sqrt(1 + s**2)', 's', -50, 50)
+    equals: 2*asinh(50)
+    samples: {kk: [1.0]}
+    tolerance: 1e-8
+    shown: ['the integral of $1/|z|$ out to infinity grows like a logarithm without limit']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  - id: line-charge-integral-diverges
+    kind: limit
+    where: 'worked example "The integral over the charge diverges": 2 asinh(Z/r) approaches 2 ln(2Z/r), a logarithm that grows without bound (r = 1)'
+    inputs: {}
+    formula: 2*asinh(zz)
+    limit: 2*log(2*zz)
+    vary: {zz: [10, 100, 1000, 100000]}
+    tolerance: 1e-9
+    shown: ['For large $|z|$ the integrand falls only like $1/|z|$']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  - id: gauss-cylinder
+    kind: identity
+    where: 'worked example "The field from Gauss''s law": E 2 pi r L = lambda L / eps0 gives E = lambda/(2 pi eps0 r)'
+    formula: (lam/(2*pi*eps0*rr)) * 2*pi*rr*LL
+    equals: lam*LL/eps0
+    samples: {lam: [2.0, 0.3], eps0: [1.0, 8.85], rr: [0.01, 3.0], LL: [1.0, 0.2]}
+    tolerance: 1e-12
+    shown: ['So $E \cdot 2\pi rL = \lambda L/\varepsilon_0$, and $E = \lambda/(2\pi\varepsilon_0 r)$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own

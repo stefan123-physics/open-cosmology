@@ -1,0 +1,123 @@
+---
+title: "Euler's method and better numerical methods"
+slug: eulers-method
+course: "18.03"
+lecture: 2
+order: 1
+summary: "Most differential equations are solved numerically. Euler's method follows the direction field in straight steps: from (xₙ, yₙ) go a step h along the line element of slope Aₙ = f(xₙ, yₙ), so xₙ₊₁ = xₙ + h and yₙ₊₁ = yₙ + hAₙ. Done by hand, keep a table. Where the solution curve is convex Euler's answer is too low, where concave too high, and y″ can be found from the equation itself without solving it. The error is roughly proportional to h: Euler is a first-order method, so halving the step halves the error. Heun's method (improved Euler, RK2) averages the slope at the start and at the Euler endpoint; its error goes as h². The standard Runge–Kutta method RK4 uses four slopes and has error ∝ h⁴. A pitfall: solutions can blow up at places the equation does not reveal, as y′ = y² shows."
+prerequisites: [direction-fields]
+source:
+  title: "MIT 18.03 Lecture 2: Euler's Numerical Method for y′ = f(x, y)"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/lecture-2-eulers-numerical-method-for-y-f-x-y/
+  readings:
+    - title: "18.03 Lecture 2 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/d58c252755364e4d66f6b55d01847261_LbKKzMag5Rc.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.03"
+    lecture: 3
+    why: "Linear first-order equations, which can be solved exactly with an integrating factor."
+quiz:
+  - question: "One Euler step from $(x_n, y_n)$ with step $h$ gives $y_{n+1} =$…"
+    choices: ["$y_n + f(x_n, y_n)$", "$y_n + h\\,f(x_n, y_n)$", "$y_n + h^2 f(x_n, y_n)$", "$f(x_n + h, y_n)$"]
+    answer: 1
+    explanation: "Follow the line element of slope $A_n = f(x_n, y_n)$ for a horizontal distance $h$: the rise is $hA_n$."
+  - question: "The solution curve is convex near the start. Euler's method gives values that are…"
+    choices: ["too high", "too low", "exact", "impossible to tell"]
+    answer: 1
+    explanation: "A convex curve bends up away from its tangent lines, and Euler follows the tangent, so it falls below."
+  - question: "Halving the step size with Heun's method (RK2) divides the error by about…"
+    choices: ["2", "4", "16", "1"]
+    answer: 1
+    explanation: "Its error is roughly proportional to $h^2$; halving $h$ quarters the error."
+flashcards:
+  - front: "Euler's method"
+    back: "$x_{n+1} = x_n + h$, $y_{n+1} = y_n + hA_n$, $A_n = f(x_n, y_n)$. Error $\\approx ch$: first order."
+  - front: "Heun's method (improved Euler, RK2)"
+    back: "Predict $\\tilde y_{n+1} = y_n + hA_n$, take $B_n = f(x_{n+1}, \\tilde y_{n+1})$, then $y_{n+1} = y_n + h\\,\\frac{A_n + B_n}{2}$. Error $\\approx ch^2$."
+  - front: "Euler too high or too low?"
+    back: "Convex solution ($y'' > 0$): Euler too low. Concave ($y'' < 0$): too high. Find $y''$ by differentiating the equation."
+status: reviewed
+---
+
+In real life most differential equations are solved numerically: even the solution curves a computer draws are computed point by point (transcript, p. 1). This lecture introduces the basic method, Euler's, of which the others are refinements.
+
+## Euler's method
+
+An **initial value problem** is a differential equation with a starting point (transcript, p. 1):
+
+<Formula label="Initial value problem" tex="y' = f(x, y), \qquad y(x_0) = y_0" cite="reading1" at="p. 1" />
+
+At $(x_0, y_0)$ the only information is the line element of the [direction field](/courses/18-03/direction-fields) there, so start off in that direction, go a horizontal **step** $h$, recompute the slope, and repeat. The result is a broken-line approximation to the solution (pp. 1–2). (Euler himself used the idea to prove that solutions exist, not to compute them, p. 1.)
+
+From $(x_n, y_n)$, the line element has slope $A_n = f(x_n, y_n)$; over a run of $h$ it rises by $hA_n$ (pp. 2–3):
+
+<Formula label="Euler's method" tex="x_{n+1} = x_n + h, \qquad y_{n+1} = y_n + hA_n, \qquad A_n = f(x_n, y_n)" cite="reading1" at="pp. 3–4" />
+
+**Example.** $y' = x^2 - y^2$, $y(0) = 1$, which cannot be solved with elementary functions, with $h = 0.1$ (pp. 4–6). Be systematic and keep a table with columns $n$, $x_n$, $y_n$, $A_n$, $hA_n$ (p. 5):
+
+| $n$ | $x_n$ | $y_n$ | $A_n = x_n^2 - y_n^2$ | $hA_n$ |
+|---|---|---|---|---|
+| 0 | 0 | 1 | $-1$ | $-0.1$ |
+| 1 | 0.1 | 0.9 | $-0.80$ | $-0.08$ |
+| 2 | 0.2 | 0.82 | | |
+
+So Euler gives $y(0.2) \approx 0.82$ (pp. 5–6).
+
+## Too high or too low?
+
+If the solution were a straight line, Euler would be exact. A **convex** solution curve bends up away from the tangent line Euler follows, so Euler falls **too low**, and keeps losing ground; a **concave** curve makes Euler **too high** (transcript, pp. 7–8). Convex means $y'' > 0$, concave $y'' < 0$, and $y''$ can be found from the differential equation itself, without solving it (pp. 8–9). For the example, differentiating with the chain rule (p. 9):
+
+<Formula label="Second derivative from the equation" tex="y'' = 2x - 2yy', \qquad y''(0) = 2(0) - 2(1)(-1) = 2" cite="reading1" at="p. 9" />
+
+So the solution is convex at the start, and the Euler value 0.82 is too low (pp. 9–10). If the curve changes from convex to concave along the way, no prediction can be made (p. 10).
+
+## How the error depends on the step
+
+The **error** $e$ is the difference between the true value and Euler's. Smaller steps follow the curve better, bigger ones worse (transcript, pp. 10–11). Roughly, for small $h$ (pp. 11–12):
+
+<Formula label="Euler is first order" tex="e \approx c\,h" cite="reading1" at="p. 12" />
+
+for some constant $c$: Euler's method is a **first-order method**. Halve the step size and you halve the error (p. 12). ("First order" refers to the power of $h$, not the order of the equation.) Halving again and again until the answer stops changing works, but slowly (p. 13).
+
+## Better methods: Heun and Runge–Kutta
+
+Euler's slope $A_n$ is systematically wrong when the curve bends. Improve it (transcript, pp. 13–15): take the Euler step to a temporary point $\tilde y_{n+1}$, find the slope $B_n$ there, and use the average of $A_n$ and $B_n$ for the real step:
+
+<Formula label="Heun's method" tex="\tilde y_{n+1} = y_n + hA_n, \qquad B_n = f(x_{n+1}, \tilde y_{n+1}), \qquad y_{n+1} = y_n + h\,\frac{A_n + B_n}{2}" cite="reading1" at="pp. 14–15" />
+
+This is **Heun's method**, also called improved Euler, modified Euler, or **RK2** (Runge–Kutta second order) (p. 16). It is a **second-order** method: $e \approx ch^2$, so halving the step quarters the error (p. 16).
+
+What costs time is evaluating $f$, which in practice can be a long formula: Euler evaluates it once per step, Heun twice (p. 16). The standard method, **RK4** (Runge–Kutta fourth order), evaluates four slopes and combines them in a weighted average, divided by 6, the sum of the weights; its error goes as $h^4$, and it is what draws the solution curves in the course's computer visuals (pp. 17–18). Mattuck adds that higher order is not free, since more slopes per step means more work (p. 17). (He then says it hardly matters which method is used, comparing RK4 with halving Euler's step four times; but four halvings multiply Euler's work by 16, not 4, so for the same accuracy RK4 is far cheaper.)
+
+<Plot variable="x" domain={[0, 1]} range={[0.9, 2.8]} xLabel="x" yLabel="y"
+  curves={[
+    { expr: "exp(x)", label: "exact eˣ" },
+    { expr: "x <= 0.5 ? 1 + x : 1.5 + 1.5*(x - 0.5)", label: "Euler, h = 0.5", dash: true },
+    { expr: "x <= 0.5 ? 1 + 1.25*x : 1.625 + 1.625*1.25*(x - 0.5)", label: "Heun, h = 0.5" }
+  ]}
+  caption="y′ = y, y(0) = 1, computed with two steps of h = 0.5: Euler's broken line (slopes 1 and 1.5) falls well below the exact solution eˣ, which is convex; Heun's averaged slopes land much closer (2.64 against e ≈ 2.72 at x = 1)." />
+
+## A pitfall
+
+$y' = y^2$ looks harmless, and separation of variables gives the solutions $y = 1/(c - x)$ (transcript, p. 18). Starting from $y(0) = 1$, the solution $1/(1 - x)$ shoots off to infinity at $x = 1$. Asked for $y(2)$, a numerical method follows the curve up towards infinity and never finds the other branch (pp. 18–19). Each solution has its own **singularity**, at $x = c$, and nothing in the equation predicts where: one of the things that makes numerical work hard (p. 19). (Separation of variables also misses the solution $y = 0$. A first pitfall was left for the problem set, p. 18.)
+
+<WorkedExample title="Euler and Heun on y′ = y">
+<Problem>
+For $y' = y$, $y(0) = 1$, estimate $y(1)$ (exactly $e \approx 2.718$): (a) by Euler with $h = 0.5$ and $h = 0.25$; (b) by Heun with $h = 0.5$. Compare the errors.
+</Problem>
+<Step title="(a) Euler">
+With $h = 0.5$ each step multiplies $y$ by $1 + h = 1.5$: $y(1) \approx 1.5^2 = 2.25$, error 0.47. With $h = 0.25$: $1.25^4 \approx 2.441$, error 0.28. Halving $h$ cut the error by a factor of about 1.7; for smaller $h$ the factor approaches 2. Both are too low, as expected for a convex solution.
+</Step>
+<Step title="(b) Heun">
+$A_n = y_n$, $\tilde y_{n+1} = y_n(1 + h)$, $B_n = y_n(1 + h)$, so each step multiplies $y$ by $1 + h + h^2/2 = 1.625$. Two steps: $1.625^2 \approx 2.641$, error 0.08, already better than Euler with twice as many steps.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Euler: $x_{n+1} = x_n + h$, $y_{n+1} = y_n + hf(x_n, y_n)$; keep a table.
+- Convex solution: Euler too low; concave: too high; $y''$ comes from differentiating the equation.
+- Euler's error $\approx ch$ (first order); Heun/RK2 $\approx ch^2$; RK4 $\approx ch^4$, at the cost of more evaluations of $f$.
+- Solutions can blow up at singularities that the equation does not reveal, such as $y = 1/(1 - x)$ for $y' = y^2$.

@@ -1,0 +1,455 @@
+# Calculations on content/year-4/8.08/van-der-waals-phase-transitions.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter II notes, "Interacting Classical Gas and van der Waals Equation of State"
+# (Wen, handwritten scan). Page numbers are Wen's handwritten numbers, top right (13-20 = PDF pages 1-8); this page uses
+# pp. 15-20, points 3 to 7. The notes quote one number: the measured exponent beta of about 1/3 (p. 20).
+# Page's own examples: carbon dioxide's critical point fitted with van der Waals constants (NIST critical data);
+# Clapeyron slopes for boiling water and melting ice (standard handbook values); reduced coexistence at T = 0.9 T_c
+# and 0.99 T_c, solved numerically from the reduced equation of state (equal depth of G).
+# Constants: k_B (exact 2019 SI); R = 8.314 J/(mol K) as printed on the page.
+
+page: content/year-4/8.08/van-der-waals-phase-transitions.mdx
+calcs:
+  # ---------------------------------------------------------------- Gibbs potential (p. 16)
+  - id: gibbs-saddle
+    kind: identity
+    where: 'formula "Summing over volumes": for a large system -kT ln of the integral of exp(-beta f(V)) dV approaches the minimum of f; here f = N g(V/N) with g = (v - 2)^2 - 1, so -(1/N) kT ln Q_com tends to min g = -1 (Laplace method, N = 1e4, kT = 1; error of order ln N/N)'
+    formula: -log(integrate('exp(-NN*(t - 2)**2)', 't', 0, 4))/NN - 1
+    equals: -1
+    samples: {NN: [1e4, 2e4]}
+    tolerance: 1e-3
+    shown: ['for a large system it is so sharply peaked that the integral is dominated by the volume $V^*$']
+    source: {cite: reading1, at: 'p. 16, point 4'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- constant pressure (pp. 17-18)
+  - id: gibbs-slope
+    kind: identity
+    where: 'formula "Slope of the Gibbs potential": d/dV of -NkT ln(V - b) - a/V + PV is -NkT/(V - b) + a/V^2 + P (numerical derivative)'
+    formula: deriv('-NT*log(x - bb) - aa/x + PP*x', 'x', VV)
+    equals: -NT/(VV - bb) + aa/VV**2 + PP
+    samples: {NT: [1.0, 2.0, 0.5], bb: [0.1, 0.3, 0.2], aa: [1.0, 0.5, 2.0], PP: [0.3, 1.0, 0.1], VV: [1.0, 2.0, 0.8]}
+    tolerance: 1e-6
+    shown: ['Its slope is (notes p. 18)']
+    source: {cite: reading1, at: 'p. 18'}
+    origin: mit
+
+  - id: cubic-form
+    kind: identity
+    where: 'formula "Equation of state as a cubic": V^3 - (b + NkT/P) V^2 + (a/P) V - ab/P equals (V^2/P)(V - b)(P + a/V^2 - NkT/(V - b)), zero on the van der Waals isotherm'
+    formula: VV**3 - (bb + NT/PP)*VV**2 + aa/PP*VV - aa*bb/PP
+    equals: (VV**2/PP)*(VV - bb)*(PP + aa/VV**2 - NT/(VV - bb))
+    samples: {NT: [1.0, 2.0, 0.5], bb: [0.1, 0.3, 0.2], aa: [1.0, 0.5, 2.0], PP: [0.3, 1.0, 0.1], VV: [1.0, 2.0, 0.8]}
+    tolerance: 1e-9
+    shown: ['The volumes where $\partial G/\partial V = 0$ are the roots']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: mit
+
+  - id: critical-cond-1
+    kind: identity
+    where: 'formula "Critical point": 3 V_c = b + N k T_c/P_c with V_c = 3b, P_c = a/27b^2, N k T_c = 8a/27b'
+    formula: 3*(3*bb)
+    equals: bb + (8*aa/(27*bb))/(aa/(27*bb**2))
+    samples: {aa: [1.0, 0.5, 2.0], bb: [0.1, 0.3, 2.0]}
+    tolerance: 1e-9
+    shown: ['$3V_c = b + Nk_BT_c/P_c$']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: mit
+
+  - id: critical-cond-2
+    kind: identity
+    where: 'formula "Critical point": 3 V_c^2 = a/P_c'
+    formula: 3*(3*bb)**2
+    equals: aa/(aa/(27*bb**2))
+    samples: {aa: [1.0, 0.5, 2.0], bb: [0.1, 0.3, 2.0]}
+    tolerance: 1e-9
+    shown: ['$3V_c^2 = a/P_c$']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: mit
+
+  - id: critical-cond-3
+    kind: identity
+    where: 'formula "Critical point": V_c^3 = ab/P_c'
+    formula: (3*bb)**3
+    equals: aa*bb/(aa/(27*bb**2))
+    samples: {aa: [1.0, 0.5, 2.0], bb: [0.1, 0.3, 2.0]}
+    tolerance: 1e-9
+    shown: ['$V_c^3 = ab/P_c$']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: mit
+
+  - id: critical-ratio
+    where: 'text after "Critical point of the van der Waals gas": P_c V_c/(N k T_c) = (a/27b^2)(3b)/(8a/27b)'
+    inputs: {aa: 1.7, bb: 0.3}
+    formula: (aa/(27*bb**2))*(3*bb)/(8*aa/(27*bb))
+    expected: '0.375'
+    shown: ['$P_cV_c/(Nk_BT_c) = 3/8$', 'the model''s $P_cV_c/RT_c = 0.375$']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- equal depth at T = 0.9 Tc (page's plot)
+  - id: coex-09-liquid
+    where: 'G(V) plot caption: the reduced van der Waals pressure at the liquid volume 0.6034 at T = 0.9 T_c (coexistence solved numerically: V_l = 0.6034, V_g = 2.3488, P = 0.64700)'
+    inputs: {v: 0.6034, t: 0.9}
+    formula: 8*t/(3*v - 1) - 3/v**2
+    expected: '0.647'
+    tolerance: 0.0005
+    shown: ['At P = 0.647 P_c the liquid minimum (near V = 0.60 V_c)']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: coex-09-gas
+    where: 'G(V) plot caption: the reduced pressure at the gas volume 2.3488 is the same'
+    inputs: {v: 2.3488, t: 0.9}
+    formula: 8*t/(3*v - 1) - 3/v**2
+    expected: '0.647'
+    tolerance: 0.0005
+    shown: ['the gas minimum (near 2.35 V_c) are equally deep']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: coex-09-equal-depth
+    where: 'G(V) plot caption: g(V_l) - g(V_g) with g = -(8t/3) ln(v - 1/3) - 3/v + p v, p = 0.64700, is zero (equal depth)'
+    inputs: {vl: 0.6034, vg: 2.3488, t: 0.9, p: 0.64700}
+    formula: (-(8*t/3)*log(vl - 1/3) - 3/vl + p*vl) - (-(8*t/3)*log(vg - 1/3) - 3/vg + p*vg)
+    expected: '0.000'
+    tolerance: 0.0005
+    shown: ['are equally deep: the two phases coexist']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: reduced-g
+    kind: identity
+    where: 'G(V) plot caption: G/(P_c V_c) = -(8/3) T/T_c ln(V/V_c - 1/3) - 3 V_c/V + (P/P_c)(V/V_c) + const, from the formula "Gibbs potential as a function of volume" with V_c = 3b, P_c = a/27b^2, NkT_c = 8a/27b (difference of the two at two volumes, so the constant drops out)'
+    formula: ((-NT*log(V1 - bb) - aa/V1 + PP*V1) - (-NT*log(V2 - bb) - aa/V2 + PP*V2))/((aa/(27*bb**2))*3*bb)
+    equals: (-(8/3)*(NT/(8*aa/(27*bb)))*log(V1/(3*bb) - 1/3) - 3*(3*bb)/V1 + (PP/(aa/(27*bb**2)))*V1/(3*bb)) - (-(8/3)*(NT/(8*aa/(27*bb)))*log(V2/(3*bb) - 1/3) - 3*(3*bb)/V2 + (PP/(aa/(27*bb**2)))*V2/(3*bb))
+    samples: {NT: [1.0, 0.3], aa: [2.0, 1.0], bb: [0.2, 0.1], PP: [0.5, 2.0], V1: [0.5, 0.25], V2: [1.5, 0.9]}
+    tolerance: 1e-9
+    shown: ['G/(P_cV_c) = −(8/3)(T/T_c) ln(V/V_c − 1/3) − 3V_c/V + (P/P_c)(V/V_c), up to a constant']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- carbon dioxide (page's example)
+  - id: co2-tc
+    kind: fact
+    where: 'worked example "Fitting carbon dioxide"; quiz 2: measured critical temperature of CO2'
+    value: '304.13 K'
+    shown: ['$T_c \approx 304.13$ K', '$T_c \\approx 304$ K']
+    source: {cite: nist-co2}
+    origin: later-data
+
+  - id: co2-pc
+    kind: fact
+    where: 'worked example; quiz 2: measured critical pressure of CO2, 7.3773 MPa'
+    value: '7.38 MPa'
+    shown: ['$P_c \approx 7.38$ MPa', '$P_c \\approx 7.38$ MPa']
+    source: {cite: nist-co2}
+    origin: later-data
+
+  - id: co2-vc
+    kind: fact
+    where: 'worked example: measured critical molar volume of CO2 (44.01 g/mol over 467.6 kg/m^3)'
+    value: '94.1 cm3/mol'
+    shown: ['a molar volume there of about 94.1 cm³']
+    source: {cite: nist-co2}
+    origin: later-data
+
+  - id: co2-nkt
+    where: 'worked example "Solve for b and a": N k T_c = R T_c for one mole'
+    inputs: {R: 8.314 J/K, Tc: 304.13 K}
+    formula: R*Tc
+    expected: 2529 J
+    shown: ['$Nk_BT_c \approx 2529$ J']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: co2-b
+    where: 'worked example "Solve for b and a"; quiz 2: b = R T_c/(8 P_c)'
+    inputs: {R: 8.314 J/K, Tc: 304.13 K, Pc: 7.3773 MPa}
+    formula: R*Tc/(8*Pc)
+    expected: 4.28e-5 m**3
+    shown: ['\approx 4.28 \times 10^{-5}$ m³, about 42.8 cm³', 'b = RT_c/(8P_c) \\approx 4.28 \\times 10^{-5}$ m³']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: co2-a
+    where: 'worked example "Solve for b and a"; quiz 2: a = 27 (R T_c)^2/(64 P_c)'
+    inputs: {R: 8.314 J/K, Tc: 304.13 K, Pc: 7.3773 MPa}
+    formula: 27*(R*Tc)**2/(64*Pc)
+    expected: 0.366 Pa*m**6
+    shown: ['7.377 \times 10^6) \approx 0.366$ Pa m⁶ per mole squared', 'a = 27R^2T_c^2/(64P_c) \\approx 0.366$']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: co2-vc-model
+    where: 'worked example "The critical volume"; quiz 2 explanation: V_c = 3b'
+    inputs: {R: 8.314 J/K, Tc: 304.13 K, Pc: 7.3773 MPa}
+    formula: 3*R*Tc/(8*Pc)
+    expected: 128.5 cm**3
+    shown: ['$V_c = 3b \approx 128.5$ cm³', 'The 128 cm³ is $V_c = 3b$']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  - id: co2-vc-excess
+    where: 'worked example: the model V_c exceeds the measured 94.1 cm^3 by this percentage'
+    inputs: {Vm: 128.5 cm**3, Vx: 94.1 cm**3}
+    formula: 100*(Vm/Vx - 1)
+    expected: '37'
+    shown: ['about 37% more than the measured 94.1 cm³']
+    source: {cite: nist-co2}
+    origin: page-own
+
+  - id: co2-zc
+    where: 'worked example: P_c V_c/(R T_c) for carbon dioxide'
+    inputs: {Pc: 7.377e6 Pa, Vc: 94.1e-6 m**3, RT: 2529 J}
+    formula: Pc*Vc/RT
+    expected: '0.274'
+    shown: ['7.377 \times 10^6 \times 94.1 \times 10^{-6}/2529 \approx 0.274']
+    source: {cite: nist-co2}
+    origin: page-own
+
+  - id: zc-range
+    kind: fact
+    where: 'worked example "What this says"; summary: most real gases have P_c V_c/R T_c between about 0.23 (water) and 0.31 (hydrogen, helium)'
+    value: '0.23 to 0.31'
+    shown: ['between about 0.23 and 0.31', 'about 0.23 to 0.31 for real gases']
+    source: {ref: 'standard critical-point tables (e.g. NIST Chemistry WebBook): water about 0.23, most simple gases 0.27-0.31'}
+    origin: later-data
+
+  # ---------------------------------------------------------------- Clapeyron (p. 19)
+  - id: clapeyron
+    kind: identity
+    where: 'formula "Clapeyron equation": from V_l dP - S_l dT = V_g dP - S_g dT, dP/dT = (S_g - S_l)/(V_g - V_l) = L/(T dV) with L = T dS'
+    formula: (Sg - Sl)/(Vg - Vl)
+    equals: (TT*(Sg - Sl))/(TT*(Vg - Vl))
+    samples: {Sg: [2.0, 5.0], Sl: [1.0, 0.5], Vg: [10.0, 3.0], Vl: [1.0, 0.2], TT: [300.0, 1.0]}
+    tolerance: 1e-12
+    shown: ['Solving for the slope of the line gives the **Clapeyron equation**']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: mit
+
+  - id: water-L
+    kind: fact
+    where: 'worked example (a); quiz 3: latent heat of vaporization of water at 100 C'
+    value: '40.66 kJ/mol'
+    shown: ['a latent heat of about 40.66 kJ per mole', 'a latent heat of about 40.7 kJ per mole']
+    source: {ref: 'standard handbook value of the enthalpy of vaporization of water at 373.15 K'}
+    origin: later-data
+
+  - id: water-vgas
+    where: 'worked example (a); quiz 3: ideal-gas molar volume of the vapour at 373.15 K and 101325 Pa'
+    inputs: {R: 8.314 J/K, T: 373.15 K, P: 101325 Pa}
+    formula: R*T/P
+    expected: 0.0306 m**3
+    shown: ['8.314 \times 373.15/101325 \approx 0.0306$ m³', 'fills about 30.6 litres per mole']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: page-own
+
+  - id: water-slope
+    where: 'worked example (a); quiz 3: dP/dT = L/(T V_gas)'
+    inputs: {L: 40660 J, T: 373.15 K, V: 0.0306 m**3}
+    formula: L/(T*V)
+    expected: 3.56e3 Pa/K
+    shown: ['\approx 3.56 \times 10^3$ Pa/K', 'about 3.6 kPa per kelvin;', 'rises by about 3.6 kPa']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: page-own
+
+  - id: water-slope-atm
+    where: 'worked example (a): 3.56 kPa as a percentage of 101325 Pa'
+    inputs: {d: 3.56e3 Pa, P: 101325 Pa}
+    formula: 100*d/P
+    expected: '3.5'
+    shown: ['roughly 3.5% of an atmosphere']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: page-own
+
+  - id: water-liquid-volume
+    kind: fact
+    where: 'quiz 3 explanation: molar volume of liquid water at 100 C (18.02 g/mol / 958.4 kg/m^3 = 18.8 cm^3)'
+    value: '0.019 L'
+    shown: ['the liquid''s 0.019 litres hardly matter']
+    source: {ref: 'density of liquid water at 100 C, 958.4 kg/m^3 (standard tables)'}
+    origin: later-data
+
+  - id: ice-L
+    kind: fact
+    where: 'worked example (b): latent heat of fusion of ice'
+    value: '6.01 kJ/mol'
+    shown: ['a latent heat of about 6.01 kJ per mole']
+    source: {ref: 'standard handbook value of the enthalpy of fusion of ice at 273.15 K'}
+    origin: later-data
+
+  - id: ice-volumes
+    kind: fact
+    where: 'worked example (b): molar volumes of water (18.015 g / 0.99984 g/cm^3) and ice (18.015 g / 0.9167 g/cm^3) at 0 C'
+    value: '18.02 and 19.65 cm3/mol'
+    shown: ['a mole of water fills 18.02 cm³ and a mole of ice 19.65 cm³']
+    source: {ref: 'densities of water (0.99984 g/cm^3) and ice (0.9167 g/cm^3) at 0 C, standard tables'}
+    origin: later-data
+
+  - id: ice-dv
+    where: 'worked example (b): Delta V = V_water - V_ice'
+    inputs: {Vw: 18.02 cm**3, Vi: 19.65 cm**3}
+    formula: Vw - Vi
+    expected: -1.63 cm**3
+    shown: ['$\Delta V = 18.02 - 19.65 = -1.63$ cm³']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: page-own
+
+  - id: ice-slope
+    where: 'worked example (b); quiz 3 distractor: dP/dT = L/(T Delta V) for melting ice'
+    inputs: {L: 6010 J, T: 273.15 K, dV: -1.63e-6 m**3}
+    formula: L/(T*dV)
+    expected: -1.35e7 Pa/K
+    shown: ['\approx -1.35 \times 10^7$ Pa/K', 'about 13.5 MPa', 'About −13.5 MPa per kelvin']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: page-own
+
+  - id: ice-slope-atm
+    where: 'worked example (b): 13.5 MPa in atmospheres'
+    inputs: {d: 13.5 MPa, P: 101325 Pa}
+    formula: d/P
+    expected: '130'
+    tolerance: 5
+    shown: ['some 130 atmospheres']
+    source: {cite: reading1, at: 'p. 19, point 6'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- scaling (p. 20)
+  - id: reduced-vdw
+    kind: identity
+    where: 'formula "Reduced van der Waals equation": with V = 3b vv, P = (a/27b^2) pp, NkT = (8a/27b) tt on the van der Waals isotherm, (vv - 1/3)(pp + 3/vv^2) = (8/3) tt'
+    formula: (vv - 1/3)*((NT/(3*bb*vv - bb) - aa/(3*bb*vv)**2)/(aa/(27*bb**2)) + 3/vv**2)
+    equals: (8/3)*NT/(8*aa/(27*bb))
+    samples: {NT: [1.0, 0.3, 2.0], aa: [2.0, 1.0, 0.7], bb: [0.2, 0.1, 0.5], vv: [0.8, 1.5, 3.0]}
+    tolerance: 1e-9
+    shown: ['the constants $a$ and $b$ disappear']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: mit
+
+  - id: reduced-constants
+    kind: identity
+    where: 'text before "Reduced van der Waals equation": a/(P_c V_c^2) = 3 (and NkT_c/(P_c V_c) = 8/3, checked as their product 8)'
+    formula: (aa/((aa/(27*bb**2))*(3*bb)**2))*((8*aa/(27*bb))/((aa/(27*bb**2))*3*bb))
+    equals: 8
+    samples: {aa: [2.0, 1.0], bb: [0.2, 0.5]}
+    tolerance: 1e-9
+    shown: ['$a/(P_cV_c^2) = 3$ and $Nk_BT_c/(P_cV_c) = 8/3$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: mit
+
+  - id: landau-minima
+    kind: identity
+    where: 'formula "The two minima": the slope 2 C1 t x + 4 C2 x^3 vanishes at x = sqrt(-C1 t/(2 C2)) for t < 0 (checked as slope + 1 = 1)'
+    formula: 2*C1*tt*sqrt(-C1*tt/(2*C2)) + 4*C2*sqrt(-C1*tt/(2*C2))**3 + 1
+    equals: 1
+    samples: {C1: [1.0, 3.0, 0.5], C2: [1.0, 0.375, 2.0], tt: [-0.1, -0.01, -0.5]}
+    tolerance: 1e-12
+    shown: ['Setting the slope to zero']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: mit
+
+  - id: landau-jump
+    kind: identity
+    where: 'formula "Volume jump": twice sqrt(-C1 t/(2 C2)) is sqrt(-2 C1 t/C2)'
+    formula: 2*sqrt(-C1*tt/(2*C2))
+    equals: sqrt(-2*C1*tt/C2)
+    samples: {C1: [1.0, 3.0, 0.5], C2: [1.0, 0.375, 2.0], tt: [-0.1, -0.01, -0.5]}
+    tolerance: 1e-12
+    shown: ['so the volume jump between liquid and gas is']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: mit
+
+  - id: vdw-expansion
+    kind: identity
+    where: 'text: near the critical point the reduced pressure 8(1 + t)/(3(1 + phi) - 1) - 3/(1 + phi)^2 is 1 + 4t - 6 t phi - (3/2) phi^3 up to terms of order t phi^2 and phi^4 (checked at small t, phi, tolerance 1e-5)'
+    formula: 8*(1 + tt)/(3*(1 + ph) - 1) - 3/(1 + ph)**2
+    equals: 1 + 4*tt - 6*tt*ph - 1.5*ph**3
+    samples: {tt: [0.001, -0.001, 0.0005], ph: [0.01, -0.01, 0.02]}
+    tolerance: 1e-5
+    shown: ['$\bar P \approx 1 + 4t - 6t\phi - \frac32\phi^3$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: vdw-c1-c2
+    kind: identity
+    where: 'text: integrating P - P_vdW = (P - 1 - 4t) + 6 t phi + (3/2) phi^3 over phi gives the even part 3 t phi^2 + (3/8) phi^4, so C1 = 3, C2 = 3/8 (checked: derivative of 3 t phi^2 + (3/8) phi^4 is 6 t phi + 1.5 phi^3)'
+    formula: deriv('3*tt*s**2 + 0.375*s**4', 's', ph)
+    equals: 6*tt*ph + 1.5*ph**3
+    samples: {tt: [-0.01, 0.02], ph: [0.1, -0.3]}
+    tolerance: 1e-6
+    shown: ['that makes $C_1 = 3$ and $C_2 = \frac38$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: vdw-jump-formula
+    kind: identity
+    where: 'text: with C1 = 3, C2 = 3/8 the jump sqrt(-2 C1 t/C2) is 4 sqrt(-t)'
+    formula: sqrt(-2*3*tt/0.375)
+    equals: 4*sqrt(-tt)
+    samples: {tt: [-0.01, -0.1]}
+    tolerance: 1e-12
+    shown: ['$\Delta\bar V \approx 4\sqrt{-t}$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: vdw-jump-099
+    where: 'text: 4 sqrt(-t) at T = 0.99 T_c'
+    inputs: {tt: -0.01}
+    formula: 4*sqrt(-tt)
+    expected: '0.40'
+    shown: ['At $\bar T = 0.99$ this predicts $0.40$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: coex-099-p-liquid
+    where: 'text: exact coexistence at T = 0.99 T_c (solved numerically: V_l = 0.83091, V_g = 1.24295, P = 0.960479); reduced pressure at V_l'
+    inputs: {v: 0.83091, t: 0.99}
+    formula: 8*t/(3*v - 1) - 3/v**2
+    expected: '0.9605'
+    shown: ['$0.831$ and $1.243$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: coex-099-p-gas
+    where: 'text: the same reduced pressure at V_g = 1.24295'
+    inputs: {v: 1.24295, t: 0.99}
+    formula: 8*t/(3*v - 1) - 3/v**2
+    expected: '0.9605'
+    shown: ['$0.831$ and $1.243$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: coex-099-equal-depth
+    where: 'text: equal depth of G at the two volumes at T = 0.99 T_c, P = 0.960479'
+    inputs: {vl: 0.83091, vg: 1.24295, t: 0.99, p: 0.960479}
+    formula: (-(8*t/3)*log(vl - 1/3) - 3/vl + p*vl) - (-(8*t/3)*log(vg - 1/3) - 3/vg + p*vg)
+    expected: '0.0000'
+    tolerance: 0.00005
+    shown: ['close to the exact coexisting volumes of the van der Waals gas']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: coex-099-jump
+    where: 'text: the exact jump V_g - V_l at T = 0.99 T_c'
+    inputs: {vl: 0.83091, vg: 1.24295}
+    formula: vg - vl
+    expected: '0.41'
+    shown: ['which differ by $0.41$']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: page-own
+
+  - id: beta-measured
+    kind: fact
+    where: 'formula "Measured scaling"; quiz 4: experiments find beta about 1/3'
+    value: '1/3'
+    shown: ['\Delta V \propto |t|^\beta, \qquad \beta \approx \frac13']
+    source: {cite: reading1, at: 'p. 20, point 7'}
+    origin: mit
+
+  - id: beta-modern
+    kind: fact
+    where: 'text: today''s best value of beta for the liquid-gas critical point (3D Ising universality class), about 0.326'
+    value: '0.326'
+    shown: ['close to 0.326']
+    source: {ref: 'critical exponent beta of the three-dimensional Ising universality class, 0.3265 (conformal bootstrap and Monte Carlo results)'}
+    origin: later-data

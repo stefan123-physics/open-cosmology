@@ -1,0 +1,268 @@
+# Calculations on content/year-4/8.08/ising-model-mean-field.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Lecture Notes, Chapter III "Ising Model" (Wen, handwritten scan), pp. 21-23.
+# Page numbers are the handwritten numbers at the top right of each scanned page (21-27 = PDF pages 1-7).
+# The notes quote no numbers.
+# Page's own examples: worked example (square lattice, J/k_B = 50 K: mean-field and Onsager T_c, <s> at 150 K by
+# iteration, effective field, energy per spin); plot caption (minima at T/T_c = 0.75); quiz 2 (cubic lattice,
+# J/k_B = 10 K); the Onsager value 2.27 J/k_B quoted in the text.
+# Notation in the formulas: JJ = J, zz = z, bb = beta = 1/(k_B T), hh = h, mm = <s>, s1..s4 = spins, NN = N.
+
+page: content/year-4/8.08/ising-model-mean-field.mdx
+calcs:
+  # ---------------------------------------------------------------- mean-field theory (p. 22)
+  - id: decoupling-error
+    kind: identity
+    where: 'formula "The mean-field approximation": s_i s_j minus the approximation is exactly the product of the two fluctuations (s_i - m)(s_j - m), the term that is dropped'
+    formula: s1*s2 - (mm*s2 + s1*mm - mm**2)
+    equals: (s1 - mm)*(s2 - mm)
+    samples: {s1: [1, 1, -1, -1], s2: [1, -1, 1, -1], mm: [0.3, -0.7, 0.55, 0.9]}
+    tolerance: 1e-12
+    shown: ['which drops only the product of the two fluctuations']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: page-own
+
+  - id: mean-energy-counting
+    kind: identity
+    where: 'formula "Mean-field energy": on a ring of 4 sites (z = 2, zN/2 = 4 pairs), the sum over pairs of (m s_i + m s_j - m^2) equals z m (sum of s_i) - (1/2) z N m^2'
+    formula: (mm*s1 + mm*s2 - mm**2) + (mm*s2 + mm*s3 - mm**2) + (mm*s3 + mm*s4 - mm**2) + (mm*s4 + mm*s1 - mm**2)
+    equals: 2*mm*(s1 + s2 + s3 + s4) - 0.5*2*4*mm**2
+    samples: {s1: [1, -1, 1], s2: [1, 1, -1], s3: [-1, 1, -1], s4: [1, -1, -1], mm: [0.4, -0.2, 0.8]}
+    tolerance: 1e-12
+    shown: ['So there are $zN/2$ pairs']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: mit
+
+  - id: mean-partition-function
+    kind: identity
+    where: 'formula "Mean-field partition function": for N = 2 independent spins in h_eff, the sum over the four configurations of exp(beta h_eff (s1 + s2)) is (e^(-beta h_eff) + e^(beta h_eff))^2'
+    formula: exp(bb*hh*2) + 2*exp(0) + exp(-bb*hh*2)
+    equals: (exp(-bb*hh) + exp(bb*hh))**2
+    samples: {bb: [1.0, 0.3, 2.0], hh: [0.5, -1.2, 0.1]}
+    tolerance: 1e-12
+    shown: ['The partition function is now a product of one-spin sums']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: mit
+
+  - id: average-spin-tanh
+    kind: identity
+    where: 'formula "Average spin in the effective field": (e^x - e^-x)/(e^x + e^-x) = tanh x, x = beta h_eff'
+    formula: (exp(xx) - exp(-xx))/(exp(xx) + exp(-xx))
+    equals: tanh(xx)
+    samples: {xx: [0.1, -0.8, 2.5]}
+    tolerance: 1e-12
+    shown: ['its average is that of a single two-state spin']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: mit
+
+  - id: minimize-free-energy
+    kind: identity
+    where: 'formula "Minimizing the free energy": (1/N) dA/d<s> of the boxed A, with k_B T = 1/beta, is -tanh(beta h_eff) z J + z J <s> (numerical derivative); the notes'' minus sign in the denominator is a slip'
+    formula: deriv('-(1/bb)*log(exp(-bb*(hh + zz*JJ*t)) + exp(bb*(hh + zz*JJ*t))) + 0.5*zz*JJ*t**2', 't', mm)
+    equals: -tanh(bb*(hh + zz*JJ*mm))*zz*JJ + zz*JJ*mm
+    samples: {bb: [1.0, 0.5, 2.0], hh: [0.0, 0.3, -0.2], zz: [4, 2, 6], JJ: [1.0, 0.7, 0.25], mm: [0.5, -0.3, 0.9]}
+    tolerance: 1e-6
+    shown: ['The notes also leave out the factor $N$ here.']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: slip
+
+  - id: slope-at-origin
+    kind: identity
+    where: 'text before "Mean-field critical temperature": the slope of tanh(beta z J <s>) at <s> = 0 is beta z J, so the transition is at beta z J = 1, T_c = zJ/k_B'
+    formula: deriv('tanh(bb*zz*JJ*t)', 't', 0)
+    equals: bb*zz*JJ
+    samples: {bb: [1.0, 0.5, 2.0], zz: [4, 2, 6], JJ: [1.0, 0.7, 0.25]}
+    tolerance: 1e-6
+    shown: ['so the condition is $\beta zJ = 1$']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: mit
+
+  # ---------------------------------------------------------------- plot caption (T/T_c = 0.75)
+  - id: caption-minimum
+    where: 'first plot caption: at T/T_c = 0.75 the minima of -(T/T_c) ln cosh[(T_c/T)<s>] + <s>^2/2 lie at the root of <s> = tanh(<s>/0.75)'
+    formula: solve('tanh(t/0.75) - t', 't', 0.5, 1)
+    expected: '0.776'
+    shown: ['At T/T_c = 0.75 the minima lie at ±0.776']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: caption-depth
+    where: 'first plot caption: depth of the minimum below <s> = 0, in units of k_B T_c (the size; the page says "below")'
+    formula: -(-0.75*log(cosh(0.7755163/0.75)) + 0.7755163**2/2)
+    expected: '0.044'
+    shown: ['0.044 k_B T_c per spin below the symmetric point']
+    source: {cite: reading1, at: 'p. 22 (boxed free energy)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- mean-field versus exact
+  - id: onsager-text
+    where: 'section "Finite temperature": Onsager T_c = 2J/[k_B ln(1 + sqrt 2)] in units of J/k_B'
+    formula: 2/log(1 + sqrt(2))
+    expected: '2.27'
+    shown: ['\ln(1 + \sqrt 2)] \approx 2.27J/k_B$, where the heat capacity']
+    source: {cite: reading1, at: 'p. 21 (context not in the notes)'}
+    origin: page-own
+
+  - id: onsager-flashcard
+    where: 'flashcard 5 and the summary and "How good is mean-field theory?": the same Onsager value 2.27 J/k_B'
+    formula: 2/log(1 + sqrt(2))
+    expected: '2.27'
+    shown: ['\\ln(1 + \\sqrt 2)] \\approx 2.27J/k_B$."', 'against Onsager''s exact $2.27J/k_B$', 'against the exact $2.27J/k_B$ on a square lattice']
+    source: {cite: reading1, at: 'p. 21 (context not in the notes)'}
+    origin: page-own
+
+  - id: chain-break
+    where: 'section "How good is mean-field theory?": one broken bond turns a pair energy -J into +J, a cost of 2J (in units of J)'
+    formula: (+1) - (-1)
+    expected: '2'
+    shown: ['costs only $2J$']
+    source: {cite: reading1, at: 'p. 21, point 1'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: square lattice, J/k_B = 50 K
+  - id: ex-tc-mean
+    where: 'worked example: T_c = z J/k_B with z = 4, J/k_B = 50 K'
+    inputs: {z: 4, Jk: 50 K}
+    formula: z*Jk
+    expected: 200 K
+    shown: ['$T_c = zJ/k_B = 4 \times 50$ K $= 200$ K']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-tc-onsager
+    where: 'worked example: Onsager T_c = 2 J/[k_B ln(1 + sqrt 2)] with J/k_B = 50 K'
+    inputs: {Jk: 50 K}
+    formula: 2*Jk/log(1 + sqrt(2))
+    expected: 113.5 K
+    shown: ['\approx 113.5$ K']
+    source: {cite: reading1, at: 'p. 23 (Onsager value not in the notes)'}
+    origin: page-own
+
+  - id: ex-overestimate
+    where: 'worked example: 200 K / 113.5 K - 1 in per cent ("more than 75%")'
+    formula: 100*(200/(2*50/log(1 + sqrt(2))) - 1)
+    expected: '76'
+    shown: ['overestimates $T_c$ by more than 75%']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-ratio
+    where: 'worked example: beta z J = T_c/T = 200/150'
+    formula: 200/150
+    expected: '1.333'
+    shown: ['$\beta zJ = T_c/T = 200/150 = 4/3$']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-iter-1
+    where: 'worked example: first iterate tanh(4/3)'
+    formula: tanh(4/3)
+    expected: '0.870'
+    shown: ['$\tanh(4/3) = 0.870$']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-iter-2
+    where: 'worked example: second iterate tanh(4/3 tanh(4/3))'
+    formula: tanh(4/3*tanh(4/3))
+    expected: '0.821'
+    shown: ['$\tanh(4 \times 0.870/3) = 0.821$']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-iter-3
+    where: 'worked example: third iterate'
+    formula: tanh(4/3*tanh(4/3*tanh(4/3)))
+    expected: '0.799'
+    shown: ['then $0.799$']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-iter-4
+    where: 'worked example: fourth iterate'
+    formula: tanh(4/3*tanh(4/3*tanh(4/3*tanh(4/3))))
+    expected: '0.787'
+    shown: ['$0.787$, $0.782$']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-iter-5
+    where: 'worked example: fifth iterate'
+    formula: tanh(4/3*tanh(4/3*tanh(4/3*tanh(4/3*tanh(4/3)))))
+    expected: '0.782'
+    shown: ['$0.782$, …, settling']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-solution
+    where: 'worked example: the fixed point of <s> = tanh(4<s>/3)'
+    formula: solve('tanh(4/3*t) - t', 't', 0.5, 1)
+    expected: '0.776'
+    shown: ['settling at $\langle s\rangle \approx 0.776$']
+    source: {cite: reading1, at: 'p. 23 (boxed self-consistent equation)'}
+    origin: page-own
+
+  - id: ex-majority
+    where: 'worked example: fraction of spins in the majority direction, (1 + <s>)/2, in per cent'
+    formula: 100*(1 + solve('tanh(4/3*t) - t', 't', 0.5, 1))/2
+    expected: '88.8'
+    shown: ['$(1 + 0.776)/2 = 0.888$', 'On average 88.8% of the spins']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: ex-heff
+    where: 'worked example: h_eff/k_B = z (J/k_B) <s>'
+    inputs: {z: 4, Jk: 50 K}
+    formula: z*Jk*solve('tanh(4/3*t) - t', 't', 0.5, 1)
+    expected: 155 K
+    shown: ['\approx 155$ K $\times\,k_B$']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: page-own
+
+  - id: ex-energy-form
+    kind: identity
+    where: 'worked example: at h = 0, <E_mean> = -h_eff N <s> + (1/2) z N J <s>^2 = -(1/2) z N J <s>^2'
+    formula: -(zz*JJ*mm)*NN*mm + 0.5*zz*NN*JJ*mm**2
+    equals: -0.5*zz*NN*JJ*mm**2
+    samples: {zz: [4, 2], JJ: [1.0, 0.3], mm: [0.776, -0.4], NN: [100, 7]}
+    tolerance: 1e-12
+    shown: ['= -\frac12 zNJ\langle s\rangle^2$, so per spin']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: page-own
+
+  - id: ex-energy-kelvin
+    where: 'worked example: energy per spin in kelvin, -(1/2) z (J/k_B) <s>^2 = -2 x 50 K x <s>^2'
+    inputs: {Jk: 50 K}
+    formula: -2*Jk*solve('tanh(4/3*t) - t', 't', 0.5, 1)**2
+    expected: -60.1 K
+    shown: ['\approx -60.1$ K $\times\,k_B$']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: page-own
+
+  - id: ex-energy-joule
+    where: 'worked example: the same energy in joules'
+    inputs: {Jk: 50 K}
+    formula: -2*k_B*Jk*solve('tanh(4/3*t) - t', 't', 0.5, 1)**2
+    expected: -8.30e-22 J
+    shown: ['about $-8.30 \times 10^{-22}$ J']
+    source: {cite: reading1, at: 'p. 22, point 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 2: simple cubic lattice
+  - id: quiz-cubic-tc
+    where: 'quiz 2: T_c = z J/k_B with z = 6, J/k_B = 10 K'
+    inputs: {z: 6, Jk: 10 K}
+    formula: z*Jk
+    expected: 60 K
+    quiz: 1
+    shown: ['$T_c = zJ/k_B = 6 \\times 10$ K $= 60$ K']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own
+
+  - id: quiz-cubic-double
+    where: 'quiz 2 distractor: counting each pair twice, 2 z J/k_B'
+    inputs: {z: 6, Jk: 10 K}
+    formula: 2*z*Jk
+    expected: 120 K
+    shown: ['would give 120 K']
+    source: {cite: reading1, at: 'p. 23'}
+    origin: page-own

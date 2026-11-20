@@ -1,0 +1,368 @@
+# Calculations on content/year-4/8.07/method-of-images-uniqueness.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 5, "Image Charge Method; Separation of Variables" (handwritten scan),
+# pp. 58-63 (Guth) and p. 63-4 (second hand). The notes quote no numbers.
+# Page's own examples: a grounded sphere of radius 5.0 cm with 10 nC at 20 cm (image, potentials on the sphere, force,
+# energy); quiz 2, 5.0 nC at 3.0 cm above a grounded plane; plot caption, the fraction of induced charge within s = d
+# and the radius s = sqrt(3) d that holds half of it.
+# Constants: eps0 (CODATA 2018).
+
+page: content/year-4/8.07/method-of-images-uniqueness.mdx
+calcs:
+  # ---------------------------------------------------------------- the plane (pp. 58-60)
+  - id: plane-zero-potential
+    kind: identity
+    where: 'formula "Potential above the plane": at z = 0 the two terms cancel for every x, y (checked as V + 1 = 1)'
+    formula: QQ/(4*pi*ee)*(1/sqrt(xx**2 + yy**2 + (0 - dd)**2) - 1/sqrt(xx**2 + yy**2 + (0 + dd)**2)) + 1
+    equals: 1
+    samples: {QQ: [1.0, -2.0, 3.0], ee: [1.0, 0.5, 2.0], xx: [0.3, -1.2, 4.0], yy: [0.0, 2.2, -0.7], dd: [1.0, 0.4, 2.5]}
+    tolerance: 1e-12
+    shown: ['so their potentials cancel there']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: mit
+
+  - id: plane-sigma
+    kind: identity
+    where: 'formula "Induced surface charge": -eps0 dV/dz at z = 0, with V from "Potential above the plane", equals -Q d/(2 pi (s^2 + d^2)^(3/2)) (numerical derivative; s^2 = x^2 + y^2)'
+    formula: -ee*deriv('QQ/(4*pi*ee)*(1/sqrt(ss**2 + (t - dd)**2) - 1/sqrt(ss**2 + (t + dd)**2))', 't', 0)
+    equals: -QQ*dd/(2*pi*(ss**2 + dd**2)**1.5)
+    samples: {QQ: [1.0, 2.5, -1.0], ee: [1.0, 0.3, 2.0], ss: [0.0, 0.8, 3.0], dd: [1.0, 0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['The notes stop at the derivative.']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: plane-sigma-peak
+    kind: identity
+    where: 'text after "Induced surface charge": at s = 0, sigma = -Q/(2 pi d^2)'
+    formula: -QQ*dd/(2*pi*(0**2 + dd**2)**1.5)
+    equals: -QQ/(2*pi*dd**2)
+    samples: {QQ: [1.0, 2.5], dd: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['$-Q/(2\pi d^2)$ at $s = 0$']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: plane-total-induced
+    kind: identity
+    where: 'formula "Total induced charge": 2 pi times the integral of sigma(s) s ds from 0 to L is -Q (1 - d/sqrt(L^2 + d^2)), which tends to -Q (checked with L = 1e4 d)'
+    formula: 2*pi*integrate('-QQ*dd/(2*pi*(t**2 + dd**2)**1.5)*t', 't', 0, 1e4*dd)
+    equals: -QQ*(1 - dd/sqrt((1e4*dd)**2 + dd**2))
+    samples: {QQ: [1.0, 2.5], dd: [1.0, 0.3]}
+    tolerance: 1e-6
+    shown: ['The integral is easy with the formula for']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: mit
+
+  - id: plane-fraction-within-d
+    where: 'plot caption: fraction of the induced charge within s = d, 1 - d/sqrt(d^2 + d^2) = 1 - 1/sqrt(2), in per cent'
+    formula: 100*(1 - 1/sqrt(2))
+    expected: '29'
+    shown: ['about 29% of the induced charge']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: plane-half-radius
+    kind: identity
+    where: 'plot caption: within s = sqrt(3) d lies half the induced charge, 1 - d/sqrt(3 d^2 + d^2) = 1/2'
+    formula: 1 - dd/sqrt(3*dd**2 + dd**2)
+    equals: 1/2
+    samples: {dd: [1.0, 0.03]}
+    tolerance: 1e-12
+    shown: ['within s = √3 d half of it']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: plane-force
+    kind: identity
+    where: 'formula "Force on the charge": Q times the z-field of the image, -Q d/dz of [-Q/(4 pi eps0 (z + d))] at z = d, is -Q^2/(4 pi eps0 (2d)^2): a pull towards the plane of size Q^2/(4 pi eps0 (2d)^2)'
+    formula: -QQ*deriv('-QQ/(4*pi*ee*(t + dd))', 't', dd)
+    equals: -QQ**2/(4*pi*ee*(2*dd)**2)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], dd: [1.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['So the charge is pulled towards the plane by']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: plane-energy
+    kind: identity
+    where: 'formula "Energy of a charge above a grounded plane": (1/2) Q times the image potential at (0, 0, d), -Q/(4 pi eps0 2d), is -Q^2/(8 pi eps0) (1/2d)'
+    formula: 0.5*QQ*(-QQ/(4*pi*ee*sqrt(0**2 + 0**2 + (dd + dd)**2)))
+    equals: -QQ**2/(8*pi*ee)/(2*dd)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], dd: [1.0, 0.4]}
+    tolerance: 1e-12
+    shown: ['without its own potential, $V$ at the charge is the image''s']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: mit
+
+  - id: plane-energy-half
+    kind: identity
+    where: 'text: the energy is half that of a real pair Q, -Q at distance 2d, -Q^2/(4 pi eps0 2d)'
+    formula: 2*(-QQ**2/(8*pi*ee)/(2*dd))
+    equals: -QQ**2/(4*pi*ee*2*dd)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], dd: [1.0, 0.4]}
+    tolerance: 1e-12
+    shown: ['which is $-Q^2/(4\pi\varepsilon_0\cdot 2d)$']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: mit
+
+  - id: plane-energy-work
+    kind: identity
+    where: 'text "Why half?": minus the integral of the attraction Q^2/(4 pi eps0 (2z)^2) from d to infinity is -Q^2/(16 pi eps0 d) (upper limit 1e4 d)'
+    formula: -integrate('QQ**2/(4*pi*ee*(2*t)**2)', 't', dd, 1e4*dd)
+    equals: -QQ**2/(16*pi*ee*dd)*(1 - 1e-4)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], dd: [1.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['A check by direct integration']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- two planes at right angles (p. 61)
+  - id: corner-plane-x0
+    kind: identity
+    where: 'section "Two planes at right angles": Q at (h, d), -Q at (-h, d), +Q at (-h, -d), -Q at (h, -d) give V = 0 on the plane x = 0 (point (0, Y, Z); checked as V + 1 = 1, with 4 pi eps0 = 1)'
+    formula: 1/sqrt((0 - hh)**2 + (YY - dd)**2 + ZZ**2) - 1/sqrt((0 + hh)**2 + (YY - dd)**2 + ZZ**2) + 1/sqrt((0 + hh)**2 + (YY + dd)**2 + ZZ**2) - 1/sqrt((0 - hh)**2 + (YY + dd)**2 + ZZ**2) + 1
+    equals: 1
+    samples: {hh: [1.0, 0.5], dd: [2.0, 1.5], YY: [0.7, 3.0], ZZ: [0.0, -1.1]}
+    tolerance: 1e-12
+    shown: ['Three images do it']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: mit
+
+  - id: corner-plane-y0
+    kind: identity
+    where: 'the same four charges give V = 0 on the plane y = 0 (point (X, 0, Z))'
+    formula: 1/sqrt((XX - hh)**2 + (0 - dd)**2 + ZZ**2) - 1/sqrt((XX + hh)**2 + (0 - dd)**2 + ZZ**2) + 1/sqrt((XX + hh)**2 + (0 + dd)**2 + ZZ**2) - 1/sqrt((XX - hh)**2 + (0 + dd)**2 + ZZ**2) + 1
+    equals: 1
+    samples: {hh: [1.0, 0.5], dd: [2.0, 1.5], XX: [0.7, 3.0], ZZ: [0.0, -1.1]}
+    tolerance: 1e-12
+    shown: ['so both planes are at zero potential']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the grounded sphere (pp. 62-63)
+  - id: sphere-quadratic
+    kind: identity
+    where: 'text after "Two conditions": with (q/Q)^2 = b/R, the first condition a^2 + b^2 = (b/R)(a^2 + R^2) is (b - R)(b - a^2/R) = 0'
+    formula: (bb - RR)*(bb - aa**2/RR)
+    equals: aa**2 + bb**2 - (bb/RR)*(aa**2 + RR**2)
+    samples: {aa: [1.0, 0.5, 2.0], RR: [3.0, 4.0, 2.5], bb: [0.7, 1.9, -0.4]}
+    tolerance: 1e-12
+    shown: ['gives $(b - R)(b - a^2/R) = 0$']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: sphere-condition-1
+    kind: identity
+    where: 'formula "Image charge for a grounded sphere" satisfies the first of "Two conditions": (a/R)^2 (a^2 + R^2) = a^2 + (a^2/R)^2'
+    formula: (aa/RR)**2*(aa**2 + RR**2)
+    equals: aa**2 + (aa**2/RR)**2
+    samples: {aa: [1.0, 0.5, 2.0], RR: [3.0, 4.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['The other root is Guth''s boxed solution']
+    source: {cite: reading1, at: 'p. 63'}
+    origin: mit
+
+  - id: sphere-condition-2
+    kind: identity
+    where: 'and the second: (a/R)^2 R = a^2/R'
+    formula: (aa/RR)**2*RR
+    equals: aa**2/RR
+    samples: {aa: [1.0, 0.5, 2.0], RR: [3.0, 4.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['Two equations for the two unknowns']
+    source: {cite: reading1, at: 'p. 63'}
+    origin: mit
+
+  - id: sphere-zero-potential
+    kind: identity
+    where: 'formula "Zero potential on the sphere" with q = -aQ/R and b = a^2/R, for several angles theta (checked as V + 1 = 1)'
+    formula: (-aa*QQ/RR)/sqrt(aa**2 + (aa**2/RR)**2 - 2*aa*(aa**2/RR)*cos(th)) + QQ/sqrt(aa**2 + RR**2 - 2*aa*RR*cos(th)) + 1
+    equals: 1
+    samples: {aa: [1.0, 0.5, 2.0, 0.05], RR: [3.0, 4.0, 2.5, 0.2], QQ: [1.0, -2.0, 0.5, 1.0], th: [0.0, 1.0, 2.5, 3.14159]}
+    tolerance: 1e-9
+    shown: ['Try zero, which is right for a grounded sphere']
+    source: {cite: reading1, at: 'pp. 62-63'}
+    origin: mit
+
+  - id: sphere-near-surface
+    kind: limit
+    where: 'text: as R tends to a, the image distance a^2/R tends to a (and q = -aQ/R to -Q); checked for a = 1'
+    inputs: {}
+    formula: 1/RR
+    limit: 1
+    vary: {RR: [1.5, 1.1, 1.01, 1.0001]}
+    tolerance: 1e-3
+    shown: ['the image moves out to meet it and grows to $-Q$']
+    source: {cite: reading1, at: 'p. 63'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: charge near a grounded sphere
+  - id: ex-image-charge
+    where: 'worked example "The image": q = -aQ/R, a = 5.0 cm, R = 20 cm, Q = 10 nC'
+    inputs: {a: 5.0 cm, R: 20 cm, Q: 10 nC}
+    formula: -a/R*Q
+    expected: -2.5 nC
+    shown: ['$= -2.5$ nC']
+    source: {cite: reading1, at: 'p. 63'}
+    origin: page-own
+
+  - id: ex-image-distance
+    where: 'worked example "The image": b = a^2/R'
+    inputs: {a: 5.0 cm, R: 20 cm}
+    formula: a**2/R
+    expected: 1.25 cm
+    shown: ['$= 1.25$ cm from the centre']
+    source: {cite: reading1, at: 'p. 63'}
+    origin: page-own
+
+  - id: ex-near-from-image
+    where: 'worked example "The potential on the sphere": nearest point is a - b from the image'
+    inputs: {a: 5.0 cm, R: 20 cm}
+    formula: a - a**2/R
+    expected: 3.75 cm
+    shown: ['$5 - 1.25 = 3.75$ cm from $q$']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: ex-near-V-Q
+    where: 'worked example: potential of Q at the nearest point, 15 cm away'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 10 nC, r: 15 cm}
+    formula: Q/(4*pi*eps0*r)
+    expected: 599 V
+    shown: ['\approx 599$ V and']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: ex-near-V-q
+    where: 'worked example: potential of the image at the nearest point, 3.75 cm away'
+    inputs: {eps0: 8.8541878128e-12 F/m, q: -2.5 nC, r: 3.75 cm}
+    formula: q/(4*pi*eps0*r)
+    expected: -599 V
+    shown: ['\approx -599$ V, which cancel']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: ex-far-V-Q
+    where: 'worked example: potential of Q at the farthest point, 25 cm away'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 10 nC, r: 25 cm}
+    formula: Q/(4*pi*eps0*r)
+    expected: 360 V
+    shown: ['the two parts are $\pm 360$ V']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: ex-far-V-q
+    where: 'worked example: potential of the image at the farthest point, a + b = 6.25 cm away'
+    inputs: {eps0: 8.8541878128e-12 F/m, q: -2.5 nC, a: 5.0 cm, b: 1.25 cm}
+    formula: q/(4*pi*eps0*(a + b))
+    expected: -360 V
+    shown: ['At the farthest point, 25 cm and 6.25 cm away']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: ex-distance-ratio
+    kind: identity
+    where: 'worked example: on the sphere the distance to the image over the distance to Q is a/R at every angle'
+    formula: sqrt(aa**2 + (aa**2/RR)**2 - 2*aa*(aa**2/RR)*cos(th))/sqrt(aa**2 + RR**2 - 2*aa*RR*cos(th))
+    equals: aa/RR
+    samples: {aa: [5.0, 5.0, 5.0], RR: [20.0, 20.0, 20.0], th: [0.0, 1.3, 3.14159]}
+    tolerance: 1e-9
+    shown: ['The ratio of the distances is $a/R = 1/4$ at every point']
+    source: {cite: reading1, at: 'p. 62'}
+    origin: page-own
+
+  - id: ex-separation
+    where: 'worked example "The force": R - b'
+    inputs: {R: 20 cm, b: 1.25 cm}
+    formula: R - b
+    expected: 18.75 cm
+    shown: ['$R - b = 18.75$ cm']
+    source: {cite: reading1, at: 'p. 63'}
+    origin: page-own
+
+  - id: ex-force
+    where: 'worked example "The force": |Q q|/(4 pi eps0 (R - b)^2)'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 10 nC, q: 2.5 nC, s: 18.75 cm}
+    formula: Q*q/(4*pi*eps0*s**2)
+    expected: 6.39e-6 N
+    shown: ['about $6.39 \times 10^{-6}$ N']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: ex-coulomb-k
+    where: 'worked example "The force": 1/(4 pi eps0) written as 8.988e9'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: 1/(4*pi*eps0)
+    expected: 8.988e9 m/F
+    shown: ['$|\vec F| = |Qq|/[4\pi\varepsilon_0(R - b)^2] = 8.988 \times 10^9']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: page-own
+
+  - id: ex-energy
+    where: 'worked example "The energy": (1/2) Q q/(4 pi eps0 (R - b))'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 10 nC, q: -2.5 nC, s: 18.75 cm}
+    formula: 0.5*Q*q/(4*pi*eps0*s)
+    expected: -5.99e-7 J
+    shown: ['about $-5.99 \times 10^{-7}$ J']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: ex-energy-closed
+    kind: identity
+    where: 'worked example "The energy": (1/2) Q (-aQ/R)/(4 pi eps0 (R - a^2/R)) = -Q^2 a/(8 pi eps0 (R^2 - a^2))'
+    formula: 0.5*QQ*(-aa*QQ/RR)/(4*pi*ee*(RR - aa**2/RR))
+    equals: -QQ**2*aa/(8*pi*ee*(RR**2 - aa**2))
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], aa: [1.0, 0.05], RR: [3.0, 0.2]}
+    tolerance: 1e-12
+    shown: ['In closed form this is']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: ex-energy-work
+    kind: identity
+    where: 'worked example "The energy": minus the integral from R to infinity of the attraction Q^2 a t/(4 pi eps0 (t^2 - a^2)^2) gives the same (upper limit 1e4 R)'
+    formula: -integrate('QQ**2*aa*t/(4*pi*ee*(t**2 - aa**2)**2)', 't', RR, 1e4*RR)
+    equals: -QQ**2*aa/(8*pi*ee)*(1/(RR**2 - aa**2) - 1/((1e4*RR)**2 - aa**2))
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], aa: [1.0, 0.05], RR: [3.0, 0.2]}
+    tolerance: 1e-6
+    shown: ['which is also minus the work of the attraction integrated from']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 2: 5.0 nC at 3.0 cm above a plane
+  - id: quiz-plane-energy
+    where: 'quiz 2: W = -Q^2/(16 pi eps0 d), Q = 5.0 nC, d = 3.0 cm, in microjoules (the size, since the quiz check reads unsigned numbers; the page shows the minus sign)'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 5.0 nC, d: 3.0 cm}
+    formula: Q**2/(16*pi*eps0*d)
+    expected: 1.87 uJ
+    quiz: 1
+    shown: ['"About $-1.87$ µJ"']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: quiz-plane-energy-pair
+    where: 'quiz 2 distractor: a real pair Q, -Q at distance 2d, -Q^2/(8 pi eps0 d)'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 5.0 nC, d: 3.0 cm}
+    formula: -Q**2/(8*pi*eps0*d)
+    expected: -3.74 uJ
+    shown: ['"About $-3.74$ µJ"']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: quiz-plane-energy-quarter
+    where: 'quiz 2 distractor: half of the right answer, -Q^2/(32 pi eps0 d)'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 5.0 nC, d: 3.0 cm}
+    formula: -Q**2/(32*pi*eps0*d)
+    expected: -0.94 uJ
+    shown: ['"About $-0.94$ µJ"']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: quiz-plane-energy-no-factors
+    where: 'quiz 2 distractor and explanation: -Q^2/(4 pi eps0 d), leaving out both factors of 2'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 5.0 nC, d: 3.0 cm}
+    formula: -Q**2/(4*pi*eps0*d)
+    expected: -7.49 uJ
+    shown: ['"About $-7.49$ µJ"']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own

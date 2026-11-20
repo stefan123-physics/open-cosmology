@@ -1,0 +1,159 @@
+---
+title: Markov matrices and Fourier series
+slug: markov-matrices-fourier-series
+course: "18.06"
+lecture: 24
+order: 1
+summary: "A Markov matrix has entries ≥ 0 and every column adding to 1, and so do all its powers. Then λ = 1 is an eigenvalue: the columns of A − I add to zero, so the rows of A − I add to the zero row, (1, 1, …, 1) is in the nullspace of (A − I)ᵀ, and A − I is singular. (A and Aᵀ always have the same eigenvalues, since det(A − λI) = det(Aᵀ − λI).) The other eigenvalues have |λ| ≤ 1, normally < 1, so uₖ = Aᵏu₀ approaches the steady state c₁x₁, the eigenvector for λ = 1, whose components are not negative. For Strang's 3 × 3 example that eigenvector is (0.6, 33, 0.7). In his population model, 0.9 of California stays and 0.1 moves, 0.8 of Massachusetts stays and 0.2 moves: eigenvalues 1 and 0.7, and 1000 people starting in Massachusetts tend to 2000/3 and 1000/3. Second topic: in an orthonormal basis q₁, …, qₙ, the coefficients of v = x₁q₁ + ⋯ + xₙqₙ are simply xᵢ = qᵢᵀv (x = Qᵀv). Fourier series do the same in a space of functions: f(x) = a₀ + a₁cos x + b₁sin x + a₂cos 2x + ⋯, with the inner product ∫₀^(2π) f(x)g(x) dx, in which the sines and cosines are orthogonal; multiplying by cos x and integrating gives a₁ = (1/π)∫₀^(2π) f(x)cos x dx."
+prerequisites: [differential-equations-exp-at, orthogonal-matrices-gram-schmidt]
+source:
+  title: "MIT 18.06 Lecture 24: Markov matrices; fourier series"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-24-markov-matrices-fourier-series/
+  readings:
+    - title: "18.06 Lecture 24 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/a77a2a3a8c01d73741727acb73bffb69_lGGDIGizcQ0.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 25
+    why: "Symmetric matrices: real eigenvalues and orthonormal eigenvectors, the property Fourier series rely on."
+quiz:
+  - question: "Why is $\\lambda = 1$ always an eigenvalue of a Markov matrix $A$?"
+    choices: ["Because its entries are positive", "Because the columns of $A - I$ add to zero, so its rows are dependent and $A - I$ is singular", "Because $A$ is symmetric", "Because $\\det A = 1$"]
+    answer: 1
+    explanation: "Adding the rows of $A - I$ gives the zero row: $(1, \\dots, 1)$ is in the nullspace of $(A - I)^T$. A square matrix with dependent rows is singular."
+  - question: "A Markov matrix has eigenvalues $1$ and $0.4$, with $x_1 = (1, 3)$. Where does $u_k = A^ku_0$ go if $u_0 = (100, 300)$?"
+    choices: ["To zero", "It stays at $(100, 300)$, which is already the steady state", "To $(300, 100)$", "It grows without bound"]
+    answer: 1
+    explanation: "$(100, 300) = 100x_1$ is pure eigenvector for $\\lambda = 1$, so $Au_0 = u_0$ at every step."
+  - question: "$v = x_1q_1 + \\cdots + x_nq_n$ with $q_1, \\dots, q_n$ orthonormal. What is $x_2$?"
+    choices: ["$q_2^Tv$", "$v^Tv$", "$1/(q_2^Tq_2)$", "The second component of $v$"]
+    answer: 0
+    explanation: "Take the dot product with $q_2$: every term but $x_2q_2^Tq_2 = x_2$ gives zero."
+  - question: "In the Fourier series of $f$ on $[0, 2\\pi]$, which formula gives $a_1$, the amount of $\\cos x$?"
+    choices: ["$\\int_0^{2\\pi} f(x)\\cos x\\,dx$", "$\\frac{1}{\\pi}\\int_0^{2\\pi} f(x)\\cos x\\,dx$", "$\\frac{1}{2\\pi}\\int_0^{2\\pi} f(x)\\,dx$", "$f(0)$"]
+    answer: 1
+    explanation: "Multiply by $\\cos x$ and integrate: only $a_1\\int_0^{2\\pi}\\cos^2x\\,dx = \\pi a_1$ survives. The third choice is $a_0$, the average."
+flashcards:
+  - front: "Markov matrix"
+    back: "All entries $\\ge 0$, every column adds to 1. Then $\\lambda = 1$ is an eigenvalue and all others have $|\\lambda| \\le 1$."
+  - front: "Steady state of $u_{k+1} = Au_k$ (Markov)"
+    back: "$u_k \\to c_1x_1$: the eigenvector for $\\lambda = 1$, scaled to keep the total of $u_0$. Its components are not negative."
+  - front: "Eigenvalues of $A^T$"
+    back: "The same as those of $A$, because $\\det(A^T - \\lambda I) = \\det(A - \\lambda I)$. The eigenvectors differ."
+  - front: "Coefficients in an orthonormal basis"
+    back: "$x_i = q_i^Tv$, i.e. $x = Q^{-1}v = Q^Tv$."
+  - front: "Fourier coefficient $a_1$"
+    back: "$a_1 = \\frac{1}{\\pi}\\int_0^{2\\pi} f(x)\\cos x\\,dx$, since $\\int_0^{2\\pi}\\cos^2x\\,dx = \\pi$ and the other terms are orthogonal to $\\cos x$."
+status: reviewed
+---
+
+Two applications (transcript, p. 1). First **Markov matrices**, the eigenvalue application, where the important eigenvalue is 1. Then, if time allows, **Fourier series**, an application of [orthonormal bases](/courses/18-06/orthogonal-matrices-gram-schmidt) from the projection chapter.
+
+## What a Markov matrix is
+
+Strang invents a typical one, with columns $(0.1, 0.2, 0.7)$, $(0.01, 0.99, 0)$ and $(0.3, 0.3, 0.4)$ (p. 1):
+
+<Formula label="Strang's Markov matrix" tex="A = \begin{pmatrix} 0.1 & 0.01 & 0.3 \\ 0.2 & 0.99 & 0.3 \\ 0.7 & 0 & 0.4 \end{pmatrix}" cite="reading1" at="p. 1" />
+
+Two properties make it Markov (p. 1):
+
+1. every entry is $\geq 0$ (Markov matrices come from probabilities, which are never negative);
+2. every column adds to $1$.
+
+Both properties survive squaring, so all powers $A^k$ are Markov matrices too (pp. 1–2).
+
+## Eigenvalue 1 and the steady state
+
+For differential equations last time, the steady state came from $\lambda = 0$, because $e^{0t} = 1$ (p. 2). For powers, a zero eigenvalue dies at once; here the eigenvalue that matters is $\lambda = 1$ (p. 2). The key facts (pp. 2–4):
+
+- $\lambda = 1$ is an eigenvalue, found without any determinant;
+- every other eigenvalue has $|\lambda| \leq 1$, and in all but exceptional cases $|\lambda| < 1$; none is larger than 1;
+- the eigenvector $x_1$ for $\lambda = 1$ has no negative components, when $\lambda = 1$ is not repeated (Strang does not prove this part, p. 9).
+
+With $u_0 = c_1x_1 + c_2x_2 + \cdots$ (a complete set of eigenvectors assumed, as always) (p. 3):
+
+<Formula label="Approach to the steady state" tex="u_k = A^ku_0 = c_1\,1^k\,x_1 + c_2\lambda_2^kx_2 + \cdots \;\to\; c_1x_1" cite="reading1" at="p. 3" />
+
+All the terms with $|\lambda| < 1$ go to zero, and the steady state is the $x_1$ part of $u_0$ (p. 3).
+
+**Why $\lambda = 1$** (pp. 4–6). Subtract $I$: the diagonal of the example becomes $-0.9$, $-0.01$, $-0.6$. Every column of $A - I$ now adds to zero, and the claim is that $A - I$ is singular (p. 4). Rather than a determinant, look at the rows: adding all three rows gives the zero row, so the rows are dependent and the square matrix is singular (pp. 5–6). In other words, $(1, 1, 1)$ is in the nullspace of $(A - I)^T$, the left nullspace (p. 6).
+
+**$A$ and $A^T$ have the same eigenvalues** (pp. 7–8). The determinant of a matrix equals that of its transpose (property 10), and $(\lambda I)^T = \lambda I$:
+
+<Formula label="Same eigenvalues for the transpose" tex="\det(A - \lambda I) = \det\big((A - \lambda I)^T\big) = \det(A^T - \lambda I)" cite="reading1" at="pp. 7–8" />
+
+So $1$ is an eigenvalue of $A^T$, with eigenvector $(1, 1, 1)$, and therefore of $A$, but with a different eigenvector: the nullspace of $A - I$, not its left nullspace (p. 8). For the example Strang finds it on the spot: $0.6$ and $0.7$ make the last row zero ($0.42 - 0.42$), and then the first row, $-0.54 + 0.21 + 0.01y = 0$, needs $y = 33$ (pp. 8–9):
+
+<Formula label="Steady-state eigenvector" tex="x_1 = \begin{pmatrix} 0.6 \\ 33 \\ 0.7 \end{pmatrix}" cite="reading1" at="pp. 8–9" />
+
+All positive, as the theory predicts (pp. 8–9). (Strang first expects a component of 3300 and corrects himself to 33.)
+
+## Movement between two states
+
+Where do Markov matrices come from? Strang's example: the populations of California and Massachusetts, with the same fractions moving every year (pp. 9–10). The entries are probabilities of moving or staying, so they lie between 0 and 1, and each column adds to 1 because everybody is accounted for: the total population is conserved (p. 10). Each year $0.9$ of California stays and $0.1$ moves to Massachusetts; $0.8$ of Massachusetts stays and $0.2$ moves to California (pp. 10–11):
+
+<Formula label="Population model" tex="\begin{pmatrix} u_{\text{Cal}} \\ u_{\text{Mass}} \end{pmatrix}_{k+1} = \begin{pmatrix} 0.9 & 0.2 \\ 0.1 & 0.8 \end{pmatrix}\begin{pmatrix} u_{\text{Cal}} \\ u_{\text{Mass}} \end{pmatrix}_k" cite="reading1" at="pp. 10–11" />
+
+Strang notes the severe limitation: the same matrix acts at every step (p. 10). Start with $0$ in California and $1000$ in Massachusetts (p. 11). After one step the populations are $200$ and $800$, and the total stays $1000$ for ever (pp. 11–12).
+
+The eigenvalues are $1$ and, from the trace $1.7$, $0.7$; the determinant $0.72 - 0.02 = 0.7$ agrees (pp. 12–13). $A - I$ gives $x_1 = (2, 1)$, positive, and $A - 0.7I$ gives $x_2 = (-1, 1)$ (pp. 13–14). Fitting $u_0 = (0, 1000)$ (p. 14):
+
+<Formula label="Population after k years" tex="u_k = \frac{1000}{3}\,1^k\begin{pmatrix} 2 \\ 1 \end{pmatrix} + \frac{2000}{3}\,(0.7)^k\begin{pmatrix} -1 \\ 1 \end{pmatrix}" cite="reading1" at="p. 14" />
+
+The $0.7^k$ part disappears, and the populations approach $\frac{2000}{3} \approx 667$ in California and $\frac{1000}{3} \approx 333$ in Massachusetts (pp. 13–14).
+
+Many applications and other textbooks, for example in electrical engineering, use row vectors and multiply from the left. They work with the transpose, and then the **rows** add to one (p. 15).
+
+## Expansion in an orthonormal basis
+
+Before Fourier, a comment on projections with an orthonormal basis $q_1, \dots, q_n$ of $n$-dimensional space (p. 15). Any $v$ is a combination (pp. 15–16):
+
+<Formula label="Expansion" tex="v = x_1q_1 + x_2q_2 + \cdots + x_nq_n" cite="reading1" at="pp. 15–16" />
+
+To find $x_1$, take the dot product of everything with $q_1$: all terms but the first give zero, and $q_1^Tq_1 = 1$ (p. 16):
+
+<Formula label="Coefficient in an orthonormal basis" tex="x_1 = q_1^Tv" cite="reading1" at="p. 16" />
+
+In matrix language $Qx = v$, so $x = Q^{-1}v = Q^Tv$, and the first component is $q_1^Tv$ (p. 17).
+
+## Fourier series
+
+Fourier series are built on the same orthogonality (p. 18). A function is written as (p. 18)
+
+<Formula label="Fourier series" tex="f(x) = a_0 + a_1\cos x + b_1\sin x + a_2\cos 2x + b_2\sin 2x + \cdots" cite="reading1" at="p. 18" />
+
+Joseph Fourier's idea was to work in a space of functions: vectors become functions, and the basis $1, \cos x, \sin x, \cos 2x, \sin 2x, \dots$ is infinite, because the space is infinite-dimensional (p. 18). It works because these functions are orthogonal (p. 19).
+
+For vectors, $v^Tw = v_1w_1 + \cdots + v_nw_n$. For functions, multiply $f(x)g(x)$ at every $x$ and, since there is a continuum of $x$'s, integrate instead of adding (pp. 19–20). The sines and cosines have period $2\pi$, so $f(x) = f(x + 2\pi)$ and the interval is $0$ to $2\pi$ (p. 20):
+
+<Formula label="Inner product of functions" tex="f^Tg = \int_0^{2\pi} f(x)\,g(x)\,dx" cite="reading1" at="p. 20" />
+
+For example $\int_0^{2\pi}\sin x\cos x\,dx = \left[\tfrac12\sin^2x\right]_0^{2\pi} = 0$, and trigonometric identities give the same for every other pair (p. 20). (Strang calls the basis orthonormal; strictly it is orthogonal, since $\int\cos^2x\,dx = \pi$, not 1, which is why $\frac1\pi$ appears below; the constant function has $\int_0^{2\pi}1\,dx = 2\pi$, which is why $a_0$ is the average.) The constant $a_0$ is the average value of $f$ (p. 21). For $a_1$, do as for vectors: multiply by $\cos x$ and integrate. Everything vanishes except one term (p. 21):
+
+<Formula label="First Fourier coefficient" tex="\int_0^{2\pi} f(x)\cos x\,dx = a_1\int_0^{2\pi}\cos^2x\,dx = \pi a_1, \qquad a_1 = \frac{1}{\pi}\int_0^{2\pi} f(x)\cos x\,dx" cite="reading1" at="p. 21" />
+
+This is the classical formula for Fourier coefficients ("Euler's famous formula", or maybe Fourier's, as Strang puts it), and it is exactly an expansion in an orthogonal basis (p. 21). For more on Fourier series see 18.03's [introduction to Fourier series](/courses/18-03/fourier-series-introduction).
+
+<WorkedExample title="A Markov chain and a Fourier coefficient">
+<Problem>
+(a) Each year $0.6$ of the members of club P stay and $0.4$ move to club Q; $0.7$ of club Q stay and $0.3$ move to P. Start with $700$ in P and none in Q. Find $u_k$ and the steady state. (b) Find $a_1$ for $f(x) = (1 + \cos x)^2$ by the formula, and check it by expanding $f$.
+</Problem>
+<Step title="(a) Matrix and eigenvalues">
+$A = \begin{pmatrix} 0.6 & 0.3 \\ 0.4 & 0.7 \end{pmatrix}$: columns add to 1. The eigenvalues are $1$ and, from the trace $1.3$, $0.3$. $A - I = \begin{pmatrix} -0.4 & 0.3 \\ 0.4 & -0.3 \end{pmatrix}$ gives $x_1 = (3, 4)$; $A - 0.3I = \begin{pmatrix} 0.3 & 0.3 \\ 0.4 & 0.4 \end{pmatrix}$ gives $x_2 = (1, -1)$.
+</Step>
+<Step title="(a) Solution">
+$c_1(3, 4) + c_2(1, -1) = (700, 0)$: adding the equations, $7c_1 = 700$, so $c_1 = 100$ and $c_2 = 400$. Then $u_k = 100(3, 4) + 400(0.3)^k(1, -1)$. Check: $u_1 = (300 + 120, 400 - 120) = (420, 280)$, and directly $A(700, 0) = (420, 280)$. Steady state: $(300, 400)$.
+</Step>
+<Step title="(b) Fourier coefficient">
+$(1 + \cos x)^2\cos x = \cos x + 2\cos^2x + \cos^3x$. Over $[0, 2\pi]$ the integrals of $\cos x$ and $\cos^3x$ are zero and $\int 2\cos^2x\,dx = 2\pi$, so $a_1 = 2\pi/\pi = 2$. Check: $(1 + \cos x)^2 = 1 + 2\cos x + \cos^2x = \frac32 + 2\cos x + \frac12\cos 2x$, whose coefficient of $\cos x$ is indeed $2$ (and $a_0 = \frac32$ is the average).
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Markov: entries $\geq 0$, columns add to 1. Then $\lambda = 1$ is an eigenvalue (rows of $A - I$ add to zero) and the others have $|\lambda| \leq 1$.
+- $A^ku_0 \to c_1x_1$, the non-negative eigenvector for $\lambda = 1$; the total is conserved.
+- $A$ and $A^T$ have the same eigenvalues.
+- Orthonormal basis: $x_i = q_i^Tv$. Fourier: functions as vectors, $\int_0^{2\pi} fg\,dx$ as inner product, $a_1 = \frac1\pi\int_0^{2\pi} f\cos x\,dx$.

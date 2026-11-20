@@ -1,0 +1,165 @@
+---
+title: Eigenvalues and eigenvectors
+slug: eigenvalues-and-eigenvectors
+course: "18.06"
+lecture: 21
+order: 1
+summary: "An eigenvector of a square matrix A is a nonzero vector that comes out of A in its own direction: Ax = λx, and the number λ is its eigenvalue. Eigenvalue 0 means x is in the nullspace, so A is singular. A projection has eigenvalues 1 (vectors in the plane) and 0 (vectors perpendicular to it); the 2 × 2 swap permutation has 1 for (1, 1) and −1 for (−1, 1). To find them, write (A − λI)x = 0: a nonzero x exists only when A − λI is singular, so det(A − λI) = 0, the characteristic equation, gives the n eigenvalues first, and then each x comes from the nullspace of A − λI. The eigenvalues add up to the trace and multiply to the determinant; for 2 × 2 the equation is λ² − (trace)λ + det = 0. Adding 3I adds 3 to every eigenvalue and keeps the eigenvectors, but the eigenvalues of A + B or AB are not found from those of A and B. A 90° rotation has eigenvalues i and −i, a complex conjugate pair, and a triangular matrix such as (3 1; 0 3) has a repeated eigenvalue with only one independent eigenvector."
+prerequisites: [cramers-rule-inverse-volume, column-space-and-nullspace]
+source:
+  title: "MIT 18.06 Lecture 21: Eigenvalues and eigenvectors"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-21-eigenvalues-and-eigenvectors/
+  readings:
+    - title: "18.06 Lecture 21 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/8d0f7baefcedee6596eaab43c55122fe_cdZnhQjJu4I.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 22
+    why: "With n independent eigenvectors a matrix can be diagonalised, and its powers become easy."
+quiz:
+  - question: "A projection matrix $P$ onto a plane in three dimensions. Which eigenvalues does it have?"
+    choices: ["Only 1", "1 and $-1$", "0 (twice) and 1", "1 (twice) and 0"]
+    answer: 3
+    explanation: "Every vector in the plane is unchanged ($\\lambda = 1$, a whole plane of them), and a vector perpendicular to the plane is sent to zero ($\\lambda = 0$)."
+  - question: "A $2 \\times 2$ matrix has trace 7 and determinant 10. What are its eigenvalues?"
+    choices: ["2 and 5", "3 and 4", "1 and 10", "$-2$ and $-5$"]
+    answer: 0
+    explanation: "The eigenvalues solve $\\lambda^2 - 7\\lambda + 10 = 0$: they add to 7 and multiply to 10, so they are 2 and 5."
+  - question: "$A$ has eigenvector $x$ with eigenvalue 4. What can you say about $A + 3I$?"
+    choices: ["Nothing without knowing $A$", "$x$ is an eigenvector with eigenvalue 12", "Its eigenvectors are all new", "$x$ is an eigenvector with eigenvalue 7"]
+    answer: 3
+    explanation: "$(A + 3I)x = 4x + 3x = 7x$. Adding a multiple of $I$ shifts every eigenvalue and keeps the eigenvectors."
+  - question: "Why does the $90°$ rotation $Q$ have no real eigenvector?"
+    choices: ["Because $\\det Q = 0$", "Because no direction comes out of a $90°$ turn parallel to itself", "Because $Q$ is symmetric", "Because its trace is 1"]
+    answer: 1
+    explanation: "Every vector is turned through $90°$. Its eigenvalues solve $\\lambda^2 + 1 = 0$, so they are $i$ and $-i$."
+flashcards:
+  - front: "Eigenvector and eigenvalue"
+    back: "A nonzero $x$ with $Ax = \\lambda x$: $A$ only multiplies it by $\\lambda$ (which may be 0, negative or complex)."
+  - front: "How to find eigenvalues"
+    back: "Solve $\\det(A - \\lambda I) = 0$; then find each $x$ in the nullspace of $A - \\lambda I$."
+  - front: "Trace and determinant"
+    back: "Sum of eigenvalues = trace $a_{11} + \\cdots + a_{nn}$; product of eigenvalues = $\\det A$."
+  - front: "Two warnings"
+    back: "A real matrix can have complex eigenvalues (rotation: $\\pm i$), and a repeated eigenvalue can come with too few eigenvectors ($\\begin{pmatrix} 3 & 1 \\\\ 0 & 3 \\end{pmatrix}$)."
+status: reviewed
+---
+
+This is the first lecture on eigenvalues and eigenvectors, the subject of most of the rest of the course (transcript, p. 1). The matrices are square. This lecture is about what these special numbers and vectors are; the following lectures show what they are for. Determinants, from [the last three lectures](/courses/18-06/cramers-rule-inverse-volume), are the tool for finding them.
+
+## Vectors that keep their direction
+
+A matrix acts on vectors like a function: in goes $x$, out comes $Ax$ (transcript, p. 1). Most vectors come out pointing in a new direction. A few come out **parallel** to where they went in, and those are the eigenvectors (pp. 1–2):
+
+<Formula label="Eigenvalue equation" tex="Ax = \lambda x" cite="reading1" at="p. 2" />
+
+The multiplier $\lambda$ is the **eigenvalue**. "Parallel" allows the very opposite direction too: $\lambda$ may be negative, zero, or even an imaginary number (p. 2). The eigenvector must not be the zero vector.
+
+Eigenvalue $0$ is nothing special from this point of view. It means $Ax = 0x = 0$: the eigenvectors for $\lambda = 0$ are the nonzero vectors in the [nullspace](/courses/18-06/column-space-and-nullspace). So if $A$ is singular, $\lambda = 0$ is one of its eigenvalues (pp. 2–3).
+
+## Two examples you can see
+
+Before any formulas, Strang takes matrices whose action we already know (p. 3).
+
+**A projection** $P$ onto a plane (pp. 3–5). A typical vector $b$ is not an eigenvector: its projection $Pb$ points elsewhere. But a vector $x$ already in the plane is projected onto itself, $Px = x$: every vector in the plane is an eigenvector with $\lambda = 1$, a whole plane of them (p. 4). A vector perpendicular to the plane is projected to zero, $Px = 0x$, so $\lambda = 0$ (p. 5). In three dimensions that gives three independent eigenvectors, two in the plane and one across it, with eigenvalues $1$, $1$ and $0$. All of this follows from the picture, without writing $P = A(A^TA)^{-1}A^T$ (p. 5).
+
+**A permutation** (pp. 6–7). The matrix
+
+<Formula label="The swap permutation" tex="A = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}" cite="reading1" at="p. 6" />
+
+exchanges the two components of a vector. The vector $(1, 1)$ is unchanged, so it is an eigenvector with $\lambda = 1$ (p. 6). The vector $(-1, 1)$ comes out as $(1, -1)$, minus itself, so $\lambda = -1$ (p. 7). A matrix with no negative entries can have a negative eigenvalue.
+
+## Trace: the sum of the eigenvalues
+
+An $n \times n$ matrix has $n$ eigenvalues, and for $n = 3$ or more they are not easy to find: they are the roots of an equation of degree $n$ (p. 8). One fact helps at once (p. 8):
+
+<Formula label="Sum of the eigenvalues" tex="\lambda_1 + \lambda_2 + \cdots + \lambda_n = a_{11} + a_{22} + \cdots + a_{nn}" cite="reading1" at="p. 8" />
+
+The sum down the diagonal is the **trace**. For the permutation it is $0$, so once $\lambda = 1$ was found, the other eigenvalue had to be $-1$: in the $2 \times 2$ case one eigenvalue and the trace give the other (p. 8).
+
+## The characteristic equation
+
+Both $\lambda$ and $x$ are unknown, and they are multiplied together, so elimination cannot be used directly (p. 3). The trick is to bring $\lambda x$ to the left (p. 9):
+
+<Formula label="Shifted equation" tex="(A - \lambda I)\,x = 0" cite="reading1" at="p. 9" />
+
+A nonzero $x$ solves this only if $A - \lambda I$ is **singular**, and singular matrices have determinant zero (pp. 9–10):
+
+<Formula label="Characteristic equation" tex="\det(A - \lambda I) = 0" cite="reading1" at="p. 10" />
+
+This is the characteristic (or eigenvalue) equation. It no longer contains $x$, so the eigenvalues are found **first** (p. 10). There are $n$ of them, though some may be repeated, and "a repeated lambda is the source of all trouble" in 18.06, as Strang puts it (p. 10). Then for each $\lambda$, $A - \lambda I$ is a singular matrix and $x$ is in its nullspace, found by elimination with the free variable set to 1 (pp. 10–11).
+
+## A symmetric example
+
+Strang makes the example easy: $2 \times 2$, symmetric and constant down the diagonal (p. 11),
+
+<Formula label="Lecture example" tex="A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}" cite="reading1" at="p. 11" />
+
+Subtracting $\lambda$ from the diagonal only, not from every entry (p. 13):
+
+<Formula label="Its characteristic equation" tex="\det\begin{pmatrix} 3 - \lambda & 1 \\ 1 & 3 - \lambda \end{pmatrix} = (3 - \lambda)^2 - 1 = \lambda^2 - 6\lambda + 8 = 0" cite="reading1" at="p. 13" />
+
+The $6$ is the trace, $3 + 3$, and the $8$ is the determinant (pp. 13–14). For every $2 \times 2$ matrix the equation reads
+
+<Formula label="Two by two" tex="\lambda^2 - (\operatorname{trace})\,\lambda + \det A = 0" cite="reading1" at="p. 14" />
+
+It factors as $(\lambda - 4)(\lambda - 2) = 0$, so $\lambda_1 = 4$ and $\lambda_2 = 2$ (p. 14). The **product** of the eigenvalues is the determinant, $4 \cdot 2 = 8$, in general as well as here (pp. 16, 20):
+
+<Formula label="Product of the eigenvalues" tex="\lambda_1 \lambda_2 \cdots \lambda_n = \det A" cite="reading1" at="p. 20" />
+
+**The eigenvectors** (pp. 15–16). $A - 4I$ has $-1$ on the diagonal and $1$ off it; it is singular, as it must be (if it were not, 4 would be wrong), and its nullspace holds $x_1 = (1, 1)$. $A - 2I$ has all four entries 1, and its nullspace holds $x_2 = (-1, 1)$. Each nullspace is a whole line of eigenvectors; "the" eigenvector means one reasonable basis vector for that line (p. 16).
+
+Two things to notice, which Strang points out before computing anything. The eigenvalues are real, as he announces they will be for every symmetric matrix, and the eigenvectors $(1, 1)$ and $(-1, 1)$ are **perpendicular**: their dot product is zero (pp. 11–12). The swap permutation, also symmetric, had the same eigenvectors.
+
+## Adding a multiple of I, and what does not work
+
+This $A$ is the permutation plus $3I$ (p. 16). Its eigenvalues $4$ and $2$ are the permutation's $1$ and $-1$ plus 3, and the eigenvectors did not change at all (p. 17). The reason is one line: if $Ax = \lambda x$, then
+
+<Formula label="Shift by 3I" tex="(A + 3I)\,x = \lambda x + 3x = (\lambda + 3)\,x" cite="reading1" at="p. 17" />
+
+It is tempting to go further (pp. 18–19): if $Ax = \lambda x$ and $B$ has eigenvalue $\alpha$, then "$(A + B)x = (\lambda + \alpha)x$". That argument is wrong. It assumes that $x$ is also an eigenvector of $B$, and normally $B$ has different eigenvectors. In general the eigenvalues of $A + B$ are not sums of eigenvalues of $A$ and $B$, and those of $AB$ are not products: eigenvalues are not linear (p. 19). $B = 3I$ worked only because every vector is an eigenvector of $I$.
+
+## A rotation: complex eigenvalues
+
+The $90°$ rotation, called $Q$ because rotations are orthogonal matrices, is (p. 20)
+
+<Formula label="Ninety-degree rotation" tex="Q = \begin{pmatrix} \cos 90° & -\sin 90° \\ \sin 90° & \cos 90° \end{pmatrix} = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}" cite="reading1" at="p. 20" />
+
+Trouble is coming (pp. 20–21). Every vector is turned through $90°$, so no real vector comes out parallel to itself. And the two facts above clash: the trace is $0$, so the eigenvalues have opposite signs, but the determinant is $+1$, so their product is positive. The characteristic equation settles it (p. 22):
+
+<Formula label="Rotation eigenvalues" tex="\det\begin{pmatrix} -\lambda & -1 \\ 1 & -\lambda \end{pmatrix} = \lambda^2 + 1 = 0, \qquad \lambda_1 = i,\ \lambda_2 = -i" cite="reading1" at="p. 22" />
+
+A perfectly real matrix can have complex eigenvalues, and complex numbers enter the course here (p. 22). They come as a **complex conjugate pair**: switch the sign of the imaginary part of one and you get the other (pp. 22–23). Symmetric matrices never do this. $Q$ is the opposite extreme, **antisymmetric** ($Q^T = -Q$), and antisymmetric matrices have purely imaginary eigenvalues. Matrices close to symmetric keep real eigenvalues; the ones in between have a symmetric part and an antisymmetric part (p. 23).
+
+## A repeated eigenvalue and too few eigenvectors
+
+One more bad case (p. 24). Change one entry of the earlier example to zero:
+
+<Formula label="Triangular example" tex="A = \begin{pmatrix} 3 & 1 \\ 0 & 3 \end{pmatrix}, \qquad \det(A - \lambda I) = (3 - \lambda)^2" cite="reading1" at="pp. 24–25" />
+
+For a **triangular** matrix the eigenvalues sit on the diagonal, because the determinant of a triangular matrix is the product of its diagonal entries (pp. 24–25). Here $\lambda = 3$ twice. The trouble is in the eigenvectors: $A - 3I$ has a single nonzero entry, $1$, in the corner, and its nullspace is the line through $(1, 0)$ (p. 25). The second $\lambda = 3$ should bring a second independent eigenvector, and there is none (p. 26). The matrix is **degenerate**: a repeated eigenvalue opens the door to a shortage of eigenvectors. For all other matrices the next lecture gives "the complete story" (p. 26).
+
+<WorkedExample title="Eigenvalues of your own">
+<Problem>
+(a) Find the eigenvalues and eigenvectors of $A = \begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}$, and check the trace, the determinant and the angle between the eigenvectors. (b) Do the same for the triangular $B = \begin{pmatrix} 1 & 4 \\ 0 & 3 \end{pmatrix}$.
+</Problem>
+<Step title="(a) Eigenvalues">
+Trace $7$, determinant $10 - 4 = 6$, so $\lambda^2 - 7\lambda + 6 = (\lambda - 6)(\lambda - 1) = 0$: $\lambda_1 = 6$, $\lambda_2 = 1$. Sum $7$, product $6$.
+</Step>
+<Step title="(a) Eigenvectors">
+$A - 6I = \begin{pmatrix} -1 & 2 \\ 2 & -4 \end{pmatrix}$ is singular; its nullspace holds $x_1 = (2, 1)$. Check: $Ax_1 = (12, 6) = 6x_1$. $A - I = \begin{pmatrix} 4 & 2 \\ 2 & 1 \end{pmatrix}$ gives $x_2 = (1, -2)$, and $Ax_2 = (1, -2)$. The dot product $2 \cdot 1 + 1 \cdot (-2) = 0$: perpendicular, as for every symmetric matrix.
+</Step>
+<Step title="(b) Triangular">
+The eigenvalues are the diagonal entries, $1$ and $3$ (sum $4$ = trace, product $3$ = det). $B - I = \begin{pmatrix} 0 & 4 \\ 0 & 2 \end{pmatrix}$ gives $x_1 = (1, 0)$; $B - 3I = \begin{pmatrix} -2 & 4 \\ 0 & 0 \end{pmatrix}$ gives $x_2 = (2, 1)$. Check: $Bx_2 = (6, 3) = 3x_2$. The eigenvalues are different, so there is no shortage, but $B$ is not symmetric and $x_1 \cdot x_2 = 2$: the eigenvectors are not perpendicular.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $Ax = \lambda x$ with $x \neq 0$: eigenvectors keep their direction, and $\lambda$ is the stretch factor. $\lambda = 0$ means $A$ is singular.
+- Find $\lambda$ first from $\det(A - \lambda I) = 0$, then each $x$ from the nullspace of $A - \lambda I$.
+- The eigenvalues add up to the trace and multiply to the determinant; for $2 \times 2$, $\lambda^2 - (\text{trace})\lambda + \det = 0$.
+- Adding $cI$ adds $c$ to each eigenvalue and keeps the eigenvectors; $A + B$ and $AB$ have no such rule.
+- Symmetric matrices have real eigenvalues and perpendicular eigenvectors (announced here, shown later); a rotation has complex ones ($\pm i$), and a repeated eigenvalue can leave too few eigenvectors.

@@ -1,0 +1,259 @@
+# Calculations on content/year-4/8.08/bose-condensation-ginzburg-landau.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Lecture Notes, Chapter VII continued "The Bose Gas" (Wen, handwritten scan), pp. 73-75.
+# Page numbers are the handwritten numbers at the top right of each scanned page: 73 = PDF page 4, 74 = PDF page 5;
+# the number 75 is written on two pages, cited as "75a" (PDF page 6) and "75b" (PDF page 7).
+# The notes quote one number: the lambda point of helium-4, 2.17 K (p. 75a).
+# Page's own: the minimum of the Ginzburg-Landau free energy (checked against the notes), the heat-capacity jump, the
+# density of a density wave, the shift of its phase, the crests around a vortex (dislocation plot); the worked example
+# comparing the ideal-gas condensate fraction 1 - t^(3/2) with the linear law 1.5 (1 - t); plot captions; quiz 1.
+# Notation in the formulas: aa = a, U0 = U_0, a0 = a_0, TT = T, Tc = T_c, r = T/T_c, p0 = psi_0 (real), al = alpha,
+# kk = k, xx = x, ell = shift, ph = phi.
+
+page: content/year-4/8.08/bose-condensation-ginzburg-landau.mdx
+calcs:
+  # ---------------------------------------------------------------- collective modes (p. 73)
+  - id: density-wave-density
+    kind: identity
+    where: 'text after "Two kinds of collective mode": |psi0 + alpha e^{ikx}|^2 = psi0^2 + 2 psi0 alpha cos(kx) + alpha^2 for real psi0, alpha (modulus squared written out as (psi0 + alpha cos)^2 + (alpha sin)^2)'
+    formula: (p0 + al*cos(kk*xx))**2 + (al*sin(kk*xx))**2
+    equals: p0**2 + 2*p0*al*cos(kk*xx) + al**2
+    samples: {p0: [1.0, 0.7, 2.0], al: [0.05, 0.3, -0.2], kk: [1.0, 2.5, 0.4], xx: [0.3, -1.1, 4.0]}
+    tolerance: 1e-12
+    shown: ['$|\psi_1|^2 = \psi_0^2 + 2\psi_0\alpha\cos(\vec k\cdot\vec x) + \alpha^2$']
+    source: {cite: reading1, at: 'p. 73'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- minimum and free energy (p. 75a)
+  - id: gl-minimum
+    kind: identity
+    where: 'formula "Condition for the minimum": d/dx (a x + U0 x^2/2) = a + U0 x vanishes at x = |psi|^2 = -a/U0 (checked as derivative + 1 = 1)'
+    formula: deriv('aa*t + U0*t**2/2', 't', -aa/U0, 1) + 1
+    equals: 1
+    samples: {aa: [-0.5, -2.0, -0.1], U0: [1.0, 0.3, 4.0]}
+    tolerance: 1e-6
+    shown: ['so below the transition the condensate density is $|\psi|^2 = -a/U_0$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: mit
+
+  - id: gl-free-energy
+    kind: identity
+    where: 'formula "Free energy of the condensed phase": a x + U0 x^2/2 at x = -a/U0 is -a^2/(2 U0), as in the notes'
+    formula: aa*(-aa/U0) + U0*(-aa/U0)**2/2
+    equals: -0.5*aa**2/U0
+    samples: {aa: [-0.5, -2.0, -0.1], U0: [1.0, 0.3, 4.0]}
+    tolerance: 1e-12
+    shown: ['-\dfrac12\,\dfrac{a^2}{U_0}']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: mit
+
+  - id: quiz-gl
+    kind: identity
+    where: 'quiz 1: the distractor -a^2/(4 U0) is half the right drop -a^2/(2 U0)'
+    formula: (-aa**2/(4*U0))/(-aa**2/(2*U0))
+    equals: 0.5
+    samples: {aa: [-0.5, -2.0], U0: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['$|\\psi|^2 = -a/U_0$ and $-a^2/(2U_0)$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: condensate-linear
+    kind: identity
+    where: 'text after "Entropy and heat capacity": with a = a0 (T/T_c - 1), -a/U0 = (a0/U0)(1 - T/T_c)'
+    formula: -a0*(r - 1)/U0
+    equals: (a0/U0)*(1 - r)
+    samples: {a0: [1.0, 2.0, 0.5], U0: [1.0, 0.3, 4.0], r: [0.9, 0.5, 0.99]}
+    tolerance: 1e-12
+    shown: ['the condensate density is $|\psi|^2 = (a_0/U_0)(1 - T/T_c)$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: entropy-extra
+    kind: identity
+    where: 'same text: the extra entropy -d/dT[-a0^2 (1 - T/T_c)^2/(2 U0)] = -a0^2 (1 - T/T_c)/(U0 T_c), negative below T_c and zero at T_c'
+    formula: -deriv('-a0**2*(1 - t/Tc)**2/(2*U0)', 't', TT, 1)
+    equals: -a0**2*(1 - TT/Tc)/(U0*Tc)
+    samples: {a0: [1.0, 2.0, 0.5], U0: [1.0, 0.3, 4.0], Tc: [1.0, 2.17, 3.0], TT: [0.5, 2.0, 3.0]}
+    tolerance: 1e-6
+    shown: ['gives an extra entropy, negative (the condensate is ordered), that vanishes at $T_c$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: heat-capacity-extra
+    kind: identity
+    where: 'formula "Heat-capacity jump": -T d2/dT2 of -a0^2 (1 - T/T_c)^2/(2 U0) is T a0^2/(U0 T_c^2)'
+    formula: -TT*deriv('-a0**2*(1 - t/Tc)**2/(2*U0)', 't', TT, 2)
+    equals: TT*a0**2/(U0*Tc**2)
+    samples: {a0: [1.0, 2.0, 0.5], U0: [1.0, 0.3, 4.0], Tc: [1.0, 2.17, 3.0], TT: [0.5, 2.0, 3.0]}
+    tolerance: 1e-4
+    shown: ['\frac{\Delta C}{V} = \frac{a_0^2}{U_0T_c^2}\,T']
+    source: {cite: reading1, at: 'p. 75a (sketch of C)'}
+    origin: page-own
+
+  - id: heat-capacity-jump
+    kind: identity
+    where: 'same formula: at T = T_c the extra heat capacity is a0^2/(U0 T_c)'
+    formula: Tc*a0**2/(U0*Tc**2)
+    equals: a0**2/(U0*Tc)
+    samples: {a0: [1.0, 2.0], U0: [1.0, 0.3], Tc: [1.0, 2.17]}
+    tolerance: 1e-12
+    shown: ['\text{a jump of } \frac{a_0^2}{U_0T_c} \text{ at } T_c']
+    source: {cite: reading1, at: 'p. 75a (sketch of C)'}
+    origin: page-own
+
+  - id: lambda-point
+    kind: fact
+    where: 'p. 75a: the lambda point of helium-4 in the notes (2.1768 K measured)'
+    value: '2.17 K'
+    shown: ['2.17 K, the **lambda point**', 'shows its lambda peak at 2.17 K', 'has a sharp peak at 2.17 K, the lambda point', 'lambda peak at 2.17 K; free bosons', 'a sharp lambda peak at 2.17 K']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Mexican-hat plot caption (units a0/U0 for |psi|^2, a0^2/U0 for energy)
+  - id: hat-minimum
+    where: 'Mexican-hat plot caption: |psi|^2 = 1 - T/T_c at T/T_c = 0.5'
+    formula: 1 - 0.5
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['at T/T_c = 0.5 that is |ψ|² = 0.5']
+    source: {cite: reading1, at: 'p. 74'}
+    origin: page-own
+
+  - id: hat-depth
+    where: 'Mexican-hat plot caption: (r - 1) x^2 + x^4/2 at x^2 = 0.5 with r = 0.5 is -(1 - r)^2/2 = -0.125'
+    formula: (0.5 - 1)*0.5 + 0.5**2/2
+    expected: '-0.125'
+    tolerance: 1e-9
+    shown: ['and a depth of 0.125']
+    source: {cite: reading1, at: 'p. 74'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: ideal-gas condensate fraction
+  - id: ex-linear-coefficient
+    kind: limit
+    where: 'worked example: [1 - (1 - tau)^(3/2)]/tau tends to 3/2 as tau -> 0'
+    inputs: {}
+    formula: (1 - (1 - tau)**1.5)/tau
+    limit: 1.5
+    vary: {tau: [0.1, 0.01, 0.001]}
+    tolerance: 1e-3
+    shown: ['so the fraction is $\approx \frac32\tau = \frac32(1 - T/T_c)$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-095-exact
+    where: 'worked example: 1 - 0.95^1.5'
+    formula: 1 - 0.95**1.5
+    expected: '0.0741'
+    shown: ['exact $1 - 0.95^{3/2} = 0.0741$', 'compare the two at $T/T_c = 0.95$, $0.8$ and $0.5$', 'At $T/T_c = 0.95$: exact']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-095-linear
+    where: 'worked example: 1.5 (1 - 0.95)'
+    formula: 1.5*(1 - 0.95)
+    expected: '0.075'
+    shown: ['linear $0.075$', 'the linear law 1.5(1 − T/T_c)']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-095-diff
+    where: 'worked example and plot caption: (0.075/0.0741 - 1) in per cent'
+    formula: 100*(1.5*(1 - 0.95)/(1 - 0.95**1.5) - 1)
+    expected: '1'
+    shown: ['linear $0.075$, 1% apart', 'They agree to 1% at T/T_c = 0.95']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-08-exact
+    where: 'worked example: 1 - 0.8^1.5'
+    formula: 1 - 0.8**1.5
+    expected: '0.284'
+    shown: ['At $0.8$: $0.284$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-08-linear
+    where: 'worked example: 1.5 (1 - 0.8)'
+    formula: 1.5*(1 - 0.8)
+    expected: '0.30'
+    shown: ['against $0.30$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-08-diff
+    where: 'worked example: (0.30/0.2845 - 1) in per cent'
+    formula: 100*(1.5*(1 - 0.8)/(1 - 0.8**1.5) - 1)
+    expected: '5'
+    shown: ['5% apart']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-05-exact
+    where: 'worked example: 1 - 0.5^1.5'
+    formula: 1 - 0.5**1.5
+    expected: '0.646'
+    shown: ['At $0.5$: $0.646$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-05-linear
+    where: 'worked example: 1.5 (1 - 0.5)'
+    formula: 1.5*(1 - 0.5)
+    expected: '0.75'
+    shown: ['against $0.75$']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  - id: ex-05-diff
+    where: 'worked example: (0.75/0.6464 - 1) in per cent'
+    formula: 100*(1.5*(1 - 0.5)/(1 - 0.5**1.5) - 1)
+    expected: '16'
+    shown: ['16% apart']
+    source: {cite: reading1, at: 'p. 75a'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- density wave (p. 75b)
+  - id: cdw-re
+    kind: identity
+    where: 'formula "Density of a density wave": Re(alpha e^{i phi} e^{ikx}) = alpha cos(kx + phi) (real part of the product written out)'
+    formula: al*cos(ph)*cos(kk*xx) - al*sin(ph)*sin(kk*xx)
+    equals: al*cos(kk*xx + ph)
+    samples: {al: [0.2, 1.0, 0.05], ph: [0.0, 1.3, -2.0], kk: [1.0, 2.5, 0.4], xx: [0.3, -1.1, 4.0]}
+    tolerance: 1e-12
+    shown: ['\rho(x) = \rho_0 + \alpha\cos(kx + \phi) = \rho_0 + \mathrm{Re}\left(\psi\,e^{ikx}\right)']
+    source: {cite: reading1, at: 'p. 75b'}
+    origin: mit
+
+  - id: cdw-shift
+    kind: identity
+    where: 'text after "Density of a density wave": shifting the wave by ell, cos(k(x - ell) + phi) = cos(kx + (phi - k ell))'
+    formula: cos(kk*(xx - ell) + ph)
+    equals: cos(kk*xx + (ph - kk*ell))
+    samples: {kk: [1.0, 2.5, 0.4], xx: [0.3, -1.1, 4.0], ell: [0.5, 2.0, -0.7], ph: [0.0, 1.3, -2.0]}
+    tolerance: 1e-12
+    shown: ['shifting the wave by a distance $\ell$ changes $\phi$ by $-k\ell$']
+    source: {cite: reading1, at: 'p. 75b'}
+    origin: page-own
+
+  - id: dislocation-crest
+    kind: identity
+    where: 'dislocation plot: the parametric point x = (2 pi j - s) cot s, y = 2 pi j - s (k = 1) satisfies y + theta = 2 pi j with theta the polar angle of (x, y); checked for j = 1, s in (0, pi), where y > 0 and theta = acos(x/r) = acos(cot s/sqrt(cot^2 s + 1)) = s'
+    formula: (2*pi - s) + acos(cos(s)/sin(s)/sqrt((cos(s)/sin(s))**2 + 1))
+    equals: 2*pi
+    samples: {s: [0.3, 1.5, 2.8]}
+    tolerance: 1e-9
+    shown: ['{ x: "(2*pi - s)*cos(s)/sin(s)", y: "2*pi - s", range: [0.02, 3.12] }']
+    source: {cite: reading1, at: 'p. 75b (sketch)'}
+    origin: page-own
+
+  - id: dislocation-crest-lower
+    kind: identity
+    where: 'dislocation plot: for j = -1 and s in (-pi, 0), y = -2 pi - s < 0, so theta = -acos(x/r) with x/r = -cot s/sqrt(cot^2 s + 1) (x and y have the sign of y cot s and y), which equals s; y + theta = -2 pi'
+    formula: (-2*pi - s) - acos(-cos(s)/sin(s)/sqrt((cos(s)/sin(s))**2 + 1))
+    equals: -2*pi
+    samples: {s: [-0.3, -1.5, -2.8]}
+    tolerance: 1e-9
+    shown: ['{ x: "(-2*pi - s)*cos(s)/sin(s)", y: "-2*pi - s", range: [-3.12, -0.02] }']
+    source: {cite: reading1, at: 'p. 75b (sketch)'}
+    origin: page-own

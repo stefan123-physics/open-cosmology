@@ -1,0 +1,437 @@
+# Calculations on content/year-3/8.06/fermis-golden-rule-constant-perturbations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 10 transcripts and notes chapter 4 (section 4.3.1), with the page's
+# own worked example: an ejected electron of 27.2 eV in a box of side L = 1.0 cm, an illustrative golden-rule rate
+# w = 1.0e12 per second, m = 9.109e-31 kg, hbar = 1.055e-34 J s = 6.582e-16 eV s, 1 eV = 1.602e-19 J.
+
+page: content/year-3/8.06/fermis-golden-rule-constant-perturbations.mdx
+calcs:
+  # ---------------------------------------------------------------- derivation checks
+  - id: time-integral
+    kind: identity
+    where: 'eq. (4.3.18): the real part of ∫₀^t₀ e^(iωt′) dt′ is ∫₀^t₀ cos(ωt′) dt′ = sin(ωt₀)/ω'
+    formula: integrate('cos(ww*s)', 's', 0, tt)
+    equals: sin(ww*tt)/ww
+    samples: {ww: [0.7, 2.3], tt: [1.5, 4.0]}
+    tolerance: 1e-9
+    shown: ['c_f^{(1)}(t_0) = \frac{V_{fi}}{i\hbar}\int_0^{t_0}e^{i\omega_{fi}t''}\,dt''']
+    source: {cite: reading5, at: 'eq. (4.3.18)'}
+    origin: mit
+
+  - id: half-angle-real
+    kind: identity
+    where: 'eq. (4.3.19), real part: 1 − cos θ equals the real part of e^(iθ/2)(−2i) sin(θ/2), which is 2 sin²(θ/2)'
+    formula: 1 - cos(x)
+    equals: 2*sin(x/2)**2
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['taking half the exponent out front made a sine']
+    source: {cite: reading5, at: 'eq. (4.3.19)'}
+    origin: mit
+
+  - id: half-angle-imaginary
+    kind: identity
+    where: 'eq. (4.3.19), imaginary part: −sin θ equals the imaginary part of e^(iθ/2)(−2i) sin(θ/2), which is −2 cos(θ/2) sin(θ/2)'
+    formula: -sin(x)
+    equals: -2*cos(x/2)*sin(x/2)
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['(-2i)\sin\left(\frac{\omega_{fi}t_0}{2}\right)']
+    source: {cite: reading5, at: 'eq. (4.3.19)'}
+    origin: mit
+
+  - id: probability-from-amplitude
+    kind: identity
+    where: 'eq. (4.3.20): |1 − e^(iθ)|² = (1 − cos θ)² + sin²θ = 4 sin²(θ/2), so |c_f|² = 4|V_fi|² sin²(ω_fi t₀/2)/(E_f − E_i)²'
+    formula: (1 - cos(x))**2 + sin(x)**2
+    equals: 4*sin(x/2)**2
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['P_{fi}(t_0) = \left|c_f^{(1)}(t_0)\right|^2 = \frac{4\,|V_{fi}|^2\sin^2\left(\omega_{fi}t_0/2\right)}{(E_f - E_i)^2}']
+    source: {cite: reading5, at: 'eq. (4.3.20)'}
+    origin: mit
+
+  - id: oscillation-zero
+    kind: identity
+    where: 'L10.2 p. 3: sin²(ω t₀/2) vanishes again at t₀ = 2π/ω'
+    formula: sin(ww*(2*pi/ww)/2)**2 + 1
+    equals: 1
+    samples: {ww: [0.5, 3.0]}
+    tolerance: 1e-12
+    shown: ['returns to zero at $t_0 = 2\pi/|\omega_{fi}|$']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: mit
+
+  - id: equal-energy-limit
+    kind: limit
+    where: 'eqs. (4.3.22), (4.3.23): 4 sin²(ω t₀/2)/ω² → t₀² as ω → 0 (P_fi in units of |V_fi|²/ħ², t₀ = 1.7)'
+    inputs: {tt: 1.7}
+    formula: 4*sin(ww*tt/2)**2/ww**2
+    limit: tt**2
+    vary: {ww: [0.1, 0.01, 0.001]}
+    tolerance: 1e-6
+    shown: ['\lim_{E_f \rightarrow E_i}P_{fi}(t_0) = \frac{|V_{fi}|^2}{\hbar^2}\,t_0^2']
+    source: {cite: reading5, at: 'eq. (4.3.23)'}
+    origin: mit
+
+  - id: lobe-height
+    kind: limit
+    where: 'L10.3 p. 2: the integrand sin²(ω t₀/2)/ω² tends to t₀²/4 at ω = 0 (t₀ = 2.5)'
+    inputs: {tt: 2.5}
+    formula: sin(ww*tt/2)**2/ww**2
+    limit: tt**2/4
+    vary: {ww: [0.1, 0.01, 0.001]}
+    tolerance: 1e-6
+    shown: ['it has a central lobe of height $t_0^2/4$ at $\omega_{fi} = 0$']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: lobe-zeros
+    kind: identity
+    where: 'eq. (4.3.27): the integrand vanishes at ω t₀/2 = π, i.e. ω = 2π/t₀ (and at 4π/t₀)'
+    formula: sin((2*pi/tt)*tt/2)**2 + sin((4*pi/tt)*tt/2)**2 + 1
+    equals: 1
+    samples: {tt: [1.0, 3.7]}
+    tolerance: 1e-12
+    shown: ['zeros at $\omega_{fi} = \pm 2\pi/t_0$, $\pm 4\pi/t_0$ and so on']
+    source: {cite: reading5, at: 'eq. (4.3.27)'}
+    origin: mit
+
+  - id: change-of-variables
+    kind: identity
+    where: 'eqs. (4.3.29), (4.3.30): with u = ω t₀/2, ∫₀^a sin²(ω t₀/2)/ω² dω = (t₀/2) ∫₀^(a t₀/2) sin²u/u² du (the dE_f = ħ dω gives the ħ)'
+    formula: integrate('sin(w*tt/2)**2/w**2', 'w', 0, aa)
+    equals: tt/2*integrate('sin(u)**2/u**2', 'u', 0, aa*tt/2)
+    samples: {tt: [1.0, 3.0], aa: [2.0, 5.0]}
+    tolerance: 1e-8
+    shown: ['the $dE_f$ takes one power away']
+    source: {cite: reading5, at: 'eq. (4.3.30)'}
+    origin: mit
+
+  - id: sinc-integral
+    kind: limit
+    where: 'eq. (4.3.31): ∫ sin²u/u² du over the whole line is π; 2∫₀^X tends to π as X grows'
+    inputs: {}
+    formula: 2*integrate('sin(u)**2/u**2', 'u', 0, X)
+    limit: pi
+    vary: {X: [31.4159, 314.159, 1570.8]}
+    tolerance: 1e-3
+    shown: ['= \frac{\pi}{2}\,\hbar t_0']
+    source: {cite: reading5, at: 'eq. (4.3.31)'}
+    origin: mit
+
+  - id: main-lobe-fraction
+    where: 'L10.3 p. 2, notes p. 93: share of ∫ sin²u/u² du in the main lobe |u| < π, in per cent'
+    inputs: {}
+    formula: 2*integrate('sin(u)**2/u**2', 'u', 0, pi)/pi*100
+    expected: '90'
+    tolerance: '1'
+    shown: ['The central lobe holds about 90% of the integral']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: next-lobes-fraction
+    where: 'L10.3 p. 2, notes p. 93: share within |u| < 2π (main lobe plus one lobe on each side), in per cent'
+    inputs: {}
+    formula: 2*integrate('sin(u)**2/u**2', 'u', 0, 2*pi)/pi*100
+    expected: '95'
+    tolerance: '1'
+    shown: ['with the next lobe on each side about 95%']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: ten-lobes-fraction
+    where: 'notes p. 93: share within |u| < 11π (main lobe plus ten lobes on each side), in per cent'
+    inputs: {}
+    formula: 2*integrate('sin(u)**2/u**2', 'u', 0, 11*pi)/pi*100
+    expected: '99'
+    tolerance: '1'
+    shown: ['ten or more lobes on each side give 99%']
+    source: {cite: reading5, at: 'p. 93'}
+    origin: mit
+
+  - id: linear-probability
+    kind: identity
+    where: 'eq. (4.3.32): (4/ħ²)·(π/2)ħ t = (2π/ħ) t'
+    formula: 4/hb**2*(pi/2)*hb*tt
+    equals: 2*pi/hb*tt
+    samples: {hb: [1.0, 0.3], tt: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['\sum_f P_{fi}(t) = \frac{2\pi}{\hbar}\,|V_{fi}|^2\,\rho(E_i)\,t']
+    source: {cite: reading5, at: 'eq. (4.3.32)'}
+    origin: mit
+
+  - id: golden-rule-units
+    kind: units
+    where: 'L10.3 p. 4: |V_fi|² ρ / ħ has units of one over time'
+    inputs: {V: 1 J, rho: 1 1/J, t: 1 s}
+    terms: ['V**2*rho/hbar', '1/t']
+    unit: '1/s'
+    shown: ['dividing by $\hbar$ leaves one over time']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: box-independence
+    kind: identity
+    where: 'eq. (4.3.35): |V_fi|² ∝ L⁻³ and ρ ∝ L³, so their product does not depend on L'
+    formula: (cc/LL**1.5)**2*(dd*LL**3)
+    equals: cc**2*dd
+    samples: {cc: [1.0, 2.5], dd: [0.7, 3.0], LL: [1.0, 7.0]}
+    tolerance: 1e-12
+    shown: ['which cancels the $L^3$ in $\rho$']
+    source: {cite: reading5, at: 'eq. (4.3.35)'}
+    origin: mit
+
+  - id: density-of-states-check
+    kind: identity
+    where: 'eqs. (4.3.12)-(4.3.14): (L/2π)³ k (m/ħ²) = L³ m k/(8π³ħ²)'
+    formula: (LL/(2*pi))**3*kk*mm/hb**2
+    equals: LL**3*mm*kk/(8*pi**3*hb**2)
+    samples: {LL: [1.0, 3.0], kk: [0.5, 2.0], mm: [1.0, 4.0], hb: [1.0, 0.6]}
+    tolerance: 1e-12
+    shown: ['\rho(E) = \frac{L^3}{8\pi^3}\,\frac{m}{\hbar^2}\,k\,d\Omega" cite']
+    source: {cite: reading5, at: 'eq. (4.3.14)'}
+    origin: mit
+
+  - id: kdk-from-energy
+    kind: identity
+    where: 'eq. (4.3.10): E = ħ²k²/2m gives dE/dk = ħ²k/m, i.e. k dk = (m/ħ²) dE'
+    formula: deriv('hb**2*s**2/(2*mm)', 's', kk)
+    equals: hb**2*kk/mm
+    samples: {hb: [1.0, 0.6], mm: [1.0, 4.0], kk: [0.5, 2.0]}
+    tolerance: 1e-8
+    shown: ['k\,dk = \frac{m}{\hbar^2}\,dE']
+    source: {cite: reading5, at: 'eq. (4.3.10)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- quoted figures
+  - id: weak-one-in-a-million
+    kind: fact
+    where: 'L10.2 p. 2: a probability of 10^-6 (one atom in a million ionized) is reasonable, a probability of 3 is not'
+    value: '1e-6'
+    shown: ['one in a million, an atom in a million ionized, is reasonable']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  - id: weak-three
+    kind: fact
+    where: 'L10.2 p. 2: a first-order probability of 3 is plainly too big'
+    value: '3'
+    shown: ['A probability of 3 is plainly nonsense']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  - id: notes-test-wt0
+    kind: fact
+    where: 'notes p. 94: the practical test takes w t₀ about 0.01'
+    value: '0.01'
+    shown: ['choose $t_0$ with $wt_0$ about 0.01']
+    source: {cite: reading5, at: 'p. 94'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-energy-joules
+    where: 'example (a): 27.2 eV in joules'
+    inputs: {}
+    formula: 27.2*1.602e-19
+    expected: '4.36e-18'
+    shown: ['$= 4.36 \times 10^{-18}$ J']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: page-own
+
+  - id: ex-wavenumber
+    where: 'example (a): k = sqrt(2mE)/ħ in 1/m'
+    inputs: {}
+    formula: sqrt(2*9.109e-31*27.2*1.602e-19)/1.055e-34
+    expected: '2.67e10'
+    shown: ['k = \sqrt{2mE}/\hbar \approx 2.67 \times 10^{10}']
+    source: {cite: reading5, at: 'eq. (4.3.10)'}
+    origin: page-own
+
+  - id: ex-wavelength
+    where: 'example (a): de Broglie wavelength 2π/k in nm'
+    inputs: {}
+    formula: 2*pi/(sqrt(2*9.109e-31*27.2*1.602e-19)/1.055e-34)*1e9
+    expected: '0.235'
+    shown: ['2\pi/k \approx 0.235$ nm']
+    source: {cite: reading5, at: 'eq. (4.3.4)'}
+    origin: page-own
+
+  - id: ex-box-volume
+    where: 'example (b): L³ for L = 1.0 cm = 1.0e-2 m, in cubic metres'
+    inputs: {}
+    formula: (1.0e-2)**3
+    expected: '1e-6'
+    shown: ['With $L^3 = 10^{-6}$ cubic metres']
+    source: {cite: reading5, at: 'eq. (4.3.14)'}
+    origin: page-own
+
+  - id: ex-dos-joule
+    where: 'example (b): ρ = L³ m k/(2π²ħ²) for all directions, in states per joule, L = 1.0e-2 m'
+    inputs: {}
+    formula: (1.0e-2)**3*9.109e-31*(sqrt(2*9.109e-31*27.2*1.602e-19)/1.055e-34)/(2*pi**2*1.055e-34**2)
+    expected: '1.11e41'
+    shown: ['$1.11 \times 10^{41}$ states per joule']
+    source: {cite: reading5, at: 'eq. (4.3.14)'}
+    origin: page-own
+
+  - id: ex-dos-ev
+    where: 'example (b): the same in states per eV'
+    inputs: {}
+    formula: (1.0e-2)**3*9.109e-31*(sqrt(2*9.109e-31*27.2*1.602e-19)/1.055e-34)/(2*pi**2*1.055e-34**2)*1.602e-19
+    expected: '1.77e22'
+    shown: ['about $1.77 \times 10^{22}$ states per eV']
+    source: {cite: reading5, at: 'eq. (4.3.14)'}
+    origin: page-own
+
+  - id: ex-spacing
+    where: 'example (b): spacing 1/ρ between neighbouring box states, in eV'
+    inputs: {}
+    formula: 1/((1.0e-2)**3*9.109e-31*(sqrt(2*9.109e-31*27.2*1.602e-19)/1.055e-34)/(2*pi**2*1.055e-34**2)*1.602e-19)
+    expected: '5.6e-23'
+    shown: ['about $5.6 \times 10^{-23}$ eV apart']
+    source: {cite: reading5, at: 'eq. (4.3.14)'}
+    origin: page-own
+
+  - id: ex-t0
+    where: 'example (c): t₀ = 0.01/w in s'
+    inputs: {}
+    formula: 0.01/1.0e12
+    expected: '1.0e-14'
+    shown: ['$t_0 = 0.01/w = 1.0 \times 10^{-14}$ s, ten femtoseconds']
+    source: {cite: reading5, at: 'p. 94'}
+    origin: page-own
+
+  - id: ex-halfwidth
+    where: 'example (c): half-width 2πħ/t₀ of the main lobe, in eV'
+    inputs: {}
+    formula: 2*pi*6.582e-16/1.0e-14
+    expected: '0.41'
+    shown: ['10^{-16}/10^{-14} \approx 0.41$ eV on either side']
+    source: {cite: reading5, at: 'eq. (4.3.28)'}
+    origin: page-own
+
+  - id: ex-rho-change-up
+    where: 'example (c): rise of ρ ∝ √E at the upper edge of the window, in per cent'
+    inputs: {}
+    formula: (sqrt((27.2 + 2*pi*6.582e-16/1.0e-14)/27.2) - 1)*100
+    expected: '0.76'
+    shown: ['it changes by only about 0.76% either way']
+    source: {cite: reading5, at: 'eq. (4.3.36)'}
+    origin: page-own
+
+  - id: ex-rho-change-down
+    where: 'example (c): fall of ρ ∝ √E at the lower edge of the window, in per cent (also about 0.76%)'
+    inputs: {}
+    formula: (1 - sqrt((27.2 - 2*pi*6.582e-16/1.0e-14)/27.2))*100
+    expected: '0.76'
+    shown: ['(the square root of the ratio of the energies at the edge and at the centre)']
+    source: {cite: reading5, at: 'eq. (4.3.36)'}
+    origin: page-own
+
+  - id: ex-states-in-window
+    where: 'example (c): number of box states in the main lobe, ρ (per eV) times 2 × half-width'
+    inputs: {}
+    formula: (1.0e-2)**3*9.109e-31*(sqrt(2*9.109e-31*27.2*1.602e-19)/1.055e-34)/(2*pi**2*1.055e-34**2)*1.602e-19*2*(2*pi*6.582e-16/1.0e-14)
+    expected: '1.5e22'
+    shown: ['the window holds about $1.5 \times 10^{22}$ states']
+    source: {cite: reading5, at: 'eq. (4.3.28)'}
+    origin: page-own
+
+  - id: ex-fast-t0
+    where: 'example (c), aside: a rate 100 times larger, w = 1.0e14 per second, gives t₀ = 0.01/w in fs'
+    inputs: {}
+    formula: 0.01/1.0e14*1e15
+    expected: '0.1'
+    shown: ['force $t_0$ down to 0.1 fs']
+    source: {cite: reading5, at: 'p. 94'}
+    origin: page-own
+
+  - id: ex-fast-halfwidth
+    where: 'example (c), aside: the half-width 2πħ/t₀ for t₀ = 1.0e-16 s, in eV'
+    inputs: {}
+    formula: 2*pi*6.582e-16/1.0e-16
+    expected: '41'
+    shown: ['the half-width up to 41 eV']
+    source: {cite: reading5, at: 'eq. (4.3.28)'}
+    origin: page-own
+
+  - id: ex-v2rho
+    where: 'example (d): |V_fi|²ρ = ħw/2π in eV'
+    inputs: {}
+    formula: 6.582e-16*1.0e12/(2*pi)
+    expected: '1.05e-4'
+    shown: ['\approx 1.05 \times 10^{-4}$ eV']
+    source: {cite: reading5, at: 'eq. (4.3.34)'}
+    origin: page-own
+
+  - id: ex-box-factor
+    where: 'example (d): doubling L multiplies ρ ∝ L³ by 2³'
+    inputs: {}
+    formula: 2**3
+    expected: '8'
+    shown: ['Doubling $L$ multiplies $\rho$ by 8']
+    source: {cite: reading5, at: 'eq. (4.3.35)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- helium (L10.4, notes pp. 94-96)
+  - id: helium-scale
+    where: 'eq. (4.3.39): 13.6 eV × Z² with Z = 2'
+    inputs: {}
+    formula: 13.6*2**2
+    expected: '54.4'
+    shown: ['= -(54.4\ \text{eV})\left(']
+    source: {cite: reading5, at: 'eq. (4.3.39)'}
+    origin: mit
+
+  - id: helium-ground
+    where: 'notes Figure 4.4: E(1,1) = −54.4 × 2 eV (the lecture rounds it to −108)'
+    inputs: {}
+    formula: -54.4*(1 + 1)
+    expected: '-108.8'
+    shown: ['The ground state $(1,1)$ lies at $-108.8$ eV']
+    source: {cite: reading5, at: 'Figure 4.4, p. 95'}
+    origin: mit
+
+  - id: helium-ground-lecture
+    kind: fact
+    where: 'L10.4 p. 1: the lecture says "minus 108" for the ground state (rounded from −108.8)'
+    value: '-108'
+    shown: ['[The lecture rounds it to "minus 108".]']
+    source: {cite: reading4, at: 'p. 1'}
+    origin: slip
+
+  - id: helium-first-continuum
+    where: 'L10.4 p. 1, notes p. 95: E(∞,1) = −54.4 × (0 + 1) eV'
+    inputs: {}
+    formula: -54.4*(0 + 1)
+    expected: '-54.4'
+    shown: ['and the other is in the 1s state: energy $-54.4$ eV']
+    source: {cite: reading5, at: 'p. 95'}
+    origin: mit
+
+  - id: helium-22
+    where: 'L10.4 p. 2, notes p. 95: E(2,2) = −54.4 × (1/4 + 1/4) eV'
+    inputs: {}
+    formula: -54.4*(1/4 + 1/4)
+    expected: '-27.2'
+    shown: ['$\frac{1}{4} + \frac{1}{4} = \frac{1}{2}$ and so lies at $-27.2$ eV']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: mit
+
+  - id: helium-second-continuum
+    where: 'L10.4 p. 2, notes Figure 4.4: E(∞,2) = −54.4/4 eV'
+    inputs: {}
+    formula: -54.4*(0 + 1/4)
+    expected: '-13.6'
+    shown: ['$(\infty,2)$ at $-13.6$ eV starts a second continuum']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: mit
+
+  - id: helium-auger-energy
+    where: 'L10.4 p. 2: kinetic energy of the ejected electron, E(2,2) − E(1,∞)'
+    inputs: {}
+    formula: -27.2 - (-54.4)
+    expected: '27.2'
+    shown: ['flies off with kinetic energy $-27.2 - (-54.4) = 27.2$ eV']
+    source: {cite: reading4, at: 'p. 2'}
+    origin: mit

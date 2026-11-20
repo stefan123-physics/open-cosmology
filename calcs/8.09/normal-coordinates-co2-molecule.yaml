@@ -1,0 +1,199 @@
+# Calculations on content/year-4/8.09/normal-coordinates-co2-molecule.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) Lecture Notes, Chapter 3, Section 3.2, pp. 55-59 (printed page numbers).
+# The notes quote no numbers. Checked here: the kinetic energy after eliminating the carbon (3.35), the potential and
+# kinetic matrices (3.36)-(3.37) by finite differences, the frequencies (3.40), the normalisation of (3.41), the
+# corrected bond-angle denominators (3.33), and the page's own CO2 numbers with mass numbers 16 and 12 (rho = 4/3).
+# Notation: r = rho, kk = k, mm = m, kap = kappa, bb = b, e1/e3 = eta_1/eta_3, y = y_1, v1/v3/w = velocities.
+
+page: content/year-4/8.09/normal-coordinates-co2-molecule.mdx
+calcs:
+  # ---------------------------------------------------------------- energies (pp. 58-59)
+  - id: kinetic-eliminated
+    kind: identity
+    where: 'formula "Kinetic energy, three coordinates": eq. (3.34) with xdot2 = -rho(v1 + v3), ydot2 = -2 rho w, ydot3 = w and M = m/rho gives eq. (3.35)'
+    formula: mm/2*(v1**2 + v3**2) + (mm/r)/2*(r*(v1 + v3))**2 + mm/2*(w**2 + w**2) + (mm/r)/2*(2*r*w)**2
+    equals: mm/2*(1 + r)*(v1**2 + v3**2) + mm*r*v1*v3 + mm*(1 + 2*r)*w**2
+    samples: {mm: [1.0, 2.7, 0.4], r: [1.3333, 0.5, 2.0], v1: [0.3, -1.2, 2.0], v3: [1.1, 0.4, -0.7], w: [0.5, -0.9, 1.3]}
+    tolerance: 1e-12
+    shown: ['T = \frac{m}{2}(1 + \rho)\big(\dot x_1^2 + \dot x_3^2\big) + m\rho\,\dot x_1 \dot x_3 + m(1 + 2\rho)\,\dot y_1^2']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.35), p. 59'}
+    origin: mit
+
+  - id: bond-angle-1
+    kind: identity
+    where: 'formula "Bond angles" (corrected): (y2 - y1)/(x2 - x1) with x2 = -rho(x1 + x3), y2 = -2 rho y1 equals (1 + 2 rho) y1/((1 + rho) x1 + rho x3)'
+    formula: (-2*r*y - y)/(-r*(x1 + x3) - x1)
+    equals: (1 + 2*r)*y/((1 + r)*x1 + r*x3)
+    samples: {r: [1.3333, 0.5, 2.0], y: [0.1, -0.3, 0.05], x1: [-1.0, -0.9, -1.1], x3: [1.0, 1.1, 0.8]}
+    tolerance: 1e-12
+    shown: ['\frac{(1 + 2\rho)\, y_1}{(1 + \rho)x_1 + \rho x_3}']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.33), p. 58'}
+    origin: slip
+
+  - id: bond-angle-2
+    kind: identity
+    where: 'same formula: (y3 - y2)/(x3 - x2) with y3 = y1 equals (1 + 2 rho) y1/((1 + rho) x3 + rho x1)'
+    formula: (y + 2*r*y)/(x3 + r*(x1 + x3))
+    equals: (1 + 2*r)*y/((1 + r)*x3 + r*x1)
+    samples: {r: [1.3333, 0.5, 2.0], y: [0.1, -0.3, 0.05], x1: [-1.0, -0.9, -1.1], x3: [1.0, 1.1, 0.8]}
+    tolerance: 1e-12
+    shown: ['\frac{(1 + 2\rho)\, y_1}{(1 + \rho)x_3 + \rho x_1}']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.33), p. 58'}
+    origin: slip
+
+  - id: v11
+    kind: identity
+    where: 'formula "Potential matrix of CO2": V_11 = d2V/d eta1^2 at the minimum, with V the full potential (3.31)-(3.33) restricted to y1 = 0 (springs only) = k(1 + 2 rho + 2 rho^2)'
+    formula: deriv('kk/2*(sqrt((-bb + t + r*t)**2) - bb)**2 + kk/2*(sqrt((bb + r*t)**2) - bb)**2', 't', 0, 2)
+    equals: kk*(1 + 2*r + 2*r**2)
+    samples: {kk: [1.0, 3.0], r: [1.3333, 0.5], bb: [1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['k(1 + 2\rho + 2\rho^2) & 0 & 2k\rho(1 + \rho)']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.36), p. 59'}
+    origin: mit
+
+  - id: v13
+    kind: identity
+    where: 'same matrix: V_13 = d2V/d eta1 d eta3 = 2 k rho (1 + rho), from the springs with y1 = 0 (mixed derivative via V(e1 = e3 = t) = (V11 + 2 V13 + V33) t^2/2)'
+    formula: (deriv('kk/2*(sqrt((-bb + t + r*(2*t))**2) - bb)**2 + kk/2*(sqrt((bb + t + r*(2*t))**2) - bb)**2', 't', 0, 2) - 2*kk*(1 + 2*r + 2*r**2))/2
+    equals: 2*kk*r*(1 + r)
+    samples: {kk: [1.0, 3.0], r: [1.3333, 0.5], bb: [1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['2k\rho(1 + \rho) & 0 & k(1 + 2\rho + 2\rho^2)']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.36), p. 59'}
+    origin: mit
+
+  - id: v22
+    kind: identity
+    where: 'same matrix: V_22 = d2V/dy1^2 at the straight shape = 2 kappa (1 + 2 rho)^2; full potential with springs (lengths from 3.32) and bending term (corrected angles 3.33), x1 = -b, x3 = b'
+    formula: deriv('kk/2*(sqrt(bb**2 + (1 + 2*r)**2*t**2) - bb)**2*2 + kap*bb**2/2*(atan((1 + 2*r)*t/(-bb))**2 + atan((1 + 2*r)*t/bb)**2)', 't', 0, 2)
+    equals: 2*kap*(1 + 2*r)**2
+    samples: {kk: [1.0, 3.0], r: [1.3333, 0.5], bb: [1.0, 2.0], kap: [0.2, 0.7]}
+    tolerance: 1e-6
+    shown: ['0 & 2\kappa(1 + 2\rho)^2 & 0']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.36), p. 59'}
+    origin: mit
+
+  - id: bending-frequency
+    kind: identity
+    where: 'formula "Bending mode": 2 kappa (1 + 2 rho)^2 / (2 m (1 + 2 rho)) = kappa (1 + 2 rho)/m'
+    formula: 2*kap*(1 + 2*r)**2/(2*mm*(1 + 2*r))
+    equals: kap*(1 + 2*r)/mm
+    samples: {kap: [0.2, 0.7], r: [1.3333, 0.5], mm: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['so the bending frequency is $\omega^2 = \kappa(1 + 2\rho)/m$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.38), p. 59'}
+    origin: mit
+
+  # ---------------------------------------------------------------- stretching modes (p. 59)
+  - id: lambda1-root
+    kind: identity
+    where: 'formula "Stretching frequencies": d - c = k - lambda m (checked: d - c at lambda = k/m vanishes; written as value + 1 = 1)'
+    formula: kk*(1 + 2*r + 2*r**2) - (kk/mm)*mm*(1 + r) - (2*kk*r*(1 + r) - (kk/mm)*mm*r) + 1
+    equals: 1 + 0*r
+    samples: {kk: [1.0, 3.0], mm: [1.0, 2.5], r: [1.3333, 0.5]}
+    tolerance: 1e-12
+    shown: ['The first gives $k - \lambda m = 0$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.40), p. 59'}
+    origin: mit
+
+  - id: lambda2-root
+    kind: identity
+    where: 'same: d + c vanishes at lambda = (k/m)(1 + 2 rho) (value + 1 = 1)'
+    formula: kk*(1 + 2*r + 2*r**2) - (kk/mm)*(1 + 2*r)*mm*(1 + r) + (2*kk*r*(1 + r) - (kk/mm)*(1 + 2*r)*mm*r) + 1
+    equals: 1 + 0*r
+    samples: {kk: [1.0, 3.0], mm: [1.0, 2.5], r: [1.3333, 0.5]}
+    tolerance: 1e-12
+    shown: ['\lambda_2 = \omega_2^2 = \frac{k}{m}\,(1 + 2\rho)']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.40), p. 59'}
+    origin: mit
+
+  - id: norm-a2
+    kind: identity
+    where: 'worked example, step "Normalisation": (1, 1).T.(1, 1) = 2 m (1 + 2 rho)'
+    formula: mm*(1 + r) + 2*mm*r + mm*(1 + r)
+    equals: 2*mm*(1 + 2*r)
+    samples: {mm: [1.0, 2.5], r: [1.3333, 0.5]}
+    tolerance: 1e-12
+    shown: ['$(1, 1)\cdot\hat T\cdot(1, 1) = m(1 + \rho) + 2m\rho + m(1 + \rho) = 2m(1 + 2\rho)$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.41), p. 59'}
+    origin: mit
+
+  - id: norm-a1
+    kind: identity
+    where: 'same step: (1, -1).T.(1, -1) = 2 m'
+    formula: mm*(1 + r) - 2*mm*r + mm*(1 + r)
+    equals: 2*mm + 0*r
+    samples: {mm: [1.0, 2.5], r: [1.3333, 0.5]}
+    tolerance: 1e-12
+    shown: ['$(1, -1)\cdot\hat T\cdot(1, -1) = 2m(1 + \rho) - 2m\rho = 2m$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.41), p. 59'}
+    origin: mit
+
+  - id: xi2-of-displacement
+    kind: identity
+    where: 'step "A normal coordinate": xi_2 = 2 m (1 + 2 rho) eps / sqrt(2 m (1 + 2 rho)) = sqrt(2 m (1 + 2 rho)) eps'
+    formula: 2*mm*(1 + 2*r)*ep/sqrt(2*mm*(1 + 2*r))
+    equals: sqrt(2*mm*(1 + 2*r))*ep
+    samples: {mm: [1.0, 2.5], r: [1.3333, 0.5], ep: [0.01, 0.2]}
+    tolerance: 1e-12
+    shown: ['$\xi_2 = 2m(1 + 2\rho)\epsilon/\sqrt{2m(1 + 2\rho)} = \sqrt{2m(1 + 2\rho)}\,\epsilon$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.28), p. 56'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- CO2 numbers (page's own)
+  - id: rho-co2
+    where: 'worked example, step "Mass ratio and frequencies"; quiz 3 (distractor 4/3)'
+    inputs: {}
+    formula: 16/12
+    expected: '1.333'
+    shown: ['$4/3 \\approx 1.333$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.40), p. 59'}
+    origin: page-own
+
+  - id: ratio-co2
+    where: 'summary, quiz 3, worked example, plot caption and point, page summary: sqrt(1 + 2 rho) for rho = 4/3'
+    inputs: {}
+    formula: sqrt(1 + 2*16/12)
+    expected: '1.915'
+    quiz: 2
+    shown: ['$\\sqrt{11/3} \\approx 1.915$", "$11/3', 'is $\\sqrt{11/3} \\approx 1.915$. The third', '$\omega_2/\omega_1 = \sqrt{11/3} \approx 1.915$', 'the ratio is about 1.915', 'stretching frequencies is √(11/3) ≈ 1.915', 'the ratio is $\sqrt{11/3} \approx 1.915$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.40), p. 59'}
+    origin: page-own
+
+  - id: one-plus-two-rho
+    where: 'quiz 3 explanation and worked example: 1 + 2 rho = 11/3'
+    inputs: {}
+    formula: 1 + 2*16/12
+    expected: '3.667'
+    shown: ['$11/3 \\approx 3.667$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.40), p. 59'}
+    origin: page-own
+
+  - id: distractor-one-plus-rho
+    where: 'quiz 3: the distractor sqrt(1 + rho) = sqrt(7/3)'
+    inputs: {}
+    formula: sqrt(1 + 16/12)
+    expected: '1.528'
+    shown: ['$\\sqrt{7/3} \\approx 1.528$']
+    source: {cite: reading1, at: 'Section 3.2, eq. (3.40), p. 59'}
+    origin: page-own
+
+  - id: carbon-amplitude
+    where: 'step "The carbon''s motion": |x2|/eta1 = 2 rho = 8/3'
+    inputs: {}
+    formula: 2*16/12
+    expected: '2.67'
+    shown: ['The carbon moves about 2.67 times as far as each oxygen']
+    source: {cite: reading1, at: 'Section 3.2, p. 57'}
+    origin: page-own
+
+  - id: centre-of-mass-check
+    where: 'same step: 12 x 8/3 = 32 = 2 x 16'
+    inputs: {}
+    formula: 12*8/3
+    expected: '32'
+    tolerance: 1e-9
+    shown: ['$12 \times 8/3 = 32 = 2 \times 16$']
+    source: {cite: reading1, at: 'Section 3.2, p. 57'}
+    origin: page-own

@@ -1,0 +1,368 @@
+# Calculations on content/year-4/8.08/ginzburg-landau-theory.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Lecture Notes, Chapter III "Ising Model" (Wen, handwritten scan), pp. 24-27.
+# Page numbers are the handwritten numbers at the top right of each scanned page (21-27 = PDF pages 1-7).
+# The notes quote no numbers.
+# Page's own examples: the mean-field coefficients a0 = k_B T_c, b = k_B T_c/3 (derived on the page); worked example
+# with T_c = 200 K (order parameter at 190 K and 150 K, heat-capacity jump per mole, susceptibility ratio, jump in M);
+# susceptibility plot caption; quiz 2. Facts: water's critical point and the 3D exponent beta (later data, in words).
+# Notation in the formulas: aa = a, bb = b, a0 = a_0, TT = T, Tc = T_c, NN = N, hh = h, mm = <s>, r = T/T_c, kT = k_B T_c.
+
+page: content/year-4/8.08/ginzburg-landau-theory.mdx
+calcs:
+  # ---------------------------------------------------------------- the expansion (p. 24, and the page's mean-field coefficients)
+  - id: a0-from-ln2
+    kind: identity
+    where: 'formula "Ginzburg-Landau free energy": the mean-field free energy per spin at <s> = 0 is -k_B T ln(2 cosh 0) = -k_B T ln 2, the notes'' A_0 per spin'
+    formula: -TT*log(2*cosh(0))
+    equals: -TT*log(2)
+    samples: {TT: [1.0, 0.3, 2.5]}
+    tolerance: 1e-12
+    shown: ['is the free energy of a spin with two equally likely states']
+    source: {cite: reading1, at: 'p. 24, point 3'}
+    origin: mit
+
+  - id: coefficient-a
+    kind: identity
+    where: 'formula "Coefficients of the mean-field Ising model": the curvature at <s> = 0 of the mean-field free energy per spin, -k_B T ln cosh(T_c <s>/T) + k_B T_c <s>^2/2 (units k_B T_c = 1, r = T/T_c), is a = 1 - T_c/T'
+    formula: deriv('-r*log(cosh(t/r)) + t**2/2', 't', 0, 2)
+    equals: 1 - 1/r
+    samples: {r: [0.8, 1.1, 1.5, 2.0]}
+    tolerance: 1e-3
+    shown: ['it becomes $A_0(T)$, exactly Wen''s, plus']
+    source: {cite: reading1, at: 'pp. 22 and 24'}
+    origin: page-own
+
+  - id: coefficient-b
+    kind: limit
+    where: 'same formula: [f(s) - f(0) - a s^2/2]/s^4 tends to b/4 = (1/12)(T_c/T)^3 as s -> 0 (units k_B T_c = 1; checked at T/T_c = 1.1)'
+    inputs: {}
+    formula: ((-1.1*log(cosh(ss/1.1)) + ss**2/2) - 0.5*(1 - 1/1.1)*ss**2)/ss**4
+    limit: (1/12)*(1/1.1)**3
+    vary: {ss: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-3
+    shown: ['so $a_0 = k_BT_c$ and $b(T_c) = k_BT_c/3$']
+    source: {cite: reading1, at: 'pp. 22 and 24'}
+    origin: page-own
+
+  - id: coefficient-a-near-tc
+    kind: limit
+    where: 'same formula: 1 - T_c/T approaches T/T_c - 1 as T -> T_c (ratio tends to 1)'
+    inputs: {}
+    formula: (1 - 1/r)/(r - 1)
+    limit: 1
+    vary: {r: [1.2, 1.05, 1.01, 1.001]}
+    tolerance: 2e-3
+    shown: ['\approx k_BT_c\left(\frac{T}{T_c} - 1\right)']
+    source: {cite: reading1, at: 'p. 24, point 3'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- order parameter and free energy (p. 24)
+  - id: order-root
+    kind: identity
+    where: 'formula "Order parameter in Ginzburg-Landau theory": <s> = sqrt(-a/b) solves a<s> + b<s>^3 = 0 (checked as LHS + 1 = 1), with a = a0 (T/T_c - 1) < 0'
+    formula: aa*sqrt(-aa/bb) + bb*sqrt(-aa/bb)**3 + 1
+    equals: 1
+    samples: {aa: [-0.5, -2.0, -0.01], bb: [1.0, 0.3, 4.0]}
+    tolerance: 1e-12
+    shown: ['and the roots $\langle s\rangle^2 = -a/b$ when $a < 0$']
+    source: {cite: reading1, at: 'p. 24, point 3'}
+    origin: mit
+
+  - id: order-root-t
+    kind: identity
+    where: 'same formula: sqrt(-a/b) = sqrt(a0/b) sqrt(1 - T/T_c) with a = a0 (T/T_c - 1)'
+    formula: sqrt(-a0*(r - 1)/bb)
+    equals: sqrt(a0/bb)*sqrt(1 - r)
+    samples: {a0: [1.0, 2.0], bb: [0.33, 1.5], r: [0.9, 0.2]}
+    tolerance: 1e-12
+    shown: ['Below $T_c$ the non-zero roots are the minima']
+    source: {cite: reading1, at: 'p. 24, point 3'}
+    origin: mit
+
+  - id: free-energy-below
+    kind: identity
+    where: 'formula "Free energy in equilibrium": (1/2) a s^2 + (1/4) b s^4 at s^2 = -a/b is -a^2/(4b) = -a0^2 t^2/(4b) per spin, with a = -a0 t'
+    formula: 0.5*(-a0*tt)*(a0*tt/bb) + 0.25*bb*(a0*tt/bb)**2
+    equals: -a0**2*tt**2/(4*bb)
+    samples: {a0: [1.0, 2.0, 0.5], bb: [0.33, 1.5, 1.0], tt: [0.1, 0.5, 0.02]}
+    tolerance: 1e-12
+    shown: ['<Formula label="Free energy in equilibrium"']
+    source: {cite: reading1, at: 'p. 24, point 3'}
+    origin: mit
+
+  - id: heat-capacity-jump
+    kind: identity
+    where: 'formula "Size of the heat-capacity jump": -T d2/dT2 of -N a0^2 (1 - T/T_c)^2/(4b), at T = T_c, is N a0^2/(2 b T_c) (numerical second derivative)'
+    formula: -Tc*deriv('-NN*a0**2*(1 - t/Tc)**2/(4*bb)', 't', Tc, 2)
+    equals: NN*a0**2/(2*bb*Tc)
+    samples: {NN: [1.0, 10.0], a0: [1.0, 2.0], bb: [0.33, 1.5], Tc: [1.0, 3.0]}
+    tolerance: 1e-4
+    shown: ['Its size follows from the $t^2$ term (our step)']
+    source: {cite: reading1, at: 'p. 24, point 3'}
+    origin: page-own
+
+  - id: heat-capacity-mean-field
+    kind: identity
+    where: 'formula "Size of the heat-capacity jump": with a0 = k_B T_c and b = k_B T_c/3, N a0^2/(2 b T_c) = (3/2) N k_B (k_B written kk)'
+    formula: NN*(kk*Tc)**2/(2*(kk*Tc/3)*Tc)
+    equals: 1.5*NN*kk
+    samples: {NN: [1.0, 6.0], kk: [1.0, 1.38], Tc: [200.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['with the mean-field values of $a_0$ and $b$']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- field and susceptibility (p. 25)
+  - id: amin-above
+    kind: identity
+    where: 'formula "Free energy above T_c in a weak field": (1/2) a s^2 - h s at s = h/a is -h^2/(2a) per spin'
+    formula: 0.5*aa*(hh/aa)**2 - hh*(hh/aa)
+    equals: -0.5*hh**2/aa
+    samples: {aa: [0.5, 2.0], hh: [0.1, -0.03]}
+    tolerance: 1e-12
+    shown: ['gives $\langle s\rangle = h/a$ and (notes p. 25)']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: mit
+
+  - id: magnetization-above
+    kind: identity
+    where: 'formula "Magnetization and susceptibility above T_c": M = -dA_min/dh = N h/a'
+    formula: -deriv('-0.5*t**2/aa*NN', 't', hh)
+    equals: NN*hh/aa
+    samples: {aa: [0.5, 2.0], hh: [0.1, -0.03], NN: [1.0, 100.0]}
+    tolerance: 1e-6
+    shown: ['The magnetization is minus the derivative of the free energy']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: mit
+
+  - id: curvature-below
+    kind: identity
+    where: 'formula "Expansion about the ordered minimum": the second derivative of (1/2) a s^2 + (1/4) b s^4 at s = sqrt(-a/b) is a + 3b(-a/b) = -2a'
+    formula: deriv('0.5*aa*t**2 + 0.25*bb*t**4', 't', sqrt(-aa/bb), 2)
+    equals: -2*aa
+    samples: {aa: [-0.5, -2.0], bb: [1.0, 0.3]}
+    tolerance: 1e-4
+    shown: ['$a + 3bs_{\text{min}}^2 = a - 3a = -2a$']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: mit
+
+  - id: chi-ratio-general
+    kind: identity
+    where: 'text after "Expansion about the ordered minimum": at the same |a| the susceptibility below, N/(-2aV) with a = -|a|, is half that above, N/(|a|V)'
+    formula: (NN/(2*aa*VV))/(NN/(aa*VV))
+    equals: 0.5
+    samples: {NN: [1.0, 10.0], aa: [0.05, 0.3], VV: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['at the same distance from $T_c$ the susceptibility below is half that above']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: page-own
+
+  - id: chi-caption-above
+    where: 'susceptibility plot caption: 1/(x - 1) at T/T_c = 1.1, in units of N/(a0 V)'
+    formula: 1/(1.1 - 1)
+    expected: '10'
+    shown: ['at T/T_c = 1.1 the value is 10']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: page-own
+
+  - id: chi-caption-below
+    where: 'susceptibility plot caption: 1/(2(1 - x)) at T/T_c = 0.9'
+    formula: 1/(2*(1 - 0.9))
+    expected: '5'
+    shown: ['and at 0.9 it is 5']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- first-order line (p. 26)
+  - id: delta-m
+    kind: identity
+    where: 'formula "Jump in magnetization": M = N<s> jumps from -N sqrt(-a/b) to +N sqrt(-a/b)'
+    formula: NN*sqrt(-aa/bb) - (-NN*sqrt(-aa/bb))
+    equals: 2*NN*sqrt(-aa/bb)
+    samples: {NN: [1.0, 50.0], aa: [-0.5, -2.0], bb: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['Across the first-order line the magnetization jumps by']
+    source: {cite: reading1, at: 'p. 26, point 4'}
+    origin: mit
+
+  - id: equal-minima
+    kind: identity
+    where: 'formula "Free energies of the two states": at h = 0 both minima +-sqrt(-a/b) give -N a^2/(4b) (the notes'' -N a^2/(2b) is a slip)'
+    formula: NN*(0.5*aa*(-sqrt(-aa/bb))**2 + 0.25*bb*(-sqrt(-aa/bb))**4)
+    equals: -NN*aa**2/(4*bb)
+    samples: {NN: [1.0, 50.0], aa: [-0.5, -2.0], bb: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['a slip against the $-\frac14$ of p. 24']
+    source: {cite: reading1, at: 'p. 26, point 4'}
+    origin: slip
+
+  # ---------------------------------------------------------------- liquid-gas analogy (p. 27)
+  - id: lg-dictionary
+    kind: identity
+    where: 'text after "Ginzburg-Landau theory of the liquid-gas transition": with r0 = a/2 and u0 = b/4, r0 x^2 + u0 x^4 is (1/2) a x^2 + (1/4) b x^4'
+    formula: (aa/2)*xx**2 + (bb/4)*xx**4
+    equals: 0.5*aa*xx**2 + 0.25*bb*xx**4
+    samples: {aa: [-0.5, 2.0], bb: [1.0, 0.3], xx: [0.2, -1.1]}
+    tolerance: 1e-12
+    shown: ['$r_0$ as $a/2$ and $u_0$ as $b/4$']
+    source: {cite: reading1, at: 'p. 27, point 5'}
+    origin: page-own
+
+  - id: water-critical-temperature
+    kind: fact
+    where: 'remark after "The critical point": the critical temperature of water (IAPWS value 647.096 K)'
+    value: '647 K'
+    shown: ['whose critical point lies near 647 K and 22.1 MPa']
+    source: {ref: 'IAPWS critical point of water, T_c = 647.096 K, P_c = 22.064 MPa'}
+    origin: later-data
+
+  - id: three-d-beta
+    kind: fact
+    where: 'remark after "The critical point": the measured order-parameter exponent of fluids and the 3D Ising class, about 0.326'
+    value: '0.33'
+    shown: ['give $\beta \approx 0.33$ rather than $\frac12$']
+    source: {ref: 'critical exponent beta of the three-dimensional Ising universality class, about 0.326 (simulations and liquid-gas measurements)'}
+    origin: later-data
+
+  # ---------------------------------------------------------------- worked example: T_c = 200 K, a0 = k_B T_c, b = k_B T_c/3
+  - id: ex-t-190
+    where: 'worked example: t = 1 - 190/200'
+    formula: 1 - 190/200
+    expected: '0.05'
+    shown: ['At 190 K, $t = 0.05$']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-s-gl-190
+    where: 'worked example: <s> = sqrt(3t) at t = 0.05'
+    formula: sqrt(3*0.05)
+    expected: '0.387'
+    shown: ['$\langle s\rangle = \sqrt{0.15} \approx 0.387$']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-s-full-190
+    where: 'worked example: root of <s> = tanh(200<s>/190)'
+    formula: solve('tanh(200/190*t) - t', 't', 0.1, 1)
+    expected: '0.379'
+    shown: ['gives 0.379, so the expansion is 2% high']
+    source: {cite: reading1, at: 'p. 23 (self-consistent equation)'}
+    origin: page-own
+
+  - id: ex-error-190
+    where: 'worked example: (sqrt(0.15)/0.3795 - 1) in per cent'
+    formula: 100*(sqrt(0.15)/solve('tanh(200/190*t) - t', 't', 0.1, 1) - 1)
+    expected: '2'
+    shown: ['so the expansion is 2% high']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-t-150
+    where: 'worked example: t = 1 - 150/200'
+    formula: 1 - 150/200
+    expected: '0.25'
+    shown: ['At 150 K, $t = 0.25$']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-s-gl-150
+    where: 'worked example: sqrt(3 x 0.25)'
+    formula: sqrt(0.75)
+    expected: '0.866'
+    shown: ['$\sqrt{0.75} \approx 0.866$']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-s-full-150
+    where: 'worked example: root of <s> = tanh(4<s>/3), from the previous page'
+    formula: solve('tanh(4/3*t) - t', 't', 0.5, 1)
+    expected: '0.776'
+    shown: ['against the full 0.776 of the previous page']
+    source: {cite: reading1, at: 'p. 23 (self-consistent equation)'}
+    origin: page-own
+
+  - id: ex-error-150
+    where: 'worked example: (0.866/0.7755 - 1) in per cent'
+    formula: 100*(sqrt(0.75)/solve('tanh(4/3*t) - t', 't', 0.5, 1) - 1)
+    expected: '12'
+    shown: ['of the previous page: 12% high']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-heat-capacity-mole
+    where: 'worked example: (3/2) N_A k_B'
+    inputs: {NA: 6.02214076e23 1/mol}
+    formula: 1.5*NA*k_B
+    expected: 12.5 J/(mol*K)
+    shown: ['$\frac32 R = 1.5 \times 8.314$ J/(mol K) $\approx 12.5$ J/(mol K)']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-gas-constant
+    where: 'worked example: R = N_A k_B written as 8.314'
+    inputs: {NA: 6.02214076e23 1/mol}
+    formula: NA*k_B
+    expected: 8.314 J/(mol*K)
+    shown: ['1.5 \times 8.314$ J/(mol K)']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: quiz-heat-capacity
+    where: 'quiz 2: (3/2) R per mole'
+    inputs: {NA: 6.02214076e23 1/mol}
+    formula: 1.5*NA*k_B
+    expected: 12.5 J/(mol*K)
+    quiz: 1
+    shown: ['"About $12.5$ J/(mol K)"']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: quiz-heat-capacity-r
+    where: 'quiz 2 distractor: R alone (N k_B per mole)'
+    inputs: {NA: 6.02214076e23 1/mol}
+    formula: NA*k_B
+    expected: 8.3 J/(mol*K)
+    shown: ['"About $8.3$ J/(mol K)"']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: quiz-heat-capacity-3r
+    where: 'quiz 2 distractor: 3R (twice the right answer)'
+    inputs: {NA: 6.02214076e23 1/mol}
+    formula: 3*NA*k_B
+    expected: 24.9 J/(mol*K)
+    shown: ['"About $24.9$ J/(mol K)"']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: ex-t-210
+    where: 'worked example: a/a0 = T/T_c - 1 at 210 K'
+    formula: 210/200 - 1
+    expected: '0.05'
+    shown: ['At 210 K, $a = a_0 \times 0.05$']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: page-own
+
+  - id: ex-chi-ratio
+    where: 'worked example: chi(190 K)/chi(210 K) = [1/(2 x 0.05)]/[1/0.05]'
+    formula: (1/(2*(1 - 190/200)))/(1/(210/200 - 1))
+    expected: '0.5'
+    shown: ['is $0.5$']
+    source: {cite: reading1, at: 'p. 25'}
+    origin: page-own
+
+  - id: ex-delta-m
+    where: 'worked example: Delta M/N = 2 sqrt(3t) at t = 0.05'
+    formula: 2*sqrt(3*0.05)
+    expected: '0.775'
+    shown: ['2 \times 0.387 \approx 0.775$']
+    source: {cite: reading1, at: 'p. 26, point 4'}
+    origin: page-own
+
+  - id: ex-flip-fraction
+    where: 'worked example: fraction of spins that flip, (Delta M/N)/2, in per cent'
+    formula: 100*sqrt(3*0.05)
+    expected: '39'
+    shown: ['turns about 39% of the spins']
+    source: {cite: reading1, at: 'p. 26, point 4'}
+    origin: page-own

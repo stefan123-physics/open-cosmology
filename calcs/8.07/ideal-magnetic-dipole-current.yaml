@@ -1,0 +1,326 @@
+# Calculations on content/year-4/8.07/ideal-magnetic-dipole-current.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 11, "Magnetic Dipoles and Magnetic Fields in Matter" (Guth, handwritten
+# slides, Lecture 26, November 9, 2012), slides 1-14 on this page. No numbered equations; the slides quote no numbers
+# except the 21 cm line and 100% (slide 6), and the scale factors 1 and 1/2 (slide 12).
+# Page's own worked example: a circular loop R = 1 cm, I = 2 A, wire cross-section 1 mm^2, shrunk by lambda = 1e-3,
+# field on the axis at z = 20 cm. Plot: wires smeared into Gaussians of width w = 0.1 mm. mu0/4pi = 1e-7 T m/A.
+# Delta functions are checked with narrow Gaussians, delta_w(u) = exp(-u^2/2w^2)/(w sqrt(2 pi)).
+
+page: content/year-4/8.07/ideal-magnetic-dipole-current.mdx
+calcs:
+  # ---------------------------------------------------------------- vector area by the vector identity
+  - id: curl-identity-coefficient
+    kind: value
+    where: 'slide 3: curl(e_i x r) = e_i (div r) - (e_i . grad) r = 3 e_i - e_i = 2 e_i'
+    formula: 3 - 1
+    expected: '2'
+    shown: ['= 3\,\hat e_i - \hat e_i = 2\,\hat e_i']
+    source: {cite: reading1, at: 'slide 3'}
+    origin: mit
+
+  - id: circle-vector-area
+    kind: identity
+    where: 'slides 3-4: for a circle of radius R in the xy plane, (1/2) closed integral of (x dy - y dx) is the area pi R^2 (z component of m/I)'
+    formula: integrate('RR**2*(cos(t)**2 + sin(t)**2)/2', 't', 0, 2*pi)
+    equals: pi*RR**2
+    samples: {RR: [0.01, 1.0, 3.0]}
+    tolerance: 1e-9
+    shown: ['If the loop lies in a plane, $|\vec a|$ is its area (slide 4)']
+    source: {cite: reading1, at: 'slide 4'}
+    origin: page-own
+
+  - id: closed-loop-dl
+    kind: identity
+    where: 'slide 2: the closed integral of dl vanishes; x component for a circle, -R sin(t) dt (checked with 1 added to the integrand: the integral is then 2 pi)'
+    formula: integrate('-RR*sin(t) + 1', 't', 0, 2*pi)
+    equals: 2*pi
+    samples: {RR: [0.01, 1.0, 3.0]}
+    tolerance: 1e-9
+    shown: ['For a wire the same statement is $\oint d\vec\ell = 0$']
+    source: {cite: reading1, at: 'slide 2'}
+    origin: mit
+
+  # ---------------------------------------------------------------- ideal electric dipole
+  - id: electric-dipole-moment-check
+    kind: identity
+    where: 'remark after slide 8: integral of z rho over z with rho = -p d delta(z)/dz gives p; with delta_w, -z delta_w''(z) = z^2/w^2 delta_w(z), so the integral is p'
+    formula: integrate('PP*z**2/WW**2*exp(-z**2/(2*WW**2))/(WW*sqrt(2*pi))', 'z', -1, 1)
+    equals: PP
+    samples: {PP: [1.0, 2.5e-3], WW: [0.05, 0.1]}
+    tolerance: 1e-6
+    shown: ['$\int\vec r\,\rho_{\text{dip}}\,d^3x = \vec p$']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: page-own
+
+  - id: electric-dipole-net-charge
+    kind: identity
+    where: 'remark after slide 8: the integral of -p delta_w''(z) over z vanishes (checked with 1 added)'
+    formula: integrate('PP*z/WW**2*exp(-z**2/(2*WW**2))/(WW*sqrt(2*pi)) + 1', 'z', -1, 1)
+    equals: 2
+    samples: {PP: [1.0, 2.5e-3], WW: [0.05, 0.1]}
+    tolerance: 1e-6
+    shown: ['and $\int\rho_{\text{dip}}\,d^3x = 0$']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: page-own
+
+  - id: difference-quotient-limit
+    kind: identity
+    where: 'slides 8 and 10: [delta_w(u + a/2) - delta_w(u - a/2)]/a tends to delta_w''(u) = -u/w^2 delta_w(u) as a -> 0 (a = 1e-5, at three points)'
+    formula: (exp(-(UU + 5e-6)**2/(2*0.01)) - exp(-(UU - 5e-6)**2/(2*0.01)))/(0.1*sqrt(2*pi)*1e-5)
+    equals: -UU/0.01*exp(-UU**2/(2*0.01))/(0.1*sqrt(2*pi))
+    samples: {UU: [0.05, 0.1, -0.23]}
+    tolerance: 1e-6
+    shown: ['The bracket is a difference quotient, so as $a \to 0$ it becomes the derivative of $\delta(z)$']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- square loop and the general limit
+  - id: dipole-current-moment
+    kind: identity
+    where: 'remark after slide 11: for J = -m x grad delta^3 with m along z, (1/2) integral of (x J_y - y J_x) = (1/2)(m + m) = m; each half is -m integral of u delta_w''(u) du = m (checked with delta_w)'
+    formula: 2*(1/2)*integrate('-MM*u*(-u/WW**2)*exp(-u**2/(2*WW**2))/(WW*sqrt(2*pi))', 'u', -1, 1)
+    equals: MM
+    samples: {MM: [1.0, 6.28e-4], WW: [0.05, 0.1]}
+    tolerance: 1e-6
+    shown: ['$\frac12\int\vec r \times \vec J\,d^3x = \vec m$']
+    source: {cite: reading1, at: 'slide 11'}
+    origin: page-own
+
+  - id: scaling-power
+    kind: value
+    where: 'slide 12: the four powers of lambda are three for the volume and one for the factor r'
+    formula: 3 + 1
+    expected: '4'
+    shown: ['The four powers of $\lambda$ are three for the volume']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: mit
+
+  - id: scaling-moment-invariant
+    kind: identity
+    where: 'slide 12: the shrunken current lambda^-4 J(r/lambda) keeps its moment. Model J_y(r) = f(x) g(y) g(z) with f(v) = v exp(-v^2) and unit-area g: the x integral of x f(x/lambda) gives lambda^2 times the original, the y and z integrals of g give lambda each, so lambda^-4 x lambda^2 x lambda^2 = 1 (checked numerically for the x integral, with the factor lambda^2 of y and z)'
+    formula: (1/LL**4)*integrate('u*(u/LL)*exp(-(u/LL)**2)', 'u', -10*LL, 10*LL)*LL**2
+    equals: integrate('v*v*exp(-v**2)', 'v', -10, 10)
+    samples: {LL: [1.0, 0.5, 0.01]}
+    tolerance: 1e-6
+    shown: ['substituting $\vec r = \lambda\vec u$ in the integral shows that its moment is unchanged (slide 12)']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: delta-rescaling
+    kind: identity
+    where: 'slide 13: delta^3(r'' - r/lambda) = lambda^3 delta^3(r - lambda r''); in 1D, delta(u - x/lambda) = lambda delta(x - lambda u): integrating both against a test function of u gives the same value (Gaussian delta_w)'
+    formula: integrate('exp(-(u - XX/LL)**2/(2*0.0001))/(0.01*sqrt(2*pi))*cos(u)', 'u', XX/LL - 0.2, XX/LL + 0.2)
+    equals: integrate('LL*exp(-(XX - LL*u)**2/(2*(0.01*LL)**2))/(0.01*LL*sqrt(2*pi))*cos(u)', 'u', XX/LL - 0.2, XX/LL + 0.2)
+    samples: {LL: [1.0, 0.5, 0.2], XX: [0.3, 0.1, 0.05]}
+    tolerance: 1e-6
+    shown: ['$\delta^3(\vec r\,'' - \vec r/\lambda) = \lambda^3\,\delta^3(\vec r - \lambda\vec r\,'')$']
+    source: {cite: reading1, at: 'slide 13'}
+    origin: mit
+
+  - id: levi-civita-cyclic
+    kind: value
+    where: 'slide 14: M^(1)_{i;j} = m_k eps_kji, and eps_kji = eps_ikj (cyclic), so the sum is -eps_ikj m_k d_j delta^3; check eps_kji for (k,j,i) = (3,1,2) equals eps_ikj for (i,k,j) = (2,3,1): both +1 (cyclic of 123), product 1'
+    formula: 1*1
+    expected: '1'
+    shown: ['= -\epsilon_{ikj}\,m_k\,\frac{\partial\delta^3(\vec r)}{\partial x_j}']
+    source: {cite: reading1, at: 'slide 14'}
+    origin: mit
+
+  - id: fact-21cm
+    kind: fact
+    where: 'slide 6: "Galaxy is mapped by 21 cm line"; Delta E "comes 100% from" the delta-function term'
+    value: 21 cm, 100%
+    shown: ['comes 100% from the delta-function term']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: mit
+
+  # ---------------------------------------------------------------- plot
+  - id: plot-normalisation
+    kind: value
+    where: 'plot: w sqrt(2 pi) with w = 0.1 mm, the 0.250663 of the curves'
+    formula: 0.1*sqrt(2*pi)
+    expected: '0.250663'
+    shown: ['{ expr: "(exp(-(y + a/2)^2/0.02) - exp(-(y - a/2)^2/0.02))/(0.250663*a)", label: "two wires" }']
+    source: {cite: reading1, at: 'slide 10'}
+    origin: page-own
+
+  - id: plot-width
+    kind: value
+    where: 'plot: 2 w^2 = 0.02 mm^2 and 1/w^2 = 100 per mm^2 for w = 0.1 mm'
+    formula: 2*0.1**2 + 1/0.1**2
+    expected: '100.02'
+    shown: ['{ expr: "-100*y*exp(-y^2/0.02)/0.250663", label: "limit", dash: true }']
+    source: {cite: reading1, at: 'slide 10'}
+    origin: page-own
+
+  - id: plot-extreme
+    kind: value
+    where: 'plot caption: the limit curve -y/w^2 delta_w(y) has its extremes at y = -/+ w = -/+0.1 mm, value 100 x 0.1 exp(-1/2)/0.250663 per mm^2'
+    formula: 100*0.1*exp(-0.5)/(0.1*sqrt(2*pi))
+    expected: '24.2'
+    shown: ['with extremes of ±24.2 per mm² at y = ∓0.1 mm']
+    source: {cite: reading1, at: 'slide 10'}
+    origin: page-own
+
+  - id: plot-extreme-position
+    kind: value
+    where: 'plot caption: d/dy of y exp(-y^2/2w^2) vanishes at y = w; solved numerically between 0.05 and 0.2 mm'
+    formula: solve('1 - y**2/0.01', 'y', 0.05, 0.2)
+    expected: '0.1'
+    shown: ['Gaussian 0.1 mm wide']
+    source: {cite: reading1, at: 'slide 10'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: example-m
+    kind: value
+    where: 'worked example: m = I pi R^2, I = 2 A, R = 0.01 m (A m^2)'
+    inputs: {II: 2, RR: 0.01}
+    formula: II*pi*RR**2
+    expected: '6.28e-4'
+    shown: ['$m = I\pi R^2 = 2 \times \pi \times (0.01)^2 = 6.28 \times 10^{-4}$ A m²']
+    source: {cite: reading1, at: 'slide 4'}
+    origin: page-own
+
+  - id: example-radius
+    kind: value
+    where: 'worked example: shrunken radius lambda R = 1e-3 x 1 cm, in micrometres'
+    formula: 1e-3*0.01*1e6
+    expected: '10'
+    shown: ['The radius becomes 10 μm']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: example-current
+    kind: value
+    where: 'worked example: I / lambda^2 = 2 / 1e-6 (A)'
+    formula: 2/(1e-3)**2
+    expected: '2e6'
+    shown: ['the current must rise to $2/10^{-6} = 2 \times 10^{6}$ A']
+    source: {cite: reading1, at: 'slide 9'}
+    origin: page-own
+
+  - id: example-current-density
+    kind: value
+    where: 'worked example: original current density 2 A / 1 mm^2 (A/m^2)'
+    formula: 2/1e-6
+    expected: '2e6'
+    shown: ['The current density was $2/10^{-6} = 2 \times 10^{6}$ A/m²']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: example-current-density-shrunk
+    kind: value
+    where: 'worked example: shrunken current density 2e6 / (lambda^2 x 1 mm^2) = 2e6/1e-12 (A/m^2), the factor lambda^-4 times 2e6 A/m^2'
+    formula: 2e6/((1e-3)**2*1e-6)
+    expected: '2e18'
+    shown: ['$2 \times 10^{6}/10^{-12} = 2 \times 10^{18}$ A/m²']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: example-lambda-minus-four
+    kind: value
+    where: 'worked example: lambda^-4 for lambda = 1e-3'
+    formula: (1e-3)**-4
+    expected: '1e12'
+    shown: ['the factor $\lambda^{-4} = 10^{12}$ of the scaling']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: example-dipole-field
+    kind: value
+    where: 'worked example: mu0 m/(2 pi z^3) = 2e-7 x 6.283e-4 / 0.2^3 (T)'
+    inputs: {mm: 6.2832e-4, zz: 0.2}
+    formula: 2e-7*mm/zz**3
+    expected: '1.57e-8'
+    shown: ['$2 \times 10^{-7} \times 6.28 \times 10^{-4}/0.008 = 1.57 \times 10^{-8}$ T']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: example-dipole-field-nt
+    kind: value
+    where: 'worked example: the same in nT'
+    inputs: {mm: 6.2832e-4, zz: 0.2}
+    formula: 2e-7*mm/zz**3*1e9
+    expected: '15.7'
+    shown: ['or 15.7 nT']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: example-exact-dipole-ratio
+    kind: identity
+    where: 'worked example: the exact axial field mu0 I R^2/2(R^2 + z^2)^(3/2) equals the dipole term mu0 I pi R^2/(2 pi z^3) times (1 + R^2/z^2)^(-3/2)'
+    formula: MU*II*RR**2/(2*(RR**2 + zz**2)**1.5)
+    equals: MU*II*pi*RR**2/(2*pi*zz**3)*(1 + RR**2/zz**2)**-1.5
+    samples: {MU: [1.2566e-6, 1.0], II: [2.0, 0.5], RR: [0.01, 1.0], zz: [0.2, 3.0]}
+    tolerance: 1e-12
+    shown: ['The exact field is smaller by the factor $(1 + R^2/z^2)^{-3/2}$']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: example-ratio
+    kind: value
+    where: 'worked example: (1 + (0.01/0.2)^2)^(-3/2)'
+    formula: (1 + (0.01/0.2)**2)**-1.5
+    expected: '0.9963'
+    shown: ['$(1.0025)^{-3/2} = 0.9963$']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: example-ratio-percent
+    kind: value
+    where: 'worked example: 1 - 0.99626 in percent'
+    formula: (1 - (1 + (0.01/0.2)**2)**-1.5)*100
+    expected: '0.37'
+    shown: ['so 0.37% smaller, 15.65 nT']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: example-exact-field
+    kind: value
+    where: 'worked example: the exact field of the original loop at 20 cm, in nT'
+    formula: 4*pi*1e-7*2*0.01**2/(2*(0.01**2 + 0.2**2)**1.5)*1e9
+    expected: '15.65'
+    shown: ['15.65 nT. After shrinking']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: example-shrunk-ratio
+    kind: value
+    where: 'worked example: R^2/z^2 after shrinking, (1e-5/0.2)^2'
+    formula: (1e-5/0.2)**2
+    expected: '2.5e-9'
+    shown: ['$R^2/z^2 = 2.5 \times 10^{-9}$']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: example-shrunk-difference
+    kind: value
+    where: 'worked example: the relative difference 1 - (1 + 2.5e-9)^(-3/2), about 1.5 x 2.5e-9 = 3.75e-9, quoted as 4e-9'
+    formula: 1.5*2.5e-9
+    expected: '4e-9'
+    tolerance: 0.5e-9
+    shown: ['the difference falls to $4 \times 10^{-9}$ of the field']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-current-factor
+    kind: value
+    where: 'quiz 2: the current grows as lambda^-2 for lambda = 0.1'
+    formula: 0.1**-2
+    expected: '100'
+    tolerance: 1e-9
+    shown: ['so $I$ must grow as $\\lambda^{-2} = 100$']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own
+
+  - id: quiz-density-factor
+    kind: value
+    where: 'quiz 2: the current density grows as lambda^-4 for lambda = 0.1'
+    formula: 0.1**-4
+    expected: '10000'
+    tolerance: 1e-6
+    shown: ['as $\\lambda^{-4} = 10\\,000$']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: page-own

@@ -1,0 +1,448 @@
+# Calculations on content/year-4/8.07/conductor-surface-forces-capacitance.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012, Guth) Lecture Notes 4, "Conductors: Surface Forces and Capacitance" (typed, September 21,
+# 2012, addendum to Lecture 7), pp. 1-5, eqs. (4.1)-(4.18). The notes quote no numbers.
+# Page's own examples: a metal sphere of radius 10 cm at 30 kV (pressure, virtual-work check, force on a hemisphere);
+# the breakdown field of air, 3 MV/m (quoted figure); concentric shells a = 4.0 cm, b = 10.0 cm (elastance and
+# capacitance matrices); quiz 2, a field of 2.0 MV/m.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: eps0. Standard atmosphere 101325 Pa (exact by definition).
+
+page: content/year-4/8.07/conductor-surface-forces-capacitance.mdx
+calcs:
+  # ---------------------------------------------------------------- the charged sphere (pp. 1-2)
+  - id: potential-outside
+    kind: identity
+    where: 'formula "Potential outside", eq. (4.3): Q/(4 pi eps0) times the integral of dr''/r''^2 from r to infinity is Q/(4 pi eps0 r) (checked with the upper limit 1e4 r)'
+    formula: QQ/(4*pi*ee) * integrate('1/s**2', 's', rr, 1e4*rr)
+    equals: QQ/(4*pi*ee*rr) * (1 - 1e-4)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], rr: [0.2, 3.0]}
+    tolerance: 1e-6
+    shown: ['the potential outside is a line integral of the field inwards from infinity']
+    source: {cite: reading1, at: 'eq. (4.3), p. 1'}
+    origin: mit
+
+  - id: sphere-energy
+    kind: identity
+    where: 'formula "Energy of the charged sphere", eq. (4.5): (1/2) V(R) Q with V(R) = Q/(4 pi eps0 R) is Q^2/(8 pi eps0 R)'
+    formula: 0.5 * QQ/(4*pi*ee*RR) * QQ
+    equals: QQ**2/(8*pi*ee*RR)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], RR: [0.2, 3.0]}
+    tolerance: 1e-12
+    shown: ['All the charge sits at this one potential']
+    source: {cite: reading1, at: 'eq. (4.5), p. 2'}
+    origin: mit
+
+  # ---------------------------------------------------------------- virtual work (pp. 2-3)
+  - id: energy-derivative
+    kind: identity
+    where: 'formula "Change in the stored energy", eq. (4.9): d/dR of Q^2/(8 pi eps0 R) is -Q^2/(8 pi eps0 R^2) (numerical derivative)'
+    formula: deriv('QQ**2/(8*pi*ee*s)', 's', RR)
+    equals: -QQ**2/(8*pi*ee*RR**2)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], RR: [0.7, 3.0]}
+    tolerance: 1e-6
+    shown: ['Meanwhile the stored energy, from the energy formula above, changes by']
+    source: {cite: reading1, at: 'eq. (4.9), p. 2'}
+    origin: mit
+
+  - id: pressure-from-virtual-work
+    kind: identity
+    where: 'formula "Energy conservation", eq. (4.10), solved for P: Q^2/(8 pi eps0 R^2) / (4 pi R^2) = Q^2/(2 (4 pi)^2 eps0 R^4)'
+    formula: QQ**2/(8*pi*ee*RR**2) / (4*pi*RR**2)
+    equals: QQ**2/(2*(4*pi)**2*ee*RR**4)
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], RR: [0.7, 3.0]}
+    tolerance: 1e-12
+    shown: ['Solving for $P$, and writing the answer in terms of']
+    source: {cite: reading1, at: 'eqs. (4.10)-(4.11), p. 2'}
+    origin: mit
+
+  - id: pressure-forms
+    kind: identity
+    where: 'formula "Pressure on a charged surface", eq. (4.11): with sigma = Q/(4 pi R^2) and E_out = sigma/eps0, the three forms agree'
+    formula: QQ**2/(2*(4*pi)**2*ee*RR**4)
+    equals: 0.5 * (QQ/(4*pi*RR**2))**2/ee
+    samples: {QQ: [1.0, 2.5], ee: [1.0, 0.3], RR: [0.7, 3.0]}
+    tolerance: 1e-12
+    shown: ['gives the boxed result of the notes']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: mit
+
+  - id: pressure-sigma-E
+    kind: identity
+    where: 'formula "Pressure on a charged surface", eq. (4.11): sigma^2/(2 eps0) = (1/2) sigma E_out with E_out = sigma/eps0'
+    formula: 0.5 * ss**2/ee
+    equals: 0.5 * ss * (ss/ee)
+    samples: {ss: [1.0, -2.5, 0.4], ee: [1.0, 0.3, 2.0]}
+    tolerance: 1e-12
+    shown: ['the charge feels a force as if it sat in the field']
+    source: {cite: reading1, at: 'eq. (4.11), p. 3'}
+    origin: mit
+
+  # ---------------------------------------------------------------- why one half (p. 3)
+  - id: sheets-sum-four
+    kind: identity
+    where: 'formula "Sum over thin sheets": for N = 4, (0 + 1 + 2 + 3)/N^2 equals N(N - 1)/(2 N^2) (in units of sigma^2/eps0)'
+    formula: (0 + 1 + 2 + 3) / NN**2
+    equals: NN*(NN - 1)/(2*NN**2)
+    samples: {NN: [4]}
+    tolerance: 1e-12
+    shown: ['By Gauss''s law the $n$th sheet feels the field of the $n-1$ sheets below it']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  - id: sheets-limit
+    kind: limit
+    where: 'formula "Sum over thin sheets": N(N - 1)/(2 N^2) tends to 1/2 as N grows'
+    inputs: {}
+    formula: NN*(NN - 1)/(2*NN**2)
+    limit: 1/2
+    vary: {NN: [10, 100, 1000, 100000]}
+    tolerance: 1e-4
+    shown: ['So the force does not depend on how the charge is distributed through the layer']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  - id: layer-even-average
+    kind: identity
+    where: 'plot caption, solid curve: for an even layer E/E_out = x, and its average over the charge (density constant on 0..1) is 1/2'
+    formula: integrate('s', 's', 0, 1)
+    equals: 1/2
+    samples: {kk: [1.0]}
+    tolerance: 1e-9
+    shown: ['The average bit of charge sits halfway up and feels half of $E_{\text{out}}$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: layer-dense-profile
+    kind: identity
+    where: 'plot, dashed curve: for charge density 3(1 - x)^2 on 0..1 (total 1), the enclosed fraction, hence E/E_out, is 1 - (1 - x)^3'
+    formula: integrate('3*(1 - s)**2', 's', 0, xx)
+    equals: 1 - (1 - xx)**3
+    samples: {xx: [0.1, 0.5, 0.9, 1.0]}
+    tolerance: 1e-9
+    shown: ['1 - (1 - x)^3 : 1)", label: "denser inside"']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  - id: layer-dense-average
+    kind: identity
+    where: 'plot caption: for the dashed profile too, the field averaged over the charge is exactly E_out/2'
+    formula: integrate('(1 - (1 - s)**3)*3*(1 - s)**2', 's', 0, 1)
+    equals: 1/2
+    samples: {kk: [1.0]}
+    tolerance: 1e-9
+    shown: ['the field averaged over the charge is exactly ½E_out']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: the charged sphere
+  - id: sphere-4pieps0R
+    where: 'worked example "Charge and field": 4 pi eps0 R for R = 10 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm}
+    formula: 4 * pi * eps0 * R
+    expected: 1.113e-11 F
+    shown: ['$Q = 4\pi\varepsilon_0RV = 1.113 \times 10^{-11}']
+    source: {cite: reading1, at: 'eq. (4.4), p. 2'}
+    origin: page-own
+
+  - id: sphere-charge
+    where: 'worked example "Charge and field": Q = 4 pi eps0 R V, R = 10 cm, V = 30 kV'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: 4 * pi * eps0 * R * V
+    expected: 334 nC
+    shown: ['about 334 nC']
+    source: {cite: reading1, at: 'eq. (4.4), p. 2'}
+    origin: page-own
+
+  - id: sphere-field
+    where: 'worked example "Charge and field": E_out = Q/(4 pi eps0 R^2) = V/R'
+    inputs: {R: 10 cm, V: 30 kV}
+    formula: V / R
+    expected: 3.0e5 V/m
+    shown: ['$V/R = 3.0 \times 10^5$ V/m']
+    source: {cite: reading1, at: 'eq. (4.2), p. 1'}
+    origin: page-own
+
+  - id: air-breakdown
+    kind: fact
+    where: 'worked example: the breakdown field of dry air, 3 MV/m (8.02T Course Notes Ch. 5, Example 5.5, eq. (5.4.7), p. 14: Eb = 3 × 10⁶ V/m), ten times the 0.3 MV/m of the example'
+    value: 3 MV/m
+    shown: ['about 3 MV/m according to the 8.02 course notes, Example 5.5', 'even at the breakdown field of air, 3 MV/m']
+    source: {cite: mit802-ch5, at: 'Section 5.4, Example 5.5, p. 14'}
+    origin: page-own
+
+  - id: sphere-sigma
+    where: 'worked example "Charge and field": sigma = eps0 E_out'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: eps0 * V / R
+    expected: 2.66e-6 C/m**2
+    shown: ['\approx 2.66 \times 10^{-6}$ C/m²']
+    source: {cite: reading1, at: 'eq. (4.11), p. 3'}
+    origin: page-own
+
+  - id: sphere-pressure
+    where: 'worked example "The pressure": P = (1/2) eps0 E_out^2'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: 0.5 * eps0 * (V / R)**2
+    expected: 0.398 Pa
+    shown: ['about 0.398 Pa']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: sphere-pressure-sigma
+    where: 'worked example "The pressure": the same number from sigma^2/(2 eps0), with sigma = Q/(4 pi R^2)'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: (4 * pi * eps0 * R * V / (4 * pi * R**2))**2 / (2 * eps0)
+    expected: 0.398 Pa
+    shown: ['The same number comes from $\sigma^2/(2\varepsilon_0)$']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: sphere-energy-value
+    where: 'worked example "Checking the virtual work": W = (1/2) Q V'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: 0.5 * (4 * pi * eps0 * R * V) * V
+    expected: 5.01 mJ
+    shown: ['\approx 5.01$ mJ']
+    source: {cite: reading1, at: 'eq. (4.5), p. 2'}
+    origin: page-own
+
+  - id: sphere-dWdR
+    where: 'worked example "Checking the virtual work": |dW/dR| = W/R at fixed charge'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: 0.5 * (4 * pi * eps0 * R * V) * V / R
+    expected: 0.0501 J/m
+    shown: ['about 0.0501 J/m']
+    source: {cite: reading1, at: 'eq. (4.9), p. 2'}
+    origin: page-own
+
+  - id: sphere-total-force
+    where: 'worked example "Checking the virtual work": 4 pi R^2 P'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: 4 * pi * R**2 * 0.5 * eps0 * (V / R)**2
+    expected: 0.0501 N
+    shown: ['is the same 0.0501 N']
+    source: {cite: reading1, at: 'eq. (4.10), p. 2'}
+    origin: page-own
+
+  - id: hemisphere-projection
+    kind: identity
+    where: 'worked example "Pulling the halves apart": the axial part of a uniform pressure on a hemisphere, the integral of P cos(theta) 2 pi R^2 sin(theta) d theta over 0..pi/2, is P pi R^2'
+    formula: integrate('PP*cos(s)*2*pi*RR**2*sin(s)', 's', 0, pi/2)
+    equals: PP*pi*RR**2
+    samples: {PP: [1.0, 0.4], RR: [1.0, 0.1]}
+    tolerance: 1e-9
+    shown: ['the sideways parts of the pressure cancel']
+    source: {cite: reading1, at: 'eq. (4.6), p. 2'}
+    origin: page-own
+
+  - id: hemisphere-force
+    where: 'worked example "Pulling the halves apart": P pi R^2'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm, V: 30 kV}
+    formula: pi * R**2 * 0.5 * eps0 * (V / R)**2
+    expected: 0.0125 N
+    shown: ['\approx 0.0125$ N, about 12.5 millinewtons']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: breakdown-pressure
+    where: 'worked example "Pulling the halves apart": (1/2) eps0 E^2 at E = 3 MV/m'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 3 MV/m}
+    formula: 0.5 * eps0 * E**2
+    expected: 39.8 Pa
+    shown: ['only about 39.8 Pa']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: breakdown-vs-atmosphere
+    where: 'worked example "Pulling the halves apart": one standard atmosphere over that pressure, about 2540'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 3 MV/m, atm: 101325 Pa}
+    formula: atm / (0.5 * eps0 * E**2)
+    expected: '2500'
+    tolerance: 5%
+    shown: ['roughly 2500 times less than the atmosphere''s']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 2
+  - id: quiz-pressure
+    where: 'quiz 2: P = (1/2) eps0 E^2 at E = 2.0 MV/m'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 2.0 MV/m}
+    formula: 0.5 * eps0 * E**2
+    expected: 17.7 Pa
+    quiz: 1
+    shown: ['"About 17.7 Pa"']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: quiz-pressure-no-half
+    where: 'quiz 2 distractor: eps0 E^2, forgetting the factor 1/2'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 2.0 MV/m}
+    formula: eps0 * E**2
+    expected: 35.4 Pa
+    shown: ['"About 35.4 Pa"']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: quiz-pressure-quarter
+    where: 'quiz 2 distractor: (1/4) eps0 E^2'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 2.0 MV/m}
+    formula: 0.25 * eps0 * E**2
+    expected: 8.85 Pa
+    shown: ['"About 8.85 Pa"']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  - id: quiz-atmosphere
+    where: 'quiz 2 explanation: near the breakdown field of air (3 MV/m) the pressure is thousands of times below one atmosphere'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 3 MV/m, atm: 101325 Pa}
+    formula: atm / (0.5 * eps0 * E**2)
+    expected: '3000'
+    tolerance: 50%
+    shown: ['the pressure is thousands of times smaller']
+    source: {cite: reading1, at: 'eq. (4.11), p. 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: concentric shells
+  - id: coulomb-constant
+    where: 'worked example "The elastance matrix": k = 1/(4 pi eps0)'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: 1 / (4 * pi * eps0)
+    expected: 8.988e9 m/F
+    shown: ['k = 1/(4\pi\varepsilon_0) = 8.988 \times 10^9$ m/F']
+    source: {cite: reading1, at: 'eq. (4.15), p. 4'}
+    origin: page-own
+
+  - id: shells-P11
+    where: 'worked example "The elastance matrix": P11 = k/a, a = 4.0 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm}
+    formula: 1 / (4 * pi * eps0 * a)
+    expected: 2.247e11 1/F
+    shown: ['P_{11} = k/a \approx 2.247 \times 10^{11}$ per farad']
+    source: {cite: reading1, at: 'eq. (4.15), p. 4'}
+    origin: page-own
+
+  - id: shells-P12
+    where: 'worked example "The elastance matrix": P12 = P21 = P22 = k/b, b = 10.0 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, b: 10.0 cm}
+    formula: 1 / (4 * pi * eps0 * b)
+    expected: 8.988e10 1/F
+    shown: ['= k/b \approx 8.988 \times 10^{10}$ per farad']
+    source: {cite: reading1, at: 'eq. (4.15), p. 4'}
+    origin: page-own
+
+  - id: shells-inverse
+    kind: identity
+    where: 'worked example "The capacitance matrix": inverting P = k [[1/a, 1/b], [1/b, 1/b]] (k = 1) gives C11 = ab/(b - a); C12 = -C11 and C22 = b^2/(b - a) are the next two entries'
+    formula: (1/bb) / ((1/aa)*(1/bb) - (1/bb)**2)
+    equals: aa*bb/(bb - aa)
+    samples: {aa: [4.0, 1.0, 0.3], bb: [10.0, 2.5, 0.8]}
+    tolerance: 1e-12
+    shown: ['Inverting the 2 × 2 matrix gives']
+    source: {cite: reading1, at: 'eq. (4.17), p. 5'}
+    origin: page-own
+
+  - id: shells-inverse-C12
+    kind: identity
+    where: 'worked example "The capacitance matrix": C12 = -P12/det P = -C11'
+    formula: -(1/bb) / ((1/aa)*(1/bb) - (1/bb)**2)
+    equals: -aa*bb/(bb - aa)
+    samples: {aa: [4.0, 1.0, 0.3], bb: [10.0, 2.5, 0.8]}
+    tolerance: 1e-12
+    shown: ['$C_{12} = C_{21} = -C_{11}$']
+    source: {cite: reading1, at: 'eq. (4.17), p. 5'}
+    origin: page-own
+
+  - id: shells-inverse-C22
+    kind: identity
+    where: 'worked example "The capacitance matrix": C22 = P11/det P = b^2/(b - a)'
+    formula: (1/aa) / ((1/aa)*(1/bb) - (1/bb)**2)
+    equals: bb**2/(bb - aa)
+    samples: {aa: [4.0, 1.0, 0.3], bb: [10.0, 2.5, 0.8]}
+    tolerance: 1e-12
+    shown: ['$C_{22} = 4\pi\varepsilon_0\,b^2/(b-a)']
+    source: {cite: reading1, at: 'eq. (4.17), p. 5'}
+    origin: page-own
+
+  - id: shells-CP-check
+    kind: identity
+    where: 'worked example "The capacitance matrix": C11 P11 + C12 P21 = (ab/(b - a))(1/a - 1/b) = 1'
+    formula: aa*bb/(bb - aa) * (1/aa - 1/bb)
+    equals: 1
+    samples: {aa: [4.0, 1.0, 0.3], bb: [10.0, 2.5, 0.8]}
+    tolerance: 1e-12
+    shown: ['Check one entry of $CP = 1$']
+    source: {cite: reading1, at: 'eq. (4.17), p. 5'}
+    origin: page-own
+
+  - id: shells-C11
+    where: 'worked example "The capacitance matrix": C11 = 4 pi eps0 ab/(b - a)'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm, b: 10.0 cm}
+    formula: 4 * pi * eps0 * a * b / (b - a)
+    expected: 7.42 pF
+    shown: ['ab/(b-a) \approx 7.42$ pF, $C_{12}']
+    source: {cite: reading1, at: 'eq. (4.16), p. 5'}
+    origin: page-own
+
+  - id: shells-C22
+    where: 'worked example "The capacitance matrix": C22 = 4 pi eps0 b^2/(b - a)'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm, b: 10.0 cm}
+    formula: 4 * pi * eps0 * b**2 / (b - a)
+    expected: 18.5 pF
+    shown: ['\approx 18.5$ pF']
+    source: {cite: reading1, at: 'eq. (4.16), p. 5'}
+    origin: page-own
+
+  - id: shells-Q1
+    where: 'worked example "Using it": Q1 = C11 V1, V1 = 100 V'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm, b: 10.0 cm, V1: 100 V}
+    formula: 4 * pi * eps0 * a * b / (b - a) * V1
+    expected: 742 pC
+    shown: ['\approx 742$ pC and']
+    source: {cite: reading1, at: 'eq. (4.16), p. 5'}
+    origin: page-own
+
+  - id: shells-Q2
+    where: 'worked example "Using it": Q2 = C21 V1 = -C11 V1'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm, b: 10.0 cm, V1: 100 V}
+    formula: -4 * pi * eps0 * a * b / (b - a) * V1
+    expected: -742 pC
+    shown: ['\approx -742$ pC']
+    source: {cite: reading1, at: 'eq. (4.16), p. 5'}
+    origin: page-own
+
+  - id: shells-V1
+    where: 'worked example "Using it": V1 = P11 Q1 with Q1 = 1 nC, Q2 = 0'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm, Q1: 1 nC}
+    formula: Q1 / (4 * pi * eps0 * a)
+    expected: 225 V
+    shown: ['$V_1 \approx 225$ V']
+    source: {cite: reading1, at: 'eq. (4.15), p. 4'}
+    origin: page-own
+
+  - id: shells-V2
+    where: 'worked example "Using it": V2 = P21 Q1 with Q1 = 1 nC, Q2 = 0'
+    inputs: {eps0: 8.8541878128e-12 F/m, b: 10.0 cm, Q1: 1 nC}
+    formula: Q1 / (4 * pi * eps0 * b)
+    expected: 89.9 V
+    shown: ['$V_2 \approx 89.9$ V']
+    source: {cite: reading1, at: 'eq. (4.15), p. 4'}
+    origin: page-own
+
+  - id: shells-capacitor
+    kind: identity
+    where: 'worked example "As a capacitor": with Q1 = Q, Q2 = -Q, V1 - V2 = Q (P11 - P21) = k Q (1/a - 1/b), so C = 1/(k (1/a - 1/b)) = 4 pi eps0 ab/(b - a) (k = 1)'
+    formula: 1 / (1/aa - 1/bb)
+    equals: aa*bb/(bb - aa)
+    samples: {aa: [4.0, 1.0, 0.3], bb: [10.0, 2.5, 0.8]}
+    tolerance: 1e-12
+    shown: ['$V_1 - V_2 = Q(P_{11} - P_{21}) = kQ(1/a - 1/b)$']
+    source: {cite: reading1, at: 'eq. (4.18), p. 5'}
+    origin: page-own
+
+  - id: shells-capacitor-value
+    where: 'worked example "As a capacitor": C = 4 pi eps0 ab/(b - a)'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 4.0 cm, b: 10.0 cm}
+    formula: 4 * pi * eps0 * a * b / (b - a)
+    expected: 7.42 pF
+    shown: ['7.42$ pF, the spherical capacitor of 8.02']
+    source: {cite: reading1, at: 'eq. (4.18), p. 5'}
+    origin: page-own

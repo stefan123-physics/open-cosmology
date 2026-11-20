@@ -1,0 +1,220 @@
+# Calculations on content/year-4/8.07/potentials-gauges-retarded-solutions.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 15, "Potentials and Fields" (Guth, typeset slides, Lecture 36,
+# December 10, 2012), slides 1-14, eqs. (1)-(26) on this page. The slides quote no numbers.
+# Slips: eqs. (23) and (25) print 1/(4 pi eps0) in front of the integral for A; it is mu0/(4 pi) (entry a-prefactor).
+# Page's own worked example: E = E0 x-hat with E0 = 200 V/m, the point x = 3 m at t = 5 s, Lambda = -E0 x t;
+# c = 2.998e8 m/s. Quiz: 3 m and the Earth-Sun distance 1.496e11 m.
+
+page: content/year-4/8.07/potentials-gauges-retarded-solutions.mdx
+calcs:
+  # ---------------------------------------------------------------- gauge transformations
+  - id: gauge-example-gradient
+    kind: identity
+    where: 'worked example (b): Lambda = -E0 x t has dLambda/dx = -E0 t, the x component of the second A'
+    formula: deriv('-EE*x*TT', 'x', XX, 1)
+    equals: -EE*TT
+    samples: {EE: [200.0, 3.0], XX: [3.0, -1.0], TT: [5.0, 0.5]}
+    tolerance: 1e-6
+    shown: ['We need $\nabla\Lambda = -E_0 t\,\hat x$, so $\Lambda = -E_0xt$ (plus a constant)']
+    source: {cite: reading1, at: 'slide 5, eq. (9)'}
+    origin: page-own
+
+  - id: gauge-example-scalar
+    kind: identity
+    where: 'worked example (b): V'' = V - dLambda/dt = -E0 x + E0 x = 0 (checked with 1 added)'
+    formula: -EE*XX - deriv('-EE*XX*t', 't', TT, 1) + 1
+    equals: 1
+    samples: {EE: [200.0, 3.0], XX: [3.0, -1.0], TT: [5.0, 0.5]}
+    tolerance: 1e-6
+    shown: ['$V'' = V - \partial\Lambda/\partial t = -E_0x + E_0x = 0$']
+    source: {cite: reading1, at: 'slide 5, eq. (9)'}
+    origin: page-own
+
+  - id: gauge-example-same-field
+    kind: identity
+    where: 'worked example (a): -dV/dx for V = -E0 x equals -dA_x/dt for A_x = -E0 t: both E0'
+    formula: -deriv('-EE*x', 'x', XX, 1)
+    equals: -deriv('-EE*t', 't', TT, 1)
+    samples: {EE: [200.0, 3.0], XX: [3.0, -1.0], TT: [5.0, 0.5]}
+    tolerance: 1e-6
+    shown: ['so again $\vec E = E_0\,\hat x$']
+    source: {cite: reading1, at: 'slide 3, eq. (5)'}
+    origin: page-own
+
+  - id: gauge-example-V
+    kind: value
+    where: 'worked example (c): V = -E0 x = -200 x 3 (V)'
+    formula: -200*3
+    expected: '-600'
+    shown: ['$V = -200 \times 3 = -600$ V']
+    source: {cite: reading1, at: 'slide 5, eq. (9)'}
+    origin: page-own
+
+  - id: gauge-example-A
+    kind: value
+    where: 'worked example (c): A_x = -E0 t = -200 x 5 (V s/m = T m)'
+    formula: -200*5
+    expected: '-1000'
+    shown: ['$A_x = -200 \times 5 = -1000$ V s/m']
+    source: {cite: reading1, at: 'slide 5, eq. (9)'}
+    origin: page-own
+
+  - id: gauge-example-units
+    kind: units
+    where: 'worked example (c): V s/m is the same unit as T m (and E0 t has units of A)'
+    inputs: {Vu: 1 V, su: 1 s, mu: 1 m, Tu: 1 T}
+    terms: ['Vu*su/mu', 'Tu*mu']
+    unit: 'T*m'
+    shown: ['which is the same as $-1000$ T m']
+    source: {cite: reading1, at: 'slide 2, eq. (4)'}
+    origin: page-own
+
+  - id: gauge-example-residual
+    kind: identity
+    where: 'worked example (d): Lambda = -E0 x t has Laplacian 0 and second time derivative 0, so box^2 Lambda = 0 (checked with 1 added)'
+    formula: deriv('-EE*x*TT', 'x', XX, 2) - deriv('-EE*XX*t', 't', TT, 2)/CC**2 + 1
+    equals: 1
+    samples: {EE: [200.0, 3.0], XX: [3.0, -1.0], TT: [5.0, 0.5], CC: [1.0, 3.0]}
+    tolerance: 1e-4
+    shown: ['Here $\Lambda = -E_0xt$ has $\nabla^2\Lambda = 0$ and $\partial^2\Lambda/\partial t^2 = 0$']
+    source: {cite: reading1, at: 'slide 7, eq. (16)'}
+    origin: page-own
+
+  - id: lorenz-preserved
+    kind: identity
+    where: 'worked example (d) remark: a gauge change adds box^2 Lambda to div A + (1/c^2) dV/dt, so Lambda with box^2 Lambda = 0 keeps the Lorenz condition; sample Lambda = sin(x - 2t), c = 2 (checked with 1 added)'
+    formula: deriv('sin(x - 2*TT)', 'x', XX, 2) - deriv('sin(XX - 2*t)', 't', TT, 2)/4 + 1
+    equals: 1
+    samples: {XX: [0.3, 1.7, -2.0], TT: [0.1, 0.8, 2.5]}
+    tolerance: 1e-4
+    shown: ['keeps the Lorenz condition true (a remark of ours, not on the slides)']
+    source: {cite: reading1, at: 'slide 6, eq. (14)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the potential equations
+  - id: lorenz-gives-wave-eq
+    kind: identity
+    where: 'slide 6, eq. (15): with div A = -(1/c^2) dV/dt, eq. (6) d/dt(div A) term becomes -(1/c^2) d^2V/dt^2 (sample V = sin(x) cos(3t), c = 1.5)'
+    formula: -deriv('sin(XX)*cos(3*t)', 't', TT, 2)/CC**2
+    equals: 9*sin(XX)*cos(3*TT)/CC**2
+    samples: {XX: [0.4, 1.3], TT: [0.2, 1.1], CC: [1.5, 1.5]}
+    tolerance: 1e-4
+    shown: ['\nabla^2 V - \frac{1}{c^2}\frac{\partial^2 V}{\partial t^2} = -\frac{1}{\varepsilon_0}\rho" cite="reading1" at="slide 6, eq. (15)"']
+    source: {cite: reading1, at: 'slide 6, eq. (15)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- checking the retarded solution
+  - id: grad-distance
+    kind: identity
+    where: 'slide 9, eq. (22): d/dx |r - r''| = (x - x'')/|r - r''| (r'' = (0.5, -0.2, 0.1))'
+    formula: deriv('sqrt((x - 0.5)**2 + (YY + 0.2)**2 + (ZZ - 0.1)**2)', 'x', XX, 1)
+    equals: (XX - 0.5)/sqrt((XX - 0.5)**2 + (YY + 0.2)**2 + (ZZ - 0.1)**2)
+    samples: {XX: [1.0, -0.7, 2.0], YY: [0.3, 1.5, -1.0], ZZ: [0.8, -0.4, 1.2]}
+    tolerance: 1e-6
+    shown: ['\frac{\partial}{\partial x_i}|\vec r - \vec r\,''| = \frac{x_i - x''_i}{|\vec r - \vec r\,''|}']
+    source: {cite: reading1, at: 'slide 9, eq. (22)'}
+    origin: mit
+
+  - id: drho-through-tr
+    kind: identity
+    where: 'slide 9, eq. (22): d/dx rho(t - R/c) = -(1/c) rho-dot (x - x'')/R; rho = sin, source at origin, c = 2, y = 0.6, z = -0.3'
+    formula: deriv('sin(TT - sqrt(x**2 + 0.36 + 0.09)/2)', 'x', XX, 1)
+    equals: -(1/2)*cos(TT - sqrt(XX**2 + 0.45)/2)*XX/sqrt(XX**2 + 0.45)
+    samples: {XX: [1.0, -0.7, 2.0], TT: [0.3, 1.5, -1.0]}
+    tolerance: 1e-6
+    shown: ['= -\frac{1}{c}\,\dot\rho(\vec r\,'', t_r)\,\frac{x_i - x''_i}{|\vec r - \vec r\,''|}']
+    source: {cite: reading1, at: 'slide 9, eq. (22)'}
+    origin: mit
+
+  - id: rho-dot-terms-cancel
+    kind: value
+    where: 'slide 9: the three rho-dot/|r - r''|^2 terms have coefficients (1/c)(1 + 2 - 3)'
+    formula: 1 + 2 - 3
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['The three $\dot\rho$ terms cancel, since $1 + 2 - 3 = 0$']
+    source: {cite: reading1, at: 'slide 9'}
+    origin: mit
+
+  - id: retarded-solves-wave-eq
+    kind: identity
+    where: 'slides 9-10: away from the source point, f = rho(t - R/c)/R obeys Laplacian f = (1/c^2) d^2f/dt^2; rho = sin, source at origin, c = 2 (checked as the difference + 1)'
+    formula: deriv('sin(TT - sqrt(x**2 + YY**2 + ZZ**2)/2)/sqrt(x**2 + YY**2 + ZZ**2)', 'x', XX, 2) + deriv('sin(TT - sqrt(XX**2 + y**2 + ZZ**2)/2)/sqrt(XX**2 + y**2 + ZZ**2)', 'y', YY, 2) + deriv('sin(TT - sqrt(XX**2 + YY**2 + z**2)/2)/sqrt(XX**2 + YY**2 + z**2)', 'z', ZZ, 2) - deriv('sin(t - sqrt(XX**2 + YY**2 + ZZ**2)/2)/sqrt(XX**2 + YY**2 + ZZ**2)', 't', TT, 2)/4 + 1
+    equals: 1
+    samples: {XX: [1.0, -0.7, 2.0], YY: [0.3, 1.5, -1.0], ZZ: [0.8, -0.4, 1.2], TT: [0.3, 1.5, -1.0]}
+    tolerance: 1e-3
+    shown: ['\nabla^2 V = -\frac{1}{\varepsilon_0}\rho + \frac{1}{c^2}\frac{\partial^2 V}{\partial t^2}']
+    source: {cite: reading1, at: 'slide 10'}
+    origin: mit
+
+  - id: advanced-solves-wave-eq
+    kind: identity
+    where: 'slide 12: the advanced form f = rho(t + R/c)/R obeys the same equation away from the source point (rho = sin, c = 2; difference + 1)'
+    formula: deriv('sin(TT + sqrt(x**2 + YY**2 + ZZ**2)/2)/sqrt(x**2 + YY**2 + ZZ**2)', 'x', XX, 2) + deriv('sin(TT + sqrt(XX**2 + y**2 + ZZ**2)/2)/sqrt(XX**2 + y**2 + ZZ**2)', 'y', YY, 2) + deriv('sin(TT + sqrt(XX**2 + YY**2 + z**2)/2)/sqrt(XX**2 + YY**2 + z**2)', 'z', ZZ, 2) - deriv('sin(t + sqrt(XX**2 + YY**2 + ZZ**2)/2)/sqrt(XX**2 + YY**2 + ZZ**2)', 't', TT, 2)/4 + 1
+    equals: 1
+    samples: {XX: [1.0, -0.7, 2.0], YY: [0.3, 1.5, -1.0], ZZ: [0.8, -0.4, 1.2], TT: [0.3, 1.5, -1.0]}
+    tolerance: 1e-3
+    shown: ['Every step of the check goes through with $+1/c$ in place of $-1/c$']
+    source: {cite: reading1, at: 'slide 12, eqs. (25)-(26)'}
+    origin: mit
+
+  - id: coulomb-divergence
+    kind: identity
+    where: 'slide 9, eq. (22): away from r = r'', div[(r - r'')/|r - r''|^3] = 0 (the 4 pi delta is all at the source point); r'' at origin (checked + 1)'
+    formula: deriv('x/(x**2 + YY**2 + ZZ**2)**1.5', 'x', XX, 1) + deriv('y/(XX**2 + y**2 + ZZ**2)**1.5', 'y', YY, 1) + deriv('z/(XX**2 + YY**2 + z**2)**1.5', 'z', ZZ, 1) + 1
+    equals: 1
+    samples: {XX: [1.0, -0.7, 2.0], YY: [0.3, 1.5, -1.0], ZZ: [0.8, -0.4, 1.2]}
+    tolerance: 1e-5
+    shown: ['= 4\pi\,\delta^3(\vec r - \vec r\,'')" cite="reading1" at="slide 9, eq. (22)"']
+    source: {cite: reading1, at: 'slide 9, eq. (22)'}
+    origin: mit
+
+  - id: a-prefactor
+    kind: identity
+    where: 'slide 11, eq. (23) slip: the A integral needs mu0/(4 pi), not 1/(4 pi eps0); with c^2 = 1/(mu0 eps0), mu0/(4 pi) = 1/(4 pi eps0 c^2); eps0 = 8.854e-12, mu0 = 4 pi 1e-7 (ratio 1/c^2 within 1e-3)'
+    formula: (MU/(4*pi))/(1/(4*pi*EPS))*CC**2
+    equals: 1
+    samples: {MU: [1.2566370614e-6], EPS: [8.8541878128e-12], CC: [2.99792458e8]}
+    tolerance: 1e-6
+    shown: ['going from $\rho/\varepsilon_0$ to $\mu_0\vec J$ makes it $\mu_0/4\pi$']
+    source: {cite: reading1, at: 'slide 11, eq. (23)'}
+    origin: slip
+
+  # ---------------------------------------------------------------- quiz and facts
+  - id: quiz-coulomb-delay
+    kind: value
+    where: 'quiz 2: light travel time over 3 m, 3/2.998e8 s, about 10 ns'
+    formula: 3/2.998e8
+    expected: '1.0e-8'
+    tolerance: 1e-10
+    shown: ['after $3/(2.998 \\times 10^8)$ s $\\approx 10$ ns']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: page-own
+
+  - id: quiz-sun-delay
+    kind: value
+    where: 'quiz 3: t - t_r = 1.496e11/2.998e8 s'
+    formula: 1.496e11/2.998e8
+    expected: '499'
+    tolerance: 0.5
+    shown: ['$1.496 \\times 10^{11}/2.998 \\times 10^8 \\approx 499$ s']
+    source: {cite: reading1, at: 'slide 11, eq. (24)'}
+    origin: page-own
+
+  - id: quiz-sun-minutes
+    kind: value
+    where: 'quiz 3: 499 s is a little over 8 minutes (8.3 hours is a wrong choice)'
+    formula: 1.496e11/2.998e8/60
+    expected: '8.32'
+    tolerance: 0.01
+    shown: ['a little over 8 minutes']
+    source: {cite: reading1, at: 'slide 11, eq. (24)'}
+    origin: page-own
+
+  - id: lorenz-1867
+    kind: fact
+    where: 'Lorenz gauge naming note: L. Lorenz, "On the identity of the vibrations of light with electrical currents", Phil. Mag. 34 (1867) 287 (Danish original 1867)'
+    value: '1867'
+    shown: ['by the Danish physicist Ludvig Lorenz in 1867']
+    source: {cite: jackson-okun, at: 'on Lorenz (1867)'}
+    origin: page-own

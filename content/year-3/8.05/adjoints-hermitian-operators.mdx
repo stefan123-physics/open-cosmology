@@ -1,0 +1,159 @@
+---
+title: Linear functionals, adjoints and Hermitian operators
+slug: adjoints-hermitian-operators
+course: "8.05"
+lecture: 8
+order: 1
+summary: "Every linear functional on a finite-dimensional inner product space is the inner product with one particular vector. Applied to the functional v ↦ (u, Tv), this defines the adjoint T†, the operator with (u, Tv) = (T†u, v); it is linear, (ST)† = T†S† and (T†)† = T. In an orthonormal basis its matrix is the conjugate transpose, but not in other bases. In Dirac notation the identity is the sum of the kets times bras of an orthonormal basis, and every operator is a sum of matrix elements times ket-bra pairs. On a complex space, an operator with (v, Tv) = 0 for every v must be zero, unlike a real rotation; it follows that an operator is Hermitian exactly when all its expectation values are real."
+prerequisites: [eigenvalues-inner-products]
+source:
+  title: "MIT 8.05 Lecture 8: Linear Algebra: Vector Spaces and Operators (cont.)"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-8-linear-algebra-vector-spaces-and-operators-cont/
+  readings:
+    - title: "8.05 Lecture 8 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/1eef153e5b5d5721aa4382f202f6594c_a9FHHS6n-r4.pdf
+    - title: "Zwiebach, Linear Algebra: Vector Spaces and Operators (8.05 lecture notes, chapter 3)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-3/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 9
+    why: "Dirac's bra and ket notation in full, and projectors."
+quiz:
+  - question: "On pairs of complex numbers, $\\phi(v) = 2v_1 - iv_2$. Which vector $u$ gives $\\phi(v) = (u, v)$?"
+    choices: ["$(2, i)$", "$(2, -i)$", "$(-2, i)$", "$(2i, 1)$"]
+    answer: 0
+    explanation: "$(u, v) = u_1^*v_1 + u_2^*v_2$, so we need $u_1^* = 2$ and $u_2^* = -i$, giving $u = (2, i)$. The conjugate in the first entry is why the sign of $i$ flips."
+  - question: "What is the adjoint of the product $ST$?"
+    choices: ["$T^\\dagger S^\\dagger$", "$S^\\dagger T^\\dagger$", "$ST$", "$TS$"]
+    answer: 0
+    explanation: "$(u, STv) = (S^\\dagger u, Tv) = (T^\\dagger S^\\dagger u, v)$: each operator is moved across in turn, so the order reverses."
+  - question: "In an orthonormal basis, how are the matrix elements of $T^\\dagger$ related to those of $T$?"
+    choices: ["$(T^\\dagger)_{ij} = (T_{ji})^*$", "$(T^\\dagger)_{ij} = T_{ij}^*$", "$(T^\\dagger)_{ij} = T_{ji}$", "$(T^\\dagger)_{ij} = -T_{ij}$"]
+    answer: 0
+    explanation: "The matrix of the adjoint is the transpose with complex conjugates, but only in an orthonormal basis; in another basis the inner products of the basis vectors enter the rule."
+  - question: "On the real plane, $(v, Tv) = 0$ for every $v$ does not force $T = 0$. Which operator shows this?"
+    choices: ["The rotation by 90°", "The identity", "The zero operator", "Reflection in the x axis"]
+    answer: 0
+    explanation: "A 90° rotation turns every vector into one perpendicular to it, so $(v, Tv) = 0$ always. On a complex space no nonzero operator can do this."
+flashcards:
+  - front: "Definition of the adjoint"
+    back: "$T^\\dagger$ is the operator with $(u, Tv) = (T^\\dagger u, v)$ for all $u$, $v$. It exists because the map from $v$ to $(u, Tv)$ is a linear functional, which is an inner product with some vector."
+  - front: "Polarisation identity"
+    back: "$(u, Tv)$ is a combination of four terms of the form $(w, Tw)$, with $w = u \\pm v$ and $u \\pm iv$; it needs the factor $i$, so it works only on complex spaces."
+  - front: "Hermitian operators and real expectation values"
+    back: "On a complex inner product space, $T^\\dagger = T$ if and only if $(v, Tv)$ is real for every $v$. The hard direction uses the theorem that $(v, Tv) = 0$ for all $v$ forces the operator to be zero."
+status: reviewed
+---
+
+Zwiebach returns and introduces a central construction of the linear algebra part of 8.05: the **adjoint** (or Hermitian conjugate) of an operator. It is built from linear functionals, checked on an explicit example, translated into Dirac notation, and then used to prove that operators with real expectation values are Hermitian (transcript pp. 1–19; notes chapter 3, section 6 and the start of section 7). He asks the class to read the improved notes on projectors themselves, since measurements in quantum mechanics act on states with projectors (transcript p. 1). He also explains that the course will work in two notations: the inner product $(u, v)$ used for the mathematics, and Dirac's ⟨u|v⟩, which is quicker for many calculations. (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example.)
+
+## Linear functionals
+
+A **linear functional** on $V$ is a linear map $\phi$ from the vectors to the numbers $F$ (transcript p. 2):
+
+<Formula label="Linear functional" tex="\phi(v_1 + v_2) = \phi(v_1) + \phi(v_2), \qquad \phi(av) = a\,\phi(v)" cite="reading2" at="p. 20" />
+
+On $\mathbb{R}^3$ the map $\phi(v) = 3v_1 - v_2 + 7v_3$ is an example, and it is the dot product with a fixed vector (transcript pp. 2–3):
+
+<Formula label="The lecture's example" tex="\phi(v) = 3v_1 - v_2 + 7v_3 = (u, v), \qquad u = (3, -1, 7)" cite="reading1" at="p. 3" />
+
+(The notes make the same point with a different example, eq. (6.1).) This is no accident. **Theorem**: for every linear functional $\phi$ there is a **unique** vector $u$ with $\phi(v) = (u, v)$ for all $v$ (transcript p. 3). The proof (in finite dimensions) expands $v$ in an orthonormal basis, $v = \sum_i(e_i, v)\,e_i$, and uses linearity: $\phi(v) = \sum_i(e_i, v)\,\phi(e_i)$. Each number $\phi(e_i)$ can be moved into the first entry of the inner product, where it must enter conjugated (transcript pp. 4–5):
+
+<Formula label="The vector behind a functional" tex="\phi(v) = (u, v), \qquad u = \phi(e_1)^*\,e_1 + \dots + \phi(e_n)^*\,e_n" cite="reading2" at="eq. (6.5)" />
+
+Uniqueness: if $u'$ also works, then $(u - u', v) = 0$ for every $v$; choosing $v = u - u'$ gives zero length, so $u' = u$ (transcript p. 5). A student asked whether infinite dimensions are allowed; the notes add that the theorem holds in infinite-dimensional Hilbert spaces for **continuous** functionals (transcript p. 4; notes p. 21, footnote).
+
+## The adjoint of an operator
+
+Fix $u$ and an operator $T$. Then the map from $v$ to $(u, Tv)$ is a linear functional, so by the theorem it is the inner product with some vector, which depends on $u$. Call that vector $T^\dagger u$ (transcript pp. 5–6):
+
+<Formula label="Definition of the adjoint" tex="(u, Tv) = (T^\dagger u, v) \quad \text{for all } u, v" cite="reading2" at="eq. (6.8)" />
+
+Mathematicians write $T^*$ and conjugate numbers with a bar; physicists use the dagger. So far $T^\dagger$ is only a map. It is **linear**: comparing $(u_1 + u_2, Tv)$ worked out both ways gives $T^\dagger(u_1 + u_2) = T^\dagger u_1 + T^\dagger u_2$, and for a number $a$ the conjugate taken out of the first entry is undone when it goes back in (transcript pp. 6–7):
+
+<Formula label="The adjoint is linear" tex="(au, Tv) = a^*(u, Tv) = a^*(T^\dagger u, v) = (aT^\dagger u, v) \quad\Longrightarrow\quad T^\dagger(au) = a\,T^\dagger u" cite="reading2" at="eqs. (6.12)–(6.14)" />
+
+Two rules follow quickly (transcript p. 7). Moving operators across one at a time, $(u, STv) = (S^\dagger u, Tv) = (T^\dagger S^\dagger u, v)$, and flipping inner products with conjugates shows that daggering twice gives back the operator:
+
+<Formula label="Rules for adjoints" tex="(ST)^\dagger = T^\dagger S^\dagger, \qquad (S^\dagger)^\dagger = S" cite="reading1" at="pp. 7–8" />
+
+## An example and the matrix rule
+
+On $\mathbb{C}^3$, take (transcript p. 8)
+
+<Formula label="An operator on three complex components" tex="T(v_1, v_2, v_3) = (2v_2 + iv_3,\; v_1 - iv_2,\; 3iv_1 + v_2 + 7v_3)" cite="reading2" at="eq. (6.15)" />
+
+Write out $(u, Tv) = u_1^*(2v_2 + iv_3) + u_2^*(v_1 - iv_2) + u_3^*(3iv_1 + v_2 + 7v_3)$ and collect the coefficient of each $v_i$; each coefficient must be the conjugate of a component of $T^\dagger u$ (transcript pp. 9–10). The column of the matrix in position $j$ lists the coefficients of $v_j$ (transcript p. 10):
+
+<Formula label="The two matrices" tex="T = \begin{pmatrix}0 & 2 & i\\ 1 & -i & 0\\ 3i & 1 & 7\end{pmatrix}, \qquad T^\dagger = \begin{pmatrix}0 & 1 & -3i\\ 2 & i & 1\\ -i & 0 & 7\end{pmatrix}" cite="reading2" at="eq. (6.20)" />
+
+One is the transpose of the other with every entry conjugated. In general, put $u = e_i$ and $v = e_j$ from an orthonormal basis into the definition. The inner products of basis vectors become Kronecker deltas, and what is left is (transcript p. 11)
+
+<Formula label="Matrix of the adjoint" tex="(T^\dagger)_{ij} = (T_{ji})^*" cite="reading2" at="eq. (6.22)" />
+
+This holds **only in an orthonormal basis**. If $(e_i, e_j) = g_{ij}$ instead, the $g$'s stay in the equation and the adjoint matrix is not simply the conjugate transpose (transcript p. 12). The adjoint itself is defined without any basis; only the recipe for its matrix depends on the basis.
+
+## The same in Dirac notation
+
+In bras and kets, $(u, Tv)$ is written ⟨u|T|v⟩: the ket |Tv⟩ is just T acting on |v⟩, so the vertical bars can be placed either way (transcript p. 12). Flipping the inner product gives the rule physicists remember (transcript p. 13):
+
+<Formula label="Flipping a matrix element" tex="(u, T^\dagger v) = (v, Tu)^*" cite="reading1" at="p. 13" />
+
+and the matrix elements are $T_{ij} = (e_i, Te_j)$, written ⟨e_i|T|e_j⟩.
+
+Dirac notation shows its strength with a ket followed by a bra. The object |e_i⟩⟨e_i|, summed over an orthonormal basis, is not a number but an **operator**: acting on a ket |a⟩, each ⟨e_i|a⟩ is a number, the component of $a$, and the sum rebuilds |a⟩. So this sum is the **identity operator** (transcript pp. 13–14). A single term of the sum is an orthogonal projector. Placing one such identity on each side of $T$ gives (transcript pp. 14–15)
+
+- $T$ = the sum over $i$ and $j$ of $T_{ij}$ times |e_i⟩⟨e_j|,
+
+where the numbers that appear in the middle, ⟨e_i|T|e_j⟩, are exactly the matrix elements. Every operator is a combination of ket-bra pairs, with its matrix as the coefficients. Results such as "matrices of products multiply" follow in one line.
+
+## When (v, Tv) = 0 for every v
+
+Suppose $(v, Tv) = 0$ for every vector $v$. Must $T$ be zero? On the **real** plane, no: the rotation by $90°$ turns each vector into one perpendicular to it (transcript p. 16). On a **complex** space, yes (transcript p. 16):
+
+<Formula label="A theorem for complex spaces" tex="(v, Tv) = 0 \text{ for all } v \quad\Longrightarrow\quad T = 0" cite="reading2" at="eq. (7.24)" />
+
+Zwiebach traces some of his own early confusion in quantum mechanics to not knowing this theorem. The proof has to fail for real spaces, so it must use $i$ (transcript pp. 16–18). It is enough to show $(u, Tv) = 0$ for all $u$ and $v$, because then $u = Tv$ gives $Tv = 0$. Combinations of the form $(w, Tw)$ with $w = u \pm v$ give $2(u, Tv) + 2(v, Tu)$, which does not isolate $(u, Tv)$; with $w = u \pm iv$ the second term comes with the opposite sign. Together they give what is usually called the **polarisation identity** (the name is not used in the lecture; transcript p. 18):
+
+<Formula label="Polarisation identity" tex="(u, Tv) = \frac{1}{4}\Big[(u + v, T(u + v)) - (u - v, T(u - v)) + \frac{1}{i}(u + iv, T(u + iv)) - \frac{1}{i}(u - iv, T(u - iv))\Big]" cite="reading2" at="eq. (7.27)" />
+
+Every term on the right has the form $(w, Tw)$, so it vanishes, and $T = 0$.
+
+## Hermitian operators
+
+An operator is **Hermitian** (self-adjoint) if $T^\dagger = T$. On a complex space, the theorem gives a criterion that physicists use constantly (transcript pp. 18–19):
+
+<Formula label="Hermitian means real expectation values" tex="T^\dagger = T \quad\text{if and only if}\quad (v, Tv) \text{ is real for all } v" cite="reading2" at="eq. (7.28)" />
+
+One direction is easy: if $T^\dagger = T$, then $(v, Tv) = (Tv, v) = (v, Tv)^*$. For the other, reality gives $(Tv, v) = (v, Tv)^* = (v, Tv) = (T^\dagger v, v)$, so $((T^\dagger - T)v, v) = 0$; conjugating, $(v, (T^\dagger - T)v) = 0$ for every $v$, and the theorem forces $T^\dagger = T$. Similarly, on a finite-dimensional space an operator that preserves every length turns out to be **unitary**, which also needs the theorem (in infinite dimensions the notes also require it to be surjective: the right shift preserves lengths but is not unitary); unitary operators are next (transcript p. 19).
+
+## Worked example
+
+<WorkedExample title="An adjoint and a real expectation value">
+<Problem>
+(a) On $\mathbb{C}^2$ with the standard inner product, let $T(v_1, v_2) = (v_1 + 2iv_2,\; 3v_2)$. Find $T^\dagger$ from the definition and check that its matrix is the conjugate transpose. (b) Let $H = \begin{pmatrix}2 & 1 - i\\ 1 + i & 3\end{pmatrix}$. Check that $H$ is Hermitian and compute $(v, Hv)$ for $v = (1, i)$.
+</Problem>
+<Step title="(a) Collect the coefficients">
+$(u, Tv) = u_1^*(v_1 + 2iv_2) + u_2^* \cdot 3v_2 = u_1^*\,v_1 + (2iu_1^* + 3u_2^*)\,v_2$. The coefficients must be the conjugates of the components of $T^\dagger u$: the first is $u_1$, and the second is the conjugate of $2iu_1^* + 3u_2^*$, namely $-2iu_1 + 3u_2$. So $T^\dagger(u_1, u_2) = (u_1,\; -2iu_1 + 3u_2)$.
+</Step>
+<Step title="(a) Compare matrices">
+$T = \begin{pmatrix}1 & 2i\\ 0 & 3\end{pmatrix}$ and $T^\dagger = \begin{pmatrix}1 & 0\\ -2i & 3\end{pmatrix}$: transpose $T$ and conjugate each entry, as the standard basis is orthonormal.
+</Step>
+<Step title="(b) Hermitian">
+Transposing $H$ swaps $1 - i$ and $1 + i$, and conjugating swaps them back, while the real diagonal stays: $H^\dagger = H$.
+</Step>
+<Step title="(b) Expectation value">
+$Hv = (2 + (1 - i)i,\; (1 + i) + 3i) = (3 + i,\; 1 + 4i)$. Then $(v, Hv) = 1 \cdot (3 + i) + (-i)(1 + 4i) = 3 + i - i + 4 = 7$, a real number, as it must be for a Hermitian operator.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Every linear functional is an inner product with a unique vector: $\phi(v) = (u, v)$, with $u = \sum_i\phi(e_i)^*e_i$.
+- The adjoint is defined by $(u, Tv) = (T^\dagger u, v)$; it is linear, $(ST)^\dagger = T^\dagger S^\dagger$ and $(S^\dagger)^\dagger = S$.
+- In an orthonormal basis $(T^\dagger)_{ij} = (T_{ji})^*$, the conjugate transpose; in other bases the rule changes.
+- In Dirac notation the sum of |e_i⟩⟨e_i| over an orthonormal basis is the identity, and every operator is the sum of $T_{ij}$ times |e_i⟩⟨e_j|.
+- On a complex space $(v, Tv) = 0$ for all $v$ forces $T = 0$, by the polarisation identity; on a real space a $90°$ rotation is a counterexample.
+- Consequently, on a complex space, $T$ is Hermitian if and only if $(v, Tv)$ is real for every $v$.

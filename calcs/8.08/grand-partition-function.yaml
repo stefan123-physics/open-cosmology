@@ -1,0 +1,271 @@
+# Calculations on content/year-4/8.08/grand-partition-function.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005, Wen) Lecture Notes, Chapter IV "Grand Canonical Ensemble" (handwritten scan). Page
+# numbers are Wen's handwritten numbers, top right (pp. 28-35; the PDF has them in the order 28, 30, 29, 31-35): this page
+# covers pp. 28-30, points 1 to 3. The notes quote no numbers on these pages.
+# Page's own examples: the ideal gas summed exactly (Q_G = exp(zV/lambda^3)); air as nitrogen (28 u) at 300 K and
+# 101325 Pa in open boxes of 1 um^3 and (10 nm)^3; the plot of the Poisson distribution with <N> = 25; quiz 2, <N> = 400.
+# Constants: k_B, hbar (exact 2019 SI); 1 u = 1.66053907e-27 kg (CODATA 2018), so 28 u = 4.64951e-26 kg.
+
+page: content/year-4/8.08/grand-partition-function.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations (pp. 28-30)
+  - id: reservoir-energy
+    kind: identity
+    where: 'formula "Energy of system plus particle reservoir": E + N_res mu = E - N mu + N_tot mu with N_res = N_tot - N'
+    formula: EE + (Nt - NN)*mu
+    equals: EE - NN*mu + Nt*mu
+    samples: {EE: [1.0, 3.5], NN: [2.0, 7.0], Nt: [20.0, 50.0], mu: [-0.4, 1.3]}
+    tolerance: 1e-12
+    shown: ['E_{n,N} + N_{\text{res}}\,\mu = E_{n,N} - N\mu + N_{\text{tot}}\,\mu']
+    source: {cite: reading1, at: 'p. 28, point 1'}
+    origin: mit
+
+  - id: mean-N-from-Omega
+    kind: identity
+    where: 'formula "Mean particle number": for Q_G = 1 + exp(b(mu - e1)) + exp(b(2 mu - e2)) (states with N = 0, 1, 2; k_B T = 1/b), -dOmega/dmu equals sum N w / sum w'
+    formula: -deriv('-(1/bb)*log(1 + exp(bb*(x - e1)) + exp(bb*(2*x - e2)))', 'x', mu)
+    equals: (exp(bb*(mu - e1)) + 2*exp(bb*(2*mu - e2)))/(1 + exp(bb*(mu - e1)) + exp(bb*(2*mu - e2)))
+    samples: {bb: [1.0, 2.5], mu: [-0.5, 0.3], e1: [0.2, 1.0], e2: [0.5, 1.7]}
+    tolerance: 1e-6
+    shown: ['= -\frac{\partial}{\partial\mu}\Omega(\mu, V, T)']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: mit
+
+  - id: variance-from-Omega
+    kind: identity
+    where: 'formula "Fluctuation of the particle number": for the same three-term Q_G, -kT d2Omega/dmu2 (central difference) equals <N^2> - <N>^2'
+    formula: -(1/bb)*((-(1/bb)*log(1 + exp(bb*(mu + 1e-3 - e1)) + exp(bb*(2*(mu + 1e-3) - e2)))) - 2*(-(1/bb)*log(1 + exp(bb*(mu - e1)) + exp(bb*(2*mu - e2)))) + (-(1/bb)*log(1 + exp(bb*(mu - 1e-3 - e1)) + exp(bb*(2*(mu - 1e-3) - e2)))))/1e-6
+    equals: (exp(bb*(mu - e1)) + 4*exp(bb*(2*mu - e2)))/(1 + exp(bb*(mu - e1)) + exp(bb*(2*mu - e2))) - ((exp(bb*(mu - e1)) + 2*exp(bb*(2*mu - e2)))/(1 + exp(bb*(mu - e1)) + exp(bb*(2*mu - e2))))**2
+    samples: {bb: [1.0, 2.5], mu: [-0.5, 0.3], e1: [0.2, 1.0], e2: [0.5, 1.7]}
+    tolerance: 1e-4
+    shown: ['\left\langle(N - \bar N)^2\right\rangle = -k_BT\,\frac{\partial^2}{\partial\mu^2}\Omega(\mu, V, T)']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: mit
+
+  - id: gaussian-variance
+    kind: identity
+    where: 'text after "Gaussian distribution of N": for the ideal gas A_N = kT N (ln(N/x) - 1) with x = V/lambda^3 (Stirling), kT/(d2A/dN2) at N = x equals the exact variance x'
+    formula: TT/((TT*(xx + 1e-2)*(log((xx + 1e-2)/xx) - 1) - 2*TT*xx*(log(xx/xx) - 1) + TT*(xx - 1e-2)*(log((xx - 1e-2)/xx) - 1))/1e-4)
+    equals: xx
+    samples: {TT: [1.0, 3.0], xx: [25.0, 400.0]}
+    tolerance: 1e-3
+    shown: ['whose variance is $k_BT/(\partial^2A/\partial N^2)$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ideal-QG-sum
+    kind: identity
+    where: 'section "The ideal gas, summed exactly": sum over N of y^N/N! (N = 0..14) equals e^y, y = zV/lambda^3'
+    formula: 1 + yy + yy**2/2 + yy**3/6 + yy**4/24 + yy**5/120 + yy**6/720 + yy**7/5040 + yy**8/40320 + yy**9/362880 + yy**10/3628800 + yy**11/39916800 + yy**12/479001600 + yy**13/6227020800 + yy**14/87178291200
+    equals: exp(yy)
+    samples: {yy: [0.5, 1.5, 2.0]}
+    tolerance: 1e-8
+    shown: ['$Q_G = \sum_N (zV/\lambda^3)^N/N! = e^{zV/\lambda^3}$']
+    source: {cite: reading1, at: 'p. 28, point 1'}
+    origin: page-own
+
+  - id: ideal-mean-N
+    kind: identity
+    where: 'ideal gas: <N> = -dOmega/dmu with Omega = -kT V e^(mu/kT)/lambda^3 (units: lambda = 1) equals V e^(mu/kT)'
+    formula: -deriv('-TT*VV*exp(x/TT)', 'x', mu)
+    equals: VV*exp(mu/TT)
+    samples: {TT: [1.0, 2.0], VV: [3.0, 50.0], mu: [-2.0, -0.3]}
+    tolerance: 1e-6
+    shown: ['$\langle N\rangle = -\partial\Omega/\partial\mu = zV/\lambda^3$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ideal-pressure
+    kind: identity
+    where: 'ideal gas: P = -dOmega/dV equals kT <N>/V (Omega = -kT V e^(mu/kT), lambda = 1)'
+    formula: -deriv('-TT*x*exp(mu/TT)', 'x', VV)
+    equals: TT*(VV*exp(mu/TT))/VV
+    samples: {TT: [1.0, 2.0], VV: [3.0, 50.0], mu: [-2.0, -0.3]}
+    tolerance: 1e-6
+    shown: ['$P = -\partial\Omega/\partial V = k_BT\,z/\lambda^3 = nk_BT$']
+    source: {cite: reading1, at: 'p. 30, point 3'}
+    origin: page-own
+
+  - id: ideal-variance
+    kind: identity
+    where: 'ideal gas: -kT d2Omega/dmu2 (central difference) equals <N> (Poisson)'
+    formula: -TT*((-TT*VV*exp((mu + 1e-3)/TT)) - 2*(-TT*VV*exp(mu/TT)) + (-TT*VV*exp((mu - 1e-3)/TT)))/1e-6
+    equals: VV*exp(mu/TT)
+    samples: {TT: [1.0, 2.0], VV: [3.0, 50.0], mu: [-2.0, -0.3]}
+    tolerance: 1e-4
+    shown: ['The variance is $-k_BT\,\partial^2\Omega/\partial\mu^2 = \langle N\rangle$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ideal-entropy
+    kind: identity
+    where: 'formula "Entropy from Omega", checked on the ideal gas: with lambda^3 = T^(-3/2) (constants set to 1), -dOmega/dT at fixed V and mu equals the Sackur-Tetrode S = N (5/2 - ln(n lambda^3)), N = V T^(3/2) e^(mu/T)'
+    formula: -deriv('-x*VV*x**1.5*exp(mu/x)', 'x', TT)
+    equals: VV*TT**1.5*exp(mu/TT)*(2.5 - log(exp(mu/TT)))
+    samples: {TT: [1.0, 2.0], VV: [3.0, 50.0], mu: [-2.0, -0.3]}
+    tolerance: 1e-5
+    shown: ['= \left.\frac{\partial A}{\partial T}\right|_{V,N} = -S']
+    source: {cite: reading1, at: 'p. 30, point 3'}
+    origin: page-own
+
+  - id: omega-minus-PV
+    kind: identity
+    where: 'formula "Omega is proportional to the volume": for Omega = V omega, -dOmega/dV = -omega, so Omega = -P V'
+    formula: VV*om
+    equals: -(-deriv('x*om', 'x', VV))*VV
+    samples: {VV: [2.0, 9.0], om: [-1.5, -0.2]}
+    tolerance: 1e-6
+    shown: ['\omega(T, \mu) = -P(T, \mu), \qquad \Omega = -PV']
+    source: {cite: reading1, at: 'p. 30, point 3'}
+    origin: mit
+
+  # ---------------------------------------------------------------- plot caption (Poisson, <N> = 25)
+  - id: plot-sd
+    where: 'plot caption: standard deviation sqrt(25)'
+    inputs: {}
+    formula: sqrt(25)
+    expected: '5'
+    tolerance: 1e-9
+    shown: ['The standard deviation is √25 = 5, 20% of the mean']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: plot-rel
+    where: 'plot caption: 5/25 in per cent'
+    inputs: {}
+    formula: 100*sqrt(25)/25
+    expected: '20'
+    tolerance: 1e-9
+    shown: ['5, 20% of the mean']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: air at 300 K, 1 atm
+  - id: ex-kT
+    where: 'worked example, step "Density, thermal wavelength and mu": k_B T at 300 K'
+    inputs: {T: 300 K}
+    formula: k_B*T
+    expected: 4.142e-21 J
+    shown: ['$k_BT = 4.142 \times 10^{-21}$ J']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-mass
+    where: 'worked example: 28 u in kg'
+    inputs: {}
+    formula: 28*1.66053907e-27
+    expected: '4.65e-26'
+    shown: ['$m = 28$ u $= 4.65 \times 10^{-26}$ kg']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-n
+    where: 'worked example: n = P/k_B T'
+    inputs: {P: 101325 Pa, T: 300 K}
+    formula: P/(k_B*T)
+    expected: 2.446e25 1/m**3
+    shown: ['$n = P/k_BT = 2.446 \times 10^{25}$ m⁻³']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-lambda
+    where: 'worked example: lambda = sqrt(2 pi hbar^2/m k_B T)'
+    inputs: {m: 4.64951e-26 kg, T: 300 K}
+    formula: sqrt(2*pi*hbar**2/(m*k_B*T))
+    expected: 1.905e-11 m
+    shown: ['$\lambda = \sqrt{2\pi\hbar^2/mk_BT} = 1.905 \times 10^{-11}$ m']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-nlam3
+    where: 'worked example: n lambda^3'
+    inputs: {m: 4.64951e-26 kg, T: 300 K, P: 101325 Pa}
+    formula: P/(k_B*T)*sqrt(2*pi*hbar**2/(m*k_B*T))**3
+    expected: '1.69e-7'
+    shown: ['so $n\lambda^3 = 1.69 \times 10^{-7}$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-mu-over-kT
+    where: 'worked example: mu/k_B T = ln(n lambda^3)'
+    inputs: {m: 4.64951e-26 kg, T: 300 K, P: 101325 Pa}
+    formula: log(P/(k_B*T)*sqrt(2*pi*hbar**2/(m*k_B*T))**3)
+    expected: '-15.6'
+    shown: ['$\mu = k_BT\ln(n\lambda^3) = -15.6\,k_BT = -0.40$ eV']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-mu
+    where: 'worked example: mu in eV'
+    inputs: {m: 4.64951e-26 kg, T: 300 K, P: 101325 Pa}
+    formula: k_B*T*log(P/(k_B*T)*sqrt(2*pi*hbar**2/(m*k_B*T))**3)
+    expected: -0.40 eV
+    shown: ['-15.6\,k_BT = -0.40$ eV']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-N-micron
+    where: 'worked example, step "The open boxes": <N> = nV for 1 um^3'
+    inputs: {P: 101325 Pa, T: 300 K, V: 1e-18 m**3}
+    formula: P*V/(k_B*T)
+    expected: '2.45e7'
+    shown: ['$\langle N\rangle = nV = 2.45 \times 10^7$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-sd-micron
+    where: 'worked example: sqrt(<N>) for 1 um^3'
+    inputs: {P: 101325 Pa, T: 300 K, V: 1e-18 m**3}
+    formula: sqrt(P*V/(k_B*T))
+    expected: '4.9e3'
+    shown: ['$\sqrt{\langle N\rangle} = 4.9 \times 10^3$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-rel-micron
+    where: 'worked example: relative fluctuation 1/sqrt(<N>) for 1 um^3'
+    inputs: {P: 101325 Pa, T: 300 K, V: 1e-18 m**3}
+    formula: 1/sqrt(P*V/(k_B*T))
+    expected: '2.0e-4'
+    shown: ['a relative fluctuation of $2.0 \times 10^{-4}$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-N-nano
+    where: 'worked example: <N> for (10 nm)^3'
+    inputs: {P: 101325 Pa, T: 300 K, V: 1e-24 m**3}
+    formula: P*V/(k_B*T)
+    expected: '24.5'
+    shown: ['$\langle N\rangle = 24.5$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-sd-nano
+    where: 'worked example: standard deviation for (10 nm)^3'
+    inputs: {P: 101325 Pa, T: 300 K, V: 1e-24 m**3}
+    formula: sqrt(P*V/(k_B*T))
+    expected: '4.9'
+    shown: ['the standard deviation is $4.9$: 20%']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  - id: ex-rel-nano
+    where: 'worked example: relative fluctuation for (10 nm)^3 in per cent'
+    inputs: {P: 101325 Pa, T: 300 K, V: 1e-24 m**3}
+    formula: 100/sqrt(P*V/(k_B*T))
+    expected: '20'
+    shown: ['$4.9$: 20%, the plot above']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-poisson
+    where: 'quiz 2: standard deviation for <N> = 400'
+    inputs: {}
+    formula: sqrt(400)
+    expected: '20'
+    tolerance: 1e-9
+    quiz: 1
+    shown: ['the standard deviation is $\\sqrt{400} = 20$']
+    source: {cite: reading1, at: 'p. 29, point 2'}
+    origin: page-own

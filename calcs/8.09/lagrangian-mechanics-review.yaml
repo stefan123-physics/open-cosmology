@@ -1,0 +1,127 @@
+# Calculations on content/year-4/8.09/lagrangian-mechanics-review.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) lecture notes, Chapter 1, Sections 1.1-1.2, pp. 1-7.
+# Page's own worked example: a bead on a vertical helix of radius 10 cm rising 5.0 cm per turn.
+
+page: content/year-4/8.09/lagrangian-mechanics-review.mdx
+calcs:
+  # ---------------------------------------------------------------- non-inertial coordinates (p. 3)
+  - id: polar-acceleration-radial
+    kind: identity
+    where: 'formula "Acceleration in polar coordinates" (eq. 1.2): the x component of d2/dt2 (r cos th) equals (r'''' - r th''^2) cos th - (2 r'' th'' + r th'''') sin th, checked for r = 1 + t^2, th = 0.3 t + 0.2 t^3 at sample times'
+    formula: "deriv('(1 + x**2) * cos(0.3*x + 0.2*x**3)', 'x', tt, 2)"
+    equals: (2 - (1 + tt**2)*(0.3 + 0.6*tt**2)**2)*cos(0.3*tt + 0.2*tt**3) - (2*(2*tt)*(0.3 + 0.6*tt**2) + (1 + tt**2)*(1.2*tt))*sin(0.3*tt + 0.2*tt**3)
+    samples: {tt: [0.4, 1.1, 1.7]}
+    tolerance: 1e-6
+    shown: ['\ddot{\vec r} = \ddot r\,\hat r + 2\dot r\dot\theta\,\hat\theta + r\left(\ddot\theta\,\hat\theta - \dot\theta^2\,\hat r\right)']
+    source: {cite: reading1, at: 'Section 1.2, eq. (1.2), p. 3'}
+    origin: mit
+
+  # ---------------------------------------------------------------- point transformations (p. 4)
+  - id: cancellation-of-dots
+    kind: identity
+    where: 'formula "Cancellation of dots" (eq. 1.10): for Q = q^2 t + sin q, Qdot = (2 q t + cos q) qdot + q^2, so dQdot/dqdot = 2 q t + cos q = dQ/dq; checked by differentiating Qdot with respect to qdot numerically'
+    formula: "deriv('(2*q*tt + cos(q))*x + q**2', 'x', qd, 1)"
+    equals: deriv('x**2*tt + sin(x)', 'x', q, 1)
+    samples: {q: [0.3, 1.2, -0.7], tt: [0.5, 2.0, 1.3], qd: [1.0, -0.4, 2.2]}
+    tolerance: 1e-6
+    shown: ['\frac{\partial \dot Q}{\partial \dot q} = \frac{\partial Q}{\partial q}']
+    source: {cite: reading1, at: 'Section 1.2, eq. (1.10), p. 4'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the cone (p. 7)
+  - id: cone-lagrangian
+    kind: identity
+    where: 'formula "Lagrangian for the cone" (eq. 1.19): with z = r cot(alpha), rdot^2 + r^2 thdot^2 + zdot^2 = (1 + cot^2 alpha) rdot^2 + r^2 thdot^2'
+    formula: rd**2 + r**2*w**2 + (rd*(1/tan(al)))**2
+    equals: (1 + (1/tan(al))**2)*rd**2 + r**2*w**2
+    samples: {rd: [0.3, 1.1, -0.6], r: [0.5, 2.0, 1.3], w: [1.0, -0.4, 2.2], al: [0.3, 0.7, 1.2]}
+    tolerance: 1e-12
+    shown: ['L = \frac{m}{2}\left[\left(1 + \cot^2\alpha\right)\dot r^2 + r^2\dot\theta^2\right] - mgr\cot\alpha']
+    source: {cite: reading1, at: 'Section 1.2, eq. (1.19), p. 7'}
+    origin: mit
+
+  - id: cone-circular-orbit
+    kind: identity
+    where: 'text after the four steps (page-own remark): with rddot = 0, eq. (1.21) gives thdot^2 = g cot(alpha)/r; checked as r thdot^2 = g cot(alpha) for thdot^2 = g cot(alpha)/r'
+    formula: r * (g0*(1/tan(al))/r)
+    equals: g0*(1/tan(al))
+    samples: {r: [0.5, 2.0, 1.3], g0: [9.81, 9.81, 9.81], al: [0.3, 0.7, 1.2]}
+    tolerance: 1e-12
+    shown: ['$\dot\theta^2 = g\cot\alpha / r$']
+    source: {cite: reading1, at: 'Section 1.2, eq. (1.21), p. 7'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: bead on a helix
+  - id: helix-b
+    where: 'worked example step "One coordinate": b = rise per turn / (2 pi)'
+    inputs: {rise: 5.0 cm}
+    formula: rise / (2*pi)
+    expected: 0.796 cm
+    shown: ['$b = 5.0/(2\pi) = 0.796$ cm']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: helix-R-over-b
+    where: 'worked example step "The equation of motion": R/b'
+    inputs: {R: 10 cm, rise: 5.0 cm}
+    formula: R / (rise / (2*pi))
+    expected: '12.6'
+    shown: ['$R/b = 12.6$']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: helix-R2-over-b2
+    where: 'worked example step "The equation of motion": R^2/b^2'
+    inputs: {R: 10 cm, rise: 5.0 cm}
+    formula: (R / (rise / (2*pi)))**2
+    expected: '158'
+    shown: ['$R^2/b^2 = 158$']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: helix-denominator
+    where: 'worked example step "The equation of motion": 1 + R^2/b^2, the factor g is divided by'
+    inputs: {R: 10 cm, rise: 5.0 cm}
+    formula: 1 + (R / (rise / (2*pi)))**2
+    expected: '159'
+    shown: ['-9.81/159', 'about $g/159$']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: helix-acceleration
+    where: 'worked example step "The equation of motion": zddot = -g/(1 + R^2/b^2)'
+    inputs: {R: 10 cm, rise: 5.0 cm, g0: 9.81 m/s**2}
+    formula: -g0 / (1 + (R / (rise / (2*pi)))**2)
+    expected: -0.0617 m/s**2
+    shown: ['= -0.0617\ \text{m/s}^2']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: helix-sin2-beta
+    kind: identity
+    where: 'text after the worked example: 1/(1 + R^2/b^2) = sin^2(beta) with tan(beta) = b/R; also the plot curve (b/R)^2/(1 + (b/R)^2)'
+    formula: 1/(1 + R**2/b**2)
+    equals: sin(atan(b/R))**2
+    samples: {R: [10, 1, 3], b: [0.796, 1, 7]}
+    tolerance: 1e-12
+    shown: ['the result is $\ddot z = -g\sin^2\beta$', 'x^2 / (1 + x^2)']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: helix-45-degrees
+    where: 'plot point "45° slope" and quiz 3: b = R gives 1/(1 + 1) = 1/2, the same as g sin^2(45 degrees)'
+    inputs: {}
+    formula: 1 / (1 + 1)
+    expected: '0.5'
+    shown: ['{ x: 1, y: 0.5, label: "45° slope" }', 'gives g/2']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own
+
+  - id: sin2-45
+    where: 'quiz 3 explanation: g sin^2(45 degrees) = g/2'
+    inputs: {}
+    formula: sin(pi/4)**2
+    expected: '0.5'
+    shown: ['$g\\sin^2 45^\\circ = g/2$']
+    source: {cite: reading1, at: 'Section 1.2, p. 5'}
+    origin: page-own

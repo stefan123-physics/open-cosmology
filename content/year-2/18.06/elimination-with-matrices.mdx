@@ -1,0 +1,115 @@
+---
+title: "Elimination with matrices"
+slug: elimination-with-matrices
+course: "18.06"
+lecture: 2
+order: 1
+summary: "Elimination, the method every software package uses, solves Ax = b by subtracting multiples of a pivot row from the rows below it, so as to get zeros under each pivot and turn A into an upper triangular U. For x + 2y + z = 2, 3x + 8y + z = 12, 4y + z = 2, the multipliers 3 and 2 give the pivots 1, 2, 5 (their product, 10, is the determinant). Carrying the right-hand side along in the augmented matrix gives Ux = c with c = (2, 6, −10), and back substitution gives z = −2, y = 1, x = 2. A zero in a pivot position calls for a row exchange; if no row below can help, the matrix is not invertible. Each step is a multiplication by an elimination matrix such as E₂₁, and by the associative law E₃₂(E₂₁A) = (E₃₂E₂₁)A = U. A row times a matrix combines the rows; matrices on the left act on rows, on the right on columns; AB ≠ BA in general; and the inverse of 'subtract 3 times row 1' is 'add it back'."
+prerequisites: [geometry-of-linear-equations]
+source:
+  title: "MIT 18.06 Lecture 2: Elimination with matrices"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-2-elimination-with-matrices/
+  readings:
+    - title: "18.06 Lecture 2 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/49c357a7166c58e09f76f25512872fd9_QVKj3LADCnA.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 3
+    why: "Matrix multiplication in all its ways, and inverse matrices."
+  - course: "18.06"
+    lecture: 4
+    why: "Undoing elimination: A = LU."
+quiz:
+  - question: "Which matrix subtracts 3 times row 1 from row 2 (of a 3 × 3 matrix)?"
+    choices: ["$\\begin{pmatrix} 1 & 0 & 0 \\\\ 3 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}$", "$\\begin{pmatrix} 1 & -3 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}$", "$\\begin{pmatrix} 1 & 0 & 0 \\\\ -3 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}$", "$\\begin{pmatrix} -3 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & 1 \\end{pmatrix}$"]
+    answer: 2
+    explanation: "Row 2 of $E_{21}$ is $(-3, 1, 0)$: minus 3 of row 1 plus 1 of row 2."
+  - question: "To exchange the columns of a matrix, a permutation matrix must multiply it…"
+    choices: ["on the left", "on the right", "either side", "it cannot be done"]
+    answer: 1
+    explanation: "Multiplying on the left combines rows; on the right, columns."
+  - question: "When does elimination fail completely?"
+    choices: ["When a pivot position holds 0 and there is no nonzero entry below it to exchange with", "Whenever a pivot position holds 0", "When a multiplier is negative", "When $b$ has a zero entry"]
+    answer: 0
+    explanation: "A zero with a nonzero below is cured by a row exchange; with only zeros below, there is no pivot and $A$ is not invertible."
+flashcards:
+  - front: "Elimination"
+    back: "Subtract (multiplier) × (pivot row) from each lower row to clear the column under the pivot; the result is upper triangular $U$, then back substitution."
+  - front: "Elimination matrix $E_{21}$"
+    back: "The identity with $-\\ell$ in position (2, 1): it subtracts $\\ell$ times row 1 from row 2. Its inverse puts $+\\ell$ there."
+  - front: "Row times matrix"
+    back: "A row vector times a matrix is a combination of the rows of the matrix (as a matrix times a column is a combination of its columns)."
+status: reviewed
+---
+
+The second lecture solves $Ax = b$ by **elimination**, the method every software package uses, and expresses it in matrix language (transcript, p. 1). Gauss thought of it first, Strang says, but only because he was born earlier (p. 1). It continues [the geometry of linear equations](/courses/18-06/geometry-of-linear-equations).
+
+## Forward elimination
+
+The example (transcript, pp. 1–2):
+
+<Formula label="The system" tex="x + 2y + z = 2, \quad 3x + 8y + z = 12, \quad 4y + z = 2; \qquad A = \begin{pmatrix} 1 & 2 & 1 \\ 3 & 8 & 1 \\ 0 & 4 & 1 \end{pmatrix}, \quad b = \begin{pmatrix} 2 \\ 12 \\ 2 \end{pmatrix}" cite="reading1" at="pp. 1–2" />
+
+Keep the first equation, and subtract a multiple of it from the second to knock out $x$ (p. 2). The 1 in the top left is the **first pivot** (pp. 2–3). The **multiplier** is 3: subtracting 3 times row 1 from row 2 leaves $(0, 2, -2)$ (p. 3). That clears position (2, 1); position (3, 1) already holds 0, so its multiplier is 0 (pp. 3–4). Now $x$ is gone from the last two equations, and the **second pivot** is the 2. Subtracting 2 times row 2 from row 3 clears position (3, 2) and leaves the **third pivot**, 5 (p. 4):
+
+<Formula label="Upper triangular result" tex="A = \begin{pmatrix} 1 & 2 & 1 \\ 3 & 8 & 1 \\ 0 & 4 & 1 \end{pmatrix} \to \begin{pmatrix} 1 & 2 & 1 \\ 0 & 2 & -2 \\ 0 & 4 & 1 \end{pmatrix} \to \begin{pmatrix} 1 & 2 & 1 \\ 0 & 2 & -2 \\ 0 & 0 & 5 \end{pmatrix} = U" cite="reading1" at="pp. 3–5" />
+
+$U$ is **upper triangular**; getting from $A$ to $U$ is the most common calculation in scientific computing (p. 5). Pivots may not be 0, and here they are 1, 2, 5; their product is the **determinant**, 10 (p. 5).
+
+**How elimination can fail** (pp. 5–7). A 0 in a pivot position is not the end: **exchange rows** with a lower equation that has a nonzero entry there (pp. 5–6). Changing the 8 to a 6 would make the second pivot position 0, but the 4 below would allow an exchange (p. 6). Changing the coefficient of $z$ in the third equation from 1 to $-4$, however, would turn the third pivot into 0 with nothing below: complete failure, and the matrix would not be invertible (pp. 6–7).
+
+## Back substitution
+
+Carry the right-hand side along as an extra column, the **augmented matrix** $[A\;b]$ (transcript, p. 7). The steps change $b = (2, 12, 2)$ to $(2, 6, 2)$ and then to $c = (2, 6, -10)$ (p. 8). (On p. 7 the transcript says "2 of the first equation"; the multiplier is 3.) The equations $Ux = c$ are (p. 9)
+
+<Formula label="Triangular system" tex="x + 2y + z = 2, \qquad 2y - 2z = 6, \qquad 5z = -10" cite="reading1" at="p. 9" />
+
+Solve from the bottom up, since the system is triangular: $z = -2$, then $2y + 4 = 6$ gives $y = 1$, then $x + 2 - 2 = 2$ gives $x = 2$ (p. 9).
+
+## Rows and columns of a product
+
+A matrix times a column is a combination of the matrix's **columns**: $A(3, 4, 5)$ is 3 times column 1 plus 4 times column 2 plus 5 times column 3 (transcript, p. 10). The parallel fact for rows, which matters because elimination works on rows (pp. 10–11):
+
+<Formula label="Row times matrix" tex="\begin{pmatrix} 1 & 2 & 7 \end{pmatrix}A = 1\,(\text{row } 1) + 2\,(\text{row } 2) + 7\,(\text{row } 3)" cite="reading1" at="pp. 10–11" />
+
+## Elimination matrices
+
+The first step, subtracting 3 times row 1 from row 2, is a multiplication by the **elimination matrix** $E_{21}$ (transcript, pp. 11–13). Rows 1 and 3 stay, so their rows of $E_{21}$ are $(1, 0, 0)$ and $(0, 0, 1)$; leaving everything alone would be the **identity matrix** $I$ (p. 12). Row 2 must take $-3$ of row 1 plus 1 of row 2 (pp. 12–13):
+
+<Formula label="Elimination matrices" tex="E_{21} = \begin{pmatrix} 1 & 0 & 0 \\ -3 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}, \qquad E_{32} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & -2 & 1 \end{pmatrix}" cite="reading1" at="pp. 13–14" />
+
+One entry of a product can be checked by a dot product: row 2 of $E_{21}$ with column 3 of $A$ gives $-3 + 1 + 0 = -2$ (p. 13). The whole of elimination is then (p. 15)
+
+<Formula label="Elimination in one line" tex="E_{32}(E_{21}A) = U = (E_{32}E_{21})A" cite="reading1" at="pp. 15–16" />
+
+The parentheses can be moved, the **associative law**, though it takes work to prove; so the single matrix $E_{32}E_{21}$ does all of elimination at once (pp. 15–16). Strang notes that there is a better way to see it, going from $U$ back to $A$, which is the next lecture but one (pp. 18–19).
+
+**Permutations** (pp. 16–18). A **permutation matrix** $P$ exchanges rows: do the exchange to the identity matrix and use the result, $P = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$, so $P\begin{pmatrix} a & b \\ c & d \end{pmatrix} = \begin{pmatrix} c & d \\ a & b \end{pmatrix}$ (p. 17). To exchange **columns**, the same matrix must multiply on the **right**: matrices on the left act on rows, on the right on columns (pp. 17–18). The order matters, $AB \ne BA$ in general: the commutative law is false, though the associative law holds (p. 18).
+
+**A first inverse** (pp. 19–20). What undoes $E_{21}$? It subtracted 3 times row 1 from row 2, so the inverse **adds it back** (p. 20):
+
+<Formula label="Inverse of an elimination matrix" tex="E_{21}^{-1} = \begin{pmatrix} 1 & 0 & 0 \\ 3 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}, \qquad E_{21}^{-1}E_{21} = I" cite="reading1" at="p. 20" />
+
+<WorkedExample title="Eliminate and back-substitute">
+<Problem>
+Solve $x + y + 2z = 4$, $2x + 5y + 3z = 10$, $-x + 2y + 4z = 5$ by elimination; give the pivots, the elimination matrices, and the determinant.
+</Problem>
+<Step title="Column 1">
+Pivot 1. Subtract 2 times row 1 from row 2: $(0, 3, -1)$ with right side 2, with $E_{21}$ having $-2$ in position (2, 1). Add row 1 to row 3 (multiplier $-1$): $(0, 3, 6)$ with right side 9, with $E_{31}$ having $+1$ in position (3, 1).
+</Step>
+<Step title="Column 2">
+Pivot 3. Subtract row 2 from row 3: $(0, 0, 7)$ with right side 7, with $E_{32}$ having $-1$ in position (3, 2). The pivots are 1, 3, 7, so the determinant is 21.
+</Step>
+<Step title="Back substitution">
+$7z = 7$ gives $z = 1$; $3y - 1 = 2$ gives $y = 1$; $x + 1 + 2 = 4$ gives $x = 1$. Check the third equation: $-1 + 2 + 4 = 5$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Elimination subtracts multiples of pivot rows to reach an upper triangular $U$; pivots cannot be 0. Row exchanges cure a zero pivot position when a nonzero lies below.
+- Carry $b$ along (the augmented matrix) to get $Ux = c$, then back-substitute.
+- Each step is an elimination matrix: $E_{32}E_{21}A = U$, by the associative law; $AB \ne BA$.
+- Rows: matrices on the left; columns: on the right. The inverse of an elimination step adds back what it subtracted.

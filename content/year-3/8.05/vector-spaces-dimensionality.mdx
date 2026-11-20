@@ -1,0 +1,156 @@
+---
+title: Pauli matrix identities, vector spaces and dimension
+slug: vector-spaces-dimensionality
+course: "8.05"
+lecture: 5
+order: 1
+summary: "A matrix equation such as σ² = 1 constrains its eigenvalues, and with zero trace this fixes them at ±1. The Pauli matrices anticommute, {σᵢ, σⱼ} = 2δᵢⱼ, which gives σᵢσⱼ = δᵢⱼ + iεᵢⱼₖσₖ and the identity (a·σ)(b·σ) = a·b + i(a×b)·σ, so the spin along any direction has eigenvalues ±ħ/2. The lecture then starts linear algebra in the style of Axler's Linear Algebra Done Right: the axioms of a vector space over the real or complex numbers, examples from column vectors to Hermitian matrices, polynomials, sequences and functions, subspaces and direct sums, spanning lists, linear independence, bases and dimension, and the definition of a linear operator."
+prerequisites: [spin-one-half-states-operators]
+source:
+  title: "MIT 8.05 Lecture 5: Linear Algebra: Vector Spaces and Operators"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-5-linear-algebra-vector-spaces-and-operators/
+  readings:
+    - title: "8.05 Lecture 5 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/2d7c1a923283c6b26eccb556b5d75be3_eZzBK3oy-08.pdf
+    - title: "Zwiebach, Spin One-half, Bras, Kets, and Operators (8.05 lecture notes, chapter 2)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-2/
+    - title: "Zwiebach, Linear Algebra: Vector Spaces and Operators (8.05 lecture notes, chapter 3)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-3/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 6
+    why: "Linear operators: null space, range, inverses and matrix representations."
+quiz:
+  - question: "A matrix satisfies M² = 1 and has trace zero. What are its eigenvalues (2 × 2)?"
+    choices: ["+1 and −1", "Both +1", "Both −1", "0 and 1"]
+    answer: 0
+    explanation: "Any eigenvalue obeys the same equation, $\\lambda^2 = 1$, so $\\lambda = \\pm1$; the trace is the sum of the eigenvalues, so they must be one of each."
+  - question: "What is $(\\vec a\\cdot\\vec\\sigma)(\\vec b\\cdot\\vec\\sigma)$?"
+    choices: ["$(\\vec a\\cdot\\vec b)\\,1 + i(\\vec a\\times\\vec b)\\cdot\\vec\\sigma$", "$(\\vec a\\cdot\\vec b)\\,1$", "$i(\\vec a\\times\\vec b)\\cdot\\vec\\sigma$", "$(\\vec b\\cdot\\vec\\sigma)(\\vec a\\cdot\\vec\\sigma)$ always"]
+    answer: 0
+    explanation: "It follows from $\\sigma_i\\sigma_j = \\delta_{ij}1 + i\\epsilon_{ijk}\\sigma_k$ multiplied by $a_ib_j$."
+  - question: "Why are the 2 × 2 Hermitian matrices a real vector space, not a complex one?"
+    choices: ["Multiplying a Hermitian matrix by a complex number generally spoils Hermiticity; real numbers preserve it", "Because their entries are real", "Because they have real eigenvalues", "They are a complex vector space"]
+    answer: 0
+    explanation: "A vector space must be closed under multiplication by its numbers. $iH$ is anti-Hermitian, so only real multiples stay in the set."
+  - question: "Why is the space of all polynomials infinite-dimensional?"
+    choices: ["Any finite list has a highest degree, so it cannot span polynomials of higher degree", "Polynomials have infinitely many roots", "The coefficients are complex", "Polynomials are functions"]
+    answer: 0
+    explanation: "Finite-dimensional means spanned by some (finite) list; a list's span contains no polynomial of higher degree than its members."
+flashcards:
+  - front: "Pauli matrix algebra"
+    back: "$\\{\\sigma_i, \\sigma_j\\} = 2\\delta_{ij}1$, $[\\sigma_i, \\sigma_j] = 2i\\epsilon_{ijk}\\sigma_k$, so $\\sigma_i\\sigma_j = \\delta_{ij}1 + i\\epsilon_{ijk}\\sigma_k$ and $(\\vec a\\cdot\\vec\\sigma)(\\vec b\\cdot\\vec\\sigma) = (\\vec a\\cdot\\vec b)1 + i(\\vec a\\times\\vec b)\\cdot\\vec\\sigma$."
+  - front: "Basis and dimension"
+    back: "A basis is a list that spans the space and is linearly independent. All bases of a finite-dimensional space have the same length, its dimension. No inner product is needed."
+  - front: "Linear operator"
+    back: "A map $T: V \\to V$ with $T(u + v) = Tu + Tv$ and $T(au) = aTu$; it is fixed by its action on a basis."
+status: reviewed
+---
+
+This lecture finishes the algebra of the Pauli matrices and then starts a careful study of linear algebra, the mathematics of quantum mechanics: states are vectors in a complex vector space, and observables are linear operators on it (transcript pp. 1–23; notes chapter 2, section 3, and chapter 3, section 1 and the start of section 2). (MIT's material for this lecture is Zwiebach's recorded lecture and his notes; this page follows them in its own words, with its own worked example.)
+
+## Eigenvalues from matrix equations
+
+Suppose a matrix obeys a polynomial equation, $M^2 + \alpha M + \beta\,1 = 0$ (transcript pp. 1–2). Apply it to an eigenvector $v$, with $Mv = \lambda v$: since $M^2v = \lambda^2v$,
+
+<Formula label="Eigenvalues obey the matrix equation" tex="M^2 + \alpha M + \beta\,1 = 0 \quad\Longrightarrow\quad \lambda^2 + \alpha\lambda + \beta = 0" cite="reading2" at="eqs. (3.41), (3.42)" />
+
+because an eigenvector is never the zero vector. Each Pauli matrix squares to the identity, $\sigma_i^2 = 1$, so its eigenvalues are $\pm1$. The **trace**, the sum of the diagonal entries, equals the sum of the eigenvalues, and every Pauli matrix has trace zero; so the two eigenvalues are $+1$ and $-1$, one each (transcript pp. 2–3). (The two facts are independent: the identity matrix squares to itself but does not have zero trace; transcript p. 9.)
+
+## Pauli matrix identities
+
+From the spin algebra $[\hat S_i, \hat S_j] = i\hbar\epsilon_{ijk}\hat S_k$ with $\hat S_i = \frac{\hbar}{2}\sigma_i$ comes $[\sigma_i, \sigma_j] = 2i\epsilon_{ijk}\sigma_k$. The Pauli matrices also **anticommute**: $\sigma_1\sigma_2 = -\sigma_2\sigma_1$ (transcript p. 3). With the anticommutator $\{A, B\} \equiv AB + BA$:
+
+<Formula label="Anticommutator of Pauli matrices" tex="\{\sigma_i, \sigma_j\} = 2\delta_{ij}\,1" cite="reading2" at="eq. (3.51)" />
+
+Any product splits as $AB = \frac12\{A, B\} + \frac12[A, B]$, so (transcript p. 4)
+
+<Formula label="Product of two Pauli matrices" tex="\sigma_i\sigma_j = \delta_{ij}\,1 + i\epsilon_{ijk}\,\sigma_k" cite="reading2" at="eq. (3.53)" />
+
+To make this geometric, define $\vec a\cdot\vec\sigma \equiv a_1\sigma_1 + a_2\sigma_2 + a_3\sigma_3$ for an ordinary vector $\vec a$ (numbers commute with matrices, so the order does not matter). Multiplying the identity by $a_ib_j$ and recognizing $\epsilon_{ijk}a_ib_j = (\vec a\times\vec b)_k$ (transcript pp. 4–5):
+
+<Formula label="Product identity" tex="(\vec a\cdot\vec\sigma)(\vec b\cdot\vec\sigma) = (\vec a\cdot\vec b)\,1 + i\,(\vec a\times\vec b)\cdot\vec\sigma" cite="reading2" at="eq. (3.60)" />
+
+For a unit vector $\vec n$ this gives $(\vec n\cdot\vec\sigma)^2 = 1$. So the spin operator along $\vec n$, $\hat S_n = \frac{\hbar}{2}\vec n\cdot\vec\sigma$, satisfies $\hat S_n^2 = (\hbar/2)^2\,1$ and has zero trace: its eigenvalues are $+\hbar/2$ and $-\hbar/2$ (transcript pp. 5–6). That is as it must be: space has no preferred direction, so a spin-½ measured along any axis must give $\pm\hbar/2$.
+
+**Triplets of operators** (transcript pp. 6–7). For two triplets of operators $\vec X$ and $\vec Y$, define $\vec X\cdot\vec Y = X_iY_i$ and $(\vec X\times\vec Y)_k = \epsilon_{ijk}X_iY_j$. If the operators do not commute, these products lose their usual symmetry: even $\vec X\times\vec X$ can be nonzero. (What $\hat{\vec S}\times\hat{\vec S}$ equals is a homework exercise.)
+
+## Vector spaces
+
+The rest of the lecture follows Axler's *Linear Algebra Done Right*, the text of MIT's 18.700, which builds the subject with as little structure as possible (transcript pp. 7–9). This shows, for instance, that matrix representations, traces and eigenvalues need no inner product (transcript pp. 8, 20–21).
+
+A vector space has **vectors** and **numbers**. The numbers form a field $F$, here either the real numbers or the complex numbers, giving a **real** or a **complex** vector space; the vectors themselves are not called real or complex (transcript pp. 9–10). A vector space $V$ has an addition, $u + v \in V$, and a multiplication by numbers, $av \in V$, so it is closed under both, obeying (transcript pp. 10–11; notes p. 2; listed here in the notes' order, the lecture swaps 4 and 5):
+
+1. $u + v = v + u$ (commutativity);
+2. $u + (v + w) = (u + v) + w$ and $(ab)v = a(bv)$ (associativity);
+3. a zero vector with $0 + v = v$ (additive identity);
+4. for each $v$ some $u$ with $v + u = 0$ (additive inverse);
+5. $1v = v$ for the number 1 (multiplicative identity);
+6. $a(u + v) = au + av$ and $(a + b)v = av + bv$ (distributivity).
+
+Everything else follows in a line or two: the zero vector and the additive inverse are unique, $0v = 0$ (the number zero gives the zero vector), $a0 = 0$, and the inverse of $v$ is $(-1)v$, written $-v$ (transcript p. 12).
+
+**Examples** (transcript pp. 12–16):
+
+1. Columns of $N$ real numbers: a real vector space.
+2. $M \times N$ matrices with complex entries: a complex vector space.
+3. The $2 \times 2$ **Hermitian** matrices: a **real** vector space, even though they contain $i$'s, because multiplying by a complex number would spoil Hermiticity.
+4. Polynomials $p(z) = a_0 + a_1z + \dots + a_nz^n$ with coefficients in $F$ (each of finite degree).
+5. Infinite sequences $(x_1, x_2, \dots)$ of numbers in $F$.
+6. Complex functions on an interval $[0, L]$: a complex vector space.
+
+## Subspaces, span and dimension
+
+A **subspace** of $V$ is a subset that is itself a vector space (so it contains $0$). $V$ is the **direct sum** of subspaces $U_1, \dots, U_m$ if every vector of $V$ can be written **uniquely** as a sum $u_1 + \dots + u_m$ with each $u_i$ in $U_i$; for example the plane is the direct sum of two different lines through the origin (transcript pp. 16–17):
+
+<Formula label="Direct sum" tex="V = U_1\oplus U_2\oplus\dots\oplus U_m" cite="reading3" at="eq. (1.5)" />
+
+A **list** $(v_1, \dots, v_n)$ is always finite. Its **span** is the set of all combinations $a_1v_1 + \dots + a_nv_n$, and the list spans $V$ if its span is $V$ (transcript pp. 17–18). $V$ is **finite-dimensional** if some list spans it, and **infinite-dimensional** otherwise. The polynomials are infinite-dimensional: any list has a highest degree and misses polynomials of higher degree. The columns of example 1 are finite-dimensional, spanned by $e_1 = (1, 0, \dots, 0)$, $e_2$, …, $e_N$.
+
+A list is **linearly independent** if
+
+<Formula label="Linear independence" tex="a_1v_1 + a_2v_2 + \dots + a_nv_n = 0 \quad\Longrightarrow\quad a_1 = a_2 = \dots = a_n = 0" cite="reading3" at="eq. (1.8)" />
+
+A **basis** is a list that spans $V$ and is linearly independent: enough vectors to reach everything, and none to spare (transcript pp. 19–20). Bases are not unique (and changing them will be routine), but all bases have the same length, the **dimension** of $V$. No inner product is involved: orthonormality comes later. So example 1 has dimension $N$, and the $M \times N$ matrices dimension $MN$.
+
+**The Hermitian $2 \times 2$ matrices have dimension 4** (transcript pp. 21–22). The list $(1, \sigma_1, \sigma_2, \sigma_3)$ consists of Hermitian matrices; it spans, since the general Hermitian matrix is
+
+<Formula label="General Hermitian 2 × 2 matrix" tex="\begin{pmatrix}c + d & a - ib\\ a + ib & c - d\end{pmatrix} = c\,1 + a\,\sigma_1 + b\,\sigma_2 + d\,\sigma_3, \qquad a, b, c, d\ \text{real}" cite="reading1" at="pp. 21–22" />
+
+and it is linearly independent, since the matrix vanishes only if $a = b = c = d = 0$. (These are the letters used in the lecture; the notes, eqs. (1.9)–(1.10), call the four coefficients $a_0$ to $a_3$.) Examples 5 and 6 are infinite-dimensional, which takes a little more work to show.
+
+## Linear operators
+
+A linear map takes one vector space to another, possibly of different dimension; when it maps $V$ to itself it is a **linear operator** $T$ (transcript pp. 22–23):
+
+<Formula label="Linear operator" tex="T(u + v) = Tu + Tv, \qquad T(au) = a\,Tu" cite="reading3" at="p. 5" />
+
+Since every vector is a combination of basis vectors, $T$ is known once its action on a basis is known; that is how its matrix will be defined next lecture, again without any inner product.
+
+<WorkedExample title="A Hermitian matrix in the Pauli basis">
+<Problem>
+Take $M = \begin{pmatrix}3 & 1 - 2i\\ 1 + 2i & -1\end{pmatrix}$. (a) Expand it in the basis $(1, \sigma_1, \sigma_2, \sigma_3)$. (b) Use the product identity to find $M$'s eigenvalues without solving a determinant. (c) Check them against the trace and determinant. (d) Use the identity to compute $\sigma_1\sigma_2$.
+</Problem>
+<Step title="(a) Coefficients">
+$c + d = 3$ and $c - d = -1$ give $c = 1$, $d = 2$; $a - ib = 1 - 2i$ gives $a = 1$, $b = 2$. So $M = 1 + \vec v\cdot\vec\sigma$ with $\vec v = (1, 2, 2)$.
+</Step>
+<Step title="(b) Eigenvalues">
+$(\vec v\cdot\vec\sigma)^2 = |\vec v|^2\,1 = 9\cdot1$, and $\vec v\cdot\vec\sigma$ has zero trace, so its eigenvalues are $\pm3$. Adding $1$ shifts them: $M$ has eigenvalues $4$ and $-2$.
+</Step>
+<Step title="(c) Check">
+$\text{tr}\,M = 3 - 1 = 2 = 4 + (-2)$, and $\det M = -3 - (1 + 4) = -8 = 4 \times (-2)$.
+</Step>
+<Step title="(d) A product">
+With $\vec a = \hat x$, $\vec b = \hat y$: $\vec a\cdot\vec b = 0$ and $\vec a\times\vec b = \hat z$, so $\sigma_1\sigma_2 = i\sigma_3$, as multiplying the matrices confirms.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- A polynomial equation for a matrix holds for its eigenvalues; $\sigma_i^2 = 1$ and zero trace give eigenvalues $\pm1$.
+- $\{\sigma_i, \sigma_j\} = 2\delta_{ij}$, $\sigma_i\sigma_j = \delta_{ij} + i\epsilon_{ijk}\sigma_k$, $(\vec a\cdot\vec\sigma)(\vec b\cdot\vec\sigma) = \vec a\cdot\vec b + i(\vec a\times\vec b)\cdot\vec\sigma$; hence $\hat S_n$ has eigenvalues $\pm\hbar/2$.
+- A vector space over $F$ (real or complex numbers) obeys six axioms; examples include columns, matrices, Hermitian matrices (a real space), polynomials, sequences and functions.
+- Subspaces, direct sums, spanning lists, linear independence, bases and dimension need no inner product; the $2 \times 2$ Hermitian matrices have dimension 4.
+- A linear operator respects sums and multiples, and is fixed by its action on a basis.

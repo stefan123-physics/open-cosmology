@@ -1,0 +1,284 @@
+# Calculations on content/year-4/8.08/van-der-waals-equation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter II notes, "Interacting Classical Gas and van der Waals Equation of State"
+# (Wen, handwritten scan). Page numbers are Wen's handwritten numbers, top right (13-20 = PDF pages 1-8); this page uses
+# pp. 13-14, points 1 and 2. The notes quote no numbers.
+# Page's own example: a square-well model gas, hard-core distance r0 = 0.34 nm, well depth eps = k_B x 120 K from r0
+# to 1.5 r0, one mole: b, vbar, a, Boyle temperature, C2 at 150 K and 600 K, deviation from ideal at 150 K and 1 atm.
+# Constants: k_B (exact 2019 SI), N_A = 6.02214076e23 /mol (exact 2019 SI).
+
+page: content/year-4/8.08/van-der-waals-equation.mdx
+calcs:
+  # ---------------------------------------------------------------- partition function and mean field (p. 13)
+  - id: mean-field-average
+    kind: identity
+    where: 'formula "Mean-field interaction energy": (1/2) V n^2 vbar = (1/2) N n vbar with n = N/V'
+    formula: 0.5*VV*(NN/VV)**2*vb
+    equals: 0.5*NN*(NN/VV)*vb
+    samples: {VV: [1.0, 2.5, 0.3], NN: [10.0, 3.0, 7.0], vb: [-1.0, 0.4, -2.2]}
+    tolerance: 1e-12
+    shown: ['The step from the double integral is $\frac12 V n^2\bar v = \frac12 N n\bar v$']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: mit
+
+  - id: thermal-wavelength-integral
+    kind: identity
+    where: 'formula "Mean-field partition function": the integral of exp(-beta hbar^2 k^2/2m) d^3k/(2 pi)^3 is (m kT/2 pi hbar^2)^(3/2) = 1/lambda^3 (radial integral, units hbar = 1)'
+    formula: integrate('4*pi*s**2*exp(-s**2/(2*mm*TT))', 's', 0, 60*sqrt(mm*TT))/(2*pi)**3
+    equals: (mm*TT/(2*pi))**1.5
+    samples: {mm: [1.0, 0.5, 3.0], TT: [1.0, 2.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['the Gaussian integral over $\vec k$ is $(m k_BT/2\pi\hbar^2)^{3/2} = 1/\lambda^3$']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: page-own
+
+  - id: free-energy-from-Q
+    kind: identity
+    where: 'formula "Free energy in the mean-field approximation": -kT ln Q with Stirling ln N! = N ln N - N, Q = (1/N!) ((V - b)/lam^3)^N exp(-beta N n vbar/2), equals N kT (ln(N lam^3/(V - b)) - 1) + N^2 vbar/(2V) (kT = 1/beta)'
+    formula: -TT*(-(NN*log(NN) - NN) + NN*log((VV - bb)/lam**3) - NN*(NN/VV)*vb/(2*TT))
+    equals: NN*TT*(log(NN*lam**3/(VV - bb)) - 1) + 0.5*NN**2*vb/VV
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0], bb: [1.0, 2.0, 0.5], lam: [0.3, 1.0, 0.7], vb: [-0.1, -0.02, 0.05]}
+    tolerance: 1e-9
+    shown: ["With Stirling's approximation $\\ln N! \\approx N\\ln N - N$"]
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: mit
+
+  # ---------------------------------------------------------------- equation of state (p. 14)
+  - id: pressure-derivative
+    kind: identity
+    where: 'formula "Pressure": -dA/dV of the mean-field free energy is N kT/(V - b) + N^2 vbar/(2 V^2) (numerical derivative)'
+    formula: -deriv('NN*TT*(log(NN*lam**3/(x - bb)) - 1) + 0.5*NN**2*vb/x', 'x', VV)
+    equals: NN*TT/(VV - bb) + 0.5*NN**2*vb/VV**2
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0], bb: [1.0, 2.0, 0.5], lam: [0.3, 1.0, 0.7], vb: [-0.1, -0.02, 0.05]}
+    tolerance: 1e-6
+    shown: ['The pressure is minus the derivative of the free energy']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: mit
+
+  - id: vdw-equation
+    kind: identity
+    where: 'formula "The van der Waals equation of state": with a = -N^2 vbar/2, (V - b)(P + a/V^2) = N kT for the pressure above'
+    formula: (VV - bb)*(NN*TT/(VV - bb) + 0.5*NN**2*vb/VV**2 + (-0.5*NN**2*vb)/VV**2)
+    equals: NN*TT
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0], bb: [1.0, 2.0, 0.5], vb: [-0.1, -0.02, 0.05]}
+    tolerance: 1e-9
+    shown: ['Moving the second term to the left and multiplying by $V - b$']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: mit
+
+  - id: virial-c2-c3
+    kind: identity
+    where: 'formula "Virial expansion": PV/NkT = V/(V - b) - a/(N kT V); for small b/V this agrees with 1 + C2/V + C3/V^2 with C2 = b - a/NkT, C3 = b^2 up to terms of order (b/V)^3 (checked at V = 1e3 b, where the remainder b^3/V^3 is below 1e-8)'
+    formula: (1e3*bb)/(1e3*bb - bb) - aa/(NT*1e3*bb)
+    equals: 1 + (bb - aa/NT)/(1e3*bb) + bb**2/(1e3*bb)**2
+    samples: {bb: [1.0, 0.2, 3.0], aa: [2.0, 0.5, 1.0], NT: [1.0, 4.0, 0.7]}
+    tolerance: 1e-8
+    shown: ['(The notes write the third term as $C_3/V^3$; it is $C_3/V^2$']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: slip
+
+  - id: boyle-zero
+    kind: identity
+    where: 'text: C2 = b - a/(N kT) vanishes at T_B = a/(b N k) (checked as C2 + 1 = 1, N k = 1)'
+    formula: bb - aa/(aa/bb) + 1
+    equals: 1
+    samples: {bb: [1.0, 0.2, 3.0], aa: [2.0, 0.5, 1.0]}
+    tolerance: 1e-12
+    shown: ['It passes through zero at the **Boyle temperature** $T_B = a/(bNk_B)$']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: quiz-c2
+    where: 'quiz 3: C2/b = 1 - T_B/T with T_B = 400 K, T = 800 K'
+    inputs: {TB: 400 K, T: 800 K}
+    formula: 1 - TB/T
+    expected: '0.5'
+    shown: ['which at 800 K is $0.5\\,b$', '"$0.5\\,b$"']
+    quiz: 2
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- hard balls and the Fermi gas (p. 14)
+  - id: fermi-effective-core
+    where: 'text: N (2 pi/3) r0^3 = N lambda^3/2^(5/2) gives r0 = (3/(2 pi 2^(5/2)))^(1/3) lambda'
+    inputs: {}
+    formula: (3/(2*pi*2**2.5))**(1/3)
+    expected: '0.44'
+    shown: ['$r_0 \approx 0.44\,\lambda$']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: lj-minimum
+    where: 'plot caption: the Lennard-Jones well is deepest at r = 2^(1/6) sigma'
+    inputs: {}
+    formula: 2**(1/6)
+    expected: '1.12'
+    shown: ['r = 2^(1/6) σ ≈ 1.12 σ']
+    source: {cite: reading1, at: 'p. 18'}
+    origin: page-own
+
+  - id: lj-depth
+    kind: identity
+    where: 'plot caption: v(2^(1/6) sigma) = -eps (in units of eps; checked as v + 2 = 1)'
+    formula: ee*4*((2**(1/6))**(-12) - (2**(1/6))**(-6)) + 2*ee
+    equals: ee
+    samples: {ee: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['deepest (−ε) at']
+    source: {cite: reading1, at: 'p. 18'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: square-well model gas
+  - id: ex-b
+    where: 'worked example "The excluded volume": b = N_A (2 pi/3) r0^3'
+    inputs: {NA: 6.02214076e23, r0: 0.34 nm}
+    formula: NA*2*pi/3*r0**3
+    expected: 4.96e-5 m**3
+    shown: ['\approx 4.96 \times 10^{-5}$ m³']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: page-own
+
+  - id: ex-b-cm3
+    where: 'worked example "The excluded volume": the same in cm^3'
+    inputs: {NA: 6.02214076e23, r0: 0.34 nm}
+    formula: NA*2*pi/3*r0**3
+    expected: 49.6 cm**3
+    shown: ['about 49.6 cm³ per mole']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: page-own
+
+  - id: ex-two-pi-thirds
+    where: 'worked example: 2 pi/3'
+    inputs: {}
+    formula: 2*pi/3
+    expected: '2.094'
+    shown: ['6.022 \times 10^{23} \times 2.094 \times (3.4 \times 10^{-10}\ \text{m})^3']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: page-own
+
+  - id: ex-shell
+    where: 'worked example: 1.5^3 - 1'
+    inputs: {}
+    formula: 1.5**3 - 1
+    expected: '2.375'
+    shown: ['\frac{4\pi}{3}\times 2.375\,r_0^3']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: page-own
+
+  - id: ex-a
+    where: 'worked example "The average potential and a": a = (1/2) N_A^2 eps (4 pi/3) 2.375 r0^3, eps = k_B x 120 K'
+    inputs: {NA: 6.02214076e23, r0: 0.34 nm, Tw: 120 K}
+    formula: 0.5*NA**2*k_B*Tw*4*pi/3*(1.5**3 - 1)*r0**3
+    expected: 0.117 Pa*m**6
+    shown: ['\approx 0.117$ Pa m⁶ per mole squared']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-boyle
+    where: 'worked example "The Boyle temperature": T_B = a/(b N_A k_B) = 2.375 eps/k_B'
+    inputs: {NA: 6.02214076e23, r0: 0.34 nm, Tw: 120 K}
+    formula: (0.5*NA**2*k_B*Tw*4*pi/3*(1.5**3 - 1)*r0**3)/((NA*2*pi/3*r0**3)*NA*k_B)
+    expected: 285 K
+    shown: ['$T_B = 2.375\,\varepsilon/k_B = 285$ K']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-ratio-600
+    where: 'worked example: T_B/T at 600 K'
+    inputs: {TB: 285 K, T: 600 K}
+    formula: TB/T
+    expected: '0.475'
+    shown: ['49.6 \times (1 - 0.475)']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-c2-600
+    where: 'worked example "The second virial coefficient": C2 = b (1 - T_B/T) at 600 K'
+    inputs: {b: 49.6 cm**3, TB: 285 K, T: 600 K}
+    formula: b*(1 - TB/T)
+    expected: 26.0 cm**3
+    shown: ['\approx 26.0$ cm³ per mole']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-ratio-150
+    where: 'worked example: T_B/T at 150 K'
+    inputs: {TB: 285 K, T: 150 K}
+    formula: TB/T
+    expected: '1.9'
+    shown: ['49.6 \times (1 - 1.9)']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-c2-150
+    where: 'worked example "The second virial coefficient": C2 at 150 K'
+    inputs: {b: 49.6 cm**3, TB: 285 K, T: 150 K}
+    formula: b*(1 - TB/T)
+    expected: -44.6 cm**3
+    shown: ['\approx -44.6$ cm³ per mole']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-ideal-volume
+    where: 'worked example "The deviation from ideal": one mole at 150 K and 101325 Pa'
+    inputs: {NA: 6.02214076e23, T: 150 K, P: 101325 Pa}
+    formula: NA*k_B*T/P
+    expected: 0.0123 m**3
+    shown: ['fills $N_Ak_BT/P \approx 0.0123$ m³']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-deviation
+    where: 'worked example "The deviation from ideal": C2/V'
+    inputs: {C2: -44.6e-6 m**3, V: 0.0123 m**3}
+    formula: C2/V
+    expected: '-0.0036'
+    shown: ['\approx -0.0036$, or −0.36%', 'about 0.36% below']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-beta-eps
+    where: 'note after the example: eps/kT at 150 K'
+    inputs: {Tw: 120 K, T: 150 K}
+    formula: Tw/T
+    expected: '0.8'
+    shown: ['$\varepsilon/k_BT = 0.8$']
+    source: {cite: reading1, at: 'p. 13, point 1'}
+    origin: page-own
+
+  - id: ex-tc
+    where: 'note after the example: T_c = 8 a/(27 b N_A k_B) = (8/27) T_B'
+    inputs: {TB: 285 K}
+    formula: 8/27*TB
+    expected: 84 K
+    shown: ['\approx 84$ K']
+    source: {cite: reading1, at: 'p. 17, point 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- exact square-well comparison (review finding)
+  - id: ex-exact-c2-150
+    where: 'note after the example: exact second virial coefficient of the square well, b [1 - (1.5^3 - 1)(exp(eps/kT) - 1)], at 150 K'
+    inputs: {b: 49.6 cm**3, Tw: 120 K, T: 150 K}
+    formula: b*(1 - (1.5**3 - 1)*(exp(Tw/T) - 1))
+    expected: -95 cm**3
+    shown: ['it is about $-95$ cm³ per mole']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-exact-boyle
+    where: 'note after the example: exact Boyle temperature of the square well, where (1.5^3 - 1)(exp(eps/kT) - 1) = 1'
+    inputs: {Tw: 120 K}
+    formula: Tw/log(1 + 1/(1.5**3 - 1))
+    expected: 341 K
+    tolerance: 1 K
+    shown: ['the exact Boyle temperature is about 341 K']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own
+
+  - id: ex-exact-c2-600
+    where: 'note after the example: exact square-well C2 at 600 K (eps/kT = 0.2), against the mean-field 26.0'
+    inputs: {b: 49.6 cm**3, Tw: 120 K, T: 600 K}
+    formula: b*(1 - (1.5**3 - 1)*(exp(Tw/T) - 1))
+    expected: 23.5 cm**3
+    shown: ['23.5 against 26.0 cm³ per mole', 'where $\varepsilon/k_BT = 0.2$']
+    source: {cite: reading1, at: 'p. 14, point 2'}
+    origin: page-own

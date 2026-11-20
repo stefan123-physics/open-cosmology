@@ -1,0 +1,164 @@
+# Calculations on content/year-1/8.01/resistive-forces.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.01SC Lesson 14 (segments 14.1–14.3) and Course Notes Chapter 8, Section 8.6, with the page's own numbers.
+
+page: content/year-1/8.01/resistive-forces.mdx
+calcs:
+  - id: linear-solution
+    kind: identity
+    where: 'formula "Velocity with linear drag": v = (mg/α)(1 − e^(−t/τ)) solves dv/dt = g − (α/m) v'
+    formula: deriv('m * g / al * (1 - exp(-al * t / m))', 't', t0) - (g - al / m * (m * g / al * (1 - exp(-al * t0 / m))))
+    equals: 0 * t0
+    samples: {m: [2.0, 0.5], g: [9.81, 1.0], al: [0.3, 2.0], t0: [0.5, 3.0]}
+    tolerance: 1e-6
+    shown: ['v_y(t) = \frac{mg}{\alpha}\left(1 - e^{-t/\tau}\right), \qquad \tau = \frac{m}{\alpha}']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: mit
+
+  - id: quadratic-solution
+    kind: identity
+    where: 'formula "Velocity with quadratic drag": the fraction form solves dv/dt = g − (β/m) v²'
+    formula: deriv('sqrt(m*g/b) * (1 - exp(-t/(sqrt(m*g/b)/(2*g)))) / (1 + exp(-t/(sqrt(m*g/b)/(2*g))))', 't', t0) - (g - b / m * (sqrt(m*g/b) * tanh(g * t0 / sqrt(m*g/b)))**2)
+    equals: 0 * t0
+    samples: {m: [80.0, 1.0], g: [9.81, 9.81], b: [0.42, 0.1], t0: [1.0, 4.0]}
+    tolerance: 1e-5
+    shown: ['v(t) = \sqrt{\frac{mg}{\beta}}\;\frac{1 - e^{-t/\tau}}{1 + e^{-t/\tau}}']
+    source: {cite: reading4, at: 'p. 4'}
+    origin: mit
+
+  - id: tanh-form
+    kind: identity
+    where: 'section "High speed": the fraction equals v_term tanh(g t/v_term) since τ = v_term/(2g)'
+    formula: vt * (1 - exp(-2 * g * t0 / vt)) / (1 + exp(-2 * g * t0 / vt))
+    equals: vt * tanh(g * t0 / vt)
+    samples: {vt: [43.2, 5.0], g: [9.81, 9.81], t0: [0.5, 6.0]}
+    tolerance: 1e-9
+    shown: ['$v(t) = v_\text{term}\tanh(g t/v_\text{term})$']
+    source: {cite: reading4, at: 'p. 4'}
+    origin: page-own
+
+  - id: coasting-solution
+    kind: identity
+    where: 'notes Example 8.6: v = v₀/(1 + β v₀ t/m) solves dv/dt = −(β/m) v²'
+    formula: deriv('v0 / (1 + b * v0 * t / m)', 't', t0) + b / m * (v0 / (1 + b * v0 * t0 / m))**2
+    equals: 0 * t0
+    samples: {v0: [20.0, 5.0], b: [0.5, 0.1], m: [1.0, 3.0], t0: [0.5, 4.0]}
+    tolerance: 1e-6
+    shown: ['$v(t) = v_0/(1 + \beta v_0 t/m)$']
+    source: {cite: reading1, at: 'Eq. (8.6.18), p. 8-32'}
+    origin: mit
+
+  - id: cd-sphere
+    kind: fact
+    where: 'section "Two models": C_D = 0.47 for a sphere (notes, Table 8.1)'
+    value: 0.47
+    shown: ['0.47 for a sphere']
+    source: {cite: reading1, at: 'Table 8.1, p. 8-27'}
+    origin: mit
+
+  - id: cd-cube
+    kind: fact
+    where: 'section "Two models": C_D = 1.05 for a cube (notes, Table 8.1)'
+    value: 1.05
+    shown: ['1.05 for a cube facing the flow']
+    source: {cite: reading1, at: 'Table 8.1, p. 8-27'}
+    origin: mit
+
+  - id: bearing-alpha
+    where: 'worked example "A ball bearing", step "Drag coefficient": α = 6πηR'
+    inputs: {eta: 1.0 Pa*s, R: 1.0 mm}
+    formula: 6 * pi * eta * R
+    expected: 0.0188 kg/s
+    shown: ['6\pi \times 1.0 \times 1.0 \times 10^{-3} \approx 0.0188$ kg/s']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: page-own
+
+  - id: bearing-mass
+    where: 'worked example "A ball bearing": the mass 3.3 × 10⁻⁵ kg is that of steel (7850 kg/m³) of radius 1.0 mm'
+    inputs: {rho: 7850 kg/m**3, R: 1.0 mm}
+    formula: 4 / 3 * pi * R**3 * rho
+    expected: 3.3e-5 kg
+    shown: ['mass $3.3 \times 10^{-5}$ kg']
+    source: {cite: reading1, at: 'Eq. (8.6.12), p. 8-31'}
+    origin: page-own
+
+  - id: bearing-terminal
+    where: 'worked example "A ball bearing", step "Terminal speed"'
+    inputs: {m: 3.3e-5 kg, g: 9.81 m/s**2, al: 0.0188 kg/s}
+    formula: m * g / al
+    expected: 0.017 m/s
+    shown: ['/0.0188 \approx 0.017$ m/s']
+    source: {cite: reading3, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: bearing-tau
+    where: 'worked example "A ball bearing", step "Time constant"'
+    inputs: {m: 3.3e-5 kg, al: 0.0188 kg/s}
+    formula: m / al
+    expected: 1.8e-3 s
+    shown: ['$\tau = m/\alpha \approx 1.8 \times 10^{-3}$ s']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: skydiver-beta
+    where: 'worked example "A skydiver", step "Drag coefficient"'
+    inputs: {CD: 1.0, rho: 1.2 kg/m**3, A: 0.70 m**2}
+    formula: 0.5 * CD * rho * A
+    expected: 0.42 kg/m
+    shown: ['\tfrac12 \times 1.0 \times 1.2 \times 0.70 = 0.42$ kg/m']
+    source: {cite: reading1, at: 'Eq. (8.6.1), p. 8-27'}
+    origin: page-own
+
+  - id: skydiver-terminal
+    where: 'worked example "A skydiver", step "Terminal speed"'
+    inputs: {m: 80 kg, g: 9.81 m/s**2, b: 0.42 kg/m}
+    formula: sqrt(m * g / b)
+    expected: 43.2 m/s
+    shown: ['$v_\text{term} = \sqrt{80 \times 9.81/0.42} \approx 43.2$ m/s']
+    source: {cite: reading4, at: 'pp. 4–5'}
+    origin: page-own
+
+  - id: skydiver-kmh
+    where: 'worked example "A skydiver": about 156 km/h'
+    inputs: {m: 80 kg, g: 9.81 m/s**2, b: 0.42 kg/m}
+    formula: sqrt(m * g / b)
+    expected: 156 km/hour
+    shown: ['about 156 km/h']
+    source: {cite: reading4, at: 'pp. 4–5'}
+    origin: page-own
+
+  - id: skydiver-tau
+    where: 'worked example "A skydiver", step "How long it takes": τ = v_term/(2g) ≈ 2.20 s'
+    inputs: {m: 80 kg, g: 9.81 m/s**2, b: 0.42 kg/m}
+    formula: sqrt(m * g / b) / (2 * g)
+    expected: 2.20 s
+    shown: ['$\tau = v_\text{term}/(2g) \approx 2.20$ s']
+    source: {cite: reading4, at: 'p. 4'}
+    origin: page-own
+
+  - id: atanh-09
+    where: 'worked example "A skydiver": artanh 0.9 ≈ 1.472'
+    inputs: {}
+    formula: 0.5 * log((1 + 0.9) / (1 - 0.9))
+    expected: '1.472'
+    shown: ['$gt/v_\text{term} \approx 1.472$']
+    source: {cite: reading4, at: 'p. 3'}
+    origin: page-own
+
+  - id: skydiver-90
+    where: 'worked example "A skydiver": time to 90% of terminal speed ≈ 6.5 s'
+    inputs: {m: 80 kg, g: 9.81 m/s**2, b: 0.42 kg/m}
+    formula: 0.5 * log(19) * sqrt(m * g / b) / g
+    expected: 6.5 s
+    tolerance: 0.05 s
+    shown: ['$t \approx 1.472 \times 43.2/9.81 \approx 6.5$ s']
+    source: {cite: reading4, at: 'p. 4'}
+    origin: page-own
+
+  - id: quiz-sqrt2
+    where: 'quiz 3: doubling m multiplies v_term by √2'
+    inputs: {}
+    formula: sqrt(2)
+    expected: '1.414'
+    shown: ['larger by $\\sqrt2$']
+    source: {cite: reading4, at: 'p. 5'}
+    origin: page-own

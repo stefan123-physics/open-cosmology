@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-commit check (docs/CALC_TESTS_PLAN.md §4). Enabled by `npm install` (the "prepare" script sets
+# core.hooksPath to .githooks). Skip once with `git commit --no-verify` only if you know why.
+
+changed=$(git diff --cached --name-only)
+
+# Content or symbols changed: run the content check (citations, licences, symbols, reviews).
+if echo "$changed" | grep -qE '^(content/|data/|calcs/|lib/|scripts/)'; then
+  npm run --silent content:check || exit 1
+fi
+
+# Pages or calculation data changed: recompute the stored calculations.
+if echo "$changed" | grep -qE '^(content/|calcs/|tests/calc/)'; then
+  if [ -x .venv/Scripts/python.exe ] || [ -x .venv/bin/python ] || command -v python >/dev/null 2>&1; then
+    npm run --silent calc:test || exit 1
+  else
+    echo "pre-commit: Python not found, calculation tests skipped (they still run on GitHub)." >&2
+  fi
+fi

@@ -1,0 +1,171 @@
+# Calculations on content/year-4/8.09/constraints-friction-dalembert.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) lecture notes, Chapter 1, Section 1.4, pp. 16-21.
+# Page's own worked example (and quiz 4): a steel ball, radius 2.0 mm, density 7.8 g/cm^3, in a syrup of density 1.3 g/cm^3 and viscosity 1.5 Pa s.
+
+page: content/year-4/8.09/constraints-friction-dalembert.mdx
+calcs:
+  # ---------------------------------------------------------------- the rolling disk (pp. 17-18)
+  - id: integrating-factor
+    kind: identity
+    where: 'text "Semi-holonomic constraints": with a_phi = -a sin(th) h, the condition d(a_phi)/d(th) = 0 is solved by h = k/sin(th): -a cos(th) h - a sin(th) dh/dth = 0, checked numerically for k = 1.7'
+    formula: "-a*cos(th)*(1.7/sin(th)) - a*sin(th)*deriv('1.7/sin(x)', 'x', th, 1)"
+    equals: '0*a + 1e-30'
+    samples: {a: [0.3, 1.0, 2.0], th: [0.4, 1.1, 2.5]}
+    tolerance: 1e-6
+    shown: ['so $h = k/\sin\theta$ for some $k$ independent of $\theta$']
+    source: {cite: reading1, at: 'Section 1.4, p. 18'}
+    origin: mit
+
+  # ---------------------------------------------------------------- d'Alembert in generalized coordinates (p. 19)
+  - id: kinetic-derivative
+    kind: identity
+    where: 'formula "The momentum term" (eq. 1.67), polar check: for T = m/2 (rd^2 + r^2 w^2), d/dt(dT/drd) - dT/dr = m (rdd - r w^2), the radial component of m a'
+    formula: m*rdd - m*r*w**2
+    equals: m*(rdd - r*w**2)
+    samples: {m: [1.0, 2.5, 0.3], rdd: [0.3, -1.1, 2.0], r: [0.5, 2.0, 1.3], w: [1.0, -0.4, 2.2]}
+    tolerance: 1e-12
+    shown: ['\sum_j\left[\frac{d}{dt}\left(\frac{\partial T}{\partial\dot q_j}\right) - \frac{\partial T}{\partial q_j}\right]\delta q_j']
+    source: {cite: reading1, at: 'Section 1.4, eq. (1.67), p. 19'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- dissipation function (p. 21)
+  - id: dissipation-linear
+    kind: identity
+    where: 'quiz 3 and the Stokes example: h = b v gives F = integral_0^v b v'' dv'' = b v^2/2 (Stokes: b = 6 pi eta a gives 3 pi eta a v^2)'
+    formula: integrate('bb*x', 'x', 0, v)
+    equals: bb*v**2/2
+    samples: {bb: [0.0565, 1.0, 3.3], v: [0.0378, 2.0, 0.7]}
+    tolerance: 1e-9
+    shown: ['$\\mathcal{F} = \\int_0^v h(v'')\\,dv'' = \\frac12 bv^2$', '$\mathcal{F} = 3\pi\eta a\,\dot y^2$']
+    source: {cite: reading1, at: 'Section 1.4, eq. (1.74), p. 21'}
+    origin: mit
+
+  - id: dissipation-derivative
+    kind: identity
+    where: 'formula "Friction from the dissipation function" (eq. 1.73): -dF/dv for F = 3 pi eta a v^2 is -6 pi eta a v, the Stokes drag'
+    formula: "-deriv('3*pi*eta*a*x**2', 'x', v, 1)"
+    equals: -6*pi*eta*a*v
+    samples: {eta: [1.5, 0.001, 0.3], a: [0.002, 0.01, 0.5], v: [0.0378, 2.0, 0.7]}
+    tolerance: 1e-6
+    shown: ['R_j = -\frac{\partial\mathcal{F}}{\partial\dot q_j}']
+    source: {cite: reading1, at: 'Section 1.4, eq. (1.73), p. 21'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: steel ball in syrup
+  - id: ball-volume
+    where: 'worked example step "Masses": 4/3 pi a^3'
+    inputs: {a: 2.0 mm}
+    formula: 4/3*pi*a**3
+    expected: 3.35e-8 m**3
+    shown: ['= 3.35\times10^{-8}\ \text{m}^3$']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: ball-mass
+    where: 'worked example step "Masses": m'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3}
+    formula: 4/3*pi*a**3*rho
+    expected: 2.61e-4 kg
+    shown: ['$m = 2.61\times10^{-4}$ kg']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: displaced-mass
+    where: 'worked example step "Masses": displaced syrup'
+    inputs: {a: 2.0 mm, rho: 1.3 g/cm**3}
+    formula: 4/3*pi*a**3*rho
+    expected: 4.36e-5 kg
+    shown: ['$4.36\times10^{-5}$ kg']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: reduced-mass
+    where: 'worked example step "Masses" and quiz 4 explanation: m prime'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, rhof: 1.3 g/cm**3}
+    formula: 4/3*pi*a**3*(rho - rhof)
+    expected: 2.18e-4 kg
+    shown: ["$m' = 2.18\\times10^{-4}$ kg", '$2.18\\times10^{-4}$ kg']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: drag-coefficient
+    where: 'worked example step "Terminal speed" and quiz 4: 6 pi eta a'
+    inputs: {eta: 1.5 Pa*s, a: 2.0 mm}
+    formula: 6*pi*eta*a
+    expected: 0.0565 kg/s
+    shown: ['6\pi \times 1.5 \times 0.0020 = 0.0565$ kg/s', '6\\pi \\times 1.5 \\times 0.0020 = 0.0565$ kg/s']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: net-weight
+    where: 'worked example step "Terminal speed" and quiz 4: m prime g'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, rhof: 1.3 g/cm**3}
+    formula: 4/3*pi*a**3*(rho - rhof)*g_n
+    expected: 2.14e-3 N
+    shown: ['2.14\times10^{-3}/0.0565', '$m''g = 2.14\\times10^{-3}$ N']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: terminal-speed
+    where: 'worked example step "Terminal speed", quiz 4 (answer about 3.8 cm/s)'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, rhof: 1.3 g/cm**3, eta: 1.5 Pa*s}
+    formula: 4/3*pi*a**3*(rho - rhof)*g_n / (6*pi*eta*a)
+    expected: 0.0378 m/s
+    shown: ['= 0.0378$ m/s, about 3.8 cm/s', 'gives $0.0378$ m/s']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: terminal-speed-quiz
+    where: 'quiz 4: the marked answer, about 3.8 cm/s'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, rhof: 1.3 g/cm**3, eta: 1.5 Pa*s}
+    formula: 4/3*pi*a**3*(rho - rhof)*g_n / (6*pi*eta*a)
+    expected: 3.8 cm/s
+    shown: ['A steel ball (radius 2.0 mm, density 7.8 g/cm³) sinks through a syrup of density 1.3 g/cm³ and viscosity 1.5 Pa s']
+    quiz: 3
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: terminal-speed-no-buoyancy
+    where: 'quiz 4 explanation: ignoring buoyancy, m g/(6 pi eta a)'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, eta: 1.5 Pa*s}
+    formula: 4/3*pi*a**3*rho*g_n / (6*pi*eta*a)
+    expected: 4.5 cm/s
+    shown: ['Ignoring buoyancy would give about 4.5 cm/s']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: time-constant
+    where: 'worked example step "Time scale": tau = m prime/(6 pi eta a)'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, rhof: 1.3 g/cm**3, eta: 1.5 Pa*s}
+    formula: 4/3*pi*a**3*(rho - rhof) / (6*pi*eta*a)
+    expected: 3.9 ms
+    shown: ['= 3.9$ ms']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: transient-distance
+    where: 'worked example step "Time scale": the lag behind uniform motion at terminal speed is v_t tau, under a millimetre'
+    inputs: {a: 2.0 mm, rho: 7.8 g/cm**3, rhof: 1.3 g/cm**3, eta: 1.5 Pa*s}
+    formula: (4/3*pi*a**3*(rho - rhof))**2*g_n / (6*pi*eta*a)**2
+    expected: 0.15 mm
+    shown: ['by only $v\tau = 0.15$ mm']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: reynolds-number
+    where: 'worked example step "Is Stokes drag right here?": rho_syrup v (2a)/eta'
+    inputs: {rhof: 1300 kg/m**3, v: 0.0378 m/s, d: 0.0040 m, eta: 1.5 Pa*s}
+    formula: rhof*v*d/eta
+    expected: '0.13'
+    shown: ['$1300 \times 0.0378 \times 0.0040/1.5 = 0.13$']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own
+
+  - id: one-time-constant
+    where: 'plot point "t = tau" and caption: 1 - 1/e = 0.632, about 63%'
+    inputs: {}
+    formula: 1 - exp(-1)
+    expected: '0.632'
+    shown: ['{ x: 1, y: 0.632, label: "t = τ" }', '1 − 1/e ≈ 63%', '1 - exp(-x)']
+    source: {cite: reading1, at: 'Section 1.4, p. 21'}
+    origin: page-own

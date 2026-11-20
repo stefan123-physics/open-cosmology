@@ -1,0 +1,307 @@
+# Calculations on content/year-4/8.08/superfluidity-vortices.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Lecture Notes, Chapter VII continued "The Bose Gas" (Wen, handwritten scan), pp. 70-72
+# (reading1), and the last page of the first Chapter VII PDF, p. 69 (reading2).
+# Page numbers are the handwritten numbers at the top right of each scanned page (70-72 = PDF pages 1-3 of the second PDF;
+# p. 69 = PDF page 22 of the first).
+# The notes quote no numbers in this part. Page's own: the current of a winding state (and the notes' slip n/(hbar R m)),
+# the energy of the winding states, the vortex speed, Feynman's vortex density, the Doppler-shifted excitations and the
+# Landau critical velocity, the free-boson ring levels; the helium-4 worked example and quiz; plot caption and point.
+# Facts: helium-4 roton critical velocity and sound speed (later data, in words).
+# Notation in the formulas: hb = hbar, nn = n, RR = R, mm = m, p0 = |psi_0|^2, VV = V, rr = r, w = omega, kk = k,
+# vv = v (sound speed), vs = v_s, mu = mu, x = k in units of m v/hbar, u = v_s/v.
+
+page: content/year-4/8.08/superfluidity-vortices.mdx
+calcs:
+  # ---------------------------------------------------------------- flow in a ring (p. 70)
+  - id: current-winding
+    kind: identity
+    where: 'formula "A flowing state and its current": (1/m) Re(psi* (hbar/i) d/dx psi) with d/dx psi = (i n/R) psi gives hbar n |psi0|^2/(m R) (the i cancels: (hbar/i)(i n/R) = hbar n/R)'
+    formula: (1/mm)*p0*(hb*nn/RR)
+    equals: hb*nn*p0/(mm*RR)
+    samples: {mm: [1.0, 6.6e-27, 2.0], p0: [2.0, 0.5, 1.0], hb: [1.0, 1.05e-34, 0.5], nn: [1.0, 3.0, -2.0], RR: [0.5, 0.01, 2.0]}
+    tolerance: 1e-12
+    shown: ['J_x = \frac{\hbar n}{mR}\,|\psi_0|^2']
+    source: {cite: reading1, at: 'p. 70'}
+    origin: mit
+
+  - id: current-slip
+    kind: identity
+    where: 'remark after "A flowing state and its current": the notes'' n/(hbar R m) differs from hbar n/(m R) by a factor hbar^2 (checked as the ratio)'
+    formula: (hb*nn/(mm*RR))/(nn/(hb*RR*mm))
+    equals: hb**2
+    samples: {hb: [1.0, 2.0, 0.3], nn: [1.0, 2.0, 5.0], mm: [1.0, 4.0, 0.7], RR: [0.5, 3.0, 1.0]}
+    tolerance: 1e-12
+    shown: ['The notes write the current as $\frac{n}{\hbar Rm}|\psi_0|^2$, a slip']
+    source: {cite: reading1, at: 'p. 70'}
+    origin: slip
+
+  - id: winding-energy
+    kind: identity
+    where: 'formula "Energy of the winding states": (hbar^2/2m)|grad psi|^2 V with |grad psi|^2 = (n/R)^2 |psi0|^2 equals n^2 E_1, E_1 = hbar^2 |psi0|^2 V/(2 m R^2)'
+    formula: (hb**2/(2*mm))*(nn/RR)**2*p0*VV
+    equals: nn**2*(hb**2*p0*VV/(2*mm*RR**2))
+    samples: {hb: [1.0, 2.0, 0.5], mm: [1.0, 3.0, 2.0], nn: [1.0, 2.0, -3.0], RR: [0.5, 2.0, 1.0], p0: [1.0, 0.4, 2.0], VV: [1.0, 7.0, 0.1]}
+    tolerance: 1e-12
+    shown: ['\Omega_n - \Omega_0 = \frac{\hbar^2 n^2}{2mR^2}\,|\psi_0|^2\,V = n^2E_1']
+    source: {cite: reading1, at: 'p. 70 (sketch of Omega against n)'}
+    origin: page-own
+
+  - id: plot-point-trapped
+    where: 'plot of Omega(n): the point (2, 4) lies on x^2 + 3 sin^2(pi x) at x = 2'
+    formula: 2**2 + 3*sin(pi*2)**2
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['points={[{ x: 2, y: 4, label: "trapped" }]}']
+    source: {cite: reading1, at: 'p. 70 (sketch)'}
+    origin: page-own
+
+  - id: plot-parabola
+    where: 'plot of Omega(n): the barrier term 3 sin^2(pi n) vanishes at whole n, so the well bottoms lie on n^2 (checked at n = -1)'
+    formula: (-1)**2 + 3*sin(-pi)**2
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['the barriers between them are drawn with height 3E₁ for display only']
+    source: {cite: reading1, at: 'p. 70 (sketch)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- vortices (p. 71)
+  - id: vortex-speed
+    kind: identity
+    where: 'text after "Superfluid velocity and current": for phi = atan(y/x), |grad phi| = 1/r, so v_s = hbar/(m r) (both partial derivatives of the angle taken numerically at sample points (x, y) with x > 0)'
+    formula: sqrt(deriv('atan(ry/t)', 't', rx, 1)**2 + deriv('atan(t/rx)', 't', ry, 1)**2)
+    equals: 1/sqrt(rx**2 + ry**2)
+    samples: {rx: [0.5, 1.0, 3.0], ry: [0.4, 2.0, 1.0]}
+    tolerance: 1e-5
+    shown: ['so the fluid circles the core with speed $v_s = \hbar/(mr)$']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  - id: circulation
+    kind: identity
+    where: 'formula "Quantization of circulation": (hbar/m) 2 pi n = (h/m) n with h = 2 pi hbar'
+    formula: (hb/mm)*2*pi*nn
+    equals: (2*pi*hb/mm)*nn
+    samples: {hb: [1.0, 1.05e-34, 2.0], mm: [1.0, 6.6e-27, 3.0], nn: [1.0, 2.0, -1.0]}
+    tolerance: 1e-12
+    shown: ['\oint d\vec s\cdot\vec v_s = \frac{\hbar}{m}\cdot 2\pi\cdot\text{integer} = \frac{h}{m}\times\text{integer}']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: mit
+
+  - id: circulation-vortex-loop
+    kind: identity
+    where: 'same formula: around a circle of radius r about a vortex, v_s 2 pi r with v_s = hbar/(m r) is h/m'
+    formula: (hb/(mm*rr))*2*pi*rr
+    equals: 2*pi*hb/mm
+    samples: {hb: [1.0, 2.0], mm: [1.0, 3.0], rr: [0.1, 5.0]}
+    tolerance: 1e-12
+    shown: ['the circulation around any closed loop is **quantized**']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  - id: curl-solid-rotation
+    kind: identity
+    where: 'boxed remark: the curl of omega x r = (-omega y, omega x) is d(omega x)/dx - d(-omega y)/dy = 2 omega'
+    formula: deriv('w*t', 't', 0.3, 1) - deriv('-w*t', 't', 0.8, 1)
+    equals: 2*w
+    samples: {w: [1.0, 0.25, 3.0]}
+    tolerance: 1e-6
+    shown: ['has curl $2\vec\omega$']
+    source: {cite: reading1, at: 'p. 71, boxed remark'}
+    origin: page-own
+
+  - id: vortex-density
+    kind: identity
+    where: 'formula "Vortex density in a rotating superfluid": N_v h/m = 2 omega A gives N_v/A = 2 m omega/h'
+    formula: (2*w*AA/(2*pi*hb/mm))/AA
+    equals: 2*mm*w/(2*pi*hb)
+    samples: {w: [1.0, 0.5], AA: [1.0, 1e-4], hb: [1.0, 1.05e-34], mm: [1.0, 6.6e-27]}
+    tolerance: 1e-12
+    shown: ['\frac{N_v}{A} = \frac{2m\omega}{h}']
+    source: {cite: reading1, at: 'p. 71, boxed remark'}
+    origin: page-own
+
+  - id: core-size
+    kind: identity
+    where: 'text after "A vortex": hbar^2/(2 m xi^2) = mu at xi = hbar/sqrt(2 m mu)'
+    formula: hb**2/(2*mm*(hb/sqrt(2*mm*mu))**2)
+    equals: mu
+    samples: {hb: [1.0, 1.05e-34], mm: [1.0, 6.6e-27], mu: [0.3, 2.0]}
+    tolerance: 1e-9
+    shown: ['gives a core size $\xi$ of order $\hbar/\sqrt{2m\mu}$']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- excitations on a flow (p. 72, p. 69)
+  - id: sound-speed-limit
+    kind: limit
+    where: 'formula "Excitations of the condensate at rest": omega_k/k from omega^2 = (k^2/2 + 2 mu) k^2/2 (hbar = m = 1) tends to sqrt(mu) as k -> 0 (checked with mu = 0.7)'
+    inputs: {}
+    formula: sqrt((kk**2/2 + 2*0.7)*kk**2/2)/kk
+    limit: sqrt(0.7)
+    vary: {kk: [0.1, 0.01, 0.001]}
+    tolerance: 1e-4
+    shown: ['v = \sqrt{\frac{\mu}{m}}']
+    source: {cite: reading2, at: 'p. 69'}
+    origin: mit
+
+  - id: doppler-branches
+    kind: identity
+    where: 'formula "Excitations on a flowing superfluid": v|k| + v_s k equals (v + v_s)|k| for k > 0 and (v - v_s)|k| for k < 0 (checked as the k < 0 branch at k = -|kk|)'
+    formula: vv*abs(-kk) + vs*(-kk)
+    equals: (vv - vs)*abs(-kk)
+    samples: {vv: [1.0, 2.0], vs: [0.3, 1.5], kk: [0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['= v|k| + v_sk']
+    source: {cite: reading1, at: 'p. 72'}
+    origin: mit
+
+  - id: dispersion-plot-units
+    kind: identity
+    where: 'dispersion plot: with k = x m v/hbar and mu = m v^2, sqrt(eps(eps + 2 mu))/(m v^2) = |x| sqrt(x^2/4 + 1) (units m = v = hbar = 1)'
+    formula: sqrt((x**2/2)*(x**2/2 + 2))
+    equals: abs(x)*sqrt(x**2/4 + 1)
+    samples: {x: [0.3, -1.2, 2.5]}
+    tolerance: 1e-12
+    shown: ['expr: "abs(x)*sqrt(x^2/4 + 1) + u*x"']
+    source: {cite: reading2, at: 'p. 69'}
+    origin: page-own
+
+  - id: critical-velocity-bogoliubov
+    kind: limit
+    where: 'text after "Critical velocity": for the interacting gas omega_k/|k| = sqrt(1 + x^2/4) in units of v is smallest as k -> 0, where it tends to 1: v_c = v'
+    inputs: {}
+    formula: sqrt(x**2/4 + 1)
+    limit: 1
+    vary: {x: [0.1, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['$\omega_k/|k|$ is smallest at $k \to 0$, so $v_c = v$']
+    source: {cite: reading1, at: 'p. 72'}
+    origin: page-own
+
+  - id: free-boson-unstable
+    where: 'dispersion plot: the free-boson curve x^2/2 + u x is negative for -2u < x < 0 (value at x = -u for u = 0.6, negative)'
+    formula: (-0.6)**2/2 + 0.6*(-0.6)
+    expected: '-0.18'
+    tolerance: 1e-9
+    shown: ['The dashed curve dips below zero for any v_s > 0']
+    source: {cite: reading1, at: 'p. 72'}
+    origin: page-own
+
+  - id: ring-levels
+    kind: identity
+    where: 'formula "Single-particle levels on a ring": -(hbar^2/2m) d^2/dx^2 of e^{i n x/R} gives hbar^2 n^2/(2 m R^2) (second derivative of cos(n x/R) at x = 0, divided by the function)'
+    formula: -(hb**2/(2*mm))*deriv('cos(nn*t/RR)', 't', 0, 2)
+    equals: hb**2*nn**2/(2*mm*RR**2)
+    samples: {hb: [1.0, 1.0], mm: [1.0, 2.0], nn: [1.0, 2.0], RR: [1.0, 3.0]}
+    tolerance: 1e-4
+    shown: ['\epsilon_n = \frac{\hbar^2n^2}{2mR^2}']
+    source: {cite: reading1, at: 'p. 72'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example and quiz: helium-4, m = 6.6465e-27 kg
+  - id: ex-h-over-m
+    where: 'worked example (a): h/m for helium-4'
+    inputs: {mHe: 6.6465e-27 kg}
+    formula: 2*pi*hbar/mHe
+    expected: 9.97e-8 m**2/s
+    tolerance: 0.005e-8 m**2/s
+    shown: ['\approx 9.97 \times 10^{-8}$ m²/s', '$h/m = 6.63 \\times 10^{-34}/6.65 \\times 10^{-27} \\approx 9.97 \\times 10^{-8}$ m²/s', 'about $10^{-7}$ m²/s', '$h/m \\approx 1.0 \\times 10^{-7}$ m²/s', '$N_v/A = 2\omega/(h/m) = 2/(9.97 \times 10^{-8})']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  - id: quiz-h-over-m
+    where: 'quiz 2: h/m about 1.0e-7 m^2/s'
+    inputs: {mHe: 6.6465e-27 kg}
+    formula: 2*pi*hbar/mHe
+    expected: 1.0e-7 m**2/s
+    tolerance: 0.05e-7 m**2/s
+    quiz: 1
+    shown: ['"About $1.0 \\times 10^{-7}$ m²/s"']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  - id: quiz-hbar-over-m
+    where: 'quiz 2 distractor: hbar/m'
+    inputs: {mHe: 6.6465e-27 kg}
+    formula: hbar/mHe
+    expected: 1.6e-8 m**2/s
+    tolerance: 0.05e-8 m**2/s
+    shown: ['"About $1.6 \\times 10^{-8}$ m²/s"']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  - id: ex-ring-speed
+    where: 'worked example (b) and quiz 2 distractor: hbar/(m R) with R = 1 cm'
+    inputs: {mHe: 6.6465e-27 kg, R: 0.01 m}
+    formula: hbar/(mHe*R)
+    expected: 1.59e-6 m/s
+    tolerance: 0.005e-6 m/s
+    shown: ['\approx 1.59 \times 10^{-6}$ m/s', '"About $1.6 \\times 10^{-6}$ m²/s"']
+    source: {cite: reading1, at: 'p. 70'}
+    origin: page-own
+
+  - id: ex-turns
+    where: 'worked example (b): n = 0.01/(hbar/(m R))'
+    inputs: {mHe: 6.6465e-27 kg, R: 0.01 m, vflow: 0.01 m/s}
+    formula: vflow/(hbar/(mHe*R))
+    expected: '6300'
+    tolerance: 50
+    shown: ['$n \approx 0.01/1.59 \times 10^{-6} \approx 6300$']
+    source: {cite: reading1, at: 'p. 70'}
+    origin: page-own
+
+  - id: ex-vortex-speed
+    where: 'worked example (c): hbar/(m r) at r = 1 micrometre'
+    inputs: {mHe: 6.6465e-27 kg, r: 1e-6 m}
+    formula: hbar/(mHe*r)
+    expected: 1.6e-2 m/s
+    tolerance: 0.05e-2 m/s
+    shown: ['\approx 1.6 \times 10^{-2}$ m/s, about 1.6 cm/s at 1 μm', 'and ten times faster at 0.1 μm']
+    source: {cite: reading1, at: 'p. 71'}
+    origin: page-own
+
+  - id: ex-vortex-density
+    where: 'worked example (d) and quiz 4: 2 omega/(h/m) at omega = 1 rad/s, per m^2'
+    inputs: {mHe: 6.6465e-27 kg, w: 1 1/s}
+    formula: 2*w/(2*pi*hbar/mHe)
+    expected: 2.0e7 1/m**2
+    tolerance: 0.05e7 1/m**2
+    shown: ['\approx 2.0 \times 10^7$ m⁻²', '$1/\sqrt{2.0 \times 10^7}$ m']
+    source: {cite: reading1, at: 'p. 71, boxed remark'}
+    origin: page-own
+
+  - id: ex-vortex-density-cm2
+    where: 'worked example (d) and quiz 4: the same per cm^2'
+    inputs: {mHe: 6.6465e-27 kg, w: 1 1/s}
+    formula: 2*w/(2*pi*hbar/mHe)
+    expected: 2000 1/cm**2
+    tolerance: 50 1/cm**2
+    shown: ['about 2000 vortices per cm²', 'about 2000 per cm² at $\\omega = 1$ rad/s']
+    source: {cite: reading1, at: 'p. 71, boxed remark'}
+    origin: page-own
+
+  - id: ex-vortex-spacing
+    where: 'worked example (d): 1/sqrt(N_v/A) in mm'
+    inputs: {mHe: 6.6465e-27 kg, w: 1 1/s}
+    formula: 1/sqrt(2*w/(2*pi*hbar/mHe))
+    expected: 0.22 mm
+    tolerance: 0.005 mm
+    shown: ['$\approx 0.22$ mm']
+    source: {cite: reading1, at: 'p. 71, boxed remark'}
+    origin: page-own
+
+  - id: roton-critical-velocity
+    kind: fact
+    where: 'remark after "Critical velocity": the Landau critical velocity of helium-4 set by the roton minimum, Delta/(hbar k0) with Delta/k_B = 8.6 K and k0 = 1.9 per angstrom, about 59 m/s'
+    value: '60 m/s'
+    shown: ['a Landau critical velocity near 60 m/s']
+    source: {ref: 'roton parameters of liquid helium-4 at saturated vapour pressure (Donnelly and Barenghi, J. Phys. Chem. Ref. Data 27, 1217, 1998): Delta/k_B = 8.6 K, k0 = 1.9 per angstrom'}
+    origin: later-data
+
+  - id: helium-sound-speed
+    kind: fact
+    where: 'same remark: first sound in liquid helium-4 at low temperature, about 238 m/s'
+    value: '240 m/s'
+    shown: ['the sound speed of about 240 m/s']
+    source: {ref: 'speed of first sound in liquid helium-4 near 1 K, about 238 m/s (Donnelly and Barenghi 1998)'}
+    origin: later-data

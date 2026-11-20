@@ -1,0 +1,227 @@
+# Calculations on content/year-5/8.962/spacetime-geometric-viewpoint.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.962 (Spring 2020, Hughes) Lecture 1 transcript. Units with c = 1: lengths in light-seconds, times in s.
+# Page's own examples: Einstein synchronisation with t1e = 1 s, t1r = 9 s (graph) and 2 s, 10 s (quiz 1);
+# a boost with v = 0.6 of the displacement (5, 3) (worked example) and v = 0.8 of (10, 8) (quiz 2).
+
+page: content/year-5/8.962/spacetime-geometric-viewpoint.mdx
+calcs:
+  # ---------------------------------------------------------------- Einstein synchronisation (graph)
+  - id: sync-graph-bounce
+    where: 'graph caption: clock 2 must read (1 + 9)/2 at the bounce'
+    inputs: {t1e: 1, t1r: 9}
+    formula: (t1e + t1r)/2
+    expected: '5'
+    shown: ['(1 + 9)/2 = 5 s at the bounce']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: page-own
+
+  - id: sync-graph-distance
+    where: 'graph caption: clock 2 is half the round trip (9 - 1)/2 = 4 light-seconds away'
+    inputs: {t1e: 1, t1r: 9}
+    formula: (t1r - t1e)/2
+    expected: '4'
+    shown: ['Clock 2 sits 4 light-seconds from clock 1']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: page-own
+
+  - id: sync-graph-paths
+    kind: identity
+    where: 'graph: the outgoing ray t = 1 + x and the returning ray t = 9 - x meet at x = 4, t = 5 (plus 10 for a defined relative difference)'
+    formula: 10 + (1 + x) - (9 - x)
+    equals: 10 + 2*(x - 4)
+    samples: {x: [0, 1.5, 4]}
+    tolerance: 1e-12
+    shown: ['t = 1 + x (out) and t = 9 − x (back)']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 1
+  - id: quiz1-bounce
+    where: 'quiz 1: (2 + 10)/2 = 6 s'
+    inputs: {t1e: 2, t1r: 10}
+    formula: (t1e + t1r)/2
+    expected: '6'
+    shown: ['$(2 + 10)/2 = 6$ s']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: page-own
+
+  - id: quiz1-distance
+    where: 'quiz 1: round trip 8 s at speed 1 covers the distance twice, so 4 light-seconds'
+    inputs: {t1e: 2, t1r: 10}
+    formula: (t1r - t1e)/2
+    expected: '4'
+    shown: ['The round trip of 8 s covers the distance twice at speed 1, so the clocks are 4 light-seconds apart']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- units
+  - id: light-second
+    where: 'units section: one light-second is about 300,000 km'
+    inputs: {t: 1 s}
+    formula: c * t
+    expected: 300000 km
+    tolerance: 0.1%
+    shown: ['lengths are in light-seconds, about 300,000 km']
+    source: {cite: reading1, at: 'transcript p. 12'}
+    origin: mit
+
+  - id: light-nanosecond
+    where: 'units section: a light-nanosecond is 29.98 cm'
+    inputs: {t: 1 ns}
+    formula: c * t
+    expected: 29.98 cm
+    shown: ['a light-nanosecond is 29.98 cm']
+    source: {cite: reading1, at: 'transcript p. 12'}
+    origin: page-own
+
+  - id: foot
+    kind: fact
+    where: 'units section: one foot is 30.48 cm (exact by definition)'
+    value: '30.48 cm'
+    shown: ['a foot 30.48 cm']
+    source: {ref: 'international foot, defined as exactly 0.3048 m (1959)'}
+    origin: later-data
+
+  - id: foot-vs-light-ns
+    where: 'units section: the foot and the light-nanosecond differ by about 1.6% (relative to the foot)'
+    inputs: {t: 1 ns, ft: 30.48 cm}
+    formula: (ft - c*t)/ft * 100
+    expected: '1.6'
+    shown: ['so the two differ by about 1.6%']
+    source: {cite: reading1, at: 'transcript p. 12'}
+    origin: slip
+
+  # ---------------------------------------------------------------- Lorentz transformation (identities)
+  - id: lorentz-matrix-row0
+    kind: identity
+    where: 'the matrix form reproduces the formula: row 0 of Lambda times (dt, dx, dy, dz) is gamma (dt - v dx) (plus 5 so the relative difference is defined)'
+    formula: 5 + (1/sqrt(1 - v**2))*dt + (-v/sqrt(1 - v**2))*dx + 0*dy + 0*dz
+    equals: 5 + (dt - v*dx)/sqrt(1 - v**2)
+    samples: {v: [0.3, 0.6, -0.8], dt: [2, 5, 1], dx: [1, 3, -4], dy: [0.5, 2, 1], dz: [1, 1, 3]}
+    tolerance: 1e-12
+    shown: ['\Lambda^{\bar\mu}{}_{\nu} = \begin{pmatrix} \gamma & -\gamma v & 0 & 0']
+    source: {cite: reading1, at: 'transcript pp. 15-16'}
+    origin: mit
+
+  - id: lorentz-derivative
+    kind: identity
+    where: 'Lambda^mubar_nu = d x^mubar / d x^nu: the derivative of xbar = gamma (x - v t) with respect to t is -gamma v (central difference at sample points, plus 5)'
+    formula: 5 + ((x - v*(t + 1e-4))/sqrt(1 - v**2) - (x - v*(t - 1e-4))/sqrt(1 - v**2))/(2e-4)
+    equals: 5 - v/sqrt(1 - v**2)
+    samples: {v: [0.3, 0.6, -0.8], x: [1, 2, 3], t: [0.5, 1, 2]}
+    tolerance: 1e-8
+    shown: ['\Lambda^{\bar\mu}{}_{\nu} = \frac{\partial x^{\bar\mu}}{\partial x^{\nu}}']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: v = 0.6, (5, 3)
+  - id: ex-gamma
+    where: 'worked example: gamma = 1/sqrt(1 - 0.36) = 1/0.8 = 1.25'
+    inputs: {v: 0.6}
+    formula: 1/sqrt(1 - v**2)
+    expected: '1.25'
+    shown: ['$\gamma = 1/\sqrt{1 - 0.36} = 1/0.8 = 1.25$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-dt-bar
+    where: 'worked example: dt-bar = 1.25 (5 - 0.6 * 3) = 1.25 * 3.2 = 4'
+    inputs: {v: 0.6, dt: 5, dx: 3}
+    formula: (dt - v*dx)/sqrt(1 - v**2)
+    expected: '4'
+    shown: ['$\Delta x^{\bar 0} = 1.25\,(5 - 0.6 \times 3) = 1.25 \times 3.2 = 4$ s']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-dx-bar
+    where: 'worked example: dx-bar = 1.25 (3 - 0.6 * 5) = 0 (plus 1 for a defined relative difference)'
+    inputs: {v: 0.6, dt: 5, dx: 3}
+    formula: 1 + (dx - v*dt)/sqrt(1 - v**2)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['$\Delta x^{\bar 1} = 1.25\,(3 - 0.6 \times 5) = 0$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-interval-O
+    where: 'worked example: -(dt)^2 + (dx)^2 = -25 + 9 = -16 for O'
+    inputs: {dt: 5, dx: 3}
+    formula: -dt**2 + dx**2
+    expected: '-16'
+    shown: ['$-25 + 9 = -16$ for $O$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-interval-Obar
+    where: 'worked example: -(4)^2 + 0^2 = -16 for O-bar'
+    inputs: {v: 0.6, dt: 5, dx: 3}
+    formula: -((dt - v*dx)/sqrt(1 - v**2))**2 + ((dx - v*dt)/sqrt(1 - v**2))**2
+    expected: '-16'
+    shown: ['$-16 + 0 = -16$ for $\bar O$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 2: v = 0.8, (10, 8)
+  - id: quiz2-gamma
+    where: 'quiz 2: gamma = 1/sqrt(1 - 0.64) = 5/3'
+    inputs: {v: 0.8}
+    formula: 1/sqrt(1 - v**2)
+    expected: '1.6667'
+    shown: ['$\\gamma = 1/\\sqrt{1 - 0.64} = 5/3$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: quiz2-dt-bar
+    where: 'quiz 2: dt-bar = (5/3)(10 - 6.4) = 6'
+    inputs: {v: 0.8, dt: 10, dx: 8}
+    formula: (dt - v*dx)/sqrt(1 - v**2)
+    expected: '6'
+    quiz: 1
+    shown: ['\\tfrac53(10 - 6.4) = 6$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: quiz2-dx-bar
+    where: 'quiz 2: dx-bar = (5/3)(8 - 8) = 0 (plus 1)'
+    inputs: {v: 0.8, dt: 10, dx: 8}
+    formula: 1 + (dx - v*dt)/sqrt(1 - v**2)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['$\\Delta\\bar x = \\tfrac53(8 - 8) = 0$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: quiz2-no-gamma
+    where: 'quiz 2 distractor: 10 - 6.4 = 3.6, forgetting gamma'
+    inputs: {v: 0.8, dt: 10, dx: 8}
+    formula: dt - v*dx
+    expected: '3.6'
+    shown: ['"$3.6$"']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: quiz2-dilated
+    where: 'quiz 2 distractor: gamma * dt = 16.7, ignoring the v dx term'
+    inputs: {v: 0.8, dt: 10}
+    formula: dt/sqrt(1 - v**2)
+    expected: '16.7'
+    shown: ['"$16.7$"']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quoted speeds
+  - id: speed-87
+    kind: fact
+    where: 'the second observer runs at about 87% of the speed of light (Hughes''s example)'
+    value: '0.87'
+    shown: ['at, say, 87% of the speed of light']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: mit
+
+  - id: speed-three-quarters
+    kind: fact
+    where: 'another force-free observer moving at three quarters of the speed of light (Hughes''s example)'
+    value: '0.75'
+    shown: ['at three quarters of the speed of light']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: mit

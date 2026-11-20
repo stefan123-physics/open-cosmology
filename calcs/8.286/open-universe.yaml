@@ -1,0 +1,123 @@
+# Calculations on content/year-4/8.286/open-universe.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+
+page: content/year-4/8.286/open-universe.mdx
+calcs:
+  - id: open-argument
+    where: 'worked example "An open universe of matter alone", step "The open formula"'
+    inputs: {Omega: 0.3}
+    formula: 2 * sqrt(1 - Omega) / Omega
+    expected: '5.578'
+    shown: ['= 2\sqrt{0.7}/0.3 = 5.578$']
+    source: {cite: reading2, at: 'slide 5 ("Evolution of an open universe")'}
+    origin: page-own
+
+  - id: open-asinh
+    where: 'worked example, step "The open formula": sinh^-1(5.578)'
+    inputs: {x: 5.578}
+    formula: log(x + sqrt(x**2 + 1))
+    expected: '2.420'
+    shown: ['\sinh^{-1}(5.578) = 2.420$']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  - id: open-prefactor
+    where: 'worked example, step "Put it together": 0.3/(2 (0.7)^(3/2))'
+    inputs: {Omega: 0.3}
+    formula: Omega / (2 * (1 - Omega)**(3/2))
+    expected: '0.256'
+    shown: ['= 0.256 \times 3.158 = 0.809$']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  - id: open-ht
+    where: 'worked example, step "Put it together"; plot point "Ω = 0.3"'
+    inputs: {Omega: 0.3}
+    formula: Omega / (2 * (1 - Omega)**(3/2)) * (2 * sqrt(1 - Omega) / Omega - log(2 * sqrt(1 - Omega) / Omega + sqrt((2 * sqrt(1 - Omega) / Omega)**2 + 1)))
+    expected: '0.809'
+    shown: ['= 0.809$', '{ x: 0.3, y: 0.8088, label: "Ω = 0.3" }']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  - id: open-age
+    where: 'worked example, step "In years"'
+    inputs: {Omega: 0.3, H: 67.3 km/s/Mpc}
+    formula: Omega / (2 * (1 - Omega)**(3/2)) * (2 * sqrt(1 - Omega) / Omega - log(2 * sqrt(1 - Omega) / Omega + sqrt((2 * sqrt(1 - Omega) / Omega)**2 + 1))) / H
+    expected: 11.8e9 yr
+    shown: ['t = 0.809 \times 14.5 = 11.8$ billion years']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  - id: plot-flat
+    where: 'plot point "flat: 2/3"'
+    inputs: {}
+    formula: 2/3
+    expected: '0.6667'
+    shown: ['{ x: 1, y: 0.6667, label: "flat: 2/3" }']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  # ---- formula checks (docs/CALC_TESTS_PLAN.md §6)
+  - id: sinh-solution-solves-friedmann
+    kind: identity
+    where: 'formula "Evolution of an open universe" must satisfy the Friedmann equation with k = −κ, i.e. (dã/dt̃)² = 2α/ã + 1'
+    formula: (deriv('alpha * (cosh(x) - 1)', 'x', th) / deriv('alpha * (sinh(x) - x)', 'x', th))**2
+    equals: 2 * alpha / (alpha * (cosh(th) - 1)) + 1
+    samples: {th: [0.05, 0.5, 1.5, 3.0, 8.0], alpha: [1, 1, 2, 0.7, 1]}
+    tolerance: 1e-6
+    shown: ['c\,t = \alpha\,(\sinh\theta - \theta), \qquad \frac{a}{\sqrt\kappa} = \alpha\,(\cosh\theta - 1)']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: mit
+
+  - id: open-early-time-flat-limit
+    kind: limit
+    where: 'at early times the open solution must approach the flat (9α/2)^(1/3) t̃^(2/3), with the same constant as the closed one'
+    inputs: {alpha: 1.7}
+    formula: alpha * (cosh(th) - 1)
+    limit: (9 * alpha / 2)**(1/3) * (alpha * (sinh(th) - th))**(2/3)
+    vary: {th: [0.3, 0.1, 0.03, 0.01, 0.003]}
+    tolerance: 1e-5
+    shown: ['c\,t = \alpha\,(\sinh\theta - \theta)']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  - id: open-age-flat-limit
+    kind: limit
+    where: 'formula "Age of a matter-dominated universe", Ω < 1 case: must approach the flat 2/3 as Ω → 1 from below'
+    formula: Omega / (2 * (1 - Omega)**1.5) * (2 * sqrt(1 - Omega) / Omega - asinh(2 * sqrt(1 - Omega) / Omega))
+    limit: 2 / 3
+    vary: {Omega: [0.9, 0.99, 0.999, 0.9999]}
+    tolerance: 1e-4
+    shown: ['\dfrac{\Omega}{2(1-\Omega)^{3/2}}\left[\dfrac{2\sqrt{1-\Omega}}{\Omega} - \sinh^{-1}\!\dfrac{2\sqrt{1-\Omega}}{\Omega}\right]']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: mit
+
+  - id: closed-age-flat-limit
+    kind: limit
+    where: 'same formula, Ω > 1 case (upper signs, expanding phase): must approach 2/3 as Ω → 1 from above'
+    formula: Omega / (2 * (Omega - 1)**1.5) * (asin(2 * sqrt(Omega - 1) / Omega) - 2 * sqrt(Omega - 1) / Omega)
+    limit: 2 / 3
+    vary: {Omega: [1.1, 1.01, 1.001, 1.0001]}
+    tolerance: 1e-4
+    shown: ['\dfrac{\Omega}{2(\Omega-1)^{3/2}}\left[\sin^{-1}\!\left(\pm\dfrac{2\sqrt{\Omega-1}}{\Omega}\right) \mp \dfrac{2\sqrt{\Omega-1}}{\Omega}\right]']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: mit
+
+  - id: closed-age-matches-cycloid
+    kind: identity
+    where: 'the Ω > 1 age must agree with the cycloid: at development angle θ (≤ π/2), Ω = 2/(1 + cos θ) and |H|t = Ω(θ − sin θ)/(2(Ω − 1)^(3/2)) (age-closed-universe)'
+    formula: (2 / (1 + cos(th))) / (2 * ((2 / (1 + cos(th))) - 1)**1.5) * (asin(2 * sqrt((2 / (1 + cos(th))) - 1) / (2 / (1 + cos(th)))) - 2 * sqrt((2 / (1 + cos(th))) - 1) / (2 / (1 + cos(th))))
+    equals: (2 / (1 + cos(th))) * (th - sin(th)) / (2 * ((2 / (1 + cos(th))) - 1)**1.5)
+    samples: {th: [0.05, 0.3, 0.9, 1.5, 1.57]}
+    shown: ['\dfrac{\Omega}{2(\Omega-1)^{3/2}}\left[\sin^{-1}']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  - id: open-age-matches-sinh-solution
+    kind: identity
+    where: 'the Ω < 1 age must agree with the sinh solution: at θ, Ω = 2/(1 + cosh θ) and |H|t = Ω(sinh θ − θ)/(2(1 − Ω)^(3/2))'
+    formula: (2 / (1 + cosh(th))) / (2 * (1 - 2 / (1 + cosh(th)))**1.5) * (2 * sqrt(1 - 2 / (1 + cosh(th))) / (2 / (1 + cosh(th))) - asinh(2 * sqrt(1 - 2 / (1 + cosh(th))) / (2 / (1 + cosh(th)))))
+    equals: (2 / (1 + cosh(th))) * (sinh(th) - th) / (2 * (1 - 2 / (1 + cosh(th)))**1.5)
+    samples: {th: [0.05, 0.3, 1.2, 2.5, 6.0]}
+    shown: ['\sinh^{-1}\!\dfrac{2\sqrt{1-\Omega}}{\Omega}\right]']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own

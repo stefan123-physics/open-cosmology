@@ -1,0 +1,180 @@
+---
+title: Eigenvalues, inner products and bras
+slug: eigenvalues-inner-products
+course: "8.05"
+lecture: 7
+order: 1
+summary: "Eigenvectors with distinct eigenvalues are linearly independent, and on a finite-dimensional complex space every operator has at least one eigenvalue, because its characteristic polynomial always has a root. An inner product generalises the dot product to complex spaces: it is conjugate-symmetric, positive, and linear in its second entry but conjugate-linear in its first. It gives lengths, orthogonality, orthonormal bases with components found by inner products, the Schwarz and triangle inequalities, and Hilbert spaces. Gram–Schmidt builds orthonormal bases, and every subspace has an orthogonal complement. Bras are the linear maps from vectors to numbers; each ket has exactly one bra, and in components a bra is the conjugated row vector."
+prerequisites: [linear-operators-matrices, spin-one-half-states-operators]
+source:
+  title: "MIT 8.05 Lecture 7: Linear Algebra: Vector Spaces and Operators (cont.)"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-7-linear-algebra-vector-spaces-and-operators-cont/
+  readings:
+    - title: "8.05 Lecture 7 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/6fef49e488cda2a4311d0f9744da4d4b_jjZM88ku-7k.pdf
+    - title: "Zwiebach, Linear Algebra: Vector Spaces and Operators (8.05 lecture notes, chapter 3)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-3/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 8
+    why: "Linear operators in Dirac notation, adjoints and Hermitian operators."
+quiz:
+  - question: "In the complex space of pairs, what is the inner product of $a = (1, i)$ with itself?"
+    choices: ["2", "0", "$2i$", "1"]
+    answer: 0
+    explanation: "$(a, a) = 1^* \\cdot 1 + i^* \\cdot i = 1 + (-i)(i) = 1 + 1 = 2$. Without the complex conjugate the answer would be $1 + i^2 = 0$, a nonzero vector of zero length, which is why the conjugate is needed."
+  - question: "How does a number $\\alpha$ come out of the first entry of an inner product?"
+    choices: ["$(\\alpha a, b) = \\alpha^*(a, b)$", "$(\\alpha a, b) = \\alpha(a, b)$", "$(\\alpha a, b) = |\\alpha|(a, b)$", "It cannot be taken out"]
+    answer: 0
+    explanation: "The axioms make the inner product linear in the second entry; conjugate symmetry then gives $(\\alpha a, b) = (b, \\alpha a)^* = (\\alpha(b, a))^* = \\alpha^*(a, b)$."
+  - question: "An operator acts on a 4-dimensional space. At most how many distinct eigenvalues can it have?"
+    choices: ["4", "3", "8", "No limit"]
+    answer: 0
+    explanation: "Eigenvectors with distinct eigenvalues are linearly independent, and a 4-dimensional space has at most 4 linearly independent vectors."
+  - question: "Why does every operator on a finite-dimensional complex space have an eigenvalue?"
+    choices: ["Its characteristic polynomial has at least one complex root", "Every matrix is diagonal in some basis", "The determinant is never zero", "Complex spaces are infinite-dimensional"]
+    answer: 0
+    explanation: "$\\lambda$ is an eigenvalue exactly when $\\det(T - \\lambda I) = 0$. That is a polynomial equation in $\\lambda$, and over the complex numbers every polynomial of degree at least 1 has a root. Over the real numbers it may not, as for a rotation of the plane."
+flashcards:
+  - front: "Axioms of an inner product (as in the lecture)"
+    back: "$(a, b) = (b, a)^*$; $(a, a) \\ge 0$, with $0$ only for $a = 0$; linear in the second entry, $(a, \\beta_1 b_1 + \\beta_2 b_2) = \\beta_1(a, b_1) + \\beta_2(a, b_2)$. It follows that it is conjugate-linear in the first entry."
+  - front: "Components in an orthonormal basis"
+    back: "If $(e_i, e_j) = \\delta_{ij}$ and $a = \\sum_ia_ie_i$, then $a_k = (e_k, a)$: the components are inner products with the basis vectors."
+  - front: "What is a bra?"
+    back: "A linear map from the vector space to the numbers: it eats a ket and returns a number. Bras form the dual space; each ket has exactly one bra, the ket times $\\alpha$ corresponds to the bra times $\\alpha^*$, and in components a bra is the conjugated row vector."
+status: reviewed
+---
+
+Zwiebach was away again, and this lecture was given by William Detmold. It finishes eigenvalues, then adds the one piece of structure that quantum mechanics needs on top of a vector space: an **inner product**, which gives lengths, angles and probabilities. It ends with Dirac's bras (transcript pp. 1–19; notes chapter 3, sections 3–4, the start of section 5 and the start of section 6). (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example.)
+
+## Eigenvectors are independent
+
+Recall that a one-dimensional subspace is invariant under $T$ exactly when its vectors satisfy (transcript pp. 1–2)
+
+<Formula label="Eigenvalue equation" tex="Tu = \lambda u" cite="reading2" at="eq. (3.50)" />
+
+Moving $\lambda u$ to the left gives $(T - \lambda I)u = 0$, so a nonzero eigenvector is a nonzero vector that $T - \lambda I$ sends to zero. That operator is therefore **not injective**, and so not invertible, and the eigenvectors with eigenvalue $\lambda$ are its null space (transcript p. 2):
+
+<Formula label="Eigenvectors as a null space" tex="\{\text{eigenvectors with eigenvalue } \lambda\} = \text{null}\,(T - \lambda I)" cite="reading2" at="eq. (3.53)" />
+
+**Theorem** (transcript pp. 2–3). Nonzero eigenvectors $u_1, \dots, u_n$ belonging to **distinct** eigenvalues $\lambda_1, \dots, \lambda_n$ are linearly independent. The proof is by contradiction. Suppose some of them are dependent, and let $k$ be the smallest number for which $c_1u_1 + \dots + c_ku_k = 0$ with the $c$'s not all zero. Apply $T - \lambda_kI$: each $u_i$ is multiplied by $\lambda_i - \lambda_k$, and the last term disappears (transcript p. 3):
+
+<Formula label="The step in the proof" tex="(T - \lambda_kI)(c_1u_1 + \dots + c_ku_k) = c_1(\lambda_1 - \lambda_k)\,u_1 + \dots + c_{k-1}(\lambda_{k-1} - \lambda_k)\,u_{k-1} = 0" cite="reading1" at="p. 3" />
+
+The coefficient $c_k$ is not zero (otherwise a shorter relation would already exist), so some earlier $c_i$ is not zero either, since $c_ku_k$ alone cannot vanish. Because the eigenvalues differ, the result is a nontrivial relation among fewer than $k$ of the vectors, which contradicts $k$ being the smallest. One consequence (notes p. 13): an operator on an $n$-dimensional space has at most $n$ distinct eigenvalues.
+
+## Every complex operator has an eigenvalue
+
+**Theorem** (transcript p. 4). On a **finite-dimensional complex** vector space, every operator has at least one eigenvalue. The lecture gave the reason rather than a proof. Pick a basis: $T - \lambda I$ is not invertible exactly when its matrix is not invertible, that is, when its determinant vanishes. Written out, that determinant is a polynomial in $\lambda$, the **characteristic polynomial** (transcript pp. 4–5):
+
+<Formula label="Characteristic polynomial" tex="f(\lambda) = \det(T - \lambda I) = (-1)^N(\lambda - \lambda_1)(\lambda - \lambda_2)\cdots(\lambda - \lambda_N)" cite="reading2" at="eqs. (3.56)–(3.57)" />
+
+for an $N$-dimensional space. Over the complex numbers every such polynomial factors completely, so it has at least one root, and each root $\lambda_i$ is an eigenvalue. (In the lecture, after a student's suggestion on p. 5, the determinant was written as $\det(\lambda I - T)$, which differs only by the sign $(-1)^N$.) The roots may coincide: an eigenvalue that appears more than once is **degenerate**. Over the real numbers the roots may be complex and so not available, which is why the $90°$ rotation of the plane in the last lecture had no eigenvalues. Eigenvalues do not depend on the basis; the basis was only a tool for the argument.
+
+## From dot products to inner products
+
+An inner product is a map that takes two vectors and gives a number. The model is the dot product on $\mathbb{R}^n$ (transcript pp. 5–6):
+
+<Formula label="Dot product" tex="a \cdot b = a_1b_1 + a_2b_2 + \dots + a_nb_n" cite="reading2" at="eq. (4.60)" />
+
+It is symmetric, $a \cdot a \ge 0$ with equality only for $a = 0$, and it is linear in each entry. It defines the length, $|a|^2 = a \cdot a$, and obeys the Schwarz inequality $|a \cdot b| \le |a|\,|b|$ (transcript pp. 6–7). These properties do not single it out: $c_1a_1b_1 + \dots + c_na_nb_n$ with positive constants $c_i$ satisfies them all.
+
+On a complex space the plain sum of products fails, because $z \cdot z$ need not be real or positive. The length of a complex number uses its conjugate, and so does the length of a complex vector (transcript p. 7):
+
+<Formula label="Length of a complex vector" tex="|z|^2 = z_1^*z_1 + z_2^*z_2 + \dots + z_n^*z_n" cite="reading2" at="eq. (4.67)" />
+
+This suggests conjugating the components of one of the two vectors.
+
+## The axioms
+
+An **inner product** on a complex vector space $V$ assigns a complex number $(a, b)$ to each ordered pair of vectors, such that (transcript p. 8)
+
+<Formula label="Axioms of an inner product" tex="(a, b) = (b, a)^*, \qquad (a, a) \ge 0 \text{ with } (a, a) = 0 \text{ only for } a = 0, \qquad (a, \beta_1b_1 + \beta_2b_2) = \beta_1(a, b_1) + \beta_2(a, b_2)" cite="reading1" at="p. 8" />
+
+for all vectors and complex numbers $\beta_1$, $\beta_2$. The first axiom makes $(a, a)$ real, so the second one makes sense. Dirac writes the inner product as ⟨a|b⟩; mathematicians often write it with angle brackets and a comma, or as here with round brackets as in Zwiebach's notes (transcript pp. 8–9).
+
+Only the second entry was required to be linear. The first entry then follows from conjugate symmetry, with conjugates appearing (transcript p. 9):
+
+<Formula label="Conjugate-linear in the first entry" tex="(\alpha_1a_1 + \alpha_2a_2, b) = \alpha_1^*(a_1, b) + \alpha_2^*(a_2, b)" cite="reading2" at="eqs. (4.70)–(4.71)" />
+
+**Examples** (transcript p. 10). On $\mathbb{C}^n$, the natural inner product conjugates the first vector:
+
+<Formula label="Inner product on n-tuples of complex numbers" tex="(a, b) = a_1^*b_1 + a_2^*b_2 + \dots + a_n^*b_n" cite="reading2" at="eq. (4.68)" />
+
+On complex functions on an interval $0 \le x \le L$, the sum becomes an integral, the limit of sampling the functions at more and more points:
+
+<Formula label="Inner product of functions" tex="(f, g) = \int_0^Lf^*(x)\,g(x)\,dx" cite="reading1" at="p. 10" />
+
+This is exactly the overlap integral of wavefunctions used since 8.04.
+
+## Orthonormal bases, lengths and Hilbert spaces
+
+The inner product lets us compare two vectors. They are **orthogonal** if $(a, b) = 0$, and a list $e_1, \dots, e_n$ is **orthonormal** if (transcript pp. 10–11)
+
+<Formula label="Orthonormal list" tex="(e_i, e_j) = \delta_{ij}" cite="reading2" at="eq. (5.75)" />
+
+If an orthonormal list is a basis and $a = \sum_ia_ie_i$, taking the inner product with $e_k$ picks out one component, because only the term with $i = k$ survives (transcript p. 11):
+
+<Formula label="Components from inner products" tex="(e_k, a) = \sum_{i=1}^na_i\,(e_k, e_i) = \sum_{i=1}^na_i\,\delta_{ki} = a_k" cite="reading2" at="eq. (5.78)" />
+
+The **norm** is $|a| = \sqrt{(a, a)}$, never negative thanks to the second axiom. It satisfies the two inequalities (transcript pp. 11–12):
+
+<Formula label="Schwarz and triangle inequalities" tex="|(a, b)| \le |a|\,|b|, \qquad |a + b| \le |a| + |b|" cite="reading2" at="eqs. (4.73)–(4.74)" />
+
+The triangle inequality says no side of a triangle is longer than the other two together. (Proving the Schwarz inequality for complex spaces was left to the problem set.)
+
+A finite-dimensional complex vector space with an inner product is a **Hilbert space**. In infinite dimensions one more condition is needed: the space must be **complete**, so that sequences of vectors that get ever closer together (Cauchy sequences) converge to a vector in the space (transcript pp. 12–13). The polynomials on an interval are not complete: the polynomials $1 + x + x^2/2! + \dots + x^n/n!$ get closer and closer to $e^x$, which is not a polynomial. (In the lecture the sum was started at the term $x^1$; it must start at the constant term $1$ to give $e^x$.) The states of every quantum system live in a Hilbert space.
+
+## Gram–Schmidt and orthogonal complements
+
+Any list of linearly independent vectors $v_1, \dots, v_n$ can be turned into an orthonormal list spanning the same subspace. Each new vector has its components along the earlier ones removed and is then normalised (transcript p. 13):
+
+<Formula label="Gram–Schmidt" tex="e_j = \frac{v_j - \sum_{i<j}(e_i, v_j)\,e_i}{\left|v_j - \sum_{i<j}(e_i, v_j)\,e_i\right|}" cite="reading2" at="eq. (5.80)" />
+
+starting with $e_1 = v_1/|v_1|$. It works in any inner product space just as in three dimensions.
+
+For any set $U$ of vectors (not necessarily a subspace) the **orthogonal complement** is everything orthogonal to all of $U$ (transcript pp. 13–15):
+
+<Formula label="Orthogonal complement" tex="U^\perp = \{v \in V : (v, u) = 0 \text{ for all } u \in U\}" cite="reading2" at="eq. (5.81)" />
+
+It is always a subspace. In three dimensions the set of the two unit vectors along $x$ and $y$ is not a subspace, but its complement, the multiples of the unit vector along $z$, is. If $U$ is a subspace, every vector splits uniquely into a part in $U$ and a part orthogonal to it, so $V = U \oplus U^\perp$ (transcript p. 14; proved in the notes, p. 19). A question from the class (p. 14) brought out that plane waves, which cannot be normalised, are not in the Hilbert space at all; they are used because the method works, as building blocks for normalisable wave packets.
+
+## Bras and the dual space
+
+Dirac split the "bracket" ⟨a|b⟩ into two pieces: the **ket** |b⟩, a vector in $V$, and the **bra** ⟨a| (transcript p. 16). A bra is not a vector in $V$. It is a **map**: it takes a ket and returns a complex number, the inner product. And because the inner product is linear in its second entry, the bra is a linear map from $V$ to the complex numbers.
+
+The linear maps from $V$ to the numbers form a vector space of their own, the **dual space** $V^*$: bras can be added and multiplied by numbers, defined by what they do to every ket (transcript pp. 16–17). Each ket gives exactly one bra, and **different kets give different bras**. Suppose the kets $v$ and $v'$ gave the same bra, so that $(v, w) = (v', w)$ for every $w$. Then $(v - v', w) = 0$ for every $w$; choosing $w = v - v'$ gives a vector of zero length, so $v = v'$ (transcript pp. 17–18). In the other direction, on a **finite-dimensional** space every linear map to the numbers is the bra of some ket (proved in the notes with an orthonormal basis, eq. (6.5)). In infinite dimensions this needs care: evaluating a function at one point is linear but is not the inner product with any function in the space. In finite dimensions, then, kets and bras are in one-to-one correspondence and can share their labels. The correspondence conjugates numbers: the ket $\alpha$|v⟩ goes with the bra $\alpha^*$⟨v| (transcript p. 18).
+
+Concretely, if a ket is a column of components, its bra is the **row** of conjugated components, and the inner product is ordinary matrix multiplication of a row by a column (transcript p. 18):
+
+<Formula label="A bra as a conjugated row" tex="(a, v) = \begin{pmatrix}a_1^* & a_2^* & \cdots & a_n^*\end{pmatrix}\begin{pmatrix}v_1\\ v_2\\ \cdots\\ v_n\end{pmatrix} = a_1^*v_1 + \dots + a_n^*v_n" cite="reading1" at="p. 18" />
+
+This is the rule already used for spin one-half in Lecture 4. Operators in this notation were planned for this lecture but moved to the next one.
+
+## Worked example
+
+<WorkedExample title="Gram–Schmidt and a complex orthogonality">
+<Problem>
+(a) In $\mathbb{R}^3$ with the dot product, apply Gram–Schmidt to $v_1 = (1, 1, 0)$ and $v_2 = (1, 0, 1)$. (b) In $\mathbb{C}^2$, show that $a = (1, i)$ and $b = (i, 1)$ are orthogonal, and find $|a|$. What would the dot product without conjugates have said?
+</Problem>
+<Step title="(a) First vector">
+$|v_1| = \sqrt{2}$, so $e_1 = (1, 1, 0)/\sqrt{2}$.
+</Step>
+<Step title="(a) Second vector">
+$(e_1, v_2) = 1/\sqrt{2}$, so $v_2 - (e_1, v_2)\,e_1 = (1, 0, 1) - \tfrac{1}{2}(1, 1, 0) = (\tfrac{1}{2}, -\tfrac{1}{2}, 1)$. Its squared length is $\tfrac{1}{4} + \tfrac{1}{4} + 1 = \tfrac{3}{2}$, and dividing by its length gives $e_2 = (1, -1, 2)/\sqrt{6}$. Check: $e_1 \cdot e_2 = (1 - 1 + 0)/\sqrt{12} = 0$, and $|e_2|^2 = (1 + 1 + 4)/6 = 1$.
+</Step>
+<Step title="(b) Complex vectors">
+$(a, b) = 1^* \cdot i + i^* \cdot 1 = i - i = 0$: orthogonal. $(a, a) = 1 + (-i)(i) = 2$, so $|a| = \sqrt{2}$. Without conjugates, $a_1b_1 + a_2b_2 = i + i = 2i$, and $a$ "dotted" with itself would give $1 + i^2 = 0$: a nonzero vector of zero length. The conjugate is what makes lengths work.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- The eigenvectors of $\lambda$ form $\text{null}\,(T - \lambda I)$; eigenvectors with distinct eigenvalues are linearly independent, so an $n$-dimensional space allows at most $n$ distinct eigenvalues.
+- On a finite-dimensional complex space $\det(T - \lambda I)$ is a polynomial with at least one root, so every operator has an eigenvalue; repeated roots are degenerate eigenvalues.
+- An inner product is conjugate-symmetric, positive, and linear in the second entry, hence conjugate-linear in the first; on $\mathbb{C}^n$ it is $\sum a_i^*b_i$ and on functions $\int f^*g\,dx$.
+- In an orthonormal basis the components are $a_k = (e_k, a)$; the norm obeys the Schwarz and triangle inequalities; a complete inner product space is a Hilbert space.
+- Gram–Schmidt builds orthonormal bases, and $V = U \oplus U^\perp$ for every subspace $U$.
+- Bras are linear maps from kets to numbers, forming the dual space; each ket has one bra, numbers are conjugated in passing between them, and in components a bra is the conjugated row vector.

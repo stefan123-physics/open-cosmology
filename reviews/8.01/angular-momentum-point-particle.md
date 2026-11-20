@@ -1,0 +1,67 @@
+---
+page: content/year-1/8.01/angular-momentum-point-particle.mdx
+reviewed: 2026-11-16
+sources_read:
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/pages/week-11-angular-momentum/32-1-angular-momentum-for-a-point-particle/ (read; segment pages 32.1–32.4 read as saved HTML, each with the CC BY-NC-SA 4.0 licence link and its transcript link)
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter19/ (read; Chapter 19 PDF, 30 pages, extracted with pdftotext -layout; Sections 19.1–19.2, Examples 19.1–19.3 (pp. 19-5 to 19-8) and Example 19.6 (pp. 19-16 to 19-17) compared in full; page numbers from the printed footers "19-k" at the end of each page)
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/a31efcde3ce6b8a685c3451cd4af782e_Idx3VgOpUDk.pdf (read; 32.1 transcript, 2 pages; URL confirmed as the transcript link on the 32.1 page)
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/1446a01bef091e5c006cfa592823fa45_WwvDJqtHNBU.pdf (read; 32.2 transcript, 2 pages; URL confirmed)
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/4ac5094df11b5b08352a3dd8e4c060d3_d2POYCmmM8A.pdf (read; 32.3 transcript, 4 pages; URL confirmed)
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/de9dbf42b8a7497a43dbfeb56b71c3b0_2tSUT6HDeaw.pdf (read; 32.4 transcript, 2 pages; URL confirmed)
+  - https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/pages/week-11-angular-momentum/ (read; segment list of Lessons 32–34, for the leadsTo check)
+  - content/year-1/8.01/_course.json, content/year-5/Ferreras/galaxies-in-halos.mdx, content/year-5/Ferreras/simulating-galaxy-formation.mdx (read; leadsTo targets and callout claims)
+  - calcs/8.01/angular-momentum-point-particle.yaml (read; its 8 tests pass)
+verdict: needs-changes
+---
+
+# Review: Angular momentum of a point particle
+
+The transcripts carry no printed page numbers, so "p. n" is the PDF page. Every page citation on the page was checked against that, and every notes citation against the printed footers.
+
+## Differences from the MIT source
+| # | Severity | Where on page | MIT says | Page says | Suggested fix |
+|---|----------|---------------|----------|-----------|---------------|
+| 1 | error | Summary, second bullet | 32.2 pp. 1–2: an object "moving at a speed v along a straight line"; the angular momentum is constant "because the perpendicular distance is not changing" (with v constant). Notes Example 19.1: "uniform velocity". | "a particle moving in a straight line has constant angular momentum about any point" | Wrong as stated: a particle speeding up or slowing down along a straight line (moment arm fixed, p changing) has a changing L about any point off the line. Write "a particle moving in a straight line at constant velocity has constant angular momentum about any point". (The body and quiz 1 are right; only the summary drops the condition.) |
+| 2 | warning | Formula "Magnitude of the angular momentum", `cite="reading3" at="p. 1"` | 32.2 p. 1 gives r mv sin θ and (r sin θ) mv = r⊥ mv; the third form r_S p⊥ is not in the transcript. All three are in notes Eqs. (19.2.2)–(19.2.6), p. 19-4. | Three forms, cited to the 32.2 transcript only | Cite `reading1` at "Eqs. (19.2.2)–(19.2.6), p. 19-4" (already named in the prose), or drop $= r_S\,p_\perp$ from the cited formula. |
+| 3 | warning | "About a point B a distance $d$ beyond particle 2 on the same line" | 32.3 pp. 1–3: A and B both lie on the axis drawn through the two particles (the x-axis); r_B,1 = −(2r + d) î, r_B,2 = −d î. | "on the same line", right after "on lines a distance 2r apart" | Easy to misread as particle 2's line of motion (where particle 2 would contribute nothing). Write "on the line through A and the two particles (the $x$-axis), a distance $d$ beyond particle 2". The terms the page gives, (2r + d)p₁ k̂ and −d p₁ k̂, are correct for MIT's B. |
+| 4 | warning | `source.readings[0].location` | The page also cites Example 19.3 (notes, pp. 19-6–19-7). | "Sections 19.1–19.2, Examples 19.1, 19.2 and 19.6" | Add Example 19.3. (Example 19.1 is listed but never cited in the text; worked example (a) is the page's own version of it, which is fine.) |
+| 5 | warning | Section "A system about different points", the derivation of $\vec L_A = \vec L_B + \vec r_{A,B} \times \vec p_{\text{sys}}$ | In the video lessons this result is segment 33.4 ("If Momentum is Zero then Angular Momentum is Independent of Origin"); 32.3 p. 4 only states it. The notes give it in Example 19.6 (Section 19.6). | Brings the derivation forward into Lesson 32, citing the notes | Physics and citation are right. Say in one bracket that MIT's video derives it in 33.4, and make sure the Lesson 33 page refers back here instead of repeating it. |
+| 6 | info | Circular motion, "where $mr^2$ is the moment of inertia of a point particle about the axis" | 32.4 p. 2: "the moment of inertia of a point particle located at the center" (a slip; the particle is at radius r and the inertia is about the axis). Notes Example 19.2, p. 19-6: "moment of inertia about the z-axis is I_S = mR²". | Correct wording | No change needed; optionally a bracket per writing rule 4. |
+| 7 | info | Bracket on Example 19.3, "notes, Example 19.3, pp. 19-6–19-7" | The calculation (−hmRω_z r̂ term) is on p. 19-7; the explicit statement that L about an off-plane axis point has a component in the x–y plane is on p. 19-8. | pp. 19-6–19-7 | Change to "pp. 19-6–19-8". |
+| 8 | info | "any point at the same perpendicular distance sees the same value" | 32.2 p. 1: "A reference point that's the same horizontal distance away from the object will see the same angular momentum." | Same claim | True for points on the same side of the line; a point the same distance away on the other side sees the opposite sign. Optionally "the same magnitude (and the same sign on the same side)". The "farther point sees a larger one" part comes from 32.2 p. 2's tilted-motion case, and is correct in general. |
+| 9 | info | Opening paragraph, "this chapter builds the analogue" | Notes 19.1 (p. 19-2). | "this chapter" | On a web lesson "this chapter" reads oddly; "the notes' Chapter 19 builds…" or "this lesson and the next ones build…". |
+| 10 | info | Example 19.6 citation "Eqs. (19.5.14)–(19.5.19), pp. 19-16–19-17" | Example 19.6 starts on p. 19-16 (Eqs. 19.5.11–19.5.12); Eqs. (19.5.13)–(19.5.19) and the centre-of-mass remark are on p. 19-17. The notes number these equations (19.5.x) although they sit in Section 19.6. | As quoted | Fine; "pp. 19-16–19-17" covers the example. The single formula cite, Eq. (19.5.18), p. 19-17, is exact. |
+
+## Arithmetic and answer checks
+- Citations to the notes (footers): Section 19.1 and Eq. (19.1.1) p. 19-2 ✓; Eq. (19.2.1) and the units "[kg m² s⁻¹] = [N m s] = [J s]", "no special name" p. 19-3 ✓; Eqs. (19.2.2)–(19.2.6) p. 19-4 ✓; Section 19.2.2 right-hand rule pp. 19-4–19-5 ✓ (the "perpendicular to the plane" sentence is on p. 19-5); Example 19.2 with r̂ × θ̂ = k̂ and L = I_S ω p. 19-6 ✓; Eq. (19.5.18) and the centre-of-mass remark p. 19-17 ✓.
+- Citations to transcripts: 32.1 definition p. 1 ✓, tail-to-tail right-hand rule pp. 1–2 ✓, perpendicular to both p. 2 ✓. 32.2 straight line, arbitrary origin, magnitude p. 1 ✓; ball moving up, same distance pp. 1–2 ✓; sign and circular motion p. 2 ✓. 32.3 set-up p. 1 ✓, vectors and L_A = 2rp₁ k̂ p. 2 ✓, point B pp. 2–3 ✓, "whenever the momentum of the system is 0" p. 4 ✓. 32.4 ω_z > 0 p. 1 ✓, cylindrical coordinates pp. 1–2 ✓, r̂ × θ̂ = k̂, mr²ω_z k̂, moment of inertia and "perpendicular to the plane of motion" p. 2 ✓.
+- Formula contents: (−r î) × (−p₁ ĵ) = rp₁ k̂, (r î) × (p₁ ĵ) = rp₁ k̂, sum 2rp₁ k̂ ✓; about B: (−(2r + d) î) × (−p₁ ĵ) = (2r + d)p₁ k̂, (−d î) × (p₁ ĵ) = −dp₁ k̂, sum 2rp₁ k̂ ✓; r r̂ × mrω_z θ̂ = mr²ω_z k̂ ✓; L_A = L_B + r_A,B × p_sys matches (19.5.18) ✓.
+- Worked example (a): p = 0.50 × 4.0 = 2.0 kg m/s ✓; (x î + 3.0 ĵ) × 2.0 î = 6.0 (ĵ × î) = −6.0 k̂ kg m²/s for every x ✓. Sign: the ball is above the origin moving in +x, so its polar angle decreases; seen from +z it goes round the origin clockwise, and negative k̂ means clockwise ✓. Moment arm 3.0 m ✓.
+- Worked example (b): each skater p = 1.0 × 2.0 = 2.0 kg m/s, total momentum zero ✓; about a point on one skater's line, r ∥ p for that skater, so 0 ✓; the other: moment arm 1.5 m, 1.5 × 2.0 = 3.0 kg m²/s ✓; the same about every point since p_sys = 0 (Eq. 19.5.19) ✓. The claim is correct for magnitude and direction (the direction is perpendicular to the ice, with the sense set by which way the pair circulates; the page gives only the magnitude, which is fine).
+- Worked example (c): 0.20 × 0.64 × 3.0 = 0.384 ≈ 0.38 kg m²/s ✓.
+- Quiz 1: index 1 (constant and nonzero) ✓; explanation correct. Quiz 2: (1.0 î + 2.0 ĵ) × 6.0 î = 12 (ĵ × î) = −12 k̂, index 1 ✓ (the 2.0 kg mass is a harmless distractor). Quiz 3: index 1 ✓. Quiz 4: 0.384, index 1 ✓; distractors 0.48 (mrω, the momentum), 0.16 (m r) and 1.44 (mrω²·r) are plausible slips.
+- Flashcards: all three correct.
+- calcs/8.01/angular-momentum-point-particle.yaml: all eight entries agree with my recomputation and pass (`pytest -k angular-momentum-point`: 8 passed). Quiz 4's "0.384" is named in `example-c`'s `where` but its `shown` string matches only the worked example; optional to add the quiz string.
+
+## Coverage and order
+- 32.1 (definition, right-hand rule, perpendicularity) ✓; 32.2 (straight-line motion, choice of point, magnitude two ways, moment arm, sign in circular motion) ✓; 32.3 (two particles about A and B, independence when p_sys = 0) ✓; 32.4 (circular motion in cylindrical coordinates, L = mr²ω_z k̂, along the axis) ✓. Order follows MIT ✓.
+- Notes: 19.1 (introduced in one sentence; the preview of τ_S = dL_S/dt and L_z = I_S ω_z for rigid bodies is left to later lessons, appropriate), 19.2.1–19.2.2 ✓, Example 19.1 (replaced by the page's own example (a)) ✓, Example 19.2 ✓, Example 19.3 (one-sentence bracket; its magnitude mRω_z(h² + R²)^½ and the cone are not given; acceptable for a bracket), Example 19.6 ✓ (see row 5 about 33.4).
+- Added by the page: worked example, cosmology callout, quiz and flashcards.
+
+## Licensing
+- All four segment pages carry CC BY-NC-SA 4.0; no "All rights reserved" or "Courtesy of" notice in the transcripts, the chapter text or the segment pages (grep found none). No figure is reused.
+- The notes' opening quotation (Kleppner, *An Introduction to Mechanics*, p. 307) is not reproduced or paraphrased ✓.
+- No copied paragraphs. Closest wording: "although some choices are easier or more useful" (32.2: "some choices are easier to calculate or more useful than others") and "with no special name" (notes: "There is no special name for this set of units"): short phrases, acceptable.
+- Worked examples are original: (a) uses its own numbers and motion along y = 3.0 m, not Example 19.1's diagonal velocity; (b) and (c) have no MIT counterpart with these numbers. No OpenStax or LibreTexts material.
+
+## Notes
+- leadsTo 8.01 Lecture 33: matches `_course.json` (lecture 33, "Angular Momentum of a Rigid Body"); OCW's Lesson 33 is "Angular Momentum of a Rigid Body about a Fixed Axis" and includes 33.5 "Kinetic Energy of a Symmetric Object", so "and its kinetic energy" is correct ✓. (The `_course.json` title is a shortened form of OCW's; info only.)
+- leadsTo Ferreras 4.6: exists (galaxies-in-halos.mdx, lecture 4.6). That page says the size–mass relations "test how angular momentum flows (early simulations without feedback made discs that were too small and compact)" ✓, and Section 4.5 (simulating-galaxy-formation.mdx) explains the overcooling problem: gas "lost its angular momentum". So the callout's "early ones lost too much angular momentum and made discs that were too small" is supported, but (warning-level suggestion) it omits the cause the Ferreras pages give, missing feedback (overcooling); add "because they lacked feedback" or similar, and consider pointing to 4.5 as well.
+- Callout, "When gas falls into a dark matter halo it keeps most of its angular momentum … a rotating disc whose size is set by how much angular momentum it brought in": standard disc-formation theory (Fall & Efstathiou 1980; Mo, Mao & White 1998), correct, but not stated in either Ferreras page; it is unattributed. Acceptable as background; optionally attribute it in a reference. "m r v for a circular orbit" ✓ (equals mr²ω, consistent with Section "Circular motion").
+- No em dashes on the page.
+
+## Resolution (2026-11-16, by the page author)
+
+- **Error 1:** the Summary bullet now says "in a straight line at constant velocity".
+- **Warnings:** the magnitude formula now cites the notes, Eqs. (19.2.2)–(19.2.6), p. 19-4 (the transcript is cited for the moment-arm form); point B is described as lying on the axis through A and both particles; Example 19.3 is added to the notes' `location`; the page says that the video course proves the change-of-point formula in segment 33.4 (the Lesson 33 page will refer back rather than repeat it); the callout names missing feedback as the reason early simulations made discs too small.
+- Info: Example 19.3 is cited as pp. 19-6–19-8; the remark about points at the same distance now notes the opposite sign on the other side; "this chapter" is reworded. The disc-formation statement stays as standard background without a separate source.

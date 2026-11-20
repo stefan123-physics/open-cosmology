@@ -1,0 +1,343 @@
+# Calculations on content/year-4/8.08/volume-energy-fluctuations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter VI notes, "Thermal Fluctuations" (Wen, handwritten scan). Page numbers are
+# Wen's handwritten numbers, top right (41-47 = PDF pages 1-7); this page uses pp. 45-47, points 2 to 4.
+# The notes quote no numbers.
+# Page's own example: an AFM cantilever (k_s = 0.1 N/m at 300 K; rms 0.5 nm), 1 cm^3 of helium at 273.15 K and 101325 Pa,
+# a gas of 1500 atoms. Callout: CMB photons at T = 2.725 K (Guth 2013 value, calcs/values.yaml).
+# Constants: k_B (exact 2019 SI), hbar, c.
+
+page: content/year-4/8.08/volume-energy-fluctuations.mdx
+calcs:
+  # ---------------------------------------------------------------- volume (p. 45)
+  - id: curvature-in-v
+    kind: identity
+    where: 'formula "Curvature of the free energy in V": for the ideal gas A = N kT [ln(N lam^3/V) - 1], d2A/dV2 = 1/(V K_T) with K_T = 1/P = V/(N kT)'
+    formula: deriv('NN*TT*(log(NN*lam**3/x) - 1)', 'x', VV, 2)
+    equals: 1/(VV*VV/(NN*TT))
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-5
+    shown: ['= -\frac{1}{(\partial V/\partial P)_T} = \frac{1}{VK_T}']
+    source: {cite: reading1, at: 'p. 45, point 2'}
+    origin: mit
+
+  - id: ideal-vkt
+    kind: identity
+    where: 'text: for an ideal gas V K_T = N kT/P^2 = V/P = V^2/(N kT)'
+    formula: NN*TT/(NN*TT/VV)**2
+    equals: VV**2/(NN*TT)
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['and $VK_T = Nk_BT/P^2 = V/P = V^2/(Nk_BT)$']
+    source: {cite: reading1, at: 'p. 45, point 2'}
+    origin: mit
+
+  - id: ideal-volume-variance
+    kind: identity
+    where: 'formula "Volume fluctuations of an ideal gas": kT V K_T = V^2/N'
+    formula: TT*VV**2/(NN*TT)
+    equals: VV**2/NN
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['tex="\langle(V - \bar V)^2\rangle = \frac{V^2}{N}, \qquad']
+    source: {cite: reading1, at: 'p. 45, point 2'}
+    origin: mit
+
+  - id: gibbs-first-derivative
+    kind: identity
+    where: 'formula "The volume as a derivative of G": with A(V) = -N kT ln V (ideal gas, up to terms without V), dG/dP of G = -kT ln int exp(-beta(A + PV)) dV equals <V> = (N + 1) kT/P (numerical integral and derivative; N = 3, kT = 1)'
+    formula: deriv('-log(integrate("v**3*exp(-p*v)", "v", 0, 80/p))', 'p', PP)
+    equals: 4/PP
+    samples: {PP: [1.0, 2.0, 0.7]}
+    tolerance: 1e-5
+    shown: ['the familiar thermodynamic rule $\partial G(P, T)/\partial P = V$']
+    source: {cite: reading1, at: 'p. 45, point 2'}
+    origin: page-own
+
+  - id: gibbs-second-derivative
+    kind: identity
+    where: 'formula "The second derivative of G": -kT d2G/dP2 is the variance of V, (N + 1)(kT/P)^2 for the same Gamma distribution (N = 3, kT = 1)'
+    formula: -deriv('-log(integrate("v**3*exp(-p*v)", "v", 0, 80/p))', 'p', PP, 2)
+    equals: 4/PP**2
+    samples: {PP: [1.0, 2.0, 0.7]}
+    tolerance: 1e-4
+    shown: ['\langle(V - \bar V)^2\rangle = -k_BT\,\frac{\partial^2G}{\partial P^2} = k_BT\,VK_T" cite=']
+    source: {cite: reading1, at: 'p. 45, point 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- energy (p. 46)
+  - id: entropy-curvature
+    kind: identity
+    where: 'formula "Curvature of the entropy": for S(E) = (3/2) N k ln E (ideal gas, k = 1), -d2S/dE2 = 1/(T^2 C_V) with T = E/(1.5 N), C_V = 1.5 N'
+    formula: -deriv('1.5*NN*log(x)', 'x', EE, 2)
+    equals: 1/((EE/(1.5*NN))**2*1.5*NN)
+    samples: {NN: [10.0, 100.0, 3.0], EE: [15.0, 30.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['-\frac{\partial^2S}{\partial E^2} = \frac{1}{T^2}\frac{\partial T}{\partial E} = \frac{1}{T^2C_V}']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: mit
+
+  - id: extensive-curvature
+    kind: identity
+    where: 'text: with S = N s(E/N), d2S/dE2 = (1/N) d2s/de2 (s = 1.5 ln e as a test case)'
+    formula: deriv('NN*1.5*log(x/NN)', 'x', EE, 2)
+    equals: (1/NN)*deriv('1.5*log(y)', 'y', EE/NN, 2)
+    samples: {NN: [10.0, 100.0, 3.0], EE: [15.0, 30.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['Then $d^2S/dE^2 = (1/N)\,d^2s/d\epsilon^2$']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: mit
+
+  - id: ideal-s-curvature
+    kind: identity
+    where: 'formula "Curvature for the ideal gas": d2s/de2 = -(3/2) k/e^2 (notes drop the minus sign); k = 1, s = ln(v (2 m e)^(3/2)/h^3)'
+    formula: deriv('log(vv*(2*mm*x)**1.5/hh**3)', 'x', ep, 2)
+    equals: -1.5/ep**2
+    samples: {vv: [1.0, 3.0, 0.2], mm: [1.0, 0.5, 4.0], hh: [1.0, 0.3, 2.0], ep: [1.0, 2.5, 0.4]}
+    tolerance: 1e-6
+    shown: ['\frac{d^2s}{d\epsilon^2} = -\frac32\,\frac{k_B}{\epsilon^2}']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: slip
+
+  - id: ideal-delta-e
+    kind: identity
+    where: 'formula "Energy fluctuation of an ideal gas": sqrt(-N k/(d2s/de2)) = sqrt(N) sqrt(2/3) e = sqrt(2/3) E/sqrt(N), and equals sqrt(k T^2 C_V) with C_V = 1.5 N k, E = 1.5 N k T (k = 1)'
+    formula: sqrt(-NN/(-1.5/ep**2))
+    equals: sqrt(TT**2*1.5*NN)
+    samples: {NN: [10.0, 100.0, 3.0], ep: [1.5, 3.0, 0.75], TT: [1.0, 2.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['\delta E = \sqrt N\,\sqrt{\frac23}\,\epsilon = \sqrt{\frac23}\,\frac{E}{\sqrt N}']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: mit
+
+  - id: ideal-delta-e-form
+    kind: identity
+    where: 'formula "Energy fluctuation of an ideal gas": sqrt(N) sqrt(2/3) e equals sqrt(2/3) E/sqrt(N) with E = N e'
+    formula: sqrt(NN)*sqrt(2/3)*ep
+    equals: sqrt(2/3)*(NN*ep)/sqrt(NN)
+    samples: {NN: [10.0, 100.0, 3.0], ep: [1.5, 3.0, 0.75]}
+    tolerance: 1e-12
+    shown: ['the same as $\sqrt{k_BT^2C_V}$ with $C_V = \frac32Nk_B$']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: mit
+
+  - id: plot-30
+    where: 'plot caption: delta E/E = sqrt(2/(3 N)) for N = 30, about 15%'
+    inputs: {}
+    formula: 100*sqrt(2/(3*30))
+    expected: '15'
+    shown: ['With 30 atoms the energy wanders by about 15% (δE/Ē = √(2/90))']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: plot-500
+    where: 'plot caption: for N = 500, under 4% (3.65%)'
+    inputs: {}
+    formula: 100*sqrt(2/(3*500))
+    expected: '3.65'
+    shown: ['with 500 atoms by under 4%']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: plot-gaussian
+    kind: identity
+    where: 'plot: exp(-(x - 1)^2/(2 (2/(3N)))) equals exp(-0.75 N (x - 1)^2)'
+    formula: exp(-(x - 1)**2/(2*(2/(3*NN))))
+    equals: exp(-0.75*NN*(x - 1)**2)
+    samples: {x: [0.9, 1.2, 0.5], NN: [30.0, 5.0, 500.0]}
+    tolerance: 1e-12
+    shown: ['expr: "exp(-0.75*N*(x - 1)^2)"']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: quiz-1500
+    where: 'quiz 3: delta E/E = sqrt(2/(3 x 1500)) in percent'
+    inputs: {}
+    formula: 100*sqrt(2/(3*1500))
+    expected: '2.1'
+    quiz: 2
+    shown: ['= \\sqrt{1/2250} \\approx 0.021$, about 2.1%']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- fluctuation and response (p. 47)
+  - id: piston-ideal
+    kind: identity
+    where: 'text: for PV = kTN, -dP/dV = kTN/V^2, so kT/(-dP/dV) = V^2/N'
+    formula: TT/(-deriv('TT*NN/x', 'x', VV))
+    equals: VV**2/NN
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0]}
+    tolerance: 1e-6
+    shown: ['$-\partial P/\partial V = k_BTN/V^2$, and the variance is $V^2/N$ again']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: mit
+
+  - id: tilted-minimum
+    kind: identity
+    where: 'formula "Response to a force": the minimum of x^2/(2K) - x F is at x = K F (solve for zero slope)'
+    formula: solve('y/KK - FF', 'y', -100, 100)
+    equals: KK*FF
+    samples: {KK: [1.0, 0.3, 4.0], FF: [1.0, -2.0, 0.5]}
+    tolerance: 1e-8
+    shown: ['\bar x = K\,F, \qquad K = \frac{1}{\partial^2A/\partial x^2}']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: cantilever and helium
+  - id: ex-kT-300
+    where: 'worked example (a): k_B T at 300 K'
+    inputs: {T: 300 K}
+    formula: k_B*T
+    expected: 4.142e-21 J
+    shown: ['$k_BT = 1.380649 \times 10^{-23} \times 300 \approx 4.142 \times 10^{-21}$ J']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: ex-x2
+    where: 'worked example (a): <x^2> = k_B T/k_s'
+    inputs: {T: 300 K, ks: 0.1 N/m}
+    formula: k_B*T/ks
+    expected: 4.142e-20 m**2
+    shown: ['$\langle x^2\rangle = k_BT/k_s \approx 4.142 \times 10^{-20}$ m²']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: ex-rms
+    where: 'worked example (a): root-mean-square jitter'
+    inputs: {T: 300 K, ks: 0.1 N/m}
+    formula: sqrt(k_B*T/ks)
+    expected: 2.04e-10 m
+    shown: ['a root-mean-square of $2.04 \times 10^{-10}$ m, about 0.20 nm']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: quiz-rms
+    where: 'quiz 4: the same in nm'
+    inputs: {T: 300 K, ks: 0.1 N/m}
+    formula: sqrt(k_B*T/ks)
+    expected: 0.2 nm
+    quiz: 3
+    shown: ['a root-mean-square of about 0.20 nm."']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: quiz-x2
+    where: 'quiz 4 explanation: <x^2> = 4.14e-21/0.1'
+    inputs: {T: 300 K, ks: 0.1 N/m}
+    formula: k_B*T/ks
+    expected: 4.14e-20 m**2
+    shown: ['= k_BT/k_s = 4.14 \\times 10^{-21}/0.1 \\approx 4.14 \\times 10^{-20}$ m²']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: ex-response
+    where: 'worked example (a): K F = F/k_s for 1 pN'
+    inputs: {F: 1e-12 N, ks: 0.1 N/m}
+    formula: F/ks
+    expected: 0.01 nm
+    shown: ['moves the tip by $KF = 10^{-12}/0.1 = 10^{-11}$ m, 0.01 nm']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: ex-ratio
+    where: 'worked example (a): jitter over deflection, 2.04e-10/1e-11'
+    inputs: {T: 300 K, ks: 0.1 N/m, F: 1e-12 N}
+    formula: sqrt(k_B*T/ks)/(F/ks)
+    expected: '20'
+    tolerance: 1
+    shown: ['some 20 times smaller than the thermal jitter']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: ex-stiffness
+    where: 'worked example (b): k_s = k_B T/<x^2> with rms 0.5 nm'
+    inputs: {T: 300 K, x: 0.5 nm}
+    formula: k_B*T/x**2
+    expected: 0.0166 N/m
+    shown: ['= 4.142 \times 10^{-21}/(0.5 \times 10^{-9})^2 \approx 0.0166$ N/m']
+    source: {cite: reading1, at: 'p. 47, point 4'}
+    origin: page-own
+
+  - id: ex-helium-n
+    where: 'worked example (c): N = PV/k_B T for 1 cm^3 at 273.15 K and 101325 Pa'
+    inputs: {P: 101325 Pa, V: 1e-6 m**3, T: 273.15 K}
+    formula: P*V/(k_B*T)
+    expected: '2.69e19'
+    shown: ['\approx 2.69 \times 10^{19}$ atoms']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: ex-helium-de
+    where: 'worked example (c): delta E/E = sqrt(2/(3N))'
+    inputs: {P: 101325 Pa, V: 1e-6 m**3, T: 273.15 K}
+    formula: sqrt(2/(3*P*V/(k_B*T)))
+    expected: '1.6e-10'
+    shown: ['$\delta E/\bar E = \sqrt{2/(3N)} \approx 1.6 \times 10^{-10}$']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: ex-1500
+    where: 'worked example (c): 1500 atoms, about 2.1%'
+    inputs: {}
+    formula: 100*sqrt(2/(3*1500))
+    expected: '2.1'
+    shown: ['A gas of only 1500 atoms, by contrast, fluctuates by about 2.1%']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- callout: CMB photons
+  - id: cmb-cv
+    kind: identity
+    where: 'callout: for E = u V with u = a T^4, C_V = dE/dT = 4E/T'
+    formula: deriv('aa*x**4*VV', 'x', TT)
+    equals: 4*aa*TT**4*VV/TT
+    samples: {aa: [1.0, 0.3], VV: [2.0, 5.0], TT: [1.0, 2.7]}
+    tolerance: 1e-6
+    shown: ['so $C_V = 4E/T$ and $\delta E/\bar E = \sqrt{k_BT^2C_V}/E = \sqrt{4k_BT/(uV)}$']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: cmb-u
+    where: 'callout: u = (pi^2/15) (kT)^4/(hbar c)^3 at 2.725 K (as computed on the 8.286 black-body page)'
+    inputs: {T: 2.725 K}
+    formula: pi**2/15*(k_B*T)**4/(hbar*c)**3
+    expected: 4.17e-14 J/m**3
+    shown: ['at $T = 2.725$ K with $u = 4.17 \times 10^{-14}$ J/m³']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: cmb-cm3
+    where: 'callout: sqrt(4 kT/(u V)) for V = 1 cm^3, about 6%'
+    inputs: {T: 2.725 K, V: 1e-6 m**3}
+    formula: 100*sqrt(4*k_B*T/(pi**2/15*(k_B*T)**4/(hbar*c)**3*V))
+    expected: '6'
+    shown: ['a cubic centimetre fluctuates by about 6%']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: cmb-photons-cm3
+    where: 'callout: photon number density 2 zeta(3)/pi^2 (kT/hbar c)^3 at 2.725 K, about 411 per cm^3 (some 400)'
+    inputs: {T: 2.725 K, V: 1e-6 m**3}
+    formula: 2*1.2020569/pi**2*(k_B*T/(hbar*c))**3*V
+    expected: '400'
+    tolerance: 20
+    shown: ['(it holds only some 400 photons)']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: cmb-mpc
+    where: 'callout: sqrt(4 kT/(u V)) for a cube 1 Mpc on a side (1 Mpc = 3.0857e22 m): 1.1e-38, about 10^-38'
+    inputs: {T: 2.725 K, L: 3.0857e22 m}
+    formula: sqrt(4*k_B*T/(pi**2/15*(k_B*T)**4/(hbar*c)**3*L**3))/1e-38
+    expected: '1'
+    tolerance: 0.3
+    shown: ['but a cube one megaparsec on a side by about $10^{-38}$']
+    source: {cite: reading1, at: 'p. 46, point 3'}
+    origin: page-own
+
+  - id: cmb-ripples
+    kind: fact
+    where: 'callout: the CMB ripples are about one part in 100 000 (8.286 Lecture 23, 8.902 Lecture 17)'
+    value: '1e-5'
+    shown: ['The ripples of one part in 100 000 that the CMB shows']
+    source: {ref: 'CMB temperature anisotropies of about 1e-5, as quoted on the 8.286 Lecture 23 and 8.902 Lecture 17 pages'}
+    origin: later-data

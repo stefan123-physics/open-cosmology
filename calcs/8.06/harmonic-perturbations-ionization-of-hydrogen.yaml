@@ -1,0 +1,560 @@
+# Calculations on content/year-3/8.06/harmonic-perturbations-ionization-of-hydrogen.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 11 transcripts (L11.1-L11.4) and notes chapter 4 (sections 4.3.2, 4.4),
+# with the page's own worked example: a 500 eV photon on ground-state hydrogen, R_y = 13.6 eV, a0 = 0.0529 nm,
+# hbar c = 197.3 eV nm, 1/alpha = 137.0, m c^2 = 511 keV. Complex integrals are checked through their real and
+# imaginary parts.
+
+page: content/year-3/8.06/harmonic-perturbations-ionization-of-hydrogen.mdx
+calcs:
+  # ---------------------------------------------------------------- harmonic perturbation: amplitude
+  - id: cosine-exponentials
+    kind: identity
+    where: 'L11.1 p. 1: 2 cos x = e^(ix) + e^(-ix); real part cos x + cos(-x), imaginary part sin x + sin(-x) = 0'
+    formula: cos(x) + cos(-x) + sin(x) + sin(-x)
+    equals: 2*cos(x)
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['2\cos\omega t = e^{i\omega t} + e^{-i\omega t}']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: mit
+
+  - id: exp-integral-real
+    kind: identity
+    where: 'eq. (4.3.44): ∫₀^t₀ e^(iat′) dt′ = (e^(iat₀) − 1)/(ia); real part sin(at₀)/a'
+    formula: integrate('cos(aa*s)', 's', 0, tt)
+    equals: sin(aa*tt)/aa
+    samples: {aa: [0.7, -2.3], tt: [1.5, 4.0]}
+    tolerance: 1e-9
+    shown: ['c_f^{(1)}(t_0) = \frac{H''_{fi}}{i\hbar}\int_0^{t_0}\left(e^{i(\omega_{fi}+\omega)t''} + e^{i(\omega_{fi}-\omega)t''}\right)dt''']
+    source: {cite: reading5, at: 'eq. (4.3.44)'}
+    origin: mit
+
+  - id: exp-integral-imaginary
+    kind: identity
+    where: 'eq. (4.3.44): imaginary part of (e^(iat₀) − 1)/(ia) is (1 − cos(at₀))/a = ∫₀^t₀ sin(at′) dt′; with the prefactor 1/(iħ) the amplitude is −(H′_fi/ħ)(e^(iat₀) − 1)/a'
+    formula: integrate('sin(aa*s)', 's', 0, tt)
+    equals: (1 - cos(aa*tt))/aa
+    samples: {aa: [0.7, -2.3], tt: [1.5, 4.0]}
+    tolerance: 1e-9
+    shown: ['-\frac{H''_{fi}}{\hbar}\left(\frac{e^{i(\omega_{fi}+\omega)t_0} - 1}{\omega_{fi}+\omega}']
+    source: {cite: reading5, at: 'eq. (4.3.44)'}
+    origin: mit
+
+  - id: lecture-minus-i
+    kind: fact
+    where: 'L11.1 p. 3: the lecture says "minus i H′_fi over ħ"; (1/i)(1/i) = −1, so the prefactor is −H′_fi/ħ (notes eq. 4.3.44)'
+    value: '-1'
+    shown: ['[The transcript reads "minus $i$" in front']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: slip
+
+  - id: short-time-limit
+    kind: limit
+    where: 'L11.1 p. 3, notes p. 97: (e^(iat₀) − 1)/a → i t₀ as t₀ → 0; the imaginary part over t₀, sin(at₀)/(at₀), tends to 1 (a = 2.7)'
+    inputs: {aa: 2.7}
+    formula: sin(aa*tt)/(aa*tt)
+    limit: 1
+    vary: {tt: [0.1, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['each fraction tends to $it_0$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: bounded-numerator
+    kind: identity
+    where: 'L11.1 p. 4: |e^(iβ) − 1|² = 4 sin²(β/2), so |e^(iβ) − 1| lies between 0 and 2'
+    formula: (cos(bb) - 1)**2 + sin(bb)**2
+    equals: 4*sin(bb/2)**2
+    samples: {bb: [0.4, 2.9, 5.1]}
+    tolerance: 1e-12
+    shown: ['has a magnitude between 0 and 2']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  - id: plot-peak-height
+    where: 'plot: |two-term amplitude|² (units |H′_fi|²/ħ² = 1) at the absorption peak ω_fi = ω + 10⁻⁶, for the default ω = 5, t₀ = 4; close to t₀² = 16'
+    inputs: {}
+    formula: ((cos((5+1e-6+5)*4)-1)/(5+1e-6+5) + (cos(1e-6*4)-1)/1e-6)**2 + (sin((5+1e-6+5)*4)/(5+1e-6+5) + sin(1e-6*4)/1e-6)**2
+    expected: '16'
+    tolerance: '1'
+    shown: ['there are two peaks of height close to t₀²']
+    source: {cite: reading5, at: 'eq. (4.3.44)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- absorption and the golden rule
+  - id: half-phase-real
+    kind: identity
+    where: 'eq. (4.3.45): e^(iθ) − 1 = e^(iθ/2)·2i sin(θ/2); real parts cos θ − 1 = −2 sin²(θ/2)'
+    formula: cos(x) - 1
+    equals: -2*sin(x/2)**2
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['e^{i(\omega_{fi}-\omega)t_0/2}\;\frac{2i\sin\left((\omega_{fi}-\omega)t_0/2\right)}{\omega_{fi}-\omega}']
+    source: {cite: reading5, at: 'eq. (4.3.45)'}
+    origin: mit
+
+  - id: half-phase-imaginary
+    kind: identity
+    where: 'eq. (4.3.45): imaginary parts sin θ = 2 cos(θ/2) sin(θ/2)'
+    formula: sin(x)
+    equals: 2*cos(x/2)*sin(x/2)
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['Taking half the phase out front turns what is left into a sine']
+    source: {cite: reading5, at: 'eq. (4.3.45)'}
+    origin: mit
+
+  - id: absorption-probability
+    kind: identity
+    where: 'eq. (4.3.46): |2i sin(θ/2)|² = 4 sin²(θ/2) = |e^(iθ) − 1|², so P_fi = 4|H′_fi|² sin²(...)/(ħ²(ω_fi − ω)²)'
+    formula: (1 - cos(x))**2 + sin(x)**2
+    equals: 4*sin(x/2)**2
+    samples: {x: [0.4, 2.9]}
+    tolerance: 1e-12
+    shown: ['P_{fi}(t_0) = \frac{4\,|H''_{fi}|^2}{\hbar^2}\,\frac{\sin^2\left((\omega_{fi}-\omega)t_0/2\right)}{(\omega_{fi}-\omega)^2}, \qquad E_f \simeq E_i + \hbar\omega']
+    source: {cite: reading5, at: 'eq. (4.3.46)'}
+    origin: mit
+
+  - id: band-zeros
+    kind: identity
+    where: 'eqs. (4.3.48), (4.3.49): the integrand vanishes at ω_fi − ω = ±2π/t₀, i.e. E_f = E_i + ħω ± 2πħ/t₀'
+    formula: sin((2*pi/tt)*tt/2)**2 + sin((-2*pi/tt)*tt/2)**2 + 1
+    equals: 1
+    samples: {tt: [1.0, 3.7]}
+    tolerance: 1e-12
+    shown: ['the zeros are $2\pi\hbar/t_0$ apart']
+    source: {cite: reading5, at: 'eq. (4.3.49)'}
+    origin: mit
+
+  - id: shifted-sinc-integral
+    kind: limit
+    where: 'eqs. (4.3.50)-(4.3.52): ∫ sin²((w − W)t₀/2)/(w − W)² dw over a wide window around W tends to πt₀/2 (W = 3, t₀ = 2; window slightly off-centre so the 0/0 point is never sampled)'
+    inputs: {WW: 3.0, tt: 2.0}
+    formula: integrate('sin((w - WW)*tt/2)**2/(w - WW)**2', 'w', WW - XX + 0.123, WW + XX)
+    limit: pi*tt/2
+    vary: {XX: [31.4159, 157.08, 314.159]}
+    tolerance: 2e-3
+    shown: ['it is $\pi\hbar t_0/2$, as in the last lecture']
+    source: {cite: reading5, at: 'eq. (4.3.52)'}
+    origin: mit
+
+  - id: lecture-over-2pi
+    kind: fact
+    where: 'L11.2 p. 3: the lecture says the integral gives "ħ linear in t₀ over 2π"; it is πħt₀/2'
+    value: '2'
+    shown: ['"$\hbar$ linear in $t_0$ over $2\pi$"']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: slip
+
+  - id: linear-growth
+    kind: identity
+    where: 'eq. (4.3.53): (4/ħ²)·(π/2)ħ t₀ = (2π/ħ) t₀'
+    formula: 4/hb**2*(pi/2)*hb*tt
+    equals: 2*pi/hb*tt
+    samples: {hb: [1.0, 0.3], tt: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['\sum_f P_{fi}(t_0) = \frac{2\pi}{\hbar}\,\rho(E_i + \hbar\omega)\,|H''_{fi}|^2\,t_0']
+    source: {cite: reading5, at: 'eq. (4.3.53)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- ionization: validity window
+  - id: rydberg-value
+    where: 'eq. (4.4.3): R_y = α ħc/(2a₀) in eV, with ħc = 197.327 eV nm, 1/α = 137.036, a₀ = 0.0529177 nm'
+    inputs: {}
+    formula: 197.327/137.036/0.0529177/2
+    expected: '13.6'
+    shown: ['the Rydberg, about 13.6 eV']
+    source: {cite: reading5, at: 'eq. (4.4.3)'}
+    origin: mit
+
+  - id: rydberg-forms
+    kind: identity
+    where: 'eq. (4.4.3): with a₀ = ħ²/(m e²) and α = e²/(ħc), e²/a₀ = ħ²/(m a₀²) = α ħc/a₀ (Gaussian units, arbitrary sample values)'
+    formula: qq**2/(hb**2/(mm*qq**2)) + hb**2/(mm*(hb**2/(mm*qq**2))**2)
+    equals: 2*(qq**2/(hb*cc))*hb*cc/(hb**2/(mm*qq**2))
+    samples: {qq: [1.0, 0.7], hb: [1.0, 1.3], mm: [1.0, 2.2], cc: [3.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['2R_y = \frac{e^2}{a_0} = \frac{\hbar^2}{ma_0^2} = \alpha\,\frac{\hbar c}{a_0}']
+    source: {cite: reading5, at: 'eq. (4.4.3)'}
+    origin: mit
+
+  - id: wavelength-ratio
+    kind: identity
+    where: 'eq. (4.4.6): 2πħc/(ħω a₀) = (4π/α)(R_y/ħω), using ħc/a₀ = 2R_y/α'
+    formula: 2*pi*(2*Ry/al)/hw
+    equals: 4*pi/al*Ry/hw
+    samples: {Ry: [13.6, 1.0], al: [0.0073, 0.1], hw: [500.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['\frac{4\pi}{\alpha}\,\frac{R_y}{\hbar\omega} \gg 1']
+    source: {cite: reading5, at: 'eq. (4.4.6)'}
+    origin: mit
+
+  - id: four-pi-over-alpha
+    where: 'eq. (4.4.6): 4π/α with 1/α = 137.036'
+    inputs: {}
+    formula: 4*pi*137.036
+    expected: '1722'
+    tolerance: '1'
+    shown: ['Since $4\pi/\alpha \approx 1722$']
+    source: {cite: reading5, at: 'eq. (4.4.6)'}
+    origin: mit
+
+  - id: upper-bound-kev
+    where: 'eq. (4.4.7): 1722 R_y in keV, R_y = 13.606 eV'
+    inputs: {}
+    formula: 4*pi*137.036*13.606/1000
+    expected: '23'
+    shown: ['about 23 keV: a photon']
+    source: {cite: reading5, at: 'eq. (4.4.7)'}
+    origin: mit
+
+  - id: photon-of-bohr-wavelength
+    where: 'L11.3 pp. 2-3: energy 2πħc/a₀ of a photon with λ = a₀, in keV'
+    inputs: {}
+    formula: 2*pi*197.327/0.0529177/1000
+    expected: '23'
+    shown: ['a photon whose wavelength equals the Bohr radius has about 23 keV']
+    source: {cite: reading3, at: 'pp. 2–3'}
+    origin: mit
+
+  - id: lecture-1772
+    kind: fact
+    where: 'L11.3 p. 2: the lecture says 4π/α is "about 1,772"; it is 1722'
+    value: '1772'
+    shown: ['[The transcript reads "about 1,772"']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: slip
+
+  - id: lower-bound-ev
+    where: 'eq. (4.4.10): 10 R_y in eV (the lecture and notes round 136 to 140)'
+    inputs: {}
+    formula: 10*13.6
+    expected: '140'
+    tolerance: '5'
+    shown: ['roughly between 140 eV and 2.3 keV']
+    source: {cite: reading5, at: 'eq. (4.4.10)'}
+    origin: mit
+
+  - id: upper-practical-kev
+    where: 'eq. (4.4.10): a tenth of 1722 R_y, in keV'
+    inputs: {}
+    formula: 4*pi*137.036*13.606/1000/10
+    expected: '2.3'
+    shown: ['(10 times 13.6 eV, and a tenth of 23 keV)']
+    source: {cite: reading5, at: 'eq. (4.4.10)'}
+    origin: mit
+
+  - id: ka0-low
+    where: 'eq. (4.4.13): k a₀ = sqrt(ħω/R_y − 1) at ħω = 140 eV'
+    inputs: {}
+    formula: sqrt(140/13.6 - 1)
+    expected: '3'
+    shown: ['lies between about 3 and 13']
+    source: {cite: reading5, at: 'eq. (4.4.13)'}
+    origin: mit
+
+  - id: ka0-high
+    where: 'eq. (4.4.13): k a₀ = sqrt(ħω/R_y − 1) at ħω = 2.3 keV'
+    inputs: {}
+    formula: sqrt(2300/13.6 - 1)
+    expected: '13'
+    shown: ['3 to 13.']
+    source: {cite: reading5, at: 'eq. (4.4.13)'}
+    origin: mit
+
+  - id: electron-rest-energy
+    where: 'notes p. 100: m c² of the electron in keV'
+    inputs: {}
+    formula: 9.10938e-31*(2.99792e8)**2/1.602177e-19/1000
+    expected: '511'
+    shown: ['the electron''s rest energy, 511 keV']
+    source: {cite: reading5, at: 'p. 100'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the matrix element
+  - id: cos-gamma
+    kind: identity
+    where: 'eq. (4.4.22): the dot product of unit vectors at (θ, φ) and (θ′, φ′)'
+    formula: sin(th)*cos(ph)*sin(tp)*cos(pp) + sin(th)*sin(ph)*sin(tp)*sin(pp) + cos(th)*cos(tp)
+    equals: sin(th)*sin(tp)*cos(ph - pp) + cos(th)*cos(tp)
+    samples: {th: [0.3, 1.2, 2.5], ph: [0.5, 2.0, 4.4], tp: [1.1, 0.2, 2.9], pp: [3.0, 5.5, 0.7]}
+    tolerance: 1e-12
+    shown: ['\cos\gamma = \sin\theta\sin\theta''\cos(\phi - \phi'') + \cos\theta\cos\theta''']
+    source: {cite: reading5, at: 'eq. (4.4.22)'}
+    origin: mit
+
+  - id: phi-integral-zero
+    kind: identity
+    where: 'eq. (4.4.23): ∫₀^2π cos(φ − φ′) dφ′ = 0 (checked as the integral plus 1 equals 1)'
+    formula: integrate('cos(ph - s)', 's', 0, 2*pi) + 1
+    equals: 1
+    samples: {ph: [0.5, 2.0, 4.4]}
+    tolerance: 1e-10
+    shown: ['\int_0^{2\pi}d\phi''\,\cos(\phi - \phi'') = 0']
+    source: {cite: reading5, at: 'eq. (4.4.23)'}
+    origin: mit
+
+  - id: radial-integral-real
+    kind: identity
+    where: 'eq. (4.4.25), a₀ = 1, b = k x: ∫₀^∞ r³ e^(−r) cos(br) dr = Re 6/(1 + ib)⁴ = 6(1 − 6b² + b⁴)/(1 + b²)⁴ (upper limit 80)'
+    formula: integrate('s**3*exp(-s)*cos(bb*s)', 's', 0, 80)
+    equals: 6*(1 - 6*bb**2 + bb**4)/(1 + bb**2)**4
+    samples: {bb: [0.3, 1.7, 4.0]}
+    tolerance: 1e-8
+    shown: ['\int_0^\infty r^3e^{-r/a_0}e^{-ikrx}\,dr = \frac{6\,a_0^4}{(1 + ika_0x)^4}']
+    source: {cite: reading5, at: 'eq. (4.4.25)'}
+    origin: mit
+
+  - id: radial-integral-imaginary
+    kind: identity
+    where: 'eq. (4.4.25), a₀ = 1, b = k x: ∫₀^∞ r³ e^(−r) (−sin(br)) dr = Im 6/(1 + ib)⁴ = 6(−4b + 4b³)/(1 + b²)⁴'
+    formula: -integrate('s**3*exp(-s)*sin(bb*s)', 's', 0, 80)
+    equals: 6*(-4*bb + 4*bb**3)/(1 + bb**2)**4
+    samples: {bb: [0.3, 1.7, 4.0]}
+    tolerance: 1e-8
+    shown: ['The two integrals']
+    source: {cite: reading5, at: 'eq. (4.4.25)'}
+    origin: mit
+
+  - id: angular-integral-imaginary
+    kind: identity
+    where: 'eq. (4.4.26), κ = k a₀: Im ∫₋₁¹ x/(1 + iκx)⁴ dx = ∫ x(−4κx + 4κ³x³)/(1 + κ²x²)⁴ dx = −(8/3)κ/(1 + κ²)³'
+    formula: integrate('x*(-4*kk*x + 4*kk**3*x**3)/(1 + kk**2*x**2)**4', 'x', -1, 1)
+    equals: -(8/3)*kk/(1 + kk**2)**3
+    samples: {kk: [0.5, 3.0, 13.0]}
+    tolerance: 1e-8
+    shown: ['= -\frac{8i}{3}\,\frac{ka_0}{(1 + k^2a_0^2)^3}']
+    source: {cite: reading5, at: 'eq. (4.4.26)'}
+    origin: mit
+
+  - id: angular-integral-real
+    kind: identity
+    where: 'eq. (4.4.26): the real part, ∫₋₁¹ x(1 − 6κ²x² + κ⁴x⁴)/(1 + κ²x²)⁴ dx, vanishes (odd integrand; checked as integral plus 1 equals 1)'
+    formula: integrate('x*(1 - 6*kk**2*x**2 + kk**4*x**4)/(1 + kk**2*x**2)**4', 'x', -1, 1) + 1
+    equals: 1
+    samples: {kk: [0.5, 3.0, 13.0]}
+    tolerance: 1e-10
+    shown: ['first the radial one, then the angular one']
+    source: {cite: reading5, at: 'eq. (4.4.26)'}
+    origin: mit
+
+  - id: matrix-element-full
+    kind: identity
+    where: 'eqs. (4.4.24)-(4.4.27), a₀ = 1 and eE₀/√(πL³) taken out: 2π ∫₀^∞ r³e^(−r) Im∫₋₁¹ x e^(−ikrx) dx dr = −32π k/(1 + k²)³, using ∫₋₁¹ x sin(bx) dx = 2(sin b − b cos b)/b²; then 32π/√π = 32√π'
+    formula: 2*pi*integrate('-s**3*exp(-s)*2*(sin(kk*s) - kk*s*cos(kk*s))/(kk*s)**2', 's', 0, 80)
+    equals: -32*pi*kk/(1 + kk**2)**3
+    samples: {kk: [0.5, 3.0, 6.0]}
+    tolerance: 1e-7
+    shown: ['\langle f|H''|i\rangle = -32i\sqrt{\pi}\,(eE_0a_0)\,\frac{ka_0^4}{\sqrt{a_0^3L^3}}\,\frac{\cos\theta}{(1 + k^2a_0^2)^3}']
+    source: {cite: reading5, at: 'eq. (4.4.27)'}
+    origin: mit
+
+  - id: prefactor-product
+    where: 'notes p. 102: 2π × 6 × (−8/3) = −32π (the coefficient of π i)'
+    inputs: {}
+    formula: 2*6*(-8/3)
+    expected: '-32'
+    shown: ['2\pi \times 6 \times (-8i/3) = -32\pi i']
+    source: {cite: reading5, at: 'eq. (4.4.26)'}
+    origin: mit
+
+  - id: energy-units
+    kind: units
+    where: 'L11.4 p. 5, eq. (4.4.28): e E₀ a₀ is an energy'
+    inputs: {qe: 1 C, E0: 1 V/m, a0: 1 m, en: 1 J}
+    terms: ['qe*E0*a0', 'en']
+    unit: 'J'
+    shown: ['is an energy, as the matrix element of a Hamiltonian']
+    source: {cite: reading4, at: 'p. 5'}
+    origin: mit
+
+  - id: length-units
+    kind: units
+    where: 'L11.4 p. 5: k a₀⁴/√(a₀³L³) has no units'
+    inputs: {kk: 1 1/m, a0: 1 m, LL: 1 m}
+    terms: ['kk*a0**4/sqrt(a0**3*LL**3)', 'kk*a0']
+    unit: 'dimensionless'
+    shown: ['$ka_0^4$ is a length cubed, like $\sqrt{a_0^3L^3}$']
+    source: {cite: reading4, at: 'p. 5'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: 500 eV photon
+  - id: ex-ratio
+    where: 'example (a): ħω/R_y for 500 eV'
+    inputs: {}
+    formula: 500/13.6
+    expected: '36.8'
+    shown: ['500/13.6 \approx 36.8']
+    source: {cite: reading5, at: 'eq. (4.4.9)'}
+    origin: page-own
+
+  - id: ex-kinetic
+    where: 'example (b): electron kinetic energy in eV'
+    inputs: {}
+    formula: 500 - 13.6
+    expected: '486.4'
+    shown: ['500 - 13.6 = 486.4']
+    source: {cite: reading5, at: 'eq. (4.4.2)'}
+    origin: page-own
+
+  - id: ex-ka0
+    where: 'example (b): k a₀ = sqrt(ħω/R_y − 1)'
+    inputs: {}
+    formula: sqrt(500/13.6 - 1)
+    expected: '5.98'
+    shown: ['\sqrt{36.76 - 1} \approx 5.98']
+    source: {cite: reading5, at: 'eq. (4.4.12)'}
+    origin: page-own
+
+  - id: ex-wavelength
+    where: 'example (c): photon wavelength 2πħc/ħω in nm'
+    inputs: {}
+    formula: 2*pi*197.3/500
+    expected: '2.48'
+    shown: ['2\pi \times 197.3/500 \approx 2.48']
+    source: {cite: reading5, at: 'eq. (4.4.5)'}
+    origin: page-own
+
+  - id: ex-wavelength-ratio
+    where: 'example (c): λ/a₀'
+    inputs: {}
+    formula: 2*pi*197.3/500/0.0529
+    expected: '47'
+    shown: ['\lambda/a_0 \approx 47']
+    source: {cite: reading5, at: 'eq. (4.4.6)'}
+    origin: page-own
+
+  - id: ex-wavelength-ratio-alpha
+    where: 'example (c): (4π/α)(R_y/ħω) with 1/α = 137.0'
+    inputs: {}
+    formula: 4*pi*137.0*13.6/500
+    expected: '47'
+    shown: ['1722 \times 13.6/500']
+    source: {cite: reading5, at: 'eq. (4.4.6)'}
+    origin: page-own
+
+  - id: ex-speed
+    where: 'example (d): v/c = sqrt(2E_e/mc²)'
+    inputs: {}
+    formula: sqrt(2*486.4/511000)
+    expected: '0.044'
+    shown: ['\sqrt{2 \times 486.4/511000} \approx 0.044']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-speed-percent
+    where: 'example (d): the same in per cent'
+    inputs: {}
+    formula: sqrt(2*486.4/511000)*100
+    expected: '4.4'
+    shown: ['about 4.4% of the speed of light']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-factor-500
+    where: 'example (e): k a₀/(1 + k²a₀²)³ at 500 eV'
+    inputs: {}
+    formula: sqrt(500/13.6 - 1)/(500/13.6)**3
+    expected: '1.20e-4'
+    shown: ['5.98/36.76^3 \approx 1.20 \times 10^{-4}']
+    source: {cite: reading5, at: 'eq. (4.4.27)'}
+    origin: page-own
+
+  - id: ex-k2a2-1000
+    where: 'example (e): k²a₀² at 1000 eV'
+    inputs: {}
+    formula: 1000/13.6 - 1
+    expected: '72.5'
+    shown: ['k^2a_0^2 = 1000/13.6 - 1 \approx 72.5']
+    source: {cite: reading5, at: 'eq. (4.4.12)'}
+    origin: page-own
+
+  - id: ex-ka0-1000
+    where: 'example (e): k a₀ at 1000 eV'
+    inputs: {}
+    formula: sqrt(1000/13.6 - 1)
+    expected: '8.52'
+    shown: ['$ka_0 \approx 8.52$']
+    source: {cite: reading5, at: 'eq. (4.4.12)'}
+    origin: page-own
+
+  - id: ex-factor-1000
+    where: 'example (e): k a₀/(1 + k²a₀²)³ at 1000 eV'
+    inputs: {}
+    formula: sqrt(1000/13.6 - 1)/(1000/13.6)**3
+    expected: '2.14e-5'
+    shown: ['8.52/73.53^3 \approx 2.14 \times 10^{-5}']
+    source: {cite: reading5, at: 'eq. (4.4.27)'}
+    origin: page-own
+
+  - id: ex-ratio-amplitude
+    where: 'example (e): ratio of the k-dependent factors, 1000 eV over 500 eV'
+    inputs: {}
+    formula: (sqrt(1000/13.6 - 1)/(1000/13.6)**3)/(sqrt(500/13.6 - 1)/(500/13.6)**3)
+    expected: '0.178'
+    shown: ['falls by a factor of about 0.178']
+    source: {cite: reading5, at: 'eq. (4.4.27)'}
+    origin: page-own
+
+  - id: ex-ratio-squared
+    where: 'example (e): the same ratio squared'
+    inputs: {}
+    formula: ((sqrt(1000/13.6 - 1)/(1000/13.6)**3)/(sqrt(500/13.6 - 1)/(500/13.6)**3))**2
+    expected: '0.032'
+    shown: ['its square by about 0.032']
+    source: {cite: reading5, at: 'eq. (4.4.28)'}
+    origin: page-own
+
+  - id: ex-asymptotic
+    where: 'example (e): 2^(−5/2), the large-k a₀ scaling of the factor when ħω doubles'
+    inputs: {}
+    formula: 2**(-5/2)
+    expected: '0.177'
+    shown: ['$2^{-5/2} \approx 0.177$']
+    source: {cite: reading5, at: 'eq. (4.4.27)'}
+    origin: page-own
+
+  - id: ex-angle
+    where: 'example (f): cos 60° and its square'
+    inputs: {}
+    formula: cos(pi/3)**2
+    expected: '0.25'
+    shown: ['it is half its value along the field, and its square a quarter']
+    source: {cite: reading5, at: 'eq. (4.4.27)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: recombination-temperature
+    kind: fact
+    where: '8.286 Lecture 17 transcript p. 18 (Guth): hydrogen ionized until about 4,000 K'
+    value: '4000'
+    shown: ['until the universe cooled to about 4,000 K']
+    source: {cite: guth17, at: 'p. 18'}
+    origin: mit
+
+  - id: decoupling-temperature
+    kind: fact
+    where: '8.286 Lecture 17 transcript p. 19 (Guth): decoupling at about 3,000 K'
+    value: '3000'
+    shown: ['decoupled at about 3,000 K']
+    source: {cite: guth17, at: 'p. 19'}
+    origin: mit
+
+  - id: thermal-energy-4000
+    where: 'callout: k_B T at 4,000 K in eV'
+    inputs: {}
+    formula: k_B*4000*kelvin
+    expected: '0.34 eV'
+    shown: ['only about 0.34 eV']
+    source: {cite: guth17, at: 'p. 18'}
+    origin: page-own
+
+  - id: threshold-over-thermal
+    where: 'callout: 13.6 eV over k_B T at 4,000 K'
+    inputs: {}
+    formula: 13.6/(8.617333e-5*4000)
+    expected: '40'
+    tolerance: '1'
+    shown: ['some 40 times less than the 13.6 eV']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: page-own

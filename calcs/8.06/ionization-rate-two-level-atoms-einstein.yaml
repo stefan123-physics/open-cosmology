@@ -1,0 +1,487 @@
+# Calculations on content/year-3/8.06/ionization-rate-two-level-atoms-einstein.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 12 transcripts (L12.1-L12.5) and notes chapter 4 (sections 4.4, 4.5.1-4.5.3),
+# with the page's own worked example: a 500 eV photon (ka0 = 5.98 from Lecture 11) with peak field 1.0e9 V/m,
+# E* = 5.14e11 V/m, t* = 2.42e-17 s; a 10.2 eV line at 6,000 K and the 21 cm line (1420.4 MHz) at 2.725 K,
+# h = 4.136e-15 eV s, k_B = 8.617e-5 eV/K.
+
+page: content/year-3/8.06/ionization-rate-two-level-atoms-einstein.mdx
+calcs:
+  # ---------------------------------------------------------------- ionization rate
+  - id: matrix-element-squared
+    kind: identity
+    where: 'eq. (4.4.28): |−32i√π (eE₀a₀) k a₀⁴ cos θ/(√(a₀³L³)(1 + k²a₀²)³)|² = 1024π (eE₀a₀)² k²a₀⁵ cos²θ/(L³(1 + k²a₀²)⁶)'
+    formula: (32*sqrt(pi)*xx*kk*aa**4*cos(th)/(sqrt(aa**3*LL**3)*(1 + kk**2*aa**2)**3))**2
+    equals: 1024*pi*xx**2*kk**2*aa**5/LL**3*cos(th)**2/(1 + kk**2*aa**2)**6
+    samples: {xx: [0.7, 1.9], kk: [0.5, 3.0], aa: [0.4, 1.2], LL: [5.0, 9.0], th: [0.3, 1.1]}
+    tolerance: 1e-10
+    shown: ['|H''_{fi}|^2 = 1024\pi\,(eE_0a_0)^2\,\frac{k^2a_0^5}{L^3}']
+    source: {cite: reading6, at: 'eq. (4.4.28)'}
+    origin: mit
+
+  - id: density-of-states
+    kind: identity
+    where: 'eq. (4.4.29): L³/(2π)³ k² dk dΩ states, with dE = ħ²k dk/m, gives ρ = (L³/8π³)(m/ħ²) k dΩ (per unit dΩ)'
+    formula: LL**3/(2*pi)**3*kk**2*mm/(hb**2*kk)
+    equals: LL**3/(8*pi**3)*mm/hb**2*kk
+    samples: {LL: [3.0, 7.0], kk: [0.5, 2.5], mm: [1.0, 2.0], hb: [1.0, 0.4]}
+    tolerance: 1e-12
+    shown: ['\rho(E_e) = \frac{L^3}{8\pi^3}\,\frac{m}{\hbar^2}\,k\,d\Omega']
+    source: {cite: reading6, at: 'eq. (4.4.29)'}
+    origin: mit
+
+  - id: rate-per-solid-angle
+    kind: identity
+    where: 'eq. (4.4.30) → (4.4.31): (2π/ħ)(L³/8π³)(m/ħ²)k · 1024π X² k²a₀⁵ c²/(L³(1 + k²a₀²)⁶) = (256/π)(ma₀²/ħ²)(X²/ħ) k³a₀³ c²/(1 + k²a₀²)⁶, X = eE₀a₀, c = cos θ'
+    formula: 2*pi/hb*LL**3/(8*pi**3)*mm/hb**2*kk*1024*pi*xx**2*kk**2*aa**5/LL**3*cc**2/(1 + kk**2*aa**2)**6
+    equals: 256/pi*mm*aa**2/hb**2*xx**2/hb*kk**3*aa**3/(1 + kk**2*aa**2)**6*cc**2
+    samples: {hb: [1.0, 0.6], LL: [4.0, 8.0], mm: [1.0, 1.7], kk: [0.6, 2.2], xx: [0.5, 1.4], aa: [0.5, 1.3], cc: [0.3, 0.9]}
+    tolerance: 1e-10
+    shown: ['\frac{dw}{d\Omega} = \frac{256}{\pi}\,\frac{ma_0^2}{\hbar^2}\,\frac{(eE_0a_0)^2}{\hbar}']
+    source: {cite: reading6, at: 'eq. (4.4.31)'}
+    origin: mit
+
+  - id: cos2-integral
+    kind: value
+    where: 'eq. (4.4.32): ∫cos²θ dΩ = 2π ∫₀^π cos²θ sin θ dθ = 4π/3, over 4π gives the average 1/3'
+    inputs: {}
+    formula: 2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi)/(4*pi)
+    expected: '0.333333'
+    tolerance: '0.001%'
+    shown: ['\int\cos^2\theta\,d\Omega = \frac{1}{3}\cdot 4\pi']
+    source: {cite: reading6, at: 'eq. (4.4.32)'}
+    origin: mit
+
+  - id: sin2-average
+    kind: value
+    where: 'L12.1 p. 2: the average of sin²θ over the sphere is 2/3'
+    inputs: {}
+    formula: 2*pi*integrate('sin(s)**3', 's', 0, pi)/(4*pi)
+    expected: '0.666667'
+    tolerance: '0.001%'
+    shown: ['and that of $\sin^2\theta$ is $2/3$']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: mit
+
+  - id: cos2-slip
+    kind: fact
+    where: 'L12.1 p. 2: the transcript reads the integral of cos²θ over solid angle "is 4π", then "multiplied by 1/3"; it is 4π/3'
+    value: '4π'
+    shown: ['[The transcript first reads that the integral "is $4\pi$"']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: slip
+
+  - id: total-rate-prefactor
+    kind: identity
+    where: 'eq. (4.4.33): integrating cos²θ gives 4π/3, and ma₀²/ħ² = 1/(2R_y), so (256/π)(4π/3)/(2R_y) = (512/3)/R_y'
+    formula: 256/pi*(4*pi/3)*1/(2*ry)
+    equals: 512/3/ry
+    samples: {ry: [1.0, 13.6]}
+    tolerance: 1e-12
+    shown: ['w = \int d\Omega\,\frac{dw}{d\Omega} = \frac{512}{3}\,\frac{(eE_0a_0)^2}{\hbar R_y}']
+    source: {cite: reading6, at: 'eq. (4.4.33)'}
+    origin: mit
+
+  - id: power-nine
+    kind: identity
+    where: 'eq. (4.4.34), L12.1 p. 3: dropping the 1, (ka₀)³/((ka₀)²)⁶ = (ka₀)^(−9), "12 minus 3"'
+    formula: kk**3/(kk**2)**6
+    equals: kk**(-(12 - 3))
+    samples: {kk: [3.0, 13.0]}
+    tolerance: 1e-12
+    shown: ['a rather high power, which comes from $12 - 3$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: window-ka0-squared
+    kind: fact
+    where: 'notes p. 103: in the window of validity 9 ≤ (ka₀)² ≤ 169, so ka₀ from 3 to 13 (computed on the Lecture 11 page)'
+    value: '9'
+    shown: ['so $(ka_0)^2$ is at least 9']
+    source: {cite: reading6, at: 'p. 103'}
+    origin: mit
+
+  - id: atomic-units-form
+    kind: identity
+    where: 'eq. (4.4.35): with eE₀a₀ = (E₀/E*)·2R_y, E_p = 2E₀ and t* = ħ/2R_y, (512/3)(eE₀a₀)²/(ħR_y) = (256/3)(E_p/E*)²/t*'
+    formula: 512/3*((ep/2)/es*2*ry)**2/(hb*ry)
+    equals: 256/3*(ep/es)**2/(hb/(2*ry))
+    samples: {ep: [0.01, 0.3], es: [1.0, 2.0], ry: [1.0, 13.6], hb: [1.0, 0.66]}
+    tolerance: 1e-12
+    shown: ['w = \frac{256}{3}\left(\frac{E_p}{E_*}\right)^2\frac{1}{t_*}\,\frac{1}{(ka_0)^9}']
+    source: {cite: reading6, at: 'eq. (4.4.35)'}
+    origin: mit
+
+  - id: atomic-field
+    where: 'eq. (4.4.36): E* = 2R_y/(e a₀) = 27.2114 V / 0.0529177 nm, in V/m'
+    inputs: {}
+    formula: 2*13.6057/0.0529177e-9
+    expected: '5.14e11'
+    shown: ['Numerically $E_* \approx 5.14 \times 10^{11}$ V/m']
+    source: {cite: reading6, at: 'eq. (4.4.36)'}
+    origin: mit
+
+  - id: atomic-time
+    where: 'eq. (4.4.36): t* = ħ/(2R_y) = 6.582e-16 eV s / 27.2114 eV, in s'
+    inputs: {}
+    formula: 6.582119569e-16/(2*13.6057)
+    expected: '2.42e-17'
+    shown: ['and $t_* \approx 2.42 \times 10^{-17}$ s. [The transcript']
+    source: {cite: reading6, at: 'eq. (4.4.36)'}
+    origin: mit
+
+  - id: atomic-time-alpha-c
+    where: 'eq. (4.4.36): t* = a₀/(αc) = 0.0529177 nm × 137.036/c, in s: agrees with ħ/2R_y'
+    inputs: {}
+    formula: 0.0529177e-9*137.036/2.99792458e8
+    expected: '2.42e-17'
+    shown: ['t_* = \frac{a_0}{\alpha c} = \frac{\hbar}{2R_y}']
+    source: {cite: reading6, at: 'eq. (4.4.36)'}
+    origin: mit
+
+  - id: t-star-slip
+    kind: fact
+    where: 'L12.1 p. 3: the transcript reads t* is "two Rydbergs over h bar"; it is ħ/(2R_y), which gives 2.42e-17 s'
+    value: '2R_y/ħ'
+    shown: ['[The transcript reads that $t_*$ is "two Rydbergs over $h$ bar"']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: slip
+
+  - id: electron-speed
+    kind: fact
+    where: 'L12.1 p. 3: the electron in hydrogen has v/c ≈ α ≈ 1/137'
+    value: '1/137'
+    shown: ['is about the fine-structure constant, $1/137$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: ten-rydbergs
+    kind: fact
+    where: 'L12.1 p. 1: the photon energy is "like 10 Rydbergs"'
+    value: '10'
+    shown: ['$\hbar\omega$ around 10 Rydbergs or more']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: mit
+
+  - id: wavelength-slip
+    kind: fact
+    where: 'L12.1 p. 1: the transcript reads the wavelength should be "smaller, or much smaller than the atom"; the condition is λ ≫ a₀ (notes eq. 4.4.5)'
+    value: 'λ ≪ a₀'
+    shown: ['[The transcript reads "smaller, or much smaller than the atom"']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: slip
+
+  # ---------------------------------------------------------------- Einstein's argument
+  - id: boltzmann-ratio
+    kind: identity
+    where: 'L12.3 p. 2: e^(−βE_b)/e^(−βE_a) = e^(−βħω_ba) with ħω_ba = E_b − E_a'
+    formula: exp(-bb*eb)/exp(-bb*ea)
+    equals: exp(-bb*(eb - ea))
+    samples: {bb: [0.5, 2.0], eb: [1.5, 3.0], ea: [0.2, 1.0]}
+    tolerance: 1e-12
+    shown: ['\frac{N_b}{N_a} = \frac{e^{-\beta E_b}}{e^{-\beta E_a}} = e^{-\beta\hbar\omega_{ba}}']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: failed-equilibrium
+    kind: identity
+    where: 'eq. (4.5.5): B_ab U N_a − B_ba U N_b with N_b = N_a e^(−x) equals N_a(B_ab − B_ba e^(−x))U, x = βħω_ba'
+    formula: b1*uu*na - b2*uu*na*exp(-x)
+    equals: na*(b1 - b2*exp(-x))*uu
+    samples: {b1: [1.0, 2.5], b2: [0.7, 3.0], uu: [0.3, 1.7], na: [100, 5000], x: [0.2, 3.0]}
+    tolerance: 1e-12
+    shown: ['0 = N_a\left(B_{ab} - B_{ba}\,e^{-\beta\hbar\omega_{ba}}\right)U(\omega_{ba})']
+    source: {cite: reading6, at: 'eq. (4.5.5)'}
+    origin: mit
+
+  - id: solve-for-u
+    kind: identity
+    where: 'eq. (4.5.6): U = A/(B_ab N_a/N_b − B_ba) = (A/B_ab)/(e^x − B_ba/B_ab) with N_a/N_b = e^x; substituted back, −A N_b − B_ba U N_b + B_ab U N_a = 0 (checked as U from the first form equal to the second)'
+    formula: aa/(b1*exp(x) - b2)
+    equals: aa/b1/(exp(x) - b2/b1)
+    samples: {aa: [0.5, 2.0], b1: [1.0, 2.5], b2: [0.3, 0.9], x: [0.4, 3.0]}
+    tolerance: 1e-12
+    shown: ['U(\omega_{ba}) = \frac{A}{B_{ab}}\,\frac{1}{e^{\beta\hbar\omega_{ba}} - B_{ba}/B_{ab}}']
+    source: {cite: reading6, at: 'eq. (4.5.6)'}
+    origin: mit
+
+  - id: equilibrium-balance
+    kind: identity
+    where: 'eq. (4.5.6) first line: with U from the solved form and N_b = N_a e^(−x), A N_b + B_ba U N_b equals B_ab U N_a'
+    formula: aa*na*exp(-x) + b2*(aa/(b1*exp(x) - b2))*na*exp(-x)
+    equals: b1*(aa/(b1*exp(x) - b2))*na
+    samples: {aa: [0.5, 2.0], b1: [1.0, 2.5], b2: [0.3, 0.9], x: [0.4, 3.0], na: [10, 1000]}
+    tolerance: 1e-12
+    shown: ['0 = \frac{dN_b}{dt} = -A\,N_b - B_{ba}\,U(\omega_{ba})\,N_b + B_{ab}\,U(\omega_{ba})\,N_a']
+    source: {cite: reading6, at: 'eq. (4.5.6)'}
+    origin: mit
+
+  - id: einstein-relations
+    kind: identity
+    where: 'eq. (4.5.8): with B_ba = B_ab and A/B_ab = ħω³/π²c³, the equilibrium U equals Planck (4.5.7)'
+    formula: (b1*hb*w**3/(pi**2*cc**3))/b1/(exp(bb*hb*w) - b1/b1)
+    equals: hb*w**3/(pi**2*cc**3)/(exp(bb*hb*w) - 1)
+    samples: {b1: [0.5, 3.0], hb: [1.0, 0.5], w: [0.4, 2.0], cc: [1.0, 3.0], bb: [0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['B_{ab} = B_{ba}, \qquad \frac{A}{B_{ab}} = \frac{\hbar\,\omega_{ba}^3}{\pi^2c^3}']
+    source: {cite: reading6, at: 'eq. (4.5.8)'}
+    origin: mit
+
+  - id: spontaneous-over-stimulated
+    kind: identity
+    where: 'notes p. 107: A/(B U) = (ħω³/π²c³)/(ħω³/(π²c³(e^x − 1))) = e^x − 1'
+    formula: (hb*w**3/(pi**2*cc**3))/(hb*w**3/(pi**2*cc**3)/(exp(x) - 1))
+    equals: exp(x) - 1
+    samples: {hb: [1.0, 0.5], w: [0.4, 2.0], cc: [1.0, 3.0], x: [0.1, 5.0]}
+    tolerance: 1e-12
+    shown: ['\frac{A}{B_{ab}\,U(\omega_{ba})} = e^{\hbar\omega_{ba}/k_BT} - 1']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: mit
+
+  - id: crossover-caption
+    where: 'plot caption: equal rates where e^(1/x) = 2, x = k_BT/ħω_ba = 1/ln 2'
+    inputs: {}
+    formula: 1/log(2)
+    expected: '1.44'
+    shown: ['They are equal at k_BT = ħω_ba/ln 2 ≈ 1.44 ħω_ba.']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: crossover-quiz
+    where: 'quiz 4: k_BT = ħω_ba/ln 2 ≈ 1.44 ħω_ba'
+    inputs: {}
+    formula: 1/log(2)
+    expected: '1.44'
+    shown: ['\\approx 1.44\\,\\hbar\\omega_{ba}$']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: crossover-plot-point
+    where: 'plot point at x = 1/ln 2, y = e^(ln 2) − 1 = 1'
+    inputs: {}
+    formula: 1/log(2)
+    expected: '1.4427'
+    shown: ['points={[{ x: 1.4427, y: 1, label: "equal" }]}']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- dipole operator
+  - id: optical-wavelengths
+    kind: fact
+    where: 'L12.5 p. 1: optical wavelengths from about 4,000 to 8,000 ångström, a₀ about 0.5 ångström'
+    value: '4000-8000'
+    shown: ['from about 4,000 to 8,000 ångström, while $a_0$ is about 0.5 ångström']
+    source: {cite: reading5, at: 'p. 1'}
+    origin: mit
+
+  - id: dipole-factor-two
+    kind: identity
+    where: 'eq. (4.5.11): −d·n 2E₀ cos ωt = 2(−d·n E₀) cos ωt'
+    formula: -dn*2*e0*cos(w*t)
+    equals: 2*(-dn*e0)*cos(w*t)
+    samples: {dn: [0.4, -1.3], e0: [0.5, 2.0], w: [1.0, 3.0], t: [0.2, 1.1]}
+    tolerance: 1e-12
+    shown: ['\vec d = q\,\vec r, \qquad \delta H = -\vec d\cdot\vec E(t) = 2\left(-\vec d\cdot\vec n\,E_0\right)\cos\omega t']
+    source: {cite: reading6, at: 'eq. (4.5.11)'}
+    origin: mit
+
+  - id: dipole-probability
+    kind: identity
+    where: 'eq. (4.5.13): 4|H′_ab|²/ħ² with H′_ab = −E₀(d·n)_ab gives 4E₀²|(d·n)_ab|²/ħ²'
+    formula: 4*(-e0*dn)**2/hb**2*sin((wba - w)*t/2)**2/(wba - w)**2
+    equals: 4*e0**2*dn**2/hb**2*sin((wba - w)*t/2)**2/(wba - w)**2
+    samples: {e0: [0.5, 2.0], dn: [0.3, 1.2], hb: [1.0, 0.5], wba: [2.0, 3.0], w: [1.7, 2.4], t: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{4E_0^2\,|(\vec d\cdot\vec n)_{ab}|^2}{\hbar^2}']
+    source: {cite: reading6, at: 'eq. (4.5.13)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-ka0
+    where: 'example (a): ka₀ = √(500/13.6 − 1) (Lecture 11)'
+    inputs: {}
+    formula: sqrt(500/13.6 - 1)
+    expected: '5.98'
+    shown: ['Last lecture found $ka_0 \approx 5.98$ for this photon']
+    source: {cite: reading6, at: 'eq. (4.4.12)'}
+    origin: page-own
+
+  - id: ex-field-ratio
+    where: 'example (a): E_p/E* = 1.0e9/5.14e11'
+    inputs: {}
+    formula: 1.0e9/5.14e11
+    expected: '1.95e-3'
+    shown: ['$E_p/E_* = 1.0 \times 10^9/5.14 \times 10^{11} \approx 1.95 \times 10^{-3}$']
+    source: {cite: reading6, at: 'eq. (4.4.35)'}
+    origin: page-own
+
+  - id: ex-field-ratio-squared
+    where: 'example (a): (E_p/E*)²'
+    inputs: {}
+    formula: (1.0e9/5.14e11)**2
+    expected: '3.79e-6'
+    shown: ['whose square is $3.79 \times 10^{-6}$']
+    source: {cite: reading6, at: 'eq. (4.4.35)'}
+    origin: page-own
+
+  - id: ex-ka0-ninth
+    where: 'example (a): (ka₀)⁹ with ka₀ = 5.98'
+    inputs: {}
+    formula: 5.98**9
+    expected: '9.78e6'
+    shown: ['$(ka_0)^9 = 5.98^9 \approx 9.78 \times 10^6$']
+    source: {cite: reading6, at: 'eq. (4.4.35)'}
+    origin: page-own
+
+  - id: ex-rate
+    where: 'example (a): w = (256/3)(E_p/E*)²/(t*(ka₀)⁹), per second'
+    inputs: {}
+    formula: 256/3*(1.0e9/5.14e11)**2/(2.42e-17*sqrt(500/13.6 - 1)**9)
+    expected: '1.36e6'
+    shown: ['about $1.36 \times 10^{6}$ per second']
+    source: {cite: reading6, at: 'eq. (4.4.35)'}
+    origin: page-own
+
+  - id: ex-mean-time
+    where: 'example (a): 1/w in microseconds'
+    inputs: {}
+    formula: 1/(256/3*(1.0e9/5.14e11)**2/(2.42e-17*sqrt(500/13.6 - 1)**9))*1e6
+    expected: '0.73'
+    shown: ['$1/w \approx 0.73$ μs']
+    source: {cite: reading6, at: 'eq. (4.4.35)'}
+    origin: page-own
+
+  - id: ex-field-500-weaker
+    where: 'example (a): E*/E_p = 514, "500 times weaker"'
+    inputs: {}
+    formula: 5.14e11/1.0e9
+    expected: '500'
+    tolerance: '5%'
+    shown: ['Even a field 500 times weaker than the atomic field']
+    source: {cite: reading6, at: 'eq. (4.4.36)'}
+    origin: page-own
+
+  - id: ex-keep-one
+    where: 'example (b): (k²a₀²/(1 + k²a₀²))⁶ with k²a₀² = 500/13.6 − 1 = 35.76'
+    inputs: {}
+    formula: ((500/13.6 - 1)/(500/13.6))**6
+    expected: '0.85'
+    shown: ['= (35.76/36.76)^6 \approx 0.85$']
+    source: {cite: reading6, at: 'eq. (4.4.33)'}
+    origin: page-own
+
+  - id: ex-keep-one-percent
+    where: 'example (b): lowers the rate by 1 − 0.8475 ≈ 15%'
+    inputs: {}
+    formula: (1 - ((500/13.6 - 1)/(500/13.6))**6)*100
+    expected: '15'
+    shown: ['Keeping it lowers the rate by about 15%']
+    source: {cite: reading6, at: 'eq. (4.4.33)'}
+    origin: page-own
+
+  - id: ex-cone-electrons
+    where: 'example (c): 2·2π∫₀^(π/6) cos²θ sinθ dθ/(4π/3) = 1 − cos³30°'
+    inputs: {}
+    formula: 2*2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi/6)/(4*pi/3)
+    expected: '0.35'
+    shown: ['which is $1 - \cos^3 30^\circ \approx 0.35$']
+    source: {cite: reading6, at: 'eq. (4.4.32)'}
+    origin: page-own
+
+  - id: ex-cone-sky
+    where: 'example (c): solid-angle fraction of the two cones, 2·2π(1 − cos 30°)/(4π)'
+    inputs: {}
+    formula: 2*2*pi*(1 - cos(pi/6))/(4*pi)
+    expected: '0.13'
+    shown: ['$1 - \cos 30^\circ \approx 0.13$']
+    source: {cite: reading6, at: 'eq. (4.4.32)'}
+    origin: page-own
+
+  - id: ex-uv-kT
+    where: 'example (d): k_B T at 6,000 K, in eV'
+    inputs: {}
+    formula: 8.617e-5*6000
+    expected: '0.517'
+    shown: ['$k_BT = 8.617 \times 10^{-5} \times 6000 \approx 0.517$ eV']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-uv-x
+    where: 'example (d): ħω/k_BT = 10.2/0.51702'
+    inputs: {}
+    formula: 10.2/(8.617e-5*6000)
+    expected: '19.7'
+    shown: ['so $\hbar\omega_{ba}/k_BT \approx 19.7$']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-uv-ratio
+    where: 'example (d): A/(BU) = e^19.73 − 1'
+    inputs: {}
+    formula: exp(10.2/(8.617e-5*6000)) - 1
+    expected: '3.7e8'
+    shown: ['$A/(BU) = e^{19.7} - 1 \approx 3.7 \times 10^{8}$']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-lyman-alpha
+    where: 'example (d): Lyman alpha, 10.2 eV = (3/4)R_y with R_y = 13.6 eV'
+    inputs: {}
+    formula: 0.75*13.6
+    expected: '10.2'
+    shown: ["For a transition of energy 10.2 eV (hydrogen's Lyman alpha)"]
+    source: {cite: reading6, at: 'eq. (4.4.3)'}
+    origin: page-own
+
+  - id: ex-21cm-energy
+    where: 'example (e): hν = 4.136e-15 eV s × 1.4204e9 Hz, in eV'
+    inputs: {}
+    formula: 4.136e-15*1.4204e9
+    expected: '5.87e-6'
+    shown: ['= h\nu = 4.136 \times 10^{-15} \times 1.4204 \times 10^9 \approx 5.87 \times 10^{-6}$ eV']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-cmb-kT
+    where: 'example (e): k_B T at 2.725 K, in eV'
+    inputs: {}
+    formula: 8.617e-5*2.725
+    expected: '2.35e-4'
+    shown: ['$k_BT = 8.617 \times 10^{-5} \times 2.725 \approx 2.35 \times 10^{-4}$ eV']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-21cm-x
+    where: 'example (e): ħω/k_BT'
+    inputs: {}
+    formula: 4.136e-15*1.4204e9/(8.617e-5*2.725)
+    expected: '0.0250'
+    shown: ['The ratio is $\hbar\omega_{ba}/k_BT \approx 0.0250$']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-21cm-ratio
+    where: 'example (e): A/(BU) = e^x − 1'
+    inputs: {}
+    formula: exp(4.136e-15*1.4204e9/(8.617e-5*2.725)) - 1
+    expected: '0.0253'
+    shown: ['$A/(BU) = e^{0.0250} - 1 \approx 0.0253$']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-21cm-factor
+    where: 'example (e): stimulated over spontaneous, 1/0.02534'
+    inputs: {}
+    formula: 1/(exp(4.136e-15*1.4204e9/(8.617e-5*2.725)) - 1)
+    expected: '39'
+    shown: ['stimulated emission is about 39 times faster than spontaneous emission']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-21cm-crossover
+    where: 'example (e): T = ħω/(k_B ln 2), in K'
+    inputs: {}
+    formula: 4.136e-15*1.4204e9/(8.617e-5*log(2))
+    expected: '0.098'
+    shown: ['that is at about 0.098 K']
+    source: {cite: reading6, at: 'p. 107'}
+    origin: page-own

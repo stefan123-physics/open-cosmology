@@ -1,0 +1,158 @@
+---
+title: "How many halos? The Press–Schechter mass function"
+slug: press-schechter
+course: "8.902"
+lecture: 16
+order: 2
+summary: Smooth the Gaussian density field on the scale of a mass M and ask what fraction of space has a linear density contrast above δ_c ≈ 1.69. Press and Schechter identified that fraction with the mass in halos heavier than M; differentiating it (and fixing a famous factor of two) gives the number of halos of each mass at each redshift.
+prerequisites: [spherical-collapse, power-spectrum]
+source:
+  title: "MIT 8.902 Lecture 16: Press–Schechter mass function"
+  url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/pages/lecture-notes/
+  readings:
+    - title: "8.902 Lecture 16 notes (M. Vogelsberger, Fall 2023)"
+      url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec16.pdf
+license: CC BY-NC-SA 4.0
+references:
+  ps1974:
+    title: "W. H. Press & P. Schechter, Formation of galaxies and clusters of galaxies by self-similar gravitational condensation, ApJ 187, 425 (1974)"
+    url: https://doi.org/10.1086/152650
+    location: "whole paper"
+  bcek1991:
+    title: "J. R. Bond, S. Cole, G. Efstathiou & N. Kaiser, Excursion set mass functions for hierarchical Gaussian fluctuations, ApJ 379, 440 (1991)"
+    url: https://doi.org/10.1086/170520
+    location: "sharp-k filter result"
+  st1999:
+    title: "R. K. Sheth & G. Tormen, Large-scale bias and the peak background split, MNRAS 308, 119 (1999)"
+    url: https://arxiv.org/abs/astro-ph/9901122
+    location: "comparison of mass functions with simulations"
+leadsTo:
+  - course: "8.902"
+    lecture: 17
+    why: "The same Gaussian fluctuations, seen directly as temperature anisotropies in the CMB."
+quiz:
+  - question: "What is the key assumption of the Press–Schechter approach?"
+    choices: ["Halos are distributed randomly", "The fraction of space where the smoothed linear density contrast exceeds $\\delta_c$ equals the fraction of mass in halos of at least that mass", "All halos have the same mass", "The density field is non-Gaussian"]
+    answer: 1
+    explanation: "Linear theory plus spherical collapse: wherever the linear $\\bar\\delta$, smoothed on the scale $R(M)$, is above 1.69, that matter is taken to be in a collapsed halo of mass ≥ M."
+  - question: "Why does the original Press–Schechter calculation need a 'fudge factor' of 2?"
+    choices: ["Because of the cosmological constant", "Integrated over all masses it puts only half of the mass into halos: regions below $\\delta_c$ on one scale can still be inside a collapsed region on a larger scale", "Because halos are not spherical", "Because $\\delta_c$ should be 3.38"]
+    answer: 1
+    explanation: "As $M \\to 0$, $\\sigma \\to \\infty$ and $\\frac12\\text{erfc}(0) = \\frac12$. The 'cloud-in-cloud' problem is resolved by the excursion-set (extended Press–Schechter) approach, which gives exactly the factor 2 for a sharp-$k$ window."
+  - question: "How does the abundance of very massive halos change with redshift?"
+    choices: ["It is constant", "It rises at higher redshift", "It falls steeply (exponentially) at higher redshift, because $\\sigma D(z)$ is smaller and the factor $e^{-\\delta_c^2/2\\sigma^2D^2}$ shrinks rapidly", "It falls as $(1+z)^{-1}$"]
+    answer: 2
+    explanation: "Halos with $\\sigma D \\ll \\delta_c$ are rare peaks; that exponential sensitivity makes cluster counts a powerful probe of $\\sigma_8$ and $\\Omega_m$."
+  - question: "In $\\sigma_R^2 = \\frac{1}{2\\pi^2}\\int k^2\\,dk\\,P(k)\\,|\\hat W_R(k)|^2$, what does the window function $W_R$ do?"
+    choices: ["Adds noise", "Smooths the density field over a region of size $R$, removing waves much shorter than $R$", "Selects only the largest scales beyond the horizon", "Converts mass to radius"]
+    answer: 1
+    explanation: "$\\bar\\delta$ is the density contrast averaged over a sphere (or Gaussian) of radius $R(M)$; its variance is $\\sigma_R^2$."
+flashcards:
+  - front: "Lagrangian radius of a halo of mass M"
+    back: "$R(M) = \\left(\\dfrac{3M}{4\\pi\\rho_c(z)\\Omega_m(z)}\\right)^{1/3}$"
+  - front: "Press–Schechter collapsed fraction"
+    back: "$F(M,z) = \\frac12\\text{erfc}\\!\\left(\\dfrac{\\delta_c}{\\sqrt2\\,\\sigma_R D(z)}\\right)$ (×2 after the fudge factor)"
+  - front: "Press–Schechter mass function"
+    back: "$N(M,z) = \\sqrt{\\dfrac2\\pi}\\,\\dfrac{\\bar\\rho\\,\\delta_c}{\\sigma_R D}\\left|\\dfrac{d\\ln\\sigma_R}{dM}\\right| e^{-\\delta_c^2/2\\sigma_R^2D^2}\\,\\dfrac1M$, with $\\bar\\rho = \\rho_c\\Omega_m$"
+  - front: "Cloud-in-cloud problem"
+    back: "Plain Press–Schechter misses matter that is below $\\delta_c$ on its own scale but inside a larger collapsed region: only half the mass ends up in halos, hence the factor 2."
+status: reviewed
+---
+
+The spherical collapse page gave a rule: a region has collapsed into a halo once its **linear** density contrast reaches $\delta_c \approx 1.69$. The power spectrum page told us how big the linear fluctuations are on each scale. Put the two together and we can count halos. This is the **Press–Schechter** argument (William Press and Paul Schechter, 1974), and it is the subject of section 2.F of the 8.902 notes, at the end of the Lecture 16 notes. The aim is the **halo mass function**: the number density of halos of a given mass at a given redshift.
+
+## From mass to a smoothing scale
+
+A halo of mass $M$ formed from matter that was originally spread out at the mean density. The radius of the sphere that held it is
+
+<Formula label="Radius corresponding to a halo mass" tex="\frac{4\pi}{3}R^3\rho_c(z)\,\Omega_m(z) = M \quad\Longrightarrow\quad R(M) = \left(\frac{3M}{4\pi\rho_c(z)\,\Omega_m(z)}\right)^{1/3}" cite="reading1" at="eq. (448), p. 96" />
+
+where $\rho_c\Omega_m = \bar\rho$ is the mean matter density. To ask whether that mass has collapsed, we **smooth** the density field over regions of size $R$, averaging $\delta$ with a window function $W_R$ (for example a sphere of radius $R$):
+
+<Formula label="Smoothed density field" tex="\bar\delta(\vec x) = \int d^3y\;\delta(\vec y)\,W_R(|\vec x - \vec y|)" cite="reading1" at="eq. (449), p. 96" />
+
+[The notes write $\delta(\vec x)$ inside the integral; $\delta(\vec y)$ is meant.] Halos of mass $M$ form where $\bar\delta$ crosses $\delta_c = 1.69$. The smoothed field has variance
+
+<Formula label="Variance on the scale R(M)" tex="\sigma_R^2 = \frac{1}{2\pi^2}\int_0^\infty k^2\,dk\;P(k)\,|\hat W_R(k)|^2" cite="reading1" at="eq. (450), p. 96" />
+
+This is the variance from the power spectrum page, with each mode weighted by the Fourier transform $\hat W_R$ of the window, which removes waves much shorter than $R$. [The notes print the prefactor as $1/2\pi$ and the window as $\hat W_R$; with eq. (405) the prefactor is $1/2\pi^2$, and the window enters squared because $\bar\delta$ is a convolution in real space, which becomes the product $\hat\delta\,\hat W_R$ in Fourier space.] Larger $M$ means larger $R$, more smoothing, and a smaller $\sigma_R$.
+
+## Gaussian statistics
+
+Inflation produces a **Gaussian random field**, so the smoothed contrast at any point follows a normal distribution with zero mean:
+
+<Formula label="Probability distribution of the smoothed contrast" tex="p(\bar\delta, z) = \frac{1}{\sqrt{2\pi\sigma_R^2(z)}}\;e^{-\bar\delta^2/2\sigma_R^2(z)}, \qquad \sigma_R(z) = \sigma_R\,D(z)" cite="reading1" at="eq. (451), p. 96–97" />
+
+where $\sigma_R(z)$ is the linear $\sigma_R$ evolved with the growth factor $D$ ($D = 1$ today).
+
+## The Press–Schechter idea
+
+The central assumption: **the probability that the smoothed contrast exceeds $\delta_c$ equals the fraction of volume (equivalently, of mass) in halos of mass $M$ or more.** Integrating the Gaussian tail,
+
+<Formula label="Collapsed fraction" tex="F(M, z) = \int_{\delta_c}^\infty d\bar\delta\;p(\bar\delta, z) = \frac12\,\text{erfc}\!\left(\frac{\delta_c}{\sqrt2\,\sigma_R(z)}\right)" cite="reading1" at="eq. (452), p. 97" />
+
+The fraction in halos with masses between $M$ and $M + dM$ is the change of $F$ with $M$. Since $M$ enters only through $\sigma_R$, use the chain rule, $\partial/\partial M = (d\sigma_R/dM)\,\partial/\partial\sigma_R$ (eq. 453; the notes print a "−" where "=" is meant), together with $\frac{d}{dx}\text{erfc}(x) = -\frac{2}{\sqrt\pi}e^{-x^2}$:
+
+<Formula label="Derivative of the collapsed fraction" tex="\frac{\partial F}{\partial M} = \frac{d\sigma_R}{dM}\,\frac{\delta_c}{\sqrt{2\pi}\,\sigma_R^2 D(z)}\,e^{-\delta_c^2/2\sigma_R^2D^2(z)} = \frac{1}{\sqrt{2\pi}}\,\frac{\delta_c}{\sigma_R D(z)}\,\frac{d\ln\sigma_R}{dM}\,e^{-\delta_c^2/2\sigma_R^2D^2(z)}" cite="reading1" at="eq. (454), p. 97" />
+
+so that $(\partial F/\partial M)\,dM$ is the fraction of volume in halos of mass $[M, M + dM]$ (eq. 455). [In the third line of eq. (454) the notes write $\sqrt{2\pi\sigma_R^2}$, dropping a factor $1/\sigma_R$; the last line, used from then on, is right. Also, $\sigma_R$ falls as $M$ grows, so $d\ln\sigma_R/dM < 0$ and $F$ decreases with $M$; the fraction *in* the interval is $|\partial F/\partial M|\,dM$. Here and below the magnitude is meant.]
+
+## Counting halos, and a factor of two
+
+A volume fraction is not yet a number of halos. Each halo of mass $M$ came from a volume $M/\bar\rho = M/\rho_c\Omega_m$, so dividing by that volume gives the comoving number density:
+
+<Formula label="Number density (before correction)" tex="\frac{1}{\sqrt{2\pi}}\,\frac{\rho_c(z)\,\Omega_m(z)\,\delta_c}{\sigma_R D(z)}\,\frac{d\ln\sigma_R}{dM}\,e^{-\delta_c^2/2\sigma_R^2D^2(z)}\,\frac{1}{M}" cite="reading1" at="eq. (456), p. 97" />
+
+(the notes keep the label $\partial F/\partial M$ on the left of eq. 456; it is now a number density per unit mass). Now a check: summed over all masses, the volume fractions should add up to 1 (all matter is in some halo, however small):
+
+<Formula label="Normalisation requirement" tex="\int_0^\infty dM\,\left|\frac{\partial F(M, z)}{\partial M}\right| = 1" cite="reading1" at="eq. (457), p. 97" />
+
+[The notes print the upper limit as 1.] But the calculation gives **only ½**: as $M \to 0$, $\sigma_R \to \infty$ and $F \to \frac12\text{erfc}(0) = \frac12$. Half the mass is missing. The notes simply multiply by 2, the famous Press–Schechter "fudge factor", to obtain the mass function:
+
+<Formula label="Press–Schechter mass function" tex="N(M, z) = \sqrt{\frac{2}{\pi}}\;\frac{\rho_c(z)\,\Omega_m(z)\,\delta_c}{\sigma_R D(z)}\;\frac{d\ln\sigma_R}{dM}\;e^{-\delta_c^2/2\sigma_R^2D^2(z)}\;\frac{1}{M}" cite="reading1" at="eq. (458), p. 97" />
+
+The missing half is the **cloud-in-cloud** problem. A point can have $\bar\delta < \delta_c$ when smoothed on scale $R$, yet $\bar\delta > \delta_c$ on some larger scale: it sits inside a bigger collapsed halo, but the simple argument doesn't count it. The notes refer to Problem Set 6 for the **extended Press–Schechter** (excursion-set) formalism, which follows $\bar\delta$ as the smoothing scale shrinks, like a random walk, and counts the first crossing of $\delta_c$; for a sharp-$k$ window it gives exactly the factor 2. (This approach is due to Bond, Cole, Efstathiou and Kaiser, ApJ 379, 440, 1991; the original argument is Press and Schechter, ApJ 187, 425, 1974. Both references are added here; the notes don't give them.)
+
+## The shape of the mass function
+
+Everything depends on the single combination $\nu = \delta_c/(\sigma_R D)$, the height of the collapse threshold in units of the typical fluctuation. Halos with $\nu \lesssim 1$ are **common**: their scale has typically already collapsed. Halos with $\nu \gg 1$ need rare, high peaks of the Gaussian, and the factor $e^{-\nu^2/2}$ makes them **exponentially rare**. Since $\sigma_R$ falls with mass, the mass function is roughly a power law at low masses and drops off exponentially above a characteristic mass $M_*$, where $\sigma(M_*)\,D = \delta_c$. As the universe evolves, $D$ grows, $M_*$ moves to larger masses, and ever bigger halos form: **hierarchical** growth.
+
+<Plot
+  variable="x"
+  domain={[-4, 4]}
+  range={[-6, 0]}
+  xLabel="log₁₀ (M / M*,today)"
+  yLabel="log₁₀ (M² N / ρ̄)"
+  curves={[
+    { expr: "log10(sqrt(2/pi)*((n+3)/6)*10^(((n+3)/6)*x)*exp(-(10^(((n+3)/6)*x))^2/2))", label: "today, D = 1" },
+    { expr: "log10(sqrt(2/pi)*((n+3)/6)*(10^(((n+3)/6)*x)/D)*exp(-(10^(((n+3)/6)*x)/D)^2/2))", label: "earlier, growth factor D", dash: true }
+  ]}
+  params={{ n: { value: -1.5, min: -2.5, max: 0, step: 0.1, label: "n_\\text{eff}" }, D: { value: 0.5, min: 0.2, max: 0.9, step: 0.05, label: "D" } }}
+  caption="Computed from eq. (458) with an illustrative power law σ(M) = δ_c (M/M*)^(−(n+3)/6), where M* is today's characteristic mass (σ(M*) = δ_c). Then M²N/ρ̄ = √(2/π) α ν e^(−ν²/2) with α = (n+3)/6 and ν = δ_c/(σD): the fraction of mass per unit ln M. The real σ(M) follows from the processed power spectrum, with n_eff changing slowly with mass. The cutoff moves to lower masses at earlier times (smaller D), and the most massive halos are hit hardest."
+/>
+
+<WorkedExample title="Massive clusters are rare, and rarer in the past">
+<Problem>
+Suppose that today the linear rms fluctuation on the scale of a $10^{15}\,M_\odot$ cluster is $\sigma = 0.5$ (an illustrative round number). Using the Press–Schechter collapsed fraction, with the factor 2, $F = \text{erfc}(\nu/\sqrt2)$, $\nu = \delta_c/(\sigma D)$: what fraction of all mass is in halos at least this heavy today, and at $z = 1$ in an Einstein–de Sitter universe?
+</Problem>
+<Step title="Today">
+$\nu = 1.686/0.5 = 3.37$, so $F = \text{erfc}(3.37/\sqrt2) = \text{erfc}(2.38) \approx 7.5\times10^{-4}$: less than 0.1% of the mass is in such clusters.
+</Step>
+<Step title="At z = 1">
+In Einstein–de Sitter $D \propto a$, so $D = 1/2$ at $z = 1$ and $\nu = 6.74$. Then $F = \text{erfc}(4.77) \approx 1.5\times10^{-11}$.
+</Step>
+<Step title="Lesson">
+Halving the growth factor cuts the abundance by a factor of about $5\times10^7$. Because the number of massive clusters depends exponentially on $\sigma_8$ and on how fast $D$ grows (which depends on $\Omega_m$ and Λ), counting clusters at different redshifts is a sensitive cosmological test.
+</Step>
+</WorkedExample>
+
+<Callout kind="note" title="How good is it?">
+The notes end by comparing the Press–Schechter mass function with later fits calibrated on N-body simulations: Sheth, Mo & Tormen, Jenkins et al., and Tinker et al. [The notes' figure caption dates Press and Schechter to 1973; their paper appeared in 1974.] All have similar shapes, and the notes say Press–Schechter deviates slightly more. More specifically (this is not in the notes; see Sheth & Tormen, MNRAS 308, 119, 1999, and the notes' own figure), Press–Schechter predicts too many halos below and around the characteristic mass and too few of the rarest, most massive ones. The simulation-based fits are what modern cluster surveys use, but the Press–Schechter logic, Gaussian peaks above a collapse threshold, underlies all of them.
+</Callout>
+
+## Summary
+
+- A halo of mass $M$ comes from a region of radius $R(M) = (3M/4\pi\bar\rho)^{1/3}$; smoothing the linear field on that scale gives a Gaussian $\bar\delta$ with variance $\sigma_R^2 = \frac{1}{2\pi^2}\int k^2 P(k)|\hat W_R|^2 dk$, growing as $D(z)$.
+- **Press–Schechter**: the fraction of space with $\bar\delta > \delta_c \approx 1.69$, $F = \frac12\text{erfc}(\delta_c/\sqrt2\sigma_R D)$, is the fraction of mass in halos heavier than $M$.
+- Differentiating and dividing by $M/\bar\rho$ gives the number density; a factor 2 is needed to put all the mass in halos (the cloud-in-cloud problem, explained by the excursion-set approach).
+- The result depends on $\nu = \delta_c/\sigma_R D$: a power law at low masses, an exponential cutoff above $M_*$ that moves to larger masses with time. Massive clusters are exponentially rare, especially at high redshift.

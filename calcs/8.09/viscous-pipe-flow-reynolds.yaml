@@ -1,0 +1,147 @@
+# Calculations on content/year-4/8.09/viscous-pipe-flow-reynolds.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.7, pp. 130-134, eqs. (6.120)-(6.134).
+# Quoted by the notes: Poiseuille flows have R <~ 2000 (p. 134). Slip: p. 134 prints R = (u/a) nu for the sphere (meant: ua/nu).
+# Page's own examples: water (rho = 1000 kg/m^3, eta = 1e-3 Pa s) in a pipe of radius 1 cm with k = -5 Pa/m;
+# a 1:10 model of a 4 m car at 20 m/s, speed of sound 340 m/s.
+
+page: content/year-4/8.09/viscous-pipe-flow-reynolds.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations
+  - id: plates-profile
+    kind: identity
+    where: 'eqs. (6.123)-(6.125): v = (-k/2 eta) y (h - y) has eta v'''' = k and v(0) = 0 (checked as eta v'''' at sample y)'
+    formula: ETA*deriv('(-KK/(2*ETA))*y*(HH - y)', 'y', YY, 2)
+    equals: KK
+    samples: {ETA: [1.0e-3, 0.5], KK: [-5.0, -2.0], HH: [0.01, 1.0], YY: [0.003, 0.4]}
+    tolerance: 1e-6
+    shown: ['v_x(y) = \frac{(-k)}{2\eta}\,y\left(h - y\right)']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.125), p. 131'}
+    origin: mit
+
+  - id: wall-drag
+    kind: identity
+    where: 'eq. (6.126): eta dv/dy at y = 0 equals -h k/2'
+    formula: ETA*deriv('(-KK/(2*ETA))*y*(HH - y)', 'y', 0)
+    equals: -HH*KK/2
+    samples: {ETA: [1.0e-3, 0.5], KK: [-5.0, -2.0], HH: [0.01, 1.0]}
+    tolerance: 1e-6
+    shown: ['= -\frac{hk}{2} > 0']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.126), p. 132'}
+    origin: mit
+
+  - id: pipe-profile
+    kind: identity
+    where: 'eqs. (6.129)-(6.131), step 1: dv/dr of (-k/4 eta)(L^2 - r^2) is k r/(2 eta); step 2 (entry pipe-profile-2) checks (1/r) d/dr (r dv/dr) = k/eta'
+    formula: deriv('(-KK/(4*ETA))*(LL**2 - r**2)', 'r', RR)
+    equals: KK*RR/(2*ETA)
+    samples: {KK: [-5.0, -2.0], ETA: [1.0e-3, 0.5], LL: [0.01, 1.0], RR: [0.004, 0.3]}
+    tolerance: 1e-3
+    shown: ['v_x(r) = \frac{(-k)}{4\eta}\left(L^2 - r^2\right)']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.131), p. 133'}
+    origin: mit
+
+  - id: discharge-integral
+    kind: identity
+    where: 'eq. (6.132): rho times the integral of 2 pi r (-k/4 eta)(L^2 - r^2) from 0 to L equals -pi k L^4/(8 nu)'
+    formula: RHO*integrate('2*pi*r*(-KK/(4*ETA))*(LL**2 - r**2)', 'r', 0, LL)
+    equals: -pi*KK*LL**4/(8*ETA/RHO)
+    samples: {RHO: [1000.0, 1.2], KK: [-5.0, -2.0], ETA: [1.0e-3, 1.8e-5], LL: [0.01, 0.3]}
+    tolerance: 1e-6
+    shown: ['= -\frac{\pi kL^4}{8\nu} > 0']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.132), p. 133'}
+    origin: mit
+
+  - id: poiseuille-r-limit
+    kind: fact
+    where: 'section "The Reynolds number and similarity" and quiz 3: Poiseuille flows have R <~ 2000'
+    shown: ['stay laminar, for $R \lesssim 2000$', 'below the value of about 2000']
+    source: {cite: reading1, at: 'Section 6.7, p. 134'}
+    origin: mit
+
+  # ---------------------------------------------------------------- water in a pipe
+  - id: axis-speed
+    kind: value
+    where: 'worked example: (-k) L^2/(4 eta) = 5 x 1e-4/(4e-3) (m/s)'
+    formula: 5*0.01**2/(4*1.0e-3)
+    expected: '0.125'
+    shown: ['$v_x = (-k)L^2/4\eta = 5 \times 10^{-4}/(4 \times 10^{-3}) = 0.125$ m/s']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.131), p. 133'}
+    origin: page-own
+
+  - id: discharge
+    kind: value
+    where: 'worked example: pi x 5 x 1e-8/(8e-6) (kg/s)'
+    formula: pi*5*0.01**4/(8*1.0e-6)
+    expected: '0.0196'
+    shown: ['\pi \times 5 \times 10^{-8}/(8 \times 10^{-6}) \approx 0.0196$ kg/s, about 20 grams']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.132), p. 133'}
+    origin: page-own
+
+  - id: discharge-half-radius
+    kind: value
+    where: 'worked example: discharge with L = 0.5 cm, in g/s'
+    formula: pi*5*0.005**4/(8*1.0e-6)*1000
+    expected: '1.2'
+    shown: ['to about 1.2 g/s']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.132), p. 133'}
+    origin: page-own
+
+  - id: quiz-factor-16
+    kind: value
+    where: 'quiz 2 and worked example: 2^4'
+    formula: 2**4
+    expected: '16'
+    shown: ['and $2^4 = 16$. Half']
+    quiz: 1
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.132), p. 133'}
+    origin: page-own
+
+  - id: quiz-reynolds
+    kind: value
+    where: 'quiz 3: R = u L/nu = 0.125 x 0.01/1e-6'
+    formula: 0.125*0.01/1.0e-6
+    expected: '1250'
+    shown: ['$R = uL/\\nu = 0.125 \\times 0.01/10^{-6} = 1250$']
+    quiz: 2
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.133), p. 134'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- wind tunnel
+  - id: model-speed
+    kind: value
+    where: 'second worked example: 10 x 20 m/s'
+    formula: 10*20
+    expected: '200'
+    shown: ['$u = 10 \times 20 = 200$ m/s']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.133), p. 134'}
+    origin: page-own
+
+  - id: model-mach
+    kind: value
+    where: 'second worked example: 200/340'
+    formula: 200/340
+    expected: '0.59'
+    shown: ['$200/340 \approx 0.59$']
+    source: {cite: reading1, at: 'Section 6.7, p. 134'}
+    origin: page-own
+
+  - id: quiz-model-factor
+    kind: value
+    where: 'quiz 4: speed factor for a 1:10 model'
+    formula: 10
+    expected: '10'
+    shown: ['"10 times faster"']
+    quiz: 3
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.133), p. 134'}
+    origin: page-own
+
+  - id: pipe-profile-2
+    kind: identity
+    where: 'eq. (6.129), step 2: (1/r) d/dr (r k r/(2 eta)) = k/eta'
+    formula: deriv('r*KK*r/(2*ETA)', 'r', RR)/RR
+    equals: KK/ETA
+    samples: {KK: [-5.0, -2.0], ETA: [1.0e-3, 0.5], RR: [0.004, 0.3]}
+    tolerance: 1e-3
+    shown: ['\frac{1}{r}\,\frac{\partial}{\partial r}\left(r\,\frac{\partial v_x}{\partial r}\right) = \frac{k}{\eta}']
+    source: {cite: reading1, at: 'Section 6.7, eq. (6.129), p. 133'}
+    origin: mit

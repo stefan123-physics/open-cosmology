@@ -1,0 +1,459 @@
+# Calculations on content/year-4/8.08/einstein-relation-langevin-noise.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter IX notes, "Transport" (Wen, handwritten scan). Page numbers are Wen's
+# handwritten numbers, top right (93-111 = PDF pages 1-19; the numbering skips 112, so 113-126 = PDF pages 20-33);
+# this page uses pp. 114-126. Numbers in the notes: viscosity of water at 20 C, 0.01 poise, and the rms Brownian
+# displacement 8.9 micrometre in one minute for a = 1 micrometre (p. 116).
+# Page's own examples: a bead of radius 0.5 micrometre, density 1050 kg/m^3, in water at 293 K; shot noise of 1 mA over
+# 1 MHz; Johnson noise of 1 MOhm at 300 K over 10 kHz, with 10 pF.
+# Constants: k_B (exact 2019 SI); e = 1.602176634e-19 C given as an input; gas constant R = 8.314 J/(mol K).
+
+page: content/year-4/8.08/einstein-relation-langevin-noise.mdx
+calcs:
+  # ---------------------------------------------------------------- Einstein relation (pp. 114-115)
+  - id: spring-equipartition
+    kind: identity
+    where: 'formula "Spread in a spring potential": <x^2> over exp(-kappa x^2/2kT) is kT/kappa'
+    formula: integrate('x**2*exp(-kk*x**2/(2*TT))', 'x', -40, 40)/integrate('exp(-kk*x**2/(2*TT))', 'x', -40, 40)
+    equals: TT/kk
+    samples: {kk: [1.0, 2.0, 0.5], TT: [1.0, 0.5, 3.0]}
+    tolerance: 1e-6
+    shown: ['\langle x^2\rangle = \frac{k_BT}{\kappa}']
+    source: {cite: reading1, at: 'p. 114'}
+    origin: mit
+
+  - id: einstein-steady-state
+    kind: identity
+    where: 'text p. 115: with D = eta kT, n = exp(-V/kT) makes the current eta F n - D dn/dx vanish (F = -V'', V = x^2 + x^3/3, at x = 0.7)'
+    formula: et*(-(2*0.7 + 0.7**2))*exp(-(0.7**2 + 0.7**3/3)/TT) - et*TT*deriv('exp(-(x**2 + x**3/3)/TT)', 'x', 0.7)
+    equals: 0
+    samples: {et: [1.0, 0.3], TT: [1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['label="Einstein relation" tex="D = \eta k_BT"']
+    source: {cite: reading1, at: 'p. 115'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Brownian motion in water (p. 116)
+  - id: stokes-msd
+    kind: identity
+    where: 'formula "Brownian motion of a sphere": 6 D t with D = kT/(6 pi a nu) is kT t/(pi a nu)'
+    formula: 6*(TT/(6*pi*aa*nu))*tt
+    equals: TT*tt/(pi*aa*nu)
+    samples: {TT: [1.0, 2.0], aa: [1.0, 0.3], nu: [1.0, 5.0], tt: [1.0, 7.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{k_BTt}{\pi a\nu}']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: mit
+
+  - id: wen-8-9-micron
+    where: 'formula "Brownian motion of a sphere": sqrt(kT t/(pi a nu)) for a = 1 micrometre, t = 1 min, nu = 1e-3 Pa s, T = 300 K'
+    inputs: {T: 300 K, t: 60 s, a: 1 micrometer, nu: 1e-3 Pa*s}
+    formula: sqrt(k_B*T*t/(pi*a*nu))
+    expected: 8.9 micrometer
+    shown: ['= 8.9\ \mu\text{m}', 'the 8.9 μm is for 300 K']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: mit
+
+  - id: wen-8-8-micron
+    where: 'text: the same at 20 C (293.15 K)'
+    inputs: {T: 293.15 K, t: 60 s, a: 1 micrometer, nu: 1e-3 Pa*s}
+    formula: sqrt(k_B*T*t/(pi*a*nu))
+    expected: 8.8 micrometer
+    shown: ['at 20 °C it is 8.8 μm']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: poise
+    where: 'text: 0.01 poise = 1e-3 Pa s'
+    inputs: {P: 0.01 poise}
+    formula: P
+    expected: 1e-3 Pa*s
+    shown: ['about 0.01 poise, that is $10^{-3}$ Pa s']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: mit
+
+  - id: quiz-scaling
+    where: 'quiz 2: rms distance scales as sqrt(t/a); 4 min and 4 micrometre'
+    inputs: {}
+    formula: 8.9*sqrt(4/4)
+    expected: '8.9'
+    shown: ['four times the time and four times the radius give the same 8.9 μm']
+    quiz: 1
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-eta
+    where: 'worked example (a): eta = 1/(6 pi a nu), a = 0.5 micrometre'
+    inputs: {a: 0.5 micrometer, nu: 1e-3 Pa*s}
+    formula: 1/(6*pi*a*nu)
+    expected: 1.06e8 m/N/s
+    shown: ['\approx 1.06 \times 10^8$ m/(N s)']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-kT
+    where: 'worked example (a): k_B T at 293 K'
+    inputs: {T: 293 K}
+    formula: k_B*T
+    expected: 4.05e-21 J
+    shown: ['1.06 \times 10^8 \times 4.05 \times 10^{-21}']
+    source: {cite: reading1, at: 'p. 115'}
+    origin: page-own
+
+  - id: ex-D
+    where: 'worked example (a): D = eta k_B T'
+    inputs: {a: 0.5 micrometer, nu: 1e-3 Pa*s, T: 293 K}
+    formula: k_B*T/(6*pi*a*nu)
+    expected: 4.3e-13 m**2/s
+    shown: ['\approx 4.3 \times 10^{-13}$ m²/s']
+    source: {cite: reading1, at: 'p. 115'}
+    origin: page-own
+
+  - id: ex-rms
+    where: 'worked example (a): sqrt(6 D t) in 60 s'
+    inputs: {a: 0.5 micrometer, nu: 1e-3 Pa*s, T: 293 K, t: 60 s}
+    formula: sqrt(6*k_B*T/(6*pi*a*nu)*t)
+    expected: 12.4 micrometer
+    shown: ['$\sqrt{6Dt} \approx 12.4$ μm in a minute']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-rms-scaling
+    where: 'worked example (a): 8.8 micrometre times sqrt(1/0.5)'
+    inputs: {x: 8.8 micrometer}
+    formula: x*sqrt(1/0.5)
+    expected: 12.4 micrometer
+    shown: ['in line with $8.8\ \mu\text{m} \times \sqrt{1/0.5}$']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-kB
+    where: 'worked example (b): k_B = <x^2> pi a nu/(T t)'
+    inputs: {x2: 1.5e-10 m**2, a: 0.5 micrometer, nu: 1e-3 Pa*s, T: 293 K, t: 60 s}
+    formula: x2*pi*a*nu/(T*t)
+    expected: 1.34e-23 J/K
+    shown: ['\approx 1.34 \times 10^{-23}$ J/K']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-NA
+    where: 'worked example (b): N_A = R/k_B'
+    inputs: {R: 8.314 J/mol/K, kB: 1.3396e-23 J/K}
+    formula: R/kB
+    expected: 6.2e23 mol**-1
+    shown: ['\approx 6.2 \times 10^{23}$ per mole']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-percent
+    where: 'worked example (b): relative error of the measured k_B'
+    inputs: {kB: 1.3396e-23 J/K}
+    formula: 100*(1 - kB/k_B)
+    expected: '3'
+    tolerance: 0.5
+    shown: ['within 3% of the true values']
+    source: {cite: reading1, at: 'p. 116'}
+    origin: page-own
+
+  - id: ex-mass
+    where: 'worked example (c): mass of the bead'
+    inputs: {a: 0.5 micrometer, rho: 1050 kg/m**3}
+    formula: 4/3*pi*a**3*rho
+    expected: 5.5e-16 kg
+    shown: ['\approx 5.5 \times 10^{-16}$ kg']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: page-own
+
+  - id: ex-relax
+    where: 'worked example (c): m eta'
+    inputs: {m: 5.4978e-16 kg, eta: 1.06103e8 m/N/s}
+    formula: m*eta
+    expected: 5.8e-8 s
+    shown: ['$m\eta \approx 5.8 \times 10^{-8}$ s, about 60 ns']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: page-own
+
+  - id: ex-vth
+    where: 'worked example (c): thermal speed sqrt(kT/m)'
+    inputs: {T: 293 K, m: 5.4978e-16 kg}
+    formula: sqrt(k_B*T/m)
+    expected: 2.7 mm/s
+    shown: ['$\sqrt{k_BT/m} \approx 2.7$ mm/s']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: page-own
+
+  - id: ex-flight
+    where: 'worked example (c): flight distance sqrt(kT/m) m eta'
+    inputs: {v: 2.7128e-3 m/s, tr: 5.8333e-8 s}
+    formula: v*tr
+    expected: 1.6e-10 m
+    shown: ['about $1.6 \times 10^{-10}$ m']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Langevin equation (pp. 117-119)
+  - id: langevin-solution
+    kind: identity
+    where: 'formula "Mean square displacement of a Brownian particle": with Y = (2kT/m g)[t - (1 - exp(-g t))/g], dY/dt = (2/g)(1 - exp(-g t)) (numerical derivative; kT/m = 1)'
+    formula: deriv('2/gg*(s - (1 - exp(-gg*s))/gg)', 's', tt)
+    equals: 2/gg*(1 - exp(-gg*tt))
+    samples: {gg: [1.0, 0.5, 2.0], tt: [1.0, 3.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['\langle x^2\rangle = \frac{2k_BT}{m\gamma}\left[t - \frac{1}{\gamma}\left(1 - e^{-\gamma t}\right)\right]']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: mit
+
+  - id: langevin-equation-check
+    kind: identity
+    where: 'formula "Equation for the mean square displacement": that dY/dt obeys d(dY/dt)/dt + g dY/dt = 2 kT/m (numerical derivative; kT/m = 1)'
+    formula: deriv('2/gg*(1 - exp(-gg*s))', 's', tt) + gg*2/gg*(1 - exp(-gg*tt))
+    equals: 2
+    samples: {gg: [1.0, 0.5, 2.0], tt: [1.0, 3.0, 0.4]}
+    tolerance: 1e-6
+    shown: ['= -\gamma\frac{dY}{dt} + \frac{2k_BT}{m}']
+    source: {cite: reading1, at: 'p. 117'}
+    origin: mit
+
+  - id: langevin-initial
+    kind: identity
+    where: 'text: Y(0) = 0 for the solution (and dY/dt(0) = 0, checked by the short-time limit below)'
+    formula: 2/gg*(0 - (1 - exp(-gg*0))/gg) + 1
+    equals: 1
+    samples: {gg: [1.0, 0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['The full solution with $\langle x^2\rangle = 0$']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: mit
+
+  - id: langevin-short
+    kind: limit
+    where: 'text: for small t, (2kT/m g)[t - (1 - exp(-g t))/g] / (kT t^2/m) tends to 1 (kT/m = 1)'
+    inputs: {}
+    formula: (2*(tt - (1 - exp(-tt))))/tt**2
+    limit: 1
+    vary: {tt: [0.1, 0.01, 0.001]}
+    tolerance: 1e-3
+    shown: ['$\langle x^2\rangle = k_BTt^2/m$: the particle flies freely']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: mit
+
+  - id: langevin-long
+    kind: identity
+    where: 'text: for large t, (2kT/m g)[t - (1 - exp(-g t))/g] approaches 2 kT eta (t - m eta) with eta = 1/(m g) (kT = m = 1, t = 40/g); the notes drop the factor 2kT eta on m eta'
+    formula: 2/gg*(40/gg - (1 - exp(-40))/gg)
+    equals: 2*(1/gg)*(40/gg - 1/gg)
+    samples: {gg: [1.0, 0.5, 2.0]}
+    tolerance: 1e-9
+    shown: ['$\langle x^2\rangle \to 2k_BT\eta(t - m\eta)$', '(The notes write $2k_BT\eta t - m\eta$']
+    source: {cite: reading1, at: 'p. 118'}
+    origin: slip
+
+  - id: velocity-steady
+    kind: identity
+    where: 'text p. 119: (1/2) d<v^2>/dt + g <v^2> = Kg/m^2 has the steady value Kg/(m^2 g); setting it to kT/m gives m g = Kg/kT'
+    formula: (mm*gg*TT)/(mm**2*gg)
+    equals: TT/mm
+    samples: {mm: [1.0, 2.0], gg: [1.0, 0.5], TT: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['m\gamma = \frac{1}{k_BT}K_\gamma']
+    source: {cite: reading1, at: 'p. 119'}
+    origin: mit
+
+  - id: disc-triangle
+    kind: identity
+    where: 'formula "Integral of the force correlation": the triangle K(s) = K0 (1 - s/t0) for 0 < s < t0, K0 = F0^2 t0/tau*, integrates to F0^2 t0^2/(2 tau*)'
+    formula: integrate('FF**2*t0/ts*(1 - s/t0)', 's', 0, t0)
+    equals: FF**2*t0**2/(2*ts)
+    samples: {FF: [1.0, 3.0], t0: [1.0, 0.1], ts: [1.0, 5.0]}
+    tolerance: 1e-6
+    shown: ['= \frac{F_0^2t_0^2}{2\tau^*} = \frac{(2mv_x)^2}{2\tau^*} = \frac{2mk_BT}{\tau^*}']
+    source: {cite: reading1, at: 'p. 119'}
+    origin: mit
+
+  - id: disc-kick
+    kind: identity
+    where: 'formula "Integral of the force correlation": (2 m vx)^2/(2 tau*) = 2 m kT/tau* with m vx^2 = kT'
+    formula: (2*mm*sqrt(TT/mm))**2/(2*ts)
+    equals: 2*mm*TT/ts
+    samples: {mm: [1.0, 0.3], TT: [1.0, 2.0], ts: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{(2mv_x)^2}{2\tau^*} = \frac{2mk_BT}{\tau^*}']
+    source: {cite: reading1, at: 'p. 119'}
+    origin: mit
+
+  - id: disc-hydro
+    kind: identity
+    where: 'text p. 119: 6 pi nu a with nu = (1/6) n vbar m lambda is pi n m vbar a lambda'
+    formula: 6*pi*(nn*vb*mm*ll/6)*aa
+    equals: pi*nn*mm*vb*aa*ll
+    samples: {nn: [1.0, 3.0], vb: [1.0, 2.0], mm: [1.0, 0.4], ll: [1.0, 0.2], aa: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['$1/\eta = \pi nm\bar v\,a\lambda$']
+    source: {cite: reading1, at: 'p. 119'}
+    origin: mit
+
+  # ---------------------------------------------------------------- noise (pp. 120-125)
+  - id: exponential-spectrum
+    kind: identity
+    where: 'formula "Spectrum of an exponential correlation": the integral of c exp(-g|t|) cos(w t) over all t is 2 c g/(w^2 + g^2); the notes write (c g/pi)/(w^2 + g^2)'
+    formula: 2*integrate('cc*exp(-gg*t)*cos(ww*t)', 't', 0, 60/gg)
+    equals: 2*cc*gg/(ww**2 + gg**2)
+    samples: {cc: [1.0, 2.0], gg: [1.0, 0.7], ww: [0.0, 1.5]}
+    tolerance: 1e-5
+    shown: ['S(\omega) = \frac{2c\gamma}{\omega^2 + \gamma^2}', '(The notes write $(c\gamma/\pi)/(\omega^2 + \gamma^2)$']
+    source: {cite: reading1, at: 'p. 122'}
+    origin: slip
+
+  - id: shot-diagonal
+    kind: identity
+    where: 'formula "Current correlations": (e/dt)^2 p = e I/dt with I = p e/dt'
+    formula: (ee/dt)**2*pp
+    equals: ee*(pp*ee/dt)/dt
+    samples: {ee: [1.0, 1.6], dt: [1.0, 0.01], pp: [0.1, 0.001]}
+    tolerance: 1e-9
+    shown: ['(e/\Delta t)^2p = eI/\Delta t']
+    source: {cite: reading1, at: 'p. 123'}
+    origin: mit
+
+  - id: shot-excess
+    kind: identity
+    where: 'text: the excess correlation (e/dt)^2 p - (p e/dt)^2 is (e I/dt)(1 - p)'
+    formula: (ee/dt)**2*pp - (pp*ee/dt)**2
+    equals: ee*(pp*ee/dt)/dt*(1 - pp)
+    samples: {ee: [1.0, 1.6], dt: [1.0, 0.01], pp: [0.1, 0.3]}
+    tolerance: 1e-9
+    shown: ['exactly, there is a factor $1 - p$']
+    source: {cite: reading1, at: 'p. 123'}
+    origin: page-own
+
+  - id: shot-2eI
+    where: 'text: 2 e I for 1 mA'
+    inputs: {e: 1.602176634e-19 C, I: 1 mA}
+    formula: 2*e*I
+    expected: 3.2e-22 A**2/Hz
+    shown: ['$2eI \approx 3.2 \times 10^{-22}$ A² per hertz']
+    source: {cite: reading1, at: 'p. 123'}
+    origin: page-own
+
+  - id: shot-rms
+    where: 'text: rms current fluctuation over 1 MHz'
+    inputs: {e: 1.602176634e-19 C, I: 1 mA, df: 1 MHz}
+    formula: sqrt(2*e*I*df)
+    expected: 18 nA
+    shown: ['about 18 nA rms']
+    source: {cite: reading1, at: 'p. 123'}
+    origin: page-own
+
+  - id: velocity-spectrum-total
+    kind: identity
+    where: 'text p. 125: the integral over all w of kT g/(pi m (g^2 + w^2)) is kT/m (kT/m = 1)'
+    formula: integrate('gg/(pi*(gg**2 + w**2))', 'w', -4000*gg, 4000*gg)
+    equals: 1
+    samples: {gg: [1.0, 0.3]}
+    tolerance: 2e-4
+    shown: ['= \frac{k_BT}{m}$ (notes p. 125)']
+    source: {cite: reading1, at: 'p. 125'}
+    origin: mit
+
+  - id: velocity-spectrum-form
+    kind: identity
+    where: 'formula "Power spectrum of the velocity": (1/pi) 2 pi K/(m^2 (g^2 + w^2)) with K = m g kT/pi equals 2 kT g/(pi m (g^2 + w^2))'
+    formula: 1/pi*2*pi*(mm*gg*TT/pi)/(mm**2*(gg**2 + ww**2))
+    equals: 2*TT*gg/(pi*mm*(gg**2 + ww**2))
+    samples: {mm: [1.0, 2.0], gg: [1.0, 0.5], TT: [1.0, 3.0], ww: [0.0, 1.2]}
+    tolerance: 1e-12
+    shown: ['= \frac{2k_BT\gamma}{\pi m(\gamma^2 + \omega^2)}']
+    source: {cite: reading1, at: 'p. 125'}
+    origin: mit
+
+  - id: johnson-form
+    kind: identity
+    where: 'formula "Johnson noise": 2kT(1/RC)/(pi C ((1/RC)^2 + w^2)) = 2 kT R/(pi (1 + w^2 R^2 C^2))'
+    formula: 2*TT/(RR*CC)/(pi*CC*((1/(RR*CC))**2 + ww**2))
+    equals: 2*TT*RR/(pi*(1 + ww**2*RR**2*CC**2))
+    samples: {TT: [1.0, 2.0], RR: [1.0, 3.0], CC: [1.0, 0.2], ww: [0.0, 1.7]}
+    tolerance: 1e-12
+    shown: ['= \frac{2k_BTR}{\pi(1 + \omega^2R^2C^2)}']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: mit
+
+  - id: johnson-total
+    kind: identity
+    where: 'text and plot caption: the integral over f from 0 to infinity of 4kTR/(1 + (2 pi f R C)^2) is kT/C (kT = 1)'
+    formula: integrate('4*RR/(1 + (2*pi*f*RR*CC)**2)', 'f', 0, 20000/(RR*CC))
+    equals: 1/CC
+    samples: {RR: [1.0, 3.0], CC: [1.0, 0.2]}
+    tolerance: 2e-4
+    shown: ['4k_BTR × 1/4RC, is the equipartition value ⟨V²⟩ = k_BT/C']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: plot-half-power
+    where: 'plot point: 1/(1 + x^2) at x = 1'
+    inputs: {}
+    formula: 1/(1 + 1**2)
+    expected: '0.5'
+    shown: ['points={[{ x: 1, y: 0.5, label: "half power at f = 1/2πRC" }]}']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: johnson-example
+    where: 'text: sqrt(4 kT R df), 1 MOhm, 300 K, 10 kHz'
+    inputs: {T: 300 K, R: 1 megaohm, df: 10 kHz}
+    formula: sqrt(4*k_B*T*R*df)
+    expected: 13 microvolt
+    shown: ['shows $\sqrt{4k_BTR\Delta f} \approx 13$ μV rms']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: quiz-johnson
+    where: 'quiz 4: the same rms voltage, in microvolts'
+    inputs: {T: 300 K, R: 1 megaohm, df: 10 kHz, uV: 1 microvolt}
+    formula: sqrt(4*k_B*T*R*df)/uV
+    expected: '13'
+    shown: ['\\approx 1.3 \\times 10^{-5}$ V']
+    quiz: 3
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: johnson-cutoff
+    where: 'text: 1/(2 pi R C) for 1 MOhm and 10 pF'
+    inputs: {R: 1 megaohm, C: 10 pF}
+    formula: 1/(2*pi*R*C)
+    expected: 16 kHz
+    shown: ['the cutoff $1/2\pi RC$ is at about 16 kHz']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: johnson-kTC
+    where: 'text: sqrt(kT/C) for 10 pF at 300 K'
+    inputs: {T: 300 K, C: 10 pF}
+    formula: sqrt(k_B*T/C)
+    expected: 20 microvolt
+    shown: ['$\sqrt{k_BT/C} \approx 20$ μV']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: quiz-johnson-kT
+    where: 'quiz 4 explanation: k_B T at 300 K'
+    inputs: {T: 300 K}
+    formula: k_B*T
+    expected: 4.14e-21 J
+    shown: ['4 \\times 4.14 \\times 10^{-21}']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: johnson-band-with-C
+    where: 'text: noise in 0-10 kHz with the 10 pF cutoff, sqrt(4kTR f_c arctan(df/f_c)) (review finding)'
+    inputs: {T: 300 K, R: 1 megaohm, C: 10 pF, df: 10 kHz}
+    formula: sqrt(4*k_B*T*R/(2*pi*R*C)*atan(df*2*pi*R*C))
+    expected: 12 microvolt
+    shown: ['holds about 12 μV']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own
+
+  - id: penzias-wilson
+    kind: fact
+    where: 'callout: Penzias and Wilson (1965) reported an excess antenna temperature of about 3.5 K'
+    shown: ['corresponded to about 3.5 K']
+    source: {cite: reading1, at: 'p. 126'}
+    origin: page-own

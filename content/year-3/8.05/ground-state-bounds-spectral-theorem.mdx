@@ -1,0 +1,148 @@
+---
+title: Ground-state bounds, diagonalisation and the spectral theorem
+slug: ground-state-bounds-spectral-theorem
+course: "8.05"
+lecture: 11
+order: 1
+summary: "Used carefully, the uncertainty principle gives a rigorous lower bound on a ground-state energy: for the quartic potential αx⁴ it proves E ≥ 0.4724 (ħ²√α/m)^(2/3), against the exact 0.668, complementing the variational upper bound. An operator is diagonalisable exactly when its eigenvectors span the space; a 2 × 2 matrix with a single 1 above the diagonal is not. Changing basis by A turns T into A⁻¹TA, and the columns of A are the eigenvectors. The spectral theorem says an orthonormal basis of eigenvectors exists exactly for normal operators, those commuting with their adjoint, which include Hermitian, anti-Hermitian and unitary operators. Commuting Hermitian operators can be diagonalised simultaneously; with degeneracies, the second operator is block diagonal on the eigenspaces of the first and is then diagonalised block by block."
+prerequisites: [uncertainty-principle-energy-time, adjoints-hermitian-operators]
+source:
+  title: "MIT 8.05 Lecture 11: Uncertainty Principle and Compatible Observables (cont.)"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-11-uncertainty-principle-and-compatible-observables-cont/
+  readings:
+    - title: "8.05 Lecture 11 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/f879577e2660888d278e238385269edc_Oi-JCJePLlc.pdf
+    - title: "Zwiebach, Uncertainty Principle and Compatible Observables (8.05 lecture notes, chapter 5)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-5/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 12
+    why: "The harmonic oscillator revisited, and quantum dynamics."
+quiz:
+  - question: "Can the matrix with rows (0, 1) and (0, 0) be diagonalised?"
+    choices: ["No: its only eigenvalue 0 has just one independent eigenvector", "Yes, by a unitary matrix", "Yes, because its determinant is zero", "Only over the real numbers"]
+    answer: 0
+    explanation: "The characteristic equation is $\\lambda^2 = 0$. An eigenvector $(a, b)$ needs $b = 0$, so all eigenvectors are multiples of $(1, 0)$: they cannot span the two-dimensional space."
+  - question: "Which operators have an orthonormal basis of eigenvectors?"
+    choices: ["Exactly the normal operators, $[M^\\dagger, M] = 0$", "Only Hermitian operators", "Only unitary operators", "Every operator on a complex space"]
+    answer: 0
+    explanation: "That is the spectral theorem. Hermitian, anti-Hermitian and unitary operators are all normal, but so are others."
+  - question: "Two Hermitian operators do not commute. Can they be diagonalised in the same basis?"
+    choices: ["No", "Yes, always", "Only if one is non-degenerate", "Only in infinite dimensions"]
+    answer: 0
+    explanation: "Diagonal matrices commute, and whether two operators commute does not depend on the basis. So operators that do not commute are never both diagonal in one basis."
+  - question: "In the ground-state bound for $\\alpha x^4$, which inequality replaces $\\langle x^4\\rangle$ by something in terms of $\\Delta x$?"
+    choices: ["$\\langle x^4\\rangle \\ge \\langle x^2\\rangle^2 = (\\Delta x)^4$", "$\\langle x^4\\rangle \\le \\langle x^2\\rangle^2$", "$\\langle x^4\\rangle = 3\\langle x^2\\rangle^2$", "$\\Delta x\\,\\Delta p \\ge \\hbar/2$"]
+    answer: 0
+    explanation: "$\\langle A^2\\rangle \\ge \\langle A\\rangle^2$ for $A = x^2$, and in the ground state $\\langle x\\rangle = 0$, so $\\langle x^2\\rangle = (\\Delta x)^2$."
+flashcards:
+  - front: "Diagonalisable operator"
+    back: "There is a basis in which its matrix is diagonal; equivalently, its eigenvectors span the space. Unitarily diagonalisable: there is an orthonormal basis of eigenvectors."
+  - front: "Spectral theorem"
+    back: "On a complex vector space with an inner product, $M$ has an orthonormal basis of eigenvectors if and only if $M$ is normal: $[M^\\dagger, M] = 0$."
+  - front: "Simultaneous diagonalisation"
+    back: "Commuting Hermitian operators $S$ and $T$ have a common orthonormal basis of eigenvectors. $T$ maps each eigenspace of $S$ into itself, so it is block diagonal there and can be diagonalised block by block without disturbing $S$."
+status: reviewed
+---
+
+The lecture opens with a remark on how fast a state can change, uses the uncertainty principle to prove a rigorous energy bound, and then turns to what Zwiebach calls the main theorems of the linear algebra: which operators can be diagonalised, the spectral theorem, and simultaneous diagonalisation (transcript pp. 1–25; notes chapter 5, sections 4–7). He remarks that this used to be the hardest lecture of the course, full of indices, and that the abstract approach makes it easier (transcript p. 3). (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example.)
+
+## How fast can a state change?
+
+The overlap of a state with its own initial value, $|(\psi(0), \psi(t))|^2$, starts at 1 and measures how far the state has moved. For an energy eigenstate only a phase appears and it stays 1, so any change needs an energy uncertainty; expanded to second order in $t$, the overlap depends only on $\Delta H$ (transcript pp. 1–2). The homework uses this to prove the bound on the time for a state to become orthogonal to itself. Such bounds have attracted attention in quantum computation, where speed means changing states quickly; their authors claim they leave room for about 80 more doublings of computer speed before quantum mechanics sets the limit (transcript p. 2).
+
+## A rigorous lower bound on a ground-state energy
+
+Take a particle in the potential $\alpha x^4$ with $\alpha > 0$ (transcript pp. 3–4):
+
+<Formula label="The quartic Hamiltonian" tex="H = \frac{p^2}{2m} + \alpha x^4" cite="reading2" at="eq. (4.48)" />
+
+The variational method gives upper bounds on the ground-state energy; the uncertainty principle will give a **lower** bound, so together they trap the energy in a window (transcript p. 3). The ground state is even and has no nodes, so $\langle x\rangle = 0$; it is real and vanishes at infinity, so $\langle p\rangle$ is $(\hbar/2i)$ times the integral of $d(\psi^2)/dx$, which is zero (transcript pp. 4, 8). Write $E_{\text{gs}}$ for the ground-state energy, the expectation value of $H$ in the ground state. Hence $\langle p^2\rangle = (\Delta p)^2$ and $\langle x^2\rangle = (\Delta x)^2$ in the ground state. The quartic term is handled by $\langle A^2\rangle \ge \langle A\rangle^2$ with $A = x^2$ (transcript pp. 4–5):
+
+<Formula label="Bounding the quartic term" tex="\langle x^4\rangle \ge \langle x^2\rangle^2 = (\Delta x)^4" cite="reading2" at="eqs. (4.53)–(4.55)" />
+
+Then $\Delta p \ge \hbar/(2\Delta x)$ replaces the kinetic term, keeping the inequality in the right direction (transcript p. 5):
+
+<Formula label="Energy in terms of the position uncertainty" tex="E_{\text{gs}} \ge \frac{\hbar^2}{8m(\Delta x)^2} + \alpha(\Delta x)^4" cite="reading2" at="eq. (4.58)" />
+
+We do not know $\Delta x$ in the ground state. But whatever it is, the energy lies above the right-hand side evaluated there, so it certainly lies above the **minimum** of that function of $\Delta x$, which diverges at small $\Delta x$, has a positive minimum and grows again (transcript pp. 5–6). A function $A/x^2 + Bx^4$ is smallest at $x^2 = 2^{-1/3}(A/B)^{1/3}$, where it equals $2^{1/3}\cdot\frac{3}{2}\,A^{2/3}B^{1/3}$ (notes eq. (4.60)). With $A = \hbar^2/8m$ and $B = \alpha$ (transcript p. 6):
+
+<Formula label="The lower bound" tex="E_{\text{gs}} \ge 2^{1/3}\,\frac{3}{8}\left(\frac{\hbar^2\sqrt{\alpha}}{m}\right)^{2/3} \approx 0.4724\left(\frac{\hbar^2\sqrt{\alpha}}{m}\right)^{2/3}" cite="reading2" at="eq. (4.61)" />
+
+The numerical answer has $0.668$ in place of $0.4724$, and Zwiebach recalled the variational estimate as about 0.68 or 0.69 (transcript pp. 6–7). The bound is not tight, but every step is an exact inequality, unlike the usual hand-waving uncertainty estimates, which say no more than dimensional analysis. In the homework the same two methods meet for the harmonic oscillator, whose ground state saturates the uncertainty principle, and so give its ground-state energy exactly (transcript pp. 3, 8). The argument does not improve for excited states, and it works for $x^8$ as well as $x^4$, though Zwiebach doubted it works for $x^6$ (there $\langle A^2\rangle \ge \langle A\rangle^2$ with $A = x^3$ gives only $\langle x^6\rangle \ge 0$); odd powers have no ground state anyway (transcript pp. 7–9).
+
+## Diagonalising an operator
+
+An operator is **diagonalisable** if some basis makes its matrix diagonal (transcript p. 10). If $T$ is diagonal in the basis $u_1, \dots, u_n$, then $Tu_i = \lambda_iu_i$ for each $i$ (not summed): the basis vectors are eigenvectors. Conversely a basis of eigenvectors makes the matrix diagonal. So (transcript pp. 10–11; notes eq. (5.62))
+
+- $T$ is diagonalisable **if and only if** it has a set of eigenvectors that spans the space.
+
+The matrix with rows $(0, 1)$ and $(0, 0)$ is the standard counterexample (transcript p. 11; notes eq. (5.63)). (In the transcript the entries are first read out in another order, but the matrix used in the calculation is this one.) Its characteristic equation is $\lambda^2 = 0$, and an eigenvector $(a, b)$ must satisfy $b = 0$, so there is only one direction of eigenvectors, too few for a two-dimensional space. A student asked whether, in infinite dimensions, an operator whose eigenvectors do not span the space still has eigenvectors, mentioning the oscillator's raising operator $\hat a^\dagger$ (which in fact has none). Zwiebach answered that such an operator may still have some eigenvectors but will generally lack many, and mentioned "Jordan blocks", the entries above the diagonal that remain in finite dimensions when an operator cannot be diagonalised (transcript pp. 11–12).
+
+Concretely, start from some basis $v_1, \dots, v_n$, in which $T$ is not diagonal, and change to $u_k = Av_k$ with an invertible operator $A$ (transcript pp. 12–13):
+
+<Formula label="Change of basis" tex="T_{ij}(\{u\}) = (A^{-1})_{ik}\,T_{kp}(\{v\})\,A_{pj}" cite="reading2" at="eq. (5.65)" />
+
+with sums over repeated indices. There are two ways to read diagonalisation: passively, as finding the basis $u$ in which $T$ is diagonal; or actively, as finding $A$ such that the operator $A^{-1}TA$ is diagonal in the original basis, since $A^{-1}TAv_i = \lambda_iv_i$ (transcript p. 13). And the **columns of $A$ are the eigenvectors**: $u_k = \sum_iA_{ik}v_i$, so in the original basis the eigenvector $u_k$ is the column $(A_{1k}, \dots, A_{nk})$ (transcript p. 14; notes eqs. (5.66)–(5.67)).
+
+## The spectral theorem
+
+For quantum mechanics the useful notion is **unitarily diagonalisable**: there is an orthonormal basis of eigenvectors (transcript p. 14). Starting from an orthonormal basis, only a unitary $U$ leads to another orthonormal basis, so this means $U^\dagger MU$ is a diagonal matrix $D_M$ for some unitary $U$ (transcript p. 15; notes eq. (5.68)).
+
+Which operators have this property? Hermitian ones do, but they are not the most general. An operator $M$ is **normal** if it commutes with its adjoint (transcript p. 15):
+
+<Formula label="Normal operator" tex="[M^\dagger, M] = 0" cite="reading2" at="eq. (6.69)" />
+
+Hermitian ($M^\dagger = M$), anti-Hermitian ($M^\dagger = -M$) and unitary ($U^\dagger U = UU^\dagger = I$) operators are all normal (transcript pp. 15–16). A **lemma**: if $Mw = \lambda w$ and $M$ is normal, then $M^\dagger w = \lambda^*w$. The proof shows that the vector $(M^\dagger - \lambda^*I)w$ has zero length, the usual way to prove a vector vanishes (transcript p. 16; notes eqs. (6.70)–(6.73)). Then (transcript p. 16):
+
+<Formula label="Spectral theorem" tex="V \text{ has an orthonormal basis of eigenvectors of } M \quad\text{if and only if}\quad M \text{ is normal}" cite="reading2" at="eq. (6.74)" />
+
+for $M$ on a complex vector space with an inner product. One direction is short (transcript pp. 17–18). If $U^\dagger MU = D_M$, then $M = UD_MU^\dagger$ and $M^\dagger = UD_M^\dagger U^\dagger$, so
+
+<Formula label="Unitarily diagonalisable implies normal" tex="[M^\dagger, M] = U\left(D_M^\dagger D_M - D_MD_M^\dagger\right)U^\dagger = 0" cite="reading1" at="p. 17" />
+
+because diagonal matrices commute. The other direction, sketched in the lecture and proved in the notes, rests on the fact that every operator on a finite-dimensional complex space has an eigenvector (transcript p. 18; notes eqs. (6.75)–(6.81)). Take it as the first basis vector; the column below it fills with zeros, normality also fills the row beside it with zeros, and the problem drops by one dimension, step by step.
+
+## Simultaneous diagonalisation
+
+A single operator rarely labels states completely: degenerate energy levels contain different states, and something physical must tell them apart (transcript pp. 18–19). Two operators $S$ and $T$ are **simultaneously diagonalisable** if one basis consists of eigenvectors of both. They must then **commute**, because commuting or not is basis-independent and diagonal matrices commute (transcript p. 19). For Hermitian operators this is also enough (transcript p. 20):
+
+<Formula label="Commuting Hermitian operators" tex="S^\dagger = S, \quad T^\dagger = T, \quad [S, T] = 0 \quad\Longrightarrow\quad S \text{ and } T \text{ can be diagonalised simultaneously}" cite="reading2" at="p. 16" />
+
+**Case 1: one operator, say $T$, has no degeneracy** (transcript pp. 20–21). Its orthonormal eigenvectors $u_i$ have different eigenvalues, so each spans its own one-dimensional invariant subspace. Since $S$ and $T$ commute, $T(Su_i) = S(Tu_i) = \lambda_i(Su_i)$: the vector $Su_i$ has the eigenvalue $\lambda_i$ too, so it lies in the same line, $Su_i = \omega_iu_i$ (notes eqs. (7.88)–(7.90)). Every $u_i$ is an eigenvector of $S$ as well.
+
+**Case 2: degeneracy** (transcript pp. 21–25). Now let the eigenvalue $\lambda_k$ of $S$ have a $d_k$-dimensional eigenspace $U_k$, in which every vector is an eigenvector with that eigenvalue (notes eq. (6.82); the notes give $T$ and $S$ the opposite roles). Then $V = U_1 \oplus \dots \oplus U_m$, and an orthonormal basis of each $U_k$, put together, makes $S$ diagonal, with each $\lambda_k$ repeated $d_k$ times. Such a basis is far from unique: any unitary operator $V_k$ acting inside each $U_k$ gives another orthonormal basis in which $S$ is just as diagonal (transcript pp. 23–24; notes eqs. (6.86)–(6.87)). The key fact is that $T$ maps each $U_k$ into itself (transcript p. 24):
+
+<Formula label="The eigenspaces of S are invariant under T" tex="S(Tu) = T(Su) = \lambda_k\,(Tu) \quad \text{for } u \text{ in } U_k" cite="reading2" at="eq. (7.93), with S and T swapped" />
+
+So in this basis $T$ is **block diagonal**, one $d_k \times d_k$ block for each eigenspace (transcript pp. 24–25). The blocks are Hermitian, so each can be diagonalised by a unitary $V_k$ inside its $U_k$, which leaves $S$ diagonal. Both operators are then diagonal in the same orthonormal basis. The argument extends to any number of commuting Hermitian operators (transcript p. 25; notes pp. 17–18).
+
+## Worked example
+
+<WorkedExample title="An x⁸ bound and a normal matrix">
+<Problem>
+(a) For $H = p^2/2m + \gamma x^8$ with $\gamma > 0$, find a rigorous lower bound on the ground-state energy by the method of the lecture. (b) Show that $N = \begin{pmatrix}1 & 1\\ -1 & 1\end{pmatrix}$ is normal but not Hermitian, and find an orthonormal basis of its eigenvectors.
+</Problem>
+<Step title="(a) Bound the x⁸ term">
+Using $\langle A^2\rangle \ge \langle A\rangle^2$ twice, $\langle x^8\rangle \ge \langle x^4\rangle^2 \ge \langle x^2\rangle^4 = (\Delta x)^8$. With $\Delta p \ge \hbar/2\Delta x$ and $X = (\Delta x)^2$: $E_{\text{gs}} \ge \frac{\hbar^2}{8mX} + \gamma X^4$.
+</Step>
+<Step title="(a) Minimise">
+For $f = a/X + \gamma X^4$ with $a = \hbar^2/8m$, $f' = 0$ gives $X^5 = a/4\gamma$, and then $\gamma X^4 = a/4X$, so $f_{\text{min}} = \frac{5}{4}\,\frac{a}{X} = \frac{5}{4}\,4^{1/5}a^{4/5}\gamma^{1/5}$. Since $4^{1/5}/8^{4/5} = 2^{2/5 - 12/5} = 1/4$, this is $E_{\text{gs}} \ge \frac{5}{16}\left(\frac{\hbar^8\gamma}{m^4}\right)^{1/5}$, a coefficient of $0.3125$.
+</Step>
+<Step title="(b) Normal">
+$N^\dagger = \begin{pmatrix}1 & -1\\ 1 & 1\end{pmatrix} \ne N$, but $N^\dagger N = NN^\dagger = 2I$, so $N$ is normal.
+</Step>
+<Step title="(b) Eigenvectors">
+$N(1, i) = (1 + i,\; -1 + i) = (1 + i)(1, i)$, so $\lambda = 1 + i$; similarly $(1, -i)$ has $\lambda = 1 - i$. Their inner product is $1 \cdot 1 + (-i)(-i) = 1 - 1 = 0$, so $(1, i)/\sqrt{2}$ and $(1, -i)/\sqrt{2}$ form an orthonormal basis of eigenvectors, as the spectral theorem promises, with complex eigenvalues since $N$ is not Hermitian.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- For $\alpha x^4$, $\langle x^4\rangle \ge (\Delta x)^4$ and $\Delta p \ge \hbar/2\Delta x$ give the rigorous bound $E_{\text{gs}} \ge 0.4724\,(\hbar^2\sqrt{\alpha}/m)^{2/3}$ (exact value $0.668$), a lower bound to set beside the variational upper bound.
+- An operator is diagonalisable exactly when its eigenvectors span the space; a $2 \times 2$ matrix with a single 1 above the diagonal is not.
+- In a new basis $u_k = Av_k$ the matrix becomes $A^{-1}TA$; the columns of $A$ are the eigenvectors.
+- Spectral theorem: an orthonormal basis of eigenvectors exists if and only if $M$ is normal, $[M^\dagger, M] = 0$; Hermitian, anti-Hermitian and unitary operators are normal.
+- Commuting Hermitian operators can be diagonalised together: the second is block diagonal on the eigenspaces of the first, and each block is diagonalised by a unitary acting inside it.

@@ -1,0 +1,128 @@
+# Calculations on content/year-4/8.09/potential-flow.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.4, pp. 120-124, eqs. (6.69)-(6.90).
+# The notes quote no numbers here. Slips: p. 123 says the pressure (6.87) is unchanged by theta -> pi/2 - theta (meant: pi - theta);
+# eq. (6.88) commutes d/dt with the curl (not true in general; (6.89) is correct as the curl of (6.35)).
+# Page's own numbers: vortex with Gamma = 0.5 m^2/s at r = 0.1 m; sphere in water (1000 kg/m^3) at u = 2 m/s.
+
+page: content/year-4/8.09/potential-flow.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations
+  - id: dipole-laplace
+    kind: identity
+    where: 'eqs. (6.80)-(6.82): phi'' = -A x/r^3 (u along x) solves Laplace''s equation away from the origin (checked with 1 added; A = 1)'
+    formula: deriv('-x/(x**2 + YY**2 + ZZ**2)**1.5', 'x', XX, 2) + deriv('-XX/(XX**2 + y**2 + ZZ**2)**1.5', 'y', YY, 2) + deriv('-XX/(XX**2 + YY**2 + z**2)**1.5', 'z', ZZ, 2) + 1
+    equals: 1
+    samples: {XX: [0.8, 1.3, -0.9], YY: [0.5, -0.7, 1.1], ZZ: [0.3, 0.6, -0.4]}
+    tolerance: 1e-3
+    shown: ['\phi'' = A\,\vec u\cdot\nabla\left(\frac{1}{r}\right)']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.80), p. 122'}
+    origin: mit
+
+  - id: sphere-boundary
+    kind: identity
+    where: 'eqs. (6.85)-(6.86): with A = R^3/2 the radial velocity on r = R vanishes: -u cos(th) + (A/R^3)(2 u cos(th)) = 0 (checked with 1 added)'
+    formula: -UU*cos(TH) + (RR**3/2)/RR**3*(-UU*cos(TH) + 3*UU*cos(TH)) + 1
+    equals: 1
+    samples: {UU: [2.0, 0.5], TH: [0.3, 2.1], RR: [0.1, 3.0]}
+    tolerance: 1e-9
+    shown: ['which holds in every direction if $A = R^3/2$']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.85), p. 123'}
+    origin: mit
+
+  - id: surface-pressure
+    kind: identity
+    where: 'eq. (6.87): (1/2) rho (u^2 - (9/4) u^2 sin^2 th) = (rho u^2/8)(9 cos^2 th - 5)'
+    formula: 0.5*RHO*(UU**2 - (1.5*UU*sin(TH))**2)
+    equals: RHO*UU**2/8*(9*cos(TH)**2 - 5)
+    samples: {RHO: [1000.0, 1.2], UU: [2.0, 30.0], TH: [0.3, 1.9]}
+    tolerance: 1e-9
+    shown: ['P = P_\infty + \frac{\rho u^2}{8}\left(9\cos^2\theta - 5\right)" cite']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: mit
+
+  - id: surface-speed
+    kind: identity
+    where: 'p. 123: on r = R, (6.86) gives v = (3/2)(-u + (u.rhat) rhat); its size squared is (9/4) u^2 sin^2 th (2D components, u along x)'
+    formula: (1.5*(-UU + UU*cos(TH)*cos(TH)))**2 + (1.5*UU*cos(TH)*sin(TH))**2
+    equals: (1.5*UU*sin(TH))**2
+    samples: {UU: [2.0, 0.7], TH: [0.3, 1.2]}
+    tolerance: 1e-9
+    shown: ['a velocity along the surface of size $\tfrac32u\sin\theta$']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.86), p. 123'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- vortex (quiz 2)
+  - id: quiz-vortex-speed
+    kind: value
+    where: 'quiz 2: Gamma/(2 pi r) = 0.5/(2 pi 0.1) (m/s)'
+    formula: 0.5/(2*pi*0.1)
+    expected: '0.80'
+    shown: ['= 0.5/(2\\pi \\times 0.1) \\approx 0.80$ m/s']
+    quiz: 1
+    source: {cite: reading1, at: 'Section 6.4, p. 121'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- sphere in water
+  - id: max-speed
+    kind: value
+    where: 'worked example: (3/2) u at the equator, u = 2 m/s'
+    formula: 1.5*2
+    expected: '3'
+    shown: ['$\tfrac32 \times 2 = 3$ m/s']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.86), p. 123'}
+    origin: page-own
+
+  - id: eighth-rho-u2
+    kind: value
+    where: 'worked example: rho u^2/8 (Pa)'
+    formula: 1000*2**2/8
+    expected: '500'
+    shown: ['$\tfrac18\rho u^2 = 1000 \times 4/8 = 500$ Pa']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: page-own
+
+  - id: front-pressure
+    kind: value
+    where: 'worked example: 500 (9 - 5) at theta = 0 (Pa)'
+    formula: 500*(9*cos(0)**2 - 5)
+    expected: '2000'
+    shown: ['$500 \times (9 - 5) = +2000$ Pa']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: page-own
+
+  - id: equator-pressure
+    kind: value
+    where: 'worked example and quiz 3: 500 (0 - 5) at theta = pi/2 (Pa)'
+    formula: 500*(9*cos(pi/2)**2 - 5)
+    expected: '-2500'
+    shown: ['$500 \times (0 - 5) = -2500$ Pa', '= (1000 \\times 4/8)(-5) = -2500$ Pa']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: page-own
+
+  - id: equator-bernoulli
+    kind: value
+    where: 'worked example and quiz 3: (1/2) 1000 (4 - 9) (Pa)'
+    formula: 0.5*1000*(2**2 - 3**2)
+    expected: '-2500'
+    shown: ['\tfrac12 \times 1000 \times (4 - 9) = -2500$ Pa']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: page-own
+
+  - id: plot-points
+    kind: value
+    where: 'plot: (9 cos^2 - 5)/4 at the equator'
+    formula: (9*cos(pi/2)**2 - 5)/4
+    expected: '-1.25'
+    shown: ['{ x: 1.5708, y: -1.25, label: "equator" }']
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: page-own
+
+  - id: quiz-equator-magnitude
+    kind: value
+    where: 'quiz 3: the size of the pressure drop at the equator (the choice reads -2500 Pa)'
+    formula: -500*(9*cos(pi/2)**2 - 5)
+    expected: '2500'
+    shown: ['"$-2500$ Pa"']
+    quiz: 2
+    source: {cite: reading1, at: 'Section 6.4, eq. (6.87), p. 123'}
+    origin: page-own

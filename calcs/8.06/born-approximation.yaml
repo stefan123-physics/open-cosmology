@@ -1,0 +1,499 @@
+# Calculations on content/year-3/8.06/born-approximation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 22 transcripts L22.1-L22.3 and lecture notes chapter 7
+# ("Scattering"), pp. 147-150, eqs. (7.3.23)-(7.3.37).
+# Page's own worked example: Yukawa potential with mu = 0.7 1/fm, 2m beta/hbar^2 = 0.2 1/fm (called g below),
+# k = 1 1/fm (and 0.5 1/fm), for a neutron, m c^2 = 939.56542194 MeV (CODATA 2022), hbar c = 197.3269804 MeV fm.
+# Born Yukawa amplitude f = -g/(mu^2 + K^2), K = 2k sin(theta/2); total sigma = 4 pi g^2/(mu^2 (mu^2 + 4k^2)).
+
+page: content/year-3/8.06/born-approximation.mdx
+calcs:
+  # ---------------------------------------------------------------- the transfer K (L22.2)
+  - id: K-triangle
+    kind: identity
+    where: 'eq. (7.3.32): |k_s − k_i|² = 2k²(1 − cos θ) = (2k sin(θ/2))²'
+    formula: sqrt(2*kk**2*(1 - cos(th)))
+    equals: 2*kk*sin(th/2)
+    samples: {kk: [0.5, 2.0, 1.3], th: [0.3, 1.5, 3.0]}
+    tolerance: 1e-12
+    shown: ['K = |\vec K| = 2k\sin\frac{\theta}{2}', 'Equivalently, $K^2 = 2k^2(1 - \cos\theta)$']
+    source: {cite: reading4, at: 'eq. (7.3.32), p. 148'}
+    origin: mit
+
+  - id: K-components
+    kind: identity
+    where: 'eq. (7.3.31): with k_i = k z, k_s = k(sin θ cos φ, sin θ sin φ, cos θ), |k_s − k_i|² = 4k² sin²(θ/2), independent of φ'
+    formula: (kk*sin(th)*cos(ph))**2 + (kk*sin(th)*sin(ph))**2 + (kk*cos(th) - kk)**2
+    equals: 4*kk**2*sin(th/2)**2
+    samples: {kk: [0.5, 2.0, 1.3], th: [0.3, 1.5, 3.0], ph: [0.2, 2.5, 4.0]}
+    tolerance: 1e-12
+    shown: ['$\vec K$ depends on both angles']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: mit
+
+  - id: K-backward
+    kind: value
+    where: 'page: K at θ = π is 2k'
+    inputs: {}
+    formula: 2*sin(pi/2)
+    expected: '2'
+    shown: ['backward scattering has the largest transfer, $K = 2k$']
+    source: {cite: reading4, at: 'eq. (7.3.32), p. 148'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- central potentials (L22.3)
+  - id: central-prefactor
+    kind: identity
+    where: 'eq. (7.3.33)-(7.3.34): (1/4π)(2m/ħ²) = m/(2πħ²)'
+    formula: (1/(4*pi))*(2*mm/hb**2)
+    equals: mm/(2*pi*hb**2)
+    samples: {mm: [1.0, 3.0], hb: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['-\frac{m}{2\pi\hbar^2}\int_0^\infty 2\pi']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: angular-integral
+    kind: identity
+    where: 'eq. (7.3.34): ∫ from −1 to 1 of e^(−iKr u) du = 2 sin(Kr)/(Kr) (real part: ∫cos(Kr u) du; the imaginary part is odd and vanishes)'
+    formula: integrate('cos(KK*rr*u)', 'u', -1, 1)
+    equals: 2*sin(KK*rr)/(KK*rr)
+    samples: {KK: [0.5, 1.7, 0.9], rr: [0.3, 2.0, 5.0]}
+    tolerance: 1e-8
+    shown: ['\frac{2\sin(Kr)}{Kr}\,dr']
+    source: {cite: reading4, at: 'eq. (7.3.34), p. 149'}
+    origin: mit
+
+  - id: angular-integral-odd
+    kind: identity
+    where: 'eq. (7.3.34): the imaginary part, −∫ sin(Kr u) du over [−1, 1], vanishes'
+    formula: integrate('sin(KK*rr*u)', 'u', -1, 1)
+    equals: 0
+    samples: {KK: [0.5, 1.7], rr: [0.3, 2.0]}
+    tolerance: 1e-10
+    shown: ['the $\cos\Theta$ integral is elementary']
+    source: {cite: reading4, at: 'eq. (7.3.34), p. 149'}
+    origin: mit
+
+  - id: boxed-from-334
+    kind: identity
+    where: 'eq. (7.3.35): (m/ħ²) r² V 2 sin(Kr)/(Kr) = (2m/(Kħ²)) r V sin(Kr)'
+    formula: (mm/hb**2)*rr**2*VV*2*sin(KK*rr)/(KK*rr)
+    equals: (2*mm/(KK*hb**2))*rr*VV*sin(KK*rr)
+    samples: {mm: [1.0, 3.0], hb: [1.0, 0.5], rr: [0.3, 2.0], VV: [1.0, -2.5], KK: [0.5, 1.7]}
+    tolerance: 1e-12
+    shown: ['label="The Born amplitude for a central potential"']
+    source: {cite: reading4, at: 'eq. (7.3.35), p. 149'}
+    origin: mit
+
+  - id: born-3d-equals-radial
+    kind: identity
+    where: 'eqs. (7.3.33)-(7.3.35) checked numerically for V = e^(−r²) (m = ħ = 1): the 3D Fourier integral in spherical coordinates, −(1/2π)∫2π r² dr ∫ d(cos Θ) cos(Kr cos Θ) V, equals −(2/K)∫ r V sin(Kr) dr'
+    formula: -(1/(2*pi))*integrate('2*pi*s**2*exp(-s**2)*2*sin(KK*s)/(KK*s)', 's', 0, 12)
+    equals: -(2/KK)*integrate('s*exp(-s**2)*sin(KK*s)', 's', 0, 12)
+    samples: {KK: [0.4, 1.3, 3.0]}
+    tolerance: 1e-8
+    shown: ['label="Doing the angular integral"']
+    source: {cite: reading4, at: 'eqs. (7.3.33)-(7.3.35), pp. 148-149'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Yukawa (L22.3)
+  - id: yukawa-integral
+    kind: identity
+    where: 'eq. (7.3.37): ∫₀^∞ e^(−μr) sin(Kr) dr = K/(μ² + K²)'
+    formula: integrate('exp(-mu*s)*sin(KK*s)', 's', 0, 80)
+    equals: KK/(mu**2 + KK**2)
+    samples: {mu: [0.7, 1.5, 1.0], KK: [0.3, 1.414, 2.0]}
+    tolerance: 1e-7
+    shown: ['$\int_0^\infty e^{-\mu r}\sin(Kr)\,dr = K/(\mu^2 + K^2)$']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: mit
+
+  - id: yukawa-amplitude
+    kind: identity
+    where: 'eq. (7.3.37): −(2mβ/(Kħ²)) K/(μ² + K²) = −2mβ/(ħ²(μ² + K²))'
+    formula: -(2*mm*bb/(KK*hb**2))*KK/(mu**2 + KK**2)
+    equals: -2*mm*bb/(hb**2*(mu**2 + KK**2))
+    samples: {mm: [1.0, 3.0], bb: [0.5, -1.2], hb: [1.0, 0.5], mu: [0.7, 1.5], KK: [0.3, 2.0]}
+    tolerance: 1e-12
+    shown: ['= -\frac{2m\beta}{\hbar^2\left(\mu^2 + K^2\right)}']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: mit
+
+  - id: rutherford-limit
+    kind: identity
+    where: 'page: μ = 0, |f|² = (2mβ/ħ²)²/(4k² sin²(θ/2))² with k² = 2mE/ħ² equals β²/(16E² sin⁴(θ/2))'
+    formula: (2*mm*bb/hb**2)**2/(4*(2*mm*EE/hb**2)*sin(th/2)**2)**2
+    equals: bb**2/(16*EE**2*sin(th/2)**4)
+    samples: {mm: [1.0, 3.0], bb: [0.5, -1.2], hb: [1.0, 0.5], EE: [0.7, 4.0], th: [0.3, 2.0]}
+    tolerance: 1e-10
+    shown: ['$|f|^2 = \frac{\beta^2}{16E^2\sin^4(\theta/2)}$', 'Using $k^2 = 2mE/\\hbar^2$, $|f|^2']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  - id: pion-mass
+    kind: fact
+    where: 'charged pion mass 139.57039 MeV (PDG 2024)'
+    value: '139.57'
+    shown: ['The charged pion has $139.57$ MeV/$c^2$']
+    source: {cite: pdg-pion, at: 'm_π±'}
+    origin: page-own
+
+  - id: proton-mass
+    kind: fact
+    where: 'proton rest energy 938.27208943 MeV (CODATA 2022)'
+    value: '938.27'
+    shown: ['the proton $938.27$ MeV/$c^2$']
+    source: {cite: codata-mp, at: 'm_p c² in MeV'}
+    origin: page-own
+
+  - id: pion-proton-ratio
+    kind: value
+    where: 'L22.3 p. 5 ("maybe one seventh"): m_π/m_p = 139.57039/938.27208943 = 0.149 = 1/6.72'
+    inputs: {}
+    formula: 139.57039/938.27208943
+    expected: '0.149'
+    shown: ['a ratio of 0.149, about one seventh']
+    source: {cite: pdg-pion, at: 'm_π±'}
+    origin: page-own
+
+  - id: pion-range
+    kind: value
+    where: 'page: ħ/(m_π c) = 197.3269804 MeV fm/139.57039 MeV'
+    inputs: {}
+    formula: 197.3269804/139.57039
+    expected: '1.41'
+    shown: ['about 1.41 fm', 'close to the pion''s 1.41 fm']
+    source: {cite: codata-hbarc, at: 'ħc in MeV fm'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-hbarc
+    kind: fact
+    where: 'example: ħc = 197.3269804 MeV fm (CODATA, exact)'
+    value: '197.327'
+    shown: ['$\hbar c = 197.327$ MeV fm']
+    source: {cite: codata-hbarc, at: 'ħc in MeV fm'}
+    origin: page-own
+
+  - id: ex-mn
+    kind: fact
+    where: 'example: neutron rest energy 939.56542194 MeV (CODATA 2022)'
+    value: '939.6'
+    shown: ['A neutron (mass $939.6$ MeV/$c^2$)']
+    source: {cite: codata-mn, at: 'm_n c² in MeV'}
+    origin: page-own
+
+  - id: ex-hbarc2
+    kind: value
+    where: 'example (a): (ħc)² = 38 938 MeV² fm²'
+    inputs: {}
+    formula: 197.3269804**2
+    expected: '38938'
+    tolerance: '0.01%'
+    shown: ['$E = (\hbar c)^2k^2/(2mc^2) = 38\,938/1879.1$ MeV']
+    source: {cite: codata-hbarc, at: 'ħc in MeV fm'}
+    origin: page-own
+
+  - id: ex-2mc2
+    kind: value
+    where: 'example (a): 2 m_n c² = 1879.1 MeV'
+    inputs: {}
+    formula: 2*939.56542194
+    expected: '1879.1'
+    shown: ['38\,938/1879.1$ MeV']
+    source: {cite: codata-mn, at: 'm_n c² in MeV'}
+    origin: page-own
+
+  - id: ex-energy
+    kind: value
+    where: 'example (a): E = (ħc)² k²/(2 m c²) at k = 1 1/fm; also ħ²/2m = 20.72 MeV fm²'
+    inputs: {}
+    formula: 197.3269804**2*1.0**2/(2*939.56542194)
+    expected: '20.72'
+    shown: ['about 20.7 MeV', '0.2 \times 20.72']
+    source: {cite: codata-mn, at: 'm_n c² in MeV'}
+    origin: page-own
+
+  - id: ex-beta
+    kind: value
+    where: 'example (a): β = 0.2 1/fm × ħ²/2m'
+    inputs: {}
+    formula: 0.2*197.3269804**2/(2*939.56542194)
+    expected: '4.14'
+    shown: ['about 4.14 MeV fm']
+    source: {cite: reading4, at: 'eq. (7.3.36), p. 149'}
+    origin: page-own
+
+  - id: ex-range
+    kind: value
+    where: 'example (a): 1/μ = 1/0.7 fm'
+    inputs: {}
+    formula: 1/0.7
+    expected: '1.43'
+    shown: ['At $r = 1/\mu = 1.43$ fm']
+    source: {cite: reading4, at: 'eq. (7.3.36), p. 149'}
+    origin: page-own
+
+  - id: ex-V-at-range
+    kind: value
+    where: 'example (a): V(1/μ) = β μ e^(−1)'
+    inputs: {}
+    formula: 0.2*197.3269804**2/(2*939.56542194)*0.7*exp(-1)
+    expected: '1.07'
+    shown: ['about 1.07 MeV']
+    source: {cite: reading4, at: 'eq. (7.3.36), p. 149'}
+    origin: page-own
+
+  - id: ex-V-ratio
+    kind: value
+    where: 'example (a): E/V(1/μ) = 20.72/1.067 = 19.4, "some twenty times smaller"'
+    inputs: {}
+    formula: 1/(0.2*0.7*exp(-1))
+    expected: '19.4'
+    shown: ['some twenty times smaller than the energy']
+    source: {cite: reading4, at: 'p. 149'}
+    origin: page-own
+
+  - id: ex-mu2
+    kind: value
+    where: 'example (b): μ² = 0.49 1/fm²'
+    inputs: {}
+    formula: 0.7**2
+    expected: '0.49'
+    shown: ['$f = -0.2/(0.49 + K^2)$']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-f0
+    kind: value
+    where: 'example (b): f(0) = −0.2/0.49 fm'
+    inputs: {}
+    formula: -0.2/0.49
+    expected: '-0.408'
+    shown: ['$f = -0.408$ fm']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-ds0
+    kind: value
+    where: 'example (b) and plot: |f(0)|² = 0.1666 fm²'
+    inputs: {}
+    formula: (0.2/0.49)**2
+    expected: '0.167'
+    shown: ['$d\sigma/d\Omega = 0.167$ fm²', 'the forward value, 0.167 fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-K90
+    kind: value
+    where: 'example (b): K at 90° = 2 sin 45° 1/fm = √2'
+    inputs: {}
+    formula: 2*sin(pi/4)
+    expected: '1.414'
+    shown: ['$K = \sqrt2 = 1.414$ fm⁻¹']
+    source: {cite: reading4, at: 'eq. (7.3.32), p. 148'}
+    origin: page-own
+
+  - id: ex-f90
+    kind: value
+    where: 'example (b): f(90°) = −0.2/(0.49 + 2)'
+    inputs: {}
+    formula: -0.2/(0.49 + 2)
+    expected: '-0.0803'
+    shown: ['$f = -0.0803$ fm']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-ds90
+    kind: value
+    where: 'example (b): |f(90°)|²'
+    inputs: {}
+    formula: (0.2/2.49)**2
+    expected: '0.00645'
+    shown: ['$d\sigma/d\Omega = 0.00645$ fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-fpi
+    kind: value
+    where: 'example (b): f(180°) = −0.2/(0.49 + 4)'
+    inputs: {}
+    formula: -0.2/4.49
+    expected: '-0.0445'
+    shown: ['$f = -0.0445$ fm']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-dspi
+    kind: value
+    where: 'example (b) and plot: |f(180°)|² at k = 1 1/fm'
+    inputs: {}
+    formula: (0.2/4.49)**2
+    expected: '0.00198'
+    shown: ['$d\sigma/d\Omega = 0.00198$ fm²', 'the backward value falls to 0.00198 fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-forward-backward
+    kind: value
+    where: 'example (b): (4.49/0.49)² = 84'
+    inputs: {}
+    formula: (4.49/0.49)**2
+    expected: '84'
+    tolerance: '0.5%'
+    shown: ['The forward cross section is 84 times the backward one']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-solid-angle
+    kind: identity
+    where: 'example (c): K² = 2k²(1 − cos θ), so dK² = 2k² d(cos θ) in size and dΩ = 2π d(cos θ) = π dK²/k²'
+    formula: deriv('2*kk**2*(1 - c)', 'c', 0.3)
+    equals: -2*kk**2
+    samples: {kk: [0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['the solid angle is $d\Omega = \pi\,d(K^2)/k^2$']
+    source: {cite: reading4, at: 'eq. (7.3.32), p. 148'}
+    origin: page-own
+
+  - id: ex-sigma-formula
+    kind: identity
+    where: 'example (c): ∫ |f|² dΩ = 2π ∫₀^π sin θ g²/(μ² + 4k² sin²(θ/2))² dθ = 4π g²/(μ²(μ² + 4k²))'
+    formula: integrate('2*pi*sin(t)*gg**2/(mu**2 + 4*kk**2*sin(t/2)**2)**2', 't', 0, pi)
+    equals: 4*pi*gg**2/(mu**2*(mu**2 + 4*kk**2))
+    samples: {gg: [0.2, 1.0, 0.5], mu: [0.7, 1.5, 1.0], kk: [0.5, 1.0, 3.0]}
+    tolerance: 1e-8
+    shown: ['$\sigma = \frac{4\pi\,(2m\beta/\hbar^2)^2}{\mu^2(\mu^2 + 4k^2)}$']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-sigma-k1
+    kind: value
+    where: 'example (c): σ at k = 1 1/fm'
+    inputs: {}
+    formula: 4*pi*0.04/(0.49*4.49)
+    expected: '0.228'
+    shown: ['about 0.228 fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-energy-half
+    kind: value
+    where: 'example (c): E at k = 0.5 1/fm'
+    inputs: {}
+    formula: 197.3269804**2*0.25/(2*939.56542194)
+    expected: '5.18'
+    shown: ['(5.18 MeV)']
+    source: {cite: codata-mn, at: 'm_n c² in MeV'}
+    origin: page-own
+
+  - id: ex-sigma-khalf
+    kind: value
+    where: 'example (c): σ at k = 0.5 1/fm: μ² + 4k² = 1.49'
+    inputs: {}
+    formula: 4*pi*0.04/(0.49*1.49)
+    expected: '0.688'
+    shown: ['about 0.688 fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-sigma-ratio
+    kind: value
+    where: 'example (c): 0.688/0.228 = 3.0, "three times more"'
+    inputs: {}
+    formula: 4.49/1.49
+    expected: '3.0'
+    tolerance: '1%'
+    shown: ['three times more']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-sigma-low
+    kind: value
+    where: 'example (c): σ as k → 0, 4π g²/μ⁴'
+    inputs: {}
+    formula: 4*pi*0.04/0.49**2
+    expected: '2.09'
+    shown: ['about 2.09 fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-sigma-high
+    kind: limit
+    where: 'example (c): for 2k ≫ μ, σ k² tends to π g²/μ² (σ ∝ 1/k²); g = 0.2, μ = 0.7'
+    inputs: {}
+    formula: kk**2*4*pi*0.04/(0.49*(0.49 + 4*kk**2))
+    limit: pi*0.04/0.49
+    vary: {kk: [100, 10000, 1000000]}
+    tolerance: 1e-5
+    shown: ['roughly as $1/k^2$ once $2k \gg \mu$']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: plot-dspi-khalf
+    kind: value
+    where: 'plot caption: |f(180°)|² at k = 0.5 1/fm, 0.04/1.49²'
+    inputs: {}
+    formula: 0.04/1.49**2
+    expected: '0.0180'
+    shown: ['against 0.0180 fm² at k = 0.5 fm⁻¹']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: quiz-K
+    kind: value
+    where: 'quiz 2: K = 2k sin(θ/2) with k = 2 1/fm, θ = 60°'
+    inputs: {}
+    formula: 2*2*sin(pi/6)
+    expected: '2'
+    shown: ['$K = 2k\\sin(\\theta/2) = 2 \\times 2 \\times \\sin 30° = 2$ fm⁻¹']
+    source: {cite: reading4, at: 'eq. (7.3.32), p. 148'}
+    origin: page-own
+
+  - id: quiz-K-distractor
+    kind: value
+    where: 'quiz 2 wrong choice: 2k sin θ = 4 sin 60°'
+    inputs: {}
+    formula: 4*sin(pi/3)
+    expected: '3.46'
+    shown: ['"3.46 fm⁻¹"']
+    source: {cite: reading4, at: 'eq. (7.3.32), p. 148'}
+    origin: page-own
+
+  - id: three-and-a-half
+    kind: fact
+    where: 'L22.3 p. 5: about three and a half lectures on scattering'
+    value: 'three and a half'
+    shown: ['about three and a half lectures in all']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: mit
+
+  - id: ex-g-squared
+    kind: value
+    where: 'example (c): (2m beta/hbar^2)^2 = 0.2^2'
+    inputs: {}
+    formula: 0.2**2
+    expected: '0.04'
+    shown: ['it tends to $4\pi \times 0.04/0.49^2$']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-mu2-4k2
+    kind: value
+    where: 'example (c): mu^2 + 4k^2 at k = 1 1/fm (4.49) and at k = 0.5 1/fm (1.49)'
+    inputs: {}
+    formula: 0.49 + 4*1.0**2
+    expected: '4.49'
+    shown: ['$\sigma = 4\pi \times 0.04/(0.49 \times 4.49)$ fm²']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own
+
+  - id: ex-mu2-4k2-half
+    kind: value
+    where: 'example (c): mu^2 + 4k^2 at k = 0.5 1/fm'
+    inputs: {}
+    formula: 0.49 + 4*0.5**2
+    expected: '1.49'
+    shown: ['$4\pi \times 0.04/(0.49 \times 1.49)$']
+    source: {cite: reading4, at: 'eq. (7.3.37), p. 149'}
+    origin: page-own

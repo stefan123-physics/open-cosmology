@@ -1,0 +1,210 @@
+# Calculations on content/year-4/8.09/perturbation-theory-hamilton-jacobi.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) Lecture Notes, Chapter 5 introduction and Section 5.1, pp. 92-95 (printed page numbers).
+# The notes quote no numbers here. Checked: the first-order Hamilton and Hamilton-Jacobi results (5.5)-(5.7), (5.14)-(5.18)
+# against the series of the exact solution; the plot caption; the page's own constant-force example
+# (m = 2.0 kg, p0 = 3.0 kg m/s, F = 0.50 N, t = 4.0 s). The leadsTo figure 43 arcseconds per century is computed in
+# calcs/8.09/perihelion-precession-perturbed-kepler.yaml (Section 5.3) and recorded here as a fact.
+# Notation: mm = m, w = omega, tt = t, a0 = alpha_0, p0 = p_0, s = omega t.
+
+page: content/year-4/8.09/perturbation-theory-hamilton-jacobi.mdx
+calcs:
+  # ---------------------------------------------------------------- Hamilton's equations (pp. 92-93)
+  - id: p-first-order
+    kind: identity
+    where: 'formula "First-order momentum": integral of -w^2 t p0 from 0 to t, plus p0'
+    formula: p0 + integrate('-w**2*u*p0', 'u', 0, tt)
+    equals: p0 - 0.5*p0*w**2*tt**2
+    samples: {p0: [1.0, 3.0], w: [0.5, 2.0], tt: [0.3, 1.7]}
+    tolerance: 1e-9
+    shown: ['p^{(1)}(t) = p_0 - \tfrac12\, p_0\,\omega^2 t^2']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.5), p. 93'}
+    origin: mit
+
+  - id: x-first-order
+    kind: identity
+    where: 'formula "First-order position": integral of p^(1)/m from 0 to t'
+    formula: integrate('(p0 - 0.5*p0*w**2*u**2)/mm', 'u', 0, tt)
+    equals: p0*tt/mm - p0*w**2*tt**3/(6*mm)
+    samples: {p0: [1.0, 3.0], w: [0.5, 2.0], tt: [0.3, 1.7], mm: [1.0, 2.0]}
+    tolerance: 1e-9
+    shown: ['x^{(1)}(t) = \frac{p_0}{m}\,t - \frac{p_0\,\omega^2 t^3}{6m}']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.6), p. 93'}
+    origin: mit
+
+  - id: series-of-exact
+    kind: identity
+    where: 'formula "Exact solution": the first-order results are the first two Taylor terms of p0 cos(wt) and (p0/(m w)) sin(wt) (checked: the remainder of sin is below s^5/120 for small s; here sin(s) - (s - s^3/6) compared with s^5/120 at s = 0.01, ratio 1 to 1e-4)'
+    formula: (sin(s) - (s - s**3/6))/(s**5/120)
+    equals: 1 + 0*s
+    samples: {s: [0.01]}
+    tolerance: 1e-4
+    shown: ['p(t) = p_0 \cos(\omega t), \qquad x(t) = \frac{p_0}{m\omega}\sin(\omega t)']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.7), p. 93'}
+    origin: mit
+
+  # ---------------------------------------------------------------- plot caption
+  - id: first-order-at-1
+    where: 'plot caption: first order at wt = 1'
+    inputs: {}
+    formula: 1 - 1/6
+    expected: '0.833'
+    shown: ['(0.833 against 0.841)']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.6), p. 93'}
+    origin: page-own
+
+  - id: exact-at-1
+    where: 'plot caption and plot point: sin(1)'
+    inputs: {}
+    formula: sin(1)
+    expected: '0.841'
+    shown: ['(0.833 against 0.841)']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.7), p. 93'}
+    origin: page-own
+
+  - id: error-at-1
+    where: 'plot caption: relative error at wt = 1 is about 1%'
+    inputs: {}
+    formula: (sin(1) - (1 - 1/6))/sin(1)*100
+    expected: '1'
+    tolerance: 0.5
+    shown: ['At ωt = 1 they differ by about 1%']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.6), p. 93'}
+    origin: page-own
+
+  - id: error-at-2
+    where: 'plot caption and quiz 4: relative error at wt = 2, about 27%'
+    inputs: {}
+    formula: (sin(2) - (2 - 8/6))/sin(2)*100
+    expected: '27'
+    shown: ['the first-order curve is 27% low', 'at $\\omega t = 2$ by about 27%']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.6), p. 93'}
+    origin: page-own
+
+  - id: zero-crossing
+    where: 'plot caption: s - s^3/6 = 0 at s = sqrt 6'
+    inputs: {}
+    formula: sqrt(6)
+    expected: '2.45'
+    shown: ['beyond ωt ≈ 2.45 it turns negative']
+    source: {cite: reading1, at: 'Chapter 5 introduction, eq. (5.6), p. 93'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Hamilton-Jacobi route (pp. 94-95)
+  - id: free-particle-hj
+    kind: identity
+    where: 'text before "Free-particle variables": S = alpha x - alpha^2 t/(2m) solves (1/2m)(dS/dx)^2 + dS/dt = 0 (checked as value + 1 = 1)'
+    formula: (1/(2*mm))*deriv('al*u - al**2*tt/(2*mm)', 'u', x, 1)**2 + deriv('al*x - al**2*u/(2*mm)', 'u', tt, 1) + 1
+    equals: 1
+    samples: {mm: [1.0, 2.0], al: [0.7, 3.0], x: [0.2, -1.0], tt: [0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['it is solved by $S = \alpha x - \alpha^2t/(2m)$']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.14), p. 94'}
+    origin: mit
+
+  - id: alpha-first-order
+    kind: identity
+    where: 'formula "First-order constants": alpha^(1) = a0 + integral of -m w^2 (a0 u/m) = a0 - w^2 a0 t^2/2'
+    formula: a0 + integrate('-mm*w**2*(a0*u/mm)', 'u', 0, tt)
+    equals: a0 - 0.5*w**2*a0*tt**2
+    samples: {a0: [1.0, 3.0], w: [0.5, 2.0], tt: [0.3, 1.7], mm: [1.0, 2.0]}
+    tolerance: 1e-9
+    shown: ['\alpha^{(1)}(t) = \alpha_0 - \tfrac12\,\omega^2 \alpha_0 t^2']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.16), p. 95'}
+    origin: mit
+
+  - id: beta-first-order
+    kind: identity
+    where: 'same formula: beta^(1) = integral of w^2 u (a0 u/m) = w^2 a0 t^3/(3m)'
+    formula: integrate('w**2*u*(a0*u/mm)', 'u', 0, tt)
+    equals: w**2*a0*tt**3/(3*mm)
+    samples: {a0: [1.0, 3.0], w: [0.5, 2.0], tt: [0.3, 1.7], mm: [1.0, 2.0]}
+    tolerance: 1e-9
+    shown: ['\beta^{(1)}(t) = \frac{\omega^2 \alpha_0\, t^3}{3m}']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.16), p. 95'}
+    origin: mit
+
+  - id: x-from-hj
+    kind: identity
+    where: 'formula "First-order position from the Hamilton-Jacobi route": alpha^(1) t/m + beta^(1) = a0 t/m - w^2 a0 t^3/(6m)'
+    formula: (a0 - 0.5*w**2*a0*tt**2)*tt/mm + w**2*a0*tt**3/(3*mm)
+    equals: a0*tt/mm - w**2*a0*tt**3/(6*mm)
+    samples: {a0: [1.0, 3.0], w: [0.5, 2.0], tt: [0.3, 1.7], mm: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{\alpha_0}{m}\,t - \frac{\omega^2\alpha_0}{m}\,\frac{t^3}{3!}']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.18), p. 95'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: constant force
+  - id: cf-position-first-order
+    kind: identity
+    where: 'worked example, step "First order": (a0 + F t) t/m - F t^2/(2m) = a0 t/m + F t^2/(2m), which solves m x'''' = F with x(0) = 0, p(0) = a0'
+    formula: (a0 + FF*tt)*tt/mm - FF*tt**2/(2*mm)
+    equals: a0*tt/mm + FF*tt**2/(2*mm)
+    samples: {a0: [3.0, 1.0], FF: [0.5, 2.0], tt: [4.0, 0.7], mm: [2.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['$x^{(1)} = \alpha^{(1)}t/m + \beta^{(1)} = \alpha_0 t/m + Ft^2/m - Ft^2/(2m) = \alpha_0 t/m + Ft^2/(2m)$']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.12), p. 94'}
+    origin: page-own
+
+  - id: cf-momentum
+    where: 'step "Numbers": p = 3.0 + 0.50 x 4.0'
+    inputs: {p0: 3.0 kg*m/s, F: 0.50 N, t: 4.0 s}
+    formula: p0 + F*t
+    expected: 5.0 kg*m/s
+    shown: ['$p = \alpha = 3.0 + 0.50 \times 4.0 = 5.0$ kg m/s']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.12), p. 94'}
+    origin: page-own
+
+  - id: cf-beta
+    where: 'step "Numbers": beta = -F t^2/(2m)'
+    inputs: {m: 2.0 kg, F: 0.50 N, t: 4.0 s}
+    formula: -F*t**2/(2*m)
+    expected: -2.0 m
+    shown: ['$\beta = -0.50 \times 16/(2 \times 2.0) = -2.0$ m']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.12), p. 94'}
+    origin: page-own
+
+  - id: cf-x-free-part
+    where: 'step "Numbers" and quiz 3 (distractor): p0 t/m'
+    inputs: {m: 2.0 kg, p0: 3.0 kg*m/s, t: 4.0 s}
+    formula: p0*t/m
+    expected: 6.0 m
+    shown: ['$x = 3.0 \times 4.0/2.0 + 0.50 \times 16/(2 \times 2.0) = 6.0 + 2.0 = 8.0$ m']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.12), p. 94'}
+    origin: page-own
+
+  - id: cf-x
+    where: 'step "Numbers" and quiz 3: x = p0 t/m + F t^2/(2m)'
+    inputs: {m: 2.0 kg, p0: 3.0 kg*m/s, F: 0.50 N, t: 4.0 s}
+    formula: p0*t/m + F*t**2/(2*m)
+    expected: 8.0 m
+    quiz: 2
+    shown: ['$x = \\alpha_0 t/m + Ft^2/(2m) = 6.0 + 2.0 = 8.0$ m']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.12), p. 94'}
+    origin: page-own
+
+  - id: cf-x-distractor
+    where: 'quiz 3 explanation: alpha(t) t/m alone gives 10.0 m'
+    inputs: {m: 2.0 kg, p0: 3.0 kg*m/s, F: 0.50 N, t: 4.0 s}
+    formula: (p0 + F*t)*t/m
+    expected: 10.0 m
+    shown: ['10.0 m uses $Ft^2/m$']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.12), p. 94'}
+    origin: page-own
+
+  - id: cf-check
+    where: 'step "Numbers": 5.0 x 4.0/2.0 - 2.0 = 8.0'
+    inputs: {}
+    formula: 5.0*4.0/2.0 - 2.0
+    expected: '8.0'
+    shown: ['($5.0 \times 4.0/2.0 - 2.0 = 8.0$)']
+    source: {cite: reading1, at: 'Section 5.1, eq. (5.14), p. 94'}
+    origin: page-own
+
+  - id: mercury-leadsto
+    kind: fact
+    where: 'leadsTo: 43 arcseconds per century (42.98 in the notes, computed in the Section 5.3 calcs)'
+    value: '43'
+    shown: ['gives Mercury''s 43 arcseconds per century']
+    source: {cite: reading1, at: 'Section 5.3, p. 101'}
+    origin: mit

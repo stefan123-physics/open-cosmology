@@ -1,0 +1,38 @@
+# Formula checks on content/year-4/8.286/closed-universe-cycloid.mdx (docs/CALC_TESTS_PLAN.md §6).
+# ct = α(θ − sin θ), a/√k = α(1 − cos θ), in the rescaled variables t̃ = ct, ã = a/√k.
+
+page: content/year-4/8.286/closed-universe-cycloid.mdx
+calcs:
+  - id: cycloid-solves-friedmann
+    kind: identity
+    where: 'formula "Evolution of a closed universe" must satisfy "Rescaled variables": (dã/dt̃)² = 2α/ã − 1'
+    formula: (deriv('alpha * (1 - cos(x))', 'x', th) / deriv('alpha * (x - sin(x))', 'x', th))**2
+    equals: 2 * alpha / (alpha * (1 - cos(th))) - 1
+    samples: {th: [0.05, 0.5, 1.5, 2.5, 3.1, 4.0, 6.2], alpha: [1, 1, 2, 0.7, 1, 3, 1]}
+    tolerance: 1e-6
+    shown: ['\left(\frac{d\tilde a}{d\tilde t}\right)^2 = \frac{2\alpha}{\tilde a} - 1', 'c\,t = \alpha\,(\theta - \sin\theta), \qquad \frac{a}{\sqrt k} = \alpha\,(1 - \cos\theta)']
+    source: {cite: reading1, at: 'Lecture 9 ("Evolution of a closed universe")'}
+    origin: mit
+
+  - id: separated-integral
+    kind: identity
+    where: 'formula "Separated integral" must equal the parametric time α(θ − sin θ) at ã_f = α(1 − cos θ) (integrand ã/√(2αã − ã²) written as √ã/√(2α − ã), the same for ã > 0, to avoid 0/0 at the lower limit)'
+    formula: integrate('sqrt(x) / sqrt(2 * alpha - x)', 'x', 0, alpha * (1 - cos(th)))
+    equals: alpha * (th - sin(th))
+    samples: {th: [0.05, 0.8, 1.6, 2.4, 3.0, 3.1, 3.14], alpha: [1, 1, 1, 2, 1, 1, 1]}
+    tolerance: 1e-4
+    shown: ['\tilde t_f = \int_0^{\tilde a_f}\frac{\tilde a\,d\tilde a}{\sqrt{2\alpha\tilde a - \tilde a^2}}']
+    source: {cite: reading1, at: 'Lecture 9 ("Separated integral")'}
+    origin: mit
+
+  - id: early-time-flat-limit
+    kind: limit
+    where: 'worked example "Checking the early universe against the flat case": at early times ã must approach the flat solution (9α/2)^(1/3) t̃^(2/3) of (dã/dt̃)² = 2α/ã, with the right constant'
+    inputs: {alpha: 1.7}
+    formula: alpha * (1 - cos(th))
+    limit: (9 * alpha / 2)**(1/3) * (alpha * (th - sin(th)))**(2/3)
+    vary: {th: [0.3, 0.1, 0.03, 0.01, 0.003]}
+    tolerance: 1e-5
+    shown: ['which is proportional to $t^{2/3}$']
+    source: {cite: reading1, at: 'Lecture 9'}
+    origin: page-own

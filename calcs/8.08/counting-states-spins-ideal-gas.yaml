@@ -1,0 +1,494 @@
+# Calculations on content/year-4/8.08/counting-states-spins-ideal-gas.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005, Wen) Supplement 1, "Statistical Ensembles", a typed chapter of Wen's book draft (9 pages).
+# Citations give the section, the printed page number (= PDF page) and Wen's equation numbers.
+# Numbers from the notes: about 1e22 atoms in a litre of gas and 6e22 numbers to describe them (p. 1); ln 2 as the largest
+# entropy per spin (Fig. 1.1, p. 3); N2 = 2 N1 and the peak at E/3 (Fig. 1.2, p. 4).
+# Page's own examples: a mole of free electron spins (g = 2) in 5 T at 77 K and 4.2 K; two systems of 100 spins with 30 and
+# 70 up; nitrogen at 300 K and 1 atm and the conduction electrons of copper (Wen's question, p. 8); plot captions; quiz 3.
+# Constants: k_B (exact 2019 SI), h = 6.62607015e-34 J s (exact), N_A = 6.02214076e23 /mol (exact),
+# mu_B = 9.2740100783e-24 J/T (CODATA 2018), u = 1.66053906660e-27 kg (CODATA 2018), m_e = 9.1093837015e-31 kg (CODATA 2018).
+# Binomial coefficients are written out as exact integers (computed with Python's math.comb).
+
+page: content/year-4/8.08/counting-states-spins-ideal-gas.mdx
+calcs:
+  # ---------------------------------------------------------------- one principle (Section 1.1, p. 1)
+  - id: atoms-in-litre
+    kind: fact
+    where: 'text "One principle, two readings": a litre of gas holds of order 1e22 atoms, 6e22 numbers (Wen''s figures)'
+    value: '6 × 10^22'
+    shown: ['about $6 \times 10^{22}$ numbers']
+    source: {cite: reading1, at: 'Section 1.1, p. 1'}
+    origin: mit
+
+  # ---------------------------------------------------------------- spins (Section 1.2.1, pp. 2-3)
+  - id: binomial-sum
+    kind: identity
+    where: 'formula "Sorting the 2^N states": sum over M of C(N, M) = 2^N, checked for N = 10 (1 + 10 + 45 + 120 + 210 + 252 + ...)'
+    formula: 1 + 10 + 45 + 120 + 210 + 252 + 210 + 120 + 45 + 10 + 1
+    equals: 2**10
+    samples: {zz: [0.0]}
+    tolerance: 1e-12
+    shown: ['2^N = (1 + 1)^N = \sum_{M=0}^{N}\binom{N}{M}']
+    source: {cite: reading1, at: 'Section 1.2.1, p. 2, Eq. (1.2.1)'}
+    origin: mit
+
+  - id: stirling-100
+    where: 'formula "Stirling''s formula": (n + 1/2) ln(n + 1) - (n + 1) + (1/2) ln(2 pi) for n = 100, against ln 100! = 363.739 (our check)'
+    inputs: {nn: 100}
+    formula: (nn + 0.5)*log(nn + 1) - (nn + 1) + 0.5*log(2*pi)
+    expected: '363.74'
+    shown: ['\ln n! = \left(n + \tfrac12\right)\ln(n + 1) - (n + 1) + \tfrac12\ln(2\pi)']
+    source: {cite: reading1, at: 'Section 1.2.1, p. 2, Eq. (1.2.5)'}
+    origin: page-own
+
+  - id: entropy-max-ln2
+    where: 'plot caption: the largest entropy per spin, ln 2'
+    inputs: {}
+    formula: log(2)
+    expected: '0.693'
+    shown: ['peaks at ln 2, about 0.693, when half point up']
+    source: {cite: reading1, at: 'Section 1.2.1, p. 3, Fig. 1.1'}
+    origin: mit
+
+  - id: spin-temperature
+    kind: identity
+    where: 'formula "Temperature of the spin system": d/dx of -(1/2 + x) ln(1/2 + x) - (1/2 - x) ln(1/2 - x) equals ln((1/2 - x)/(1/2 + x)), x = eps/eps0, so 1/T = (k_B/eps0) ln((eps0/2 - eps)/(eps0/2 + eps))'
+    formula: deriv('-(0.5 + t)*log(0.5 + t) - (0.5 - t)*log(0.5 - t)', 't', xx)
+    equals: log((0.5 - xx)/(0.5 + xx))
+    samples: {xx: [-0.4, -0.1, 0.2, 0.35]}
+    tolerance: 1e-6
+    shown: ['\frac{k_B}{\epsilon_0}\ln\left(\frac{\frac12\epsilon_0 - \epsilon}{\frac12\epsilon_0 + \epsilon}\right)']
+    source: {cite: reading1, at: 'Section 1.2.2, p. 4, Eq. (1.2.14)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- two systems in contact (Fig. 1.2, p. 4)
+  - id: peak-at-third
+    kind: identity
+    where: 'second plot: with N2 = 2 N1 and E = -N1 eps0, the total entropy (per N1) h(x) + 2 h((-1 - x)/2) has zero slope at x = E1/|E| = -1/3, i.e. E1 = E/3'
+    formula: deriv('-(0.5 + t)*log(0.5 + t) - (0.5 - t)*log(0.5 - t) + t*log(-t/2) - (2 + t)*log(1 + t/2)', 't', -1/3) + 1
+    equals: 1
+    samples: {zz: [0.0]}
+    tolerance: 1e-6
+    shown: ['The peak sits at E₁ = E/3']
+    source: {cite: reading1, at: 'Section 1.2.2, p. 4, Fig. 1.2'}
+    origin: mit
+
+  - id: peak-normalisation
+    where: 'second plot expression: the constant 1.3516836, the maximum h(-1/3) + 2 h(-1/3) = 3 h(-1/3) of the total entropy per N1'
+    inputs: {}
+    formula: 3*(-(1/6)*log(1/6) - (5/6)*log(5/6))
+    expected: '1.3516836'
+    shown: ['- 1.3516836)) : 0']
+    source: {cite: reading1, at: 'Section 1.2.2, p. 4, Fig. 1.2'}
+    origin: page-own
+
+  - id: system2-entropy-form
+    kind: identity
+    where: 'second plot expression: 2 h((-1 - x)/2) written as x ln(-x/2) - (2 + x) ln(1 + x/2)'
+    formula: 2*(-(0.5 + (-1 - xx)/2)*log(0.5 + (-1 - xx)/2) - (0.5 - (-1 - xx)/2)*log(0.5 - (-1 - xx)/2))
+    equals: xx*log(-xx/2) - (2 + xx)*log(1 + xx/2)
+    samples: {xx: [-0.45, -0.3, -0.1]}
+    tolerance: 1e-10
+    shown: ['x*log(-x/2) - (2 + x)*log(1 + x/2)']
+    source: {cite: reading1, at: 'Section 1.2.2, p. 4, Fig. 1.2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Curie's law (Section 1.2.3, pp. 4-5)
+  - id: moment-tanh
+    kind: identity
+    where: 'formula "The moment solved exactly": M = (g muB N/2) tanh(g muB B/2kT) satisfies 1/T = (k/(g muB B)) ln((g muB N + 2M)/(g muB N - 2M)); in units g muB N = 1, written as y = g muB B/kT'
+    formula: log((1 + tanh(yy/2))/(1 - tanh(yy/2)))
+    equals: yy
+    samples: {yy: [0.01, 0.5, 2.0]}
+    tolerance: 1e-9
+    shown: ['\mathcal M = \frac{g\mu_BN}{2}\tanh\frac{g\mu_BB}{2k_BT}']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: curie-limit
+    kind: identity
+    where: 'formula "Curie''s law": the weak-field limit of (g muB N/2) tanh(g muB B/2kT) is g^2 muB^2 N B/(4kT) (ratio at a small argument)'
+    formula: (0.5*tanh(yy/2))/(yy/4)
+    equals: 1
+    samples: {yy: [1e-5]}
+    tolerance: 1e-8
+    shown: ['\mathcal M = \frac{g^2\mu_B^2N}{4k_BT}\,B']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 5'}
+    origin: mit
+
+  - id: ex-saturation
+    where: 'worked example "How far does Curie''s law reach?": saturation moment g muB N_A/2 with g = 2'
+    inputs: {muB: 9.2740100783e-24 J/T, NA: 6.02214076e23}
+    formula: muB*NA
+    expected: 5.585 J/T
+    shown: ['$g\mu_BN_A/2 = 9.274 \times 10^{-24} \times 6.022 \times 10^{23} = 5.585$ J/T']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-splitting
+    where: 'worked example: g muB B for g = 2, B = 5 T'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T}
+    formula: 2*muB*B
+    expected: 9.274e-23 J
+    shown: ['= 9.274 \times 10^{-23}/(2']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-kT-77
+    where: 'worked example: k_B T at 77 K'
+    inputs: {T: 77 K}
+    formula: k_B*T
+    expected: 1.063e-21 J
+    shown: ['(2 \times 1.063 \times 10^{-21})']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-arg-77
+    where: 'worked example: argument g muB B/2kT at 77 K, 5 T'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T, T: 77 K}
+    formula: 2*muB*B/(2*k_B*T)
+    expected: '0.0436'
+    shown: ['= 0.0436$']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-tanh-77
+    where: 'worked example: tanh(x) is smaller than x by 0.06% at x = 0.0436'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T, T: 77 K}
+    formula: 100*(1 - tanh(muB*B/(k_B*T))/(muB*B/(k_B*T)))
+    expected: '0.06'
+    shown: ['smaller by only 0.06%']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-moment-77
+    where: 'worked example: moment at 77 K, 5 T'
+    inputs: {muB: 9.2740100783e-24 J/T, NA: 6.02214076e23, B: 5 T, T: 77 K}
+    formula: muB*NA*tanh(muB*B/(k_B*T))
+    expected: 0.243 J/T
+    shown: ['$\mathcal M = 0.243$ J/T']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-fraction-77
+    where: 'worked example: fraction of the full moment aligned at 77 K, tanh(0.0436), about 4%'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T, T: 77 K}
+    formula: 100*tanh(muB*B/(k_B*T))
+    expected: '4'
+    tolerance: 0.5
+    shown: ['only about 4% of the full moment']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-arg-4
+    where: 'worked example: argument g muB B/2kT at 4.2 K, 5 T'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T, T: 4.2 K}
+    formula: muB*B/(k_B*T)
+    expected: '0.800'
+    shown: ['Now the argument is $0.800$']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-tanh-4
+    where: 'worked example: tanh 0.800'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T, T: 4.2 K}
+    formula: tanh(muB*B/(k_B*T))
+    expected: '0.664'
+    shown: ['$\tanh 0.800 = 0.664$']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-moment-4
+    where: 'worked example: exact moment at 4.2 K'
+    inputs: {muB: 9.2740100783e-24 J/T, NA: 6.02214076e23, B: 5 T, T: 4.2 K}
+    formula: muB*NA*tanh(muB*B/(k_B*T))
+    expected: 3.71 J/T
+    shown: ['$0.664 \times 5.585 = 3.71$ J/T']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 4'}
+    origin: page-own
+
+  - id: ex-curie-4
+    where: 'worked example: Curie''s law at 4.2 K'
+    inputs: {muB: 9.2740100783e-24 J/T, NA: 6.02214076e23, B: 5 T, T: 4.2 K}
+    formula: muB*NA*muB*B/(k_B*T)
+    expected: 4.47 J/T
+    shown: ['$0.800 \times 5.585 = 4.47$ J/T']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 5'}
+    origin: page-own
+
+  - id: ex-curie-excess
+    where: 'worked example: Curie''s law too high by 20% at 4.2 K'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 5 T, T: 4.2 K}
+    formula: 100*((muB*B/(k_B*T))/tanh(muB*B/(k_B*T)) - 1)
+    expected: '20'
+    tolerance: 1
+    shown: ['too high by 20%']
+    source: {cite: reading1, at: 'Section 1.2.3, p. 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- properties of entropy (Section 1.2.4, pp. 5-6)
+  - id: window-log
+    kind: identity
+    where: 'formula "Changing the energy window": k ln(alpha G) = k ln G + k ln alpha'
+    formula: log(aa*GG)
+    equals: log(GG) + log(aa)
+    samples: {aa: [2.0, 1000.0], GG: [1e10, 3e50]}
+    tolerance: 1e-12
+    shown: ['S(E, \alpha\Delta E) = S(E, \Delta E) + k_B\ln\alpha']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 5, Eq. (1.2.17)'}
+    origin: mit
+
+  - id: ex-before
+    where: 'worked example "Entropy bookkeeping": ln[C(100,30) C(100,70)]'
+    inputs: {}
+    formula: log(29372339821610944823963760*29372339821610944823963760)
+    expected: '117.28'
+    shown: ['\binom{100}{70}\right] = 117.28$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6'}
+    origin: page-own
+
+  - id: ex-after
+    where: 'worked example: ln C(200,100)'
+    inputs: {}
+    formula: log(90548514656103281165404177077484163874504589675413336841320)
+    expected: '135.75'
+    shown: ['\ln\binom{200}{100} = 135.75$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6'}
+    origin: page-own
+
+  - id: ex-sum-check
+    kind: identity
+    where: 'worked example: C(200,100) is the sum over k of C(100,k) C(100,100-k) (Vandermonde), checked against the central term C(100,50)^2 being smaller: ratio C(200,100)/C(100,50)^2 = exp(2.19) = 8.90'
+    formula: 90548514656103281165404177077484163874504589675413336841320/(100891344545564193334812497256*100891344545564193334812497256)
+    equals: exp(2.1855527772)
+    samples: {zz: [0.0]}
+    tolerance: 1e-6
+    shown: ['below $135.75$ by only $2.19$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6'}
+    origin: page-own
+
+  - id: ex-gain
+    where: 'worked example and quiz 3: entropy gain ln C(200,100) - ln[C(100,30) C(100,70)]'
+    inputs: {}
+    formula: log(90548514656103281165404177077484163874504589675413336841320) - log(29372339821610944823963760*29372339821610944823963760)
+    expected: '18.47'
+    quiz: 2
+    shown: ['The gain, $18.47$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6'}
+    origin: page-own
+
+  - id: ex-separated
+    where: 'worked example: ln[C(100,50)^2]'
+    inputs: {}
+    formula: 2*log(100891344545564193334812497256)
+    expected: '133.57'
+    shown: ['\ln\left[\binom{100}{50}^2\right] = 133.57$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6'}
+    origin: page-own
+
+  - id: ex-separated-diff
+    where: 'worked example and quiz 3: ln C(200,100) - ln[C(100,50)^2]'
+    inputs: {}
+    formula: log(90548514656103281165404177077484163874504589675413336841320) - 2*log(100891344545564193334812497256)
+    expected: '2.19'
+    shown: ['below $135.75$ by only $2.19$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6'}
+    origin: page-own
+
+  - id: ex-lower-bound
+    where: 'worked example: lower bound ln C(200,100) - ln(2N), N = 100'
+    inputs: {}
+    formula: log(90548514656103281165404177077484163874504589675413336841320) - log(200)
+    expected: '130.45'
+    shown: ['$135.75 - \ln 200 = 130.45$']
+    source: {cite: reading1, at: 'Section 1.2.4, p. 6, Eq. (1.2.20)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- ideal gas (Section 1.3, pp. 7-9)
+  - id: window-count-derivative
+    kind: identity
+    where: 'formula "Number of states in the window": d/dE of (2mE)^(3N/2)/(3N) is m (2mE)^((3N-2)/2) (checked with N = 2, m = 1.3)'
+    formula: deriv('(2*1.3*x)**3/6', 'x', EE)
+    equals: 1.3*(2*1.3*EE)**2
+    samples: {EE: [0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['\frac{m\,V^N S_{3N}\left(\sqrt{2mE}\right)^{3N-2}}{h^{3N}}\,\Delta E']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.2)'}
+    origin: page-own
+
+  - id: solid-angle-2
+    kind: identity
+    where: 'text after "Solid angle in n dimensions": S_2 = 2 pi^1/Gamma(1) = 2 pi'
+    formula: 2*pi/1
+    equals: 2*pi
+    samples: {zz: [0.0]}
+    tolerance: 1e-12
+    shown: ['$S_2 = 2\pi$ (a circle)']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.4)'}
+    origin: page-own
+
+  - id: solid-angle-3
+    kind: identity
+    where: 'text: S_3 = 2 pi^(3/2)/Gamma(3/2), Gamma(3/2) = sqrt(pi)/2, equals 4 pi'
+    formula: 2*pi**1.5/(sqrt(pi)/2)
+    equals: 4*pi
+    samples: {zz: [0.0]}
+    tolerance: 1e-12
+    shown: ['$S_3 = 4\pi$ (a sphere)']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.4)'}
+    origin: page-own
+
+  - id: entropy-constant-distinguishable
+    kind: identity
+    where: 'formula "Entropy of distinguishable particles": (3N/2) ln N + 3N ln sqrt(pi) - (3N/2) ln(3N/2) + 3N/2 = N((3/2) ln(2 pi/3) + 3/2) (per N)'
+    formula: 1.5*log(NN) + 3*log(sqrt(pi)) - 1.5*log(1.5*NN) + 1.5
+    equals: 1.5*log(2*pi/3) + 1.5
+    samples: {NN: [10.0, 1e6]}
+    tolerance: 1e-10
+    shown: ['N\left(\frac32\ln\frac{2\pi}{3} + \frac32\right)']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.5)'}
+    origin: mit
+
+  - id: sackur-tetrode-match
+    kind: identity
+    where: 'text after "Entropy of the ideal gas of identical particles": with eps = 3kT/2, ln(v (2m eps)^(3/2)/h^3) + (3/2) ln(2 pi/3) + 5/2 = 5/2 + ln(v (2 pi m kT)^(3/2)/h^3) (units h = 1)'
+    formula: log(vv*(2*mm*1.5*TT)**1.5) + 1.5*log(2*pi/3) + 2.5
+    equals: 2.5 + log(vv*(2*pi*mm*TT)**1.5)
+    samples: {vv: [1.0, 50.0], mm: [2.0, 0.1], TT: [3.0, 0.7]}
+    tolerance: 1e-10
+    shown: ['whose thermal wavelength $h/\sqrt{2\pi mk_BT}$ absorbs the term']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.7)'}
+    origin: page-own
+
+  - id: dropped-constant
+    where: 'text "Wave packets per particle": the constant (3/2) ln(2 pi/3) + 5/2 dropped in Eq. (1.3.8)'
+    inputs: {}
+    formula: 1.5*log(2*pi/3) + 2.5
+    expected: '3.61'
+    shown: ['which is about $3.61$']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.8)'}
+    origin: page-own
+
+  - id: energy-from-entropy
+    kind: identity
+    where: 'formula "Energy of the ideal gas as a function of S, V and N": inserting eps = (3h^2/4 pi m)(N/V)^(2/3) exp(2s/3k - 5/3) into Eq. (1.3.7) returns s/k (units h = k = 1)'
+    formula: log((VV/NN)*(2*mm*(3/(4*pi*mm))*(NN/VV)**(2/3)*exp(2*ss/3 - 5/3))**1.5) + 1.5*log(2*pi/3) + 2.5
+    equals: ss
+    samples: {VV: [10.0, 3.0], NN: [2.0, 7.0], mm: [1.0, 0.3], ss: [5.0, 12.0]}
+    tolerance: 1e-10
+    shown: ['E(S, V, N) = N\,\frac{3h^2}{4\pi m}\left(\frac NV\right)^{2/3}e^{2S/3Nk_B - 5/3}']
+    source: {cite: reading1, at: 'Section 1.3, p. 9, Eq. (1.3.9)'}
+    origin: page-own
+
+  - id: temperature-from-E
+    kind: identity
+    where: 'formula "Temperature and pressure from E(S, V, N)": dE/dS at fixed V equals 2E/(3 N k) (units k = 1, constant prefactor cc)'
+    formula: deriv('NN*cc*(NN/VV)**(2/3)*exp(2*t/(3*NN))', 't', SS)
+    equals: 2*NN*cc*(NN/VV)**(2/3)*exp(2*SS/(3*NN))/(3*NN)
+    samples: {NN: [3.0, 10.0], cc: [1.0, 0.4], VV: [2.0, 5.0], SS: [1.0, 7.0]}
+    tolerance: 1e-6
+    shown: ['T = \left.\frac{\partial E}{\partial S}\right|_V = \frac{2E}{3Nk_B}']
+    source: {cite: reading1, at: 'Section 1.3, p. 9, Eq. (1.3.10)'}
+    origin: mit
+
+  - id: pressure-from-E
+    kind: identity
+    where: 'formula "Temperature and pressure from E(S, V, N)": -dE/dV at fixed S equals 2E/(3V)'
+    formula: -deriv('NN*cc*(NN/t)**(2/3)*exp(2*SS/(3*NN))', 't', VV)
+    equals: 2*NN*cc*(NN/VV)**(2/3)*exp(2*SS/(3*NN))/(3*VV)
+    samples: {NN: [3.0, 10.0], cc: [1.0, 0.4], VV: [2.0, 5.0], SS: [1.0, 7.0]}
+    tolerance: 1e-6
+    shown: ['P = -\left.\frac{\partial E}{\partial V}\right|_S = \frac{2E}{3V}']
+    source: {cite: reading1, at: 'Section 1.3, p. 9, Eq. (1.3.11)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: Wen's question (p. 8)
+  - id: air-eps
+    where: 'worked example "Wen''s question": eps = (3/2) k_B T at 300 K'
+    inputs: {T: 300 K}
+    formula: 1.5*k_B*T
+    expected: 6.21e-21 J
+    shown: ['= 6.21 \times 10^{-21}$ J']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: air-mass
+    where: 'worked example: mass of N2, 28.01 u'
+    inputs: {uu: 1.66053906660e-27 kg}
+    formula: 28.014*uu
+    expected: 4.65e-26 kg
+    shown: ['$m = 4.65 \times 10^{-26}$ kg']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: air-lambda
+    where: 'worked example: lambda = h/sqrt(2 m eps) for N2 at 300 K'
+    inputs: {hh: 6.62607015e-34 J*s, uu: 1.66053906660e-27 kg, T: 300 K}
+    formula: hh/sqrt(2*28.014*uu*1.5*k_B*T)
+    expected: 2.76e-11 m
+    shown: ['= 2.76 \times 10^{-11}$ m']
+    source: {cite: reading1, at: 'Section 1.3, p. 8, Eq. (1.3.8)'}
+    origin: page-own
+
+  - id: air-v
+    where: 'worked example: v = k_B T/P at 300 K, 1 atm'
+    inputs: {T: 300 K, P: 101325 Pa}
+    formula: k_B*T/P
+    expected: 4.09e-26 m**3
+    shown: ['$v = k_BT/P = 4.09 \times 10^{-26}$ m³']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: air-ratio
+    where: 'worked example: v/lambda^3 for N2'
+    inputs: {hh: 6.62607015e-34 J*s, uu: 1.66053906660e-27 kg, T: 300 K, P: 101325 Pa}
+    formula: (k_B*T/P)/(hh/sqrt(2*28.014*uu*1.5*k_B*T))**3
+    expected: '1.95e6'
+    shown: ['$v/\lambda^3 = 1.95 \times 10^6$']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: electron-mass-ratio
+    where: 'worked example: a nitrogen molecule is about 51,000 electron masses'
+    inputs: {uu: 1.66053906660e-27 kg, me: 9.1093837015e-31 kg}
+    formula: 28.014*uu/me
+    expected: '51000'
+    tolerance: 1%
+    shown: ['about 51,000 times lighter']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: copper-density
+    kind: fact
+    where: 'worked example: conduction-electron density of copper, 8.47e28 per m^3 (one electron per atom)'
+    value: '8.47e28 m^-3'
+    shown: ['$8.47 \times 10^{28}$ per m³']
+    source: {ref: 'Conduction-electron density of copper, 8.47e28 m^-3 (standard solid-state tables, e.g. Ashcroft and Mermin)'}
+    origin: later-data
+
+  - id: electron-lambda
+    where: 'worked example: lambda = h/sqrt(2 m_e eps) at 300 K'
+    inputs: {hh: 6.62607015e-34 J*s, me: 9.1093837015e-31 kg, T: 300 K}
+    formula: hh/sqrt(2*me*1.5*k_B*T)
+    expected: 6.23e-9 m
+    shown: ['$\lambda = 6.23 \times 10^{-9}$ m']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: electron-v
+    where: 'worked example: volume per electron in copper'
+    inputs: {n: 8.47e28 m**-3}
+    formula: 1/n
+    expected: 1.18e-29 m**3
+    shown: ['= 1.18 \times 10^{-29}$ m³']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own
+
+  - id: electron-ratio
+    where: 'worked example: v/lambda^3 for the electrons of copper'
+    inputs: {hh: 6.62607015e-34 J*s, me: 9.1093837015e-31 kg, T: 300 K, n: 8.47e28 m**-3}
+    formula: (1/n)/(hh/sqrt(2*me*1.5*k_B*T))**3
+    expected: '4.9e-5'
+    shown: ['$v/\lambda^3 = 4.9 \times 10^{-5}$']
+    source: {cite: reading1, at: 'Section 1.3, p. 8'}
+    origin: page-own

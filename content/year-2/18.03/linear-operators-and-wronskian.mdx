@@ -1,0 +1,139 @@
+---
+title: "Linear operators, the Wronskian and normalized solutions"
+slug: linear-operators-and-wronskian
+course: "18.03"
+lecture: 11
+order: 1
+summary: "For the linear homogeneous equation y″ + p(x)y′ + q(x)y = 0, why is c₁y₁ + c₂y₂ the general solution? Writing the equation as Ly = 0, with the linear operator L = D² + pD + q, the superposition principle follows from linearity alone: L(c₁y₁ + c₂y₂) = c₁Ly₁ + c₂Ly₂ = 0. Initial values y(x₀) = a, y′(x₀) = b can be met when the Wronskian W(y₁, y₂) = y₁y₂′ − y₂y₁′ is nonzero at x₀; for two solutions it is either identically zero or never zero. Normalized solutions Y₁, Y₂, with Y₁(0) = 1, Y₁′(0) = 0 and Y₂(0) = 0, Y₂′(0) = 1, solve any initial value problem at once as aY₁ + bY₂ (for y″ − y = 0 they are cosh x and sinh x). The existence and uniqueness theorem then shows that every solution is of this form."
+prerequisites: [damped-oscillations]
+source:
+  title: "MIT 18.03 Lecture 11: Theory of General Second-order Linear Homogeneous ODEs"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/lecture-11-theory-of-general-second-order-linear-homogeneous-odes/
+  readings:
+    - title: "18.03 Lecture 11 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/2002c12a3d7460cb5ba26e1d9e0f2b43_rZ3-nFV6l8w.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.03"
+    lecture: 12
+    why: "The general theory for inhomogeneous equations, built on the same linear operator."
+quiz:
+  - question: "Which property of $L = D^2 + pD + q$ proves the superposition principle?"
+    choices: ["Linearity: $L(u_1 + u_2) = Lu_1 + Lu_2$ and $L(cu) = cLu$", "The product rule", "That $p$ and $q$ are constant", "That $L$ is invertible"]
+    answer: 0
+    explanation: "$L(c_1y_1 + c_2y_2) = c_1Ly_1 + c_2Ly_2 = 0$ uses only the two linearity laws."
+  - question: "What is the Wronskian of $\\cos x$ and $\\sin x$?"
+    choices: ["$1$", "$0$", "$\\cos 2x$", "$-1$"]
+    answer: 0
+    explanation: "$\\cos x\\cdot\\cos x - \\sin x\\cdot(-\\sin x) = \\cos^2x + \\sin^2x = 1$."
+  - question: "With normalized solutions $Y_1$, $Y_2$ at 0, the solution with $y(0) = 4$, $y'(0) = -1$ is…"
+    choices: ["$4Y_1 - Y_2$", "$-Y_1 + 4Y_2$", "$4Y_1 + Y_2$", "$Y_1 + Y_2$"]
+    answer: 0
+    explanation: "The initial value is the coefficient of $Y_1$ and the initial slope the coefficient of $Y_2$."
+flashcards:
+  - front: "Linear operator"
+    back: "$L(u_1 + u_2) = Lu_1 + Lu_2$ and $L(cu) = cLu$. The equation $y'' + py' + qy = 0$ is $Ly = 0$ with $L = D^2 + pD + q$."
+  - front: "Wronskian and its dichotomy"
+    back: "$W(y_1, y_2) = y_1y_2' - y_2y_1'$. For two solutions of $y'' + py' + qy = 0$ ($p$, $q$ continuous) it is either zero for all $x$ or zero for no $x$."
+  - front: "Normalized solutions at 0"
+    back: "$Y_1(0) = 1$, $Y_1'(0) = 0$; $Y_2(0) = 0$, $Y_2'(0) = 1$. The solution with $y(0) = a$, $y'(0) = b$ is $aY_1 + bY_2$."
+status: reviewed
+---
+
+This lecture is theoretical, but some of its ideas are among the most important in the course (transcript, p. 1). The aim is to explain why the recipe of [Lecture 9](/courses/18-03/second-order-constant-coefficients) and [Lecture 10](/courses/18-03/damped-oscillations) gives every solution, for the general linear homogeneous equation
+
+<Formula label="Linear homogeneous equation" tex="y'' + p(x)\,y' + q(x)\,y = 0" cite="reading1" at="pp. 1–2" />
+
+whose coefficients need not be constant.
+
+## Independence and the two questions
+
+$y_1$ and $y_2$ are **independent** if neither is a constant multiple of the other (transcript, p. 1). Both halves are needed: if $y_1 = 0$ and $y_2$ is not, $y_2$ is no multiple of $y_1$, but $y_1 = 0\cdot y_2$ is a multiple of $y_2$, and such a pair must not count (p. 1). The claim is that the solutions are exactly the **linear combinations** $c_1y_1 + c_2y_2$ (pp. 1, 5). That splits into two questions (pp. 1–2):
+
+1. Why are all the $c_1y_1 + c_2y_2$ solutions?
+2. Why are they all the solutions?
+
+## Linear operators and superposition
+
+Rewrite the equation with the differentiation operator $D$, so $y'' = D^2y$ and $y' = Dy$, and formally factor out $y$ (transcript, pp. 2–3):
+
+<Formula label="Operator form" tex="D^2y + p\,Dy + q\,y = 0, \qquad (D^2 + pD + q)\,y = 0, \qquad Ly = 0" cite="reading1" at="pp. 2–3" />
+
+This is shorthand: $D$ is applied to $y$, not multiplied by it (p. 3). Think of $L$ as a black box that takes in a function of $x$ and puts out another. Computing $Lu$ is easy; solving the equation is the inverse problem of finding what to put in so that zero comes out (p. 3).
+
+$L$ is a **linear operator**: for functions $u_1$, $u_2$, $u$ and a constant $c$ (pp. 3–4),
+
+<Formula label="Linearity laws" tex="L(u_1 + u_2) = Lu_1 + Lu_2, \qquad L(cu) = c\,Lu" cite="reading1" at="p. 4" />
+
+$D$ itself is linear: these are the first rules of calculus, $(u_1 + u_2)' = u_1' + u_2'$ and $(cu)' = cu'$. The product rule plays no part here (pp. 4–5). That $L = D^2 + pD + q$ is linear is left as homework (p. 5).
+
+**Superposition principle** (pp. 5–6). If $y_1$ and $y_2$ solve $Ly = 0$, so does any linear combination:
+
+<Formula label="Proof of superposition" tex="L(c_1y_1 + c_2y_2) = c_1\,Ly_1 + c_2\,Ly_2 = c_1\cdot 0 + c_2\cdot 0 = 0" cite="reading1" at="p. 6" />
+
+Plugging in and grinding out the terms would also work, but would not show *why*: the only thing used is that $L$ is linear (p. 6). The argument works for linear homogeneous equations of any order (p. 2).
+
+## Initial values and the Wronskian
+
+Question 2 is approached through the initial value problem (transcript, p. 6). Given $y(x_0) = a$ and $y'(x_0) = b$, can the constants always be chosen (p. 7)? Substituting $y = c_1y_1 + c_2y_2$ gives (pp. 7–8)
+
+<Formula label="Equations for the constants" tex="c_1\,y_1(x_0) + c_2\,y_2(x_0) = a, \qquad c_1\,y_1'(x_0) + c_2\,y_2'(x_0) = b" cite="reading1" at="p. 8" />
+
+a pair of simultaneous linear equations whose **unknowns are $c_1$ and $c_2$**, confusingly enough, while the four values of $y_1$, $y_2$ and their derivatives are just numbers (pp. 8–9). From 18.02, they can be solved whenever the determinant of coefficients is nonzero (p. 9). That determinant is the **Wronskian** (p. 9):
+
+<Formula label="Wronskian" tex="W(y_1, y_2) = \begin{vmatrix} y_1 & y_2 \\ y_1' & y_2' \end{vmatrix} = y_1y_2' - y_2y_1'" cite="reading1" at="pp. 9–10" />
+
+a function of $x$, calculated once $y_1$ and $y_2$ are known (p. 9; the expanded form is this page's). If $y_1$ and $y_2$ were dependent, $y_2 = cy_1$, the columns would be proportional and $W = 0$ for every $x$ (p. 10). The theorem, a homework problem by a method due to Abel (pp. 10–11):
+
+**Theorem.** If $y_1$ and $y_2$ solve $y'' + p(x)y' + q(x)y = 0$, with $p$ and $q$ continuous, then either $W(y_1, y_2) = 0$ for all $x$, or $W(y_1, y_2)$ is never zero.
+
+For independent solutions it is the second (that step also uses the uniqueness theorem below; the lecture takes it for granted, p. 11), so the constants can be found at every $x_0$. (The lecture mentions Abel's tragic story: he died at 26, his work unrecognised in his lifetime, and is now Norway's greatest culture hero, p. 11. His dates are 1802–1829; the transcript's are garbled.)
+
+## Normalized solutions
+
+Any other pair $u_1$, $u_2$ of independent solutions, themselves linear combinations of $y_1$ and $y_2$, gives exactly the same family of solutions (transcript, p. 11). The ones found first ($e^x$ and $e^{2x}$, say) are not always the most convenient (pp. 11–12). The **normalized solutions** at 0 are the solutions with the simplest initial values (p. 12):
+
+<Formula label="Normalized solutions" tex="Y_1(0) = 1,\; Y_1'(0) = 0; \qquad Y_2(0) = 0,\; Y_2'(0) = 1" cite="reading1" at="p. 12" />
+
+**Examples** (pp. 12–14). For $y'' + y = 0$, $\cos x$ and $\sin x$ already are $Y_1$ and $Y_2$. For $y'' - y = 0$ the characteristic roots $\pm1$ give $e^x$ and $e^{-x}$, not normalized. Setting $y = c_1e^x + c_2e^{-x}$ with $c_1 + c_2 = 1$ and $c_1 - c_2 = 0$ gives $c_1 = c_2 = \frac12$, and similarly for $Y_2$ (p. 14):
+
+<Formula label="Normalized solutions of y″ − y = 0" tex="Y_1 = \frac{e^x + e^{-x}}{2} = \cosh x, \qquad Y_2 = \frac{e^x - e^{-x}}{2} = \sinh x" cite="reading1" at="p. 14" />
+
+the hyperbolic cosine and sine, and one of the main reasons they appear in mathematics (p. 14).
+
+**Why engineers like them** (pp. 15–16). The initial value problem $y(0) = a$, $y'(0) = b$ is solved instantly, with no simultaneous equations:
+
+<Formula label="Solution of the initial value problem" tex="y = a\,Y_1 + b\,Y_2" cite="reading1" at="p. 15" />
+
+Check: at 0 the value is $a\cdot1 + b\cdot0 = a$, and the derivative is $a\cdot0 + b\cdot1 = b$ (pp. 15–16).
+
+## Why these are all the solutions
+
+The last step needs a big theorem, usually proved at the very end of a real analysis course (transcript, p. 16):
+
+**Existence and uniqueness theorem.** If $p$ and $q$ are continuous for all $x$, the equation $y'' + py' + qy = 0$ has one and only one solution with given values $y(0)$ and $y'(0)$ (p. 16).
+
+Now take any solution $u(x)$, with initial values $u(0) = a$ and $u'(0) = b$ (p. 17). The combination $aY_1 + bY_2$ is a solution with the same initial values. By uniqueness, $u$ must be that combination. So every solution is a linear combination of $Y_1$ and $Y_2$, and hence of $y_1$ and $y_2$, since the two families are the same (p. 17).
+
+<WorkedExample title="Wronskians and a normalized pair">
+<Problem>
+(a) Find the Wronskian of $e^{-at}$ and $te^{-at}$, the two solutions of the critically damped equation. (b) For $y'' - 4y = 0$, find the Wronskian of $e^{2x}$ and $e^{-2x}$, and the normalized solutions at 0. (c) Solve $y'' - 4y = 0$ with $y(0) = 3$, $y'(0) = -2$.
+</Problem>
+<Step title="(a) Critical damping">
+$W = e^{-at}(e^{-at} - ate^{-at}) - te^{-at}(-ae^{-at}) = e^{-2at}$, never zero: the two solutions are independent.
+</Step>
+<Step title="(b) Normalized pair">
+$W = e^{2x}(-2e^{-2x}) - e^{-2x}(2e^{2x}) = -4$, never zero. From $c_1e^{2x} + c_2e^{-2x}$: $Y_1$ needs $c_1 + c_2 = 1$, $2c_1 - 2c_2 = 0$, so $Y_1 = \cosh 2x$; $Y_2$ needs $c_1 + c_2 = 0$, $2c_1 - 2c_2 = 1$, so $Y_2 = \frac12\sinh 2x$.
+</Step>
+<Step title="(c) The initial value problem">
+$y = 3Y_1 - 2Y_2 = 3\cosh 2x - \sinh 2x$. Check: $y(0) = 3\cosh 0 = 3$, $y'(0) = 6\sinh 0 - 2\cosh 0 = -2$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $y'' + py' + qy = 0$ is $Ly = 0$ with the linear operator $L = D^2 + pD + q$; superposition follows from linearity alone.
+- Initial values can be fitted when the Wronskian $y_1y_2' - y_2y_1'$ is nonzero; for two solutions it is always zero or never zero.
+- Normalized solutions $Y_1$, $Y_2$ give the initial value problem's solution as $aY_1 + bY_2$.
+- By existence and uniqueness, every solution is a linear combination of two independent solutions.

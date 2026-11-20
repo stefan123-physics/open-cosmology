@@ -1,0 +1,244 @@
+---
+title: "A rope with mass: differential analysis"
+slug: massive-rope
+course: "8.01"
+lecture: 13
+order: 1
+summary: "When a rope has mass, its tension changes along its length. Cut it into small pieces, apply Newton's second law to one piece, let the piece shrink to nothing, and solve the resulting differential equation. The same method gives the linear, surface and volume densities, and the exponential grip of a rope wrapped round a post."
+prerequisites: [tension-and-springs, contact-forces, exponentials-and-logarithms]
+source:
+  title: "MIT 8.01SC Lesson 13: Massive Rope (13.1–13.6)"
+  url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/pages/week-4-drag-forces-constraints-and-continuous-systems/13-1-rope-hanging-between-trees/
+  readings:
+    - title: "8.01SC Course Notes, Chapter 8: Applications of Newton's Second Law"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter8/
+      location: "Example 8.4, Section 8.5.2 and Example 8.11 (Capstan)"
+    - title: "8.01SC segment 13.1 transcript: Rope Hanging Between Trees"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/3b9759866d97007b2c57304fada85597_9NS0JcjNdp4.pdf
+    - title: "8.01SC segment 13.2 transcript: Differential Analysis of a Massive Rope"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/404503d75524611651accebf64a85fd1_NBOL5X13UFY.pdf
+    - title: "8.01SC segment 13.3 transcript: Differential Elements"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/48a15ef6e170830a0cc49587c0bf6dbc_cadbtBS5qf4.pdf
+    - title: "8.01SC segment 13.4 transcript: Density"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/17a4fb8434bb0be25579bd0156d6cd81_5QKJG0FZTio.pdf
+    - title: "8.01SC segment 13.6 transcript: Summary of Differential Analysis"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/a1e3923728fb0ab7f51f6fc15aa17d1d_vUg50UI1aqs.pdf
+license: CC BY-NC-SA 4.0
+references:
+  demo135:
+    title: "MIT 8.01SC segment 13.5: Demo, Wrapping Friction"
+    url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/pages/week-4-drag-forces-constraints-and-continuous-systems/13-5-demo-wrapping-friction/
+    location: "video demonstration (no transcript on OCW)"
+leadsTo:
+  - course: "8.01"
+    lecture: 14
+    why: "Resistive forces: drag in a fluid, another force that leads to a differential equation."
+  - course: "Ferreras"
+    lecture: 2.3
+    why: "The same slice-by-slice balance for gas held by gravity (hydrostatic equilibrium) weighs galaxy clusters."
+quiz:
+  - question: "A uniform rope of mass $m$ hangs from the ceiling. What is the tension a quarter of the way down?"
+    choices: ["$mg/4$", "$mg/2$", "$3mg/4$", "$mg$"]
+    answer: 2
+    explanation: "$T(x) = mg(1 - x/l)$; at $x = l/4$ the rope below weighs $\\tfrac34 mg$."
+  - question: "A rope hangs between two trees, making angle $\\theta$ with the vertical at each end. As you pull it closer to horizontal ($\\theta \\to 90^\\circ$), the tension at the midpoint…"
+    choices: ["goes to zero", "stays at $mg/2$", "grows without limit", "equals $mg$"]
+    answer: 2
+    explanation: "$T_\\text{mid} = \\tfrac12 mg\\tan\\theta$, and $\\tan\\theta \\to \\infty$: a rope with mass can never be pulled perfectly straight."
+  - question: "In differential analysis, why pick an element in the middle of the rope rather than at an end?"
+    choices: ["The middle is heavier", "The ends are special cases; a general element gives an equation valid everywhere", "The tension is zero in the middle", "It makes the integral easier"]
+    answer: 1
+    explanation: "The ends are where boundary conditions apply. The general element gives the differential equation; the ends then fix the constant."
+  - question: "A rope makes two full turns round a post with $\\mu_s = 0.25$. Roughly how many times smaller is the holding force than the load?"
+    choices: ["2", "about 5", "about 23", "about 500"]
+    answer: 2
+    explanation: "$e^{\\mu_s\\theta} = e^{0.25 \\times 4\\pi} = e^{\\pi} \\approx 23$."
+flashcards:
+  - front: "Tension in a uniform hanging rope at distance x below the top"
+    back: "$T(x) = mg\\,(1 - x/l)$: the weight of the rope below that point; $mg$ at the top, 0 at the bottom."
+  - front: "The steps of differential analysis"
+    back: "Pick a small element in the middle; apply Newton's second law to it; let its size go to zero to get a differential equation; separate and integrate; use a boundary condition."
+  - front: "Linear, surface and volume density"
+    back: "$\\lambda = \\Delta m/\\Delta l$ (kg/m), $\\sigma = \\Delta m/\\Delta A$ (kg/m²), $\\rho = \\Delta m/\\Delta V$ (kg/m³); for a uniform rod $\\lambda = M/L$."
+  - front: "Rope wrapped round a post (capstan)"
+    back: "$T_B = T_A\\,e^{-\\mu_s\\theta}$: the tension falls exponentially with the wrap angle θ, so a small pull holds a large load."
+status: reviewed
+---
+
+So far every rope has been **massless**, and a massless rope has the same tension all along it, even when it accelerates. A real rope has mass, and when gravity acts along it (or it accelerates) the tension changes from point to point (13.2 transcript, p. 1). This lesson finds that tension in two ways and sets out carefully the method that the rest of the course uses for anything with mass spread out: **differential analysis**. (The spinning rope on the circular-motion examples page was a first taste of it.)
+
+## A rope hanging between two trees
+
+Start with a rope of mass $m$ hanging between two trees, like a hammock rope. At each end it makes an angle $\theta$ with the vertical. What is the tension at the midpoint and at the ends (13.1 transcript, p. 1)?
+
+Make an imaginary cut at the midpoint and take the **half rope** as the system. Three forces act on it: its weight $\tfrac12 mg$ down; the tension $T_\text{mid}$ of the other half, pulling horizontally at the cut (the rope is horizontal at its lowest point); and the tension $T_\text{end}$ at the tree, along the rope at angle $\theta$ from the vertical. With $\hat i$ horizontal and $\hat j$ up, and zero acceleration (p. 2):
+
+<Formula label="Half rope in equilibrium" tex="\hat i:\ T_\text{mid} - T_\text{end}\sin\theta = 0, \qquad \hat j:\ -\tfrac12 mg + T_\text{end}\cos\theta = 0" cite="reading2" at="p. 2" />
+
+<Formula label="Tensions at the end and the middle" tex="T_\text{end} = \frac{mg}{2\cos\theta}, \qquad T_\text{mid} = \frac{mg}{2}\,\tan\theta" cite="reading2" at="p. 2" />
+
+[The recording garbles the last step; the result follows from the two equations above.]
+
+The tension is largest at the trees, where the rope also carries the weight. And as $\theta \to 90^\circ$ (the rope pulled nearly straight), $\tan\theta$ grows without limit: **no finite pull can make a rope with mass perfectly horizontal**. [This consequence is the page's own.]
+
+<WorkedExample title="A heavy chain between two posts">
+<Problem>
+A chain of mass 2.0 kg hangs between two posts and makes 60° with the vertical at each end. Find the tension at the ends and at the lowest point. Take $g = 9.81$ m/s².
+</Problem>
+<Step title="At the ends">
+$T_\text{end} = 2.0 \times 9.81/(2\cos 60^\circ) = 19.62/1.0 \approx 19.6$ N.
+</Step>
+<Step title="At the middle">
+$T_\text{mid} = \tfrac12 \times 2.0 \times 9.81 \times \tan 60^\circ \approx 9.81 \times 1.732 \approx 17.0$ N.
+</Step>
+<Step title="Pulled tighter">
+At 80° from the vertical the same chain has $T_\text{mid} = 9.81 \times \tan 80^\circ \approx 55.6$ N, more than five times its own half-weight.
+</Step>
+</WorkedExample>
+
+## A rope hanging from the ceiling: cut it
+
+Now hang a uniform rope of mass $m$ and length $l$ from the ceiling, and measure the distance $x$ **down** from the top (13.2 transcript, p. 1).
+
+- **At the top**, the rope holds up the weight of the whole rope, so $T_\text{top} = mg$.
+- **At the bottom**, nothing hangs below, so the tension is 0.
+- **In between**, cut the rope at $x$. The piece below has length $l - x$ and mass $m(l - x)/l$, and the tension at the cut must hold it up:
+
+<Formula label="Tension in a hanging rope" tex="T(x) = \frac{l - x}{l}\,mg = \left(1 - \frac{x}{l}\right) mg" cite="reading3" at="pp. 1–2" />
+
+It falls in a straight line from $mg$ at the top to 0 at the bottom (notes, Example 8.4, Eq. (8.5.13), p. 8-24).
+
+## Differential analysis
+
+The cutting argument works because the rope is uniform. A more powerful method, which works for **any** continuous distribution of mass, is to treat the rope as made of many small pieces, apply Newton's second law to one piece, and then let the piece shrink (13.2 transcript, p. 2).
+
+**1. Pick an element.** Take a piece between $x$ and $x + \Delta x$, of mass $\Delta m$. Choose it somewhere in the middle: the ends are special cases (p. 2).
+
+**2. Forces on it.** Its weight $\Delta m\,g$ down; the rope above pulls it up with $T(x)$; the rope below pulls it down with $T(x + \Delta x)$. The two tensions differ, because the piece has mass (p. 3).
+
+**3. Second law,** with down positive and zero acceleration (p. 3):
+
+<Formula label="Second law for one element" tex="T(x + \Delta x) + \Delta m\,g - T(x) = 0 \quad\Rightarrow\quad T(x + \Delta x) - T(x) = -\Delta m\,g" cite="reading3" at="p. 3" />
+
+For a massless rope $\Delta m = 0$ and the tension would be the same above and below the piece: the old rule. For a uniform rope the piece is the fraction $\Delta x/l$ of the whole, so $\Delta m = (m/l)\,\Delta x$ (p. 4).
+
+**4. Shrink the element.** Divide by $\Delta x$ and let $\Delta x \to 0$. The left side becomes the definition of a derivative (p. 4):
+
+<Formula label="Differential equation for the tension" tex="\frac{dT}{dx} = \lim_{\Delta x \to 0}\frac{T(x + \Delta x) - T(x)}{\Delta x} = -\frac{mg}{l}" cite="reading3" at="p. 4" />
+
+**5. Separate and integrate.** Write $dT = -(mg/l)\,dx$ and integrate both sides with matching limits. To keep the limit $x$ apart from the variable of integration, call the variables $x'$ and $T'$ (pp. 5–6):
+
+<Formula label="Separation of variables" tex="\int_{T(0)}^{T(x)} dT' = -\frac{mg}{l}\int_0^x dx' \quad\Rightarrow\quad T(x) - T(0) = -\frac{mg}{l}\,x" cite="reading3" at="pp. 5–6" />
+
+**6. Boundary condition.** The top holds the whole rope, $T(0) = mg$, so $T(x) = mg(1 - x/l)$: the same as before (p. 6; notes, Eqs. (8.5.15)–(8.5.20), pp. 8-25–8-26).
+
+The method looks longer here, but it does not need the rope to be uniform. If the rope were clumpy, with a density that changes along it, $\Delta m$ would depend on position and the integral would change, but the steps would be the same (p. 7). The course uses this technique again and again.
+
+<Plot variable="x" domain={[0, 2]} range={[0, 35]} xLabel="distance below the top x (m)" yLabel="tension T (N)"
+  curves={[
+    { expr: "m * 9.81 * (1 - x / 2)", label: "uniform rope" },
+    { expr: "m * 9.81 * (1 - x / 2)^2", label: "rope tapering to nothing at the bottom", dash: true }
+  ]}
+  params={{ m: { value: 3, min: 0.5, max: 3.5, step: 0.1, label: "m\\ (\\text{kg})" } }}
+  caption="Tension along a 2.0 m rope of total mass m, computed from T = mg(1 − x/l) for a uniform rope and T = mg(1 − x/l)² for a rope whose density falls linearly from the top to zero at the bottom. Both start at mg at the top and end at 0. With m = 3.0 kg the top tension is 29.4 N; halfway down it is 14.7 N for the uniform rope and 7.36 N for the tapering one."
+/>
+
+<WorkedExample title="A rope that gets thinner downwards">
+<Problem>
+A rope of length $l = 2.0$ m and total mass $m = 3.0$ kg hangs from the ceiling. It is thickest at the top and tapers to nothing at the bottom, with linear density $\lambda(x) = 2m(l - x)/l^2$. Find the tension halfway down.
+</Problem>
+<Step title="The element">
+Now $\Delta m = \lambda(x)\,\Delta x$, so step 4 gives $dT/dx = -\lambda(x)\,g$.
+</Step>
+<Step title="Integrate from the bottom">
+At the bottom $T(l) = 0$. Integrating from $x$ to $l$: $T(x) = g\int_x^l \lambda(x')\,dx' = mg\,(l - x)^2/l^2$. At the top this gives $mg$, as it must.
+</Step>
+<Step title="Halfway down">
+$T(1.0\ \text{m}) = 3.0 \times 9.81 \times (1.0/2.0)^2 \approx 7.36$ N, half the 14.7 N of a uniform rope: most of this rope's mass is above the midpoint.
+</Step>
+</WorkedExample>
+
+## Differential elements and density
+
+Differential analysis always starts by taking a small piece of an object and asking how much mass it holds (13.3 transcript, p. 1):
+
+- in **one dimension** (a rod, a rope, a wire along any curve), a length element $\Delta l$ holding mass $\Delta m$;
+- in **two dimensions** (a sheet), an area element $\Delta A$;
+- in **three dimensions**, a volume element $\Delta V$; for a slice of a bar of cross-section $A$, $\Delta V = A\,\Delta x$.
+
+The mass per element is a **density** (13.4 transcript, p. 1):
+
+<Formula label="Linear, surface and volume density" tex="\lambda = \frac{\Delta m}{\Delta l}, \qquad \sigma = \frac{\Delta m}{\Delta A}, \qquad \rho = \frac{\Delta m}{\Delta V}" cite="reading5" at="p. 1" />
+
+For a uniform rod of length $L$ and mass $M$, $\lambda = M/L$. In the hanging rope above, $\lambda = m/l$ and $\Delta m = \lambda\,\Delta x$; in the tapering rope, $\lambda$ depended on $x$.
+
+<WorkedExample title="How hard does a hanging cable pull?">
+<Problem>
+A cable of cross-section 2.0 cm² is made of steel of density 8000 kg/m³ (round figures for this problem). A length of 100 m hangs down a mine shaft. What is its linear density and the tension at the top?
+</Problem>
+<Step title="Linear density">
+A slice of length $\Delta x$ has volume $A\,\Delta x$, so $\lambda = \rho A = 8000 \times 2.0 \times 10^{-4} = 1.6$ kg/m.
+</Step>
+<Step title="Tension at the top">
+$T = \lambda L g = 1.6 \times 100 \times 9.81 \approx 1570$ N, just from the cable's own weight.
+</Step>
+</WorkedExample>
+
+## Wrapping friction: the capstan
+
+Segment 13.5 is a demonstration of **wrapping friction**: a rope wound round a post can hold a heavy load with a light pull (13.5 video, no transcript). The notes analyse the same effect with differential analysis, for a ship's capstan (notes, Example 8.11, pp. 8-46–8-49).
+
+A rope is wrapped round a fixed drum. The load pulls one end with tension $T_A$; a sailor holds the other end with a much smaller $T_B$, just enough that the rope does not slip. The coefficient of static friction between rope and drum is $\mu_s$. Take a small slice of rope covering the angle $\Delta\theta$ (pp. 8-46–8-47):
+
+- the tensions at its two ends, $T$ and $T + \Delta T$, almost opposite but tilted by $\Delta\theta$, have a small net component **into** the drum, about $T\,\Delta\theta$; the normal force balances it, so $N = T\,\Delta\theta$;
+- along the rope, friction balances the change in tension: $\Delta T = -f_s$, and on the point of slipping $f_s = \mu_s N$.
+
+So $\Delta T = -\mu_s T\,\Delta\theta$. In the limit (pp. 8-48–8-49):
+
+<Formula label="Tension round a drum" tex="\frac{dT}{d\theta} = -\mu_s T" cite="reading1" at="Eq. (8.6.102), p. 8-49" />
+
+Separating, $dT/T = -\mu_s\,d\theta$, and integrating from the load ($\theta = 0$, $T = T_A$) to the sailor ($\theta = \theta_{BA}$, $T = T_B$) gives $\ln(T_B/T_A) = -\mu_s\theta_{BA}$, so (p. 8-49):
+
+<Formula label="Capstan equation" tex="T_B = T_A\,e^{-\mu_s \theta_{BA}}" cite="reading1" at="Eq. (8.6.108), p. 8-49" />
+
+The tension falls **exponentially** with the angle of wrap, which is why a few turns of rope round a bollard let one person hold a ship.
+
+<Plot variable="n" domain={[0, 3]} range={[0, 1]} xLabel="number of turns" yLabel="holding force ÷ load"
+  curves={[{ expr: "exp(-mu * 2 * pi * n)", label: "T_B / T_A" }]}
+  params={{ mu: { value: 0.3, min: 0.05, max: 0.6, step: 0.05, label: "\\mu_s" } }}
+  caption="The fraction of the load that the sailor must hold, computed from T_B/T_A = e^(−μs θ) with θ = 2π × turns. With μs = 0.30, one turn needs 15% of the load, three turns only 0.35%."
+/>
+
+<WorkedExample title="Three turns round a bollard">
+<Problem>
+A rope makes three full turns round a bollard, with $\mu_s = 0.30$. The load pulls with 5000 N. What force must the sailor apply?
+</Problem>
+<Step title="Angle of wrap">
+$\theta = 3 \times 2\pi \approx 18.85$ rad, so $\mu_s\theta \approx 5.65$.
+</Step>
+<Step title="Holding force">
+$T_B = 5000\,e^{-5.65} \approx 5000 \times 0.00350 \approx 17.5$ N: about the weight of a 1.8 kg bag.
+</Step>
+</WorkedExample>
+
+## The recipe
+
+Segment 13.6 sums up differential analysis for any continuous mass distribution (13.6 transcript, p. 1):
+
+1. Pick a small but finite element **somewhere in the middle**, not at an end.
+2. Draw the forces on it and write Newton's second law for it.
+3. Let the element shrink to nothing: this gives a **differential equation**.
+4. Separate the variables and integrate both sides.
+5. Apply a **boundary condition**, something known at one end, to fix the solution everywhere.
+
+<Callout kind="cosmology" title="Weighing a galaxy cluster slice by slice">
+Replace the rope by the hot gas in a galaxy cluster, held in place by the gravity of the whole cluster. A thin shell of gas feels the push of the pressure below it, the push of the pressure above it and its own weight, with $g(r)$ the cluster's gravitational acceleration at radius $r$. Balancing them, exactly as for the rope element, gives a differential equation, $dP/dr = -\rho\,g(r)$: **hydrostatic equilibrium**. Astronomers measure the temperature and density of the X-ray-emitting gas in galaxy clusters, solve this equation for the gravity it needs, and find far more mass than the stars and gas provide: evidence for dark matter.
+</Callout>
+
+## Summary
+
+- A rope with mass has a tension that varies along it. A rope hanging between trees has $T_\text{end} = mg/(2\cos\theta)$ and $T_\text{mid} = \tfrac12 mg\tan\theta$; it can never be pulled perfectly straight.
+- A uniform rope hanging from the ceiling has $T(x) = mg(1 - x/l)$: the weight of the rope below.
+- **Differential analysis**: element in the middle, second law, limit $\Delta x \to 0$, separate and integrate, boundary condition. Here $dT/dx = -mg/l$.
+- Mass in a small element: $\Delta m = \lambda\,\Delta l$, $\sigma\,\Delta A$ or $\rho\,\Delta V$.
+- A rope wrapped round a post: $dT/d\theta = -\mu_s T$, so $T_B = T_A e^{-\mu_s\theta}$.

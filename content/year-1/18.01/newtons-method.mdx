@@ -1,0 +1,178 @@
+---
+title: "A ring on a string, and Newton's method"
+slug: newtons-method
+course: "18.01"
+lecture: 13
+order: 1
+summary: "A ring sliding on a string hangs at the lowest point of its constraint curve; implicit differentiation shows the two halves of the string make equal angles, so they carry equal tension. Then Newton's method: replace the curve by its tangent line, find where that crosses zero, and repeat. Each step roughly doubles the number of correct digits."
+prerequisites: [related-rates, linear-and-quadratic-approximations]
+source:
+  title: "MIT 18.01 Lecture 13: Newton's Method"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-13-newtons-method/
+  readings:
+    - title: "18.01 Lecture 13 notes"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec13/
+    - title: "18.01 Lecture 13 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/sRIDVAcoG5A.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.01"
+    lecture: 14
+    why: "The mean value theorem: what the derivative guarantees about a function."
+  - course: "8.286"
+    lecture: 9
+    why: "Finding the time-dependence of a closed universe needs an equation like θ − sin θ = c, which has to be solved numerically."
+quiz:
+  - question: "Newton's method replaces $x_n$ by…"
+    choices: ["$x_n - f'(x_n)/f(x_n)$", "$x_n - f(x_n)/f'(x_n)$", "$x_n + f(x_n)\\,f'(x_n)$", "$f(x_n)/f'(x_n)$"]
+    answer: 1
+    explanation: "The tangent line at $x_n$ crosses zero at $x_n - f(x_n)/f'(x_n)$."
+  - question: "For $f(x) = x^2 - 5$ with $x_0 = 2$, the first Newton step gives…"
+    choices: ["$2.5$", "$9/4$", "$161/72$", "$\\sqrt5$"]
+    answer: 1
+    explanation: "$x_1 = \\tfrac12 x_0 + \\tfrac{5}{2x_0} = 1 + \\tfrac54 = \\tfrac94$."
+  - question: "Roughly how does the error change from one Newton step to the next, once it is small?"
+    choices: ["It halves", "It drops by a factor of 10", "The number of correct digits roughly doubles", "It stays the same"]
+    answer: 2
+    explanation: "The new error is roughly proportional to the square of the old one: errors of $10^{-2}$, then $10^{-4}$ or $10^{-5}$, then $10^{-9}$ or $10^{-10}$."
+  - question: "A ring hangs on a string tied at two points of different heights. At the lowest point, the two halves of the string…"
+    choices: ["have equal lengths", "make equal angles with the vertical", "are both vertical", "make a right angle"]
+    answer: 1
+    explanation: "Setting $y' = 0$ in the differentiated constraint gives $\\sin\\alpha = \\sin\\beta$: equal angles, and so equal tension in the two halves."
+flashcards:
+  - front: "Newton's method"
+    back: "$x_{n+1} = x_n - \\dfrac{f(x_n)}{f'(x_n)}$: follow the tangent line at $x_n$ to where it crosses zero."
+  - front: "Two ways Newton's method can go wrong"
+    back: "It can converge to a different root than expected (e.g. $-\\sqrt3$ from $x_0 = -1$), or fail entirely, cycling between points."
+  - front: "Ring on a string: the balance condition"
+    back: "At the lowest point the two halves make equal angles with the vertical ($\\alpha = \\beta$), so they carry equal tension."
+status: reviewed
+---
+
+Lecture 13 opens by finishing the two related-rates examples begun last time, the radar trap ($\dot x = -100$ ft/s) and the filling cone ($\dot h = 1/(2\pi)$ ft/min), which the previous page already works through (transcript, pp. 1–5). [On the board the cone's answer is first given "per second"; a student points out it is per minute, since the inflow is in cubic feet per minute (p. 4).] Two new topics follow: a max–min problem with a constraint, and Newton's method.
+
+## The rate is not the volume
+
+One student's question is worth keeping: if water flows in at 2 ft³/min, why is the level not rising at 2? Because the rate at which **volume** is added is a different quantity from the rate at which the **height** rises; how they are related depends on how wide the surface is at that height. Related rates is about keeping track of one changing quantity in terms of another, and the link is always the chain rule, $dV/dt = (dV/dh)(dh/dt)$ (transcript, pp. 4–5).
+
+## A ring on a string
+
+Tie a string between two points at different heights and let a ring slide freely on it. Where does the ring come to rest (transcript, pp. 5–6)? Jerison has two students hold the ends against the board and traces the possible positions. If both ends were at the same height the ring would settle in the middle; the question is what happens when one is higher. He notes that problems of this kind arise in designing suspension bridges (p. 6).
+
+Put one end at $(0, 0)$ and the other at $(a, b)$, and call the ring's position $(x, y)$, with $y < 0$. The ring settles at the **lowest** point, where its potential energy is least, so the task is to minimise $y$. The **constraint** is that the string has a fixed length $L$; by Pythagoras on the two pieces (pp. 6–7; notes, p. 5):
+
+<Formula label="Constraint: fixed length of string" tex="\sqrt{x^2 + y^2} + \sqrt{(a - x)^2 + (b - y)^2} = L" cite="reading2" at="p. 7" />
+
+This defines $y$ as a function of $x$ implicitly. The ends of the curve are higher than the middle (you can see it in the experiment), so the lowest point is a critical point, where the tangent is horizontal: $y' = 0$ (pp. 7–8). [The curve is part of an ellipse with foci at the two ends, but Jerison stresses that knowing this does not help: writing out the ellipse makes the problem harder (p. 8).]
+
+Differentiate the constraint implicitly with respect to $x$ (pp. 8–9; notes, p. 5):
+
+<Formula label="Constraint differentiated" tex="\frac{x + y\,y'}{\sqrt{x^2 + y^2}} - \frac{(a - x) + (b - y)\,y'}{\sqrt{(a - x)^2 + (b - y)^2}} = 0" cite="reading1" at="p. 5" />
+
+At the critical point $y' = 0$, so
+
+<Formula label="Balance at the lowest point" tex="\frac{x}{\sqrt{x^2 + y^2}} = \frac{a - x}{\sqrt{(a - x)^2 + (b - y)^2}}, \qquad \sin\alpha = \sin\beta" cite="reading2" at="p. 9" />
+
+where $\alpha$ and $\beta$ are the angles that the left and right pieces of string make with the vertical: each fraction is the opposite side over the hypotenuse of a right triangle (p. 9). So $\alpha = \beta$, a hidden symmetry: however the string is tilted, the two pieces hang at equal angles.
+
+**What it means.** A force diagram for the ring shows that equal angles mean **equal tension** in the two halves: the load is shared evenly, the balanced arrangement that a minimum problem tends to produce (pp. 9–10; notes, p. 6). And read as optics, the equal angles say that a ray of light from one focus of an elliptical mirror reflects to the other focus. Jerison recalls a miniature-golf artwork built on this: tee at one focus, hole at the other, a hole in one every time (p. 10).
+
+The notes complete what the lecture left out, the formulas for the position (notes, p. 6). Adding the horizontal legs of the two triangles gives $a = L\sin\alpha$; adding the vertical legs gives $b - 2y = L\cos\alpha$; similar triangles give $x$:
+
+<Formula label="Where the ring hangs" tex="\sin\alpha = \frac{a}{L}, \qquad y = \frac12\left(b - \sqrt{L^2 - a^2}\right), \qquad x = \frac{a}{2}\left(1 - \frac{b}{\sqrt{L^2 - a^2}}\right)" cite="reading1" at="p. 6" />
+
+The notes add that in 18.02 constrained problems in any number of variables are done with **Lagrange multipliers** (p. 6).
+
+<WorkedExample title="A ring on a 6 m rope">
+<Problem>
+A 6.0 m rope is tied at $(0, 0)$ and at $(4.0, 1.0)$ m. Where does a ring on it settle, and at what angle do the two pieces hang?
+</Problem>
+<Step title="Angle">
+$\sin\alpha = a/L = 4.0/6.0 = 2/3$, so $\alpha = \beta \approx 41.8°$ from the vertical.
+</Step>
+<Step title="Height">
+$\sqrt{L^2 - a^2} = \sqrt{36 - 16} \approx 4.472$ m, so $y = \tfrac12(1.0 - 4.472) \approx -1.74$ m.
+</Step>
+<Step title="Horizontal position and check">
+$x = \tfrac{4.0}{2}(1 - 1.0/4.472) \approx 1.55$ m: left of the middle, towards the lower end. Check: the two pieces measure $\sqrt{1.55^2 + 1.74^2} \approx 2.33$ m and $\sqrt{2.45^2 + 2.74^2} \approx 3.67$ m, together 6.0 m.
+</Step>
+</WorkedExample>
+
+## Newton's method
+
+Newton's method is "one of the greatest applications of calculus": a way to solve almost any equation $f(x) = 0$ numerically, and at the heart of many of the ways calculators work (transcript, p. 11). The lecture's example is $x^2 = 5$, written as $f(x) = x^2 - 5 = 0$; the notes use $x^2 - 3$ (notes, p. 1).
+
+**The idea.** Start with a guess $x_0$; here $x_0 = 2$, since $\sqrt5$ is close to $\sqrt4$. Pretend the function is linear: draw the tangent line at $(x_0, f(x_0))$ and take as the next guess $x_1$ the point where that line crosses the $x$-axis (p. 11). The tangent line is $y - y_0 = m(x - x_0)$; setting $y = 0$ at $x = x_1$ gives $x_1 = x_0 - y_0/m$, with $y_0 = f(x_0)$ and $m = f'(x_0)$ (pp. 11–12). Repeating this:
+
+<Formula label="Newton's method" tex="x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}" cite="reading2" at="p. 12" />
+
+For $f(x) = x^2 - 5$, $f'(x) = 2x$ and the step simplifies (p. 12):
+
+<Formula label="Newton's method for the square root of 5" tex="x_{n+1} = x_n - \frac{x_n^2 - 5}{2x_n} = \frac12\,x_n + \frac{5}{2x_n}" cite="reading2" at="p. 12" />
+
+From $x_0 = 2$: $x_1 = 1 + \tfrac54 = \tfrac94$, $x_2 = \tfrac12\cdot\tfrac94 + \tfrac52\cdot\tfrac49 = \tfrac{161}{72}$, and so on (p. 12). The errors $|\sqrt5 - x_n|$ shrink astonishingly fast (pp. 12–13):
+
+| $n$ | $x_n$ | error |
+|---|---|---|
+| 0 | 2 | about $2 \times 10^{-1}$ |
+| 1 | 9/4 = 2.25 | about $10^{-2}$ |
+| 2 | 161/72 ≈ 2.236111 | about $4 \times 10^{-5}$ |
+| 3 | ≈ 2.2360680 | about $10^{-10}$ |
+
+Already $x_2$ is "as good an approximation to $\sqrt5$ as you'll ever need", and $x_3$ reaches the edge of a calculator's precision (p. 13). The notes' example, $\sqrt3$ from $x_0 = 1$, behaves the same way, and they put it in one sentence: the **number of correct digits roughly doubles** with each step (notes, p. 3).
+
+<Plot variable="x" domain={[0.5, 4]} range={[-6, 12]} xLabel="x" yLabel="y"
+  curves={[
+    { expr: "x^2 - 5", label: "f(x) = x² − 5" },
+    { tangentOf: 0, at: "x0" }
+  ]}
+  params={{ x0: { value: 3, min: 1, max: 3.8, step: 0.05, label: "x_0" } }}
+  points={[{ curve: 0, at: "x0", label: "(x₀, f(x₀))" }]}
+  caption="f(x) = x² − 5 and its tangent line at the current guess x₀, computed from the formulas. The tangent crosses the x-axis at the next guess, x₀/2 + 5/(2x₀). From x₀ = 3 that is 2.333, already close to √5 ≈ 2.236; move the slider to see how the tangent's crossing approaches the root."
+/>
+
+**Where it ends up.** If the iterates converge to a limit $x_\infty$, take $n \to \infty$ in the recursion: $x_\infty = \tfrac12 x_\infty + \tfrac{3}{2x_\infty}$ (for $\sqrt3$), so $x_\infty^2 = 3$, as hoped (notes, pp. 3–4).
+
+**Two warnings** (notes, p. 4):
+
+1. Newton's method can find an **unexpected root**: starting from $x_0 = -1$, the iterates for $x^2 - 3$ go to $-\sqrt3$, not $+\sqrt3$.
+2. It can **fail completely**: for some functions and starting points the iterates cycle, $x_2 = x_0$, $x_3 = x_1$, …, and never converge.
+
+<WorkedExample title="Where cos x = x">
+<Problem>
+Solve $\cos x = x$ with Newton's method, starting at $x_0 = 1$.
+</Problem>
+<Step title="Set up">
+$f(x) = x - \cos x$, $f'(x) = 1 + \sin x$, so $x_{n+1} = x_n - \dfrac{x_n - \cos x_n}{1 + \sin x_n}$.
+</Step>
+<Step title="Iterate">
+$x_1 = 1 - (1 - 0.5403)/(1 + 0.8415) \approx 0.7504$; $x_2 \approx 0.7391$; $x_3 \approx 0.739085$, and further steps change only digits beyond the sixth.
+</Step>
+<Step title="Why the method is needed">
+No known formula solves $\cos x = x$; a numerical method is the only way, and Newton's reaches six decimal places in three steps.
+</Step>
+</WorkedExample>
+
+<WorkedExample title="A cube root">
+<Problem>
+Find $2^{1/3}$ with Newton's method from $x_0 = 1$.
+</Problem>
+<Step title="Recursion">
+$f(x) = x^3 - 2$, $f'(x) = 3x^2$, so $x_{n+1} = x_n - \dfrac{x_n^3 - 2}{3x_n^2} = \dfrac23 x_n + \dfrac{2}{3x_n^2}$.
+</Step>
+<Step title="Iterates">
+$x_1 = \tfrac23 + \tfrac23 \approx 1.3333$, $x_2 \approx 1.2639$, $x_3 \approx 1.25993$; the true value is $1.259921\ldots$
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology" title="Solving for the age of a closed universe">
+In 8.286 the closed universe is written with a parameter $\theta$: the scale factor and the time are $a \propto 1 - \cos\theta$ and $t \propto \theta - \sin\theta$. To find the size of the universe at a given time you must solve $\theta - \sin\theta = c$ for $\theta$, and that equation (it is Kepler's equation for orbits, in the limiting case of eccentricity 1) has no solution in closed form. A few steps of Newton's method, from a sensible first guess (not $\theta = 0$, where the derivative vanishes), $\theta_{n+1} = \theta_n - (\theta_n - \sin\theta_n - c)/(1 - \cos\theta_n)$, solve it to any accuracy.
+</Callout>
+
+## Summary
+
+- Related rates: the rate of change of one quantity determines another's through the chain rule; volume rate and height rate are different things.
+- Ring on a string: minimise $y$ subject to fixed string length; implicit differentiation with $y' = 0$ gives $\sin\alpha = \sin\beta$, so the two halves hang at equal angles and carry equal tension.
+- Newton's method: $x_{n+1} = x_n - f(x_n)/f'(x_n)$, following the tangent line to its zero. For $\sqrt5$ from 2: $\tfrac94$, $\tfrac{161}{72}$, … The number of correct digits roughly doubles each step.
+- It can converge to an unexpected root, or not converge at all.

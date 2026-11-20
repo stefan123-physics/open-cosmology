@@ -1,0 +1,127 @@
+---
+title: "Laplace transforms of derivatives and solving initial value problems"
+slug: laplace-transform-of-derivatives
+course: "18.03"
+lecture: 20
+order: 1
+summary: "The Laplace integral converges when f is of exponential type: |f(t)| ≤ ce^(kt) for all t ≥ 0. Sine and every power tⁿ qualify; 1/t does not (its integral diverges at 0), nor does e^(t²), which grows too fast. Integrating by parts gives L(f′) = sF(s) − f(0), and applying this twice, L(f″) = s²F(s) − sf(0) − f′(0), so the initial values enter the transform. To solve an initial value problem, transform the equation and the initial conditions, solve the resulting algebraic equation for Y(s), a rational function, and find the inverse transform by partial fractions. For y″ − y = e^(−t), y(0) = 1, y′(0) = 0, this gives y = (3/4)e^t + (1/4)e^(−t) − (1/2)te^(−t), with the constants already built in."
+prerequisites: [laplace-transform-introduction]
+source:
+  title: "MIT 18.03 Lecture 20: Derivative Formulas"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/lecture-20-derivative-formulas/
+  readings:
+    - title: "18.03 Lecture 20 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/b4e0484fdf2ebc7e6247e5e5fef88af7_qZHseRxAWZ8.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.03"
+    lecture: 21
+    why: "The convolution formula: the inverse transform of a product."
+quiz:
+  - question: "What is $\\mathcal{L}(f')$?"
+    choices: ["$sF(s) - f(0)$", "$sF(s)$", "$F(s)/s$", "$F'(s)$"]
+    answer: 0
+    explanation: "Integrate $\\int_0^\\infty e^{-st}f'(t)\\,dt$ by parts; the boundary term at 0 gives $-f(0)$."
+  - question: "Which function is NOT of exponential type?"
+    choices: ["$e^{t^2}$", "$t^{100}$", "$\\sin t$", "$e^{5t}$"]
+    answer: 0
+    explanation: "$e^{t^2}/e^{kt} = e^{t(t - k)}$ grows without bound for every $k$, so no constant $c$ can make $ce^{kt}$ a bound."
+  - question: "Transforming $y'' + 4y = 0$, $y(0) = 2$, $y'(0) = 6$ gives $Y(s) = $…"
+    choices: ["$\\frac{2s + 6}{s^2 + 4}$", "$\\frac{2s + 6}{s^2 - 4}$", "$\\frac{6}{s^2 + 4}$", "$\\frac{2}{s}$"]
+    answer: 0
+    explanation: "$s^2Y - 2s - 6 + 4Y = 0$, so $Y = (2s + 6)/(s^2 + 4)$, the transform of $2\\cos 2t + 3\\sin 2t$."
+flashcards:
+  - front: "Exponential type"
+    back: "$|f(t)| \\le ce^{kt}$ for all $t \\ge 0$, some constants $c, k$. It guarantees the Laplace transform exists for $s > k$."
+  - front: "Transforms of derivatives"
+    back: "$\\mathcal{L}(f') = sF - f(0)$; $\\mathcal{L}(f'') = s^2F - sf(0) - f'(0)$."
+  - front: "Solving an IVP by Laplace transform"
+    back: "Transform equation and initial values; solve the algebraic equation for $Y(s)$; invert, using partial fractions."
+status: reviewed
+---
+
+This lecture shows how the [Laplace transform](/courses/18-03/laplace-transform-introduction) solves linear equations with constant coefficients. That needs the transform of a derivative, and first a guarantee that transforms exist (transcript, p. 1).
+
+## Functions of exponential type
+
+The transform is an improper integral, and those need not converge: $\int_0^\infty t\,dt$ has no value (transcript, p. 1). The integral converges if $f$ does not grow so fast that $e^{-st}$ cannot pull it down (p. 1). The condition (p. 2): $f$ is of **exponential type** if
+
+<Formula label="Exponential type" tex="|f(t)| \le c\,e^{kt} \quad \text{for all } t \ge 0" cite="reading1" at="p. 2" />
+
+for some positive constants $c$ and $k$. The absolute value is there because large negative values hurt too, and negative $t$ does not matter (p. 2). Such exponentials can grow very fast: $e^{100t}$ looks vertical on any plot (p. 2).
+
+**Examples** (pp. 2–5).
+
+- $\sin t$: $|\sin t| \le 1$, so $c = 1$, $k = 0$ (pp. 2–3).
+- $t^n$: $t^n \le Me^t$ for some $M$ (p. 3). The ratio $t^n/e^t$ is continuous, starts at 0, and tends to 0 as $t \to \infty$ by $n$ applications of L'Hôpital's rule; so it has a maximum $M$ (pp. 3–4).
+- $\frac1t$ is not: near 0 the integral behaves like $\int dt/t$, which diverges, so it has no Laplace transform (pp. 4–5).
+- $e^{t^2}$ is not, because it grows too fast: whatever $k$, $t^2 > kt$ once $t > k$ (p. 5). Mattuck says he has never seen such a function in a physical problem (p. 5). Its relative $e^{-t^2}$, the bell curve, is perfectly well behaved (p. 6).
+
+<Plot variable="t" domain={[0, 12]} range={[0, 1.6]} xLabel="t" yLabel="t³/e^t"
+  curves={[{ expr: "t^3 * exp(-t)", label: "t³/e^t" }]}
+  points={[{ x: 3, y: 1.344, label: "max" }]}
+  caption="Why t³ is of exponential type: the ratio t³/e^t, computed from the formula, starts at 0, returns towards 0, and has a maximum 27/e³ ≈ 1.34 at t = 3, so t³ ≤ 1.35 e^t for all t ≥ 0." />
+
+## The plan
+
+The Laplace transform needs an **initial value problem**: an equation, say $y'' + Ay' + By = h(t)$, together with $y(0)$ and $y'(0)$ (transcript, p. 6). If no values are given, call them $a$ and $b$ and carry them along (pp. 6–7). Then (pp. 7–8):
+
+1. Take the Laplace transform of the equation and the initial values. Out comes an **algebraic** equation for $Y(s)$, the transform of the solution: no derivatives at all.
+2. Solve it for $Y$. This is the easy step, and $Y$ always comes out as a rational function of $s$.
+3. Take the inverse transform to get $y(t)$. This is the hard step: partial fractions and tables.
+
+It looks like a detour round a mountain, but the direct path is the hard one (p. 8).
+
+## Transforms of derivatives
+
+Start from the definition and integrate by parts, integrating $f'$ and differentiating $e^{-st}$ (transcript, pp. 8–10):
+
+<Formula label="Integrating by parts" tex="\mathcal{L}(f') = \int_0^{\infty}e^{-st}f'(t)\,dt = \Big[e^{-st}f(t)\Big]_0^{\infty} + s\int_0^{\infty}e^{-st}f(t)\,dt" cite="reading1" at="pp. 9–10" />
+
+At the upper limit, $f(t)/e^{st} \to 0$: exactly where exponential type is needed, for $s > k$ (p. 10). At the lower limit the bracket gives $-f(0)$, so the value at 0 must be known: that is why an initial value problem is required (p. 11). Hence (p. 11)
+
+<Formula label="Transform of a derivative" tex="\mathcal{L}(f') = s\,F(s) - f(0)" cite="reading1" at="p. 11" />
+
+Multiplying by $s$ corresponds to differentiating, with a correction for the starting value (p. 11). For the second derivative, do not integrate by parts twice; treat $f''$ as the derivative of $f'$ and use the formula twice (pp. 11–12):
+
+<Formula label="Transform of a second derivative" tex="\mathcal{L}(f'') = s\,\mathcal{L}(f') - f'(0) = s^2F(s) - s\,f(0) - f'(0)" cite="reading1" at="p. 12" />
+
+The main term is $s^2F(s)$; the rest are "fellow travellers", the initial values, which must not be forgotten (pp. 12–13).
+
+## An example
+
+Solve (transcript, pp. 13–19)
+
+<Formula label="The initial value problem" tex="y'' - y = e^{-t}, \qquad y(0) = 1, \quad y'(0) = 0" cite="reading1" at="pp. 13–15" />
+
+By operators this takes several steps: the complementary solution from $e^t$ and $e^{-t}$, a particular solution with the extra formula because $-1$ is a characteristic root, then two equations for the constants (pp. 13–14). Instead, transform (pp. 14–15): $s^2Y - s - 0 - Y = \frac{1}{s + 1}$. Group the $Y$ terms and move the rest across, $(s^2 - 1)Y = \frac{1}{s + 1} + s$, and factor the denominator fully (pp. 15–16):
+
+<Formula label="Solving for Y" tex="Y = \frac{s^2 + s + 1}{(s + 1)^2(s - 1)} = \frac{-1/2}{(s + 1)^2} + \frac{1/4}{s + 1} + \frac{3/4}{s - 1}" cite="reading1" at="pp. 16–18" />
+
+The cover-up method gives $\frac{3}{4}$ (put $s = 1$) and $-\frac{1}{2}$ (cover $(s + 1)^2$, put $s = -1$). The coefficient of $\frac{1}{s + 1}$ cannot be found that way; substituting $s = 0$ gives $-1 = -\frac{1}{2} + c - \frac{3}{4}$, so $c = \frac{1}{4}$ (pp. 17–18). Using a separate term for each power of $s + 1$ keeps the numerators constant (pp. 16–17). Finally, $\frac{1}{s^2}$ is the transform of $t$, and the shift formula turns $\frac{1}{(s + 1)^2}$ into $te^{-t}$ (pp. 18–19):
+
+<Formula label="Solution" tex="y = \frac{3}{4}\,e^{t} + \frac{1}{4}\,e^{-t} - \frac{1}{2}\,t\,e^{-t}" cite="reading1" at="pp. 18–19" />
+
+The last term is what the particular solution would have been; the others make up the complementary part, with the constants already supplied by the method (p. 19).
+
+<WorkedExample title="Two more initial value problems">
+<Problem>
+Solve by Laplace transform (a) $y'' + 4y = 0$, $y(0) = 2$, $y'(0) = 6$; (b) $y' + 3y = 6$, $y(0) = 1$. (c) Find a constant $M$ with $t^3 \le Me^t$ for all $t \ge 0$.
+</Problem>
+<Step title="(a) An oscillation">
+$s^2Y - 2s - 6 + 4Y = 0$, so $Y = \frac{2s + 6}{s^2 + 4} = 2\cdot\frac{s}{s^2 + 4} + 3\cdot\frac{2}{s^2 + 4}$, and $y = 2\cos 2t + 3\sin 2t$.
+</Step>
+<Step title="(b) A first-order equation">
+$sY - 1 + 3Y = \frac6s$, so $Y = \frac{s + 6}{s(s + 3)}$. Cover-up gives $\frac{2}{s} - \frac{1}{s + 3}$, so $y = 2 - e^{-3t}$. Check: $y(0) = 1$ and $y' + 3y = 3e^{-3t} + 6 - 3e^{-3t} = 6$.
+</Step>
+<Step title="(c) A bound">
+$t^3e^{-t}$ has derivative $(3t^2 - t^3)e^{-t}$, zero at $t = 3$, where its value is $27e^{-3} \approx 1.344$. So $M = 1.35$ works.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $f$ is of exponential type if $|f| \le ce^{kt}$; then $F(s)$ exists for $s > k$. Powers $t^n$ ($n \ge 0$) and sinusoids qualify; $1/t$ and $e^{t^2}$ do not.
+- $\mathcal{L}(f') = sF - f(0)$, $\mathcal{L}(f'') = s^2F - sf(0) - f'(0)$.
+- Transform the IVP, solve algebraically for $Y(s)$, invert with partial fractions; the initial values are built in.

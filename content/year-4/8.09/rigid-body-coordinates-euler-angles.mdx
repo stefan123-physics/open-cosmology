@@ -1,0 +1,192 @@
+---
+title: "Coordinates of a rigid body: Euler angles and Euler's theorem"
+slug: rigid-body-coordinates-euler-angles
+course: "8.09"
+lecture: 2.1
+order: 1
+summary: "A rigid body needs six coordinates: three for the position of a reference point (usually the centre of mass) and three angles for the orientation of axes fixed in the body. Euler's angles φ, θ, ψ build the orientation from three turns, about z, then about the new x axis (the line of nodes), then about the new z axis; each turn is an orthogonal matrix, and the product U = U_ψ U_θ U_φ has determinant +1. The eigenvalues of such a matrix have modulus 1, come in complex-conjugate pairs and multiply to 1, so one of them is 1: every displacement with one point fixed is a single rotation about an axis (Euler's theorem). That axis and the rate of turning about it define the angular velocity ω(t)."
+prerequisites: [lagrangian-mechanics-review, rigid-body-kinematics, rotations-index-notation, orthogonal-matrices-gram-schmidt, eigenvalues-and-eigenvectors]
+source:
+  title: "MIT 8.09 Lecture Notes, Chapter 2, Section 2.1: Coordinates of a Rigid Body"
+  url: https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/resources/mit8_09f14_chapter_2/
+  readings:
+    - title: "8.09 Chapter 2 notes (Stewart, typed, pp. 29–51)"
+      url: https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/6fe39e8d5ce4ce746ca256dfea665eda_MIT8_09F14_Chapter_2.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.09"
+    lecture: 2.2
+    why: "The angular velocity defined at the end of this section is what links the time derivative of a vector in the fixed frame to its derivative in the rotating body frame."
+  - course: "8.09"
+    lecture: 2.4
+    why: "Euler's equations are solved in the body frame, and the Euler angles defined here translate the solution back into the motion seen from outside."
+quiz:
+  - question: "Why does a rigid body of any number $N \\ge 3$ of particles (not all on a line) have exactly six coordinates?"
+    choices: ["Each particle has three coordinates, and the constraints remove all but two particles", "Three non-collinear points fix all the others; the first needs 3 coordinates, the second 2 (it lies on a sphere about the first), the third 1 (it lies on a circle about the line through the first two)", "Three for the centre of mass and three for its velocity", "Because a rotation matrix has six independent entries"]
+    answer: 1
+    explanation: "Once three non-collinear points are placed, every other point is fixed by its distances to them. Counting the freedom of those three points gives $3 + 2 + 1 = 6$, whatever $N$ is. A rotation matrix has nine entries but six orthogonality conditions, leaving three, which match the three angles."
+  - question: "The matrix that flips the sign of all three coordinates, $\\mathrm{diag}(-1, -1, -1)$, is orthogonal. Why is it excluded from the motions of a rigid body?"
+    choices: ["It changes the length of vectors", "It is not invertible", "Its determinant is $-1$, and no continuous motion starting from the identity (determinant $+1$) can reach it without changing the distances between particles", "It does not commute with $U_\\phi$"]
+    answer: 2
+    explanation: "Orthogonality forces $\\det W = \\pm 1$. A real motion starts from the identity and changes continuously, so the determinant cannot jump from $+1$ to $-1$. The allowed matrices form $SO(3)$, those with determinant $+1$."
+  - question: "A rotation matrix has trace $0$. Using the fact that its eigenvalues are $1$, $e^{i\\Phi}$ and $e^{-i\\Phi}$, what is the rotation angle $\\Phi$?"
+    choices: ["$90^\\circ$", "$120^\\circ$", "$180^\\circ$", "$60^\\circ$"]
+    answer: 1
+    explanation: "The trace is the sum of the eigenvalues, $1 + e^{i\\Phi} + e^{-i\\Phi} = 1 + 2\\cos\\Phi$. Setting it to $0$ gives $\\cos\\Phi = -\\tfrac{1}{2}$, so $\\Phi = 120^\\circ$. This is the case of the worked example on this page."
+  - question: "In the notes' second Euler rotation, about which axis is the body turned by $\\theta$?"
+    choices: ["The original $z$ axis", "The original $x$ axis", "The intermediate $\\tilde x$ axis, the line of nodes, where the fixed $xy$ plane meets the body's $x'y'$ plane", "The final body $z'$ axis"]
+    answer: 2
+    explanation: "The order is $\\phi$ about $z$, then $\\theta$ about the new $\\tilde x$ axis (the line of nodes), then $\\psi$ about the new $z'$ axis. Because the three matrices do not commute, the order matters."
+flashcards:
+  - front: "How many coordinates does a rigid body have, and which?"
+    back: "Six: three for the position of a point of the body (usually the centre of mass $\\vec R$) and three angles for the orientation of axes fixed in the body relative to fixed axes."
+  - front: "Euler angles (as in the 8.09 notes)"
+    back: "$\\phi$ about $z$; then $\\theta$ about the new $\\tilde x$ axis (the line of nodes); then $\\psi$ about the new $z'$ axis. Total: $U = U_\\psi U_\\theta U_\\phi$, with $\\vec r' = U\\vec r$."
+  - front: "Orthogonal matrix"
+    back: "$W^TW = WW^T = 1$, so $W^T = W^{-1}$ and lengths are unchanged. Nine entries minus six conditions leave three parameters. $\\det W = \\pm 1$; rotations are the ones with $+1$ (the group $SO(3)$)."
+  - front: "Euler's theorem"
+    back: "Any displacement of a rigid body with one point fixed is a rotation about some axis. Proof: the eigenvalues of a rotation matrix have $|\\lambda| = 1$, come in conjugate pairs and multiply to 1, so one is $\\lambda_1 = 1$; its eigenvector is the axis, and the pair $e^{\\pm i\\Phi}$ gives the angle $\\Phi$."
+  - front: "Angular velocity from Euler's theorem"
+    back: "For a small displacement in time $dt$, the axis $\\vec\\xi^{(1)}$ and the angle $d\\Phi$ define $\\vec\\omega$: parallel to the axis, with $|\\vec\\omega| = \\dot\\Phi$. The axis can change from moment to moment, so $\\vec\\omega = \\vec\\omega(t)$."
+status: reviewed
+---
+
+Chapter 2 of Stewart's 8.09 notes turns from general analytical mechanics to one important system: the **rigid body**, a spinning wheel, a top, a tumbling book, the Earth. The first section (notes pp. 29–33) asks how many numbers it takes to say where a rigid body is and how it is turned, and introduces the tools for the turning part: rotation matrices, the Euler angles, and Euler's theorem, which says that any change of orientation is a single rotation about one axis. From that theorem comes the angular velocity, the quantity the rest of the chapter is built on. The idea of a rigid body and of rotation about a fixed axis was met in [rigid bodies and rotational kinematics](/courses/8-01/rigid-body-kinematics); rotation matrices in [rotations in index notation](/courses/8-07/rotations-index-notation). (The source is the typed notes only; this page follows them in order, in its own words, with its own example.)
+
+## Six coordinates
+
+A collection of $N$ particles is rigid when the distance between every pair stays the same (notes p. 29):
+
+<Formula label="Rigid body condition" tex="r_{ij} \equiv |\vec r_i - \vec r_j| = c_{ij} = \text{constant}" cite="reading1" at="Section 2.1, eq. (2.1), p. 29" />
+
+With these constraints, how many generalised coordinates are left? Pick three points of the body that are not on one line. Every other point is then fixed by its three distances to them, so it is enough to count how freely the three points can be placed:
+
+- the first point can be anywhere: **3** coordinates;
+- the second is at a fixed distance from the first, so it lies on a sphere around it: **2** coordinates;
+- the third is at fixed distances from both, so it can only swing on a circle around the line joining them: **1** coordinate.
+
+That makes **six** coordinates, and the count does not depend on $N$, so it holds for a continuous body too. Three of them describe translation and three the orientation.
+
+For the translation, any point of the body will do, but the usual choice is the **centre of mass**. With position vectors $\vec r_i$ measured from a fixed origin, and $M$ the total mass,
+
+<Formula label="Centre of mass" tex="\vec R = \frac{1}{M}\sum_i m_i\,\vec r_i" cite="reading1" at="Section 2.1, eq. (2.2), p. 30" />
+
+and for a continuous body with mass density $\rho(\vec r)$ the sum becomes an integral over the body's volume:
+
+<Formula label="Centre of mass of a continuous body" tex="\vec R = \frac{1}{M}\int_V \rho(\vec r)\,\vec r\;dV" cite="reading1" at="Section 2.1, eq. (2.3), p. 30" />
+
+For the orientation, attach a set of axes to the body. The notes write these **body axes** with primes, $(x', y', z')$, and the fixed axes without, $(x, y, z)$. Three angles then say how the primed axes are turned relative to the unprimed ones.
+
+## Euler angles
+
+The most useful set of three angles is due to Euler. Starting from the fixed axes, the orientation is reached by three turns, each about an axis produced by the turn before (notes p. 30):
+
+1. Turn by $\phi$ about the $z$ axis. The $x$ and $y$ axes move to new axes $\tilde x$ and $\tilde y$; $z$ stays where it is.
+2. Turn by $\theta$ about the new $\tilde x$ axis. Now $\tilde y$ and $z$ move, to $\tilde y'$ and $\tilde z'$, and $\tilde x$ stays put.
+3. Turn by $\psi$ about the new $\tilde z'$ axis, which is the final body axis $z'$. This takes $\tilde x$ and $\tilde y'$ to the final $x'$ and $y'$.
+
+The axis of the second turn, $\tilde x$, is called the **line of nodes**: it is the line where the original $xy$ plane cuts the $\tilde x\tilde y'$ plane, which after the third turn is the body's $x'y'$ plane. (The notes say the $xy$ plane meets the $\tilde x\tilde y$ plane; after a turn about $z$ those two planes coincide, so the tilted plane is meant.) So $\theta$ is the tilt of the body's $z'$ axis away from the fixed $z$ axis, $\phi$ says in which direction the line of nodes points, and $\psi$ how far the body has turned about its own $z'$ axis. For a spinning top these become the precession angle, the tilt and the spin, as Section 2.5 shows.
+
+## Rotations as matrices
+
+Each turn is a $3 \times 3$ matrix acting on the column of coordinates. For the first one, with $\vec r = (x, y, z)$ the coordinates of a point in the old axes and $\tilde{\vec r}$ its coordinates in the new ones,
+
+<Formula label="First Euler rotation" tex="\tilde{\vec r} = U_\phi\,\vec r = \begin{pmatrix} \cos\phi & \sin\phi & 0 \\ -\sin\phi & \cos\phi & 0 \\ 0 & 0 & 1 \end{pmatrix}\begin{pmatrix} x \\ y \\ z \end{pmatrix}" cite="reading1" at="Section 2.1, eq. (2.4), p. 31" />
+
+The sign of the $\sin\phi$ entries is the opposite of the active rotation matrix on the 8.07 page, because here the **axes** turn by $\phi$ while the point stays put: in the new axes the point appears turned by $-\phi$. The second and third turns work the same way, with $U_\theta$ a turn about the first coordinate axis and $U_\psi$ again about the third, and they are applied one after the other. The whole change of axes is one product (notes p. 31):
+
+<Formula label="Total rotation from the Euler angles" tex="U \equiv U_\psi U_\theta U_\phi \quad\Rightarrow\quad \vec r\,' = U\,\vec r" cite="reading1" at="Section 2.1, eq. (2.5), p. 31" />
+
+<Formula label="The three Euler matrices" tex="U = \begin{pmatrix} \cos\psi & \sin\psi & 0 \\ -\sin\psi & \cos\psi & 0 \\ 0 & 0 & 1 \end{pmatrix}\begin{pmatrix} 1 & 0 & 0 \\ 0 & \cos\theta & \sin\theta \\ 0 & -\sin\theta & \cos\theta \end{pmatrix}\begin{pmatrix} \cos\phi & \sin\phi & 0 \\ -\sin\phi & \cos\phi & 0 \\ 0 & 0 & 1 \end{pmatrix}" cite="reading1" at="Section 2.1, eq. (2.6), p. 31" />
+
+The order of the factors matters: matrices do not commute in general, and turning a book first about one axis and then another leaves it differently placed than the other way round.
+
+**Orthogonality.** Every one of these matrices, and their product, is **orthogonal**: its transpose is its inverse.
+
+<Formula label="Orthogonal matrix" tex="W^TW = W W^T = 1 \quad\Leftrightarrow\quad W^T = W^{-1}" cite="reading1" at="Section 2.1, eq. (2.7), p. 31" />
+
+This is exactly the property that keeps lengths unchanged:
+
+<Formula label="Rotations keep lengths" tex="\vec r\,'^{\,2} = \vec r^T\,(W^TW)\,\vec r = \vec r^{\,2}" cite="reading1" at="Section 2.1, eq. (2.8), p. 31" />
+
+A $3 \times 3$ matrix has nine entries. The condition $W^TW = 1$ is a symmetric matrix equation, so it gives six independent conditions (three on the diagonal, three above it), and **three** free parameters remain (notes p. 32). They match the three Euler angles.
+
+**Active and passive.** So far $\vec r\,' = U\vec r$ has meant the same point described in new axes, a **passive** transformation. The same equation can be read as moving the vector $\vec r$ to a new vector $\vec r\,'$ within one set of axes, an **active** transformation. Both views describe the same matrix.
+
+**Reflections are excluded.** Since $\det(W^TW) = (\det W)^2 = 1$, an orthogonal matrix has determinant $+1$ or $-1$. Matrices such as
+
+<Formula label="Two orthogonal matrices that are not rotations" tex="U = \begin{pmatrix} -1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & -1 \end{pmatrix} \quad\text{or}\quad U = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1 \end{pmatrix}" cite="reading1" at="Section 2.1, eq. (2.9), p. 32" />
+
+(the inversion of all three axes, and a mirror in the $xy$ plane) have determinant $-1$. They are not rotations: a body that starts in its original orientation, where $U$ is the identity with determinant $+1$, cannot reach them by moving continuously, because the determinant cannot jump; the body would have to be turned inside out, changing distances between its particles. Requiring $\det U = 1$ removes them. In the language of groups, the orthogonal matrices form $O(3)$, and those with determinant $+1$ form the **special orthogonal group** $SO(3)$, the rotations.
+
+## Euler's theorem
+
+Euler angles build an orientation out of three turns, but one turn is always enough. **Euler's theorem** states that any displacement of a rigid body with one point held fixed is a rotation about some axis (notes p. 32). An axis is a line of points that the rotation leaves where they are, so the theorem holds if every rotation matrix has a vector it does not change:
+
+<Formula label="A fixed axis" tex="U\,\vec r = \vec r" cite="reading1" at="Section 2.1, eq. (2.10), p. 32" />
+
+This is an **eigenvalue equation** with eigenvalue 1. In general (see [eigenvalues and eigenvectors](/courses/18-06/eigenvalues-and-eigenvectors)) one looks for vectors $\vec\xi$ and numbers $\lambda$ with
+
+<Formula label="Eigenvalue equation for a rotation" tex="U\vec\xi = \lambda\,\vec\xi" cite="reading1" at="Section 2.1, eq. (2.11), p. 32" />
+
+<Formula label="The same equation rearranged" tex="(U - \lambda 1)\,\vec\xi = 0" cite="reading1" at="Section 2.1, eq. (2.12), p. 32" />
+
+A solution with $\vec\xi \ne 0$ exists only if $U - \lambda 1$ cannot be inverted, that is if $\det(U - \lambda 1) = 0$. This is a cubic equation in $\lambda$, with three roots $\lambda_\alpha$, $\alpha = 1, 2, 3$, and an eigenvector for each (no sum over $\alpha$ here):
+
+<Formula label="Three eigenvalues and eigenvectors" tex="U\vec\xi^{(\alpha)} = \lambda_\alpha\,\vec\xi^{(\alpha)}" cite="reading1" at="Section 2.1, eq. (2.13), p. 32" />
+
+Put the three eigenvectors side by side as the columns of a matrix $X$. Then the three equations become one matrix equation, which says that $X$ **diagonalises** $U$:
+
+<Formula label="X diagonalises U" tex="U X = X\,\mathrm{diag}(\lambda_1, \lambda_2, \lambda_3) \;\Rightarrow\; X^{-1} U X = \mathrm{diag}(\lambda_1, \lambda_2, \lambda_3)" cite="reading1" at="Section 2.1, eqs. (2.14)–(2.15), p. 33" />
+
+The eigenvalues and eigenvectors may be complex. For an orthogonal $U$ the eigenvectors can be chosen so that $X$ is **unitary**, $X^\dagger X = X X^\dagger = 1$, where the dagger means transpose and complex conjugate together. Three facts about the eigenvalues then prove the theorem:
+
+1. **Their product is 1.** The determinant is the product of the eigenvalues, and $\det U = 1$, so $\lambda_1\lambda_2\lambda_3 = 1$.
+2. **Each has modulus 1.** Take the Hermitian conjugate of $U\vec\xi = \lambda\vec\xi$ (with $U$ real, $U^\dagger = U^T$) and multiply the two equations together. Since $U^TU = 1$,
+
+<Formula label="Eigenvalues of a rotation have modulus 1" tex="\vec\xi^{\,\dagger}\vec\xi = \vec\xi^{\,\dagger} U^T U\,\vec\xi = |\lambda|^2\,\vec\xi^{\,\dagger}\vec\xi" cite="reading1" at="Section 2.1, eq. (2.16), p. 33" />
+
+   and as $\vec\xi^{\,\dagger}\vec\xi > 0$, $|\lambda|^2 = 1$. This is the length-preserving property again, now for complex vectors.
+3. **They come in conjugate pairs.** $U$ has real entries, so the complex conjugate of the eigenvalue equation is another one:
+
+<Formula label="Conjugate eigenvalues" tex="U\vec\xi = \lambda\vec\xi \;\Rightarrow\; U\vec\xi^{\,\star} = \lambda^{\star}\vec\xi^{\,\star}" cite="reading1" at="Section 2.1, eq. (2.17), p. 33" />
+
+A cubic with real coefficients has at least one real root, and the other two are either both real or a conjugate pair. Label them so that $\lambda_2 = \lambda_3^\star$. Then fact 1 with fact 2 gives $1 = \lambda_1\lambda_2\lambda_2^\star = \lambda_1|\lambda_2|^2 = \lambda_1$. One eigenvalue is exactly $1$, which is equation (2.10), and Euler's theorem is proved. (If all three are real, each is $\pm 1$, and the pairing still works: two equal ones count as a pair.)
+
+The eigenvector $\vec\xi^{(1)}$ that belongs to $\lambda_1 = 1$ is the **rotation axis**. The other two eigenvalues have modulus 1 and are conjugate, so they can be written $\lambda_2 = \lambda_3^\star = e^{i\Phi}$, and $\Phi$ is the **angle of rotation** about that axis. A useful consequence (not in the notes, but immediate): the trace of a matrix is the sum of its eigenvalues, so
+
+<Formula label="Trace of a rotation matrix (this page's own step)" tex="\mathrm{tr}\,U = 1 + e^{i\Phi} + e^{-i\Phi} = 1 + 2\cos\Phi" cite="reading1" at="Section 2.1, follows from eqs. (2.15)–(2.17), p. 33" />
+
+which gives the angle at a glance.
+
+<WorkedExample title="Two Euler turns of 90° make one turn of 120°">
+<Problem>
+Take $\phi = 90^\circ$, $\theta = 90^\circ$ and $\psi = 0$. Find the single matrix $U$, and the axis and angle of the one rotation that does the same job.
+</Problem>
+<Step title="Build the matrix">
+With $\cos 90^\circ = 0$ and $\sin 90^\circ = 1$, $U_\phi$ has rows $(0, 1, 0)$, $(-1, 0, 0)$, $(0, 0, 1)$, and $U_\theta$ has rows $(1, 0, 0)$, $(0, 0, 1)$, $(0, -1, 0)$; $U_\psi$ is the identity. Multiplying, $U = U_\theta U_\phi$ has rows $(0, 1, 0)$, $(0, 0, 1)$, $(1, 0, 0)$. So $U(x, y, z) = (y, z, x)$: it shuffles the three coordinates round in a cycle. Each row and each column has a single 1, so $U^TU = 1$, and its determinant is $+1$.
+</Step>
+<Step title="Find the axis">
+The axis is the eigenvector with eigenvalue 1: $(y, z, x) = (x, y, z)$ requires $x = y = z$. The axis is the body diagonal, along $(1, 1, 1)/\sqrt{3}$.
+</Step>
+<Step title="Find the angle">
+The diagonal of $U$ is all zeros, so $\mathrm{tr}\,U = 0 = 1 + 2\cos\Phi$, and $\cos\Phi = -\tfrac{1}{2}$: $\Phi = 120^\circ$. The other two eigenvalues are $e^{\pm 2\pi i/3}$; together with 1 their product is 1 and their sum is $1 + 2\cos 120^\circ = 0$, as they must be. Two quarter-turns about perpendicular axes are equivalent to one third of a turn about a diagonal: three such turns bring every axis back to where it was, just as $3 \times 120^\circ = 360^\circ$.
+</Step>
+</WorkedExample>
+
+## Angular velocity
+
+Euler's theorem gives a clean definition of how fast a body is turning. Look at the body at times $t$ and $t + dt$. The change of orientation is a rotation about some axis $\vec\xi^{(1)}$ by some small angle $d\Phi$. The **angular velocity** $\vec\omega(t)$ is the vector along that axis whose size is the rate of turning (notes p. 33):
+
+<Formula label="Angular velocity" tex="|\vec\omega| = \dot\Phi \quad\text{and}\quad \vec\omega \parallel \vec\xi^{(1)}" cite="reading1" at="Section 2.1, eq. (2.18), p. 33" />
+
+Over a longer motion, each small step can have its own axis and its own rate, so $\vec\omega$ changes with time. At each instant, though, there is a single $\vec\omega(t)$ for the whole body: every point of it turns about the same axis at the same rate. This is the quantity that connects time derivatives in the fixed and rotating frames in the next section.
+
+## Summary
+
+- A rigid body keeps all its interparticle distances fixed. It has **six** coordinates: three for translation (usually the centre of mass $\vec R$) and three for orientation.
+- The **Euler angles** turn the axes by $\phi$ about $z$, then $\theta$ about the line of nodes $\tilde x$, then $\psi$ about the body axis $z'$; the total is $U = U_\psi U_\theta U_\phi$, and the order matters.
+- Rotation matrices are **orthogonal**, $W^T = W^{-1}$, which keeps lengths fixed; nine entries minus six conditions leaves three parameters. Rotations have $\det U = +1$ (the group $SO(3)$); reflections and inversions have $-1$ and cannot be reached by moving a rigid body.
+- **Euler's theorem**: the eigenvalues of a rotation matrix have modulus 1, come in conjugate pairs and multiply to 1, so one of them equals 1. Its eigenvector is the rotation axis; the other two are $e^{\pm i\Phi}$, with $\Phi$ the angle, and $\mathrm{tr}\,U = 1 + 2\cos\Phi$.
+- The axis and the rate of turning of an infinitesimal displacement define the **angular velocity** $\vec\omega(t)$, the same for every point of the body.

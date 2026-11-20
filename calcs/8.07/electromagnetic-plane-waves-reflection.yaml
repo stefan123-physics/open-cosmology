@@ -1,0 +1,345 @@
+# Calculations on content/year-4/8.07/electromagnetic-plane-waves-reflection.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 14, "Electromagnetic Waves" (Guth, typeset slides, Lecture 35,
+# December 7, 2012), slides 8-19, eqs. (14)-(36) on this page. The slides quote no numbers.
+# Slips: slide 11 has |k| = omega c (for omega/c); eq. (25) has I = (1/2) eps0 E0^2 (missing c); eq. (36) has
+# absolute-value bars around (n1 - n2)/(n1 + n2), no tilde on E_{0,T}, and leaves mu1 = mu2 unstated.
+# Page's own worked example: a 1000 W/m^2 beam in air (n1 = 1.00) at normal incidence on glass (n2 = 1.50),
+# c = 2.998e8 m/s, eps0 = 8.854e-12 F/m, mu = mu0.
+
+page: content/year-4/8.07/electromagnetic-plane-waves-reflection.mdx
+calcs:
+  # ---------------------------------------------------------------- plane waves
+  - id: speed-of-light
+    kind: value
+    where: 'slide 8 and section "The wave equation from Maxwell''s equations": c = 1/sqrt(mu0 eps0) (m/s), the 2.998e8 used in the example'
+    formula: 1/sqrt(4*pi*1e-7*8.8541878128e-12)
+    expected: '2.998e8'
+    tolerance: 1e5
+    shown: ['so electromagnetic waves travel at $c = 1/\sqrt{\mu_0\varepsilon_0}$, which is the speed of light (slide 10)']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: plane-wave-solves-wave-equation
+    kind: identity
+    where: 'slide 10: cos(k z - omega t) with omega = c k solves the wave equation (c = 1.7 here; checked with 1 added)'
+    formula: deriv('cos(KK*z - 1.7*KK*TT)', 'z', ZZ, 2) - deriv('cos(KK*ZZ - 1.7*KK*t)', 't', TT, 2)/1.7**2 + 1
+    equals: 1
+    samples: {KK: [0.5, 1.2, 2.0], ZZ: [0.3, -0.8, 1.1], TT: [0.2, 0.6, 1.4]}
+    tolerance: 1e-4
+    shown: ['as the wave equation demands']
+    source: {cite: reading1, at: 'slide 10, eq. (18)'}
+    origin: mit
+
+  - id: b-perpendicular
+    kind: identity
+    where: 'slide 11, eq. (22): (k x n) is perpendicular to n and to k for any vectors (checked with 1 added)'
+    formula: (KY*NZ - KZ*NY)*NX + (KZ*NX - KX*NZ)*NY + (KX*NY - KY*NX)*NZ + (KY*NZ - KZ*NY)*KX + (KZ*NX - KX*NZ)*KY + (KX*NY - KY*NX)*KZ + 1
+    equals: 1
+    samples: {KX: [0.3, 1.2], KY: [-0.5, 2.0], KZ: [1.1, 0.4], NX: [0.6, -1.0], NY: [0.8, 0.2], NZ: [0.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['So $\vec B$ is perpendicular to both $\vec E$ and $\vec k$']
+    source: {cite: reading1, at: 'slide 11, eq. (22)'}
+    origin: mit
+
+  - id: k-over-omega
+    kind: identity
+    where: 'slide 11 (slip): |k| = omega/c, so |k|/omega = 1/c, not omega c'
+    formula: (WW/CC)/WW
+    equals: 1/CC
+    samples: {WW: [1.0, 5.0], CC: [2.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['[the slide has $\omega c$, a slip]']
+    source: {cite: reading1, at: 'slide 11'}
+    origin: slip
+
+  - id: curl-b-check
+    kind: identity
+    where: 'section "The magnetic field of a plane wave": -k^2/omega = -omega/c^2 when k = omega/c'
+    formula: -(WW/CC)**2/WW
+    equals: -WW/CC**2
+    samples: {WW: [1.0, 5.0], CC: [2.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['because $k^2 = \omega^2/c^2$']
+    source: {cite: reading1, at: 'slide 11, eq. (23)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- energy and momentum
+  - id: equal-energy-parts
+    kind: identity
+    where: 'slide 12 and quiz 4: with B = E/c and c^2 = 1/(mu0 eps0), B^2/mu0 = eps0 E^2'
+    formula: (EE*sqrt(MU*EP))**2/MU
+    equals: EP*EE**2
+    samples: {EE: [1.0, 868.0], MU: [1.2566e-6, 2.0], EP: [8.854e-12, 3.0]}
+    tolerance: 1e-9
+    shown: ['since $|\vec B|^2/\mu_0 = |\vec E|^2/\mu_0c^2 = \varepsilon_0|\vec E|^2$', 'The two terms of $u$ are equal at every point']
+    source: {cite: reading1, at: 'slide 12, eq. (24)'}
+    origin: mit
+
+  - id: poynting-is-uc
+    kind: identity
+    where: 'slide 12, eq. (25): |E x B|/mu0 = E^2/(c mu0) = eps0 c E^2 = u c (u = eps0 E^2 at that moment)'
+    formula: EE*(EE*sqrt(MU*EP))/MU
+    equals: EP*EE**2/sqrt(MU*EP)
+    samples: {EE: [1.0, 868.0], MU: [1.2566e-6, 2.0], EP: [8.854e-12, 3.0]}
+    tolerance: 1e-9
+    shown: ['which is why $\vec S = uc\,\hat z$']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: mit
+
+  - id: cos-squared-average
+    kind: value
+    where: 'slide 12: the average of cos^2 over a period'
+    formula: integrate('cos(s)**2', 's', 0, 2*pi)/(2*pi)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['The average of $\cos^2$ over a period is $\frac12$ (slide 12).']
+    source: {cite: reading1, at: 'slide 12'}
+    origin: mit
+
+  - id: intensity-slip
+    kind: identity
+    where: 'slide 12 (slip): I = <|S|> = c <u> = (1/2) c eps0 E0^2; the slide''s (1/2) eps0 E0^2 is <u>'
+    formula: CC*EP*EE**2*integrate('cos(s)**2', 's', 0, 2*pi)/(2*pi)
+    equals: 0.5*CC*EP*EE**2
+    samples: {CC: [2.998e8, 2.0], EP: [8.854e-12, 3.0], EE: [868.0, 1.5]}
+    tolerance: 1e-6
+    shown: ['[The slide writes the intensity as $\frac12\varepsilon_0E_0^2$, which is the average energy density; the energy flux is $c$ times that, as written here.]']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: slip
+
+  # ---------------------------------------------------------------- matter
+  - id: speed-in-matter
+    kind: identity
+    where: 'slide 13, eqs. (26)-(27): 1/sqrt(mu eps) = c/n with n = sqrt(mu eps/(mu0 eps0)), c = 1/sqrt(mu0 eps0)'
+    formula: 1/sqrt(MM*EP)
+    equals: (1/sqrt(M0*E0))/sqrt(MM*EP/(M0*E0))
+    samples: {MM: [1.3e-6, 2.0], EP: [2.0e-11, 5.0], M0: [1.2566e-6, 1.0], E0: [8.854e-12, 1.0]}
+    tolerance: 1e-9
+    shown: ['since $1/\sqrt{\mu\varepsilon} = c/n$']
+    source: {cite: reading1, at: 'slide 13, eq. (27)'}
+    origin: mit
+
+  - id: intensity-in-matter
+    kind: identity
+    where: 'section "Reflection and transmission": (1/2) eps v E0^2 with eps = n^2 eps0 (mu = mu0) and v = c/n equals (1/2) n eps0 c E0^2'
+    formula: 0.5*NN**2*EP*(CC/NN)*EE**2
+    equals: 0.5*NN*EP*CC*EE**2
+    samples: {NN: [1.0, 1.5, 2.4], EP: [8.854e-12, 1.0, 3.0], CC: [2.998e8, 1.0, 2.0], EE: [868.0, 1.0, 2.0]}
+    tolerance: 1e-9
+    shown: ['The intensity in a material is $\frac12\varepsilon v E_0^2 = \frac12 n\,\varepsilon_0 c\,E_0^2$']
+    source: {cite: reading1, at: 'slide 14, eq. (28)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- reflection and transmission
+  - id: solve-boundary-equations
+    kind: identity
+    where: 'slide 19: with R = (1 - b)/(1 + b) and T = 2/(1 + b) (incident amplitude 1), eq. (35) 1 - R = b T holds (eq. (34) 1 + R = T is the definition); checked as 1 - R - b T = 0 (plus 1)'
+    formula: 1 - (1 - BB)/(1 + BB) - BB*2/(1 + BB) + 1
+    equals: 1
+    samples: {BB: [0.3, 1.0, 1.5, 4.0]}
+    tolerance: 1e-12
+    shown: ['Adding (34) gives $\tilde E_{0,T} = 2\tilde E_{0,I}/(1 + \beta)$']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: beta-to-n
+    kind: identity
+    where: 'slide 19, eq. (36): with beta = n2/n1, (1 - beta)/(1 + beta) = (n1 - n2)/(n1 + n2) and 2/(1 + beta) = 2 n1/(n1 + n2); the sum of the two checked'
+    formula: (1 - N2/N1)/(1 + N2/N1) + 2/(1 + N2/N1)
+    equals: (N1 - N2)/(N1 + N2) + 2*N1/(N1 + N2)
+    samples: {N1: [1.0, 1.33, 2.4], N2: [1.5, 1.0, 1.7]}
+    tolerance: 1e-12
+    shown: ['$\beta = v_1/v_2 = n_2/n_1$ and (slide 19)']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: mit
+
+  - id: energy-conservation
+    kind: identity
+    where: 'formula "Reflected and transmitted fractions of the power": R + T = 1 and T = 4 n1 n2/(n1 + n2)^2'
+    formula: ((N1 - N2)/(N1 + N2))**2 + (N2/N1)*(2*N1/(N1 + N2))**2 + 4*N1*N2/(N1 + N2)**2
+    equals: 1 + (N2/N1)*(2*N1/(N1 + N2))**2
+    samples: {N1: [1.0, 1.33, 2.4], N2: [1.5, 1.0, 1.7]}
+    tolerance: 1e-12
+    shown: ['= \frac{4n_1n_2}{(n_1 + n_2)^2}, \qquad R + T = 1']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: example-e0
+    kind: value
+    where: 'worked example and summary: E0 = sqrt(2 I/(c eps0)) for I = 1000 W/m^2 (V/m)'
+    formula: sqrt(2000/(2.998e8*8.854e-12))
+    expected: '868'
+    tolerance: 0.5
+    shown: ['\sqrt{2000/(2.998 \times 10^8 \times 8.854 \times 10^{-12})} = 868$ V/m. The magnetic', 'a 1000 W/m² beam has $E_0 = 868$ V/m']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: page-own
+
+  - id: quiz-e0
+    kind: value
+    quiz: 1
+    where: 'quiz 2: E0 = sqrt(2 I/(c eps0)) (V/m), choice 3'
+    formula: sqrt(2000/(2.998e8*8.854e-12))
+    expected: '868'
+    tolerance: 0.5
+    shown: ['= 868$ V/m. 614 V/m forgets']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: page-own
+
+  - id: quiz-e0-no-half
+    kind: value
+    where: 'quiz 2, wrong choice: sqrt(I/(c eps0)) without the 1/2 (V/m)'
+    formula: sqrt(1000/(2.998e8*8.854e-12))
+    expected: '614'
+    tolerance: 0.5
+    shown: ['choices: ["614 V/m"']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: page-own
+
+  - id: quiz-e0-no-c
+    kind: value
+    where: 'quiz 2, wrong choice: sqrt(2 I/eps0), the slide''s formula without c (V/m)'
+    formula: sqrt(2000/8.854e-12)
+    expected: '1.50e7'
+    tolerance: 5e4
+    shown: ['"$1.50 \\times 10^{7}$ V/m"']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: page-own
+
+  - id: example-b0
+    kind: value
+    where: 'worked example, quiz 2 and summary: B0 = E0/c (T)'
+    formula: sqrt(2000/(2.998e8*8.854e-12))/2.998e8
+    expected: '2.90e-6'
+    tolerance: 5e-9
+    shown: ['868/2.998 \times 10^8 = 2.90 \times 10^{-6}$ T', '"$2.90 \\times 10^{-6}$ V/m"', '$B_0 = 2.90 \times 10^{-6}$ T; on glass']
+    source: {cite: reading1, at: 'slide 11, eq. (23)'}
+    origin: page-own
+
+  - id: example-earth-field
+    kind: fact
+    where: 'worked example: 2.9 uT is about a twentieth of a typical 50 uT Earth field (25 to 65 uT at the surface)'
+    value: about 50 uT (25-65 uT)
+    shown: ['about a twentieth of a typical 50 μT Earth field']
+    source: {ref: 'NOAA/BGS World Magnetic Model: total surface field about 25 to 65 microtesla'}
+    origin: later-data
+
+  - id: example-sunlight
+    kind: fact
+    where: 'worked example: 1000 W/m^2 is about the intensity of bright sunlight at the ground (about 1000 W/m^2 at noon on a clear day)'
+    value: about 1000 W/m^2
+    shown: ['about that of bright sunlight']
+    source: {ref: 'ASTM G173 reference solar spectrum: global irradiance at the ground about 1000 W/m^2'}
+    origin: later-data
+
+  - id: example-energy-density
+    kind: value
+    where: 'worked example: <u> = I/c (J/m^3), and the radiation pressure on an absorber, the same number in Pa'
+    formula: 1000/2.998e8
+    expected: '3.34e-6'
+    tolerance: 5e-9
+    shown: ['= 1000/2.998 \times 10^8 = 3.34 \times 10^{-6}$ J/m³', 'a radiation pressure of $3.34 \times 10^{-6}$ Pa']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: page-own
+
+  - id: example-r
+    kind: value
+    where: 'worked example: (n1 - n2)/(n1 + n2) for 1.00 and 1.50'
+    formula: (1.00 - 1.50)/(1.00 + 1.50)
+    expected: '-0.2'
+    tolerance: 1e-12
+    shown: ['= (1.00 - 1.50)/(1.00 + 1.50) = -0.2$']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: example-t
+    kind: value
+    where: 'worked example: 2 n1/(n1 + n2) for 1.00 and 1.50, and the check 1 + (-0.2) = 0.8 of eq. (34)'
+    formula: 2*1.00/(1.00 + 1.50)
+    expected: '0.8'
+    tolerance: 1e-12
+    shown: ['= 2 \times 1.00/2.50 = 0.8$', 'Check (34): $1 + (-0.2) = 0.8$.']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: example-reflected-amplitude
+    kind: value
+    where: 'worked example: 0.2 x 868 (V/m)'
+    formula: 0.2*868
+    expected: '174'
+    tolerance: 0.5
+    shown: ['$0.2 \times 868 = 174$ V/m']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: example-transmitted-amplitude
+    kind: value
+    where: 'worked example: 0.8 x 868 (V/m)'
+    formula: 0.8*868
+    expected: '694'
+    tolerance: 0.5
+    shown: ['$0.8 \times 868 = 694$ V/m']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: example-reflected-power
+    kind: value
+    where: 'worked example and summary: R = 0.2^2; 40 W/m^2 of 1000; 4% per surface'
+    formula: 0.2**2
+    expected: '0.04'
+    tolerance: 1e-12
+    shown: ['$R = 0.2^2 = 0.04$: 40 W/m² is reflected', 'This 4% loss at each surface', 'it reflects 4% (inverted)']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: example-transmitted-power
+    kind: value
+    where: 'worked example and summary: T = 1.50 x 0.8^2; 960 W/m^2 of 1000; 96%'
+    formula: 1.50*0.8**2
+    expected: '0.96'
+    tolerance: 1e-12
+    shown: ['$T = 1.50 \times 0.8^2 = 0.96$: 960 W/m² enters the glass', 'and transmits 96%.']
+    source: {cite: reading1, at: 'slide 14, eq. (28)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 3
+  - id: quiz-water-r
+    kind: value
+    where: 'quiz 3: (1.33 - 1.00)/(1.33 + 1.00), positive (the choices +0.14 and -0.14 differ only in sign, so no quiz-choice check)'
+    formula: (1.33 - 1.00)/(1.33 + 1.00)
+    expected: '0.14'
+    tolerance: 0.005
+    shown: ['= 0.33/2.33 = +0.14$']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: quiz-water-power
+    kind: value
+    where: 'quiz 3: the reflected fraction of the power, 0.14^2 (from the unrounded ratio)'
+    formula: ((1.33 - 1.00)/(1.33 + 1.00))**2
+    expected: '0.02'
+    tolerance: 0.001
+    shown: ['0.02 is the reflected fraction of the power']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  - id: quiz-water-t
+    kind: value
+    where: 'quiz 3: the transmitted amplitude 2 n1/(n1 + n2) = 2.66/2.33'
+    formula: 2*1.33/(1.33 + 1.00)
+    expected: '1.14'
+    tolerance: 0.005
+    shown: ['$2n_1/(n_1 + n_2) = 1.14$, not 0.86']
+    source: {cite: reading1, at: 'slide 19, eq. (36)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: isotropic-average
+    kind: value
+    where: 'callout: the average of cos^2 theta over all directions, (1/2) int cos^2 sin d theta from 0 to pi'
+    formula: integrate('cos(s)**2*sin(s)', 's', 0, pi)/2
+    expected: '0.333333'
+    tolerance: 1e-6
+    shown: ['the average of $\cos^2\theta$ is $\frac13$']
+    source: {cite: reading1, at: 'slide 12, eq. (25)'}
+    origin: page-own

@@ -1,0 +1,150 @@
+# Calculations on content/year-4/8.09/stokes-flow-sphere.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.8, pp. 135-141, eqs. (6.135)-(6.155).
+# Quoted by the notes: the Reynolds-number ranges of the flow regimes (pp. 138-140).
+# Slips: eq. (6.150) is printed without the integration constant 1 (needed for f -> 1 far away), and the text then imposes
+# "f(1) = 1" (meant: f(1) = 0); with the constant 1 and f(1) = 0, k = -3/2 as the notes state (entry k-from-f).
+# p. 138 calls lift "tangential" to the flow (it is perpendicular); not a number.
+# Page's own example: water droplet a = 10 micrometres, density 1000 kg/m^3, in air (eta = 1.8e-5 Pa s, 1.2 kg/m^3), g = 9.81.
+
+page: content/year-4/8.09/stokes-flow-sphere.mdx
+calcs:
+  # ---------------------------------------------------------------- the solution (x = r/a, k = -3/2)
+  - id: g-equation
+    kind: identity
+    where: 'eqs. (6.146)-(6.149): g = (k/2)(x^-3 - x^-5) solves g'''' + 6 g''/x = -3 k x^-5 (with a = 1)'
+    formula: deriv('(KK/2)*(x**-3 - x**-5)', 'x', XX, 2) + 6*deriv('(KK/2)*(x**-3 - x**-5)', 'x', XX)/XX
+    equals: -3*KK*XX**-5
+    samples: {KK: [-1.5, 2.0], XX: [1.3, 2.7]}
+    tolerance: 1e-4
+    shown: ['g\left(\frac{r}{a}\right) = \frac{ka^3}{2r^3}\left(1 - \frac{a^2}{r^2}\right)']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.149), p. 137'}
+    origin: mit
+
+  - id: f-from-g
+    kind: identity
+    where: 'eqs. (6.144) and (6.150): f'' = -x^2 g'' - 4 x g for f = 1 + k/(2x) + k/(6x^3)'
+    formula: deriv('1 + KK/(2*x) + KK/(6*x**3)', 'x', XX)
+    equals: -XX**2*deriv('(KK/2)*(x**-3 - x**-5)', 'x', XX) - 4*XX*(KK/2)*(XX**-3 - XX**-5)
+    samples: {KK: [-1.5, 2.0], XX: [1.3, 2.7]}
+    tolerance: 1e-5
+    shown: ['f\left(\frac{r}{a}\right) = 1 + \frac{ka}{2r} + \frac{ka^3}{6r^3}']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.150), p. 137'}
+    origin: slip
+
+  - id: f-second-equation
+    kind: identity
+    where: 'eq. (6.146), second line, with a = 1: f'''' + 2 f''/x + 2 g = k/x^3'
+    formula: deriv('1 + KK/(2*x) + KK/(6*x**3)', 'x', XX, 2) + 2*deriv('1 + KK/(2*x) + KK/(6*x**3)', 'x', XX)/XX + 2*(KK/2)*(XX**-3 - XX**-5)
+    equals: KK/XX**3
+    samples: {KK: [-1.5, 2.0], XX: [1.3, 2.7]}
+    tolerance: 1e-4
+    shown: ['\frac{f''''}{a^2} + \frac{2f''}{ar} + \frac{2g}{a^2} = \frac{ka}{r^3}']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.146), p. 136'}
+    origin: mit
+
+  - id: k-from-f
+    kind: value
+    where: 'slip bracket: f(1) = 1 + k/2 + k/6 = 0 gives k = -3/2'
+    formula: -1/(1/2 + 1/6)
+    expected: '-1.5'
+    shown: ['that gives $1 + k/2 + k/6 = 0$, the notes'' value $k = -3/2$']
+    source: {cite: reading1, at: 'Section 6.8, p. 137'}
+    origin: slip
+
+  - id: notes-version-k
+    kind: value
+    where: 'slip bracket: with constant 0 and f(1) = 1, k/2 + k/6 = 1 gives k = +3/2'
+    formula: 1/(1/2 + 1/6)
+    expected: '1.5'
+    shown: ['$k$ would come out as $+3/2$']
+    source: {cite: reading1, at: 'Section 6.8, p. 137'}
+    origin: slip
+
+  - id: axis-speed
+    kind: identity
+    where: 'plot: on the axis (r parallel to u), f + x^2 g with k = -3/2 equals 1 - 3/(2x) + 1/(2x^3)'
+    formula: (1 - 1.5/(2*XX) - 1.5/(6*XX**3)) + XX**2*(-1.5/2)*(XX**-3 - XX**-5)
+    equals: 1 - 3/(2*XX) + 1/(2*XX**3)
+    samples: {XX: [1.0, 2.5, 6.0]}
+    tolerance: 1e-9
+    shown: ['1 − 3a/2r + a³/2r³']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.151), p. 137'}
+    origin: page-own
+
+  - id: shear-on-sphere
+    kind: identity
+    where: 'eq. (6.154): eta d(v_theta)/dr at r = a with v_theta = -u sin(th) f(r/a), f'' at 1 = 3/2 (a = 1)'
+    formula: ETA*deriv('-UU*sin(TH)*(1 - 3/(4*r) - 1/(4*r**3))', 'r', 1)
+    equals: -(3*ETA/2)*UU*sin(TH)
+    samples: {ETA: [1.0e-3, 0.7], UU: [2.0, 0.3], TH: [0.4, 2.0]}
+    tolerance: 1e-6
+    shown: ['= -\left(\frac{3\eta}{2a}\right)u\sin\theta']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.154), p. 138'}
+    origin: mit
+
+  - id: stokes-drag
+    kind: identity
+    where: 'eq. (6.155): a^2 times the integral over the sphere of (3 eta u/2a)(cos^2 + sin^2) = 6 pi eta a u; checked via the polar integral (phi gives 2 pi)'
+    formula: 2*pi*AA**2*integrate('(3*ETA*UU/(2*AA))*(c**2 + (1 - c**2))', 'c', -1, 1)
+    equals: 6*pi*ETA*AA*UU
+    samples: {ETA: [1.0e-3, 0.7], UU: [2.0, 0.3], AA: [0.01, 1.5]}
+    tolerance: 1e-6
+    shown: ['= \left(6\pi\eta a\right)u']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.155), p. 138'}
+    origin: mit
+
+  - id: pressure-share
+    kind: value
+    where: 'page remark: pressure part of the drag, (3/2) times the integral of cos^2 over the sphere, in units of eta a u, over pi'
+    formula: 1.5*2*pi*(2/3)/pi
+    expected: '2'
+    shown: ['the pressure gives $2\pi$ and the friction $4\pi$']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.155), p. 138'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- droplet
+  - id: droplet-speed
+    kind: value
+    where: 'worked example and quiz 3: v = 2 a^2 rho g/(9 eta) (m/s)'
+    formula: 2*(1e-5)**2*1000*9.81/(9*1.8e-5)
+    expected: '0.0121'
+    shown: ['\approx 0.0121$ m/s, about 1.2 cm/s', '\\approx 0.012$ m/s']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.155), p. 138'}
+    origin: page-own
+
+  - id: quiz-droplet
+    kind: value
+    where: 'quiz 3: the marked choice in cm/s'
+    formula: 2*(1e-5)**2*1000*9.81/(9*1.8e-5)*100
+    expected: '1.2'
+    shown: ['"About 1.2 cm/s"']
+    quiz: 2
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.155), p. 138'}
+    origin: page-own
+
+  - id: droplet-buoyancy
+    kind: value
+    where: 'worked example: buoyancy over weight = 1.2/1000, in percent'
+    formula: 1.2/1000*100
+    expected: '0.1'
+    tolerance: 0.03
+    shown: ['about 0.1% of the weight']
+    source: {cite: reading1, at: 'Section 6.8, eq. (6.155), p. 138'}
+    origin: page-own
+
+  - id: droplet-reynolds
+    kind: value
+    where: 'worked example: R = rho_air v a/eta'
+    formula: 1.2*0.0121*1e-5/1.8e-5
+    expected: '0.008'
+    shown: ['1.2 \times 0.0121 \times 10^{-5}/(1.8 \times 10^{-5}) \approx 0.008$']
+    source: {cite: reading1, at: 'Section 6.8, p. 135'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- regimes (quoted)
+  - id: regimes
+    kind: fact
+    where: 'section "Eddies, wakes and turbulence", summary, flashcard 5, quiz 4: the R ranges of the regimes'
+    shown: ['$10 \lesssim R \lesssim 100$: detached vortices', '$150 \lesssim R \lesssim 1000$: vortices are shed', '$10^3 \lesssim R \lesssim 2 \times 10^5$: the wake', '$R \gtrsim 2 \times 10^5$: the turbulent wake narrows', 'Above $R \\approx 2 \\times 10^5$']
+    source: {cite: reading1, at: 'Section 6.8, pp. 138-140'}
+    origin: mit

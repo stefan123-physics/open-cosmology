@@ -1,0 +1,418 @@
+# Calculations on content/year-3/8.06/adiabatic-invariants-classical-quantum.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 15 transcripts L15.1-L15.4 and lecture notes chapter 6
+# ("Adiabatic approximation"), pp. 1-6, eqs. (1.1)-(2.15). The lecture quotes no numbers.
+# Page's own worked example: a pendulum with m = 0.50 kg, g = 9.81 m/s², string shortened steadily from 1.00 m
+# to 0.25 m in 600 s, sideways amplitude 5.0 cm at the start; hbar = 1.0546e-34 J s.
+# Cosmology callout: H0 = 70 km/s/Mpc (example value), 1 Mpc = 3.0857e19 km, a 100 GHz photon.
+
+page: content/year-3/8.06/adiabatic-invariants-classical-quantum.mdx
+calcs:
+  # ---------------------------------------------------------------- classical oscillator (L15.1, L15.2)
+  - id: hamilton-cancel
+    kind: identity
+    where: 'eq. (1.5): along the motion dH/dt = ∂H/∂t; with ω(t) = w0 + k t, ∂/∂t of ½mω²x² at fixed x is m ω ω̇ x²'
+    formula: deriv('0.5*mm*(w0 + kk*s)**2*x0**2', 's', t0)
+    equals: mm*(w0 + kk*t0)*kk*x0**2
+    samples: {mm: [1.0, 2.5], w0: [1.0, 3.0], kk: [0.1, -0.2], x0: [0.4, 1.3], t0: [0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['\frac{dH}{dt} = \frac{\partial H}{\partial t} = m\,\omega\,\dot\omega\,x^2']
+    source: {cite: reading5, at: 'eq. (1.5), p. 2'}
+    origin: mit
+
+  - id: dI-dt
+    kind: identity
+    where: 'eq. (1.7): (1/ω²)(ω·mωω̇x² − Hω̇) with H = p²/2m + ½mω²x² equals (ω̇/ω²)(½mω²x² − p²/2m)'
+    formula: (1/ww**2)*(ww*mm*ww*wd*xx**2 - (pp**2/(2*mm) + 0.5*mm*ww**2*xx**2)*wd)
+    equals: (wd/ww**2)*(0.5*mm*ww**2*xx**2 - pp**2/(2*mm))
+    samples: {ww: [1.0, 2.7], wd: [0.01, -0.3], mm: [1.0, 0.6], xx: [0.3, -1.1], pp: [0.8, 2.0]}
+    tolerance: 1e-12
+    shown: ['\frac{dI}{dt} = \frac{1}{\omega^2}\left(\omega\,\frac{dH}{dt} - H\,\dot\omega\right)']
+    source: {cite: reading5, at: 'eq. (1.7), p. 2'}
+    origin: mit
+
+  - id: V-minus-K
+    kind: identity
+    where: 'eq. (1.8) with the factor A² kept: x = A sin ωt, p = Amω cos ωt give ½mω²x² − p²/2m = −½mω²A² cos 2ωt'
+    formula: 0.5*mm*ww**2*(aa*sin(ww*t0))**2 - (aa*mm*ww*cos(ww*t0))**2/(2*mm)
+    equals: -0.5*mm*ww**2*aa**2*cos(2*ww*t0)
+    samples: {mm: [1.0, 0.5], ww: [1.0, 3.1], aa: [0.05, 2.0], t0: [0.3, 1.7]}
+    tolerance: 1e-12
+    shown: ['V - K = \frac{1}{2}\,m\,\omega^2A^2\left(\sin^2\omega t - \cos^2\omega t\right) = -\frac{1}{2}\,m\,\omega^2A^2\cos 2\omega t']
+    source: {cite: reading5, at: 'eq. (1.8), p. 2'}
+    origin: page-own
+
+  - id: V-K-average-zero
+    kind: identity
+    where: 'eqs. (1.10), (1.11): at fixed ω the integrals of V and of K over one period 2π/ω are equal, so V − K integrates to zero'
+    formula: integrate('0.5*mm*ww**2*(aa*sin(ww*s))**2', 's', t0, t0 + 2*pi/ww)
+    equals: integrate('(aa*mm*ww*cos(ww*s))**2/(2*mm)', 's', t0, t0 + 2*pi/ww)
+    samples: {mm: [1.0, 0.5], ww: [1.0, 3.1], aa: [0.5, 2.0], t0: [0.0, 0.7]}
+    tolerance: 1e-8
+    shown: ['I(t + T) - I(t) \approx \frac{\dot\omega}{\omega^2}(t)\int_t^{t + T}\bigl(V(t'') - K(t'')\bigr)\,dt'' \approx 0']
+    source: {cite: reading5, at: 'eqs. (1.10), (1.11), p. 3'}
+    origin: mit
+
+  - id: adiabatic-condition-forms
+    kind: identity
+    where: 'L15.1 p. 4: d/dt (2π/ω) = −2π ω̇/ω², so |dT/dt| = 2π ω̇/ω²; checked with ω = w0 + k t'
+    formula: deriv('2*pi/(w0 + kk*s)', 's', t0)
+    equals: -2*pi*kk/(w0 + kk*t0)**2
+    samples: {w0: [1.0, 3.0], kk: [0.1, 0.4], t0: [0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['\frac{2\pi}{\omega^2}\left|\frac{d\omega}{dt}\right| \ll 1 \quad\Longleftrightarrow\quad \frac{\dot\omega}{\omega^2} \ll 1, \qquad \left|\frac{dT}{dt}\right| \ll 1']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  # ---------------------------------------------------------------- phase space (L15.3)
+  - id: ellipse-area
+    kind: identity
+    where: 'eqs. (1.12), (1.13): π a b with a = √(2E/mω²), b = √(2mE) equals 2πE/ω (no factor 2 in a; the transcript''s "2 square root" would double the area)'
+    formula: pi*sqrt(2*ee/(mm*ww**2))*sqrt(2*mm*ee)
+    equals: 2*pi*ee/ww
+    samples: {ee: [1.0, 0.3], mm: [1.0, 2.0], ww: [1.0, 4.0]}
+    tolerance: 1e-12
+    shown: ['\pi ab = \frac{2\pi E}{\omega}']
+    source: {cite: reading5, at: 'eq. (1.13), p. 3'}
+    origin: mit
+
+  - id: contour-integral
+    kind: identity
+    where: 'eq. (1.14): ∮ p dx round the ellipse, with x = a sin θ, p = b cos θ, dx = a cos θ dθ, is ∫₀^2π a b cos²θ dθ = π a b = 2πE/ω'
+    formula: integrate('sqrt(2*mm*ee)*cos(s)*sqrt(2*ee/(mm*ww**2))*cos(s)', 's', 0, 2*pi)
+    equals: 2*pi*ee/ww
+    samples: {ee: [1.0, 0.3], mm: [1.0, 2.0], ww: [1.0, 4.0]}
+    tolerance: 1e-4
+    shown: ['\oint p\,dx = \frac{2\pi E}{\omega} = 2\pi I']
+    source: {cite: reading5, at: 'eq. (1.14), p. 4'}
+    origin: mit
+
+  - id: quantum-invariant
+    kind: identity
+    where: 'eq. (1.15): E/ω = ħω(n + ½)/ω = ħ(n + ½)'
+    formula: hb*ww*(nn + 0.5)/ww
+    equals: hb*(nn + 0.5)
+    samples: {hb: [1.0, 0.3], ww: [1.0, 5.0], nn: [0, 3]}
+    tolerance: 1e-12
+    shown: ['\frac{E}{\omega} = \frac{\hbar\omega\left(n + \frac{1}{2}\right)}{\omega} = \hbar\left(n + \frac{1}{2}\right)']
+    source: {cite: reading5, at: 'eq. (1.15), p. 4'}
+    origin: mit
+
+  - id: bohr-sommerfeld-oscillator
+    kind: identity
+    where: 'eq. (1.16): for the oscillator, 2∫_a^b p dx = 2πE/ω with E = ħω(n + ½) gives 2πħ(n + ½), i.e. (1/ħ)∫_a^b p dx = (n + ½)π: exact (x = a sin θ between the turning points ±a, p = √(2mE) cos θ)'
+    formula: (1/hb)*integrate('sqrt(2*mm*hb*ww*(nn + 0.5))*cos(s)*sqrt(2*hb*(nn + 0.5)/(mm*ww))*cos(s)', 's', -pi/2, pi/2)
+    equals: (nn + 0.5)*pi
+    samples: {hb: [1.0, 0.5], mm: [1.0, 2.0], ww: [1.0, 3.0], nn: [0, 2]}
+    tolerance: 1e-4
+    shown: ['\frac{1}{\hbar}\int_a^b p(x)\,dx = \left(n + \frac{1}{2}\right)\pi \quad\Longleftrightarrow\quad \oint p(x)\,dx = 2\pi\hbar\left(n + \frac{1}{2}\right)']
+    source: {cite: reading5, at: 'eq. (1.16), p. 4'}
+    origin: mit
+
+  - id: constant-perturbation
+    kind: identity
+    where: 'eq. (1.18): |∫₀ᵗ e^(iωt'') dt''|² = (∫cos)² + (∫sin)² = |e^(iωt) − 1|²/ω² = (2 − 2 cos ωt)/ω²'
+    formula: integrate('cos(ww*s)', 's', 0, t0)**2 + integrate('sin(ww*s)', 's', 0, t0)**2
+    equals: (2 - 2*cos(ww*t0))/ww**2
+    samples: {ww: [1.0, 3.3], t0: [0.7, 5.0]}
+    tolerance: 1e-6
+    shown: ['P_{fi}(t) = \frac{|\delta H_{fi}|^2}{\hbar^2}\,\frac{\left|e^{i\omega_{fi}t} - 1\right|^2}{\omega_{fi}^2}']
+    source: {cite: reading5, at: 'eq. (1.18), p. 4'}
+    origin: mit
+
+  # ---------------------------------------------------------------- adiabatic evolution (L15.4)
+  - id: overlap-imaginary
+    kind: identity
+    where: 'eqs. (2.9), (2.10): Re⟨ψ|ψ̇⟩ = ½ d/dt ⟨ψ|ψ⟩ = 0 for a normalized state; checked for ψ = (cos θ(t), e^(iφ(t)) sin θ(t)): Re⟨ψ|ψ̇⟩ = −cos θ sin θ θ̇ + sin θ cos θ θ̇ = 0, while Im⟨ψ|ψ̇⟩ = φ̇ sin²θ'
+    formula: -cos(th0 + kk*t0)*sin(th0 + kk*t0)*kk + sin(th0 + kk*t0)*cos(th0 + kk*t0)*kk
+    equals: 0.5*deriv('cos(th0 + kk*s)**2 + sin(th0 + kk*s)**2', 's', t0)
+    samples: {th0: [0.3, 1.1], kk: [0.5, -2.0], t0: [0.2, 1.5]}
+    tolerance: 1e-6
+    shown: ['\langle\psi|\dot\psi\rangle = -\langle\dot\psi|\psi\rangle = -\langle\psi|\dot\psi\rangle^*']
+    source: {cite: reading5, at: 'eq. (2.10), p. 6'}
+    origin: page-own
+
+  - id: c-solves
+    kind: identity
+    where: 'eq. (2.8): c(t) = exp(−∫₀ᵗ g dt'') solves ċ = −g c; checked with a constant g = ⟨ψ|ψ̇⟩ (real stand-in; the step is the same for an imaginary g)'
+    formula: deriv('exp(-gg*s)', 's', t0)
+    equals: -gg*exp(-gg*t0)
+    samples: {gg: [0.3, 1.2], t0: [0.4, 2.0]}
+    tolerance: 1e-6
+    shown: ['\dot c(t) = -c(t)\,\langle\psi(t)|\dot\psi(t)\rangle \quad\Rightarrow\quad c(t) = e^{-\int_0^t\langle\psi(t'')|\dot\psi(t'')\rangle\,dt''}']
+    source: {cite: reading5, at: 'eqs. (2.7), (2.8), p. 5'}
+    origin: mit
+
+  # ---------------------------------------------------------------- plot
+  - id: plot-slow-axes
+    kind: identity
+    where: 'plot: after a slow change to ω = rω₁ with E/ω fixed, E = rE₁ with E₁ = ½mω₁²A₁²; semi-axis a = √(2E/mω²) = A₁/√r'
+    formula: sqrt(2*rr*0.5*mm*w1**2*a1**2/(mm*(rr*w1)**2))
+    equals: a1/sqrt(rr)
+    samples: {rr: [0.5, 3.0], mm: [1.0, 0.5], w1: [1.0, 3.1], a1: [1.0, 0.05]}
+    tolerance: 1e-12
+    shown: ['the ellipse has semi-axes A₁/√r and √r m ω₁ A₁ and the same area π']
+    source: {cite: reading5, at: 'eqs. (1.12), (1.13), p. 3'}
+    origin: page-own
+
+  - id: plot-slow-b
+    kind: identity
+    where: 'plot: b = √(2mE) with E = rE₁ equals √r m ω₁ A₁'
+    formula: sqrt(2*mm*rr*0.5*mm*w1**2*a1**2)
+    equals: sqrt(rr)*mm*w1*a1
+    samples: {rr: [0.5, 3.0], mm: [1.0, 0.5], w1: [1.0, 3.1], a1: [1.0, 0.05]}
+    tolerance: 1e-12
+    shown: ['After a slow change to ω = rω₁ the energy is rE₁ (E/ω fixed)']
+    source: {cite: reading5, at: 'eq. (1.12), p. 3'}
+    origin: page-own
+
+  - id: plot-fixed-E
+    kind: identity
+    where: 'plot: with E = E₁ fixed and ω = rω₁, a = A₁/r and b = mω₁A₁, area π/r in the plot units (x/A₁, p/(mω₁A₁))'
+    formula: pi*(sqrt(2*0.5*mm*w1**2*a1**2/(mm*(rr*w1)**2))/a1)*(sqrt(2*mm*0.5*mm*w1**2*a1**2)/(mm*w1*a1))
+    equals: pi/rr
+    samples: {rr: [0.5, 2.0], mm: [1.0, 0.5], w1: [1.0, 3.1], a1: [1.0, 0.05]}
+    tolerance: 1e-12
+    shown: ['semi-axes A₁/r and m ω₁ A₁, area π/r']
+    source: {cite: reading5, at: 'eq. (1.13), p. 3'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-sqrt3
+    where: 'quiz 3: the amplitude falls by √3'
+    inputs: {}
+    formula: sqrt(3)
+    expected: '1.73'
+    quiz: 2
+    shown: ['amplitude divided by $\\sqrt 3 \\approx 1.73$']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: quiz-0577
+    where: 'quiz 3: 1/√3 of the first amplitude'
+    inputs: {}
+    formula: 1/sqrt(3)
+    expected: '0.577'
+    shown: ['to about 0.577 of its first value']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-omega1
+    where: 'example (a): ω₁ = √(g/L₁), rad/s'
+    inputs: {}
+    formula: sqrt(9.81/1.00)
+    expected: '3.132'
+    shown: ['$\omega_1 = \sqrt{9.81/1.00} \approx 3.132$ rad/s']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  - id: ex-T1
+    where: 'example (a): period 2π/ω₁, s'
+    inputs: {}
+    formula: 2*pi/sqrt(9.81/1.00)
+    expected: '2.006'
+    shown: ['a period of $2\pi/\omega_1 \approx 2.006$ s']
+    source: {cite: reading5, at: 'p. 2'}
+    origin: page-own
+
+  - id: ex-omega2
+    where: 'example (a): ω₂ = √(g/L₂), rad/s'
+    inputs: {}
+    formula: sqrt(9.81/0.25)
+    expected: '6.264'
+    shown: ['$\omega_2 = \sqrt{9.81/0.25} \approx 6.264$ rad/s']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: page-own
+
+  - id: ex-T2
+    where: 'example (a): period 2π/ω₂, s'
+    inputs: {}
+    formula: 2*pi/sqrt(9.81/0.25)
+    expected: '1.003'
+    shown: ['and the period is about 1.003 s']
+    source: {cite: reading5, at: 'p. 2'}
+    origin: page-own
+
+  - id: ex-Ldot
+    where: 'example (b): (1.00 − 0.25) m over 600 s, m/s'
+    inputs: {}
+    formula: (1.00 - 0.25)/600
+    expected: '1.25e-3'
+    shown: ['The string shortens at $0.75/600 = 1.25 \times 10^{-3}$ m/s']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-adiabatic-formula
+    kind: identity
+    where: 'example (b): with ω = √(g/L(t)), ω̇/ω² = |L̇|/(2√(gL)) (L decreasing)'
+    formula: deriv('sqrt(gg/(l0 - ld*s))', 's', t0)/(gg/(l0 - ld*t0))
+    equals: ld/(2*sqrt(gg*(l0 - ld*t0)))
+    samples: {gg: [9.81, 1.0], l0: [1.0, 2.0], ld: [0.00125, 0.1], t0: [0.0, 3.0]}
+    tolerance: 1e-6
+    shown: ['$\dot\omega/\omega^2 = |\dot L|/(2\sqrt{gL})$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-adiabatic-start
+    where: 'example (b): ω̇/ω² at L = 1.00 m'
+    inputs: {}
+    formula: 1.25e-3/(2*sqrt(9.81*1.00))
+    expected: '2.0e-4'
+    shown: ['about $2.0 \times 10^{-4}$ at the start']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-adiabatic-end
+    where: 'example (b): ω̇/ω² at L = 0.25 m'
+    inputs: {}
+    formula: 1.25e-3/(2*sqrt(9.81*0.25))
+    expected: '4.0e-4'
+    shown: ['and $4.0 \times 10^{-4}$ at the end']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-dTdt
+    where: 'example (b): |dT/dt| = 2π ω̇/ω² at the end'
+    inputs: {}
+    formula: 2*pi*1.25e-3/(2*sqrt(9.81*0.25))
+    expected: '2.5e-3'
+    shown: ['\approx 2.5 \times 10^{-3}$ second per second at most']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-E1
+    where: 'example (c): E₁ = ½ m ω₁² A₁², J'
+    inputs: {}
+    formula: 0.5*0.50*9.81*0.050**2
+    expected: '6.13e-3'
+    shown: ['0.5 \times 0.50 \times 9.81 \times 0.050^2 \approx 6.13 \times 10^{-3}$ J']
+    source: {cite: reading5, at: 'eq. (1.1), p. 1'}
+    origin: page-own
+
+  - id: ex-I
+    where: 'example (c): I = E₁/ω₁, J s'
+    inputs: {}
+    formula: 0.5*0.50*9.81*0.050**2/sqrt(9.81)
+    expected: '1.96e-3'
+    shown: ['$I = E_1/\omega_1 \approx 1.96 \times 10^{-3}$ J s']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-E2
+    where: 'example (c): E₂ = I ω₂ = 2E₁, J'
+    inputs: {}
+    formula: 0.5*0.50*9.81*0.050**2/sqrt(9.81)*sqrt(9.81/0.25)
+    expected: '1.23e-2'
+    shown: ['$E_2 = I\,\omega_2 = 2E_1 \approx 1.23 \times 10^{-2}$ J']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-work
+    where: 'example (c): work on the swing, E₂ − E₁, J'
+    inputs: {}
+    formula: 0.5*0.50*9.81*0.050**2/sqrt(9.81)*sqrt(9.81/0.25) - 0.5*0.50*9.81*0.050**2
+    expected: '6.1e-3'
+    shown: ['has done about $6.1 \times 10^{-3}$ J of work']
+    source: {cite: reading5, at: 'eq. (1.5), p. 2'}
+    origin: page-own
+
+  - id: ex-A2
+    where: 'example (d): A₂ = A₁ √(ω₁/ω₂), cm'
+    inputs: {}
+    formula: 5.0*sqrt(sqrt(9.81/1.00)/sqrt(9.81/0.25))
+    expected: '3.5'
+    shown: ['$A_2 = A_1\sqrt{\omega_1/\omega_2} = 5.0/\sqrt 2 \approx 3.5$ cm']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-A2-m
+    where: 'example (d): A₂ in metres, to three figures'
+    inputs: {}
+    formula: 0.050/sqrt(2)
+    expected: '0.0354'
+    shown: ['to $0.0354/0.25 \approx 0.141$ rad']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-theta1
+    where: 'example (d): start angle 0.050 rad in degrees'
+    inputs: {}
+    formula: 0.050*180/pi
+    expected: '2.9'
+    shown: ['(about 2.9°)']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-theta2
+    where: 'example (d): end angle A₂/L₂, rad'
+    inputs: {}
+    formula: 0.050/sqrt(2)/0.25
+    expected: '0.141'
+    shown: ['rad (about 8.1°)']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-theta2-deg
+    where: 'example (d): end angle in degrees'
+    inputs: {}
+    formula: 0.050/sqrt(2)/0.25*180/pi
+    expected: '8.1'
+    shown: ['still a small swing, so the oscillator model holds']
+    source: {cite: reading5, at: 'eq. (1.6), p. 2'}
+    origin: page-own
+
+  - id: ex-quantum-number
+    where: 'example (e): I/ħ with ħ = 1.0546e-34 J s'
+    inputs: {}
+    formula: 0.5*0.50*9.81*0.050**2/sqrt(9.81)/1.0546e-34
+    expected: '1.86e31'
+    shown: ['$I/\hbar \approx 1.86 \times 10^{31}$']
+    source: {cite: reading5, at: 'eq. (1.15), p. 4'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: hubble-rate
+    where: 'callout: H₀ = 70 km/s/Mpc in 1/s (1 Mpc = 3.0857e19 km)'
+    inputs: {}
+    formula: 70/3.0857e19
+    expected: '2.3e-18'
+    shown: ['about $2.3 \times 10^{-18}$ per second']
+    source: {cite: guth15, at: 'redshift of each photon'}
+    origin: page-own
+
+  - id: photon-omega
+    where: 'callout: ω = 2π × 100 GHz, 1/s'
+    inputs: {}
+    formula: 2*pi*100e9
+    expected: '6.3e11'
+    shown: ['$\omega \approx 6.3 \times 10^{11}$ per second']
+    source: {cite: guth15, at: 'redshift of each photon'}
+    origin: page-own
+
+  - id: photon-ratio
+    where: 'callout: ω̇/ω² = H/ω for ω ∝ 1/a'
+    inputs: {}
+    formula: (70/3.0857e19)/(2*pi*100e9)
+    expected: '4e-30'
+    shown: ['the ratio is about $4 \times 10^{-30}$']
+    source: {cite: guth15, at: 'redshift of each photon'}
+    origin: page-own
+
+  - id: mode-ratio-identity
+    kind: identity
+    where: 'callout: for ω = w0/a(t), |ω̇|/ω² = (ȧ/a)/ω = H/ω; checked with a = 1 + k t'
+    formula: -deriv('w0/(1 + kk*s)', 's', t0)/(w0/(1 + kk*t0))**2
+    equals: (kk/(1 + kk*t0))/(w0/(1 + kk*t0))
+    samples: {w0: [1.0, 5.0], kk: [0.1, 0.5], t0: [0.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['The relevant ratio is $|\dot\omega|/\omega^2 = H/\omega$']
+    source: {cite: guth15, at: 'redshift of each photon'}
+    origin: page-own
+
+  - id: decoupling-stretch
+    kind: fact
+    where: 'leadsTo 8.286 Lecture 18: photons stretched about 1,090-fold since decoupling (1 + z of last scattering, as on the site page cmb-spectrum, whose calcs recompute 1.87 mm / 1.72 µm)'
+    value: '1090'
+    shown: ['stretched about 1,090-fold since decoupling']
+    source: {cite: guth18, at: 'CMB spectrum; decoupling'}
+    origin: page-own

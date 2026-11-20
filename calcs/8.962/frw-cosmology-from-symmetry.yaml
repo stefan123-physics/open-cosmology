@@ -1,0 +1,462 @@
+# Calculations on content/year-5/8.962/frw-cosmology-from-symmetry.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+
+page: content/year-5/8.962/frw-cosmology-from-symmetry.mdx
+calcs:
+  # ---------------------------------------------------------------- Killing vectors
+  - id: killing-euclid-3d
+    where: 'section "Maximally symmetric spaces": 3 x 4/2 = 6 for three-dimensional Euclidean space'
+    inputs: {}
+    formula: 3*(3 + 1)/2
+    expected: '6'
+    shown: ['$3 \times 4/2 = 6$ Killing vectors']
+    source: {cite: reading1, at: 'transcript p. 2'}
+    origin: mit
+
+  - id: killing-minkowski
+    where: 'section "Maximally symmetric spaces" and quiz 1: 4 x 5/2 = 10 for Minkowski spacetime'
+    inputs: {}
+    formula: 4*(4 + 1)/2
+    expected: '10'
+    shown: ['$4 \times 5/2 = 10$: 3 rotations, 3 boosts', '$4 \\times 5/2 = 10$. In Minkowski']
+    source: {cite: reading1, at: 'transcript p. 2'}
+    origin: mit
+
+  - id: killing-minkowski-split
+    where: 'quiz 1 explanation: 3 rotations + 3 boosts + 4 translations = 10 (Hughes says 3 translations and 4 boosts)'
+    inputs: {}
+    formula: 3 + 3 + 4
+    expected: '10'
+    shown: ['Killing vectors are 3 rotations, 3 boosts and 4 translations']
+    source: {cite: reading1, at: 'transcript p. 2'}
+    origin: slip
+
+  - id: quiz1-distractor-n2
+    where: 'quiz 1 distractor n^2 = 16'
+    inputs: {}
+    formula: 4**2
+    expected: '16'
+    shown: ['$n^2$: 16, one per metric component']
+    source: {cite: reading1, at: 'transcript p. 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- maximally symmetric curvature
+  - id: ricci-from-riemann-trace
+    kind: identity
+    where: 'formula "Its Ricci tensor": R/(n(n-1)) (n g - g) = (R/n) g, checked for the coefficient of g at several n'
+    formula: (n*1 - 1)/(n*(n - 1))
+    equals: 1/n
+    samples: {n: [2, 3, 4, 7]}
+    tolerance: 1e-12
+    shown: ['\left(n\,g_{\beta\nu} - g_{\beta\nu}\right) = \frac{R}{n}\,g_{\beta\nu}']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: mit
+
+  - id: ricci-scalar-of-ricci
+    kind: identity
+    where: 'formula "Its Ricci tensor": one more trace of (R/n) g gives back R (trace of the metric is n)'
+    formula: (RR/n)*n
+    equals: RR
+    samples: {RR: [0.5, 2.0, -3.0], n: [4, 3, 4]}
+    tolerance: 1e-12
+    shown: ['one more trace confirms that the $R$ in front is the Ricci scalar']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: mit
+
+  - id: spatial-ricci-2k
+    kind: identity
+    where: 'formula "Curvature of each spatial slice": the n = 3 form R/(n(n-1)) = k gives Ricci coefficient (n-1)k = 2k and scalar n(n-1)k = 6k'
+    formula: (3 - 1)*kk + 100
+    equals: 2*kk + 100
+    samples: {kk: [-1, 0.5, 1]}
+    tolerance: 1e-12
+    shown: ['{}^{3}\!R_{jl} = 2k\,\gamma_{jl}']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: mit
+
+  - id: spatial-ricci-scalar-6k
+    kind: identity
+    where: 'formula "Curvature of each spatial slice": scalar curvature 3 x 2k = 6k'
+    formula: 3*(3 - 1)*kk + 100
+    equals: 6*kk + 100
+    samples: {kk: [-1, 0.5, 1]}
+    tolerance: 1e-12
+    shown: ['{}^{3}\!R = 6k']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: mit
+
+  # ---------------------------------------------------------------- solving for beta
+  - id: beta-solves-ode
+    kind: identity
+    where: 'formula "Equating the two Ricci components": beta = -(1/2) ln(1 - k r^2) satisfies (2/r) dbeta/dr = 2k e^(2 beta)'
+    formula: (2/r)*deriv('-0.5*log(1 - kk*x**2)', 'x', r, 1)
+    equals: 2*kk*exp(2*(-0.5*log(1 - kk*r**2)))
+    samples: {kk: [1, -1, 0.3], r: [0.5, 0.8, 0.2]}
+    tolerance: 1e-7
+    shown: ['\frac{2}{\bar r}\,\frac{d\beta}{d\bar r} = 2k\,e^{2\beta}']
+    source: {cite: reading1, at: 'transcript p. 7'}
+    origin: mit
+
+  - id: beta-ode-rearranged
+    kind: identity
+    where: 'formula "Equating the two Ricci components": d(e^(-2 beta))/dr = -2 k r for e^(-2 beta) = 1 - k r^2'
+    formula: deriv('1 - kk*x**2', 'x', r, 1) + 10
+    equals: -2*kk*r + 10
+    samples: {kk: [1, -1, 0.3], r: [0.5, 0.8, 0.2]}
+    tolerance: 1e-8
+    shown: ['\frac{d}{d\bar r}\left(e^{-2\beta}\right) = -2k\,\bar r']
+    source: {cite: reading1, at: 'transcript p. 7'}
+    origin: mit
+
+  - id: rescaling-invariance
+    kind: identity
+    where: 'formula "A rescaling that leaves the metric unchanged": with k -> k/alpha, r -> sqrt(alpha) r, R -> R/sqrt(alpha), the radial term R^2 dr^2/(1 - k r^2) is unchanged (dr = 1)'
+    formula: (RR/sqrt(al))**2*al/(1 - (kk/al)*al*r**2)
+    equals: RR**2/(1 - kk*r**2)
+    samples: {RR: [1.3, 2.0, 1.3], al: [4.0, 9.0, 0.5], kk: [1, -1, 1], r: [0.6, 0.3, 0.6]}
+    tolerance: 1e-12
+    shown: ['k \to \frac{k}{\alpha}, \qquad \bar r \to \sqrt{\alpha}\,\bar r, \qquad R \to \frac{R}{\sqrt{\alpha}}']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: slip
+
+  - id: rescaling-angular
+    kind: identity
+    where: 'same rescaling: the angular term R^2 r^2 is unchanged'
+    formula: (RR/sqrt(al))**2*al*r**2
+    equals: RR**2*r**2
+    samples: {RR: [1.3, 2.0, 1.3], al: [4.0, 9.0, 0.5], r: [0.3, 0.6, 0.3]}
+    tolerance: 1e-12
+    shown: ['Then $k\bar r^2$, $R\,d\bar r$ and $R\,\bar r$ are all unchanged']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: page-own
+
+  - id: chi-closed
+    kind: identity
+    where: 'formula "The radial coordinate chi": for k = +1, r = sin(chi) gives dchi/dr = 1/sqrt(1 - r^2)'
+    formula: deriv('asin(x)', 'x', r, 1)
+    equals: 1/sqrt(1 - r**2)
+    samples: {r: [0.1, 0.5, 0.9]}
+    tolerance: 1e-7
+    shown: ['\bar r = \sin\chi\ (k = +1)']
+    source: {cite: reading1, at: 'transcript p. 9'}
+    origin: mit
+
+  - id: chi-open
+    kind: identity
+    where: 'formula "The radial coordinate chi": for k = -1, r = sinh(chi) gives dchi/dr = 1/sqrt(1 + r^2)'
+    formula: deriv('asinh(x)', 'x', r, 1)
+    equals: 1/sqrt(1 + r**2)
+    samples: {r: [0.1, 0.5, 3.0]}
+    tolerance: 1e-7
+    shown: ['\bar r = \sinh\chi\ (k = -1)']
+    source: {cite: reading1, at: 'transcript p. 9'}
+    origin: mit
+
+  - id: plot-sinh-sq
+    where: 'plot caption: sinh^2 chi = 5.30 at chi = pi/2'
+    inputs: {}
+    formula: sinh(pi/2)**2
+    expected: '5.30'
+    shown: ['sinh²χ = 5.30 at χ = π/2']
+    source: {cite: reading1, at: 'transcript pp. 9–10'}
+    origin: page-own
+
+  - id: plot-chi-sq
+    where: 'plot caption: chi^2 = 2.47 at chi = pi/2'
+    inputs: {}
+    formula: (pi/2)**2
+    expected: '2.47'
+    shown: ['against χ² = 2.47 for flat space']
+    source: {cite: reading1, at: 'transcript pp. 9–10'}
+    origin: page-own
+
+  - id: kappa-rescaled-metric
+    kind: identity
+    where: 'formula "Robertson-Walker line element with a(t)": with a = R/R0, r = R0 rbar, kappa = k/R0^2 the radial term a^2 dr^2/(1 - kappa r^2) equals R^2 drbar^2/(1 - k rbar^2) (drbar = 1)'
+    formula: (RR/R0)**2*R0**2/(1 - (kk/R0**2)*(R0*rb)**2)
+    equals: RR**2/(1 - kk*rb**2)
+    samples: {RR: [1.5, 3.0], R0: [5.0, 2.0], kk: [1, -1], rb: [0.7, 0.2]}
+    tolerance: 1e-12
+    shown: ['\kappa = \frac{k}{R_0^2}']
+    source: {cite: reading1, at: 'transcript pp. 10–11'}
+    origin: mit
+
+  # ---------------------------------------------------------------- energy conservation and Friedmann
+  - id: first-law-equivalence
+    kind: identity
+    where: 'formula "Local energy conservation": with rhodot = -3 (adot/a)(rho + P), d(rho a^3)/dt + P d(a^3)/dt = 0; checked as rhodot a^3 + 3 rho a^2 adot + 3 P a^2 adot = 0 (plus 1)'
+    formula: 1 + (-3*(ad/a)*(rho + P))*a**3 + 3*rho*a**2*ad + 3*P*a**2*ad
+    equals: '1'
+    samples: {a: [0.5, 1.0, 2.0], ad: [1.1, 0.3, 1.1], rho: [1.0, 2.5, 1.0], P: [0.0, 0.4, -1.0]}
+    tolerance: 1e-12
+    shown: ['\frac{d}{dt}\left(\rho R^3\right) = -P\,\frac{d}{dt}\left(R^3\right)']
+    source: {cite: reading1, at: 'transcript p. 12'}
+    origin: mit
+
+  - id: trace-perfect-fluid
+    kind: identity
+    where: 'section "The Friedmann equations": T = trace of diag(-rho, P, P, P) = -rho + 3P'
+    formula: -rho + P + P + P
+    equals: -rho + 3*P
+    samples: {rho: [1.0, 2.5, 1.0], P: [0.4, -1.0, 0.1]}
+    tolerance: 1e-12
+    shown: ['$T = T^{\mu}{}_{\mu} = -\rho + 3P$']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  - id: friedmann-tt
+    kind: identity
+    where: 'F2 from the tt component: R_tt = -3 addot/a = 8 pi G (T_tt - (1/2) T g_tt) with T_tt = rho, g_tt = -1; checked with addot/a from F2 (G = 1)'
+    formula: 10 - 3*(-(4*pi/3)*(rho + 3*P))
+    equals: 10 + 8*pi*(rho - 0.5*(-rho + 3*P)*(-1))
+    samples: {rho: [1.0, 2.5, 1.0], P: [0.4, -1.0, 0.0]}
+    tolerance: 1e-12
+    shown: ['\text{F2:}\ \ \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + 3P\right)']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: mit
+
+  - id: friedmann-ij-consistent
+    kind: identity
+    where: 'the ij component (a addot + 2 adot^2 + 2 kappa) = 4 pi G (rho - P) a^2 holds when adot is set by F1 and addot by F2 (G = 1)'
+    formula: 10 + a*(a*(-(4*pi/3)*(rho + 3*P))) + 2*(a**2*(8*pi/3*rho - kap/a**2)) + 2*kap
+    equals: 10 + 4*pi*(rho - P)*a**2
+    samples: {a: [0.5, 1.0, 2.0], rho: [2.5, 1.0, 2.5], P: [0.0, 0.4, 0.0], kap: [-0.5, 0.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['$R_{ij} = \left(a\ddot a + 2\dot a^2 + 2\kappa\right)\tilde\gamma_{ij}$']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  - id: omega-minus-one
+    kind: identity
+    where: 'formula "Density decides the geometry": F1 with rho = Omega rho_crit gives Omega - 1 = kappa/(H^2 a^2) (G = 1)'
+    formula: 10 + (8*pi/3*rho)/H**2 - 1
+    equals: 10 + (8*pi/3*rho - H**2)*a**2/(H**2*a**2)
+    samples: {rho: [0.1, 0.3, 0.1], H: [1.5, 0.8, 1.5], a: [2.0, 0.5, 1.0]}
+    tolerance: 1e-12
+    shown: ['\Omega - 1 = \frac{\kappa}{H^2a^2}']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: mit
+
+  - id: omega-curv-sum
+    kind: identity
+    where: 'formula "Curvature density": Omega + Omega_curv = 1 when H^2 = 8 pi rho/3 - kappa/a^2 (G = 1)'
+    formula: rho/(3*(8*pi/3*rho - kap/a**2)/(8*pi)) + (-3*kap/(8*pi*a**2))/(3*(8*pi/3*rho - kap/a**2)/(8*pi))
+    equals: '1'
+    samples: {rho: [0.1, 0.3, 0.1], kap: [0.05, -0.2, 0.05], a: [2.0, 0.8, 1.0]}
+    tolerance: 1e-12
+    shown: ['\qquad \Omega + \Omega_\text{curv} = 1']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: quiz2-closed
+    where: 'quiz 2: 10% above critical gives Omega = 1.1 > 1, so kappa = H^2 a^2 (Omega - 1) > 0 (positive answer checked with H = a = 1)'
+    inputs: {}
+    formula: 1.1 - 1
+    expected: '0.1'
+    shown: ['$\\Omega = 1.1$ means $\\kappa > 0$']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: hubble-length-70
+    where: 'worked example, step "Numbers": c/H0 = 299 792/70 = 4283 Mpc'
+    inputs: {H: 70 km/s/Mpc}
+    formula: c / H
+    expected: 4283 Mpc
+    tolerance: 1 Mpc
+    shown: ['$c/H_0 = 299\,792/70 = 4283$ Mpc']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: page-own
+
+  - id: sqrt-002
+    where: 'worked example: sqrt(0.02) = 0.141'
+    inputs: {}
+    formula: sqrt(0.02)
+    expected: '0.141'
+    shown: ['$\sqrt{0.02} = 0.141$']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: page-own
+
+  - id: curvature-radius
+    where: 'worked example: radius of curvature (c/H0)/sqrt(Omega - 1) for Omega = 1.02, about 30 300 Mpc'
+    inputs: {H: 70 km/s/Mpc}
+    formula: (c / H) / sqrt(1.02 - 1)
+    expected: 30300 Mpc
+    tolerance: 50 Mpc
+    shown: ['about $30\,300$ Mpc']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: page-own
+
+  - id: curvature-radius-ratio
+    where: 'worked example: some seven times the Hubble length (1/sqrt(0.02) = 7.07)'
+    inputs: {}
+    formula: 1/sqrt(0.02)
+    expected: '7'
+    tolerance: 0.1
+    shown: ['some seven times the Hubble length']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- equations of state
+  - id: dilution-solves-conservation
+    kind: identity
+    where: 'formula "How a species dilutes": rho = rho0 a^(-3(1+w)) satisfies d rho/da = -3 (rho + w rho)/a'
+    formula: deriv('rho0*x**(-3*(1 + w))', 'x', a, 1)
+    equals: -3*(1 + w)*rho0*a**(-3*(1 + w))/a
+    samples: {rho0: [1.0, 2.0, 1.0, 2.0], w: [0.3333333333, -0.5, 1, 0], a: [0.5, 1.5, 0.5, 1.5]}
+    tolerance: 1e-7
+    shown: ['\frac{\rho_i}{\rho_{i,0}} = \left(\frac{a}{a_0}\right)^{-3(1 + w_i)}']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: mit
+
+  - id: matter-doubling
+    where: 'matter (w = 0), doubling a cuts the density by 8; quiz 4'
+    inputs: {}
+    formula: 2**(3*(1 + 0))
+    expected: '8'
+    shown: ['doubling $a$ cuts the density by 8', '$2^{3} = 8$ for $w = 0$']
+    source: {cite: reading1, at: 'transcript p. 17'}
+    origin: mit
+
+  - id: radiation-doubling
+    where: 'radiation (w = 1/3), doubling a divides the density by 16 = 8 x 2; quiz 4'
+    inputs: {}
+    formula: 2**(3*(1 + 1/3))
+    expected: '16'
+    shown: ['Doubling $a$ divides the density by 16: 8 from the volume and another 2', '$2^4 = 16$ for $w = 1/3$']
+    source: {cite: reading1, at: 'transcript pp. 17–18'}
+    origin: mit
+
+  - id: lambda-doubling
+    where: 'cosmological constant (w = -1): 2^0 = 1; quiz 4'
+    inputs: {}
+    formula: 2**(3*(1 - 1))
+    expected: '1'
+    shown: ['$2^0 = 1$ for $w = -1$']
+    source: {cite: reading1, at: 'transcript p. 18'}
+    origin: mit
+
+  # ---------------------------------------------------------------- one-species flat universes
+  - id: power-law-solves-friedmann
+    kind: identity
+    where: 'formula "Flat, one species": a = t^(2/(3(1+w))) gives (adot/a)^2 proportional to a^(-3(1+w)); checked as (adot/a)^2 a^(3(1+w)) = (2/(3(1+w)))^2, a constant'
+    formula: (deriv('x**(2/(3*(1 + w)))', 'x', t, 1)/t**(2/(3*(1 + w))))**2 * (t**(2/(3*(1 + w))))**(3*(1 + w))
+    equals: (2/(3*(1 + w)))**2
+    samples: {w: [0, 0.3333333333, 1, -0.5], t: [1.0, 2.0, 0.5, 1.0]}
+    tolerance: 1e-6
+    shown: ['a \propto t^{2/[3(1+w)]}']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: mit
+
+  - id: adot-power
+    kind: identity
+    where: 'formula "Flat, one species": adot proportional to a^(1 - 3(1+w)/2); for a = t^p, adot = p t^(p-1) = p a^(1 - 1/p) with 1/p = 3(1+w)/2'
+    formula: deriv('x**(2/(3*(1 + w)))', 'x', t, 1)
+    equals: (2/(3*(1 + w)))*(t**(2/(3*(1 + w))))**(1 - 3*(1 + w)/2)
+    samples: {w: [0, 0.3333333333, 1], t: [2.0, 0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['\dot a \propto a^{1 - 3(1+w)/2}']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: mit
+
+  - id: stiff-exponent
+    where: 'quiz 3: w = 1 gives exponent 2/(3(1 + w)) = 1/3'
+    inputs: {}
+    formula: 2/(3*(1 + 1))
+    expected: '0.333'
+    shown: ['$2/[3(1 + w)] = 2/6 = 1/3$', 'at w = 1 (a stiff fluid) a ∝ t^(1/3)']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: page-own
+
+  - id: lambda-exponential
+    kind: identity
+    where: 'formula "Cosmological-constant universe": a = exp(sqrt(L/3) t) gives (adot/a)^2 = L/3'
+    formula: (deriv('exp(sqrt(L/3)*x)', 'x', t, 1)/exp(sqrt(L/3)*t))**2
+    equals: L/3
+    samples: {L: [0.3, 1.0, 3.0], t: [1.0, 0.0, 1.0]}
+    tolerance: 1e-7
+    shown: ['a \propto \exp\!\left(\sqrt{\Lambda/3}\;t\right)']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: mit
+
+  - id: lambda-density
+    kind: identity
+    where: 'formula "Cosmological-constant universe": with rho0 = L/(8 pi G), 8 pi G rho0/3 = L/3 (G = 1)'
+    formula: 8*pi*(L/(8*pi))/3
+    equals: L/3
+    samples: {L: [0.3, 1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['\frac{8\pi G\rho_0}{3} = \frac{\Lambda}{3}']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: mit
+
+  - id: matter-time-doubling
+    where: 'plot caption: when t doubles, a grows by 2^(2/3) = 1.59 for matter'
+    inputs: {}
+    formula: 2**(2/3)
+    expected: '1.59'
+    shown: ['2^(2/3) = 1.59 for matter']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: page-own
+
+  - id: radiation-time-doubling
+    where: 'plot caption: when t doubles, a grows by 2^(1/2) = 1.41 for radiation'
+    inputs: {}
+    formula: 2**(1/2)
+    expected: '1.41'
+    shown: ['2^(1/2) = 1.41 for radiation']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quoted figures
+  - id: cmb-age
+    kind: fact
+    where: 'section "Symmetric in space, not in time": CMB emitted roughly 13.7 billion years ago (Hughes rough figure; strictly the lookback time is a little less than the age)'
+    shown: ['roughly 13.7 billion years ago']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: mit
+
+  - id: cmb-uniformity
+    kind: fact
+    where: 'section "Symmetric in space, not in time": uniform to about one part in 100,000'
+    shown: ['one part in 100,000']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: mit
+
+  - id: parsec-light-years
+    where: 'a parsec is about 3.26 light years (Hughes: about 3.2)'
+    inputs: {}
+    formula: 1 * pc / ly
+    expected: '3.26'
+    shown: ['a parsec is about 3.26 light years']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: inhomogeneity-scale
+    kind: fact
+    where: 'homogeneity fails on scales of several tens of megaparsecs'
+    shown: ['several tens of megaparsecs']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: mit
+
+  - id: h0-notes
+    kind: fact
+    where: 'section "Hubble parameter and critical density": the course notes give 73 +- 3 km/s/Mpc; local measurements cluster around 72 to 73'
+    shown: ['$73 \pm 3$ km/s/Mpc', 'cluster around 72 to 73']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: mit
+
+  - id: notes-age
+    kind: fact
+    where: 'notes written some eleven or twelve years before the lecture'
+    shown: ['some eleven or twelve years before']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: mit
+
+  - id: ex-two-percent
+    where: 'worked example: Omega = 1.02 is 2% above critical'
+    inputs: {}
+    formula: (1.02 - 1)*100
+    expected: '2'
+    shown: ['A density only 2% above critical']
+    source: {cite: reading1, at: 'transcript p. 14'}
+    origin: page-own

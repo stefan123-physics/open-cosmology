@@ -1,0 +1,337 @@
+# Calculations on content/year-4/8.07/electrostatic-energy-self-energy.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012, Guth) Lecture Notes 3, "Integral Formulation of Basic Equations" (handwritten notes
+# for Lecture 6, September 17, 2012), pp. 4-10; no numbered equations, results boxed. The notes quote no numbers.
+# Page's own examples: three charges +2, +2, -3 nC on an equilateral triangle of side 3.0 cm (quiz 1); a uniformly
+# charged ball, R = 10 cm, Q = 50 nC; a uniform ball with the Sun's mass and radius; the electron as a uniformly
+# charged ball; the Abraham-Lorentz time of the electron.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: eps0, mu0, qe (elementary charge), me (electron mass).
+# R_sun = 6.957e8 m (IAU 2015 nominal solar radius).
+
+page: content/year-4/8.07/electrostatic-energy-self-energy.mdx
+calcs:
+  # ---------------------------------------------------------------- point charges (p. 5)
+  - id: coulomb-constant
+    where: 'quiz 1 explanation and worked example "The numbers": 1/(4 pi eps0)'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: 1 / (4 * pi * eps0)
+    expected: 8.988e9 m/F
+    shown: ['$W = (8.988 \\times 10^9) \\times (-8', '= 8.988 \times 10^9 \times (50']
+    source: {cite: reading1, at: 'p. 5'}
+    origin: page-own
+
+  - id: quiz-triangle
+    where: 'quiz 1: +2, +2, -3 nC on an equilateral triangle with sides 3.0 cm; one term per pair (the quiz choices differ only in sign, so no `quiz:` match is checked)'
+    inputs: {eps0: 8.8541878128e-12 F/m, q1: 2 nC, q2: 2 nC, q3: -3 nC, d: 3.0 cm}
+    formula: (q1*q2 + q1*q3 + q2*q3) / (4 * pi * eps0 * d)
+    expected: -2.40e-6 J
+    shown: ['about −2.40 μJ', '"About −2.40 μJ"']
+    source: {cite: reading1, at: 'p. 5'}
+    origin: page-own
+
+  - id: quiz-triangle-double
+    where: 'quiz 1 distractor: the double sum over ordered pairs without the factor 1/2'
+    inputs: {eps0: 8.8541878128e-12 F/m, q1: 2 nC, q2: 2 nC, q3: -3 nC, d: 3.0 cm}
+    formula: 2 * (q1*q2 + q1*q3 + q2*q3) / (4 * pi * eps0 * d)
+    expected: -4.79e-6 J
+    shown: ['"About −4.79 μJ"']
+    source: {cite: reading1, at: 'p. 5'}
+    origin: page-own
+
+  - id: pair-sum
+    kind: identity
+    where: 'formula "n charges, symmetric form": the double sum over i != j with 1/2 equals the sum over j > i; checked for three charges'
+    formula: 0.5*(2*a1*a2/r12 + 2*a1*a3/r13 + 2*a2*a3/r23)
+    equals: a1*a2/r12 + a1*a3/r13 + a2*a3/r23
+    samples: {a1: [2, 1.5, -0.3], a2: [2, -2.2, 0.8], a3: [-3, 0.7, 1.1], r12: [3, 1.2, 0.5], r13: [3, 2.0, 0.9], r23: [3, 1.7, 0.4]}
+    tolerance: 1e-12
+    shown: ['which counts every pair twice, with a factor $\frac12$']
+    source: {cite: reading1, at: 'p. 5'}
+    origin: mit
+
+  # ---------------------------------------------------------------- uniformly charged ball (worked example)
+  - id: ball-rhoV
+    kind: identity
+    where: 'worked example "From ρV": with Q = R = 1/(4 pi eps0) = 1, rho = 3/(4 pi), V = (3 - r^2)/2, and 1/2 of the integral of rho V 4 pi r^2 dr over 0..1 is 3/5'
+    formula: 0.5*integrate('3/(4*pi)*0.5*(3 - s**2)*4*pi*s**2', 's', 0, 1)
+    equals: 3/5
+    samples: {kk: [1.0]}
+    tolerance: 1e-9
+    shown: ['from 0 to $R$ gives $\frac35\,Q^2/(4\pi\varepsilon_0R)$']
+    source: {cite: reading1, at: 'p. 6'}
+    origin: page-own
+
+  - id: ball-potential-inside
+    kind: identity
+    where: 'worked example "From ρV": V inside = Q/(8 pi eps0 R)(3 - r^2/R^2) equals the outside value at R plus the integral of E inside (units 1/(4 pi eps0) = Q = R = 1)'
+    formula: 1 + integrate('s', 's', rr, 1)
+    equals: 0.5*(3 - rr**2)
+    samples: {rr: [0.0, 0.3, 0.8]}
+    tolerance: 1e-9
+    shown: ['$V = \frac{Q}{8\pi\varepsilon_0R}\left(3 - r^2/R^2\right)$']
+    source: {cite: reading1, at: 'p. 6'}
+    origin: page-own
+
+  - id: ball-field-inside
+    kind: identity
+    where: 'worked example "From the field": inside, with eps0 = 1/(4 pi) and Q = R = 1, (eps0/2) E^2 4 pi r^2 = r^4/2 integrates to 1/10'
+    formula: integrate('(1/(8*pi))*s**2*4*pi*s**2', 's', 0, 1)
+    equals: 1/10
+    samples: {kk: [1.0]}
+    tolerance: 1e-9
+    shown: ['integrates to $W_0/10$']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-field-outside
+    kind: limit
+    where: 'worked example "From the field": outside, (eps0/2) E^2 4 pi r^2 = 1/(2 r^2) integrated from 1 to X tends to 1/2'
+    inputs: {}
+    formula: integrate('1/(2*s**2)', 's', 1, xx)
+    limit: 1/2
+    vary: {xx: [10, 100, 1000, 10000]}
+    tolerance: 2e-4
+    shown: ['outside it integrates to $W_0/2$']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-fraction-half
+    where: 'worked example "From the field" and plot caption: half the energy lies within r where 1 - 5R/(6r) = 1/2'
+    inputs: {}
+    formula: 5 / (6 * 0.5)
+    expected: '1.667'
+    tolerance: 0.001
+    shown: ['half of it lies beyond $r = \frac53R$', 'half lies within 5R/3']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-fraction-tenth
+    where: 'plot caption: 10% of the energy lies beyond r where 5R/(6r) = 0.1'
+    inputs: {}
+    formula: 5 / (6 * 0.1)
+    expected: '8.3'
+    shown: ['10% of the energy lies beyond 8.3R']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-fraction-surface
+    where: 'plot point and caption: fraction inside the ball, (1/10)/(6/10) = 1/6'
+    inputs: {}
+    formula: (1/10) / (6/10)
+    expected: '0.1667'
+    shown: ['y: 0.1667']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-Q2k
+    where: 'worked example "The numbers": Q^2/(4 pi eps0) for Q = 50 nC'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 50 nC}
+    formula: Q**2 / (4 * pi * eps0)
+    expected: 2.247e-5 J*m
+    shown: ['= 2.247 \times 10^{-5}$ J m']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-W0
+    where: 'worked example "The numbers": W0 = Q^2/(4 pi eps0 R), R = 10 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 50 nC, R: 10 cm}
+    formula: Q**2 / (4 * pi * eps0 * R)
+    expected: 2.247e-4 J
+    shown: ['so $W_0 = 2.247 \times 10^{-4}$ J']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-W
+    where: 'worked example "The numbers": W = (3/5) W0, about 135 microjoules'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 50 nC, R: 10 cm}
+    formula: 3/5 * Q**2 / (4 * pi * eps0 * R)
+    expected: 1.35e-4 J
+    shown: ['\approx 1.35 \times 10^{-4}$ J, about 135 microjoules']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: ball-W-inside
+    where: 'worked example "The numbers": W0/10 stored inside the ball'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 50 nC, R: 10 cm}
+    formula: Q**2 / (4 * pi * eps0 * R) / 10
+    expected: 2.25e-5 J
+    shown: ['$W_0/10 \approx 2.25 \times 10^{-5}$ J, about 22.5 microjoules']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- gravity (pp. 7-8)
+  - id: sun-uniform-ball
+    where: '"Gravity: a field with negative energy", Stars: -(3/5) G M^2/R for a uniform ball with the Sun''s mass and radius'
+    inputs: {Rs: 6.957e8 m}
+    formula: -3/5 * G * M_sun**2 / Rs
+    expected: -2.28e41 J
+    shown: ['would have $-2.28 \times 10^{41}$ J']
+    source: {cite: reading1, at: 'p. 8'}
+    origin: page-own
+
+  - id: sun-halving
+    where: '"Gravity", Stars: halving the radius doubles the magnitude, releasing another (3/5) G M^2/R'
+    inputs: {Rs: 6.957e8 m}
+    formula: 3/5 * G * M_sun**2 / (Rs/2) - 3/5 * G * M_sun**2 / Rs
+    expected: 2.28e41 J
+    shown: ['release another $2.28 \times 10^{41}$ J']
+    source: {cite: reading1, at: 'p. 8'}
+    origin: page-own
+
+  - id: sun-rest-energy
+    where: '"Gravity", Stars: M c^2 for the Sun'
+    inputs: {}
+    formula: M_sun * c**2
+    expected: 1.79e47 J
+    shown: ['($1.79 \times 10^{47}$ J)']
+    source: {cite: reading1, at: 'p. 8'}
+    origin: page-own
+
+  - id: sun-ratio
+    where: '"Gravity", Stars: the gravitational energy is about a millionth of M c^2 (1.27e-6)'
+    inputs: {Rs: 6.957e8 m}
+    formula: (3/5 * G * M_sun**2 / Rs) / (M_sun * c**2)
+    expected: 1e-6
+    tolerance: 50%
+    shown: ['about a millionth of its rest energy']
+    source: {cite: reading1, at: 'p. 8'}
+    origin: page-own
+
+  - id: gravity-from-coulomb
+    kind: identity
+    where: 'formula "Energy of a Newtonian gravitational field": replacing eps0 by -1/(4 pi G) in (eps0/2)|E|^2 gives -|g|^2/(8 pi G)'
+    formula: (1/2) * (-1/(4*pi*GG)) * gg**2
+    equals: -gg**2 / (8*pi*GG)
+    samples: {GG: [1.0, 6.674e-11, 3.2], gg: [2.0, 9.81, 0.4]}
+    tolerance: 1e-12
+    shown: ['Every step above goes through with $\varepsilon_0$ replaced by $-1/(4\pi G)$']
+    source: {cite: reading1, at: 'pp. 7-8'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- self-energy (p. 9)
+  - id: point-charge-shells
+    kind: identity
+    where: 'formula "Self-energy of a point charge": the energy outside radius a, (1/2) eps0 q^2/(4 pi eps0)^2 times the integral of 4 pi r^2/r^4 from a to infinity, is q^2/(8 pi eps0 a), which diverges as a -> 0 (checked with the upper limit 1000 a)'
+    formula: 0.5*ee*qq**2/(4*pi*ee)**2 * integrate('4*pi/s**2', 's', aa, 1e3*aa)
+    equals: qq**2/(8*pi*ee*aa) * (1 - 1e-3)
+    samples: {ee: [1.0, 0.3], qq: [1.0, 2.0], aa: [0.1, 0.01]}
+    tolerance: 1e-6
+    shown: ['The integrand goes like $1/r^2$, and the integral diverges at $r = 0$']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: mit
+
+  - id: electron-classical-radius
+    where: 'worked example "The radius": r_e = e^2/(4 pi eps0 m_e c^2)'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg}
+    formula: qe**2 / (4 * pi * eps0 * me * c**2)
+    expected: 2.82 fm
+    shown: ['= 2.82$ fm is the classical electron radius']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-ball-radius
+    where: 'worked example "The radius": R = (3/5) r_e'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg}
+    formula: 3/5 * qe**2 / (4 * pi * eps0 * me * c**2)
+    expected: 1.69 fm
+    shown: ['So $R \approx 1.69$ fm']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-rest-energy
+    where: 'worked example: m_e c^2 = 0.511 MeV'
+    inputs: {me: 9.1093837015e-31 kg}
+    formula: me * c**2
+    expected: 0.511 MeV
+    shown: ['$m_ec^2 = 0.511$ MeV', 'the measured mass at 0.511 MeV']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-e2k
+    where: 'worked example "A much smaller ball": e^2/(4 pi eps0)'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C}
+    formula: qe**2 / (4 * pi * eps0)
+    expected: 2.307e-28 J*m
+    shown: ['$e^2/(4\pi\varepsilon_0) = 2.307 \times 10^{-28}$ J m']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-small-ball-J
+    where: 'worked example "A much smaller ball": W = (3/5) e^2/(4 pi eps0 R) at R = 1e-18 m'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, R: 1e-18 m}
+    formula: 3/5 * qe**2 / (4 * pi * eps0 * R)
+    expected: 1.38e-10 J
+    shown: ['$= 1.38 \times 10^{-10}$ J']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-small-ball-MeV
+    where: 'worked example "A much smaller ball": the same energy in MeV'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, R: 1e-18 m}
+    formula: 3/5 * qe**2 / (4 * pi * eps0 * R)
+    expected: 864 MeV
+    shown: ['or about 864 MeV']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-small-ball-ratio
+    where: 'worked example "A much smaller ball": W / (m_e c^2), about 1690'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, R: 1e-18 m, me: 9.1093837015e-31 kg}
+    formula: (3/5 * qe**2 / (4 * pi * eps0 * R)) / (me * c**2)
+    expected: '1690'
+    tolerance: 0.1%
+    shown: ['some 1690 times the electron''s rest energy']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: electron-bare-mass
+    where: 'worked example "A much smaller ball": m0 c^2 = m_e c^2 - W'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, R: 1e-18 m, me: 9.1093837015e-31 kg}
+    formula: me * c**2 - 3/5 * qe**2 / (4 * pi * eps0 * R)
+    expected: -863 MeV
+    tolerance: 1 MeV
+    shown: ['would have to be about $-863$ MeV']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- radiation reaction (pp. 9-10)
+  - id: abraham-lorentz-time
+    where: '"Radiation reaction": tau = mu0 e^2/(6 pi m_e c) for the electron; the runaway e-folding time quoted as 6e-24 s'
+    inputs: {mu0: 1.25663706212e-6 N/A**2, qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg}
+    formula: mu0 * qe**2 / (6 * pi * me * c)
+    expected: 6.27e-24 s
+    shown: ['= 6.27 \times 10^{-24}$ s, a tiny time', 'every $6 \times 10^{-24}$ s']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: oscillator-jerk
+    kind: identity
+    where: '"Radiation reaction": for x = A cos(w t), the jerk is -w^2 times the velocity (derivatives taken numerically)'
+    formula: deriv('-AA*ww**2*cos(ww*s)', 's', tt)
+    equals: -ww**2 * (-AA*ww*sin(ww*tt))
+    samples: {AA: [1.0, 0.2, 3.0], ww: [2.0, 0.7, 1.3], tt: [0.4, 1.9, -0.8]}
+    tolerance: 1e-6
+    shown: ['(For $x = A\cos\omega t$, $\dot a = -\omega^2 v$.)']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: damping-matches-larmor
+    kind: identity
+    where: '"Radiation reaction": the cycle-averaged power removed by the force, (mu0 q^2 w^2/6 pi c) <v^2>, equals the Larmor power (mu0 q^2/6 pi c) <a^2> for x = A cos(w t) (both averaged numerically over one period, with mu0 q^2/(6 pi c) = 1)'
+    formula: ww**2 * integrate('(AA*ww*sin(ww*s))**2', 's', 0, 2*pi/ww) * ww/(2*pi)
+    equals: integrate('(AA*ww**2*cos(ww*s))**2', 's', 0, 2*pi/ww) * ww/(2*pi)
+    samples: {AA: [1.0, 0.5], ww: [2.0, 0.9]}
+    tolerance: 1e-7
+    shown: ['the energy it removes correctly matches the energy the charge radiates away']
+    source: {cite: reading1, at: 'p. 9'}
+    origin: page-own
+
+  - id: runaway-solution
+    kind: identity
+    where: '"Radiation reaction": a = a0 e^(t/tau) solves m a = m tau (da/dt) with no outside force'
+    formula: deriv('a0*exp(s/tau)', 's', tt) * tau
+    equals: a0*exp(tt/tau)
+    samples: {a0: [1.0, 2.5], tau: [1.0, 0.3], tt: [0.5, 0.2]}
+    tolerance: 1e-6
+    shown: ['$m_ea = m_e\tau\,\dot a$ is solved by an acceleration that grows as $e^{t/\tau}$']
+    source: {cite: reading1, at: 'p. 10'}
+    origin: page-own

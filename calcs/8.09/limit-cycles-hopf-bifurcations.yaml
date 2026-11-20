@@ -1,0 +1,214 @@
+# Calculations on content/year-4/8.09/limit-cycles-hopf-bifurcations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 7 (Stewart, typed), Section 7.4, printed pp. 173-182.
+# MIT numbers: the van der Pol values of mu shown (0.1 and 2), the annulus radii 1/sqrt(2) and 1 of eq. (7.60), the
+# pitchfork at mu = -2 of eq. (7.62). Page's own: the exact radial solutions behind the plots, the subcritical Hopf
+# example at mu = -0.1, the torqued-pendulum example at tau = 0.6, q = 0.5, the fold of cycles at mu = -1/4.
+
+page: content/year-4/8.09/limit-cycles-hopf-bifurcations.mdx
+calcs:
+  # ---------------------------------------------------------------- the first example (eq. 7.57, plot 1)
+  - id: radial-solution
+    kind: identity
+    where: 'plot 1: r = [1 + (r0^-2 - 1) e^(-2t)]^(-1/2) solves r_dot = r(1 - r^2) (numerical derivative)'
+    formula: deriv('1/sqrt(1 + (1/r0**2 - 1)*exp(-2*s))', 's', t0)
+    equals: (1/sqrt(1 + (1/r0**2 - 1)*exp(-2*t0)))*(1 - 1/(1 + (1/r0**2 - 1)*exp(-2*t0)))
+    samples: {r0: [0.1, 2.0, 0.5], t0: [0.5, 0.3, 2.0]}
+    tolerance: 1e-6
+    shown: ['$r(t) = \bigl[1 + (r_0^{-2} - 1)e^{-2t}\bigr]^{-1/2}$']
+    source: {cite: reading1, at: 'p. 174, eq. (7.57)'}
+    origin: page-own
+
+  - id: plot1-constants
+    where: 'plot 1: r0^-2 - 1 for r0 = 0.1 (99) and r0 = 2 (-0.75)'
+    inputs: {r0: 0.1}
+    formula: 1/r0**2 - 1
+    expected: '99'
+    shown: ['sqrt(1 + 99*exp(-2*s))", y:']
+    source: {cite: reading1, at: 'p. 174 (the page''s own starting points)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- trapping annulus (eqs. 7.59, 7.60)
+  - id: annulus-radial
+    kind: identity
+    where: 'eq. (7.60): x xdot + y ydot for (7.59) equals r^2(1 - r^2 - r^2 sin^2(2 theta))'
+    formula: x*(x - y - x*(x**2 + 5*y**2)) + y*(x + y - y*(x**2 + y**2))
+    equals: (x**2 + y**2)*(1 - (x**2 + y**2) - (x**2 + y**2)*sin(2*atan(y/x))**2)
+    samples: {x: [0.5, 0.9, 1.2], y: [0.3, -0.4, 0.7]}
+    tolerance: 1e-9
+    shown: ['r\dot r = r^2\bigl(1 - r^2 - r^2\sin^2(2\theta)\bigr)']
+    source: {cite: reading1, at: 'p. 176, eq. (7.60)'}
+    origin: mit
+
+  - id: annulus-inner
+    where: 'inner radius of the annulus, 1/sqrt(2)'
+    inputs: {}
+    formula: 1/sqrt(2)
+    expected: '0.71'
+    shown: ['the circle $r = 1/\sqrt2 \approx 0.71$ outward']
+    source: {cite: reading1, at: 'p. 176'}
+    origin: mit
+
+  - id: annulus-no-other-fixed-point
+    kind: identity
+    where: 'remark "the only one is the origin": a fixed point with r > 0 needs rdot = 0 and thetadot = 1 + 4 x y^3/r^2 = 0 at once, i.e. 1 + sin^2(2t) + 4 cos(t) sin(t)^3 = 0, which never happens (minimum about 0.28); checked at the minimum, theta = 5.0539 (and 1.9123)'
+    formula: 1 + sin(2*t)**2 + 4*cos(t)*sin(t)**3
+    equals: '0.2776'
+    samples: {t: [5.0539]}
+    tolerance: 2e-3
+    shown: ['(the only one is the origin)']
+    source: {cite: reading1, at: 'p. 176'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- pitchfork in 2D (eqs. 7.62, 7.63)
+  - id: pitchfork-trace-det
+    kind: identity
+    where: 'eq. (7.62): the Jacobian [[mu + 1, 1], [1, -1]] has trace mu and determinant -(mu + 2)'
+    formula: (mu + 1)*(-1) - 1*1
+    equals: -(mu + 2)
+    samples: {mu: [-3, -2, 0.5]}
+    tolerance: 1e-12
+    shown: ['has $\tau = \mu$ and $\Delta = -(\mu + 2)$']
+    source: {cite: reading1, at: 'p. 177'}
+    origin: mit
+
+  - id: pitchfork-branches
+    kind: identity
+    where: 'eq. (7.63): with y = x, (mu + 2) x - x^3/6 = 0 at x = sqrt(6(mu + 2))'
+    formula: (mu + 2)*sqrt(6*(mu + 2)) - sqrt(6*(mu + 2))**3/6
+    equals: '0'
+    samples: {mu: [-1.9, -1.5, -1.0]}
+    tolerance: 1e-12
+    shown: ['$x_* = y_* = \pm\sqrt{6(\mu + 2)}$']
+    source: {cite: reading1, at: 'p. 177'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Hopf (eqs. 7.64, 7.65)
+  - id: hopf-solution
+    kind: identity
+    where: 'Hopf plot: r^2 = mu/[1 + (mu/r0^2 - 1) e^(-2 mu t)] solves r_dot = mu r - r^3'
+    formula: deriv('sqrt(mu/(1 + (mu/r0**2 - 1)*exp(-2*mu*s)))', 's', t0)
+    equals: mu*sqrt(mu/(1 + (mu/r0**2 - 1)*exp(-2*mu*t0))) - sqrt(mu/(1 + (mu/r0**2 - 1)*exp(-2*mu*t0)))**3
+    samples: {mu: [0.5, 0.5, 0.2], r0: [0.05, 0.05, 1.0], t0: [1.0, 6.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['r² = μ/[1 + (μ/r₀² − 1)e^(−2μt)]']
+    source: {cite: reading1, at: 'p. 178, eq. (7.64)'}
+    origin: page-own
+
+  - id: hopf-plot-constant
+    where: 'Hopf plot: mu/r0^2 - 1 for mu = 0.5, r0 = 0.05'
+    inputs: {mu: 0.5, r0: 0.05}
+    formula: mu/r0**2 - 1
+    expected: '199'
+    shown: ['sqrt(0.5/(1 + 199*exp(-s)))*cos(s)']
+    source: {cite: reading1, at: 'p. 178 (the page''s own example)'}
+    origin: page-own
+
+  - id: hopf-radius
+    where: 'Hopf plot caption: sqrt(0.5)'
+    inputs: {}
+    formula: sqrt(0.5)
+    expected: '0.71'
+    shown: ['radius √0.5 = 0.71']
+    source: {cite: reading1, at: 'p. 178 (the page''s own example)'}
+    origin: page-own
+
+  - id: sub-hopf-root
+    where: 'worked example "Cycles of the subcritical Hopf system": sqrt(1 + 4 mu) at mu = -0.1'
+    inputs: {mu: -0.1}
+    formula: sqrt(1 + 4*mu)
+    expected: '0.775'
+    shown: ['= \frac12(1 \pm 0.775)$']
+    source: {cite: reading1, at: 'p. 179 (the page''s own example)'}
+    origin: page-own
+
+  - id: sub-hopf-inner
+    where: 'same, inner (unstable) cycle; quiz 3'
+    inputs: {mu: -0.1}
+    formula: sqrt((1 - sqrt(1 + 4*mu))/2)
+    expected: '0.336'
+    shown: ['so $r = 0.336$ and $r = 0.942$']
+    source: {cite: reading1, at: 'p. 179 (the page''s own example)'}
+    origin: page-own
+
+  - id: sub-hopf-outer
+    where: 'same, outer (stable) cycle'
+    inputs: {mu: -0.1}
+    formula: sqrt((1 + sqrt(1 + 4*mu))/2)
+    expected: '0.942'
+    shown: ['so $r = 0.336$ and $r = 0.942$']
+    source: {cite: reading1, at: 'p. 179 (the page''s own example)'}
+    origin: page-own
+
+  - id: sub-hopf-between
+    where: 'same: rdot/r at r = 0.6'
+    inputs: {mu: -0.1, r: 0.6}
+    formula: mu + r**2 - r**4
+    expected: '0.13'
+    shown: ['(for example $+0.13$ at $r = 0.6$)']
+    source: {cite: reading1, at: 'p. 179 (the page''s own example)'}
+    origin: page-own
+
+  - id: sub-hopf-fold
+    where: 'remark and plot: the cycles meet where 1 + 4 mu = 0'
+    inputs: {}
+    formula: -1/4
+    expected: '-0.25'
+    shown: ['survives until $\mu = -\frac14$']
+    source: {cite: reading1, at: 'p. 179 (our addition)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- torqued pendulum (worked example)
+  - id: torque-theta1
+    where: 'worked example "Fixed points at tau = 0.6": arcsin(0.6)'
+    inputs: {}
+    formula: asin(0.6)
+    expected: '0.644'
+    shown: ['$\theta_* = 0.644$ and $\pi - 0.644 = 2.498$']
+    source: {cite: reading1, at: 'p. 180 (the page''s own example)'}
+    origin: page-own
+
+  - id: torque-theta2
+    where: 'same: pi - arcsin(0.6)'
+    inputs: {}
+    formula: pi - asin(0.6)
+    expected: '2.498'
+    shown: ['$\theta_* = 0.644$ and $\pi - 0.644 = 2.498$']
+    source: {cite: reading1, at: 'p. 180 (the page''s own example)'}
+    origin: page-own
+
+  - id: torque-cos
+    where: 'same: cos(arcsin 0.6)'
+    inputs: {}
+    formula: cos(asin(0.6))
+    expected: '0.8'
+    shown: ['$\cos\theta_* = 0.8$']
+    source: {cite: reading1, at: 'p. 180 (the page''s own example)'}
+    origin: page-own
+
+  - id: torque-discriminant
+    where: 'same: trace^2 - 4 Delta = (1/q)^2 - 4 cos(theta*) for q = 0.5'
+    inputs: {q: 0.5}
+    formula: (1/q)**2 - 4*0.8
+    expected: '0.8'
+    shown: ['= 4 - 3.2 = 0.8 > 0$']
+    source: {cite: reading1, at: 'p. 180 (the page''s own example)'}
+    origin: page-own
+
+  - id: torque-form
+    kind: identity
+    where: 'eq. (7.67) is eq. (7.66) rewritten'
+    formula: -(1/q)*(w - q*(tau - sin(th)))
+    equals: -w/q - sin(th) + tau
+    samples: {q: [0.5, 2.0], w: [0.3, -1.0], tau: [0.8, 1.3], th: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['\dot\omega = -\frac{1}{q}\Bigl[\omega - q(\tau - \sin\theta)\Bigr]']
+    source: {cite: reading1, at: 'p. 180, eq. (7.67)'}
+    origin: mit
+
+  - id: vdp-mu-values
+    kind: fact
+    where: 'van der Pol: the notes show mu = 0.1 and mu = 2'
+    value: 'mu = 0.1, 2'
+    shown: ['(the notes show $\mu = 0.1$)', '(the notes show $\mu = 2$)']
+    source: {cite: reading1, at: 'p. 175, Figs. 7.46, 7.47'}
+    origin: mit

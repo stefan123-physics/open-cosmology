@@ -1,0 +1,128 @@
+---
+title: The dartboard, and numerical integration
+slug: numerical-integration
+course: "18.01"
+lecture: 24
+order: 1
+summary: "The lecture finishes the dartboard problem: with hits spread like e^(−r²), the chance of a ring of the board is e^(−r₁²) − e^(−r₂²), and a little brother standing next to the board is hit by about 1% of the darts. Then numerical integration, for integrals without a formula: Riemann sums, the trapezoidal rule (the average of left and right sums), and Simpson's rule, which fits parabolas and weights the values 1, 4, 2, 4, …, 4, 1. Simpson's rule is far more accurate."
+prerequisites: [average-value-and-probability, definite-integrals]
+source:
+  title: "MIT 18.01 Lecture 24: Numerical Integration"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-24-numerical-integration/
+  readings:
+    - title: "18.01 Lecture 24 notes: Numerical Integration"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec24/
+    - title: "18.01 Lecture 24 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/jBkXbAgMj6s.pdf
+    - title: "18.01 Lecture 23 notes (dartboard)"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec23/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.01"
+    lecture: 27
+    why: "Techniques of integration: trigonometric integrals, the first of several ways to find antiderivatives in closed form."
+  - course: "8.286"
+    lecture: 20
+    why: "Distances in a universe with matter and vacuum energy are integrals with no simple formula, evaluated numerically."
+quiz:
+  - question: "Darts land with density proportional to $e^{-r^2}$ per unit area. The probability of landing within radius $a$ is…"
+    choices: ["$e^{-a^2}$", "$1 - e^{-a^2}$", "$a\\,e^{-a^2}$", "$\\sqrt\\pi\\,a$"]
+    answer: 1
+    explanation: "Part over whole: $\\int_0^a e^{-r^2}2\\pi r\\,dr \\big/ \\int_0^\\infty e^{-r^2}2\\pi r\\,dr = \\pi(1 - e^{-a^2})/\\pi$."
+  - question: "The trapezoidal rule is the same as…"
+    choices: ["the left Riemann sum", "the average of the left and right Riemann sums", "Simpson's rule", "the midpoint rule"]
+    answer: 1
+    explanation: "$\\Delta x\\,(\\tfrac12 y_0 + y_1 + \\cdots + y_{n-1} + \\tfrac12 y_n)$ is half the left sum plus half the right sum."
+  - question: "In Simpson's rule with $n = 6$ intervals, the weights on $y_0, \\dots, y_6$ are…"
+    choices: ["1 1 1 1 1 1 1", "1 2 2 2 2 2 1", "1 4 2 4 2 4 1", "1 4 4 4 4 4 1"]
+    answer: 2
+    explanation: "Each pair of intervals contributes $1, 4, 1$; where pairs meet, the 1s add to 2. The whole is multiplied by $\\Delta x/3$."
+  - question: "With $n = 2$, Simpson's rule for $\\int_1^2 dx/x$ gives about…"
+    choices: ["0.6667", "0.6931", "0.6944", "0.7083"]
+    answer: 2
+    explanation: "$\\Delta x = 0.5$: $\\tfrac{0.5}{3}(1 + 4\\cdot\\tfrac23 + \\tfrac12) \\approx 0.6944$, against $\\ln 2 \\approx 0.6931$."
+flashcards:
+  - front: "Trapezoidal rule"
+    back: "$\\int_a^b f\\,dx \\approx \\Delta x\\left(\\tfrac12 y_0 + y_1 + y_2 + \\cdots + y_{n-1} + \\tfrac12 y_n\\right)$, with $\\Delta x = (b - a)/n$."
+  - front: "Simpson's rule ($n$ even)"
+    back: "$\\int_a^b f\\,dx \\approx \\dfrac{\\Delta x}{3}\\left(y_0 + 4y_1 + 2y_2 + 4y_3 + \\cdots + 2y_{n-2} + 4y_{n-1} + y_n\\right)$. Error roughly of order $(\\Delta x)^4$."
+  - front: "Area under a parabola through three points spaced $\\Delta x$ apart"
+    back: "$2\\Delta x \\cdot \\dfrac{y_0 + 4y_1 + y_2}{6}$: the base times a weighted average height."
+status: reviewed
+---
+
+The lecture starts with a correction: the energy in the boiling-cauldron example **is** heat. Energy, heat and work are the same physical quantity, measured in different units: calories, kilowatt-hours, foot-pounds (transcript, p. 1). Then it finishes the dartboard problem announced last time, and turns to integrals that have no formula.
+
+## The dartboard
+
+Someone throws darts at a target; your little brother stands next to it. How likely is he to be hit (transcript, pp. 1–8; notes for Lecture 23, pp. 4–6)? The model: the number of hits **per unit area** at distance $r$ from the centre is proportional to $c\,e^{-r^2}$. The probability of any region is the part over the whole, so the unknown $c$ cancels (pp. 1–3).
+
+Hits per area mean that a ring between $r_1$ and $r_2$ is weighted by a **volume of revolution**: shells of circumference $2\pi r$, height $e^{-r^2}$ and thickness $dr$ (p. 2). The antiderivative is easy, $-\pi e^{-r^2}$ (p. 5). For the whole, let $r$ run from 0 to infinity: unrealistic for a basement wall, but the tail is negligible and the numbers come out cleaner (p. 6). So
+
+<Formula label="Probability of a ring" tex="P(r_1 < r < r_2) = \frac{\int_{r_1}^{r_2} e^{-r^2}\,2\pi r\,dr}{\int_0^\infty e^{-r^2}\,2\pi r\,dr} = \frac{\pi\left(e^{-r_1^2} - e^{-r_2^2}\right)}{\pi} = e^{-r_1^2} - e^{-r_2^2}" cite="reading2" at="pp. 5–6" />
+
+Two realistic assumptions finish it (pp. 7–8). A seven-year-old hits the target, radius $a$, about half the time: $1 - e^{-a^2} = \tfrac12$, so $e^{-a^2} = \tfrac12$. The brother stands between $2a$ and $3a$, covering two hours of the clock, from 3 to 5 o'clock, a sixth of the ring. Then
+
+<Formula label="The little brother's risk" tex="P \approx \frac16\left(e^{-4a^2} - e^{-9a^2}\right) = \frac16\left[\left(\tfrac12\right)^4 - \left(\tfrac12\right)^9\right] \approx \frac16\cdot\frac{1}{16} \approx \frac{1}{100}" cite="reading2" at="pp. 7–8" />
+
+about 1% per dart: stand there for a hundred throws and a hit is likely (p. 8). The lecturer adds that this kind of model was used to analyse where the V-2 rockets fell on London (p. 4). Notice the weight in $r$ is $2\pi c\,r\,e^{-r^2}$, which is **zero** at the centre: although $e^{-r^2}$ is largest there, the centre has so little area that a dart rarely lands near it (pp. 4, 8–9).
+
+## Why numerical integration?
+
+Many integrals cannot be done in closed form, such as $\int_0^x \cos(t^2)\,dt$ or $\int_0^3 e^{-x^2}\,dx$, and others are just a mess; then you compute the number directly (transcript, p. 9; notes, p. 1). Sample the function at $x_0 = a, x_1, \dots, x_n = b$, equally spaced by $\Delta x$, with $y_i = f(x_i)$, and combine the $y$'s (pp. 9–10).
+
+**Riemann sums** use rectangles: $(y_0 + y_1 + \cdots + y_{n-1})\,\Delta x$ with left ends, or $(y_1 + \cdots + y_n)\,\Delta x$ with right ends. They are "incredibly inefficient" (pp. 9–10; notes, p. 1).
+
+## The trapezoidal rule
+
+Join neighbouring points by straight lines instead (transcript, pp. 10–11; notes, p. 2). Each strip is a trapezoid of area $\Delta x\,\frac{y_i + y_{i+1}}{2}$, base times average height. Adding them, every inner value appears twice with a half:
+
+<Formula label="Trapezoidal rule" tex="\int_a^b f(x)\,dx \approx \Delta x\left(\frac{y_0}{2} + y_1 + y_2 + \cdots + y_{n-1} + \frac{y_n}{2}\right)" cite="reading1" at="p. 2" />
+
+It is exactly the **average of the left and right Riemann sums**, treating the two ends symmetrically. Better, but still not very efficient (p. 11; notes, p. 3).
+
+<Plot variable="x" domain={[0, 1]} range={[0.4, 1.05]} xLabel="x" yLabel="y"
+  curves={[
+    { expr: "1/(1 + x^2)", label: "y = 1/(1 + x²)" },
+    { expr: "x <= 0.5 ? 1 - 0.4*x : 0.8 - 0.6*(x - 0.5)", label: "trapezoids, n = 2", dash: true }
+  ]}
+  caption="The curve y = 1/(1 + x²) on [0, 1] and the two straight-line tops of the trapezoidal rule with n = 2, through (0, 1), (0.5, 0.8) and (1, 0.5), all computed from the formulas. On the left half the curve bulges above its chord; on the right half it dips slightly below. The shortfall on the left is larger, so the rule gives 0.775, a little under the true π/4 ≈ 0.785." />
+
+## Simpson's rule
+
+Now fit a **parabola** through each three neighbouring points, which needs an even number of intervals (transcript, pp. 11–12; notes, pp. 3–4). For one pair of intervals the area under the parabola is the base $2\Delta x$ times a weighted average height, which emphasizes the middle (the computation is on the problem set):
+
+<Formula label="Area under a parabola" tex="2\Delta x\cdot\frac{y_0 + 4y_1 + y_2}{6}" cite="reading2" at="pp. 11–12" />
+
+Add the pairs: the weights $1, 4, 1$ overlap where pairs meet, giving $1, 4, 2, 4, 2, \dots, 2, 4, 1$ (p. 12; notes, p. 4):
+
+<Formula label="Simpson's rule (n even)" tex="\int_a^b f(x)\,dx \approx \frac{\Delta x}{3}\left(y_0 + 4y_1 + 2y_2 + 4y_3 + \cdots + 2y_{n-2} + 4y_{n-1} + y_n\right)" cite="reading1" at="p. 4" />
+
+As a check, for $f = 1$ the weights add up to $3n$, so the rule gives $n\,\Delta x = b - a$, as it should (notes, p. 4). On a small enough piece a typical function has no inflection point, so parabolas fit it extremely well (transcript, p. 11). The notes compare on $\int_0^1 \frac{dx}{1 + x^2} = \frac{\pi}{4} \approx 0.785$ with $n = 2$: the trapezoidal rule gives 0.775 and Simpson's rule 0.7833, with an error roughly of order $(\Delta x)^4$ (notes, p. 5). The lecture promises to show how much better Simpson's rule is next time (p. 12).
+
+<WorkedExample title="Simpson against the trapezoids">
+<Problem>
+Estimate $\int_0^1 e^{-x^2}\,dx$ (no elementary antiderivative) with $n = 4$ by both rules, and compare with the true value 0.746824.
+</Problem>
+<Step title="Samples">
+$\Delta x = 0.25$: $y_0 = 1$, $y_1 = e^{-0.0625} \approx 0.93941$, $y_2 = e^{-0.25} \approx 0.77880$, $y_3 = e^{-0.5625} \approx 0.56978$, $y_4 = e^{-1} \approx 0.36788$.
+</Step>
+<Step title="Trapezoidal">
+$0.25\,(0.5 + 0.93941 + 0.77880 + 0.56978 + 0.18394) \approx 0.74298$: off by about 0.0038.
+</Step>
+<Step title="Simpson">
+$\frac{0.25}{3}\,(1 + 4 \times 0.93941 + 2 \times 0.77880 + 4 \times 0.56978 + 0.36788) \approx 0.74686$: off by only about 0.00003, a hundred times better for the same five values.
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology" title="Distances that need a computer">
+In a flat universe with matter and vacuum energy, the comoving distance to redshift $z$ is $\frac{c}{H_0}\int_0^z \frac{dz'}{\sqrt{\Omega_m(1 + z')^3 + \Omega_\Lambda}}$, an integral with no elementary formula. With $\Omega_m = 0.3$, $\Omega_\Lambda = 0.7$ and $H_0 = 70$ km/s/Mpc, Simpson's rule with just $n = 2$ gives about 3300 Mpc to $z = 1$, within 0.1% of the exact value. Cosmologists compute such integrals numerically all the time, for distances to supernovae and for the age of the universe.
+</Callout>
+
+## Summary
+
+- Dartboard: with hits per area $\propto e^{-r^2}$, $P(r_1 < r < r_2) = e^{-r_1^2} - e^{-r_2^2}$; standing beside the board means about a 1% chance per dart.
+- Numerical integration samples $y_i = f(x_i)$ at spacing $\Delta x$ and combines them.
+- Trapezoidal rule: $\Delta x\,(\tfrac12 y_0 + y_1 + \cdots + y_{n-1} + \tfrac12 y_n)$, the average of left and right sums.
+- Simpson's rule ($n$ even): $\frac{\Delta x}{3}(y_0 + 4y_1 + 2y_2 + \cdots + 4y_{n-1} + y_n)$, from parabolas; far more accurate.

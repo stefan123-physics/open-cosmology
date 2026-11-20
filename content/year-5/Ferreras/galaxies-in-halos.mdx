@@ -1,0 +1,152 @@
+---
+title: "Galaxies in halos: mass functions, halo occupation and abundance matching"
+slug: galaxies-in-halos
+course: "Ferreras"
+lecture: 4.6
+order: 1
+summary: Simulations must reproduce the galaxies we see, so they are calibrated on the galaxy stellar mass function and scaling relations. Simpler statistical models link galaxies to halos directly (halo occupation and abundance matching) and show that star formation is remarkably inefficient; at best about a sixth of a halo's baryons end up in stars.
+prerequisites: [simulating-galaxy-formation, press-schechter]
+source:
+  title: "Chapter 4, Simulating galaxy formation (Sections 4.5–4.7)"
+  url: https://doi.org/10.14324/111.9781800084704
+  readings: []
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "Ferreras"
+    lecture: 7.3
+    why: "MOND's view of the scaling relations, such as the baryonic Tully–Fisher relation, that simulations must match."
+quiz:
+  - question: "What is the most basic observation a galaxy formation simulation must reproduce?"
+    choices: ["The colour of the Sun", "The galaxy stellar mass function: how many galaxies there are per unit volume at each stellar mass", "The number of planets", "The CMB temperature"]
+    answer: 1
+    explanation: "It is usually described by a Schechter function and measured best at low redshift, from large surveys such as SDSS."
+  - question: "What does galaxy bias measure?"
+    choices: ["How bright galaxies are", "How much more (or less) strongly galaxies cluster than the underlying dark matter: $b = (\\xi_g/\\xi_\\text{DM})^{1/2}$", "How fast galaxies rotate", "The error of a survey"]
+    answer: 1
+    explanation: "Massive and red galaxies are more biased: they formed in rarer, higher peaks of the density field."
+  - question: "In a halo occupation model with $N_\\text{cen} = \\tfrac12[1 + \\text{erf}((\\log M - \\log M_\\text{min})/\\sigma_{\\log M})]$, how many central galaxies does a halo of exactly $M_\\text{min}$ host on average?"
+    choices: ["0", "0.5", "1", "2"]
+    answer: 1
+    explanation: "erf(0) = 0, so $N_\\text{cen} = 1/2$: half of such halos host a central galaxy above the survey threshold."
+  - question: "Abundance matching shows the ratio of stellar mass to dark matter mass peaks at about 3% today, while the cosmic ratio of baryons to dark matter is 18.6%. What fraction of the baryons in such a halo became stars?"
+    choices: ["All of them", "About one sixth", "About 3%", "About half"]
+    answer: 1
+    explanation: "$3/18.6 \\approx 0.16$. Star formation is very inefficient, because of supernova feedback in small halos and AGN feedback in large ones."
+flashcards:
+  - front: "Schechter function"
+    back: "$\\Phi(M) = \\Phi_0\\,(M/M_*)^{\\alpha}\\,e^{-M/M_*}$: a power law at low mass, an exponential cut-off above $M_*$"
+  - front: "1-halo and 2-halo terms"
+    back: "On small scales the correlation function counts galaxy pairs within one halo (baryon physics); on large scales pairs in different halos (dark matter). The switch is at about 1–2 Mpc."
+  - front: "Abundance matching result"
+    back: "M⋆/M_halo peaks at about 3% today (vs 18.6%, the cosmic ratio of baryons to dark matter); it falls on both sides: supernova feedback at low mass, AGN feedback at high mass"
+status: reviewed
+---
+
+The previous page described how simulations work. This one, following Ferreras's Sections 4.5–4.7, asks how they are tested against real galaxies, and how simpler statistical models tie galaxies to the halos they live in.
+
+## Constraining the simulations
+
+The dark matter part of a simulation is trustworthy: its initial conditions are simple and its evolution is pure gravity (apart from the baryons' back-reaction, such as adiabatic contraction, and assuming dark matter really is collisionless). The weak point is the **subgrid physics**: how efficiently gas turns into stars and how strongly stars and black holes push back. And every test must use visible matter, whose modelling is exactly what is uncertain. So simulations are **calibrated** on observations.
+
+The most basic constraint is the **galaxy stellar mass function** (GSMF): the number of galaxies per unit comoving volume in each range of stellar mass, measured from large surveys such as SDSS. It is well described by a **Schechter function**:
+
+<Formula label="Schechter function" tex="\Phi(M) = \Phi_0\left(\frac{M}{M_*}\right)^{\alpha} e^{-M/M_*}" cite="mit" at="Eq. (4.13), p. 94" />
+
+with a characteristic mass $M_*$ above which galaxies become exponentially rare, a power-law slope $\alpha$ at low masses, and a normalisation $\Phi_0$. Galaxies live in halos, so the halo mass function is the starting point, but stellar mass does **not** simply follow halo mass, because star formation is very inefficient in both low- and high-mass halos. Different subgrid recipes can give the same GSMF (the problem is degenerate), so further tests are needed, usually at low redshift where data are best:
+
+- the **size–mass** and **morphology–mass** relations, which test how angular momentum flows (early simulations without feedback made discs that were too small and compact);
+- the **Tully–Fisher** relation and its baryonic version, which MOND proponents also invoke (Chapter 7);
+- the **age–mass** and **metallicity–mass** relations, and the **colour–magnitude** diagram with its two populations: the **blue cloud** of star-forming, mostly late-type galaxies and the **red sequence** of quiescent, mostly early-type ones.
+
+## Halo occupation
+
+Simulations are expensive, so simpler **phenomenological** models are useful. **Halo occupation distribution** (HOD) models describe statistically how galaxies populate halos. They aim at galaxy samples like those of real surveys, which are limited in brightness and miss faint dwarfs, so a threshold in stellar mass or luminosity is imposed. Galaxies are split into **centrals** (the main galaxy of a halo) and **satellites** (galaxies that fell in earlier with their own halos and now orbit the central).
+
+The key difficulty is **bias**: galaxies are not distributed exactly like the mass. Clustering is measured by the **two-point correlation function** $\xi(r)$, the excess probability of finding two galaxies a distance $r$ apart compared with a random distribution. Surveys find a power law:
+
+<Formula label="Galaxy correlation function" tex="\xi(r) = \left(\frac{r}{r_0}\right)^{-\gamma}" cite="mit" at="Eq. (4.14), p. 96" />
+
+with a **correlation length** $r_0 \approx 3$–5 Mpc and $\gamma \approx 1.8$, depending on the galaxy sample. On small scales $\xi$ counts pairs of galaxies inside one halo (the **1-halo term**, governed by baryon physics); on large scales pairs in different halos (the **2-halo term**, governed by the dark matter); the switch happens at the size of large halos, about 1–2 Mpc. The **bias** compares galaxies with dark matter:
+
+<Formula label="Bias" tex="b(r) = \left[\frac{\xi_g(r)}{\xi_\text{DM}(r)}\right]^{1/2}" cite="mit" at="Eq. (4.15), p. 97" />
+
+(the square root because the bias is defined on the density contrast, $\delta_g = b\,\delta_\text{DM}$, and $\xi$ is quadratic in δ). Red, old, massive galaxies are more biased, more clustered, than blue discs: they formed in rarer peaks of the density field. Halos themselves are biased tracers of the dark matter, since massive halos sit preferentially in overdense regions.
+
+An HOD model gives the probability $P(N\,|\,M_h)$ that a halo of mass $M_h$ hosts $N$ galaxies, fitted to semi-analytic or hydrodynamical simulations. Its mean,
+
+<Formula label="Mean halo occupation" tex="\langle N\rangle(M_h) = \sum_{N=0}^{\infty} N\,P(N\,|\,M_h)" cite="mit" at="Eq. (4.16), p. 98" />
+
+is about 1 near the threshold mass and grows with halo mass; the second moment gives the scatter. A standard five-parameter form splits $\langle N\rangle = N_\text{cen} + N_\text{sat}$, with
+
+<Formula label="Central galaxies" tex="N_\text{cen} = \frac12\left[1 + \operatorname{erf}\left(\frac{\log M - \log M_\text{min}}{\sigma_{\log M}}\right)\right]" cite="mit" at="Eq. (4.17), p. 98" />
+
+<Formula label="Satellite galaxies" tex="N_\text{sat} = \begin{cases}\left(\dfrac{M}{M_1}\right)^{\alpha} & M > M_0\\[1ex] 0 & M \leq M_0\end{cases}" cite="mit" at="Eq. (4.18), p. 98" />
+
+To build a mock catalogue, a central galaxy is placed at each halo's centre and satellites are scattered following the halo's density profile. Centrals are usually drawn from a Bernoulli distribution and satellites from a Poisson distribution.
+
+<Plot variable="lm" domain={[11, 15]} range={[0, 12]} xLabel="log₁₀(M_h / M⊙)" yLabel="mean number of galaxies"
+  curves={[
+    { expr: "0.5 * (1 + erf((lm - lmin) / sig))", label: "centrals" },
+    { expr: "lm > lmin ? (10^lm / 10^lm1)^as : 0", label: "satellites", dash: true },
+    { expr: "0.5 * (1 + erf((lm - lmin) / sig)) + (lm > lmin ? (10^lm / 10^lm1)^as : 0)", label: "total ⟨N⟩" }
+  ]}
+  params={{
+    lmin: { value: 12, min: 11, max: 13, step: 0.1, label: "\\log M_\\text{min} = \\log M_0" },
+    sig: { value: 0.2, min: 0.05, max: 0.6, step: 0.05, label: "\\sigma_{\\log M}" },
+    lm1: { value: 13.3, min: 12.5, max: 14.5, step: 0.1, label: "\\log M_1" },
+    as: { value: 1, min: 0.6, max: 1.4, step: 0.05, label: "\\alpha" }
+  }}
+  caption="Halo occupation computed from Eqs. (4.17)–(4.18), here with M₀ = M_min for simplicity (some authors use (M − M₀)/M₁ instead; above a few M₀ the two agree). Centrals switch on smoothly around M_min, over a width σ_log M; satellites appear above M₀ and grow roughly in proportion to halo mass. The parameter values are illustrative." />
+
+<WorkedExample title="How many galaxies in a cluster-mass halo?">
+<Problem>
+With $\log M_\text{min} = \log M_0 = 12$, $\sigma_{\log M} = 0.2$, $\log M_1 = 13.3$ and $\alpha = 1$, find $\langle N\rangle$ for halos of $10^{12}$ and $10^{14}\,M_\odot$.
+</Problem>
+<Step title="A halo at the threshold">
+For $M = 10^{12}\,M_\odot$: $N_\text{cen} = \tfrac12[1 + \text{erf}(0)] = 0.5$ and $N_\text{sat} = 0$, so $\langle N\rangle = 0.5$.
+</Step>
+<Step title="A cluster-mass halo">
+For $M = 10^{14}\,M_\odot$: $N_\text{cen} = \tfrac12[1 + \text{erf}(10)] = 1$, and $N_\text{sat} = 10^{14}/10^{13.3} \approx 5.0$. So $\langle N\rangle \approx 6$ galaxies above the survey threshold.
+</Step>
+</WorkedExample>
+
+Mass is assumed to be the only "environment variable" here. Halos of equal mass can have different histories (a **fossil group**, for instance, assembled differently from a normal group), so extensions add concentration, formation time or spin: **assembly bias** again. A further step, the **conditional luminosity function** $\Phi(L\,|\,M_h)$, predicts galaxy luminosities as well as numbers:
+
+<Formula label="Conditional luminosity function" tex="\Phi(L) = \int_0^\infty \Phi(L\,|\,M_h)\,n(M_h)\,dM_h, \qquad \langle N\rangle(M_h) = \int_{L_\text{min}}^\infty \Phi(L\,|\,M_h)\,dL" cite="mit" at="Eqs. (4.19)–(4.20), p. 99" />
+
+with $n(M_h)$ the halo mass function and $L_\text{min}$ the survey's threshold. It too splits into centrals (log-normal) and satellites (Schechter-like).
+
+## Abundance matching
+
+**Abundance matching** assumes that every halo hosts a galaxy at its centre, and that halos and galaxies grow together. Matching the **observed** stellar mass function to the **theoretical** halo mass function (from Press–Schechter or, better, simulations), the most massive galaxies to the most massive halos and so on down, gives a one-to-one relation between halo mass and stellar mass. Both distributions have a power law at low mass and an exponential cut-off at high mass, and their different shapes make the ratio $M_\star/M_\text{DM}$ peak at one mass and fall on both sides.
+
+The results (Ferreras uses the relation of Moster and collaborators, 2010) are striking:
+
+- Even at its peak, the stellar mass is far below the **cosmological limit**: what you would get if every baryon became a star, given the cosmic ratio of baryons to dark matter. Today the peak is about **3%** of the dark matter mass, against a cosmic baryon-to-dark-matter ratio of **18.6%**: only about **a sixth** of the baryons have turned into stars.
+- At redshift 1.5, when the universe was only about 4 billion years old, the peak was lower still.
+- The peak moves to lower halo masses with time: star formation has shifted towards smaller galaxies, a trend called **downsizing**.
+
+The falling branches reflect feedback: **supernovae** suppress star formation in small halos, **AGNs** in large ones. Most baryons are not in galaxies at all but in warm-hot intergalactic gas, and in clusters in the hot intracluster medium seen in X-rays. Dark matter halos grow unimpeded by gravity alone; galaxies grow only as fast as gas inflow, cooling and feedback allow.
+
+<WorkedExample title="Where are a halo's baryons?">
+<Problem>
+A halo of $10^{12}\,M_\odot$ is near the peak of the stellar-to-halo relation, with stars amounting to 3% of its dark matter mass. How much mass is in stars, how much baryonic mass did the halo start with (cosmic ratio of baryons to dark matter, 18.6%), and what fraction became stars?
+</Problem>
+<Step title="Stars">
+$0.03 \times 10^{12} = 3 \times 10^{10}\,M_\odot$, about half the Milky Way's stellar mass.
+</Step>
+<Step title="Baryons available">
+$0.186 \times 10^{12} \approx 1.9 \times 10^{11}\,M_\odot$.
+</Step>
+<Step title="Efficiency">
+$3 \times 10^{10} / 1.86 \times 10^{11} \approx 0.16$: about one sixth. The rest is hot gas in the halo, gas expelled by feedback, or gas that never fell in.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Simulations are calibrated on the galaxy stellar mass function (a Schechter function), size–mass and morphology–mass relations, the (baryonic) Tully–Fisher relation, and age, metallicity and colour relations. Different subgrid recipes can match the same data.
+- Galaxies cluster as $\xi(r) = (r/r_0)^{-\gamma}$ with $r_0 \approx 3$–5 Mpc; the bias $b = (\xi_g/\xi_\text{DM})^{1/2}$ links them to the dark matter; 1-halo and 2-halo terms meet at about 1–2 Mpc.
+- Halo occupation models give the mean number of centrals and satellites per halo mass; the conditional luminosity function adds luminosities.
+- Abundance matching gives a stellar-to-halo ratio peaking at about 3% today, against a cosmic baryon-to-dark-matter ratio of 18.6%: star formation is inefficient at all masses, because of feedback, and the peak shifts to lower masses with time (downsizing).

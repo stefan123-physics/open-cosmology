@@ -1,0 +1,204 @@
+# Calculations on content/year-4/8.09/strange-attractors-fractals-turbulence.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 7 (Stewart, typed), Section 7.6, printed pp. 189-195.
+# MIT numbers: the Lorenz fixed points and divergence, the attractor dimension about 2.05 (fact), the Cantor and Koch
+# dimensions, Kaplan-Yorke, Kolmogorov's exponents. Page's own: r_H (standard formula, not in the notes), the Lorenz
+# example at sigma = 10, b = 8/3, r = 28 with measured Lyapunov exponents (later data), the lengths plot, the tea cup.
+
+page: content/year-4/8.09/strange-attractors-fractals-turbulence.mdx
+calcs:
+  # ---------------------------------------------------------------- Lorenz fixed points and divergence
+  - id: lorenz-fixed-point
+    kind: identity
+    where: 'formula "The convecting fixed points": (sqrt(b(r-1)), sqrt(b(r-1)), r - 1) makes all three right-hand sides vanish'
+    formula: abs(s*(sqrt(b*(r - 1)) - sqrt(b*(r - 1)))) + abs(r*sqrt(b*(r - 1)) - sqrt(b*(r - 1)) - sqrt(b*(r - 1))*(r - 1)) + abs(-b*(r - 1) + b*(r - 1))
+    equals: '0'
+    samples: {s: [10, 4], b: [2.6667, 1.0], r: [28, 3]}
+    tolerance: 1e-9
+    shown: ['x_* = y_* = \pm\sqrt{b(r - 1)}, \qquad z_* = r - 1']
+    source: {cite: reading1, at: 'p. 189'}
+    origin: mit
+
+  - id: lorenz-rH
+    where: 'r_H = sigma(sigma + b + 3)/(sigma - b - 1) for sigma = 10, b = 8/3 (standard result, not in the notes); plot; worked example'
+    inputs: {s: 10, b: 2.6666667}
+    formula: s*(s + b + 3)/(s - b - 1)
+    expected: '24.74'
+    shown: ['which is $24.74$ for Lorenz''s values', 'r_H = 24.74 (for σ = 10', 'r_H = 24.74$ both are unstable']
+    source: {cite: reading1, at: 'p. 189 (the formula is ours)'}
+    origin: page-own
+
+  - id: lorenz-divergence
+    kind: identity
+    where: 'formula "Divergence of the Lorenz flow" and quiz 1'
+    formula: deriv('s*(xx - x0) + 0', 'xx', 1)*0 + deriv('s*(y0 - xx)', 'xx', 1) + deriv('r*x0 - yy - x0*z0', 'yy', 1) + deriv('-b*zz + x0*y0', 'zz', 1)
+    equals: -(s + b + 1)
+    samples: {s: [10, 4], b: [2.6667, 1.5], r: [28, 3], x0: [1.0, -2.0], y0: [0.5, 1.0], z0: [3.0, 0.2]}
+    tolerance: 1e-6
+    shown: ['= -(\sigma + b + 1) < 0']
+    source: {cite: reading1, at: 'p. 190'}
+    origin: mit
+
+  - id: example-fixed-point
+    where: 'worked example (a): sqrt(8/3 x 27)'
+    inputs: {b: 2.6666667, r: 28}
+    formula: sqrt(b*(r - 1))
+    expected: '8.485'
+    shown: ['= \pm\sqrt{72} = \pm 8.485$']
+    source: {cite: reading1, at: 'p. 189 (the page''s own example)'}
+    origin: page-own
+
+  - id: example-divergence
+    where: 'worked example (b)'
+    inputs: {s: 10, b: 2.6666667}
+    formula: -(s + b + 1)
+    expected: '-13.667'
+    shown: ['= -13.667$']
+    source: {cite: reading1, at: 'p. 190 (the page''s own example)'}
+    origin: page-own
+
+  - id: example-contraction
+    where: 'worked example (b): e^-13.667; quiz 1 says about a million'
+    inputs: {s: 10, b: 2.6666667}
+    formula: exp(-(s + b + 1))
+    expected: '1.2e-6'
+    shown: ['e^{-13.667} \approx 1.2\times10^{-6}$']
+    source: {cite: reading1, at: 'p. 190 (the page''s own example)'}
+    origin: page-own
+
+  - id: lyapunov-sum
+    where: 'worked example (c): 0.906 + 0 - 14.572'
+    inputs: {}
+    formula: 0.906 + 0 - 14.572
+    expected: '-13.666'
+    shown: ['$0.906 + 0 - 14.572 = -13.666$']
+    source: {cite: reading1, at: 'p. 191, eq. (7.88) (the page''s own example)'}
+    origin: page-own
+
+  - id: lyapunov-values
+    kind: fact
+    where: 'worked example (c) and quiz 3: measured Lyapunov exponents of the Lorenz attractor at sigma = 10, b = 8/3, r = 28'
+    value: '0.906, 0, -14.572'
+    shown: ['give Lyapunov exponents of about $0.906$, $0$ and $-14.572$']
+    source: {ref: 'standard numerical values for the Lorenz attractor (e.g. Sprott, Chaos and Time-Series Analysis, 2003): 0.9056, 0, -14.5723'}
+    origin: later-data
+
+  - id: kaplan-yorke-lorenz
+    where: 'worked example (c): 2 + 0.906/14.572'
+    inputs: {}
+    formula: 2 + 0.906/14.572
+    expected: '2.062'
+    shown: ['giving $1 + 0.906/14.572 = 1.062$', '$d_F = 2.062$']
+    source: {cite: reading1, at: 'p. 193, eq. (7.96) (the page''s own example)'}
+    origin: page-own
+
+  - id: lorenz-dimension
+    kind: fact
+    where: 'the Lorenz attractor''s fractal dimension, about 2.05 (notes)'
+    value: '2.05'
+    shown: ['about $2.05$ for the Lorenz system', 'close to the notes'' value of about 2.05']
+    source: {cite: reading1, at: 'p. 190'}
+    origin: mit
+
+  # ---------------------------------------------------------------- fractals
+  - id: cantor-dimension
+    where: 'formula "Dimension of the Cantor set"; quiz 2'
+    inputs: {}
+    formula: log(2)/log(3)
+    expected: '0.6309'
+    shown: ['= \frac{\ln 2}{\ln 3} \approx 0.6309']
+    source: {cite: reading1, at: 'p. 192, eq. (7.92)'}
+    origin: mit
+
+  - id: koch-dimension
+    where: 'formula "Dimension of the Koch curve"'
+    inputs: {}
+    formula: log(4)/log(3)
+    expected: '1.262'
+    shown: ['= \frac{\ln 4}{\ln 3} \approx 1.262']
+    source: {cite: reading1, at: 'p. 192, eq. (7.93)'}
+    origin: mit
+
+  - id: cantor-length-10
+    where: 'lengths plot caption: (2/3)^10'
+    inputs: {}
+    formula: (2/3)**10
+    expected: '0.017'
+    shown: ['they are 0.017 and 17.8']
+    source: {cite: reading1, at: 'p. 192 (the page''s own plot)'}
+    origin: page-own
+
+  - id: koch-length-10
+    where: 'lengths plot caption: (4/3)^10'
+    inputs: {}
+    formula: (4/3)**10
+    expected: '17.8'
+    shown: ['they are 0.017 and 17.8']
+    source: {cite: reading1, at: 'p. 193 (the page''s own plot)'}
+    origin: page-own
+
+  - id: kaplan-yorke-derivation
+    kind: identity
+    where: 'eqs. (7.95)-(7.96): ln N / ln(a0/a) with N = e^((l1 - l2) t), a = a0 e^(l2 t) equals 1 + l1/|l2|'
+    formula: ((l1 - l2)*t)/(-l2*t)
+    equals: 1 + l1/abs(l2)
+    samples: {l1: [0.9, 0.3], l2: [-14.6, -1.2], t: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['d_F = 1 + \frac{\lambda_1}{|\lambda_2|}']
+    source: {cite: reading1, at: 'p. 193, eq. (7.96)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- turbulence (eq. 7.99, worked example, plot)
+  - id: kolmogorov-units
+    kind: units
+    where: 'eq. (7.99): epsilon^(2/3) k^(-5/3) has the units of E(k), m^3/s^2'
+    inputs: {eps: 1 m^2/s^3, k: 1 1/m, E: 1 m^3/s^2}
+    terms: ['eps**(2/3)*k**(-5/3)', 'E']
+    shown: ['tex="E(k) \sim \epsilon^{2/3}k^{-5/3}"']
+    source: {cite: reading1, at: 'p. 195, eq. (7.99)'}
+    origin: mit
+
+  - id: tea-flux
+    where: 'worked example "Stirring a cup of tea": v_L^3/L'
+    inputs: {vL: 0.1 m/s, L: 0.05 m}
+    formula: vL**3/L
+    expected: 0.02 m^2/s^3
+    shown: ['= (0.1)^3/0.05 = 0.02$ W/kg']
+    source: {cite: reading1, at: 'p. 195 (the page''s own example)'}
+    origin: page-own
+
+  - id: tea-dissipation-scale
+    where: 'same: (nu^3/epsilon)^(1/4)'
+    inputs: {nu: 1.0e-6 m^2/s, eps: 0.02 m^2/s^3}
+    formula: (nu**3/eps)**0.25
+    expected: 8.4e-5 m
+    shown: ['= 8.4\times10^{-5}$ m']
+    source: {cite: reading1, at: 'p. 195 (the page''s own example)'}
+    origin: page-own
+
+  - id: tea-range
+    where: 'same: L/lambda0, about 600'
+    inputs: {L: 0.05, l0: 8.409e-5}
+    formula: L/l0
+    expected: '600'
+    tolerance: 10
+    shown: ['a factor of about 600 in size']
+    source: {cite: reading1, at: 'p. 195 (the page''s own example)'}
+    origin: page-own
+
+  - id: tea-k-low
+    where: 'Kolmogorov plot caption: log10(1/L)'
+    inputs: {L: 0.05}
+    formula: log10(1/L)
+    expected: '1.3'
+    shown: ['(log₁₀ k ≈ 1.3)']
+    source: {cite: reading1, at: 'p. 195 (the page''s own example)'}
+    origin: page-own
+
+  - id: tea-k-high
+    where: 'Kolmogorov plot caption: 1/lambda0 and its log10'
+    inputs: {l0: 8.409e-5}
+    formula: log10(1/l0)
+    expected: '4.1'
+    shown: ['(log₁₀ k ≈ 4.1)', '1.2 × 10⁴ m⁻¹']
+    source: {cite: reading1, at: 'p. 195 (the page''s own example)'}
+    origin: page-own

@@ -1,0 +1,388 @@
+# Calculations on content/year-4/8.07/larmor-formula-radiation-reaction.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 16, "Radiation" (Guth, slides, Lecture 37, December 12, 2012), slides 14-24,
+# eqs. (25)-(40). Numbers on the slides: tau = mu0 q^2/(6 pi m c) ~ 6e-24 s for an electron (slide 23, eq. (40)) and
+# alpha = e^2/(4 pi eps0 hbar c) ~ 1/137 (slide 24). Slips: eq. (30) has |r - r'| for the distance from the charge
+# (|r - r_p| meant); slide 19's sentence lacks the word "radiation". Page's own worked example: an electron at 1e7 m/s
+# perpendicular to B = 1 T; q = 1.602e-19 C, m = 9.109e-31 kg, mu0 = 1.2566e-6 T m/A, c = 2.998e8 m/s. Page's own
+# Thomson cross-section derivation.
+
+page: content/year-4/8.07/larmor-formula-radiation-reaction.mdx
+calcs:
+  # ---------------------------------------------------------------- arbitrary source
+  - id: retarded-time-expansion
+    kind: identity
+    where: 'slide 15 (page''s sketch): |r - r''| = r - r-hat . r'' + O(r''^2/r); checked with r'' = 1e-4 r along a direction at angle a to r-hat'
+    formula: sqrt(RR**2 - 2*RR*RP*cos(AA) + RP**2)
+    equals: RR - RP*cos(AA)
+    samples: {RR: [10.0, 50.0, 10.0], RP: [1e-3, 5e-3, 2e-3], AA: [0.3, 1.2, 2.6]}
+    tolerance: 1e-6
+    shown: ['$|\vec r - \vec r\,''| \approx r - \hat r \cdot \vec r\,''$']
+    source: {cite: reading1, at: 'slide 14'}
+    origin: page-own
+
+  - id: general-to-simple-dipole
+    kind: identity
+    where: 'slide 15, eq. (27) vs (14): for p = p0 cos(w t) z-hat, the theta component of (mu0/4 pi r)[(r-hat . p-ddot) r-hat - p-ddot] is (mu0/4 pi r)(-w^2 p0 cos)(sin(theta)) (z-hat = cos r-hat - sin theta-hat), i.e. eq. (14)'
+    formula: (MU/(4*pi*RR))*(-WW**2*P0*cos(XX))*(-(-sin(TH)))
+    equals: -(MU*P0*WW**2/(4*pi))*(sin(TH)/RR)*cos(XX)
+    samples: {MU: [1.2566e-6, 1.2566e-6], P0: [5e-10, 2e-9], WW: [6.283e7, 1e8], RR: [1000.0, 30.0], TH: [0.5, 1.4], XX: [0.3, 2.0]}
+    tolerance: 1e-12
+    shown: ['$(\hat r \cdot \hat z)\hat r - \hat z = \sin\theta\,\hat\theta$']
+    source: {cite: reading1, at: 'slide 15, eq. (27)'}
+    origin: mit
+
+  - id: b-equals-rhat-cross-e
+    kind: identity
+    where: 'slide 15, eq. (27): r-hat x E/c with E = (mu0/4 pi r)[(r-hat . p) r-hat - p] equals -(mu0/4 pi r c) r-hat x p; y component, r-hat = (sin T, 0, cos T), p-ddot = (P1, P2, P3)'
+    formula: (1/CC)*(MU/(4*pi*RR))*(cos(TT)*((sin(TT)*P1 + cos(TT)*P3)*sin(TT) - P1) - sin(TT)*((sin(TT)*P1 + cos(TT)*P3)*cos(TT) - P3))
+    equals: -(MU/(4*pi*RR*CC))*(cos(TT)*P1 - sin(TT)*P3)
+    samples: {MU: [1.2566e-6, 1.2566e-6], CC: [2.998e8, 2.998e8], RR: [10.0, 3.0], TT: [0.4, 1.3], P1: [1.0, -2.0], P2: [0.5, 3.0], P3: [2.0, 1.0]}
+    tolerance: 1e-12
+    shown: ['\vec B(\vec r, t) \approx -\frac{\mu_0}{4\pi rc}\left[\hat r \times \ddot{\vec p}\right]']
+    source: {cite: reading1, at: 'slide 15, eq. (27)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- point charge, Larmor
+  - id: e-rad-from-general-field
+    kind: identity
+    where: 'slide 17, eq. (30) from (28) with v_p = 0: u = c n-hat, u . R = c R, so the acceleration term is (q/4 pi eps0) R/(c R)^3 x R c n x (n x a) = q/(4 pi eps0 c^2 R) n x (n x a); coefficients compared'
+    formula: (1/(4*pi*EPS))*QQ*RR/(CC*RR)**3*RR*CC
+    equals: QQ/(4*pi*EPS*CC**2*RR)
+    samples: {EPS: [8.854e-12, 8.854e-12], QQ: [1.602e-19, 1e-9], CC: [2.998e8, 2.998e8], RR: [5.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['\vec E_{\text{rad}} = \frac{q}{4\pi\varepsilon_0c^2|\vec r - \vec r_p|}\left[\hat n \times (\hat n \times \vec a_p)\right]']
+    source: {cite: reading1, at: 'slide 17, eq. (30)'}
+    origin: mit
+
+  - id: poynting-point-charge
+    kind: identity
+    where: 'slide 18, eq. (31): |E_rad|^2/(mu0 c) with |E_rad| = q a sin(theta)/(4 pi eps0 c^2 R) equals mu0 q^2 a^2 sin^2/(16 pi^2 c R^2), since 1/(eps0 c^2) = mu0'
+    formula: (QQ*AA*sin(TH)/(4*pi*EPS*CC**2*RR))**2/(MU*CC)
+    equals: MU*QQ**2*AA**2*sin(TH)**2/(16*pi**2*CC*RR**2)
+    samples: {MU: [1.25663706e-6, 1.25663706e-6], EPS: [8.8541878e-12, 8.8541878e-12], CC: [2.99792458e8, 2.99792458e8], QQ: [1.602e-19, 1e-9], AA: [1.76e18, 3.0], RR: [1.0, 7.0], TH: [0.6, 1.5]}
+    tolerance: 1e-6
+    shown: ['\vec S_{\text{rad}} = \frac{1}{\mu_0c}|\vec E_{\text{rad}}|^2\,\hat n = \frac{\mu_0q^2a^2}{16\pi^2c}']
+    source: {cite: reading1, at: 'slide 18, eq. (31)'}
+    origin: mit
+
+  - id: larmor-from-intensity
+    kind: identity
+    where: 'slide 18, eq. (32): (mu0 q^2 a^2/(16 pi^2 c)) x 2 pi x integral of sin^3 = mu0 q^2 a^2/(6 pi c)'
+    formula: MU*QQ**2*AA**2/(16*pi**2*CC)*2*pi*integrate('sin(x)**3', 'x', 0, pi)
+    equals: MU*QQ**2*AA**2/(6*pi*CC)
+    samples: {MU: [1.2566e-6, 1.2566e-6], QQ: [1.602e-19, 1e-9], AA: [1.76e18, 3.0], CC: [2.998e8, 2.998e8]}
+    tolerance: 1e-9
+    shown: ['again with $\int\sin^3\theta\,d\theta\,d\phi = 8\pi/3$']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: mit
+
+  - id: lienard-perpendicular
+    kind: identity
+    where: 'page: for v perpendicular to a, gamma^6 (a^2 - (v a/c)^2) = gamma^4 a^2 (slide 19, eq. (33))'
+    formula: (1/(1 - BB**2))**3*(1 - BB**2)
+    equals: (1/(1 - BB**2))**2
+    samples: {BB: [0.1, 0.5, 0.8]}
+    tolerance: 1e-12
+    shown: ['the factor becomes $\gamma^6(1 - v^2/c^2) = \gamma^4$']
+    source: {cite: reading1, at: 'slide 19, eq. (33)'}
+    origin: page-own
+
+  - id: plot-gamma6
+    kind: value
+    where: 'plot caption: gamma^6 at v = 0.8c (also below the top of the range, 25)'
+    formula: (1/(1 - 0.8**2))**3
+    expected: '21.4'
+    tolerance: 0.05
+    shown: ['At v = 0.8c the factors are 21.4 and 7.7.']
+    source: {cite: reading1, at: 'slide 19, eq. (33)'}
+    origin: page-own
+
+  - id: plot-gamma4
+    kind: value
+    where: 'plot caption: gamma^4 at v = 0.8c'
+    formula: (1/(1 - 0.8**2))**2
+    expected: '7.7'
+    tolerance: 0.05
+    shown: ['range={[0, 25]}']
+    source: {cite: reading1, at: 'slide 19, eq. (33)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- radiation reaction
+  - id: integration-by-parts
+    kind: identity
+    where: 'slide 21, eq. (35): for periodic v(t) = (A cos wt, B sin 2wt) over one period, integral of a^2 = - integral of (d^2v/dt^2) . v (boundary term zero)'
+    formula: integrate('(AA*WW*sin(WW*x))**2 + (2*BB*WW*cos(2*WW*x))**2', 'x', 0, 2*pi/WW)
+    equals: -integrate('(-AA*WW**2*cos(WW*x))*(AA*cos(WW*x)) + (-4*BB*WW**2*sin(2*WW*x))*(BB*sin(2*WW*x))', 'x', 0, 2*pi/WW)
+    samples: {AA: [1.0, 2.5], BB: [0.5, 1.5], WW: [1.0, 3.0]}
+    tolerance: 1e-6
+    shown: ['\int_{t_1}^{t_2}a^2\,dt = \int\frac{d\vec v}{dt} \cdot \frac{d\vec v}{dt}\,dt']
+    source: {cite: reading1, at: 'slide 21, eq. (35)'}
+    origin: mit
+
+  - id: tau-electron
+    kind: value
+    where: 'slide 23, eq. (40): tau = mu0 e^2/(6 pi m_e c) for an electron (s); the slide says about 6e-24 s'
+    formula: 1.25663706e-6*(1.602176634e-19)**2/(6*pi*9.1093837e-31*2.99792458e8)
+    expected: '6.27e-24'
+    tolerance: 0.005e-24
+    shown: ['more precisely $6.27 \times 10^{-24}$ s, the time light', '$\tau\omega_c = 6.27 \times 10^{-24} \times 1.759']
+    source: {cite: reading1, at: 'slide 23, eq. (40)'}
+    origin: mit
+
+  - id: tau-electron-rounded
+    kind: value
+    where: 'slide 23, eq. (40): about 6e-24 s, as the slide rounds it'
+    formula: 1.25663706e-6*(1.602176634e-19)**2/(6*pi*9.1093837e-31*2.99792458e8)
+    expected: '6e-24'
+    tolerance: 0.5e-24
+    shown: ['which is about $6 \times 10^{-24}$ s for an electron (slide 23)', '\\approx 6 \\times 10^{-24}$ s for an electron: an acceleration', 'with $\tau = \mu_0q^2/(6\pi mc) \approx 6 \times 10^{-24}$ s for an electron. Quantum', '$\\tau \\approx 6 \\times 10^{-24}$ s: a runaway solution', 'τ = μ₀q²/6πmc ≈ 6 × 10⁻²⁴ s']
+    source: {cite: reading1, at: 'slide 23, eq. (40)'}
+    origin: mit
+
+  - id: tau-quiz
+    kind: value
+    where: 'quiz 3 explanation: tau = 6.27e-24 s'
+    formula: 1.25663706e-6*(1.602176634e-19)**2/(6*pi*9.1093837e-31*2.99792458e8)
+    expected: '6.27e-24'
+    tolerance: 0.005e-24
+    shown: ['= 6.27 \\times 10^{-24}$ s."']
+    source: {cite: reading1, at: 'slide 23, eq. (40)'}
+    origin: mit
+
+  - id: tau-two-thirds-re
+    kind: identity
+    where: 'page: tau = (2/3) r_e/c with r_e = e^2/(4 pi eps0 m c^2), since mu0 = 1/(eps0 c^2)'
+    formula: MU*QQ**2/(6*pi*MM*CC)
+    equals: (2/3)*QQ**2/(4*pi*EPS*MM*CC**2)/CC
+    samples: {MU: [1.25663706e-6], EPS: [8.8541878e-12], QQ: [1.602176634e-19], MM: [9.1093837e-31], CC: [2.99792458e8]}
+    tolerance: 1e-6
+    shown: ['the time light takes to cross two thirds of the classical electron radius']
+    source: {cite: reading1, at: 'slide 23, eq. (40)'}
+    origin: page-own
+
+  - id: runaway-solves
+    kind: identity
+    where: 'slide 23, eqs. (38)-(39): a(t) = a0 e^(t/tau) satisfies a = tau da/dt'
+    formula: TAU*deriv('A0*exp(t/TAU)', 't', TT, 1)
+    equals: A0*exp(TT/TAU)
+    samples: {TAU: [1.0, 2.5], A0: [0.3, 2.0], TT: [0.5, 1.7]}
+    tolerance: 1e-6
+    shown: ['a(t) = a_0\,e^{t/\tau}" cite']
+    source: {cite: reading1, at: 'slide 23, eq. (39)'}
+    origin: mit
+
+  - id: alpha
+    kind: value
+    where: 'slide 24: alpha = e^2/(4 pi eps0 hbar c), about 1/137 (1/alpha computed)'
+    formula: 4*pi*8.8541878128e-12*1.054571817e-34*2.99792458e8/(1.602176634e-19)**2
+    expected: '137'
+    tolerance: 0.1
+    shown: ['the fine-structure constant, about 1/137']
+    source: {cite: reading1, at: 'slide 24'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-acceleration
+    kind: value
+    where: 'worked example: a = q v B/m (m/s^2)'
+    formula: 1.602e-19*1e7*1/9.109e-31
+    expected: '1.759e18'
+    tolerance: 0.001e18
+    shown: ['= 1.759 \times 10^{18}$ m/s²']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-cyclotron
+    kind: value
+    where: 'worked example: omega_c = q B/m (1/s)'
+    formula: 1.602e-19*1/9.109e-31
+    expected: '1.759e11'
+    tolerance: 0.001e11
+    shown: ['$\omega_c = qB/m = 1.759 \times 10^{11}$ per second']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-larmor
+    kind: value
+    where: 'worked example: P = mu0 q^2 a^2/(6 pi c) (W)'
+    formula: 1.2566e-6*(1.602e-19)**2*(1.602e-19*1e7/9.109e-31)**2/(6*pi*2.998e8)
+    expected: '1.77e-17'
+    tolerance: 0.005e-17
+    shown: ['= 1.77 \times 10^{-17}$ W.', 'radiates $1.77 \times 10^{-17}$ W', 'radiates 1.77 × 10⁻¹⁷ W']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-kinetic
+    kind: value
+    where: 'worked example: K = m v^2/2 (J)'
+    formula: 0.5*9.109e-31*1e7**2
+    expected: '4.55e-17'
+    tolerance: 0.005e-17
+    shown: ['$K = \frac12mv^2 = 4.55 \times 10^{-17}$ J']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-kinetic-ev
+    kind: value
+    where: 'worked example: K in eV'
+    formula: 0.5*9.109e-31*1e7**2/1.602e-19
+    expected: '284'
+    tolerance: 0.5
+    shown: ['about 284 eV']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-decay-time
+    kind: value
+    where: 'worked example: K/P (s); since P = 2 tau omega_c^2 K, the energy decays as exp(-t/(K/P))'
+    formula: (0.5*9.109e-31*1e7**2)/(1.2566e-6*(1.602e-19)**2*(1.602e-19*1e7/9.109e-31)**2/(6*pi*2.998e8))
+    expected: '2.58'
+    tolerance: 0.005
+    shown: ['with time constant $K/P = 2.58$ s', 'with a time constant of 2.58 s']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-decay-time-rounded
+    kind: value
+    where: 'page summary in frontmatter: time constant 2.6 s'
+    formula: (0.5*9.109e-31*1e7**2)/(1.2566e-6*(1.602e-19)**2*(1.602e-19*1e7/9.109e-31)**2/(6*pi*2.998e8))
+    expected: '2.6'
+    tolerance: 0.05
+    shown: ['with a time constant of 2.6 s']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-orbit-period
+    kind: value
+    where: 'worked example: 2 pi/omega_c (ps)'
+    formula: 2*pi/(1.602e-19/9.109e-31)*1e12
+    expected: '36'
+    tolerance: 0.5
+    shown: ['one turn takes $2\pi/\omega_c = 36$ ps']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: ex-tau-omega
+    kind: value
+    where: 'worked example: tau omega_c, the Abraham-Lorentz force over the magnetic force'
+    formula: 6.27e-24*1.759e11
+    expected: '1.10e-12'
+    tolerance: 0.005e-12
+    shown: ['= 1.10 \times 10^{-12}$, utterly negligible']
+    source: {cite: reading1, at: 'slide 21, eq. (37)'}
+    origin: page-own
+
+  - id: ex-drag-power
+    kind: identity
+    where: 'worked example: m tau a^2 = mu0 q^2 a^2/(6 pi c) with tau = mu0 q^2/(6 pi m c), and m tau omega_c^2 v^2 = m tau a^2 for a = omega_c v'
+    formula: MM*(MU*QQ**2/(6*pi*MM*CC))*(WC*VV)**2
+    equals: MU*QQ**2*(WC*VV)**2/(6*pi*CC)
+    samples: {MM: [9.109e-31, 1.0], MU: [1.2566e-6, 1.2566e-6], QQ: [1.602e-19, 1e-6], CC: [2.998e8, 2.998e8], WC: [1.759e11, 3.0], VV: [1e7, 2.0]}
+    tolerance: 1e-12
+    shown: ['and $m\tau a^2 = \mu_0q^2a^2/(6\pi c)$, exactly the Larmor power']
+    source: {cite: reading1, at: 'slide 21, eq. (37)'}
+    origin: page-own
+
+  - id: ex-adot-circular
+    kind: identity
+    where: 'worked example: for circular motion v = v(-sin wt, cos wt), a = -v w (cos wt, sin wt), a-dot = -w^2 v (x components, w = omega_c)'
+    formula: deriv('-VV*WW*cos(WW*t)', 't', TT, 1)
+    equals: -WW**2*(-VV*sin(WW*TT))
+    samples: {VV: [1.0, 3.0], WW: [2.0, 0.5], TT: [0.3, 1.1]}
+    tolerance: 1e-6
+    shown: ['and $\dot{\vec a} = -\omega_c^2\vec v$']
+    source: {cite: reading1, at: 'slide 21, eq. (37)'}
+    origin: page-own
+
+  - id: ex-beta
+    kind: value
+    where: 'worked example: v/c'
+    formula: 1e7/2.998e8
+    expected: '0.0334'
+    tolerance: 0.00005
+    shown: ['Here $v/c = 0.0334$']
+    source: {cite: reading1, at: 'slide 19, eq. (33)'}
+    origin: page-own
+
+  - id: ex-gamma4
+    kind: value
+    where: 'worked example: gamma^4 for v/c = 0.03336 (0.2% correction)'
+    formula: (1/(1 - (1e7/2.998e8)**2))**2
+    expected: '1.0022'
+    tolerance: 0.00005
+    shown: ['$\gamma^4 = 1.0022$: a 0.2% correction']
+    source: {cite: reading1, at: 'slide 19, eq. (33)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Thomson scattering
+  - id: thomson-ratio
+    kind: identity
+    where: 'page''s own: <P>/<S> = (mu0 q^4 E0^2/(12 pi m^2 c))/(c eps0 E0^2/2) = mu0 q^4/(6 pi eps0 m^2 c^2)'
+    formula: (MU*QQ**4*E0**2/(12*pi*MM**2*CC))/(0.5*CC*EPS*E0**2)
+    equals: MU*QQ**4/(6*pi*EPS*MM**2*CC**2)
+    samples: {MU: [1.2566e-6, 1.2566e-6], EPS: [8.854e-12, 8.854e-12], QQ: [1.602e-19, 1.602e-19], MM: [9.109e-31, 9.109e-31], CC: [2.998e8, 2.998e8], E0: [1.0, 868.0]}
+    tolerance: 1e-9
+    shown: ['$\sigma_T = \mu_0q^4/(6\pi\varepsilon_0m^2c^2)$']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: thomson-scattered-power
+    kind: identity
+    where: 'page''s own: Larmor power for a = (q E0/m) cos(wt), averaged over a cycle (<cos^2> = 1/2)'
+    formula: MU*QQ**2*(QQ*E0/MM)**2/(6*pi*CC)*integrate('cos(x)**2', 'x', 0, 2*pi)/(2*pi)
+    equals: MU*QQ**4*E0**2/(12*pi*MM**2*CC)
+    samples: {MU: [1.2566e-6, 1.2566e-6], QQ: [1.602e-19, 1.0], MM: [9.109e-31, 2.0], CC: [2.998e8, 3.0], E0: [1.0, 868.0]}
+    tolerance: 1e-9
+    shown: ['the scattered power $\mu_0q^4E_0^2/(12\pi m^2c)$']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: thomson-8pi3
+    kind: identity
+    where: 'page''s own: mu0 q^4/(6 pi eps0 m^2 c^2) = (8 pi/3) r_e^2 with r_e = q^2/(4 pi eps0 m c^2), using mu0 eps0 c^2 = 1'
+    formula: MU*QQ**4/(6*pi*EPS*MM**2*CC**2)
+    equals: (8*pi/3)*(QQ**2/(4*pi*EPS*MM*CC**2))**2
+    samples: {MU: [1.25663706e-6], EPS: [8.8541878e-12], QQ: [1.602176634e-19], MM: [9.1093837e-31], CC: [2.99792458e8]}
+    tolerance: 1e-6
+    shown: ['this is $\sigma_T = \frac{8\pi}{3}\,r_e^2$']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: classical-electron-radius
+    kind: value
+    where: 'page: r_e = e^2/(4 pi eps0 m c^2) (m)'
+    formula: (1.602176634e-19)**2/(4*pi*8.8541878128e-12*9.1093837e-31*2.99792458e8**2)
+    expected: '2.818e-15'
+    tolerance: 0.0005e-15
+    shown: ['= 2.818 \times 10^{-15}$ m is the classical electron radius']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: thomson-value
+    kind: value
+    where: 'page: sigma_T = (8 pi/3) r_e^2 (m^2)'
+    formula: (8*pi/3)*((1.602176634e-19)**2/(4*pi*8.8541878128e-12*9.1093837e-31*2.99792458e8**2))**2
+    expected: '6.65e-29'
+    tolerance: 0.005e-29
+    shown: ['so $\sigma_T = 6.65 \times 10^{-29}$ m²', 'r_e^2 = 6.65 \times 10^{-29}$ m²', '(8π/3)r_e² = 6.65 × 10⁻²⁹ m²']
+    source: {cite: reading1, at: 'slide 18, eq. (32)'}
+    origin: page-own
+
+  - id: decoupling-age
+    kind: fact
+    where: 'cosmology callout: decoupling about 380,000 years after the Big Bang (Guth 2013 gives about 380,000 years: 8.286 Lecture 17, page temperature-and-decoupling; Planck 2018 gives about 380,000 years at last scattering)'
+    value: about 380,000 years
+    shown: ['Before about 380,000 years after the Big Bang']
+    source: {ref: 'Planck 2018 results VI (Planck Collaboration, A&A 641, A6, 2020): age at last scattering about 380,000 years'}
+    origin: later-data
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-sin2-pattern
+    kind: value
+    where: 'quiz 1: sin^2(theta) is largest at 90 degrees'
+    formula: sin(pi/2)**2
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['largest at right angles to it, the same doughnut as an oscillating dipole']
+    source: {cite: reading1, at: 'slide 18, eq. (31)'}
+    origin: mit

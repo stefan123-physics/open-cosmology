@@ -1,0 +1,212 @@
+---
+title: "Dust, volume elements and conservation laws"
+slug: volumes-conservation-laws
+course: "8.962"
+lecture: 4
+order: 1
+summary: "To describe matter in bulk, Hughes starts with dust: particles that do not interact and have no pressure. An element of dust with number density n₀ in its own rest frame has, for an observer who sees it move at v, density n = γn₀ and flux nv, which together form the number-flux 4-vector N = n₀u with N·N = −n₀². Basis one-forms pick out fluxes, and the flux in the time direction is the density itself. Particle conservation ∂n/∂t + ∇·(nv) = 0 becomes the frame-independent ∂_α N^α = 0. Volumes are built from the Levi-Civita tensor, V = ε_ijk A^i B^j C^k in space and ε_αβγδ A^α B^β C^γ D^δ in spacetime with ε₀₁₂₃ = +1; leaving a slot empty gives a one-form for a face, and the four-dimensional Gauss theorem turns ∂_α N^α = 0 into the familiar integral conservation law in any chosen frame. The charge-current 4-vector obeys ∂_μ J^μ = 0, which the antisymmetric field tensor F^μν builds into Maxwell's equations: a symmetric object contracted with an antisymmetric one gives zero."
+prerequisites: [tensors-one-forms-index-gymnastics]
+source:
+  title: "MIT 8.962 Lecture 4: Volumes and Volume Elements; Conservation Laws"
+  url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/lecture-4-volumes-and-volume-elements-conservation-laws/
+  readings:
+    - title: "8.962 Lecture 4 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/1834219200f6799c5fa91ccd31f3bcab_h9xaoGkyHwg.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.962"
+    lecture: 5
+    why: "The next lecture introduces the stress-energy tensor, whose divergence-free condition expresses conservation of energy and momentum, first for dust and then for a perfect fluid."
+  - course: "8.286"
+    lecture: 15
+    why: "Guth's cosmology course follows how the densities of matter and radiation change as the universe expands; in general relativity those rules come from conservation laws of the kind written here."
+quiz:
+  - question: "Dust has number density $n_0 = 3$ (per unit volume) in its rest frame. An observer sees it moving at $v = 0.6$ ($c = 1$). What number density does the observer measure?"
+    choices: ["$3.75$", "$2.4$", "$3$", "$4.69$"]
+    answer: 0
+    explanation: "Lengths along the motion shrink by $\\gamma = 1.25$, so the same particles fill a smaller volume: $n = \\gamma n_0 = 3.75$. The flux is $n v = 2.25$, and $\\vec N\\cdot\\vec N = -3.75^2 + 2.25^2 = -9 = -n_0^2$."
+  - question: "What is $\\epsilon_{1023}$?"
+    choices: ["$-1$", "$+1$", "$0$", "It depends on the observer"]
+    answer: 0
+    explanation: "$\\epsilon_{0123} = +1$, and $1023$ is one swap away from $0123$, an odd permutation, so the value is $-1$."
+  - question: "How many independent components does an antisymmetric 4 × 4 tensor $F^{\\mu\\nu}$ have?"
+    choices: ["6", "10", "16", "4"]
+    answer: 0
+    explanation: "$F^{\\mu\\mu} = -F^{\\mu\\mu}$ forces the diagonal to vanish, and the 12 off-diagonal entries come in pairs with $F^{\\nu\\mu} = -F^{\\mu\\nu}$: $12/2 = 6$, exactly the three components of $\\vec E$ and three of $\\vec B$. A symmetric tensor would have 10."
+  - question: "What does the flux of the number-flux vector in the time direction, $\\tilde\\omega^0(\\vec N) = N^0$, measure?"
+    choices: ["The number density in the observer's frame", "The flux through the $x$ face of a box", "The rest-frame density $n_0$ in every frame", "Zero, since nothing flows in time"]
+    answer: 0
+    explanation: "Flowing through time just means sitting there and ageing at one second per second, so the flux in the time direction is the density, $N^0 = n = \\gamma n_0$ for that observer."
+flashcards:
+  - front: "Dust"
+    back: "The simplest continuous matter: particles that do not interact, so there is no pressure. Every small element has its own rest frame, where its number density is $n_0$."
+  - front: "Number-flux 4-vector"
+    back: "$\\vec N = n_0\\vec u$, with components $(n, n\\vec v)$ for an observer who sees the dust move at $\\vec v$, where $n = \\gamma n_0$. All observers agree on $\\vec N$ but split it differently into density and flux; $\\vec N\\cdot\\vec N = -n_0^2$."
+  - front: "Conservation of particle number"
+    back: "$\\partial n/\\partial t + \\nabla\\cdot(n\\vec v) = 0$ is, in geometric form, $\\partial_\\alpha N^\\alpha = 0$. By the four-dimensional Gauss theorem it gives, in any chosen frame, $d/dt\\int N^0\\,d^3x = -\\oint N^i\\,dA_i$."
+  - front: "Levi-Civita tensor and volumes"
+    back: "In 3-space, $V = \\epsilon_{ijk}A^iB^jC^k = \\vec A\\cdot(\\vec B\\times\\vec C)$. In spacetime, $V = \\epsilon_{\\alpha\\beta\\gamma\\delta}A^\\alpha B^\\beta C^\\gamma D^\\delta$ with $\\epsilon_{0123} = +1$, $-1$ for odd permutations, 0 with a repeated index. One empty slot gives a one-form for a face."
+  - front: "Symmetric times antisymmetric"
+    back: "If $S^{\\mu\\nu} = S^{\\nu\\mu}$ and $A_{\\mu\\nu} = -A_{\\nu\\mu}$ then $S^{\\mu\\nu}A_{\\mu\\nu} = 0$. Example: $\\partial_\\mu\\partial_\\nu F^{\\mu\\nu} = 0$, so Maxwell's equations $\\partial_\\nu F^{\\mu\\nu} = 4\\pi J^\\mu$ force $\\partial_\\mu J^\\mu = 0$."
+status: reviewed
+---
+
+With tensors in hand, Hughes turns back to physics. So far only single particles have been described; a star or a neutron star needs matter spread out continuously. This lecture builds the simplest such matter, dust, writes its conservation law in a frame-independent way, develops the volume elements needed to turn that law into integrals, and ends with the electric current and a trick with symmetric and antisymmetric indices that the course will use again and again. Units have $c = 1$; the signature is $(-, +, +, +)$.
+
+## Recap: particles and light
+
+Tensors map one-forms and vectors to Lorentz-invariant numbers, and the metric converts between upstairs and downstairs indices: raising one index of an $(m, n)$ tensor gives an $(m + 1, n - 1)$ tensor (transcript p. 1). For particles the tools so far are the 4-velocity, $u^\alpha = (\gamma, \gamma\vec v)$ with $\vec u\cdot\vec u = -1$, normalised and timelike, and the 4-momentum $\vec p = m\vec u$ with $\vec p\cdot\vec p = -m^2$, so that $E^2 - |p|^2 = m^2$ (transcript pp. 2–3).
+
+A photon cannot have a 4-velocity: its world line is null, and as $v \to 1$ the components $\gamma$ and $\gamma v$ diverge (transcript p. 2). The 4-momentum survives the limit, roughly "zero mass times an infinite 4-velocity", and for $m = 0$ it is conveniently written with the photon's angular frequency and a unit vector $\hat n$ along its direction of travel (transcript p. 3):
+
+<Formula label="4-momentum of a photon" tex="p^\alpha = \hbar\omega\left(1,\ \hat n\right)" cite="reading1" at="transcript p. 3" />
+
+## Dust and the number-flux 4-vector
+
+The simplest continuous matter is **dust**: a huge number of particles that do not interact with one another, so they generate no pressure (transcript p. 4). Clapping two chalk erasers makes a cloud of it. Each small element of the cloud, a cube a nanometre on a side, say, has its own rest frame, and different elements may have different rest frames (transcript p. 4).
+
+In the rest frame of one element, the only thing to say (leaving mass and energy for later) is how many particles there are per unit volume, the rest-frame **number density** $n_0$, with dimensions of 1/volume (transcript p. 5). Now boost to a frame moving at, say, three quarters of the speed of light, keeping track of the same particles. Their number cannot change, but the element is Lorentz-contracted along the motion, so its volume is smaller by $\gamma$ and the density larger (transcript pp. 5–6). (In passing Hughes says the volume is "larger" by $\gamma$; he means the density.) There is also now a flow: particles cross unit area per unit time, a flux like the current density of electromagnetism (transcript p. 6):
+
+<Formula label="Density and flux of moving dust" tex="n = \gamma\,n_0, \qquad \vec n = n\,\vec v = \gamma\,n_0\,\vec v" cite="reading1" at="transcript pp. 5–6" />
+
+A timelike piece $\gamma n_0$ and a spatial piece $\gamma n_0\vec v$: these beg to be one 4-vector, and they are the rest-frame density times the 4-velocity (transcript p. 6):
+
+<Formula label="The number-flux 4-vector" tex="\vec N = n_0\,\vec u, \qquad N^\alpha = \left(n,\ n\vec v\right)" cite="reading1" at="transcript p. 6" />
+
+All observers agree on $\vec N$, whether at rest in the classroom or dashing through it; they only split spacetime differently into space and time, and so assign different densities and fluxes (transcript p. 7). Its norm gives back the rest-frame density (transcript p. 7):
+
+<Formula label="Norm of the number-flux vector" tex="\vec N\cdot\vec N = -n_0^2" cite="reading1" at="transcript p. 7" />
+
+<Plot
+  variable="x"
+  domain={[0, 0.95]}
+  range={[0, 4]}
+  xLabel="speed v of the dust"
+  yLabel="per n₀"
+  curves={[
+    { expr: "1/sqrt(1 - x^2)", label: "density n/n₀ = γ" },
+    { expr: "x/sqrt(1 - x^2)", label: "flux nv/n₀ = γv", dash: true }
+  ]}
+  caption="The number density n = γn₀ and the flux nv = γn₀v measured by observers who see the dust move at speed v, in units of the rest-frame density n₀, computed from the formulas. Their squares always differ by exactly 1, which is the statement N · N = −n₀²."
+/>
+
+<WorkedExample title="A moving cloud of dust">
+<Problem>
+Dust has rest-frame density $n_0 = 3$ particles per unit volume. Find the density, the flux and the norm of $\vec N$ for an observer who sees it move at $v = 0.6$ along $x$.
+</Problem>
+<Step title="Density and flux">
+$\gamma = 1.25$, so $n = 1.25 \times 3 = 3.75$ and the flux along $x$ is $n v = 3.75 \times 0.6 = 2.25$.
+</Step>
+<Step title="The invariant">
+$\vec N\cdot\vec N = -(3.75)^2 + (2.25)^2 = -14.0625 + 5.0625 = -9$, which is $-n_0^2$: any observer can recover the rest-frame density from $\vec N$.
+</Step>
+</WorkedExample>
+
+## Fluxes and one-forms
+
+One-forms are the natural tool for picking out a flux across a surface (transcript pp. 7–8). The basis one-forms $\tilde\omega^\alpha$ are the gradients of the coordinates, which can be pictured as level surfaces at unit steps of $x^\alpha$. The flux of $\vec N$ in the $x^\alpha$ direction is the basis one-form with $\vec N$ in its slot (transcript p. 8):
+
+<Formula label="Flux of N in the x^α direction" tex="\tilde\omega^\alpha(\vec N) = \omega^\alpha{}_{\beta}\,N^\beta = N^\alpha" cite="reading1" at="transcript p. 8" />
+
+Here $\alpha$ labels which basis one-form, not a component, and in a sensible coordinate system $\omega^\alpha{}_\beta$ is just the identity (transcript p. 8). The time component is worth a pause: what is a flux "in the time direction"? Water flowing down a throat moves in a direction; something flowing through time is just sitting there, ageing at one second per second (Hughes's reply when told his daughter was growing up so fast). So the flux in the time direction is the density, $N^0 = n$, while $N^x$ is the familiar flux along $x$ (transcript pp. 8–9).
+
+More generally, a surface can be defined as a level set of a scalar function, $\psi(t, x, y, z) = \text{const}$; for example $\psi = \sqrt{x^2 + y^2 + z^2} = 5$ is a sphere of radius 5 (transcript p. 9). The gradient one-form $\tilde d\psi$ is associated with the surface (raising its index gives the normal vector), and after normalising it, contracting with $\vec N$ gives the flux through that surface (transcript p. 9).
+
+## Conservation of particle number
+
+If particles are neither created nor destroyed, the number in a small box goes down exactly as fast as particles flow out through its sides. In ordinary 3-space notation (transcript p. 10):
+
+<Formula label="Conservation of particle number, in one frame" tex="\frac{\partial n}{\partial t} + \nabla\cdot\left(n\vec v\right) = 0" cite="reading1" at="transcript p. 10" />
+
+The first term is the time component of $\vec N$ differentiated by time, the second the spatial components differentiated by space, so the whole law is one geometric statement (transcript p. 10):
+
+<Formula label="Conservation of particle number, geometric form" tex="\partial_\alpha N^\alpha = 0, \qquad \partial_\alpha \equiv \frac{\partial}{\partial x^\alpha}" cite="reading1" at="transcript p. 10" />
+
+The first form assumes someone has decided what time and space mean; the second does not, and every observer agrees on it, although each will compute it with their own coordinates (transcript pp. 10–11). There is also the familiar integral form, a version of Gauss's law, for a 3-volume $V_3$ with boundary $\partial V_3$ (transcript p. 11):
+
+<Formula label="Integral form of the conservation law, in one frame" tex="\frac{d}{dt}\int_{V_3} n\,dV = -\oint_{\partial V_3} n\,\vec v\cdot d\vec A" cite="reading1" at="transcript p. 11" />
+
+This holds only in one Lorentz frame: $t$ is one observer's time and $V_3$ that observer's volume. Hughes wants a form that is as frame-independent as possible and that will carry over to curved spacetime, which needs a careful look at volumes (transcript pp. 11–12).
+
+## Volumes in three dimensions
+
+Start in ordinary 3-space with a parallelepiped whose edges are the vectors $\vec A$, $\vec B$, $\vec C$ (transcript p. 12). Its volume is the triple product, which can be cycled freely and written with the **Levi-Civita symbol** (transcript p. 12):
+
+<Formula label="Volume of a parallelepiped" tex="V = \vec A\cdot\left(\vec B\times\vec C\right) = \epsilon_{ijk}\,A^iB^jC^k" cite="reading1" at="transcript p. 12" />
+
+$\epsilon_{ijk}$ is $+1$ for $(1, 2, 3)$ and its even permutations $(2, 3, 1)$ and $(3, 1, 2)$, $-1$ for the odd permutations such as $(1, 3, 2)$, and 0 if any index repeats (transcript pp. 12–13). (Hughes lists 231 among the odd permutations; it is even, as he had said a moment earlier.)
+
+Hughes regards $\epsilon_{ijk}$ as the components of a (0, 3) tensor, invariant under rotations and translations of 3-space, that takes three edge vectors and returns the volume they span (transcript p. 13). Leave the first slot empty and fill the other two (transcript pp. 13–14):
+
+<Formula label="An empty slot gives the one-form of a face" tex="\sigma_i = \epsilon_{ijk}\,B^jC^k" cite="reading1" at="transcript pp. 13–14" />
+
+This is $\vec B\times\vec C$, the oriented area of the face spanned by $\vec B$ and $\vec C$. With its index downstairs it is a one-form, and indeed one-forms go naturally with surfaces (transcript p. 14). With an infinitesimal triple of edges along three directions, the volume element is $dV = \epsilon_{ijk}\,dx_{(1)}^i\,dx_{(2)}^j\,dx_{(3)}^k$, and with the face one-forms Gauss's theorem follows easily (transcript p. 14).
+
+<WorkedExample title="Volume of a slanted box">
+<Problem>
+Find the volume spanned by $\vec A = (2, 0, 0)$, $\vec B = (1, 3, 0)$ and $\vec C = (0, 1, 4)$, and the face one-form of the face spanned by $\vec B$ and $\vec C$.
+</Problem>
+<Step title="The face">
+$\sigma_i = \epsilon_{ijk}B^jC^k$ is the cross product: $\vec B\times\vec C = (3 \times 4 - 0 \times 1,\ 0 \times 0 - 1 \times 4,\ 1 \times 1 - 3 \times 0) = (12, -4, 1)$.
+</Step>
+<Step title="The volume">
+Put $\vec A$ in the empty slot: $V = \sigma_iA^i = 2 \times 12 + 0 + 0 = 24$. The same comes from the determinant of the three edge vectors.
+</Step>
+</WorkedExample>
+
+## Volumes in spacetime and Gauss's theorem
+
+In spacetime a parallelepiped has four edges $\vec A$, $\vec B$, $\vec C$, $\vec D$, and its invariant 4-volume uses a four-index Levi-Civita symbol (transcript pp. 14–15):
+
+<Formula label="Invariant 4-volume" tex="V_4 = \epsilon_{\alpha\beta\gamma\delta}\,A^\alpha B^\beta C^\gamma D^\delta, \qquad \epsilon_{0123} = +1" cite="reading1" at="transcript p. 15" />
+
+It is $+1$ for even permutations of $0123$, $-1$ for odd ones such as $\epsilon_{1023}$, and 0 if an index repeats (transcript p. 15). The faces of a 4-volume are 3-volumes; leaving out edge $\vec A$ gives the one-form of the face spanned by $\vec B$, $\vec C$ and $\vec D$ (call it a 3-volume or a 4-area, as you like):
+
+<Formula label="One-form of a face of a 4-volume" tex="\Sigma_\alpha = \epsilon_{\alpha\beta\gamma\delta}\,B^\beta C^\gamma D^\delta" cite="reading1" at="transcript p. 15" />
+
+With infinitesimal edges along the four coordinate directions, the same steps as in 3-space give **Gauss's theorem in four dimensions**: the integral of the spacetime divergence of a vector field $\vec V$ over a 4-volume equals the total flux of $\vec V$ through all of its faces (transcript p. 15):
+
+<Formula label="Gauss's theorem in spacetime" tex="\int_{V_4} \partial_\alpha V^\alpha\,d^4x = \oint_{\partial V_4} V^\alpha\,d\Sigma_\alpha" cite="reading1" at="transcript p. 15" />
+
+Now take $\vec V = \vec N$. Particle conservation, $\partial_\alpha N^\alpha = 0$, makes the left side zero, so the total flux of $\vec N$ out of any closed 4-volume vanishes (transcript p. 16). To see what that means, take a box between times $t_1$ and $t_2$ and positions $x_1$ and $x_2$ (and similarly in $y$ and $z$). A 4-dimensional box has 8 faces. The face at $t_2$ contributes $+\int N^0\,dx\,dy\,dz$; the face at $t_1$ contributes the same with a minus sign, because the orientation built into $\epsilon$ (a right-hand rule) makes the past face count negatively; the face at $x_2$ contributes $+\int N^1\,dt\,dy\,dz$ and the face at $x_1$ the same with a minus sign; and so on (transcript pp. 16–17). Let $t_2 = t_1 + dt$, move the spatial faces to the other side, divide by $dt$ and take $dt \to 0$ (transcript p. 17). The result is the integral law in the chosen frame (transcript pp. 17–18):
+
+<Formula label="The integral law recovered from the geometric one" tex="\frac{d}{dt}\int N^0\,d^3x = -\oint N^i\,dA_i" cite="reading1" at="transcript pp. 17–18" />
+
+The geometric law and the familiar integral law are completely equivalent once a Lorentz frame has been chosen (transcript p. 18). (Mid-derivation Hughes catches a missing "= 0" in his own board work; the steps above include it.)
+
+Dust may be simple, but it matters: in cosmology, one of the two main kinds of matter is dust, where a "dust particle" is a galaxy or even a cluster of galaxies (transcript p. 18). The next step is a tensor that also describes fluids, whose vanishing divergence expresses conservation of energy and of momentum; the course will mostly use that differential form (transcript p. 18).
+
+## The current 4-vector and Maxwell's equations
+
+Hughes ends with another 4-vector, the electric current (transcript p. 19). Its time component is the charge density and its space components the current density seen by an observer (with $c = 1$; otherwise the time component is $\rho c$):
+
+<Formula label="Current 4-vector and conservation of charge" tex="J^\mu = \left(\rho,\ \vec J\,\right), \qquad \frac{\partial\rho}{\partial t} + \nabla\cdot\vec J = 0 \;\Longleftrightarrow\; \partial_\mu J^\mu = 0" cite="reading1" at="transcript p. 19" />
+
+How should the electric and magnetic fields be packaged? They have six components between them, so two 4-vectors would leave two to throw away, and a general 4 × 4 tensor has 16 (transcript p. 19). A symmetric one has 4 on the diagonal and 6 independent off the diagonal, 10 in all, still too many. An **antisymmetric** tensor, $F^{\alpha\beta} = -F^{\beta\alpha}$, has a zero diagonal ($F^{\alpha\alpha} = -F^{\alpha\alpha}$) and 6 independent entries: exactly right (transcript pp. 19–20). With $c = 1$ and Gaussian units, and in the convention used on this page (Hughes admits he no longer remembers the entries and points to books such as Griffiths; transcript p. 20), the field tensor is
+
+<Formula label="The electromagnetic field tensor (one observer's components)" tex="F^{\mu\nu} = \begin{pmatrix} 0 & E_x & E_y & E_z \\ -E_x & 0 & B_z & -B_y \\ -E_y & -B_z & 0 & B_x \\ -E_z & B_y & -B_x & 0 \end{pmatrix}" cite="reading1" at="transcript p. 20" />
+
+These are components according to one observer: different observers see different electric and magnetic fields (transcript p. 20). Half of Maxwell's equations are the divergence of $F$ on its second index; the other half are a cyclic sum of derivatives of $F$ with both indices down (transcript pp. 20–21):
+
+<Formula label="Maxwell's equations in tensor form" tex="\partial_\nu F^{\mu\nu} = 4\pi J^\mu, \qquad \partial_\alpha F_{\beta\gamma} + \partial_\beta F_{\gamma\alpha} + \partial_\gamma F_{\alpha\beta} = 0" cite="reading1" at="transcript pp. 20–21" />
+
+For $\mu = 0$ the first is Gauss's law, $\nabla\cdot\vec E = 4\pi\rho$; for $\mu = x$ it is the $x$ component of $\nabla\times\vec B - \partial\vec E/\partial t = 4\pi\vec J$.
+
+This form builds in charge conservation, using nothing but the antisymmetry of $F$ (transcript p. 21). Take the divergence of the current, $4\pi\,\partial_\mu J^\mu = \partial_\mu\partial_\nu F^{\mu\nu}$. Rename the dummy indices $\mu \leftrightarrow \nu$: $\partial_\nu\partial_\mu F^{\nu\mu}$. Use antisymmetry: $-\partial_\nu\partial_\mu F^{\mu\nu}$. Partial derivatives commute: $-\partial_\mu\partial_\nu F^{\mu\nu}$. So the quantity equals minus itself and must vanish:
+
+<Formula label="Charge conservation follows from antisymmetry" tex="4\pi\,\partial_\mu J^\mu = \partial_\mu\partial_\nu F^{\mu\nu} = -\,\partial_\mu\partial_\nu F^{\mu\nu} = 0" cite="reading1" at="transcript p. 21" />
+
+The general lesson, which will kill 13 terms at a time in later calculations: **an object symmetric in two indices contracted with one antisymmetric in them gives zero** (transcript pp. 21–22). The same trick applied to the equation of motion of a charge in an electromagnetic field shows that it keeps the 4-acceleration orthogonal to the 4-velocity; Hughes leaves that to his notes (transcript p. 22).
+
+<Callout kind="cosmology">
+Hughes's remark that in cosmology a "dust particle" is a whole galaxy is exactly how 8.286 treats matter: pressureless, with the number of galaxies in a comoving volume fixed. Conservation of $\vec N$, in the curved-spacetime form the course develops later, says that in an expanding universe the number density falls as $1/a^3$ as the scale factor $a$ grows, the rule behind the matter-dominated expansion in Guth's course.
+</Callout>
+
+## Summary
+
+- **Dust** is non-interacting, pressureless matter. With rest-frame density $n_0$, an observer who sees it move at $\vec v$ measures density $n = \gamma n_0$ and flux $n\vec v$, the components of the **number-flux 4-vector** $\vec N = n_0\vec u$, with $\vec N\cdot\vec N = -n_0^2$.
+- Basis one-forms pick out fluxes: $\tilde\omega^\alpha(\vec N) = N^\alpha$, and the flux in the time direction is the density. A surface $\psi = \text{const}$ has the one-form $\tilde d\psi$.
+- Particle conservation $\partial n/\partial t + \nabla\cdot(n\vec v) = 0$ is the frame-independent $\partial_\alpha N^\alpha = 0$.
+- Volumes come from the **Levi-Civita tensor**: $\epsilon_{ijk}A^iB^jC^k$ in space, $\epsilon_{\alpha\beta\gamma\delta}A^\alpha B^\beta C^\gamma D^\delta$ with $\epsilon_{0123} = +1$ in spacetime; an empty slot gives the one-form of a face. Gauss's theorem in four dimensions turns $\partial_\alpha N^\alpha = 0$ into $d/dt\int N^0 d^3x = -\oint N^i dA_i$ in any chosen frame.
+- The current 4-vector $J^\mu = (\rho, \vec J)$ obeys $\partial_\mu J^\mu = 0$. The fields form the antisymmetric $F^{\mu\nu}$ (six components), Maxwell's equations are $\partial_\nu F^{\mu\nu} = 4\pi J^\mu$ plus a cyclic identity, and charge conservation follows because symmetric times antisymmetric contracts to zero.

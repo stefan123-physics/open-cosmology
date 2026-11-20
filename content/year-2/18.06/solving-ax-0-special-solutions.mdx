@@ -1,0 +1,128 @@
+---
+title: "Solving Ax = 0: pivot variables and special solutions"
+slug: solving-ax-0-special-solutions
+course: "18.06"
+lecture: 7
+order: 1
+summary: "The nullspace is found by elimination, now on rectangular matrices: when a column has no pivot, move on to the next. Elimination does not change the solutions of Ax = 0. For A with rows (1, 2, 2, 2), (2, 4, 6, 8), (3, 6, 8, 10) it gives an echelon (staircase) matrix U with two pivots, so the rank is r = 2. Columns 1 and 3 are pivot columns; x₂ and x₄ are free. Setting one free variable to 1 and the others to 0 and back-substituting gives the special solutions (−2, 1, 0, 0) and (2, 0, −2, 1); the nullspace is all their combinations. An m × n matrix of rank r has n − r free variables, one special solution for each. Going further, with zeros above the pivots and pivots equal to 1, gives the reduced row echelon form R = [I F; 0 0]. Then Rx = 0 says x_pivot = −F x_free, so the nullspace matrix N, whose columns are the special solutions, is [−F; I]. For the transpose of the example, the rank is again 2, and the nullspace is the line through (−1, −1, 1)."
+prerequisites: [column-space-and-nullspace]
+source:
+  title: "MIT 18.06 Lecture 7: Solving Ax = 0: pivot variables, special solutions"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-7-solving-ax-0-pivot-variables-special-solutions/
+  readings:
+    - title: "18.06 Lecture 7 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/5b376d43a2a5dd24d86e69aa67406111_VqP2tREMvt0.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 8
+    why: "Solving Ax = b: a particular solution plus the nullspace, and the role of the rank."
+quiz:
+  - question: "A $3 \\times 5$ matrix has rank 3. How many special solutions does $Ax = 0$ have?"
+    choices: ["0", "2", "3", "5"]
+    answer: 1
+    explanation: "There are $n - r = 5 - 3 = 2$ free variables, one special solution for each."
+  - question: "In a special solution, the free variables are set to…"
+    choices: ["all zeros", "all ones", "one free variable equal to 1, the others 0", "the pivots"]
+    answer: 2
+    explanation: "All zeros would give only $x = 0$. Setting each free variable to 1 in turn, the others 0, and solving for the pivot variables gives one special solution per free variable."
+  - question: "If $R = \\begin{pmatrix} I & F \\\\ 0 & 0 \\end{pmatrix}$, the nullspace matrix is…"
+    choices: ["$\\begin{pmatrix} F \\\\ I \\end{pmatrix}$", "$\\begin{pmatrix} I \\\\ -F \\end{pmatrix}$", "$\\begin{pmatrix} I & F \\end{pmatrix}$", "$\\begin{pmatrix} -F \\\\ I \\end{pmatrix}$"]
+    answer: 3
+    explanation: "$Rx = 0$ means $x_{\\text{pivot}} + F x_{\\text{free}} = 0$; with $x_{\\text{free}} = I$, $x_{\\text{pivot}} = -F$."
+flashcards:
+  - front: "Rank $r$"
+    back: "The number of pivots found by elimination. An $m \\times n$ matrix of rank $r$ has $r$ pivot variables and $n - r$ free variables."
+  - front: "Special solutions"
+    back: "Set one free variable to 1 and the others to 0, solve $Ux = 0$ for the pivot variables. The nullspace is all combinations of the special solutions."
+  - front: "Reduced row echelon form"
+    back: "Zeros above and below the pivots, pivots equal to 1: $R = \\begin{pmatrix} I & F \\\\ 0 & 0 \\end{pmatrix}$ (after reordering columns). Nullspace matrix $N = \\begin{pmatrix} -F \\\\ I \\end{pmatrix}$."
+status: reviewed
+---
+
+The last lecture defined the nullspace; this one turns the definition into an **algorithm** for solving $Ax = 0$ (transcript, p. 1). It continues [column space and nullspace](/courses/18-06/column-space-and-nullspace).
+
+## Elimination on a rectangular matrix
+
+The example has three rows and four columns (transcript, pp. 1–2):
+
+<Formula label="The example" tex="A = \begin{pmatrix} 1 & 2 & 2 & 2 \\ 2 & 4 & 6 & 8 \\ 3 & 6 & 8 & 10 \end{pmatrix}" cite="reading1" at="pp. 1–2" />
+
+By eye, column 2 is twice column 1, and row 1 plus row 2 gives row 3; elimination should discover both (p. 1). Elimination **does not change the nullspace**: subtracting a multiple of one equation from another keeps the solutions, with zeros on the right all along. It does change the column space (p. 2).
+
+Subtracting 2 and 3 times row 1 clears column 1 and leaves $(0, 0, 2, 4)$ in both lower rows (p. 2). Column 2 now has zeros in and below the pivot position: no row exchange can help, which signals that column 2 depends on the earlier ones. Elimination just **moves on** to column 3, finds the second pivot 2, and subtracting row 2 from row 3 gives a row of zeros (p. 3):
+
+<Formula label="Echelon form" tex="U = \begin{pmatrix} 1 & 2 & 2 & 2 \\ 0 & 0 & 2 & 4 \\ 0 & 0 & 0 & 0 \end{pmatrix}" cite="reading1" at="pp. 2–3" />
+
+$U$ is in **echelon** (staircase) **form** (p. 3). The row of zeros appeared because row 3 was a combination of rows 1 and 2 (p. 9). The most important number has already appeared (pp. 3–4):
+
+<Formula label="Rank" tex="\text{rank of } A = r = \text{number of pivots} = 2" cite="reading1" at="p. 4" />
+
+## Pivot variables, free variables, special solutions
+
+$Ux = 0$ has the same solutions as $Ax = 0$ (transcript, p. 4). Columns 1 and 3 are the **pivot columns**; columns 2 and 4 are **free columns**, because $x_2$ and $x_4$ can be given any values, and then $x_1$ and $x_3$ follow by back substitution (p. 4). The equations are (p. 5)
+
+<Formula label="Ux = 0" tex="x_1 + 2x_2 + 2x_3 + 2x_4 = 0, \qquad 2x_3 + 4x_4 = 0" cite="reading1" at="p. 5" />
+
+Choose $x_2 = 1$, $x_4 = 0$: then $x_3 = 0$ and $x_1 = -2$ (p. 5). That says $-2$ times column 1 plus column 2 is zero, as seen at the start (pp. 5–6). Choose $x_2 = 0$, $x_4 = 1$: then $x_3 = -2$ and $x_1 = 2$, saying 2 of column 1 minus 2 of column 3 plus column 4 is zero (pp. 6–7). These are the **special solutions**, special because of the values 0 and 1 given to the free variables (pp. 7–8). The nullspace holds exactly all their combinations (p. 8):
+
+<Formula label="The nullspace" tex="x = c\begin{pmatrix} -2 \\ 1 \\ 0 \\ 0 \end{pmatrix} + d\begin{pmatrix} 2 \\ 0 \\ -2 \\ 1 \end{pmatrix}" cite="reading1" at="pp. 6–8" />
+
+There is one special solution per free variable (p. 8). With three equations in four unknowns, solutions other than zero were bound to exist (p. 4). For an $m \times n$ matrix of rank $r$ (pp. 8–9):
+
+<Formula label="Counting" tex="r \text{ pivot variables}, \qquad n - r \text{ free variables}" cite="reading1" at="p. 9" />
+
+Here $4 - 2 = 2$: the three equations were really only two independent ones (p. 9). That is a complete algorithm for $Ax = 0$ (p. 9).
+
+## The reduced row echelon form R
+
+One more cleaning step (transcript, pp. 9–10): eliminate **upwards** to get zeros above the pivots, and divide each pivot row by its pivot to make the pivots 1. Neither changes the solutions (p. 10). Subtracting row 2 from row 1 and halving row 2 (p. 10):
+
+<Formula label="Reduced row echelon form" tex="R = \begin{pmatrix} 1 & 2 & 0 & -2 \\ 0 & 0 & 1 & 2 \\ 0 & 0 & 0 & 0 \end{pmatrix}" cite="reading1" at="p. 10" />
+
+MATLAB produces it with the command `rref(A)` (p. 10). $R$ shows everything: pivot rows 1 and 2, pivot columns 1 and 3, an **identity matrix** in the pivot rows and columns, and a zero row for each row that was a combination of others (pp. 10–11). The free columns hold $(2, 0)$ and $(-2, 2)$, and those numbers reappear in the special solutions **with their signs switched**, because back substitution moves them to the other side (pp. 11–12).
+
+**Why, in general** (pp. 12–14). Put the pivot columns first (a reordering of the variables). Then $R$ has an $r \times r$ identity, a free part $F$ with $n - r$ columns, and zero rows below (pp. 12–13):
+
+<Formula label="Block form of R" tex="R = \begin{pmatrix} I & F \\ 0 & 0 \end{pmatrix}, \qquad Rx = 0 \;\Rightarrow\; x_{\text{pivot}} + F\,x_{\text{free}} = 0 \;\Rightarrow\; x_{\text{pivot}} = -F\,x_{\text{free}}" cite="reading1" at="pp. 12–14" />
+
+Choosing the identity for the free variables gives all the special solutions at once, as the columns of the **nullspace matrix** $N$, with $RN = 0$ (p. 13):
+
+<Formula label="Nullspace matrix" tex="N = \begin{pmatrix} -F \\ I \end{pmatrix}" cite="reading1" at="p. 13" />
+
+Strang mentions a MATLAB or teaching-code command that produces this nullspace matrix; it works exactly this way: compute $R$, then put ones and zeros in the free variables and copy $-F$ into the pivot variables (pp. 13–14).
+
+## A second example: the transpose
+
+Take the transpose of the first matrix (transcript, p. 14). Its third column is the sum of the first two, so expect two pivot columns and one free column (p. 15). Elimination clears column 1, leaving a zero row and the rows $(0, 2, 2)$ and $(0, 4, 4)$; column 2 has a 0 in the pivot position but a 2 below, so **exchange rows** and continue; column 3 then has no pivot (pp. 15–16):
+
+<Formula label="The transpose and its U" tex="A^T = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 6 \\ 2 & 6 & 8 \\ 2 & 8 & 10 \end{pmatrix} \;\to\; U = \begin{pmatrix} 1 & 2 & 3 \\ 0 & 2 & 2 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}" cite="reading1" at="pp. 14–16" />
+
+The rank is again 2, which is no accident: a matrix and its transpose have the same number of pivot columns, a great fact Strang states here (p. 16). There is $3 - 2 = 1$ free column (p. 16). Set the free variable $x_3 = 1$: $2x_2 + 2x_3 = 0$ gives $x_2 = -1$, and $x_1 + 2x_2 + 3x_3 = 0$ gives $x_1 = -1$ (p. 17). Minus column 1 minus column 2 plus column 3 is zero. The whole nullspace is the line $c(-1, -1, 1)$; Strang wants the $c$ in an answer, as a reminder that it is a whole space (pp. 17–18). Going on to $R$ (p. 18):
+
+<Formula label="R for the transpose" tex="R = \begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix} = \begin{pmatrix} I & F \\ 0 & 0 \end{pmatrix}, \qquad N = \begin{pmatrix} -F \\ I \end{pmatrix} = \begin{pmatrix} -1 \\ -1 \\ 1 \end{pmatrix}" cite="reading1" at="pp. 18–19" />
+
+Solving $Ax = b$ comes next (p. 19).
+
+<WorkedExample title="Special solutions of your own">
+<Problem>
+(a) Find the rank, $R$ and the special solutions of $B = \begin{pmatrix} 1 & 3 & 0 & 2 \\ 2 & 6 & 1 & 7 \\ 1 & 3 & 2 & 8 \end{pmatrix}$. (b) Why must every $3 \times 5$ matrix have a nonzero vector in its nullspace?
+</Problem>
+<Step title="(a) Eliminate">
+Row 2 minus 2 row 1 is $(0, 0, 1, 3)$; row 3 minus row 1 is $(0, 0, 2, 6)$, and minus 2 times the new row 2 that is zero. Pivots sit in columns 1 and 3, so the rank is 2. The pivot in column 3 already has a zero above it and equals 1, so $R = \begin{pmatrix} 1 & 3 & 0 & 2 \\ 0 & 0 & 1 & 3 \\ 0 & 0 & 0 & 0 \end{pmatrix}$, with $F = \begin{pmatrix} 3 & 2 \\ 0 & 3 \end{pmatrix}$.
+</Step>
+<Step title="(a) Special solutions">
+Free $x_2 = 1$, $x_4 = 0$: $x_1 = -3$, $x_3 = 0$, giving $(-3, 1, 0, 0)$. Free $x_2 = 0$, $x_4 = 1$: $x_3 = -3$, $x_1 = -2$, giving $(-2, 0, -3, 1)$. The pivot entries are the columns of $-F$. Check the second with row 3 of $B$: $-2 + 0 - 6 + 8 = 0$.
+</Step>
+<Step title="(b) Counting">
+There are at most 3 pivots (one per row), so at least $5 - 3 = 2$ free variables, and each gives a nonzero special solution.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Elimination keeps the nullspace; on a rectangular matrix it skips columns without a pivot and ends in echelon form $U$.
+- The rank $r$ is the number of pivots; there are $n - r$ free variables.
+- Special solutions: one free variable 1, the others 0, then back substitution. The nullspace is all their combinations.
+- $R = \begin{pmatrix} I & F \\ 0 & 0 \end{pmatrix}$ gives the nullspace matrix $N = \begin{pmatrix} -F \\ I \end{pmatrix}$ directly.

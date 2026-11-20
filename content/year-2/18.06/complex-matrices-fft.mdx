@@ -1,0 +1,138 @@
+---
+title: Complex matrices and the fast Fourier transform
+slug: complex-matrices-fft
+course: "18.06"
+lecture: 26
+order: 1
+summary: "For complex vectors z in Cⁿ, zᵀz is the wrong length: for z = (1, i) it gives 1 + i² = 0. The right length squared is z̄ᵀz = |z₁|² + ⋯ + |zₙ|², written zᴴz (H for Hermite: transpose and conjugate together); (1, i) has length √2. The inner product is yᴴx. Symmetric becomes Hermitian, Aᴴ = A (real diagonal, entries 3 + i and 3 − i across it); such matrices have real eigenvalues and perpendicular eigenvectors. Orthonormal columns now mean qᵢᴴqⱼ = 0 or 1, i.e. QᴴQ = I, and a square Q of that kind is unitary. The Fourier matrix Fₙ has entries Wⁱʲ (i, j from 0 to n − 1), with W = e^(2πi/n), the first n-th root of 1 on the unit circle; for n = 4, W = i. Its columns are orthogonal, each of length √n, so Fₙ⁻¹ is Fₙᴴ/n. The fast Fourier transform rests on W₆₄² = W₃₂: F₆₄ = [I D; I −D] [F₃₂ 0; 0 F₃₂] P, where P puts the even components before the odd ones and D = diag(1, W, …, W³¹). Repeating the split brings the cost of multiplying by Fₙ down from n² to ½n log₂ n: for n = 1024, about 5 · 1024 instead of 1024², a factor of about 200."
+prerequisites: [symmetric-matrices-positive-definite, markov-matrices-fourier-series]
+source:
+  title: "MIT 18.06 Lecture 26: Complex matrices; fast fourier transform"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-26-complex-matrices-fast-fourier-transform/
+  readings:
+    - title: "18.06 Lecture 26 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/68440cfc1e8760b75bddc09bc8d374d6_M0Sa8fLOajA.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 27
+    why: "Back to real matrices: positive definite matrices and minima."
+quiz:
+  - question: "What is the length of $z = (1, i)$ in $\\mathbf{C}^2$?"
+    choices: ["$\\sqrt2$", "$0$", "$2$", "$1 + i$"]
+    answer: 0
+    explanation: "$z^Hz = \\bar1\\cdot1 + \\bar i\\cdot i = 1 + (-i)(i) = 2$, so the length is $\\sqrt2$. Plain $z^Tz = 1 + i^2 = 0$ would be wrong."
+  - question: "Which matrix is Hermitian?"
+    choices: ["$\\begin{pmatrix} 2 & 3 + i \\\\ 3 - i & 5 \\end{pmatrix}$", "$\\begin{pmatrix} 2 & 3 + i \\\\ 3 + i & 5 \\end{pmatrix}$", "$\\begin{pmatrix} i & 1 \\\\ 1 & i \\end{pmatrix}$", "$\\begin{pmatrix} 0 & 1 \\\\ -1 & 0 \\end{pmatrix}$"]
+    answer: 0
+    explanation: "$A^H = A$ needs real diagonal entries and conjugates across the diagonal."
+  - question: "For $n = 8$, what is $W$ in the Fourier matrix $F_8$?"
+    choices: ["$e^{8\\pi i}$", "$i$", "$e^{2\\pi i/8}$, an eighth of the way round the unit circle", "$2\\pi/8$"]
+    answer: 2
+    explanation: "$W = e^{2\\pi i/n}$, so $W^8 = 1$. For $n = 4$ it would be $e^{i\\pi/2} = i$."
+  - question: "Why does the FFT need only about $\\frac12 n\\log_2 n$ multiplications?"
+    choices: ["Because $F_n$ splits into two half-size Fourier matrices plus a cheap diagonal fix-up, and the split repeats $\\log_2 n$ times", "Because $F_n$ has many zero entries", "Because $F_n$ is diagonal", "Because $F_n^{-1} = F_n$"]
+    answer: 0
+    explanation: "Each level costs $n/2$ multiplications (the diagonal $D$), and there are $\\log_2 n$ levels. $F_n$ itself has no zero entries."
+flashcards:
+  - front: "Length and inner product in $\\mathbf{C}^n$"
+    back: "$\\|z\\|^2 = z^Hz = |z_1|^2 + \\cdots + |z_n|^2$; inner product $y^Hx$. $H$ = conjugate transpose."
+  - front: "Hermitian and unitary"
+    back: "Hermitian: $A^H = A$ (real eigenvalues, perpendicular eigenvectors). Unitary: square with $Q^HQ = I$."
+  - front: "Fourier matrix"
+    back: "$(F_n)_{jk} = W^{jk}$, $j, k = 0, \\dots, n - 1$, $W = e^{2\\pi i/n}$. Orthogonal columns of length $\\sqrt n$: $F_n^{-1} = F_n^H/n$."
+  - front: "FFT step"
+    back: "$F_{64} = \\begin{pmatrix} I & D \\\\ I & -D \\end{pmatrix}\\begin{pmatrix} F_{32} & 0 \\\\ 0 & F_{32} \\end{pmatrix}P$: evens and odds, two half transforms, a diagonal fix-up. Cost $\\frac12n\\log_2n$."
+status: reviewed
+---
+
+Complex numbers slipped into the course because a real matrix can have complex eigenvalues and eigenvectors (transcript, p. 1). This lecture says what changes when vectors and matrices are complex, and then turns to the most important complex matrix, the **Fourier matrix**, and the **fast Fourier transform** (FFT), which cuts the $n^2$ multiplications for a full $n \times n$ matrix down to about $n\log_2n$ and "changed everything" (pp. 1–2).
+
+## Length of a complex vector
+
+A vector $z = (z_1, \dots, z_n)$ with complex components lives in $\mathbf{C}^n$, complex $n$-dimensional space (p. 2). The old $z^Tz$ is no good. For $z = (1, i)$ it gives $1 + i^2 = 0$, and that vector does not have length zero (pp. 2–3). Each component must be multiplied by its conjugate, $\bar z_1z_1 = |z_1|^2$, as on the [symmetric matrices](/courses/18-06/symmetric-matrices-positive-definite) page (p. 3):
+
+<Formula label="Length squared" tex="\|z\|^2 = \bar z^Tz = z^Hz = |z_1|^2 + |z_2|^2 + \cdots + |z_n|^2" cite="reading1" at="pp. 3–5" />
+
+For $(1, i)$: $1 \cdot 1 + (-i)(i) = 1 + 1 = 2$, so the length is $\sqrt2$, not zero (p. 4). The message: **whenever we transpose, we also conjugate**. One symbol does both, $H$, after Hermite (who did not pronounce the H); $z^H$ is read "$z$ Hermitian" (p. 4). The inner product follows (p. 4):
+
+<Formula label="Inner product" tex="y^Hx = \bar y_1x_1 + \cdots + \bar y_nx_n" cite="reading1" at="p. 4" />
+
+It is usually a complex number, but the inner product of $z$ with itself is its length squared (p. 4).
+
+## Hermitian and unitary matrices
+
+**Symmetric becomes Hermitian** (pp. 5–6). For complex matrices the right version of $A^T = A$ is $\bar A^T = A$, written $A^H = A$. The diagonal must be real, and entries across the diagonal are conjugates. Strang's example (p. 5):
+
+<Formula label="A Hermitian matrix" tex="A = \begin{pmatrix} 2 & 3 + i \\ 3 - i & 5 \end{pmatrix} = A^H" cite="reading1" at="p. 5" />
+
+Hermitian matrices have real eigenvalues and perpendicular eigenvectors (p. 6).
+
+**Orthogonal becomes unitary** (pp. 6–7). Orthonormal vectors $q_1, \dots, q_n$ now satisfy, with the conjugate in the inner product (p. 6),
+
+<Formula label="Complex orthonormal vectors" tex="q_i^Hq_j = \begin{cases} 0 & i \neq j \\ 1 & i = j \end{cases} \qquad\Longleftrightarrow\qquad Q^HQ = I" cite="reading1" at="pp. 6–7" />
+
+A square matrix with such columns is called **unitary** instead of orthogonal (p. 7). The textbook has a short dictionary between the real words for $\mathbf{R}^n$ and the complex ones for $\mathbf{C}^n$ (p. 7).
+
+## The Fourier matrix
+
+Electrical engineers count from zero, and for this half hour Strang does too (p. 8). The $n \times n$ Fourier matrix has a first column of ones and then columns of powers of one number $W$ (pp. 8–9):
+
+<Formula label="Fourier matrix" tex="F_n = \begin{pmatrix} 1 & 1 & 1 & \cdots & 1 \\ 1 & W & W^2 & \cdots & W^{n-1} \\ 1 & W^2 & W^4 & \cdots & W^{2(n-1)} \\ \cdots & \cdots & \cdots & \cdots & \cdots \\ 1 & W^{n-1} & W^{2(n-1)} & \cdots & W^{(n-1)^2} \end{pmatrix}, \qquad (F_n)_{jk} = W^{jk}" cite="reading1" at="pp. 8–9" />
+
+The indices run from $0$ to $n - 1$ (p. 9). (Strang says the third column ends at "$W$ to the two $n - 1$"; the exponent is $2(n - 1)$.) The matrix is symmetric in the old, not quite right, sense, and full: no entry is zero (p. 9). $W$ is the special number whose $n$-th power is 1 (p. 10):
+
+<Formula label="The root of unity" tex="W = e^{2\pi i/n} = \cos\frac{2\pi}{n} + i\sin\frac{2\pi}{n}, \qquad W^n = 1" cite="reading1" at="p. 10" />
+
+It sits on the unit circle, $1/n$ of the way round. For powers, the polar form is the useful one: $W^{10} = e^{20\pi i/n}$ at once (p. 10). For $n = 6$, $W$ is at $60°$, and its powers $W^2, \dots, W^6 = 1$ walk round the circle: the six sixth roots of one, of which $W$ is the **primitive** one (pp. 10–11). For $n = 4$, $W = e^{i\pi/2} = i$, and the exponent is the row number times the column number (pp. 11–12):
+
+<Formula label="Four by four" tex="F_4 = \begin{pmatrix} 1 & 1 & 1 & 1 \\ 1 & i & i^2 & i^3 \\ 1 & i^2 & i^4 & i^6 \\ 1 & i^3 & i^6 & i^9 \end{pmatrix} = \begin{pmatrix} 1 & 1 & 1 & 1 \\ 1 & i & -1 & -i \\ 1 & -1 & 1 & -1 \\ 1 & -i & -1 & i \end{pmatrix}" cite="reading1" at="pp. 11–12" />
+
+Multiplying by $F_4$ or by $F_4^{-1}$ is the four-point Fourier transform or its inverse (p. 12). Strang guesses that Fourier knew the inverse, and that what Fourier did not notice (he thinks Gauss noticed it, without making a point of it) is that $F_n$ factors into pieces with many zeros (pp. 12–13).
+
+**Orthogonal columns** (pp. 13–14). Take the second and fourth columns (Strang first calls them "two and four", then counts from zero: one and three). Without conjugating, the products are $1 + 1 + 1 + 1$, not zero. With the conjugate, the $i$ and $-i$ change sign and the sum is zero: the columns are perpendicular (pp. 13–14). Each column has length squared $1 + 1 + 1 + 1 = 4$, so dividing by 2 makes them orthonormal (p. 14):
+
+<Formula label="Inverse of F4" tex="\left(\tfrac12F_4\right)^H\left(\tfrac12F_4\right) = I, \qquad F_4^{-1} = \tfrac14F_4^H" cite="reading1" at="p. 14" />
+
+Anything good about $F_4$ therefore holds for its inverse, which is just its conjugate transpose, scaled (p. 14). (Strang keeps the $\frac12$ inside the matrix and says the inverse is the conjugate transpose; the $\frac14$ above is that statement for $F_4$ itself.) The same holds for every $n$: the columns of $F_n$ are orthogonal with length squared $n$, so $F_n^{-1} = F_n^H/n$; Strang shows it for $n = 4$.
+
+## The fast Fourier transform
+
+The key is a connection between $F_{64}$ and $F_{32}$, half as big, as between $F_6$ and $F_3$ or $F_8$ and $F_4$ (p. 15). $W_{64}$ is $\frac{1}{64}$ of the way round the circle; squaring doubles the angle (p. 15):
+
+<Formula label="Squaring the root" tex="W_{64}^2 = W_{32}" cite="reading1" at="p. 15" />
+
+So $F_{64}$ can be built from two copies of $F_{32}$ with two fix-up factors (pp. 15–16):
+
+<Formula label="FFT factorisation" tex="F_{64} = \begin{pmatrix} I & D \\ I & -D \end{pmatrix}\begin{pmatrix} F_{32} & 0 \\ 0 & F_{32} \end{pmatrix}P, \qquad D = \begin{pmatrix} 1 & & & \\ & W & & \\ & & \ddots & \\ & & & W^{31} \end{pmatrix}" cite="reading1" at="pp. 15–16" />
+
+Here $W = W_{64}$. $P$ is the odd–even permutation: it puts the even-numbered components $x_0, x_2, x_4, \dots$ first and the odd ones $x_1, x_3, \dots$ after them, which costs nothing (p. 16). The middle factor is half zeros: two $32 \times 32$ transforms cost $2 \cdot 32^2$ instead of $64^2$ (pp. 16–17). The fix-up costs the 32 multiplications by $D$; the $I$'s cost nothing (p. 16). Strang does not check the algebra here; it is a matter of sums coming out right (p. 17).
+
+**Recursion** (pp. 17–18). Each $F_{32}$ splits the same way into two $F_{16}$'s, and the permutations together sort the vector into even-evens ($x_0, x_4, x_8, \dots$), even-odds and so on (p. 17). Going all the way down from 64 to 32, 16, 8, 4, 2 and 1 takes six steps, $\log_2 64$, and each level's fix-up costs 32, half of 64 (p. 18):
+
+<Formula label="FFT cost" tex="n^2 \quad\text{reduced to}\quad \tfrac12\,n\log_2n" cite="reading1" at="pp. 18–19" />
+
+For $n = 2^{10} = 1024$: $n^2$ is over a million, while $\frac12 \cdot 1024 \cdot 10 = 5 \cdot 1024$. That is a reduction by a factor of about 200, "just by factoring the matrix properly" (p. 19). It all hinged on a special matrix with orthogonal columns (p. 19).
+
+<WorkedExample title="Complex lengths and an FFT count">
+<Problem>
+(a) Find the length of $z = (2 - i, 1 + 3i)$. (b) Show that $B = \begin{pmatrix} 1 & 2 + i \\ 2 - i & 5 \end{pmatrix}$ is Hermitian and find its eigenvalues. (c) How much faster is the FFT than ordinary multiplication for $n = 4096$?
+</Problem>
+<Step title="(a) Length">
+$z^Hz = |2 - i|^2 + |1 + 3i|^2 = (4 + 1) + (1 + 9) = 15$, so $\|z\| = \sqrt{15}$. (Plain $z^Tz = (2 - i)^2 + (1 + 3i)^2 = (3 - 4i) + (-8 + 6i) = -5 + 2i$, not even real.)
+</Step>
+<Step title="(b) Hermitian">
+The diagonal $1, 5$ is real and $2 + i$, $2 - i$ are conjugates, so $B^H = B$. Trace $6$, determinant $5 - (2 + i)(2 - i) = 5 - 5 = 0$: $\lambda^2 - 6\lambda = 0$, eigenvalues $0$ and $6$, both real as promised.
+</Step>
+<Step title="(c) Count">
+$n = 2^{12}$: $n^2 = 16\,777\,216$, while $\frac12n\log_2n = \frac12 \cdot 4096 \cdot 12 = 24\,576$. The FFT is about $683$ times faster.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- In $\mathbf{C}^n$: transpose and conjugate together. $\|z\|^2 = z^Hz$, inner product $y^Hx$.
+- Hermitian $A^H = A$ replaces symmetric; unitary $Q^HQ = I$ replaces orthogonal.
+- $F_n$ has entries $W^{jk}$, $W = e^{2\pi i/n}$; its columns are orthogonal with length $\sqrt n$, so $F_n^{-1} = F_n^H/n$.
+- FFT: $F_{2m}$ = (fix-up with $I$, $\pm D$) × (two $F_m$) × (even–odd permutation). Cost $\frac12n\log_2n$ instead of $n^2$.

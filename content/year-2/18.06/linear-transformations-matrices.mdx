@@ -1,0 +1,130 @@
+---
+title: Linear transformations and their matrices
+slug: linear-transformations-matrices
+course: "18.06"
+lecture: 30
+order: 1
+summary: "A linear transformation T takes input vectors to output vectors and respects the two vector operations: T(v + w) = T(v) + T(w) and T(cv) = cT(v), or in one rule T(cv + dw) = cT(v) + dT(w). It can be described without coordinates. Projection onto a line and rotation by 45° are linear. Shifting the plane by a fixed v₀ is not (T(0) must be 0), and neither is taking the length, since T(−2v) would have to be −2T(v). Multiplying by a matrix, T(v) = Av, is always linear; (1 0; 0 −1) turns a house upside down, and a 2 × 3 matrix takes R³ to R². To know T it is enough to know T(v₁), …, T(vₙ) for a basis, because T(c₁v₁ + ⋯ + cₙvₙ) = c₁T(v₁) + ⋯ + cₙT(vₙ). Coordinates come from a basis. With an input basis v₁, …, vₙ and an output basis w₁, …, w_m, the matrix A of T has as column j the coefficients of T(vⱼ) in the w's; then A times input coordinates gives output coordinates. Projection onto a line, in the basis along and across the line (its eigenvectors), has matrix (1 0; 0 0) = Λ; in the standard basis, for the 45° line, it is (½ ½; ½ ½). The derivative from c₁ + c₂x + c₃x² to c₂ + 2c₃x has the 2 × 3 matrix (0 1 0; 0 0 2)."
+prerequisites: [singular-value-decomposition, projections-onto-subspaces]
+source:
+  title: "MIT 18.06 Lecture 30: Linear transformations and their matrices"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-30-linear-transformations-and-their-matrices/
+  readings:
+    - title: "18.06 Lecture 30 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/7ad2350defc787c1261729c57131ec6c_Ts3o2I8_Mxc.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 31
+    why: "Change of basis: how the matrix of one transformation changes when the basis changes, and why good bases compress images."
+quiz:
+  - question: "Which transformation of the plane is linear?"
+    choices: ["$T(v) = v + v_0$ with a fixed $v_0 \\neq 0$", "$T(v) = \\|v\\|$", "$T(v) = $ the vector with both components squared", "Rotation by $45°$"]
+    answer: 3
+    explanation: "A rotation respects sums and multiples. A shift moves the zero vector, and the length fails for $c = -2$."
+  - question: "What must every linear transformation do to the zero vector?"
+    choices: ["Send it to zero", "Send it to a fixed $v_0$", "Nothing can be said", "Send it to a unit vector"]
+    answer: 0
+    explanation: "Take $v = 0$ and $c = 3$: $T(0) = T(3 \\cdot 0) = 3T(0)$, so $T(0) = 0$."
+  - question: "How is the first column of the matrix $A$ of $T$ found, given bases $v_1, \\dots, v_n$ and $w_1, \\dots, w_m$?"
+    choices: ["It is $v_1$", "It holds the coordinates of $w_1$", "It is $T(w_1)$", "It holds the coefficients of $T(v_1)$ in the output basis $w_1, \\dots, w_m$"]
+    answer: 3
+    explanation: "Write $T(v_1) = a_{11}w_1 + \\cdots + a_{m1}w_m$; those numbers form column 1."
+  - question: "What is the matrix of $d/dx$ from the basis $1, x, x^2$ to the basis $1, x$?"
+    choices: ["$\\begin{pmatrix} 1 & 0 & 0 \\\\ 0 & 2 & 0 \\end{pmatrix}$", "$\\begin{pmatrix} 0 & 1 \\\\ 0 & 0 \\\\ 2 & 0 \\end{pmatrix}$", "$\\begin{pmatrix} 0 & 1 & 0 \\\\ 0 & 0 & 2 \\end{pmatrix}$", "$\\begin{pmatrix} 0 & 0 & 2 \\\\ 0 & 1 & 0 \\end{pmatrix}$"]
+    answer: 2
+    explanation: "$c_1 + c_2x + c_3x^2$ has derivative $c_2 + 2c_3x$: output coordinates $(c_2, 2c_3)$."
+flashcards:
+  - front: "Linear transformation"
+    back: "$T(cv + dw) = cT(v) + dT(w)$ for all vectors and numbers. Consequence: $T(0) = 0$."
+  - front: "Enough to know a linear transformation"
+    back: "Its values $T(v_1), \\dots, T(v_n)$ on a basis: then $T(\\sum c_iv_i) = \\sum c_iT(v_i)$."
+  - front: "Matrix of $T$ in given bases"
+    back: "Column $j$ = coefficients of $T(v_j)$ in the output basis $w_1, \\dots, w_m$. Then $A$ times input coordinates = output coordinates."
+  - front: "Best basis for a projection"
+    back: "Its eigenvectors (along and across the line): matrix $\\Lambda = \\begin{pmatrix} 1 & 0 \\\\ 0 & 0 \\end{pmatrix}$. Standard basis, $45°$ line: $\\begin{pmatrix} \\frac12 & \\frac12 \\\\ \\frac12 & \\frac12 \\end{pmatrix}$."
+status: reviewed
+---
+
+Linear algebra courses used to *begin* with linear transformations, so in a sense this lecture starts the course again (transcript, p. 1). A linear transformation makes sense without any matrix, and some people, physicists among them, prefer it without coordinates. But to compute, we bring in coordinates, and then every linear transformation leads to a matrix (p. 1).
+
+## Linear transformations without coordinates
+
+**Projection** (pp. 1–2). Take a line in the plane and project every vector $v$ onto it. The output is $T(v)$; transformation, map and mapping all mean the same: a rule from inputs to outputs, like a function (p. 2). No axes are needed (p. 2). A linear transformation respects the two operations on vectors (p. 2):
+
+<Formula label="Linearity" tex="T(v + w) = T(v) + T(w), \qquad T(cv) = c\,T(v)" cite="reading1" at="p. 2" />
+
+Projection qualifies: doubling $v$ doubles its projection, reversing $v$ reverses it (p. 2). The two rules combine into one (p. 2):
+
+<Formula label="Linearity in one rule" tex="T(cv + dw) = c\,T(v) + d\,T(w)" cite="reading1" at="p. 2" />
+
+**Non-examples** (pp. 2–4). Shifting the whole plane by a fixed vector, $T(v) = v + v_0$, is not linear: doubling $v$ adds only one $v_0$, not two (pp. 2–3). In fact every linear $T$ keeps zero fixed: with $v = 0$ and $c = 3$, $T(0) = 3T(0)$, so (p. 3)
+
+<Formula label="Zero stays zero" tex="T(0) = 0" cite="reading1" at="p. 3" />
+
+The length, $T(v) = \|v\|$ from $\mathbf{R}^3$ to $\mathbf{R}^1$, also fails: it sends 0 to 0 and doubles when $v$ doubles, but $T(-2v)$ is $2\|v\|$, not $-2\|v\|$ (pp. 3–4).
+
+**Rotation by $45°$** (pp. 4–5) is linear: doubling $v$ doubles the rotated vector, and rotating $v + w$ gives the sum of the rotations. A transformation acts on everything at once: rotate a house drawn in the plane (the picture on the cover of Strang's book) and the whole house turns (pp. 4–5).
+
+## Multiplying by a matrix
+
+Every matrix gives a linear transformation, $T(v) = Av$, since $A(v + w) = Av + Aw$ and $A(cv) = cAv$ (p. 5). For example (p. 6)
+
+<Formula label="A reflection" tex="A = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}" cite="reading1" at="p. 6" />
+
+keeps each $x$ component and reverses each $y$ component: the house, roof tip and door included, ends up upside down (p. 6). A transformation from $\mathbf{R}^3$ to $\mathbf{R}^2$ comes, for instance, from a $2 \times 3$ matrix (pp. 7–8). Strang's aim is to show that there are no other examples: behind every linear transformation is a matrix (p. 8).
+
+## A basis is enough
+
+How much must you be told to know $T(v)$ for **every** $v$ (p. 8)? Knowing $T(v_1)$ gives $T$ on the line through $v_1$; knowing $T(v_2)$ for an independent $v_2$ gives it on the whole plane of their combinations (pp. 8–9). In general, the values on a **basis** $v_1, \dots, v_n$ of the input space decide everything, because each $v$ is a combination of the basis (p. 9):
+
+<Formula label="Linearity on a basis" tex="v = c_1v_1 + \cdots + c_nv_n \quad\Rightarrow\quad T(v) = c_1T(v_1) + \cdots + c_nT(v_n)" cite="reading1" at="p. 9" />
+
+**Coordinates come from a basis** (pp. 9–10). The numbers $c_1, \dots, c_n$ are the coordinates of $v$, and there is exactly one way to find them. We have always assumed the standard basis, in which $v = (3, 2, 4)$ means 3 times the first coordinate vector, and so on; but another basis, for example the eigenvectors of a matrix, gives other coordinates (p. 10).
+
+## The matrix of a transformation
+
+For $T$ from $\mathbf{R}^n$ to $\mathbf{R}^m$, choose an input basis $v_1, \dots, v_n$ and an output basis $w_1, \dots, w_m$ (pp. 10–11). The matrix $A$ should take the coordinates of $v$ in the input basis to the coordinates of $T(v)$ in the output basis (p. 11). Strang works the projection example below first (pp. 11–14) and then states the general rule (pp. 15–16): column $j$ of $A$ holds the coefficients of $T(v_j)$,
+
+<Formula label="Columns of the matrix" tex="T(v_1) = a_{11}w_1 + a_{21}w_2 + \cdots + a_{m1}w_m, \qquad T(v_j) = a_{1j}w_1 + \cdots + a_{mj}w_m" cite="reading1" at="pp. 15–16" />
+
+Then $A$ times the input coordinates gives the output coordinates. It is right for the first basis vector, whose coordinates are $(1, 0, \dots, 0)$, since $A$ times that is column 1; likewise for every basis vector, and so, by linearity, for every vector (p. 16).
+
+**Projection in a good basis** (pp. 11–14). Project the plane onto a line, with the same basis for inputs and outputs: $v_1$ a unit vector **on** the line, $v_2$ a unit vector **perpendicular** to it (p. 12). The projection leaves $v_1$ alone and kills $v_2$, so input coordinates $(c_1, c_2)$ give output coordinates $(c_1, 0)$ (pp. 12–13):
+
+<Formula label="Projection in its eigenvector basis" tex="A = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} = \Lambda, \qquad \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}\begin{pmatrix} c_1 \\ c_2 \end{pmatrix} = \begin{pmatrix} c_1 \\ 0 \end{pmatrix}" cite="reading1" at="p. 13" />
+
+These basis vectors are the projection's eigenvectors, with eigenvalues 1 and 0, so the matrix is the diagonal $\Lambda$ (pp. 13–14). That is the choice a physicist forced to use coordinates would make (p. 14). **In the standard basis** $(1, 0)$, $(0, 1)$, projecting onto the $45°$ line gives the familiar $P = aa^T/a^Ta$ of chapter 4 (p. 14):
+
+<Formula label="Same projection, standard basis" tex="P = \begin{pmatrix} \tfrac12 & \tfrac12 \\ \tfrac12 & \tfrac12 \end{pmatrix}" cite="reading1" at="p. 14" />
+
+Both $(1, 0)$ and $(0, 1)$ project to $(\frac12, \frac12)$ (p. 14). This matrix is not diagonal, though symmetric with $P^2 = P$; much of the course has worked in "the handiest basis" rather than the best one (p. 14).
+
+**The derivative** (pp. 16–18). Differentiation is linear: that is exactly why learning the derivatives of a short list of functions lets us differentiate all their combinations (p. 17). With inputs $c_1 + c_2x + c_3x^2$ (basis $1, x, x^2$) and outputs $c_2 + 2c_3x$ (basis $1, x$), the matrix is $2 \times 3$ (pp. 16–17):
+
+<Formula label="Matrix of the derivative" tex="A = \begin{pmatrix} 0 & 1 & 0 \\ 0 & 0 & 2 \end{pmatrix}, \qquad A\begin{pmatrix} c_1 \\ c_2 \\ c_3 \end{pmatrix} = \begin{pmatrix} c_2 \\ 2c_3 \end{pmatrix}" cite="reading1" at="pp. 17–18" />
+
+The whole point, Strang says, is that matrices behave like the transformations: the inverse matrix goes with the inverse transformation, the product of matrices with the product of transformations. In his words, "matrix multiplication really came from linear transformations" (p. 18).
+
+<WorkedExample title="Matrices of your own transformations">
+<Problem>
+(a) Find the matrix of the reflection of the plane across the line $y = x$, first in the basis $v_1 = (1, 1)/\sqrt2$, $v_2 = (1, -1)/\sqrt2$, then in the standard basis. (b) Find the matrix of $d/dx$ from cubics (basis $1, x, x^2, x^3$) to quadratics (basis $1, x, x^2$), and use it on $p(x) = 4 - x + 5x^2 + 2x^3$.
+</Problem>
+<Step title="(a) Eigenvector basis">
+The reflection keeps $v_1$, which lies on the line, and reverses $v_2$, which is perpendicular: $T(v_1) = v_1$, $T(v_2) = -v_2$. So $A = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$, diagonal with the eigenvalues.
+</Step>
+<Step title="(a) Standard basis">
+$(1, 0)$ reflects to $(0, 1)$ and $(0, 1)$ to $(1, 0)$, so the columns give $A = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$: the swap permutation. Same transformation, different basis, different matrix.
+</Step>
+<Step title="(b) The derivative">
+$T(1) = 0$, $T(x) = 1$, $T(x^2) = 2x$, $T(x^3) = 3x^2$, so the columns are $(0, 0, 0)$, $(1, 0, 0)$, $(0, 2, 0)$, $(0, 0, 3)$: $A = \begin{pmatrix} 0 & 1 & 0 & 0 \\ 0 & 0 & 2 & 0 \\ 0 & 0 & 0 & 3 \end{pmatrix}$. For $p$, $A(4, -1, 5, 2) = (-1, 10, 6)$, that is $p'(x) = -1 + 10x + 6x^2$, which is right.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Linear: $T(cv + dw) = cT(v) + dT(w)$; then $T(0) = 0$. Projections, rotations and multiplication by $A$ are linear; shifts and lengths are not.
+- The values of $T$ on a basis determine $T$ everywhere.
+- Choosing input and output bases gives a matrix: column $j$ = output coordinates of $T(v_j)$.
+- The eigenvector basis gives the diagonal $\Lambda$; the standard basis gives the usual, handier matrix. The derivative on polynomials has a matrix too.

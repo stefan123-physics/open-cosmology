@@ -1,0 +1,215 @@
+---
+title: "Spherical stars: the Schwarzschild metric, Birkhoff's theorem and the TOV equations"
+slug: schwarzschild-birkhoff-tov
+course: "8.962"
+lecture: 20
+order: 1
+summary: "A static, spherically symmetric body with a vacuum outside has a metric with two functions of radius. Setting the Ricci tensor to zero outside gives the Schwarzschild metric, its constant fixed by the Newtonian limit, and Birkhoff's theorem says it holds outside any spherical body, even a pulsating one. Inside, a perfect fluid turns Einstein's equation into the Tolman–Oppenheimer–Volkoff equations: a mass function, an equation for the metric potential, and relativistic hydrostatic equilibrium, in which pressure itself gravitates."
+prerequisites: [einstein-field-equation, schwarzschild-black-holes]
+source:
+  title: "MIT 8.962 Lecture 20: Spherical Compact Sources I"
+  url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/lecture-20-spherical-compact-sources-i/
+  readings:
+    - title: "8.962 Lecture 20 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/96fab1aa22da86fbde1c5abc5b6b8c7e_PVYTNKZDHBo.pdf
+license: CC BY-NC-SA 4.0
+references:
+  mactutor:
+    title: "MacTutor History of Mathematics, Karl Schwarzschild (biography)"
+    url: https://mathshistory.st-andrews.ac.uk/Biographies/Schwarzschild/
+    location: "illness (pemphigus) and death, 11 May 1916"
+leadsTo:
+  - course: "8.962"
+    lecture: 21
+    why: "Solving the TOV equations: the constant-density star, Buchdahl's limit and realistic equations of state for neutron stars."
+  - course: "8.962"
+    lecture: 22
+    why: "The Schwarzschild spacetime as a black hole: orbits, horizons and coordinates that cross them."
+quiz:
+  - question: "Outside a spherical body, Ricci-flatness gives $e^{2\\Phi} = 1 + a/r$. What fixes the constant $a$?"
+    choices: ["The surface radius of the body", "Matching radial free fall far away to Newton's law, which gives $a = -2GM$", "Requiring $a = 0$, so that the spacetime is flat", "The cosmological constant"]
+    answer: 1
+    explanation: "For large $r$ a slowly falling body has $d^2r/dt^2 \\approx a/(2r^2)$; Newton says $-GM/r^2$, so $a = -2GM$."
+  - question: "A star pulsates radially, staying exactly spherical. What does Birkhoff's theorem say about the spacetime outside it?"
+    choices: ["It oscillates and emits gravitational waves", "It is the static Schwarzschild metric, with no gravitational waves", "It depends on the star's density profile", "It is flat"]
+    answer: 1
+    explanation: "Any spherically symmetric vacuum region is Schwarzschild. Spherical motion has no time-varying quadrupole moment, so it radiates no gravitational waves."
+  - question: "How does the mass $m$ that appears in the metric compare with $m_b$, the sum of the rest masses of the star's particles?"
+    choices: ["$m = m_b$ exactly", "$m < m_b$; the difference is the gravitational binding energy", "$m > m_b$, because pressure adds mass", "They cannot be compared"]
+    answer: 1
+    explanation: "$m_b$ integrates over proper volume, which carries an extra factor $1/\\sqrt{1 - 2Gm/r} > 1$. Binding puts the star in a lower energy state, so the gravitating mass is smaller."
+  - question: "In the TOV equation the Newtonian $Gm/r^2$ becomes $G(m + 4\\pi r^3P)/[r(r - 2Gm)]$. What does the $4\\pi r^3P$ term express?"
+    choices: ["The curvature of space", "That pressure, the work done compressing the fluid, also gravitates", "The rotation of the star", "The cosmological constant"]
+    answer: 1
+    explanation: "Pressure stores energy and energy gravitates. The $r - 2Gm$ in the denominator, by contrast, corrects for the non-Euclidean geometry."
+flashcards:
+  - front: "Schwarzschild metric ($c = 1$)"
+    back: "$ds^2 = -\\left(1 - \\dfrac{2GM}{r}\\right)dt^2 + \\dfrac{dr^2}{1 - 2GM/r} + r^2\\left(d\\theta^2 + \\sin^2\\theta\\,d\\phi^2\\right)$"
+  - front: "Birkhoff's theorem"
+    back: "The vacuum outside any spherically symmetric body, static or not, is the Schwarzschild spacetime. So spherical motion emits no gravitational waves, and outside a star (r > 2GM) there is a timelike Killing vector."
+  - front: "Areal radius"
+    back: "The Schwarzschild $r$: the sphere at $r$ has area $4\\pi r^2$. Proper radial distance between two spheres is not the difference of their $r$."
+  - front: "TOV equations"
+    back: "$\\dfrac{dm}{dr} = 4\\pi r^2\\rho$, $\\dfrac{d\\Phi}{dr} = \\dfrac{G(m + 4\\pi r^3P)}{r(r - 2Gm)}$, $\\dfrac{dP}{dr} = -(\\rho + P)\\dfrac{d\\Phi}{dr}$, plus an equation of state."
+  - front: "Gravitational vs baryonic mass"
+    back: "$m = \\int 4\\pi r^2\\rho\\,dr$ is the gravitating mass; integrating over proper volume, $\\int 4\\pi r^2\\rho\\,dr/\\sqrt{1 - 2Gm/r}$, gives more. The difference is the binding energy."
+status: reviewed
+---
+
+With cosmology finished, the last lectures of 8.962 turn to **compact bodies**: a source occupying a finite region, with a surface and vacuum outside ($T_{\mu\nu} = 0$). Lecture 20 builds the spacetime of a static, spherical one, which Hughes calls a "star" for short. As before, $c = 1$ and the signature is $(-,+,+,+)$. The 8.033 page [Schwarzschild black holes](/courses/8-033/schwarzschild-black-holes) introduced the resulting metric and its coordinates; here it is derived.
+
+## The most general static spherical metric
+
+Spherical symmetry means the metric functions can depend only on radius. The most general static form is
+
+<Formula label="Static, spherically symmetric metric" tex="ds^2 = -e^{2\Phi(r)}\,dt^2 + e^{2\Lambda(r)}\,dr^2 + r^2\left(d\theta^2 + \sin^2\theta\,d\phi^2\right)" cite="reading1" at="transcript pp. 1–2" />
+
+Two choices hide in this:
+
+- A $dt\,dr$ cross term could be present, but a coordinate transformation removes it: this amounts to choosing a good time coordinate.
+- The angular part could have any function of $r$ in front; choosing it to be $r^2$ makes $r$ an **areal radius**: the sphere labelled $r$ has area $4\pi r^2$. It does not make $r$ a radial distance. The proper distance between the spheres at $r_1$ and $r_2$ is $\int e^{\Lambda}dr$, which equals $r_2 - r_1$ only if $\Lambda = 0$, and in general it is not.
+
+These are **Schwarzschild coordinates**. Another useful choice, **isotropic coordinates**, uses a radius $\bar r$ that treats the three spatial directions alike:
+
+<Formula label="Isotropic coordinates" tex="ds^2 = -e^{2\Phi}\,dt^2 + e^{2\mu}\left[d\bar r^2 + \bar r^2\left(d\theta^2 + \sin^2\theta\,d\phi^2\right)\right]" cite="reading1" at="transcript p. 3" />
+
+This loses the areal meaning of the radius. The weak-field metric of linearised theory, $-(1 + 2\Phi)dt^2 + (1 - 2\Phi)(dx^2 + dy^2 + dz^2)$ with $\Phi$ the Newtonian potential, has this form to first order in $\Phi$, with $\mu = -\Phi$: it was in isotropic coordinates all along (p. 3).
+
+## Curvature and source
+
+With the metric known, the curvature is a matter of algebraic stamina (or a computer algebra notebook; Carroll lists the components in different notation). Writing $'$ for $d/dr$, the non-zero Ricci components are
+
+<Formula label="Ricci tensor of the static spherical metric" tex="R_{tt} = e^{2(\Phi - \Lambda)}\left[\Phi'' + \Phi'^2 - \Phi'\Lambda' + \frac{2}{r}\Phi'\right], \qquad R_{rr} = -\Phi'' - \Phi'^2 + \Phi'\Lambda' + \frac{2}{r}\Lambda'" cite="reading1" at="transcript p. 4" />
+
+<Formula label="Angular components" tex="R_{\theta\theta} = e^{-2\Lambda}\left[r\left(\Lambda' - \Phi'\right) - 1\right] + 1, \qquad R_{\phi\phi} = \sin^2\theta\,R_{\theta\theta}" cite="reading1" at="transcript pp. 4, 6" />
+
+The products $\Phi'^2$ and $\Phi'\Lambda'$ are the nonlinear terms that weak-field calculations threw away.
+
+The source is a perfect fluid with $\rho(r)$ and $P(r)$, at rest: only $U^t$ is non-zero, and normalising $U_\mu U^\mu = -1$ gives
+
+<Formula label="Static fluid four-velocity" tex="U^t = e^{-\Phi}, \qquad U_t = -e^{\Phi}" cite="reading1" at="transcript p. 5" />
+
+The star has a surface at $r = r_\star$: $\rho = P = 0$ for $r \ge r_\star$. [Hughes says $e^{\phi}$ and then corrects himself to $e^{-\phi}$ for $U^t$.]
+
+## Outside: the Schwarzschild metric
+
+Outside, $T_{\mu\nu} = 0$, so Einstein's equation is $R_{\mu\nu} = 0$, and any combination of the components vanishes. Multiplying $R_{tt}$ by $e^{-2(\Phi - \Lambda)}$ and adding $R_{rr}$ cancels the nonlinear terms:
+
+<Formula label="Combining tt and rr" tex="e^{-2(\Phi - \Lambda)}R_{tt} + R_{rr} = \frac{2}{r}\left(\Phi' + \Lambda'\right) = 0 \quad\Longrightarrow\quad \Phi = -\Lambda + \text{constant}" cite="reading1" at="transcript pp. 5–6" />
+
+The constant only rescales the time coordinate, so it carries no physics; set it to zero. The angular equation is linear; with $\Lambda = -\Phi$ it becomes
+
+<Formula label="The θθ equation outside" tex="e^{2\Phi}\left(-2r\Phi' - 1\right) + 1 = 0 \quad\Longleftrightarrow\quad \frac{d}{dr}\left(r\,e^{2\Phi}\right) = 1 \quad\Longrightarrow\quad \Phi = \frac{1}{2}\ln\left(1 + \frac{a}{r}\right)" cite="reading1" at="transcript p. 6" />
+
+with $a$ a constant of integration of dimension length.
+
+**Fixing $a$ by the Newtonian limit.** Consider slow radial free fall far away, $r \gg |a|$, with $dt/d\tau \gg dr/d\tau$. The geodesic equation gives $d^2r/d\tau^2 = -\Gamma^r{}_{tt}(dt/d\tau)^2$, and from the Christoffel symbols
+
+<Formula label="Radial free fall far away" tex="\Gamma^r{}_{tt} = e^{2(\Phi - \Lambda)}\Phi' = -\frac{a}{2r^2}\left(1 + \frac{a}{r}\right) \approx -\frac{a}{2r^2} \quad\Longrightarrow\quad \frac{d^2r}{dt^2} \approx \frac{a}{2r^2}" cite="reading1" at="transcript p. 7" />
+
+Newton says $d^2r/dt^2 = -GM/r^2$, so $a = -2GM$. The result is the **Schwarzschild metric**:
+
+<Formula label="Schwarzschild metric" tex="ds^2 = -\left(1 - \frac{2GM}{r}\right)dt^2 + \frac{dr^2}{1 - 2GM/r} + r^2\left(d\theta^2 + \sin^2\theta\,d\phi^2\right)" cite="reading1" at="transcript p. 7" />
+
+Hughes tells its history. Einstein's field equations appeared in November 1915. Karl Schwarzschild, a professor serving as an artillery officer on the Eastern Front, found this exact solution and published it early in 1916 (Hughes tells it as work done while ill and recuperating); it astonished Einstein, who had not expected so simple an exact solution. Schwarzschild died a few months later. [Hughes describes his illness as a lung infection caught in the trenches and his death as several weeks after the solution; Schwarzschild in fact suffered from pemphigus, an autoimmune skin disease, and died in May 1916 (MacTutor biography).] Hughes adds, speaking during the 2020 lockdown, that the story helps him get out of bed in the morning.
+
+<Plot
+  variable="x"
+  domain={[2, 20]}
+  range={[0, 4]}
+  xLabel="r (units of GM)"
+  yLabel="metric factor"
+  curves={[
+    { expr: "1 - 2/x", label: "−g_tt = 1 − 2GM/r" },
+    { expr: "1/(1 - 2/x)", label: "g_rr = 1/(1 − 2GM/r)", dash: true }
+  ]}
+  points={[{ x: 5.80, y: 0.655, label: "neutron-star surface" }]}
+  caption="The two metric functions of the Schwarzschild exterior, computed from the metric above. Far away both approach 1 (flat spacetime); towards r = 2GM, −g_tt falls to zero and g_rr grows without limit. The point marks the surface of a neutron star of 1.4 solar masses and radius 12 km, at r = 5.80 GM, where 1 − 2GM/r = 0.655."
+/>
+
+<WorkedExample title="How relativistic is a neutron star's surface?">
+<Problem>
+A neutron star has $M = 1.4\,M_\odot$ and areal radius $r_\star = 12$ km. Using $GM_\odot/c^2 = 1477$ m, find $2GM/(r_\star c^2)$ there, compare with the Sun's surface ($r = 6.96\times10^8$ m), and find the redshift of light leaving the neutron star.
+</Problem>
+<Step title="The neutron star">
+$GM/c^2 = 1.4 \times 1477 = 2068$ m, so $2GM/(r_\star c^2) = 4136/12\,000 = 0.345$. Corrections of that size are not small.
+</Step>
+<Step title="The Sun">
+$2 \times 1477/(6.96\times10^8) = 4.24\times10^{-6}$: weak field, as linearised theory assumed.
+</Step>
+<Step title="Redshift">
+A static clock at the surface ticks at $\sqrt{-g_{tt}} = \sqrt{1 - 0.345} = 0.810$ of the rate of one far away, so light climbing out is redshifted by $1/0.810 - 1 = 0.235$.
+</Step>
+</WorkedExample>
+
+## Birkhoff's theorem
+
+The Schwarzschild metric matters so much because of **Birkhoff's theorem**: the vacuum outside *any* spherically symmetric body is Schwarzschild, even if the body changes with time, as long as it stays spherical (radial pulsations, for example). A spherical motion has no time-varying quadrupole moment, so it emits no gravitational waves. Outside, you learn nothing about how the matter is distributed in radius, only its mass $M$ and your $r$, much as Gauss's law makes a spherical charge distribution look like a point charge (pp. 9–10).
+
+The proof (p. 10–11) lets the metric functions depend on time, $\Phi(t, r)$ and $\Lambda(t, r)$. A new Ricci component appears:
+
+<Formula label="The new Ricci component" tex="R_{tr} = \frac{2}{r}\,\frac{\partial\Lambda}{\partial t} = 0 \quad\Longrightarrow\quad \Lambda = \Lambda(r)" cite="reading1" at="transcript p. 10" />
+
+$R_{\theta\theta}$ keeps its static form, so the earlier analysis goes through. Moreover its time derivative must vanish, which requires
+
+<Formula label="Separating Φ" tex="\frac{\partial^2\Phi}{\partial t\,\partial r} = 0 \quad\Longrightarrow\quad \Phi(t, r) = \Phi_1(r) + \Phi_2(t)" cite="reading1" at="transcript pp. 10–11" />
+
+The $\Phi_2(t)$ part multiplies $dt^2$ by $e^{2\Phi_2(t)}$, which a new time coordinate $dt' = e^{\Phi_2(t)}dt$ absorbs, and the Schwarzschild form returns. So, as Hughes puts it, a spherically symmetric vacuum spacetime has a Killing vector $\partial_t$, timelike wherever $r > 2GM$ (in particular everywhere outside a star), which gives a conserved energy for orbits, useful in the next lectures.
+
+## Inside: the mass function
+
+Inside, the perfect fluid has $T^{\mu}{}_{\nu} = \mathrm{diag}(-\rho, P, P, P)$, so it is convenient to write Einstein's equation with one index up. The $tt$ component depends on $\Lambda$ alone:
+
+<Formula label="The tt component of the Einstein tensor" tex="G^{t}{}_{t} = -\frac{1}{r^2}\,\frac{d}{dr}\left[r\left(1 - e^{-2\Lambda}\right)\right] = -8\pi G\rho" cite="reading1" at="transcript pp. 11–12" />
+
+Define a **mass function** $m(r)$ by $e^{-2\Lambda} = 1 - 2Gm(r)/r$, chosen so that it matches the exterior. Then $r(1 - e^{-2\Lambda}) = 2Gm$, and
+
+<Formula label="The mass function" tex="\frac{dm}{dr} = 4\pi r^2\rho \quad\Longrightarrow\quad m(r) = \int_0^r 4\pi r'^2\rho(r')\,dr'" cite="reading1" at="transcript p. 12" />
+
+It looks like the obvious mass inside radius $r$, but two remarks show it is not trivial:
+
+- The boundary condition $m(0) = 0$ was imposed. Black holes, Hughes warns, are solutions that violate it.
+- $4\pi r^2dr$ is the Euclidean volume element. The proper volume element here carries the extra factor $e^{\Lambda}$, so integrating over proper volume gives a different, larger number:
+
+<Formula label="Mass from the proper volume" tex="m_b = \int_0^r \frac{4\pi r'^2\rho(r')}{\sqrt{1 - 2Gm(r')/r'}}\,dr' \;>\; m(r)" cite="reading1" at="transcript pp. 12–13" />
+
+Hughes calls $m_b$ the **baryonic mass**: it adds up the rest energy of every particle (a problem set explores how $m_b$ compares with $m$; strictly, counting baryons uses the rest-mass density in place of $\rho$, a distinction Lecture 21 introduces). The mass $m$ that gravitates is smaller. Nothing is lost: binding puts the star in a lower energy state, and the difference measures how tightly gravity holds it together.
+
+## Inside: the potential and hydrostatic equilibrium
+
+The $rr$ component gives the pressure:
+
+<Formula label="The rr component" tex="G^{r}{}_{r} = e^{-2\Lambda}\left(\frac{2}{r}\,\frac{d\Phi}{dr} + \frac{1}{r^2}\right) - \frac{1}{r^2} = 8\pi G P" cite="reading1" at="transcript pp. 13–14" />
+
+With the mass function, it rearranges into an equation for the metric potential:
+
+<Formula label="The metric potential" tex="\frac{d\Phi}{dr} = \frac{G\left(m + 4\pi r^3P\right)}{r\left(r - 2Gm\right)}" cite="reading1" at="transcript p. 14" />
+
+Compare the Newtonian $d\Phi/dr = Gm/r^2$. Two things change. In the numerator, **pressure adds to the mass**: pressure is work done squeezing the body, work adds energy, and energy gravitates. In the denominator, $r - 2Gm$ corrects for the non-Euclidean geometry.
+
+Finally, local conservation of stress-energy for a static perfect fluid (a problem-set result) relates the pressure gradient to the four-acceleration of the fluid elements. With only $U^t$ non-zero and $\Phi = \Phi(r)$, it reduces to $(\rho + P)\,\Gamma^r{}_{tt}(U^t)^2 g_{rr} = -dP/dr$, that is,
+
+<Formula label="Relativistic hydrostatic equilibrium" tex="\frac{dP}{dr} = -\left(\rho + P\right)\frac{d\Phi}{dr} = -\left(\rho + P\right)\frac{G\left(m + 4\pi r^3P\right)}{r\left(r - 2Gm\right)}" cite="reading1" at="transcript pp. 14–15" />
+
+## The TOV equations
+
+Together, the mass function, the potential and hydrostatic equilibrium are the **Tolman–Oppenheimer–Volkoff (TOV) equations**, the way static spherical fluid bodies are built in general relativity (p. 15). The recipe:
+
+1. Choose an equation of state relating $P$ and $\rho$.
+2. Choose a central density $\rho(0)$, with $m(0) = 0$.
+3. Integrate outwards until the pressure vanishes: that is the surface $r_\star$, with total mass $M = m(r_\star)$.
+4. $\Phi$ is known up to a constant; fix it by matching to the exterior, $e^{2\Phi(r_\star)} = 1 - 2GM/r_\star$.
+
+This is how professionals model stars (neutron stars above all), and a favourite problem set of Hughes's has students do it numerically. Lecture 21 solves a simple, if unphysical, special case and discusses realistic equations of state.
+
+<Callout kind="cosmology" title="Birkhoff's theorem in cosmology">
+Birkhoff's theorem has a cosmological use too: a spherical region cut out of a uniform universe evolves as if the rest were not there. That is why the Newtonian expanding sphere in 8.286 ([the Friedmann equation](/courses/8-286/friedmann-equation)) and the uniform sphere of 8.902 ([the cosmological principle and expansion](/courses/8-902/cosmological-principle-expansion)) give the right answer, and why the 8.902 [spherical-collapse model](/courses/8-902/spherical-collapse) can treat an overdense region as a small closed universe.
+</Callout>
+
+## Summary
+
+- A static, spherical spacetime is $-e^{2\Phi}dt^2 + e^{2\Lambda}dr^2 + r^2(d\theta^2 + \sin^2\theta\,d\phi^2)$ in Schwarzschild coordinates, where $r$ is an areal radius, not a distance; isotropic coordinates are an alternative, and the weak-field metric is in that form.
+- Outside, $R_{\mu\nu} = 0$ gives $\Phi = -\Lambda$, $e^{2\Phi} = 1 + a/r$, and the Newtonian limit sets $a = -2GM$: the Schwarzschild metric (1916).
+- Birkhoff's theorem: any spherical vacuum region is Schwarzschild, even around a pulsating body; spherical motion radiates no gravitational waves, and outside a star there is a timelike Killing vector.
+- Inside, $e^{-2\Lambda} = 1 - 2Gm/r$ with $dm/dr = 4\pi r^2\rho$; the gravitating mass is less than the proper-volume (baryonic) mass by the binding energy.
+- The TOV equations, $d\Phi/dr = G(m + 4\pi r^3P)/[r(r - 2Gm)]$ and $dP/dr = -(\rho + P)\,d\Phi/dr$, plus an equation of state and a central density, build relativistic stars.

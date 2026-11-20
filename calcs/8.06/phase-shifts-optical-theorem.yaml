@@ -1,0 +1,615 @@
+# Calculations on content/year-3/8.06/phase-shifts-optical-theorem.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 20 transcripts L20.1-L20.5 and lecture notes chapter 7
+# ("Scattering"), pp. 138-142, eqs. (7.2.10)-(7.2.42).
+# Spherical Bessel functions in closed form (x = ka or kr):
+#   j0 = sin x/x, n0 = −cos x/x; j1 = sin x/x² − cos x/x, n1 = −cos x/x² − sin x/x;
+#   j2 = (3/x³ − 1/x) sin x − (3/x²) cos x, with x²(j2² + n2²) = 1 + 3/x² + 9/x⁴;
+#   j3 = (15/x⁴ − 6/x²) sin x − (15/x³ − 1/x) cos x, with x²(j3² + n3²) = 1 + 6/x² + 45/x⁴ + 225/x⁶;
+#   x²(j1² + n1²) = 1 + 1/x². These give sin²δ_l = (x j_l)²/(x²(j_l² + n_l²)) for the hard sphere, as in the page's Plot.
+# Complex exponentials are checked through their real and imaginary parts (the harness has no complex numbers).
+# Page's own worked example: δ0 = 40°, δ1 = 15°, k = 0.5 fm⁻¹, higher phase shifts zero.
+
+page: content/year-3/8.06/phase-shifts-optical-theorem.mdx
+calcs:
+  # ---------------------------------------------------------------- partial waves far away (L20.2)
+  - id: j3-far
+    kind: limit
+    where: 'eq. (7.2.10) for l = 3: kr j3(kr) → sin(kr − 3π/2) = cos kr, checked at kr = 0.5 + 2πN'
+    inputs: {}
+    formula: (15/rho**3 - 6/rho)*sin(rho) - (15/rho**2 - 1)*cos(rho) + 2
+    limit: sin(rho - 3*pi/2) + 2
+    vary: {rho: [63.3318531, 6283.6853072, 628319.0307180]}
+    tolerance: 1e-5
+    shown: ['j_l(kr) \simeq \frac{1}{kr}\,\sin\left(kr - \frac{l\pi}{2}\right) = \frac{1}{2ik}']
+    source: {cite: reading6, at: 'eq. (7.2.10), p. 138'}
+    origin: mit
+
+  - id: sine-as-exponentials
+    kind: identity
+    where: 'eq. (7.2.10): (e^(ip) − e^(−ip))/2i = sin p; the numerator is purely imaginary, i(sin p − sin(−p)), so the quotient is (sin p − sin(−p))/2'
+    formula: (sin(pp) - sin(-pp))/2
+    equals: sin(pp)
+    samples: {pp: [0.3, 2.1, -1.4]}
+    tolerance: 1e-12
+    shown: ['\left(\frac{e^{i(kr - l\pi/2)}}{r} - \frac{e^{-i(kr - l\pi/2)}}{r}\right)" cite="reading6" at="eq. (7.2.10)']
+    source: {cite: reading6, at: 'eq. (7.2.10), p. 138'}
+    origin: mit
+
+  # ---------------------------------------------------------------- one-dimensional analogy (L20.2)
+  - id: one-d-scattered-real
+    kind: identity
+    where: 'L20.2 p. 4: (e^(2iδ) − 1)/2i = e^(iδ) sin δ; real parts: sin 2δ/2 = cos δ sin δ'
+    formula: sin(2*dd)/2
+    equals: cos(dd)*sin(dd)
+    samples: {dd: [0.2, 0.7, 1.3, -0.5]}
+    tolerance: 1e-12
+    shown: ['e^{i\delta}\sin\delta\;e^{ikx}']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: mit
+
+  - id: one-d-scattered-imag
+    kind: identity
+    where: 'L20.2 p. 4 and eq. (7.2.17): imaginary parts of (e^(2iδ) − 1)/2i and e^(iδ) sin δ: (1 − cos 2δ)/2 = sin²δ'
+    formula: (1 - cos(2*dd))/2
+    equals: sin(dd)**2
+    samples: {dd: [0.2, 0.7, 1.3, -0.5]}
+    tolerance: 1e-12
+    shown: ['\frac{e^{2i\delta_l} - 1}{2i} = e^{i\delta_l}\sin\delta_l']
+    source: {cite: reading6, at: 'eq. (7.2.17), p. 139'}
+    origin: mit
+
+  # ---------------------------------------------------------------- cross section and optical theorem (L20.4)
+  - id: harmonics-orthonormal
+    kind: identity
+    where: 'p. 139: ∫Y*_l0 Y_l''0 dΩ is 1 for l = l'' and 0 otherwise; checked for Y10 = √(3/4π) u (gives 1) and Y00·Y10 (gives 0), with dΩ = 2π du'
+    formula: 2*pi*integrate('3/(4*pi)*s**2', 's', -1, 1) + 2*pi*integrate('sqrt(1/(4*pi))*sqrt(3/(4*pi))*s', 's', -1, 1)
+    equals: 1
+    samples: {kk: [1.0]}
+    tolerance: 1e-9
+    shown: ['The spherical harmonics are orthonormal, so the integral is 1']
+    source: {cite: reading6, at: 'p. 139'}
+    origin: mit
+
+  - id: forward-prefactor
+    kind: identity
+    where: 'p. 140: (√(4π)/k)·√(2l + 1)·Y_l0(0) with Y_l0(0) = √((2l + 1)/4π) is (2l + 1)/k'
+    formula: sqrt(4*pi)/kk*sqrt(2*ll + 1)*sqrt((2*ll + 1)/(4*pi))
+    equals: (2*ll + 1)/kk
+    samples: {kk: [0.5, 2.0, 1.0], ll: [0, 1, 5]}
+    tolerance: 1e-12
+    shown: ['f(0) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\,e^{i\delta_l}\sin\delta_l']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: mit
+
+  - id: optical-theorem
+    kind: identity
+    where: 'L20.4 pp. 2-3: Im f(0) = (1/k)S with S = Σ(2l + 1) sin²δ_l, and σ = (4π/k²)S, so Im f(0) = (k/4π)σ and σ = (4π/k) Im f(0)'
+    formula: 4*pi/kk*(1/kk*(sin(d0)**2 + 3*sin(d1)**2))
+    equals: 4*pi/kk**2*(sin(d0)**2 + 3*sin(d1)**2)
+    samples: {kk: [0.5, 2.0], d0: [0.7, 1.2], d1: [0.26, -0.4]}
+    tolerance: 1e-12
+    shown: ['= \frac{k}{4\pi}\,\sigma', 'tex="\sigma = \frac{4\pi}{k}\,\text{Im}\,f(0)"']
+    source: {cite: reading4, at: 'p. 3'}
+    origin: mit
+
+  # ---------------------------------------------------------------- identifying phase shifts (L20.5)
+  - id: shifted-sine
+    kind: identity
+    where: 'eq. (7.2.25): sin p + tan δ cos p = sin(p + δ)/cos δ'
+    formula: sin(pp) + tan(dd)*cos(pp)
+    equals: sin(pp + dd)/cos(dd)
+    samples: {pp: [0.3, 2.1, -1.4], dd: [0.4, -0.9, 1.2]}
+    tolerance: 1e-12
+    shown: ['= \frac{A_l}{kr\cos\delta_l}\,\sin\left(kr - \frac{l\pi}{2} + \delta_l\right)Y_{l0}(\theta)']
+    source: {cite: reading6, at: 'eq. (7.2.25), p. 140'}
+    origin: mit
+
+  - id: in-out-waves-real
+    kind: identity
+    where: 'eq. (7.2.26), p. 140: e^(−iδ)(e^(i(p + 2δ)) − e^(−ip))/2i = (e^(i(p + δ)) − e^(−i(p + δ)))/2i; its real part, (sin(p + 2δ − δ) − sin(−δ − p))/2, is sin(p + δ)'
+    formula: (sin(-dd + pp + 2*dd) - sin(-dd - pp))/2
+    equals: sin(pp + dd)
+    samples: {pp: [0.3, 2.1, -1.4], dd: [0.4, -0.9, 1.2]}
+    tolerance: 1e-12
+    shown: ['= \frac{e^{-i\delta_l}}{2i}\left(e^{i(kr - l\pi/2 + 2\delta_l)} - e^{-i(kr - l\pi/2)}\right)']
+    source: {cite: reading6, at: 'eq. (7.2.26), p. 140'}
+    origin: mit
+
+  - id: in-out-waves-imag
+    kind: identity
+    where: 'eq. (7.2.26): the imaginary part, −(cos(p + 2δ − δ) − cos(−δ − p))/2, vanishes'
+    formula: (cos(-dd + pp + 2*dd) - cos(-dd - pp))/2 + 1
+    equals: 1
+    samples: {pp: [0.3, 2.1, -1.4], dd: [0.4, -0.9, 1.2]}
+    tolerance: 1e-12
+    shown: ['Up to a constant these are the waves of the ansatz']
+    source: {cite: reading6, at: 'eq. (7.2.26), p. 140'}
+    origin: mit
+
+  # ---------------------------------------------------------------- hard sphere (L20.5, notes 7.2.2)
+  - id: sin2-from-tan2
+    kind: identity
+    where: 'eq. (7.2.36): sin²δ = tan²δ/(1 + tan²δ)'
+    formula: tan(dd)**2/(1 + tan(dd)**2)
+    equals: sin(dd)**2
+    samples: {dd: [0.4, -0.9, 1.2]}
+    tolerance: 1e-12
+    shown: ['\sin^2\delta_l = \frac{\tan^2\delta_l}{1 + \tan^2\delta_l}']
+    source: {cite: reading6, at: 'eq. (7.2.36), p. 142'}
+    origin: mit
+
+  - id: hard-sphere-delta0
+    kind: identity
+    where: 'page: tan δ0 = j0(ka)/n0(ka) = (sin x/x)/(−cos x/x) = −tan x, so δ0 = −ka (for 0 < ka < π/2)'
+    formula: atan((sin(xx)/xx)/(-cos(xx)/xx))
+    equals: -xx
+    samples: {xx: [0.1, 0.5, 1.0, 1.5]}
+    tolerance: 1e-12
+    shown: ['so $\delta_0 = -ka$: far away']
+    source: {cite: reading6, at: 'eq. (7.2.35), p. 141'}
+    origin: page-own
+
+  - id: hard-sphere-delta0-wave
+    kind: identity
+    where: 'page: sin(kr + δ0) with δ0 = −ka is sin(k(r − a)), zero at r = a'
+    formula: sin(kk*rr - kk*aa) + 1
+    equals: sin(kk*(rr - aa)) + 1
+    samples: {kk: [0.5, 2.0], rr: [1.0, 3.7], aa: [1.0, 0.8]}
+    tolerance: 1e-12
+    shown: ['$\sin(kr - ka) = \sin(k(r - a))$']
+    source: {cite: reading6, at: 'eq. (7.2.35), p. 141'}
+    origin: page-own
+
+  - id: low-energy-l0
+    kind: limit
+    where: 'eq. (7.2.39): the l = 0 term (4π/k²) sin²(ka) over 4πa² is sin²x/x² → 1, so σ → 4πa²'
+    inputs: {}
+    formula: sin(xx)**2/xx**2
+    limit: 1
+    vary: {xx: [0.1, 0.01, 0.001]}
+    tolerance: 1e-6
+    shown: ['\sigma \simeq \frac{4\pi}{k^2}\,(ka)^2 = 4\pi a^2']
+    source: {cite: reading6, at: 'eq. (7.2.39), p. 142'}
+    origin: mit
+
+  - id: low-energy-l1
+    kind: limit
+    where: 'eq. (7.2.38), l = 1 term: 3 sin²δ1/(ka)⁶ → (1/3)(2·1!/2!)⁴ = 1/3, with tan δ1 = j1/n1 (the fourth power is needed)'
+    inputs: {}
+    formula: 3*sin(atan((sin(xx)/xx**2 - cos(xx)/xx)/(-cos(xx)/xx**2 - sin(xx)/xx)))**2/xx**6
+    limit: 1/3*(2*1/2)**4
+    vary: {xx: [0.1, 0.03, 0.01]}
+    tolerance: 1e-3
+    shown: ['\left(\frac{2^l\,l!}{(2l)!}\right)^4(ka)^{4l+2}']
+    source: {cite: reading6, at: 'eq. (7.2.38), p. 142'}
+    origin: mit
+
+  - id: low-energy-l2
+    kind: limit
+    where: 'eq. (7.2.38), l = 2 term: 5 sin²δ2/(ka)¹⁰ → (1/5)(4·2!/4!)⁴ = 1/405; without the fourth power it would be (1/5)(1/3) = 1/15'
+    inputs: {}
+    formula: 5*sin(atan(((3/xx**3 - 1/xx)*sin(xx) - 3*cos(xx)/xx**2)/(-(3/xx**3 - 1/xx)*cos(xx) - 3*sin(xx)/xx**2)))**2/xx**10
+    limit: 1/5*(4*2/24)**4
+    vary: {xx: [0.2, 0.1, 0.05]}
+    tolerance: 1e-2
+    shown: ['Spoken in the lecture, the fourth power of the bracket is lost']
+    source: {cite: reading6, at: 'eq. (7.2.38), p. 142'}
+    origin: mit
+
+  - id: x2-j2n2-l2
+    kind: identity
+    where: 'plot: x²(j2² + n2²) = 1 + 3/x² + 9/x⁴, with n2 = −(3/x³ − 1/x) cos x − (3/x²) sin x'
+    formula: xx**2*(((3/xx**3 - 1/xx)*sin(xx) - 3*cos(xx)/xx**2)**2 + (-(3/xx**3 - 1/xx)*cos(xx) - 3*sin(xx)/xx**2)**2)
+    equals: 1 + 3/xx**2 + 9/xx**4
+    samples: {xx: [0.4, 1.3, 3.0]}
+    tolerance: 1e-10
+    shown: ['with the closed forms of j_l and n_l for l ≤ 3']
+    source: {cite: reading6, at: 'eq. (7.2.36), p. 142'}
+    origin: page-own
+
+  - id: x2-j3n3-l3
+    kind: identity
+    where: 'plot: x²(j3² + n3²) = 1 + 6/x² + 45/x⁴ + 225/x⁶, with n3 = −(15/x⁴ − 6/x²) cos x − (15/x³ − 1/x) sin x'
+    formula: xx**2*(((15/xx**4 - 6/xx**2)*sin(xx) - (15/xx**3 - 1/xx)*cos(xx))**2 + (-(15/xx**4 - 6/xx**2)*cos(xx) - (15/xx**3 - 1/xx)*sin(xx))**2)
+    equals: 1 + 6/xx**2 + 45/xx**4 + 225/xx**6
+    samples: {xx: [0.4, 1.3, 3.0]}
+    tolerance: 1e-10
+    shown: ['computed from σ = (4π/k²) Σ (2l + 1) j_l²(ka)/(j_l²(ka) + n_l²(ka))']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: x2-j1n1-l1
+    kind: identity
+    where: 'plot: x²(j1² + n1²) = 1 + 1/x²'
+    formula: xx**2*((sin(xx)/xx**2 - cos(xx)/xx)**2 + (-cos(xx)/xx**2 - sin(xx)/xx)**2)
+    equals: 1 + 1/xx**2
+    samples: {xx: [0.4, 1.3, 3.0]}
+    tolerance: 1e-10
+    shown: ['The hard-sphere cross section in units of the geometric area πa²']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: plot-ka-05
+    kind: value
+    where: 'plot caption: σ/πa² at ka = 0.5 from the sum over l ≤ 3 (l = 4 and up add less than 1e-8)'
+    inputs: {xx: 0.5}
+    formula: 4*(sin(xx)**2 + 3*(sin(xx)/xx - cos(xx))**2/(1 + 1/xx**2) + 5*((3/xx**2 - 1)*sin(xx) - 3*cos(xx)/xx)**2/(1 + 3/xx**2 + 9/xx**4) + 7*((15/xx**3 - 6/xx)*sin(xx) - (15/xx**2 - 1)*cos(xx))**2/(1 + 6/xx**2 + 45/xx**4 + 225/xx**6))/xx**2
+    expected: '3.74'
+    shown: ['At ka = 0.5 it is 3.74πa²']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: plot-ka-05-s
+    kind: value
+    where: 'plot caption: s wave alone at ka = 0.5, 4 sin²(0.5)/0.25'
+    inputs: {xx: 0.5}
+    formula: 4*sin(xx)**2/xx**2
+    expected: '3.68'
+    shown: ['of which the s wave gives 3.68πa²']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: plot-ka-1
+    kind: value
+    where: 'plot caption: σ/πa² at ka = 1 (l ≤ 3; the rest adds about 3e-9)'
+    inputs: {xx: 1.0}
+    formula: 4*(sin(xx)**2 + 3*(sin(xx)/xx - cos(xx))**2/(1 + 1/xx**2) + 5*((3/xx**2 - 1)*sin(xx) - 3*cos(xx)/xx)**2/(1 + 3/xx**2 + 9/xx**4) + 7*((15/xx**3 - 6/xx)*sin(xx) - (15/xx**2 - 1)*cos(xx))**2/(1 + 6/xx**2 + 45/xx**4 + 225/xx**6))/xx**2
+    expected: '3.38'
+    shown: ['at ka = 1 it is 3.38πa²']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: plot-ka-1-s
+    kind: value
+    where: 'plot caption: s wave alone at ka = 1, 4 sin²1'
+    inputs: {xx: 1.0}
+    formula: 4*sin(xx)**2/xx**2
+    expected: '2.83'
+    shown: ['with 2.83πa² from the s wave']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: plot-ka-25
+    kind: value
+    where: 'plot caption: σ/πa² at ka = 2.5 (l ≤ 3 gives 2.887; with all l, 2.889, checked with SciPy)'
+    inputs: {xx: 2.5}
+    formula: 4*(sin(xx)**2 + 3*(sin(xx)/xx - cos(xx))**2/(1 + 1/xx**2) + 5*((3/xx**2 - 1)*sin(xx) - 3*cos(xx)/xx)**2/(1 + 3/xx**2 + 9/xx**4) + 7*((15/xx**3 - 6/xx)*sin(xx) - (15/xx**2 - 1)*cos(xx))**2/(1 + 6/xx**2 + 45/xx**4 + 225/xx**6))/xx**2
+    expected: '2.89'
+    shown: ['by ka = 2.5 it has fallen to 2.89πa²']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  - id: plot-ka-25-s
+    kind: value
+    where: 'plot caption: s wave alone at ka = 2.5, 4 sin²(2.5)/6.25'
+    inputs: {xx: 2.5}
+    formula: 4*sin(xx)**2/xx**2
+    expected: '0.23'
+    shown: ['the s wave alone would give only 0.23πa²']
+    source: {cite: reading6, at: 'eq. (7.2.37), p. 142'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- notes only: phase factor of the hard sphere (7.2.40)-(7.2.42)
+  - id: phase-factor-real
+    kind: identity
+    where: 'eq. (7.2.40): real part of (1 + i t)/(1 − i t) = (1 + i t)²/(1 + t²) is (1 − t²)/(1 + t²) = cos 2δ with t = tan δ'
+    formula: (1 - tan(dd)**2)/(1 + tan(dd)**2)
+    equals: cos(2*dd)
+    samples: {dd: [0.4, -0.9, 1.2]}
+    tolerance: 1e-12
+    shown: ['e^{2i\delta} = \frac{1 + i\tan\delta}{1 - i\tan\delta}']
+    source: {cite: reading6, at: 'eq. (7.2.40), p. 142'}
+    origin: mit
+
+  - id: phase-factor-imag
+    kind: identity
+    where: 'eq. (7.2.40): imaginary part 2t/(1 + t²) = sin 2δ'
+    formula: 2*tan(dd)/(1 + tan(dd)**2)
+    equals: sin(2*dd)
+    samples: {dd: [0.4, -0.9, 1.2]}
+    tolerance: 1e-12
+    shown: ['one can solve for the phase factor itself']
+    source: {cite: reading6, at: 'eq. (7.2.40), p. 142'}
+    origin: mit
+
+  - id: hard-sphere-phase-factor-l1
+    kind: identity
+    where: 'eq. (7.2.41) for l = 1: real part of (n + ij)/(n − ij) = (n² − j²)/(n² + j²) equals cos 2δ1 with tan δ1 = j1/n1'
+    formula: ((-cos(xx)/xx**2 - sin(xx)/xx)**2 - (sin(xx)/xx**2 - cos(xx)/xx)**2)/((-cos(xx)/xx**2 - sin(xx)/xx)**2 + (sin(xx)/xx**2 - cos(xx)/xx)**2)
+    equals: cos(2*atan((sin(xx)/xx**2 - cos(xx)/xx)/(-cos(xx)/xx**2 - sin(xx)/xx)))
+    samples: {xx: [0.3, 1.0, 2.2]}
+    tolerance: 1e-10
+    shown: ['e^{2i\delta_l} = \frac{n_l(ka) + i\,j_l(ka)}{n_l(ka) - i\,j_l(ka)}']
+    source: {cite: reading6, at: 'eq. (7.2.41), p. 142'}
+    origin: mit
+
+  - id: boxed-sign-l0
+    kind: identity
+    where: 'page bracket on eq. (7.2.42): for l = 0, real part of (j − in)/(j + in) = (j² − n²)/(j² + n²) is −cos 2ka, while e^(2iδ0) = e^(−2ika) has real part cos 2ka'
+    formula: ((sin(xx)/xx)**2 - (cos(xx)/xx)**2)/((sin(xx)/xx)**2 + (cos(xx)/xx)**2)
+    equals: -cos(-2*xx)
+    samples: {xx: [0.3, 1.0, 2.2]}
+    tolerance: 1e-12
+    shown: ['for $l = 0$ it gives $-e^{-2ika}$ instead of $e^{2i\delta_0} = e^{-2ika}$']
+    source: {cite: reading6, at: 'eq. (7.2.42), p. 142'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example (page's own)
+  - id: example-givens
+    kind: fact
+    where: 'example: δ0 = 40°, δ1 = 15°, k = 0.5 fm⁻¹ (chosen values, not a real potential)'
+    value: '40'
+    shown: ['$\delta_0 = 40°$ and $\delta_1 = 15°$', '$k = 0.5$ fm⁻¹']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-prefactor
+    kind: value
+    where: 'example (a): 4π/k² = 4π/0.25 fm² = 50.27 fm²'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k**2
+    expected: '50.27 fm**2'
+    shown: ['about 50.27 fm²']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-sin2-40
+    kind: value
+    where: 'example (a): sin²40° = 0.4132'
+    inputs: {}
+    formula: sin(40*pi/180)**2
+    expected: '0.4132'
+    shown: ['$\sin^2 40° = 0.4132$']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-sigma0
+    kind: value
+    where: 'example (a): σ0 = (4π/k²) sin²40° = 20.77 fm²'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k**2*sin(40*pi/180)**2
+    expected: '20.77 fm**2'
+    shown: ['$\sigma_0$ of about 20.77 fm²']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-sin2-15
+    kind: value
+    where: 'example (a): sin²15° = 0.06699'
+    inputs: {}
+    formula: sin(15*pi/180)**2
+    expected: '0.06699'
+    shown: ['$\sin^2 15° = 0.06699$']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-sigma1
+    kind: value
+    where: 'example (a): σ1 = (4π/k²)·3·sin²15° = 10.10 fm²'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k**2*3*sin(15*pi/180)**2
+    expected: '10.10 fm**2'
+    shown: ['$\sigma_1$ of about 10.10 fm²']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-sigma
+    kind: value
+    where: 'example (a): σ = σ0 + σ1 = 30.87 fm²'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k**2*(sin(40*pi/180)**2 + 3*sin(15*pi/180)**2)
+    expected: '30.87 fm**2'
+    shown: ['The total is about 30.87 fm²']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-sigma-barn
+    kind: value
+    where: 'example (a): 30.87 fm² = 0.309 b'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k**2*(sin(40*pi/180)**2 + 3*sin(15*pi/180)**2)
+    expected: '0.309 barn'
+    shown: ['or 0.309 b']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: ex-a0-real
+    kind: value
+    where: 'example (b): sin 40° cos 40° = 0.4924'
+    inputs: {}
+    formula: sin(40*pi/180)*cos(40*pi/180)
+    expected: '0.4924'
+    shown: ['= 0.4924 + 0.4132i$']
+    source: {cite: reading6, at: 'eq. (7.2.18), p. 139'}
+    origin: page-own
+
+  - id: ex-a1-real
+    kind: value
+    where: 'example (b): 3 sin 15° cos 15° = 0.75'
+    inputs: {}
+    formula: 3*sin(15*pi/180)*cos(15*pi/180)
+    expected: '0.75'
+    tolerance: '0.001%'
+    shown: ['$3\,e^{i\delta_1}\sin\delta_1 = 0.75 + 0.2010i$']
+    source: {cite: reading6, at: 'eq. (7.2.18), p. 139'}
+    origin: page-own
+
+  - id: ex-a1-imag
+    kind: value
+    where: 'example (b): 3 sin²15° = 0.2010'
+    inputs: {}
+    formula: 3*sin(15*pi/180)**2
+    expected: '0.2010'
+    shown: ['$3\,e^{i\delta_1}']
+    source: {cite: reading6, at: 'eq. (7.2.18), p. 139'}
+    origin: page-own
+
+  - id: ex-f0-real
+    kind: value
+    where: 'example (b): Re f(0) = (0.4924 + 0.75)/k = 2.485 fm'
+    inputs: {k: 0.5 1/fm}
+    formula: (sin(40*pi/180)*cos(40*pi/180) + 3*sin(15*pi/180)*cos(15*pi/180))/k
+    expected: '2.485 fm'
+    shown: ['$f(0) = (2.485 + 1.228i)$ fm']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: ex-f0-imag
+    kind: value
+    where: 'example (b): Im f(0) = (0.4132 + 0.2010)/k = 1.228 fm'
+    inputs: {k: 0.5 1/fm}
+    formula: (sin(40*pi/180)**2 + 3*sin(15*pi/180)**2)/k
+    expected: '1.228 fm'
+    shown: ['fm $\times\ 1.228$ fm']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: ex-4pi-over-k
+    kind: value
+    where: 'example (b): 4π/k = 25.13 fm'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k
+    expected: '25.13 fm'
+    shown: ['\text{Im}\,f(0) = 25.13$']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: ex-optical
+    kind: value
+    where: 'example (b): (4π/k) Im f(0) = 30.87 fm², the σ of (a)'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k*(sin(40*pi/180)**2 + 3*sin(15*pi/180)**2)/k
+    expected: '30.87 fm**2'
+    shown: ['which is again 30.87 fm²']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: ex-forward
+    kind: value
+    where: 'example (c): |f(0)|² = (2.485² + 1.228²) fm² = 7.68 fm²/sr'
+    inputs: {k: 0.5 1/fm}
+    formula: ((sin(40*pi/180)*cos(40*pi/180) + 3*sin(15*pi/180)*cos(15*pi/180))**2 + (sin(40*pi/180)**2 + 3*sin(15*pi/180)**2)**2)/k**2
+    expected: '7.68 fm**2'
+    shown: ['about 7.68 fm² per steradian']
+    source: {cite: reading6, at: 'eq. (7.2.19), p. 139'}
+    origin: page-own
+
+  - id: ex-side
+    kind: value
+    where: 'example (c): at 90°, |f|² = sin²40°/k² = 1.65 fm²/sr'
+    inputs: {k: 0.5 1/fm}
+    formula: sin(40*pi/180)**2/k**2
+    expected: '1.65 fm**2'
+    shown: ['$\sin^2\delta_0/k^2 = 1.65$ fm²']
+    source: {cite: reading6, at: 'eq. (7.2.19), p. 139'}
+    origin: page-own
+
+  - id: ex-back-real
+    kind: value
+    where: 'example (c): Re f(180°) = (0.4924 − 0.75)/k = −0.515 fm'
+    inputs: {k: 0.5 1/fm}
+    formula: (sin(40*pi/180)*cos(40*pi/180) - 3*sin(15*pi/180)*cos(15*pi/180))/k
+    expected: '-0.515 fm'
+    shown: ['$f = (-0.515 + 0.424i)$ fm']
+    source: {cite: reading6, at: 'eq. (7.2.18), p. 139'}
+    origin: page-own
+
+  - id: ex-back-imag
+    kind: value
+    where: 'example (c): Im f(180°) = (0.4132 − 0.2010)/k = 0.424 fm'
+    inputs: {k: 0.5 1/fm}
+    formula: (sin(40*pi/180)**2 - 3*sin(15*pi/180)**2)/k
+    expected: '0.424 fm'
+    shown: ['At $180°$ the p wave changes sign']
+    source: {cite: reading6, at: 'eq. (7.2.18), p. 139'}
+    origin: page-own
+
+  - id: ex-backward
+    kind: value
+    where: 'example (c): |f(180°)|² = 0.446 fm²/sr'
+    inputs: {k: 0.5 1/fm}
+    formula: ((sin(40*pi/180)*cos(40*pi/180) - 3*sin(15*pi/180)*cos(15*pi/180))**2 + (sin(40*pi/180)**2 - 3*sin(15*pi/180)**2)**2)/k**2
+    expected: '0.446 fm**2'
+    shown: ['about 0.446 fm² per steradian']
+    source: {cite: reading6, at: 'eq. (7.2.19), p. 139'}
+    origin: page-own
+
+  - id: ex-ratio
+    kind: value
+    where: 'example (c): 7.683/0.4456 = 17.2, "about 17 times"'
+    inputs: {}
+    formula: ((sin(40*pi/180)*cos(40*pi/180) + 3*sin(15*pi/180)*cos(15*pi/180))**2 + (sin(40*pi/180)**2 + 3*sin(15*pi/180)**2)**2)/((sin(40*pi/180)*cos(40*pi/180) - 3*sin(15*pi/180)*cos(15*pi/180))**2 + (sin(40*pi/180)**2 - 3*sin(15*pi/180)**2)**2)
+    expected: '17'
+    shown: ['about 17 times as likely']
+    source: {cite: reading6, at: 'eq. (7.2.19), p. 139'}
+    origin: page-own
+
+  - id: ex-incoherent
+    kind: value
+    where: 'example (c): without interference, (sin²40° + 9 sin²15°)/k² = 4.06 fm²/sr at 0 and 180°'
+    inputs: {k: 0.5 1/fm}
+    formula: (sin(40*pi/180)**2 + 9*sin(15*pi/180)**2)/k**2
+    expected: '4.06 fm**2'
+    shown: ['about 4.06 fm² per steradian']
+    source: {cite: reading6, at: 'eq. (7.2.19), p. 139'}
+    origin: page-own
+
+  - id: ex-no-interference
+    kind: identity
+    where: 'example (d): 2π∫₋₁¹(s0 + 9 s1 u² + c u) du/k² = (4π/k²)(s0 + 3 s1) for any cross-term coefficient c'
+    formula: 2*pi*integrate('s0 + 9*s1*s**2 + cc*s', 's', -1, 1)/kk**2
+    equals: 4*pi/kk**2*(s0 + 3*s1)
+    samples: {s0: [0.4132, 0.9], s1: [0.067, 0.2], cc: [0.5, -1.3], kk: [0.5, 2.0]}
+    tolerance: 1e-9
+    shown: ['= (4\pi/k^2)(\sin^2\delta_0 + 3\sin^2\delta_1)$, the result of (a)']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-givens
+    kind: fact
+    where: 'quiz 2: k = 2 fm⁻¹, σ = 50 fm² (chosen values)'
+    value: '50'
+    shown: ['$k = 2$ fm⁻¹ and the total cross section is $\\sigma = 50$ fm²']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: quiz-optical
+    kind: value
+    where: 'quiz 2: Im f(0) = kσ/4π = 2 fm⁻¹ × 50 fm²/4π = 7.96 fm'
+    inputs: {k: 2 1/fm, sig: 50 fm**2}
+    formula: k*sig/(4*pi)
+    expected: '7.96 fm'
+    shown: ['About 7.96 fm', 'about 7.96 fm. It is positive']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: quiz-distractor
+    kind: value
+    where: 'quiz 2, wrong choice: kσ/2π = 15.9 fm (2π in place of 4π)'
+    inputs: {k: 2 1/fm, sig: 50 fm**2}
+    formula: k*sig/(2*pi)
+    expected: '15.9 fm'
+    shown: ['About 15.9 fm']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own
+
+  - id: ex-k-squared
+    kind: value
+    where: 'example (a): k² = (0.5 fm⁻¹)² = 0.25 fm⁻²'
+    inputs: {k: 0.5 1/fm}
+    formula: k**2
+    expected: '0.25 1/fm**2'
+    shown: ['= 4\pi/0.25$ fm²']
+    source: {cite: reading6, at: 'eq. (7.2.20), p. 139'}
+    origin: page-own
+
+  - id: quiz-distractor-2
+    kind: value
+    where: 'quiz 2, wrong choice: kσ/4 = 25 fm (4 in place of 4π)'
+    inputs: {k: 2 1/fm, sig: 50 fm**2}
+    formula: k*sig/4
+    expected: '25 fm'
+    shown: ['"25 fm"']
+    source: {cite: reading6, at: 'p. 140'}
+    origin: page-own

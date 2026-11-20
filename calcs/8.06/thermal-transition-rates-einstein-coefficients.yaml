@@ -1,0 +1,537 @@
+# Calculations on content/year-3/8.06/thermal-transition-rates-einstein-coefficients.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 13 transcripts (L13.1, L13.2) and notes chapter 4 (section 4.5.3,
+# eqs. 4.5.13-4.5.34, pp. 108-110), Gaussian units (u_E = E²/8π).
+# The page's own worked example: hydrogen 2p (m = 0) → 1s, ħω = 10.2 eV, ħ = 6.582e-16 eV s, a₀ = 5.292e-11 m,
+# c = 2.998e8 m/s, α = 1/137.04, k_B = 8.617e-5 eV/K, black-body radiation at 3,000 K.
+
+page: content/year-3/8.06/thermal-transition-rates-einstein-coefficients.mdx
+calcs:
+  # ---------------------------------------------------------------- one wave, energy density
+  - id: dipole-probability
+    kind: identity
+    where: 'eq. (4.5.13): 4|H′_ab|²/ħ² with H′_ab = −E₀(d·n)_ab gives 4E₀²|(d·n)_ab|²/ħ²'
+    formula: 4*(-e0*dn)**2/hb**2*sin((wba - ww)*tt/2)**2/(wba - ww)**2
+    equals: 4*e0**2*dn**2/hb**2*sin((wba - ww)*tt/2)**2/(wba - ww)**2
+    samples: {e0: [0.5, 2.0], dn: [0.3, 1.2], hb: [1.0, 0.5], wba: [2.0, 3.0], ww: [1.7, 2.4], tt: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['P_{ab}(t) = \frac{4E_0^2\,|(\vec d\cdot\vec n)_{ab}|^2}{\hbar^2}']
+    source: {cite: reading4, at: 'eq. (4.5.13)'}
+    origin: mit
+
+  - id: cos2-time-average
+    where: 'eq. (4.5.14), L13.1 p. 4: the time average of cos²ωt over a period is 1/2'
+    inputs: {}
+    formula: integrate('cos(s)**2', 's', 0, 2*pi)/(2*pi)
+    expected: '0.5'
+    tolerance: '0.001%'
+    shown: ['and the average of $\cos^2$ is $1/2$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  - id: electric-energy-average
+    kind: identity
+    where: 'eq. (4.5.14): (4E₀²/8π)·(1/2) = E₀²/4π'
+    formula: 4*e0**2/(8*pi)*integrate('cos(s)**2', 's', 0, 2*pi)/(2*pi)
+    equals: e0**2/(4*pi)
+    samples: {e0: [0.5, 1.0, 3.0]}
+    tolerance: 1e-9
+    shown: ['\langle u_E\rangle = \frac{4E_0^2}{8\pi}\cdot\frac{1}{2} = \frac{E_0^2}{4\pi}']
+    source: {cite: reading4, at: 'eq. (4.5.14)'}
+    origin: mit
+
+  - id: total-energy-average
+    kind: identity
+    where: 'eq. (4.5.15): ⟨u⟩ = 2⟨u_E⟩ = E₀²/2π, so E₀² = 2π⟨u⟩'
+    formula: 2*e0**2/(4*pi)
+    equals: e0**2/(2*pi)
+    samples: {e0: [0.5, 1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['= 2\langle u_E\rangle = \frac{E_0^2}{2\pi} \quad\Rightarrow\quad E_0^2 = 2\pi\langle u\rangle']
+    source: {cite: reading4, at: 'eq. (4.5.15)'}
+    origin: mit
+
+  - id: mode-probability-energy
+    kind: identity
+    where: 'L13.1 p. 4: with E₀²(ω_i) = 2πu(ω_i) the factor 4E₀² becomes 4·2πu'
+    formula: 4*(2*pi*uu)
+    equals: 4*2*pi*uu
+    samples: {uu: [0.2, 1.0, 7.5]}
+    tolerance: 1e-12
+    shown: ['P_i(t) = \frac{4\cdot 2\pi\,u(\omega_i)}{\hbar^2}']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  - id: summed-prefactor
+    kind: identity
+    where: 'L13.2 p. 1: 4 × 2π = 8π in the summed probability'
+    formula: 4*2*pi*dn**2/hb**2
+    equals: 8*pi*dn**2/hb**2
+    samples: {dn: [0.3, 1.2], hb: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['\sum_i P_i(t) = \frac{8\pi}{\hbar^2}\int U(\omega)']
+    source: {cite: reading2, at: 'p. 1'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the frequency integral
+  - id: change-of-variables
+    kind: identity
+    where: 'L13.2 p. 2, eq. (4.5.18): with x = (ω_ba − ω)t/2, ∫ sin²((ω_ba − ω)t/2)/(ω_ba − ω)² dω = (t/2)∫ sin²x/x² dx (finite window, off-centre so 0/0 is never sampled)'
+    formula: integrate('sin((WW - w)*tt/2)**2/(WW - w)**2', 'w', WW - 2.3, WW + 3.1)
+    equals: tt/2*integrate('sin(s)**2/s**2', 's', -3.1*tt/2, 2.3*tt/2)
+    samples: {WW: [3.0, 5.0], tt: [1.0, 2.5]}
+    tolerance: 1e-7
+    shown: ['= \frac{t}{2}\int\frac{\sin^2x}{x^2}\,dx = \frac{\pi}{2}\,t']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  - id: sinc-integral-pi
+    kind: limit
+    where: 'L13.2 p. 2: ∫ sin²x/x² dx over the whole line is π; 2∫₀^X tends to π as X grows'
+    inputs: {}
+    formula: 2*integrate('sin(s)**2/s**2', 's', 0, X)
+    limit: pi
+    vary: {X: [31.4159, 314.159, 1570.8]}
+    tolerance: 1e-3
+    shown: ['a factor $t$ comes out and $\int\sin^2x/x^2\,dx = \pi$ remains']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  - id: frequency-integral
+    kind: limit
+    where: 'eq. (4.5.18) corrected: ∫ sin²((ω_ba − ω)t/2)/(ω_ba − ω)² dω over a wide window tends to πt/2 (t = 2, ω_ba = 3)'
+    inputs: {WW: 3.0, tt: 2.0}
+    formula: integrate('sin((WW - w)*tt/2)**2/(WW - w)**2', 'w', WW - XX + 0.123, WW + XX)
+    limit: pi*tt/2
+    vary: {XX: [31.4159, 157.08, 314.159]}
+    tolerance: 2e-3
+    shown: ['the peaked integral, which equals $\pi t/2$']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  - id: notes-slips-cancel
+    kind: identity
+    where: 'notes eqs. (4.5.17)-(4.5.18): without the 4 of (4.5.13) and with the integral as 2πt, (2π)(2πt) equals the correct 4·2π·(πt/2) = 4π²t'
+    formula: (2*pi)*(2*pi*tt)
+    equals: 4*2*pi*(pi*tt/2)
+    samples: {tt: [0.5, 1.0, 4.0]}
+    tolerance: 1e-12
+    shown: ['evaluates the integral as $2\pi t$ rather than $\pi t/2$']
+    source: {cite: reading4, at: 'eq. (4.5.18)'}
+    origin: slip
+
+  - id: plot-peak
+    kind: limit
+    where: 'plot caption: sin²(xt/2)/x² tends to t²/4 as x → 0 (t = 3)'
+    inputs: {tt: 3.0}
+    formula: sin(XX*tt/2)**2/XX**2
+    limit: tt**2/4
+    vary: {XX: [0.1, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['the peak rises as t²/4 and narrows']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: page-own
+
+  - id: plot-first-zero
+    where: 'plot caption: first zero of sin²(xt/2) at xt/2 = π, so x = 2π/t; checked as sin(π) relative to the peak t²/4 (t = 3)'
+    inputs: {tt: 3.0}
+    formula: 1 + sin((2*pi/tt)*tt/2)**2/(2*pi/tt)**2/(tt**2/4)
+    expected: '1.000000'
+    tolerance: '0.0001%'
+    shown: ['its first zeros at ±2π/t']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: page-own
+
+  - id: rate-prefactor
+    kind: identity
+    where: 'eq. (4.5.19), L13.2 p. 2: (8π/ħ²)(πt/2)/t = 4π²/ħ² ("the 2 gives a 4, the π gives π²")'
+    formula: 8*pi/hb**2*(pi*tt/2)/tt
+    equals: 4*pi**2/hb**2
+    samples: {hb: [1.0, 0.5], tt: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['Combining $8\pi$ with $\pi/2$ gives $4\pi^2$']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  # ---------------------------------------------------------------- direction average
+  - id: nz-squared-average
+    where: 'eqs. (4.5.21)-(4.5.23): ⟨n_z²⟩ = (1/4π)∫cos²θ dΩ = 1/3'
+    inputs: {}
+    formula: 2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi)/(4*pi)
+    expected: '0.333333'
+    tolerance: '0.001%'
+    shown: ['\langle n_in_j\rangle = \frac{1}{3}\,\delta_{ij}']
+    source: {cite: reading4, at: 'eq. (4.5.23)'}
+    origin: mit
+
+  - id: nx-squared-average
+    where: 'eq. (4.5.21): ⟨n_x²⟩ = (1/4π)∫sin³θ dθ ∫cos²φ dφ = 1/3, equal to ⟨n_z²⟩'
+    inputs: {}
+    formula: integrate('sin(s)**3', 's', 0, pi)*integrate('cos(f)**2', 'f', 0, 2*pi)/(4*pi)
+    expected: '0.333333'
+    tolerance: '0.001%'
+    shown: ['\langle n_xn_x\rangle = \langle n_yn_y\rangle = \langle n_zn_z\rangle']
+    source: {cite: reading4, at: 'eq. (4.5.21)'}
+    origin: mit
+
+  - id: nx-ny-average
+    where: 'L13.2 p. 3: off-diagonal ⟨n_x n_y⟩ = (1/4π)∫sin³θ dθ ∫cosφ sinφ dφ = 0; checked as 1 + it'
+    inputs: {}
+    formula: 1 + integrate('sin(s)**3', 's', 0, pi)*integrate('cos(f)*sin(f)', 'f', 0, 2*pi)/(4*pi)
+    expected: '1.000000'
+    tolerance: '0.0001%'
+    shown: ['is positive as often as negative and averages to zero']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: mit
+
+  - id: direction-average
+    kind: identity
+    where: 'eq. (4.5.24): for d = (x1 + i y1, …), Σ_ij (d_i)* d_j δ_ij/3 = Σ_i (x_i − i y_i)(x_i + i y_i)/3 = Σ_i (x_i² + y_i²)/3 = |d|²/3 (the cross terms of each product cancel; checked in real arithmetic)'
+    formula: ((x1*x1 + y1*y1 + (x1*y1 - y1*x1)) + (x2*x2 + y2*y2 + (x2*y2 - y2*x2)) + (x3*x3 + y3*y3 + (x3*y3 - y3*x3)))/3
+    equals: (sqrt(x1**2 + y1**2)**2 + sqrt(x2**2 + y2**2)**2 + sqrt(x3**2 + y3**2)**2)/3
+    samples: {x1: [0.3, -1.2], y1: [0.7, 0.4], x2: [1.1, 0.2], y2: [-0.5, 2.0], x3: [0.0, 0.9], y3: [1.3, -0.6]}
+    tolerance: 1e-12
+    shown: ['= \frac{1}{3}\,\vec d_{ab}^*\cdot\vec d_{ab} \equiv \frac{1}{3}\,|\vec d_{ab}|^2']
+    source: {cite: reading4, at: 'eq. (4.5.24)'}
+    origin: mit
+
+  - id: final-rate
+    kind: identity
+    where: 'eq. (4.5.25): (4π²/ħ²)(|d|²/3) U = 4π²|d|²U/(3ħ²)'
+    formula: 4*pi**2/hb**2*(dd**2/3)*uu
+    equals: 4*pi**2/(3*hb**2)*dd**2*uu
+    samples: {hb: [1.0, 0.5], dd: [0.4, 2.0], uu: [0.3, 1.5]}
+    tolerance: 1e-12
+    shown: ['w = \frac{4\pi^2}{3\hbar^2}\,|\vec d_{ab}|^2\,U(\omega_{ba})']
+    source: {cite: reading4, at: 'eq. (4.5.25)'}
+    origin: mit
+
+  - id: rate-si
+    kind: identity
+    where: 'SI form: with d_G² = d_SI²/(4πε₀), 4π² d_G² U/(3ħ²) = π d_SI² U/(3ε₀ħ²)'
+    formula: 4*pi**2*(ds**2/(4*pi*ep))*uu/(3*hb**2)
+    equals: pi*ds**2*uu/(3*ep*hb**2)
+    samples: {ds: [0.4, 2.0], ep: [1.0, 0.3], uu: [0.3, 1.5], hb: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['the same rate reads $\pi|\vec d_{ab}|^2U(\omega_{ba})/(3\epsilon_0\hbar^2)$']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: spontaneous-slip
+    kind: fact
+    where: 'L13.1 p. 3 and L13.2 p. 4: the lecture says "spontaneous" for the probability and rate induced by the radiation; they are stimulated (induced) transitions'
+    value: 'spontaneous'
+    shown: ['[The transcript calls this the probability "for spontaneous emission"']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: slip
+
+  # ---------------------------------------------------------------- A, lifetime (notes)
+  - id: einstein-a
+    kind: identity
+    where: 'eqs. (4.5.27), (4.5.28): (ħω³/π²c³)(4π²/3ħ²)|d|² = (4/3)ω³|d|²/(ħc³)'
+    formula: hb*ww**3/(pi**2*cc**3)*4*pi**2/(3*hb**2)*dd**2
+    equals: 4/3*ww**3/(hb*cc**3)*dd**2
+    samples: {hb: [1.0, 0.5], ww: [0.7, 2.0], cc: [1.0, 3.0], dd: [0.4, 1.5]}
+    tolerance: 1e-12
+    shown: ['= \frac{4}{3}\,\frac{\omega_{ba}^3}{\hbar c^3}\,|\vec d_{ab}|^2" cite']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: mit
+
+  - id: einstein-a-si
+    kind: identity
+    where: 'SI form: (4/3)ω³ d_G²/(ħc³) with d_G² = d_SI²/(4πε₀) is ω³ d_SI²/(3πε₀ħc³)'
+    formula: 4/3*ww**3*(ds**2/(4*pi*ep))/(hb*cc**3)
+    equals: ww**3*ds**2/(3*pi*ep*hb*cc**3)
+    samples: {ww: [0.7, 2.0], ds: [0.4, 1.5], ep: [1.0, 0.3], hb: [1.0, 0.5], cc: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['[In SI units, $A = \omega_{ba}^3|\vec d_{ab}|^2/(3\pi\epsilon_0\hbar c^3)$.]']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: exponential-decay
+    kind: identity
+    where: 'eq. (4.5.29): N = N₀e^(−At) solves dN/dt = −AN, and e^(−At) = e^(−t/τ) with τ = 1/A'
+    formula: deriv('n0*exp(-aa*s)', 's', tt)
+    equals: -aa*n0*exp(-tt/(1/aa))
+    samples: {n0: [100.0, 2.0], aa: [0.5, 3.0], tt: [0.2, 1.4]}
+    tolerance: 1e-8
+    shown: ['N(t) = N_0\,e^{-At} = N_0\,e^{-t/\tau}']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: quiz-omega-cubed
+    where: 'quiz 4: doubling ω_ba multiplies A by 2³ = 8'
+    inputs: {}
+    formula: 2**3
+    expected: '8'
+    quiz: 3
+    shown: ['The second level lives 8 times shorter']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: a-over-b-slip
+    kind: identity
+    where: 'L13.3 p. 1: the transcript gives A = (ħω³/πc³) B; Einstein''s relation (4.5.8), (4.5.27) has π²c³, which is what gives (4/3)ω³|d|²/ħc³ from B = 4π²|d|²/3ħ²'
+    formula: hb*ww**3/(pi**2*cc**3)*4*pi**2/(3*hb**2)*dd**2
+    equals: 4/3*ww**3*dd**2/(hb*cc**3)
+    samples: {hb: [1.0, 0.5], ww: [0.7, 2.0], cc: [1.0, 3.0], dd: [0.4, 1.5]}
+    tolerance: 1e-12
+    shown: ['[The transcript gives the relation as $\hbar\omega_{ba}^3/\pi c^3$ times $B_{ab}$']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: slip
+
+  - id: einstein-spontaneous-slip
+    kind: fact
+    where: 'L13.3 p. 1: the transcript calls the rate N_b U B_ab "spontaneous emission"; it is stimulated emission'
+    value: 'spontaneous'
+    shown: ['the transcript calls the process with rate $N_bU(\omega_{ba})B_{ab}$ "spontaneous emission"']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: slip
+
+  - id: factors-of-two
+    kind: fact
+    where: 'L13.3 p. 2: hydrogen lifetimes computed this way are "correct up to factors of 2 and measurable"'
+    value: '2'
+    shown: ['a number that comes out right to within factors of about 2']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: lifetime-sum-slip
+    kind: fact
+    where: 'L13.3 p. 2: the transcript says the total lifetime "is the sum of the inverses of the partial lifetimes"; it is 1/τ that equals Σ 1/τ_i'
+    value: 'sum of the inverses'
+    shown: ['[the transcript says the total lifetime itself is that sum]']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: slip
+
+  - id: three-s-slip
+    kind: fact
+    where: 'L13.3 p. 3: the transcript says 3s → 2p changes l "from 1 to 0"; it changes l from 0 to 1'
+    value: 'from 1 to 0'
+    shown: ['[The transcript says "from 1 to 0".]']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: slip
+
+  - id: three-d-delta-l
+    kind: fact
+    where: 'L13.3 pp. 3-4: 3d (l = 2) cannot decay to 2s or 1s (l = 0), a change of 2'
+    value: '2'
+    shown: ['reaching 2s or 1s would change $\ell$ by 2']
+    source: {cite: reading3, at: 'pp. 3–4'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-lyman-alpha
+    where: 'example: Lyman alpha, (3/4) R_y = 0.75 × 13.6 eV'
+    inputs: {}
+    formula: 0.75*13.6057
+    expected: '10.2'
+    shown: ['by emitting a photon of energy $\hbar\omega_{ba} = 10.2$ eV (Lyman alpha)']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-radial-integral
+    kind: identity
+    where: 'example (a): ∫₀^∞ r⁴ e^(−3r/2a₀) dr = 4!(2a₀/3)⁵ (upper limit 80 a₀ is effectively infinite)'
+    formula: integrate('s**4*exp(-3*s/(2*aa))', 's', 0, 80*aa)
+    equals: 24*(2*aa/3)**5
+    samples: {aa: [0.5, 1.0, 2.0]}
+    tolerance: 1e-8
+    shown: ['\int_0^\infty r^4e^{-3r/2a_0}\,dr = 4!\,(2a_0/3)^5']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-angular-integral
+    where: 'example (a): ∫cos²θ dΩ = 4π/3, divided by π'
+    inputs: {}
+    formula: 2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi)/pi
+    expected: '1.333333'
+    tolerance: '0.001%'
+    shown: ['the angular one is $\int\cos^2\theta\,d\Omega = 4\pi/3$']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-matrix-element
+    where: 'example (a): ⟨100|z|210⟩/a₀ = (1/(π√32)) · 4!(2/3)⁵ · 4π/3, in units of a₀'
+    inputs: {}
+    formula: 1/(pi*sqrt(32))*integrate('s**4*exp(-1.5*s)', 's', 0, 80)*4*pi/3
+    expected: '0.745'
+    shown: ['= (128\sqrt 2/243)\,a_0 \approx 0.745\,a_0']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-matrix-element-closed
+    where: 'example (a): 128√2/243'
+    inputs: {}
+    formula: 128*sqrt(2)/243
+    expected: '0.745'
+    shown: ['$\langle 100|z|210\rangle = (128\sqrt 2/243)']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-d-squared
+    where: 'example (a): |d|²/(e²a₀²) = (128√2/243)²'
+    inputs: {}
+    formula: (128*sqrt(2)/243)**2
+    expected: '0.555'
+    shown: ['\approx 0.555\,e^2a_0^2']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-a-gaussian
+    kind: identity
+    where: 'example (b): with e² = αħc, (4/3)ω³ k e²a₀²/(ħc³) = (4/3) k α ω³a₀²/c²'
+    formula: 4/3*ww**3*kk*(al*hb*cc)*aa**2/(hb*cc**3)
+    equals: 4/3*kk*al*ww**3*aa**2/cc**2
+    samples: {ww: [0.7, 2.0], kk: [0.555, 1.0], al: [0.0073, 0.5], hb: [1.0, 0.5], cc: [1.0, 3.0], aa: [0.4, 1.3]}
+    tolerance: 1e-12
+    shown: ['In Gaussian units $e^2 = \alpha\hbar c$, so $A = \frac{4}{3}\times 0.555\,\alpha\,\omega_{ba}^3a_0^2/c^2$']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-omega
+    where: 'example (b): ω = 10.2 eV / 6.582e-16 eV s, per second'
+    inputs: {}
+    formula: 10.2/6.582e-16
+    expected: '1.55e16'
+    shown: ['\approx 1.55 \times 10^{16}$ per second']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-omega3-a2-c2
+    where: 'example (b): ω³a₀²/c², per second'
+    inputs: {}
+    formula: (10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2
+    expected: '1.16e11'
+    shown: ['\omega_{ba}^3a_0^2/c^2 \approx 1.16 \times 10^{11}$ per second']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-four-thirds-k
+    where: 'example (b): (4/3) × 0.555'
+    inputs: {}
+    formula: 4/3*(128*sqrt(2)/243)**2
+    expected: '0.740'
+    shown: ['$A \approx 0.740 \times 1.16 \times 10^{11}/137.04']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-a
+    where: 'example (b): A = (4/3)(128√2/243)² α ω³ a₀²/c², per second'
+    inputs: {}
+    formula: 4/3*(128*sqrt(2)/243)**2/137.04*(10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2
+    expected: '6.26e8'
+    shown: ['\approx 6.26 \times 10^{8}$ per second. The lifetime']
+    source: {cite: reading4, at: 'eq. (4.5.28)'}
+    origin: page-own
+
+  - id: ex-tau
+    where: 'example (b): τ = 1/A, in ns'
+    inputs: {}
+    formula: 1e9/(4/3*(128*sqrt(2)/243)**2/137.04*(10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2)
+    expected: '1.60'
+    shown: ['The lifetime is $\tau = 1/A \approx 1.60$ ns']
+    source: {cite: reading4, at: 'eq. (4.5.29)'}
+    origin: page-own
+
+  - id: ex-tau-summary
+    where: 'summary and flashcard: τ ≈ 1.6 ns for 2p (rounded from 1.597 ns)'
+    inputs: {}
+    formula: 1e9/(4/3*(128*sqrt(2)/243)**2/137.04*(10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2)
+    expected: '1.6'
+    shown: ['$\tau \approx 1.6$ ns.', '$\\tau \\approx 1.6$ ns']
+    source: {cite: reading4, at: 'eq. (4.5.29)'}
+    origin: page-own
+
+  - id: ex-survivors
+    where: 'example (c): e^(−5/1.60)'
+    inputs: {}
+    formula: exp(-5/1.60)
+    expected: '0.044'
+    shown: ['e^{-5/1.60} \approx 0.044$']
+    source: {cite: reading4, at: 'eq. (4.5.29)'}
+    origin: page-own
+
+  - id: ex-survivors-percent
+    where: 'example (c): about 4% (4.4%)'
+    inputs: {}
+    formula: exp(-5/1.60)*100
+    expected: '4'
+    tolerance: '15%'
+    shown: ['after 5 ns only about 4% of the atoms are still in 2p']
+    source: {cite: reading4, at: 'eq. (4.5.29)'}
+    origin: page-own
+
+  - id: ex-stimulated-relation
+    kind: identity
+    where: 'example (d): B U = (A/(ħω³/π²c³)) · ħω³/(π²c³(e^x − 1)) = A/(e^x − 1)'
+    formula: (aa/(hb*ww**3/(pi**2*cc**3)))*hb*ww**3/(pi**2*cc**3)/(exp(x) - 1)
+    equals: aa/(exp(x) - 1)
+    samples: {aa: [1.0, 6.0], hb: [1.0, 0.5], ww: [0.7, 2.0], cc: [1.0, 3.0], x: [0.5, 39.5]}
+    tolerance: 1e-12
+    shown: ['B_{ab}U(\omega_{ba}) = A/(e^{\hbar\omega_{ba}/k_BT} - 1)']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  - id: ex-kt-3000
+    where: 'example (d): k_B T at 3,000 K, in eV'
+    inputs: {}
+    formula: 8.617e-5*3000
+    expected: '0.259'
+    shown: ['$k_BT = 8.617 \times 10^{-5} \times 3000 \approx 0.259$ eV']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  - id: ex-x-3000
+    where: 'example (d): ħω/k_BT = 10.2/0.25851'
+    inputs: {}
+    formula: 10.2/(8.617e-5*3000)
+    expected: '39.5'
+    shown: ['\hbar\omega_{ba}/k_BT \approx 39.5$']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  - id: ex-boltzmann-3000
+    where: 'example (d): e^(−39.5) (with the unrounded 39.457 it is 7.31e-18)'
+    inputs: {}
+    formula: exp(-10.2/(8.617e-5*3000))
+    expected: '7.3e-18'
+    shown: ['$e^{-39.5} \approx 7.3 \times 10^{-18}$']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  - id: ex-stimulated-rate
+    where: 'example (d): A/(e^x − 1) per second'
+    inputs: {}
+    formula: 4/3*(128*sqrt(2)/243)**2/137.04*(10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2/(exp(10.2/(8.617e-5*3000)) - 1)
+    expected: '4.6e-9'
+    shown: ['\approx 4.6 \times 10^{-9}$ per second']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  - id: ex-stimulated-time
+    where: 'example (d): 1/rate in seconds'
+    inputs: {}
+    formula: 1/(4/3*(128*sqrt(2)/243)**2/137.04*(10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2/(exp(10.2/(8.617e-5*3000)) - 1))
+    expected: '2.2e8'
+    shown: ['once in about $2.2 \times 10^{8}$ s']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  - id: ex-stimulated-years
+    where: 'example (d): 2.2e8 s in years (3.156e7 s per year)'
+    inputs: {}
+    formula: 1/(4/3*(128*sqrt(2)/243)**2/137.04*(10.2/6.582e-16)**3*(5.292e-11)**2/(2.998e8)**2/(exp(10.2/(8.617e-5*3000)) - 1))/3.156e7
+    expected: '7'
+    tolerance: '5%'
+    shown: ['some 7 years, against a spontaneous decay within nanoseconds']
+    source: {cite: reading4, at: 'eq. (4.5.27)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- 8.286 figures quoted in the callout
+  - id: guth-recombination
+    kind: fact
+    where: 'callout and leadsTo: Guth (8.286 Lecture 17) puts recombination at about 4,000 K and decoupling at about 3,000 K'
+    value: '4000 K, 3000 K'
+    shown: ['Guth dates recombination, when about half the hydrogen became neutral, to about 4,000 K and decoupling to about 3,000 K']
+    source: {cite: guth17, at: 'pp. 18–19'}
+    origin: mit

@@ -1,0 +1,215 @@
+---
+title: "Conductors: surface forces and the capacitance matrix"
+slug: conductor-surface-forces-capacitance
+course: "8.07"
+lecture: 4
+order: 1
+summary: "The outward force on a conductor's surface follows from virtual work: let a charged sphere grow by dR, and the drop in its field energy must equal the work the field does on the surface. The result is a pressure P = σ²/(2ε₀) = ½σE_out, half of what the full outside field would give, because the charge layer sits where the field rises from zero to E_out and feels on average half of it. For N conductors, the linearity of electrostatics makes each potential a linear combination of the charges, Vᵢ = Σⱼ Pᵢⱼ Qⱼ; the inverse matrix C = P⁻¹ is the capacitance matrix, and an ordinary capacitor, two conductors with charges ±Q, has Q = CV with V the potential difference."
+prerequisites: [electrostatic-energy-self-energy, integral-form-electrostatics, conductors-and-capacitors, multiplication-and-inverse-matrices]
+source:
+  title: "MIT 8.07 Lecture Notes 4: Conductors: Surface Forces and Capacitance"
+  url: https://ocw.mit.edu/courses/8-07-electromagnetism-ii-fall-2012/resources/mit8_07f12_ln4/
+  readings:
+    - title: "8.07 Lecture Notes 4 (Guth, September 21, 2012, addendum to Lecture 7)"
+      url: https://ocw.mit.edu/courses/8-07-electromagnetism-ii-fall-2012/1ffda29d6ddadef8e37e4be9c071b4e7_MIT8_07F12_ln4.pdf
+license: CC BY-NC-SA 4.0
+references:
+  mit802-ch5:
+    title: "8.02T Course Notes, Chapter 5: Capacitance and Dielectrics (Liao, Dourmashkin and Belcher)"
+    url: https://ocw.mit.edu/courses/8-02t-electricity-and-magnetism-spring-2005/resources/chap5capacitance/
+    location: "Section 5.4, Example 5.5, p. 14: the breakdown field of dry air, 3 × 10⁶ V/m"
+leadsTo:
+  - course: "8.07"
+    lecture: 5
+    why: "The notes promise a proof that the charges on conductors arrange themselves in only one way; the next notes give it as the uniqueness theorem, and use it as a licence to guess solutions by the method of images."
+quiz:
+  - question: "A conductor carries surface charge density $\\sigma$, and the field just outside it is $\\vec E_{\\text{out}} = (\\sigma/\\varepsilon_0)\\hat n$. What is the electric force per unit area on the surface?"
+    choices: ["$\\sigma\\vec E_{\\text{out}}$, outwards", "Zero, because the field inside a conductor vanishes", "$\\frac12\\sigma\\vec E_{\\text{out}}$, outwards", "$\\frac12\\sigma\\vec E_{\\text{out}}$, inwards"]
+    answer: 2
+    explanation: "The charge feels the average of the field outside and the zero field inside, so the force per area is $\\frac12\\sigma\\vec E_{\\text{out}} = (\\sigma^2/2\\varepsilon_0)\\hat n$. It always points outwards, whatever the sign of $\\sigma$: the charges repel each other and pull the surface out."
+  - question: "Just outside a metal surface the electric field is 2.0 MV/m. What is the outward electrostatic pressure on the surface?"
+    choices: ["About 17.7 Pa", "About 35.4 Pa", "About 8.85 Pa", "About 101 kPa, one atmosphere"]
+    answer: 0
+    explanation: "$P = \\frac12\\varepsilon_0E_{\\text{out}}^2 = \\frac12 \\times 8.854 \\times 10^{-12} \\times (2.0 \\times 10^6)^2$ Pa, about 17.7 Pa. Forgetting the factor $\\frac12$ gives 35.4 Pa. Even near the breakdown field of air the pressure is thousands of times smaller than the atmosphere's."
+  - question: "Why does the charge on a conductor's surface feel only half of the field just outside it?"
+    choices: ["Because half of the charge sits inside the conductor", "Because the conductor screens half of the field", "Because the factor ½ only appears for spheres", "Because the charge layer has a small thickness, across which the field rises from zero to its outside value, and the charge on average sees the midpoint"]
+    answer: 3
+    explanation: "Inside the layer each bit of charge feels the field of the charge below it. Split the layer into many thin sheets: the $n$th feels the field of the first $n-1$, so on average a sheet feels half of the full field. This holds whatever the profile of the charge, as long as the layer is thin."
+  - question: "For a set of conductors, what does the capacitance-matrix element $C_{21}$ tell you?"
+    choices: ["The potential of conductor 2 when conductor 1 carries unit charge and the others none", "The charge on conductor 2 when conductor 1 is held at unit potential and every other conductor at zero potential", "The capacitance of conductors 1 and 2 used as a capacitor", "The charge on conductor 1 when conductor 2 is at unit potential and the others carry no charge"]
+    answer: 1
+    explanation: "From $Q_i = \\sum_j C_{ij}V_j$, setting $V_1 = 1$ and every other $V_j = 0$ leaves $Q_2 = C_{21}$. The first choice describes $P_{21}$, the inverse matrix. The capacitance of a pair used as a capacitor is a more complicated combination of the matrix elements."
+flashcards:
+  - front: "Virtual work"
+    back: "Using conservation of energy to find a force in a static system: ask how much the energy would change if a surface moved by $dR$; the work the force would do is minus that change. Nothing actually moves."
+  - front: "Pressure on a conductor's surface"
+    back: "$P = \\dfrac{\\sigma^2}{2\\varepsilon_0} = \\dfrac12|\\sigma|\\,|\\vec E_{\\text{out}}| = \\dfrac12\\varepsilon_0|\\vec E_{\\text{out}}|^2$, pointing outwards. The charge feels the average of the field outside and the zero field inside."
+  - front: "Elastance and capacitance matrices"
+    back: "For $N$ conductors with zero potential at infinity, $V_i = \\sum_j P_{ij}Q_j$ (the elastance, or reciprocal capacitance, matrix, fixed by the geometry) and $Q_i = \\sum_j C_{ij}V_j$, with $C = P^{-1}$, that is $\\sum_j C_{ij}P_{jk} = \\delta_{ik}$."
+  - front: "Capacitance of a capacitor"
+    back: "Two conductors with charges $+Q$ and $-Q$: $Q = CV$, with $V = V_1 - V_2$ the potential difference. $C$ is in farads, 1 F = 1 C/V. Its relation to the matrix $C_{ij}$ is not simple, because $V$ is a difference of potentials."
+status: reviewed
+---
+
+Charges on a conductor push on one another, and since they cannot leave the surface, they push on the surface. How large is that push? And when several conductors share a space, how do their charges and potentials depend on each other? Guth's Lecture Notes 4 answer both questions. They are an addendum to Lecture 7, on two topics he had no time for in class, and they finish the course's work on Chapter 2 of Griffiths (notes p. 1). The energy of a charge distribution, $W = \frac12\int\rho V\,d^3x$, comes from the [previous page](/courses/8-07/electrostatic-energy-self-energy); the basic facts about conductors and capacitors were met in [8.02](/courses/8-02/conductors-and-capacitors). (Units are SI, as in the notes. This page follows the notes in order, in its own words, with its own examples.)
+
+## The method of virtual work
+
+**Virtual work** is conservation of energy used to find a force (notes p. 1). The system is static, so no work is really done: we only ask how much the energy *would* change *if* a surface moved by a tiny amount, and read off the force from that change.
+
+Guth's example is a solid conducting ball of radius $R$ with charge $Q$. The charge moves to the surface and, by spherical symmetry, spreads evenly over it:
+
+<Formula label="Surface charge density of the ball" tex="\sigma = \frac{Q}{4\pi R^2}" cite="reading1" at="eq. (4.1), p. 1" />
+
+The forces depend only on where the charges are, so the answer will hold for any spherical shell of charge, conductor or not.
+
+## The energy of a charged sphere
+
+Gauss's law gives the field outside and inside (notes p. 1):
+
+<Formula label="Field of a charged sphere" tex="\vec E = \frac{Q}{4\pi\varepsilon_0 r^2}\,\hat r \;\text{ for } r > R, \qquad \vec E = 0 \;\text{ for } r < R" cite="reading1" at="eq. (4.2), p. 1" />
+
+With $V = 0$ at infinity, the potential outside is a line integral of the field inwards from infinity:
+
+<Formula label="Potential outside" tex="V(r) = -\int_{\infty}^{r}\vec E \cdot d\vec\ell = \int_{r}^{\infty}\vec E \cdot d\vec\ell = \frac{Q}{4\pi\varepsilon_0}\int_{r}^{\infty}\frac{dr'}{r'^2} = \frac{Q}{4\pi\varepsilon_0 r}" cite="reading1" at="eq. (4.3), p. 1" />
+
+Inside, the field is zero, so the potential does not change from its value on the surface (notes p. 2):
+
+<Formula label="Potential inside" tex="V(r) = V(R) - \int_{R}^{r}\vec E \cdot d\vec\ell = V(R) = \frac{Q}{4\pi\varepsilon_0 R}" cite="reading1" at="eq. (4.4), p. 2" />
+
+All the charge sits at this one potential, so the energy formula of the previous page is easy to evaluate:
+
+<Formula label="Energy of the charged sphere" tex="W = \frac12\int\rho V\,d^3x = \frac12 V(R)\int\rho\,d^3x = \frac12 V(R)\,Q = \frac{Q^2}{8\pi\varepsilon_0 R}" cite="reading1" at="eq. (4.5), p. 2" />
+
+## The pressure on the surface
+
+Take a small piece of the surface, of area $da$ (notes p. 2). By symmetry the force on it points along $\hat r$, and it must be proportional to $da$, since the charge on it is $dq = \sigma\,da$. Call the constant of proportionality $P$; it is a force per area, a **pressure**:
+
+<Formula label="Force on a surface element" tex="d\vec F = P\,da\,\hat r" cite="reading1" at="eq. (4.6), p. 2" />
+
+Now imagine the sphere growing from $R$ to $R + dR$. The piece moves by $\hat r\,dR$, and the field does mechanical work on it:
+
+<Formula label="Work on one piece" tex="dW_{\text{mech}} = d\vec F \cdot \left(\hat r\,dR\right) = P\,da\,dR" cite="reading1" at="eq. (4.7), p. 2" />
+
+Adding up the whole surface (Guth keeps the name $dW_{\text{mech}}$, because the result is still proportional to the small $dR$):
+
+<Formula label="Work on the whole surface" tex="dW_{\text{mech}} = P\,dR\int da = 4\pi R^2 P\,dR" cite="reading1" at="eq. (4.8), p. 2" />
+
+Meanwhile the stored energy, from the energy formula above, changes by
+
+<Formula label="Change in the stored energy" tex="dW = \frac{dW}{dR}\,dR = -\frac{Q^2}{8\pi\varepsilon_0 R^2}\,dR" cite="reading1" at="eq. (4.9), p. 2" />
+
+Energy is conserved, so the drop in stored energy is the work done on the surface: $dW = -dW_{\text{mech}}$, or
+
+<Formula label="Energy conservation" tex="-\frac{Q^2}{8\pi\varepsilon_0 R^2}\,dR = -4\pi R^2 P\,dR" cite="reading1" at="eq. (4.10), p. 2" />
+
+Solving for $P$, and writing the answer in terms of $\sigma$ and the field just outside, $\vec E_{\text{out}} = (\sigma/\varepsilon_0)\hat r$, gives the boxed result of the notes:
+
+<Formula label="Pressure on a charged surface" tex="P = \frac{Q^2}{2(4\pi)^2\varepsilon_0 R^4} = \frac12\,\frac{\sigma^2}{\varepsilon_0} = \frac12\,\sigma\,|\vec E_{\text{out}}|" cite="reading1" at="eq. (4.11), p. 2" />
+
+(The last form, as printed in the notes, is right only for positive charge: for any sign it should be read as $\frac12|\sigma|\,|\vec E_{\text{out}}|$, a small slip in the notes. The first two forms are always positive.) The pressure is positive, so the force points **outwards**, whatever the sign of the charge: like charges repel, and they pull the surface out with them. In words, the charge feels a force as if it sat in the field $\frac12\vec E_{\text{out}}$: the **average** of the field outside and the zero field inside (notes p. 3).
+
+## Why one half
+
+The factor $\frac12$ has a simple microscopic explanation (notes p. 3). An ideal conductor has a surface charge layer of zero thickness, but that idealization fails at the scale of atoms: a real layer has some small thickness. Suppose the charge is spread evenly through it. By Gauss's law the field at each depth is proportional to the charge already passed, so it rises in a straight line from zero at the inner edge of the layer to $E_{\text{out}}$ at the outer edge. (The layer is so thin compared with $R$ that the surface can be treated as flat.) The average bit of charge sits halfway up and feels half of $E_{\text{out}}$, just as virtual work found.
+
+The even spread was only for the picture; the answer does not depend on it. Divide the layer into $N$ thin sheets, each with charge $\sigma/N$ per area. By Gauss's law the $n$th sheet feels the field of the $n-1$ sheets below it, $(n-1)\sigma/(N\varepsilon_0)$, however the sheets are spaced. Adding the forces per area (this page's way of writing the argument of the notes):
+
+<Formula label="Sum over thin sheets" tex="\sum_{n=1}^{N}\frac{\sigma}{N}\cdot\frac{(n-1)\,\sigma}{N\varepsilon_0} = \frac{\sigma^2}{\varepsilon_0}\cdot\frac{N(N-1)}{2N^2} \;\to\; \frac{\sigma^2}{2\varepsilon_0} \;\text{ as } N \to \infty" cite="reading1" at="p. 3" />
+
+So the force does not depend on how the charge is distributed through the layer, as long as the layer is thin compared with $R$, so that the planar picture holds.
+
+<Plot variable="x" domain={[-0.5, 2]} range={[0, 1.25]} xLabel="depth / layer thickness" yLabel="E / E_out" samples={400}
+  curves={[
+    { expr: "x < 0 ? 0 : (x < 1 ? x : 1)", label: "even layer" },
+    { expr: "x < 0 ? 0 : (x < 1 ? 1 - (1 - x)^3 : 1)", label: "denser inside", dash: true }
+  ]}
+  caption="The field through the surface charge layer, computed from Gauss's law: E/E_out is the fraction of the layer's charge between the conductor (left of 0) and the point. Solid: charge spread evenly through the layer. Dashed: charge density proportional to (1 − x)², piled up next to the conductor. Outside the layer the field is drawn flat because the surface is treated as a plane (the layer is far thinner than the sphere's radius). In both cases the field averaged over the charge is exactly ½E_out." />
+
+## Worked example: how hard does charge push?
+
+<WorkedExample title="The pressure on a charged metal sphere">
+<Problem>
+A metal sphere of radius 10 cm, far from anything else, is charged to a potential of 30 kV. Find its charge, its surface charge density and the outward pressure on its surface. Check the virtual-work step, and find the force with which the charge tries to push the two halves of the sphere apart.
+</Problem>
+<Step title="Charge and field">
+From $V = Q/(4\pi\varepsilon_0R)$, $Q = 4\pi\varepsilon_0RV = 1.113 \times 10^{-11}\ \text{F} \times 3 \times 10^4\ \text{V}$, about 334 nC. The field just outside is $V/R = 3.0 \times 10^5$ V/m (a tenth of the field at which dry air breaks down, about 3 MV/m according to the 8.02 course notes, Example 5.5), and $\sigma = \varepsilon_0E_{\text{out}} \approx 2.66 \times 10^{-6}$ C/m².
+</Step>
+<Step title="The pressure">
+$P = \frac12\varepsilon_0E_{\text{out}}^2 = \frac12 \times 8.854 \times 10^{-12} \times (3.0 \times 10^5)^2$ Pa, about 0.398 Pa. The same number comes from $\sigma^2/(2\varepsilon_0)$.
+</Step>
+<Step title="Checking the virtual work">
+The stored energy is $W = \frac12QV \approx 5.01$ mJ. Since $W \propto 1/R$ at fixed charge, $|dW/dR| = W/R$, about 0.0501 J/m. The total outward force, $4\pi R^2P$, is the same 0.0501 N, as conservation of energy demands.
+</Step>
+<Step title="Pulling the halves apart">
+On a hemisphere, the sideways parts of the pressure cancel, and what is left is the pressure times the area of the flat circle that closes it: $P\,\pi R^2 \approx 0.0125$ N, about 12.5 millinewtons. Small: even at the breakdown field of air, 3 MV/m, the pressure would be only about 39.8 Pa, roughly 2500 times less than the atmosphere's.
+</Step>
+</WorkedExample>
+
+## Capacitance: many conductors
+
+To treat capacitance in the most general setting, Guth takes $N$ separate conductors of any shapes and positions (notes p. 4). Each conductor is an equipotential; call the potential of the $i$th one $V_i$, with the potential zero at infinity.
+
+If the charge $Q_i$ on each conductor is given, and the shapes are known, the field everywhere is in principle determined. Between the conductors the field is curl-free:
+
+<Formula label="Curl-free field outside the conductors" tex="\nabla \times \vec E = 0" cite="reading1" at="eq. (4.12), p. 4" />
+
+(The notes list only this equation here. Since there is no charge between the conductors, $\nabla \cdot \vec E = 0$ holds there too, and it is needed: a curl-free field alone is not fixed by the boundary conditions.) On the surface of each conductor the field is perpendicular to it, with no part along it:
+
+<Formula label="Field at a conductor's surface" tex="\vec E_{\perp} = \frac{\sigma}{\varepsilon_0}\,\hat n, \qquad \vec E_{\parallel} = 0" cite="reading1" at="eq. (4.13), p. 4" />
+
+where $\hat n$ is the outward unit normal, $\vec E_{\perp}$ the part of the field along it and $\vec E_{\parallel}$ the part along the surface. The charge on conductor $i$ fixes the total of its surface charge, integrated over its surface $S_i$:
+
+<Formula label="Total charge of conductor i" tex="\int_{S_i}\sigma\,da = Q_i" cite="reading1" at="eq. (4.14), p. 4" />
+
+The charges arrange themselves so that the field inside each conductor is zero, and (the notes promise a proof later) this fixes their arrangement uniquely. So once all the $Q_i$ are given, all the potentials follow.
+
+## Linearity and the capacitance matrix
+
+Put a charge $Q_1$ on conductor 1 and none on the others (notes p. 4). The other conductors stay neutral overall, but charge is **induced** on their surfaces, so that the field inside each stays zero. Double $Q_1$, and because the equations of electrostatics are linear, every field doubles, every potential doubles, and every induced surface density doubles. Put charges on two conductors, and the field is the sum of the fields each would make alone. So every potential is a linear combination of the charges:
+
+<Formula label="Potentials are linear in the charges" tex="V_i = \sum_j P_{ij}\,Q_j" cite="reading1" at="eq. (4.15), p. 4" />
+
+where the numbers $P_{ij}$ depend only on the geometry (notes p. 5). The matrix can be inverted, giving the charges in terms of the potentials:
+
+<Formula label="Charges are linear in the potentials" tex="Q_i = \sum_j C_{ij}\,V_j" cite="reading1" at="eq. (4.16), p. 5" />
+
+with
+
+<Formula label="The two matrices are inverses" tex="C = P^{-1}, \qquad \sum_j C_{ij}\,P_{jk} = \delta_{ik}" cite="reading1" at="eq. (4.17), p. 5" />
+
+$C_{ij}$ is the **capacitance matrix**. $P_{ij}$ is called the **elastance matrix**, or simply the reciprocal capacitance matrix; Guth remarks that "elastance" is seldom used. Read column by column: $P_{ij}$ is the potential of conductor $i$ when conductor $j$ carries unit charge and the others none, and $C_{ij}$ is the charge on conductor $i$ when conductor $j$ is held at unit potential and all the others at zero.
+
+## The ordinary capacitor
+
+The usual case is two conductors with equal and opposite charges, and $V$ now means the potential **difference** between them. Such a pair is a **capacitor**, and its capacitance $C$ is defined by (notes p. 5)
+
+<Formula label="Capacitance of a capacitor" tex="Q = CV" cite="reading1" at="eq. (4.18), p. 5" />
+
+In the general notation $Q_1 = Q$ and $Q_2 = -Q$, simple enough, but $V = V_1 - V_2$, so $C$ is not simply one element of the matrix $C_{ij}$: the relation between them takes some work (Guth leaves it to Problem 5 of Problem Set 2 in the course). The unit of capacitance, one coulomb per volt, is the **farad**.
+
+<WorkedExample title="The matrices for two concentric shells">
+<Problem>
+A thin metal shell of radius $a = 4.0$ cm sits at the centre of a second shell of radius $b = 10.0$ cm. Find $P_{ij}$ and $C_{ij}$, and the capacitance of the pair used as a capacitor.
+</Problem>
+<Step title="The elastance matrix">
+A charge $Q_1$ on the inner shell makes the field of a point charge outside it. A charge $Q_2$ on the outer shell makes no field inside it, so it raises both shells by $Q_2/(4\pi\varepsilon_0b)$. Writing $k = 1/(4\pi\varepsilon_0) = 8.988 \times 10^9$ m/F: $V_1 = k(Q_1/a + Q_2/b)$ and $V_2 = k(Q_1 + Q_2)/b$. So $P_{11} = k/a \approx 2.247 \times 10^{11}$ per farad, and $P_{12} = P_{21} = P_{22} = k/b \approx 8.988 \times 10^{10}$ per farad. (The matrix is symmetric. That is true for any conductors, a result known as Green's reciprocity theorem, which the notes do not discuss.)
+</Step>
+<Step title="The capacitance matrix">
+Inverting the 2 × 2 matrix gives $C_{11} = 4\pi\varepsilon_0\,ab/(b-a) \approx 7.42$ pF, $C_{12} = C_{21} = -C_{11}$, and $C_{22} = 4\pi\varepsilon_0\,b^2/(b-a) \approx 18.5$ pF. Check one entry of $CP = 1$: $C_{11}P_{11} + C_{12}P_{21} = \frac{ab}{b-a}\left(\frac1a - \frac1b\right) = 1$.
+</Step>
+<Step title="Using it">
+Earth the outer shell ($V_2 = 0$) and hold the inner at $V_1 = 100$ V: then $Q_1 = C_{11}V_1 \approx 742$ pC and $Q_2 = C_{21}V_1 \approx -742$ pC. The induced charge on the outer shell exactly balances the inner one. In the other description, 1 nC on the inner shell with the outer one neutral gives $V_1 \approx 225$ V and $V_2 \approx 89.9$ V.
+</Step>
+<Step title="As a capacitor">
+With $Q_1 = Q$ and $Q_2 = -Q$, $V_1 - V_2 = Q(P_{11} - P_{21}) = kQ(1/a - 1/b)$, so $C = 4\pi\varepsilon_0\,ab/(b-a) \approx 7.42$ pF, the spherical capacitor of 8.02. Here it happens to equal $C_{11}$, because $C_{12} = -C_{11}$; for most pairs of conductors the relation is less simple.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- **Virtual work** finds a force from conservation of energy: imagine moving a surface slightly and compare the change in stored energy with the work the force would do.
+- For a sphere of charge $Q$ and radius $R$, $W = Q^2/(8\pi\varepsilon_0R)$; letting it grow by $dR$ gives an outward pressure $P = \sigma^2/(2\varepsilon_0) = \frac12\varepsilon_0|\vec E_{\text{out}}|^2$ on its surface, whatever the sign of the charge.
+- The factor $\frac12$: the charge sits in a thin layer where the field rises from zero to $E_{\text{out}}$, so on average it feels half the outside field, whatever the profile of the layer.
+- For $N$ conductors, linearity gives $V_i = \sum_j P_{ij}Q_j$ and $Q_i = \sum_j C_{ij}V_j$ with $C = P^{-1}$: the capacitance matrix and the elastance (reciprocal capacitance) matrix, both fixed by the geometry.
+- A capacitor is two conductors with charges $\pm Q$; $Q = CV$ with $V$ the potential difference, measured in farads (coulombs per volt). Its $C$ is related to the matrix $C_{ij}$, but not simply.

@@ -1,0 +1,328 @@
+# Calculations on content/year-4/8.09/pendulum-periodic-secular-perturbations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) Lecture Notes, Chapter 5, Section 5.2, pp. 95-98 (printed page numbers).
+# The notes quote the averages of sin^3 cos (0) and sin^4 (3/8); everything else is algebra, checked here.
+# Page's own example: a = 0.80 m, theta0 = 0.40 rad, g = 9.81 m/s^2; exact period from the complete elliptic integral.
+# Notation: th = theta, mm = m, aa = a, gg = g, II = I, Om = Omega, nu = nu, JJ = J, J0 = J_0, b0 = beta_0, x = nu t.
+
+page: content/year-4/8.09/pendulum-periodic-secular-perturbations.mdx
+calcs:
+  # ---------------------------------------------------------------- expansion and action-angle form (pp. 95-96)
+  - id: cosine-expansion
+    kind: identity
+    where: 'formula "Expanded pendulum Hamiltonian": -mga cos th = -mga + mga th^2/2 + (mga/2) th^2 (-th^2/12 + th^4/360) + O(th^8) (checked with mga = 1 at small th, remainder ratio to th^8/40320)'
+    formula: (-cos(th) - (-1 + th**2/2 + (th**2/2)*(-th**2/12 + th**4/360)))/(-th**8/40320)
+    equals: 1 + 0*th
+    samples: {th: [0.3, 0.2]}
+    tolerance: 1e-2
+    shown: ['\frac{mga}{2}\,\theta^2\Big(-\frac{\theta^2}{12} + \frac{\theta^4}{360} + \ldots\Big)']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.20), p. 95'}
+    origin: mit
+
+  - id: dh-in-action
+    kind: identity
+    where: 'formula "Perturbation in action-angle variables": -(mga/24) th^4 with th = sqrt(J/(pi I Om)) sin(.) and mga = I Om^2 equals -(J^2/(24 pi^2 I)) sin^4(.)'
+    formula: -(II*Om**2/24)*(sqrt(JJ/(pi*II*Om))*sin(ph))**4
+    equals: -(JJ**2/(24*pi**2*II))*sin(ph)**4
+    samples: {II: [0.64, 2.0], Om: [3.5, 1.2], JJ: [0.3, 1.7], ph: [0.4, 2.2]}
+    tolerance: 1e-12
+    shown: ['-\frac{J^2}{24\pi^2 I}\,\sin^4\!\big(2\pi(\nu t + \beta)\big)']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.23), p. 96'}
+    origin: mit
+
+  - id: oscillator-energy
+    kind: identity
+    where: 'formula "Angle and momentum in action-angle form": p^2/2I + I Om^2 th^2/2 = nu J = Om J/(2 pi), the oscillator energy (eq. 5.21)'
+    formula: (sqrt(II*JJ*Om/pi)*cos(ph))**2/(2*II) + II*Om**2*(sqrt(JJ/(pi*II*Om))*sin(ph))**2/2
+    equals: Om*JJ/(2*pi)
+    samples: {II: [0.64, 2.0], Om: [3.5, 1.2], JJ: [0.3, 1.7], ph: [0.4, 2.2]}
+    tolerance: 1e-12
+    shown: ['\alpha = H_0 = \frac{\Omega}{2\pi}\,J']
+    source: {cite: reading1, at: 'Section 5.2, eqs. (5.21)-(5.22), p. 96'}
+    origin: mit
+
+  - id: beta-rate
+    kind: identity
+    where: 'formula "First-order rates": dDH/dJ = -(J/(12 pi^2 I)) sin^4'
+    formula: deriv('-(u**2/(24*pi**2*II))*sin(ph)**4', 'u', JJ, 1)
+    equals: -(JJ/(12*pi**2*II))*sin(ph)**4
+    samples: {II: [0.64, 2.0], JJ: [0.3, 1.7], ph: [0.4, 2.2]}
+    tolerance: 1e-7
+    shown: ['-\frac{J_0}{12\pi^2 I}\,\sin^4\!\big(2\pi(\nu t + \beta_0)\big)']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.24), p. 96'}
+    origin: mit
+
+  - id: j-rate
+    kind: identity
+    where: 'same formula: -dDH/dbeta = (J^2/(3 pi I)) sin^3 cos (argument 2 pi (nu t + beta))'
+    formula: -deriv('-(JJ**2/(24*pi**2*II))*sin(2*pi*(nu*tt + u))**4', 'u', b0, 1)
+    equals: (JJ**2/(3*pi*II))*sin(2*pi*(nu*tt + b0))**3*cos(2*pi*(nu*tt + b0))
+    samples: {II: [0.64, 2.0], JJ: [0.3, 1.7], nu: [0.56, 1.0], tt: [0.3, 1.1], b0: [0.0, 0.1]}
+    tolerance: 1e-7
+    shown: ['\frac{J_0^2}{3\pi I}\,\sin^3\!\big(2\pi(\nu t + \beta_0)\big)\cos\!\big(2\pi(\nu t + \beta_0)\big)']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.24), p. 96'}
+    origin: mit
+
+  # ---------------------------------------------------------------- averages (p. 97)
+  - id: j-integral
+    kind: identity
+    where: 'formula "Action to first order" (with beta0 = 0): J0 + integral of the rate from 0 to t equals J0 + J0^2 sin^4(2 pi nu t)/(24 pi^2 I nu)'
+    formula: J0 + integrate('(J0**2/(3*pi*II))*sin(2*pi*nu*u)**3*cos(2*pi*nu*u)', 'u', 0, tt)
+    equals: J0 + J0**2*sin(2*pi*nu*tt)**4/(24*pi**2*II*nu)
+    samples: {II: [0.64, 2.0], J0: [0.3, 1.7], nu: [0.56, 1.0], tt: [0.3, 1.1]}
+    tolerance: 1e-9
+    shown: ['J^{(1)}(t) = J_0 + \frac{J_0^2}{24\pi^2 I\nu}\,\sin^4\!\big(2\pi(\nu t + \beta_0)\big)']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.26), p. 97'}
+    origin: mit
+
+  - id: j-integral-slip
+    kind: identity
+    where: 'bracket after "Action to first order": for general beta0 the integral from 0 is J0^2 [sin^4(2 pi (nu t + b0)) - sin^4(2 pi b0)]/(24 pi^2 I nu), so the printed form needs the constant sin^4(2 pi b0) subtracted'
+    formula: integrate('(J0**2/(3*pi*II))*sin(2*pi*(nu*u + b0))**3*cos(2*pi*(nu*u + b0))', 'u', 0, tt)
+    equals: J0**2*(sin(2*pi*(nu*tt + b0))**4 - sin(2*pi*b0)**4)/(24*pi**2*II*nu)
+    samples: {II: [0.64, 2.0], J0: [0.3, 1.7], nu: [0.56, 1.0], tt: [0.3, 1.1], b0: [0.1, 0.37]}
+    tolerance: 1e-9
+    shown: ['subtract the constant $\sin^4(2\pi\beta_0)$ inside the bracket']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.26), p. 97'}
+    origin: slip
+
+  - id: avg-sin3cos
+    kind: identity
+    where: 'section "The action wobbles": the average of sin^3 x cos x over a period is 0 (checked as average + 1 = 1)'
+    formula: integrate('sin(u)**3*cos(u)', 'u', 0, 2*pi)/(2*pi) + 1 + 0*x
+    equals: 1 + 0*x
+    samples: {x: [1.0]}
+    tolerance: 1e-9
+    shown: ['so its integral over a full period vanishes and $\overline{\dot J^{(1)}} = 0$']
+    source: {cite: reading1, at: 'Section 5.2, p. 97'}
+    origin: mit
+
+  - id: avg-sin4
+    where: 'section "The phase drifts": the average of sin^4 over a period'
+    inputs: {}
+    formula: integrate('sin(u)**4', 'u', 0, 2*pi)/(2*pi)
+    expected: '0.375'
+    tolerance: 1e-9
+    shown: ['With the average of $\sin^4$ over a period equal to $3/8$']
+    source: {cite: reading1, at: 'Section 5.2, p. 97'}
+    origin: mit
+
+  - id: beta-average
+    kind: identity
+    where: 'formula "Average drift of the phase": -(J0/(12 pi^2 I)) x 3/8 = -J0/(32 pi^2 I)'
+    formula: -(J0/(12*pi**2*II))*integrate('sin(u)**4', 'u', 0, 2*pi)/(2*pi)
+    equals: -J0/(32*pi**2*II)
+    samples: {J0: [0.3, 1.7], II: [0.64, 2.0]}
+    tolerance: 1e-9
+    shown: ['= -\frac{J_0}{32\pi^2 I}']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.27), p. 97'}
+    origin: mit
+
+  - id: shift-vs-energy
+    kind: identity
+    where: 'formula "Frequency shift against energy": -J0/(32 pi^2 I) with J0 = (E + mga)/nu and I = m a^2 (eE = E + mga)'
+    formula: -(eE/nu)/(32*pi**2*mm*aa**2)
+    equals: -eE/(32*pi**2*mm*aa**2*nu)
+    samples: {eE: [0.01, 0.3], nu: [0.56, 1.0], mm: [0.2, 1.0], aa: [0.8, 2.0]}
+    tolerance: 1e-12
+    shown: ['\nu'' - \nu = \overline{\dot\beta^{(1)}} = -\frac{E + mga}{32\pi^2 m a^2 \nu}']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: mit
+
+  - id: shift-vs-amplitude
+    kind: identity
+    where: 'worked example, step "First-order shift"; quiz 2; summary: with E + mga = mga th0^2/2 and g/a = 4 pi^2 nu^2, the shift is -nu th0^2/16'
+    formula: -(mm*gg*aa*th0**2/2)/(32*pi**2*mm*aa**2*sqrt(gg/aa)/(2*pi))
+    equals: -(sqrt(gg/aa)/(2*pi))*th0**2/16
+    samples: {mm: [0.2, 1.0], gg: [9.81, 3.7], aa: [0.8, 2.0], th0: [0.4, 0.1]}
+    tolerance: 1e-12
+    shown: ['gives $\nu'' - \nu = -\nu\theta_0^2/16$']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: wobble-size
+    kind: identity
+    where: 'section "The action wobbles": J0/(24 pi^2 I nu) with J0 = pi I Om th0^2 and nu = Om/2 pi equals th0^2/12'
+    formula: (pi*II*Om*th0**2)/(24*pi**2*II*Om/(2*pi))
+    equals: th0**2/12
+    samples: {II: [0.64, 2.0], Om: [3.5, 1.2], th0: [0.4, 0.1]}
+    tolerance: 1e-12
+    shown: ['the size of the wobble is $J_0/(24\pi^2I\nu) = \theta_0^2/12$ of $J_0$']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.26), p. 97'}
+    origin: page-own
+
+  - id: beta-closed-form
+    kind: identity
+    where: 'plot curve "beta^(1) (secular)": -(1/6)(3x/8 - sin(4 pi x)/(8 pi) + sin(8 pi x)/(64 pi)) is the integral of -(1/6) sin^4(2 pi u) from 0 to x (beta^(1)/th0^2, using J0/(12 pi^2 I) = nu th0^2/6)'
+    formula: integrate('-sin(2*pi*u)**4/6', 'u', 0, x)
+    equals: -(3*x/8 - sin(4*pi*x)/(8*pi) + sin(8*pi*x)/(64*pi))/6
+    samples: {x: [0.3, 1.0, 2.7]}
+    tolerance: 1e-9
+    shown: ['caption="First-order changes of the pendulum''s action-angle variables']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.24), p. 96'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: omega-squared
+    where: 'step "Small swings": g/a'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: g/a
+    expected: 12.26 1/s^2
+    shown: ['$\Omega = \sqrt{g/a} = \sqrt{12.26}$ s⁻¹']
+    source: {cite: reading1, at: 'Section 5.2, p. 96'}
+    origin: page-own
+
+  - id: omega
+    where: 'step "Small swings"'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: sqrt(g/a)
+    expected: 3.502 1/s
+    shown: ['$\approx 3.502$ rad/s']
+    source: {cite: reading1, at: 'Section 5.2, p. 96'}
+    origin: page-own
+
+  - id: nu
+    where: 'step "Small swings"'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: sqrt(g/a)/(2*pi)
+    expected: 0.5573 Hz
+    shown: ['$\nu = \Omega/2\pi \approx 0.5573$ Hz']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.21), p. 96'}
+    origin: page-own
+
+  - id: period
+    where: 'step "Small swings"'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: 2*pi/sqrt(g/a)
+    expected: 1.794 s
+    shown: ['$T = 1/\nu \approx 1.794$ s']
+    source: {cite: reading1, at: 'Section 5.2, p. 96'}
+    origin: page-own
+
+  - id: rel-shift
+    where: 'step "First-order shift", quiz 2, summary: th0^2/16 for th0 = 0.40, in percent'
+    inputs: {}
+    formula: 0.40**2/16*100
+    expected: '1.0'
+    quiz: 1
+    shown: ['the frequency is 1.0% lower', 'the period is about 1.0% longer', 'grows by 1.0%, in agreement', 'rad the period grows by 1.0%, matching']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: theta0-squared
+    where: 'step "First-order shift"'
+    inputs: {}
+    formula: 0.40**2
+    expected: '0.16'
+    shown: ['With $\theta_0^2 = 0.16$', '$-\\theta_0^2/16 = -0.16/16 = -0.01$']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: nu-prime
+    where: 'step "First-order shift"'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: sqrt(g/a)/(2*pi)*(1 - 0.40**2/16)
+    expected: 0.5518 Hz
+    shown: ['$\nu'' \approx 0.5518$ Hz']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: t-prime
+    where: 'step "First-order shift"'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: 2*pi/sqrt(g/a)/(1 - 0.40**2/16)
+    expected: 1.812 s
+    shown: ['$T'' \approx 1.812$ s']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: k-modulus
+    where: 'step "Exact period"'
+    inputs: {}
+    formula: sin(0.20)
+    expected: '0.1987'
+    shown: ['$k = \sin 0.20 \approx 0.1987$']
+    source: {cite: reading1, at: 'Section 5.2, p. 98'}
+    origin: page-own
+
+  - id: elliptic-k
+    where: 'step "Exact period": K(k) = integral of 1/sqrt(1 - k^2 sin^2 phi) from 0 to pi/2'
+    inputs: {}
+    formula: integrate('1/sqrt(1 - sin(0.2)**2*sin(u)**2)', 'u', 0, pi/2)
+    expected: '1.5866'
+    shown: ['$K(k) \approx 1.5866$']
+    source: {cite: reading1, at: 'Section 5.2, p. 98'}
+    origin: page-own
+
+  - id: exact-ratio
+    where: 'step "Exact period": T_exact/T = 2K/pi; quiz 2 explanation (1.01%)'
+    inputs: {}
+    formula: 2/pi*integrate('1/sqrt(1 - sin(0.2)**2*sin(u)**2)', 'u', 0, pi/2)
+    expected: '1.0101'
+    shown: ['T = 2K/\pi \approx 1.0101$', 'the period is 1.01% longer', 'period gives 1.01% longer']
+    source: {cite: reading1, at: 'Section 5.2, p. 98'}
+    origin: page-own
+
+  - id: first-order-ratio
+    where: 'same step: 1/(1 - 0.01)'
+    inputs: {}
+    formula: 1/(1 - 0.01)
+    expected: '1.0101'
+    shown: ['$1/(1 - 0.01) \approx 1.0101$']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: agreement
+    where: 'same step: agreement to about one part in 10^5'
+    inputs: {}
+    formula: 1/(1 - 0.01) - 2/pi*integrate('1/sqrt(1 - sin(0.2)**2*sin(u)**2)', 'u', 0, pi/2)
+    expected: '1e-5'
+    tolerance: 0.5e-5
+    shown: ['agrees to about one part in $10^5$']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own
+
+  - id: half-cycle-swings
+    where: 'step "The secular effect" and summary'
+    inputs: {}
+    formula: 0.5/(0.40**2/16)
+    expected: '50'
+    shown: ['$0.5/0.01 = 50$ full periods', 'after about 50 full periods']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.27), p. 97'}
+    origin: page-own
+
+  - id: half-cycle-time
+    where: 'same step: 50 periods of 1.8 s'
+    inputs: {g: 9.81 m/s^2, a: 0.80 m}
+    formula: 50*2*pi/sqrt(g/a)/(1 - 0.40**2/16)
+    expected: 90 s
+    tolerance: 2 s
+    shown: ['roughly 90 s']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.27), p. 97'}
+    origin: page-own
+
+  - id: wobble-percent
+    where: 'same step: th0^2/12 in percent'
+    inputs: {}
+    formula: 0.40**2/12*100
+    expected: '1.3'
+    shown: ['about 1.3%, never grows']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.26), p. 97'}
+    origin: page-own
+
+  - id: amplitude-degrees
+    where: 'worked example title and problem: 0.40 rad in degrees'
+    inputs: {}
+    formula: 0.40*180/pi
+    expected: '23'
+    shown: ['(about 23°)', 'swinging to 23 degrees']
+    source: {cite: reading1, at: 'Section 5.2, p. 95'}
+    origin: page-own
+
+  - id: quiz-distractors
+    where: 'quiz 2 distractors: th0^2/4 = 4%, and 0.25%'
+    inputs: {}
+    formula: 0.40**2/4*100
+    expected: '4'
+    shown: ['4% would be $\\theta_0^2/4$']
+    source: {cite: reading1, at: 'Section 5.2, eq. (5.28), p. 98'}
+    origin: page-own

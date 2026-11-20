@@ -1,0 +1,482 @@
+# Calculations on content/year-3/8.06/born-oppenheimer-approximation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 18 transcripts L18.1-L18.3 and lecture notes chapter 6
+# ("Adiabatic approximation"), pp. 16-21, eqs. (6.8)-(6.41).
+# LCAO energy of H2+ (Pauling 1928, modern notation), x = R/a0, energies in Ry:
+#   E_e/Ry = -1 - 2(D + X)/(1 + I), I = e^-x (1 + x + x^2/3), D = 1/x - (1 + 1/x) e^-2x, X = (1 + x) e^-x;
+#   total (E_e + V_NN)/Ry = that + 2/x.
+# Page's own worked example: curvature of the LCAO potential, H2+ and D2+ vibrations, the l = 1 rotation of H2+;
+# a0 = 0.5292 Å, Ry = 13.606 eV, ħc = 1973.3 eV Å, m_p c² = 938.27 MeV, m_d c² = 1875.61 MeV, m_p/m = 1836 (CODATA).
+
+page: content/year-3/8.06/born-oppenheimer-approximation.mdx
+calcs:
+  # ---------------------------------------------------------------- the LCAO integrals (L18.3)
+  - id: overlap-integral
+    kind: identity
+    where: 'eq. (6.40) as in the lecture: the overlap ∫ψ0(r1)ψ0(r2)d³r in elliptic coordinates μ = (r1 + r2)/R, ν = (r1 − r2)/R, d³r = (R³/8)(μ² − ν²)dμ dν dφ, is (x³/4)∫₁^∞(2μ² − 2/3)e^(−xμ)dμ = e^(−x)(1 + x + x²/3) (x = R/a0; the notes print e^(+R/a), a typo)'
+    formula: integrate('(xx**3/4)*(2*s**2 - 2/3)*exp(-xx*s)', 's', 1, 80)
+    equals: exp(-xx)*(1 + xx + xx**2/3)
+    samples: {xx: [0.5, 2.49, 5.0]}
+    tolerance: 1e-8
+    shown: ['|C|^2 = \frac{1}{2(1 + I)}, \qquad I = e^{-R/a_0}\left(1 + \frac{R}{a_0} + \frac{1}{3}\,\frac{R^2}{a_0^2}\right)']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: mit
+
+  - id: normalization
+    kind: identity
+    where: 'eq. (6.40): the norm of ψ0(r1) + ψ0(r2) is 1 + 1 + 2I, so |C|² = 1/(2(1 + I))'
+    formula: (1/(2*(1 + ii)))*(1 + 1 + 2*ii)
+    equals: 1
+    samples: {ii: [0.1, 0.6, 0.95]}
+    tolerance: 1e-12
+    shown: ['$|C|^2 = 1/[2(1 + I)]$']
+    source: {cite: reading4, at: 'eq. (6.40), p. 20'}
+    origin: mit
+
+  - id: direct-integral
+    kind: identity
+    where: 'LCAO formula: D = a0⟨ψ0(r1)|1/r2|ψ0(r1)⟩, the potential at distance x of the spherical charge |ψ0|² (units of a0): ∫₀^x 4s²e^(−2s)/x ds + ∫_x^∞ 4s e^(−2s) ds = 1/x − (1 + 1/x)e^(−2x)'
+    formula: integrate('4*s**2*exp(-2*s)/xx', 's', 0, xx) + integrate('4*s*exp(-2*s)', 's', xx, 80)
+    equals: 1/xx - (1 + 1/xx)*exp(-2*xx)
+    samples: {xx: [0.5, 2.49, 5.0]}
+    tolerance: 1e-8
+    shown: ['\frac{E_e}{\text{Ry}} = -1 - \frac{2\,(D + X)}{1 + I}, \qquad D = \frac{1}{x} - \left(1 + \frac{1}{x}\right)e^{-2x}, \qquad X = (1 + x)\,e^{-x}']
+    source: {cite: pauling1928, at: 'the hydrogen molecule-ion'}
+    origin: page-own
+
+  - id: exchange-integral
+    kind: identity
+    where: 'LCAO formula: X = a0⟨ψ0(r1)|1/r1|ψ0(r2)⟩ in elliptic coordinates is (x²/2)∫₁^∞∫₋₁¹(μ − ν)e^(−xμ)dν dμ = x²∫₁^∞ μ e^(−xμ)dμ = (1 + x)e^(−x)'
+    formula: integrate('xx**2*s*exp(-xx*s)', 's', 1, 80)
+    equals: (1 + xx)*exp(-xx)
+    samples: {xx: [0.5, 2.49, 5.0]}
+    tolerance: 1e-8
+    shown: ['\frac{E_e}{\text{Ry}} = -1 - \frac{2\,(D + X)}{1 + I}, \qquad D = \frac{1}{x} - \left(1 + \frac{1}{x}\right)e^{-2x}, \qquad X = (1 + x)\,e^{-x}']
+    source: {cite: pauling1928, at: 'the hydrogen molecule-ion'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the electronic energy curve (L18.3 p. 4)
+  - id: united-atom-limit
+    kind: limit
+    where: 'L18.3 p. 4: E_e/Ry → −3 as x → 0'
+    inputs: {}
+    formula: -1 - 2*((1/xx - (1 + 1/xx)*exp(-2*xx)) + (1 + xx)*exp(-xx))/(1 + exp(-xx)*(1 + xx + xx**2/3))
+    limit: -3
+    vary: {xx: [0.01, 0.001, 0.0001]}
+    tolerance: 1e-3
+    shown: ['As $x \to 0$ the energy goes to $-3$ Ry']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: united-atom-energies
+    kind: identity
+    where: 'page: at R = 0 the trial function is a hydrogen 1s (size a0) around charge 2e: ⟨T⟩ = 1 Ry, ⟨V⟩ = −2e²⟨1/r⟩ = −2·(e²/a0) = −4 Ry, total −3 Ry; the true ground state for charge Z = 2 is −Z² Ry = −4 Ry'
+    formula: 1 - 2*2*zz
+    equals: -3*zz
+    samples: {zz: [1.0]}
+    tolerance: 1e-12
+    shown: ['with kinetic energy $+1$ Ry and potential energy $-4$ Ry']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: small-x-expansion
+    kind: limit
+    where: 'L18.3 p. 4: (E_e/Ry + 3)/x² → 1 as x → 0, i.e. E_e/Ry = −3 + x² + …'
+    inputs: {}
+    formula: (3 - 1 - 2*((1/xx - (1 + 1/xx)*exp(-2*xx)) + (1 + xx)*exp(-xx))/(1 + exp(-xx)*(1 + xx + xx**2/3)))/xx**2
+    limit: 1
+    vary: {xx: [0.01, 0.003, 0.001]}
+    tolerance: 2e-3
+    shown: ['\frac{E_e}{\text{Ry}} = -3 + x^2 + \cdots']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: separated-atoms-limit
+    kind: limit
+    where: 'L18.3 p. 4: E_e/Ry → −1 (a hydrogen atom) as x → ∞'
+    inputs: {}
+    formula: -1 - 2*((1/xx - (1 + 1/xx)*exp(-2*xx)) + (1 + xx)*exp(-xx))/(1 + exp(-xx)*(1 + xx + xx**2/3))
+    limit: -1
+    vary: {xx: [100, 1000, 10000]}
+    tolerance: 1e-3
+    shown: ['For large $x$ it rises towards $-1$ Ry']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: separated-atoms-tail
+    kind: limit
+    where: 'page: E_e/Ry ≈ −1 − 2/x at large x (D → 1/x, I and X fall off exponentially), so (E_e/Ry + 1)·x → −2; the lecture''s "asymptotes with an exponential" holds only for E_e + V_NN'
+    inputs: {}
+    formula: (-2*((1/xx - (1 + 1/xx)*exp(-2*xx)) + (1 + xx)*exp(-xx))/(1 + exp(-xx)*(1 + xx + xx**2/3)))*xx
+    limit: -2
+    vary: {xx: [50, 100, 200]}
+    tolerance: 1e-6
+    shown: ['but slowly, as $-1 - 2/x$']
+    source: {cite: pauling1928, at: 'the hydrogen molecule-ion'}
+    origin: page-own
+
+  - id: total-exponential
+    kind: limit
+    where: 'page: (E_e + V_NN)/Ry + 1 vanishes faster than any power: times x³ it still tends to 0'
+    inputs: {}
+    formula: (2/xx - 2*((1/xx - (1 + 1/xx)*exp(-2*xx)) + (1 + xx)*exp(-xx))/(1 + exp(-xx)*(1 + xx + xx**2/3)))*xx**3
+    limit: 0
+    vary: {xx: [30, 40, 50]}
+    tolerance: 1e-6
+    shown: ['that holds for the total $E_e + V_{NN}$ below, where the repulsion $+e^2/R$ cancels the $1/x$ term']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: h2plus-wavenumber
+    kind: fact
+    where: 'NIST Chemistry WebBook, H2+ ground state: ωe = 2321.7 cm⁻¹ (later reference data)'
+    value: '2321.7'
+    shown: ['vibrational wavenumber of 2321.7 cm⁻¹']
+    source: {cite: nist-h2plus, at: 'X ²Σg⁺, ωe'}
+    origin: later-data
+
+  - id: h2plus-d0
+    kind: fact
+    where: 'NIST Chemistry WebBook, H2+ dissociation energy note: D₀ = 2.65073 eV (calculated)'
+    value: '2.65'
+    shown: ['it needs about 2.65 eV to dissociate']
+    source: {cite: nist-h2plus, at: 'D₀ note'}
+    origin: later-data
+
+  - id: h2plus-quantum
+    where: 'page: hc × 2321.7 cm⁻¹ in eV'
+    inputs: {}
+    formula: 2321.7/centimeter*planck_constant*c
+    expected: '0.29 eV'
+    shown: ['so its vibrational quantum is about 0.29 eV', 'with a quantum of about 0.29 eV']
+    source: {cite: nist-h2plus, at: 'X ²Σg⁺, ωe'}
+    origin: later-data
+
+  - id: h2plus-zpe
+    where: 'page: half of hc × 2321.7 cm⁻¹ (harmonic estimate)'
+    inputs: {}
+    formula: 0.5*2321.7/centimeter*planck_constant*c
+    expected: '0.14 eV'
+    shown: ['its zero-point energy about 0.14 eV']
+    source: {cite: nist-h2plus, at: 'X ²Σg⁺, ωe'}
+    origin: later-data
+
+  - id: h2plus-depth
+    where: 'page: D₀ + ½hcωe = 2.651 + 0.144 eV ≈ 2.8 eV, the measured binding quoted by the notes'
+    inputs: {}
+    formula: 2.65073*eV + 0.5*2321.7/centimeter*planck_constant*c
+    expected: '2.8 eV'
+    shown: ['2.65 eV plus the zero-point energy is about 2.8 eV']
+    source: {cite: nist-h2plus, at: 'D₀ note'}
+    origin: later-data
+
+  - id: rydberg
+    kind: fact
+    where: 'L18.3 p. 4: 1 Ry = e²/2a0, about 13.6 eV'
+    value: '13.6'
+    shown: ['the ground-state binding energy of hydrogen, about 13.6 eV']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: vnn-in-rydbergs
+    kind: identity
+    where: 'L18.3 pp. 4-5: e²/R = (e²/2a0)·2/x with x = R/a0'
+    formula: ee**2/(a0*xx)
+    equals: (ee**2/(2*a0))*2/xx
+    samples: {ee: [1.0, 2.3], a0: [1.0, 0.53], xx: [0.7, 2.49]}
+    tolerance: 1e-12
+    shown: ['V_{NN}(R) = \frac{e^2}{R} = \text{Ry}\cdot\frac{2}{x}']
+    source: {cite: reading3, at: 'pp. 4-5'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the minimum (L18.3 pp. 5-6)
+  - id: minimum-location
+    kind: identity
+    where: 'L18.3 p. 5: d/dx of (E_e + V_NN)/Ry vanishes at x = 2.4928 (golden-section search: 2.49283)'
+    formula: deriv('2/s - 1 - 2*((1/s - (1 + 1/s)*exp(-2*s)) + (1 + s)*exp(-s))/(1 + exp(-s)*(1 + s + s**2/3))', 's', xx)
+    equals: 0
+    samples: {xx: [2.4928]}
+    tolerance: 1e-5
+    shown: ['\frac{R}{a_0} = 2.49, \qquad \frac{E_e + V_{NN}}{\text{Ry}} = -1.1297', '$x_0 = 2.493$']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: mit
+
+  - id: minimum-value
+    where: 'L18.3 p. 5: (E_e + V_NN)/Ry at x = 2.49283'
+    inputs: {}
+    formula: 2/2.49283 - 1 - 2*((1/2.49283 - (1 + 1/2.49283)*exp(-2*2.49283)) + (1 + 2.49283)*exp(-2.49283))/(1 + exp(-2.49283)*(1 + 2.49283 + 2.49283**2/3))
+    expected: '-1.1297'
+    shown: ['\frac{R}{a_0} = 2.49, \qquad \frac{E_e + V_{NN}}{\text{Ry}} = -1.1297', 'minimum, −1.1297 Ry, at x = 2.493']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: mit
+
+  - id: binding-ry
+    where: 'L18.3 p. 5: binding = −1 − (−1.12966) Ry'
+    inputs: {}
+    formula: -1 - (2/2.49283 - 1 - 2*((1/2.49283 - (1 + 1/2.49283)*exp(-2*2.49283)) + (1 + 2.49283)*exp(-2.49283))/(1 + exp(-2.49283)*(1 + 2.49283 + 2.49283**2/3)))
+    expected: '0.1297'
+    shown: ['the binding is the extra $0.1297$ Ry']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: mit
+
+  - id: binding-ev
+    where: 'L18.3 p. 5: 0.12966 Ry × 13.605693 eV/Ry'
+    inputs: {}
+    formula: (-1 - (2/2.49283 - 1 - 2*((1/2.49283 - (1 + 1/2.49283)*exp(-2*2.49283)) + (1 + 2.49283)*exp(-2.49283))/(1 + exp(-2.49283)*(1 + 2.49283 + 2.49283**2/3))))*13.605693*eV
+    expected: '1.76 eV'
+    shown: ['gained by bringing a proton near the atom, about 1.76 eV']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: mit
+
+  - id: separation-angstrom
+    where: 'L18.3 p. 6: 2.49 × 0.529 Å'
+    inputs: {}
+    formula: 2.49*0.529
+    expected: '1.32'
+    shown: ['$2.49 \times 0.529$ Å, about 1.32 Å']
+    source: {cite: reading3, at: 'p. 6'}
+    origin: mit
+
+  - id: experiment
+    kind: fact
+    where: 'notes p. 21: R = 1.06 Å and E = −2.8 eV (binding 2.8 eV, also L18.3 p. 5); the transcript''s "106 angstroms" is 1.06 Å'
+    value: '1.06'
+    shown: ['Experiment gives a separation of 1.06 Å and a binding energy of 2.8 eV']
+    source: {cite: reading4, at: 'p. 21'}
+    origin: mit
+
+  - id: separation-error
+    where: 'page: 1.3191/1.06 − 1 in per cent (lecture: "20%... 25%")'
+    inputs: {}
+    formula: (2.49283*0.529177/1.06 - 1)*100
+    expected: '24'
+    shown: ['The separation comes out about 24% too large']
+    source: {cite: reading4, at: 'p. 21'}
+    origin: page-own
+
+  - id: binding-fraction
+    where: 'page: 1.764/2.8 in per cent'
+    inputs: {}
+    formula: 0.12966*13.605693/2.8*100
+    expected: '63'
+    shown: ['the binding energy about 63% of the measured value']
+    source: {cite: reading4, at: 'p. 21'}
+    origin: page-own
+
+  - id: fifteen-digits
+    kind: fact
+    where: 'L18.3 p. 2: modern variational calculations converge to 15 digits'
+    value: '15'
+    shown: ['answers converging to fifteen digits']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: mass-ratio-scale
+    kind: fact
+    where: 'L18.1 p. 1: √(m/M) could be 10⁻²'
+    value: '1e-2'
+    shown: ['so $\sqrt{m/M}$ may be about $10^{-2}$']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: given values
+  - id: a0
+    kind: fact
+    where: 'example: Bohr radius 0.529177210903 Å (CODATA), rounded'
+    value: '0.5292'
+    shown: ['Take $a_0 = 0.5292$ Å']
+    source: {cite: codata-bohr, at: 'a₀'}
+    origin: page-own
+
+  - id: ry-ev
+    kind: fact
+    where: 'example: Rydberg energy 13.605693 eV (CODATA), rounded'
+    value: '13.606'
+    shown: ['1 Ry = 13.606 eV, $\hbar c']
+    source: {cite: codata-ry, at: 'R∞hc in eV'}
+    origin: page-own
+
+  - id: hbarc
+    kind: fact
+    where: 'example: ħc = 197.3269804 MeV fm = 1973.2698 eV Å (CODATA, exact)'
+    value: '1973.3'
+    shown: ['$\hbar c = 1973.3$ eV Å']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: mp
+    kind: fact
+    where: 'example: proton rest energy 938.27208816 MeV (CODATA)'
+    value: '938.27'
+    shown: ['$m_pc^2 = 938.27$ MeV']
+    source: {cite: codata-mp, at: 'm_p c²'}
+    origin: page-own
+
+  - id: md
+    kind: fact
+    where: 'example: deuteron rest energy 1875.61294257 MeV (CODATA)'
+    value: '1875.61'
+    shown: ['$m_dc^2 = 1875.61$ MeV']
+    source: {cite: codata-md, at: 'm_d c²'}
+    origin: page-own
+
+  - id: mp-me
+    kind: fact
+    where: 'example: m_p/m_e = 1836.15267 (CODATA)'
+    value: '1836'
+    shown: ['$m_p/m = 1836$']
+    source: {cite: codata-mpme, at: 'm_p/m_e'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: results
+  - id: curvature
+    where: 'example: second derivative of (E_e + V_NN)/Ry with respect to x at the minimum (numerically 0.12567)'
+    inputs: {}
+    formula: deriv('2/s - 1 - 2*((1/s - (1 + 1/s)*exp(-2*s)) + (1 + s)*exp(-s))/(1 + exp(-s)*(1 + s + s**2/3))', 's', 2.49283, 2)
+    expected: '0.1257'
+    shown: ['has second derivative 0.1257 with respect to']
+    source: {cite: pauling1928, at: 'the hydrogen molecule-ion'}
+    origin: page-own
+
+  - id: spring-constant
+    where: 'example (a): k = 0.1257 × 13.606/0.5292² eV/Å²'
+    inputs: {}
+    formula: 0.1257*13.606/0.5292**2
+    expected: '6.107'
+    shown: ['about 6.107 eV/Å²']
+    source: {cite: codata-bohr, at: 'a₀'}
+    origin: page-own
+
+  - id: spring-constant-si
+    where: 'example (a): 6.107 eV/Å² in N/m'
+    inputs: {}
+    formula: 6.107*eV/angstrom**2
+    expected: '98 N/m'
+    shown: ['(about 98 N/m)']
+    source: {cite: codata-bohr, at: 'a₀'}
+    origin: page-own
+
+  - id: mu-h
+    where: 'example (b): reduced mass of two protons, μc² = 938.27/2 MeV'
+    inputs: {}
+    formula: 938.27208816/2
+    expected: '469.14'
+    shown: ['$\mu c^2 = 938.27/2 = 469.14$']
+    source: {cite: codata-mp, at: 'm_p c²'}
+    origin: page-own
+
+  - id: hw-h
+    where: 'example (b): ħω = ħc √(k/μc²), eV'
+    inputs: {}
+    formula: 1973.3*sqrt(6.107/469.14e6)
+    expected: '0.225'
+    shown: ['eV, about 0.225 eV']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: zpe-h
+    where: 'example (b): ½ħω'
+    inputs: {}
+    formula: 0.5*1973.3*sqrt(6.107/469.14e6)
+    expected: '0.113'
+    shown: ['is about 0.113 eV', 'sits 0.11 eV above the bottom of the well']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: d0-lcao
+    where: 'example (b): well depth 1.764 eV minus the zero-point energy 0.1126 eV'
+    inputs: {}
+    formula: 0.12966*13.606 - 0.5*1973.3*sqrt(6.107/469.14e6)
+    expected: '1.65'
+    shown: ['in this model about 1.65 eV, not 1.76 eV']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: mu-d
+    where: 'example (c): reduced mass of two deuterons, μc² = 1875.61/2 MeV'
+    inputs: {}
+    formula: 1875.61294257/2
+    expected: '937.81'
+    shown: ['$\mu c^2 = 1875.61/2 = 937.81$']
+    source: {cite: codata-md, at: 'm_d c²'}
+    origin: page-own
+
+  - id: hw-d
+    where: 'example (c): ħω of D2+ in eV'
+    inputs: {}
+    formula: 1973.3*sqrt(6.107/937.81e6)
+    expected: '0.159'
+    shown: ['eV, about 0.159 eV']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: hw-ratio
+    where: 'example (c): ħω(D2+)/ħω(H2+) = √(m_p/m_d) ≈ 0.707, about 1/√2'
+    inputs: {}
+    formula: sqrt(938.27/1875.61)
+    expected: '0.707'
+    shown: ['smaller by about $1/\sqrt 2$']
+    source: {cite: codata-md, at: 'm_d c²'}
+    origin: page-own
+
+  - id: zpe-d
+    where: 'example (c): ½ħω of D2+'
+    inputs: {}
+    formula: 0.5*1973.3*sqrt(6.107/937.81e6)
+    expected: '0.080'
+    shown: ['The zero-point energy is about 0.080 eV']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: r0
+    where: 'example (d): R0 = 2.493 × 0.5292 Å'
+    inputs: {}
+    formula: 2.493*0.5292
+    expected: '1.319'
+    shown: ['$R_0 = 2.493 \times 0.5292$ Å $= 1.319$ Å']
+    source: {cite: codata-bohr, at: 'a₀'}
+    origin: page-own
+
+  - id: e-rot
+    where: 'example (d): ħ²ℓ(ℓ+1)/2μR0² for ℓ = 1 = (ħc)²/(μc² R0²), in meV'
+    inputs: {}
+    formula: 1973.3**2/(469.14e6*1.319**2)*1000
+    expected: '4.77'
+    shown: ['about 4.77 meV']
+    source: {cite: codata-hbarc, at: 'ħc'}
+    origin: page-own
+
+  - id: hierarchy-vib
+    where: 'example (d): ħω/1 Ry = 0.2251/13.606'
+    inputs: {}
+    formula: 1973.3*sqrt(6.107/469.14e6)/13.606
+    expected: '0.0165'
+    shown: ['$1 : 0.0165 : 0.00035$']
+    source: {cite: codata-ry, at: 'R∞hc in eV'}
+    origin: page-own
+
+  - id: hierarchy-rot
+    where: 'example (d): E_rot/1 Ry = 4.769 meV/13.606 eV'
+    inputs: {}
+    formula: 1973.3**2/(469.14e6*1.319**2)/13.606
+    expected: '0.00035'
+    shown: ['$1 : 0.0165 : 0.00035$']
+    source: {cite: codata-ry, at: 'R∞hc in eV'}
+    origin: page-own
+
+  - id: sqrt-ratio
+    where: 'example (d): √(1/1836)'
+    inputs: {}
+    formula: sqrt(1/1836.15267)
+    expected: '0.023'
+    shown: ['$\sqrt{m/m_p} \approx 0.023$']
+    source: {cite: codata-mpme, at: 'm_p/m_e'}
+    origin: page-own
+
+  - id: ratio
+    where: 'example (d): 1/1836'
+    inputs: {}
+    formula: 1/1836.15267
+    expected: '0.00054'
+    shown: ['$m/m_p \approx 0.00054$']
+    source: {cite: codata-mpme, at: 'm_p/m_e'}
+    origin: page-own

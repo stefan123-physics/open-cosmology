@@ -1,0 +1,204 @@
+# Calculations on content/year-4/8.08/vacuum-casimir-interacting-bosons.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005), Supplement 2 "Quantum Theory for Interacting Bosons": Wen's typed book chapter 4
+# "Boson systems", sections 4.6-4.8. Page numbers are the printed page numbers of the chapter (28-54 = PDF pages 1-27);
+# equation numbers are Wen's. Wen sets hbar = 1; formulas below use units with hbar = c = 1 where stated.
+# Numbers quoted in the notes: the Casimir coefficients 24 and 240 and the years 1948, 1958, 1997.
+# Page's own numbers: the plot (units hbar = c = Lambda = 1), the worked example (plates of 1 cm^2 at 1 um and 100 nm,
+# 1D walls at 1 um) and quiz 2.
+# Notation in the formulas: lam = L*Lambda (dimensionless), qq = pi/(L Lambda), aa = wall separation.
+
+page: content/year-4/8.08/vacuum-casimir-interacting-bosons.mdx
+calcs:
+  # ---------------------------------------------------------------- the hard-wall sum (p. 40, eqn 4.6.1)
+  - id: geometric-series-derivative
+    kind: identity
+    where: 'formula "Vacuum energy between two walls": sum over n of n e^(-nq) = -d/dq [1/(1 - e^(-q))] = 1/(4 sinh²(q/2)), so (cπ/2L) times it is cπ/[8L sinh²(π/2LΛ)] with q = π/LΛ'
+    formula: -deriv('1/(1 - exp(-t))', 't', qq)
+    equals: 1/(4*sinh(qq/2)**2)
+    samples: {qq: [0.05, 0.3, 1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['= \frac{c\pi}{8L\sinh^2(\pi/2L\Lambda)}']
+    source: {cite: reading1, at: '§4.6, p. 40, eqn (4.6.1)'}
+    origin: slip
+
+  - id: bulk-term
+    kind: limit
+    where: 'same formula: the large-cut-off expansion; [cπ/(8L sinh²(π/2LΛ))] / (cΛ²L/2π) tends to 1 (units c = L = 1; the notes print Λ²L/4cπ, half this, a slip)'
+    inputs: {}
+    formula: (pi/(8*sinh(pi/(2*lam))**2))/(lam**2/(2*pi))
+    limit: 1
+    vary: {lam: [10, 30, 100, 300]}
+    tolerance: 1e-4
+    shown: ['= \frac{c\Lambda^2L}{2\pi} - \frac{c\pi}{24L} + O(\Lambda^{-2})']
+    source: {cite: reading1, at: '§4.6, p. 40, eqn (4.6.1)'}
+    origin: slip
+
+  - id: casimir-term
+    kind: limit
+    where: 'same formula: after subtracting the bulk term, the remainder tends to -cπ/24L, independent of Λ (units c = L = 1)'
+    inputs: {}
+    formula: pi/(8*sinh(pi/(2*lam))**2) - lam**2/(2*pi)
+    limit: -pi/24
+    vary: {lam: [10, 30, 100]}
+    tolerance: 1e-3
+    shown: ['- \frac{c\pi}{24L} + O(\Lambda^{-2})']
+    source: {cite: reading1, at: '§4.6, p. 40, eqn (4.6.1)'}
+    origin: mit
+
+  - id: plot-difference
+    where: 'plot caption: at L = 5/Λ the exact remainder and -π/24L differ by about 2% (units ħ = c = Λ = 1)'
+    formula: 100*((pi/(8*5*sinh(pi/10)**2) - 5/(2*pi)) + pi/120)/(pi/120)
+    expected: '2'
+    tolerance: 0.5
+    shown: ['at L = 5/Λ they differ by about 2%']
+    source: {cite: reading1, at: '§4.6, p. 40, eqn (4.6.1)'}
+    origin: page-own
+
+  - id: plot-next-term
+    kind: limit
+    where: 'plot caption: the difference falls off as 1/L³; L³ times [remainder + π/24L] tends to π³/480 (units ħ = c = Λ = 1)'
+    inputs: {}
+    formula: lam**3*((pi/(8*lam*sinh(pi/(2*lam))**2) - lam/(2*pi)) + pi/(24*lam))
+    limit: pi**3/480
+    vary: {lam: [5, 10, 20, 40]}
+    tolerance: 2e-3
+    shown: ['the difference falls off as 1/L³']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: three-walls-bulk
+    kind: identity
+    where: 'formula "Three walls": the bulk terms of the two gaps, cΛ²a/2π + cΛ²(L − a)/2π, add up to cΛ²L/2π'
+    formula: lam**2*aa/(2*pi) + lam**2*(LL - aa)/(2*pi)
+    equals: lam**2*LL/(2*pi)
+    samples: {lam: [10, 50], aa: [0.1, 0.3], LL: [1, 2]}
+    tolerance: 1e-9
+    shown: ['The bulk terms add up to a term in the total length $L$ only']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: mit
+
+  - id: force-1d
+    kind: identity
+    where: 'formula "Casimir force in one dimension": F = -dU/da of U = -cπ/24a is -cπ/24a² (pulls the walls together), size πc/24a² (ħ = 1)'
+    formula: -deriv('-pi/(24*t)', 't', aa)
+    equals: -pi/(24*aa**2)
+    samples: {aa: [0.5, 1.0, 3.0]}
+    tolerance: 1e-6
+    shown: ['F = \frac{\pi\hbar c}{24a^2}']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: mit
+
+  - id: casimir-1948
+    kind: fact
+    where: 'section "Walls and the Casimir force": Casimir''s paper, 1948'
+    value: '1948'
+    shown: ['[Casimir 1948]']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: mit
+
+  - id: sparnaay-1958
+    kind: fact
+    where: 'section "Walls and the Casimir force" and summary: measured by Sparnaay in 1958 and Lamoreaux in 1997'
+    value: '1958, 1997'
+    shown: ['by Sparnaay in 1958', 'by Lamoreaux in 1997', 'measured in 1958 and 1997']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: mit
+
+  - id: guth-120-orders
+    kind: fact
+    where: 'leadsTo and cosmology callout: the Planck-cut-off vacuum energy is too large by about 120 orders of magnitude (Guth, 8.286 Lecture 1, page eternal-inflation)'
+    value: '120 orders of magnitude'
+    shown: ['about 120 orders of magnitude larger than the measured one', 'too large by about 120 orders of magnitude']
+    source: {cite: mit8286-l1, at: 'vacuum energy'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-hbarc
+    where: 'worked example (a): ħc'
+    inputs: {}
+    formula: hbar*c
+    expected: 3.162e-26 J*m
+    shown: ['With $\hbar c = 3.162 \times 10^{-26}$ J m']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-force-1um
+    where: 'worked example (a) and quiz 2: F = π²ħcA/240a⁴ with A = 1 cm², a = 1 μm'
+    inputs: {A: 1 cm**2, a: 1 um}
+    formula: pi**2*hbar*c*A/(240*a**4)
+    expected: 1.30e-7 N
+    quiz: 2
+    shown: ['$ N $= 1.30 \times 10^{-7}$ N', 'is $1.30 \\times 10^{-7}$ N']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-pressure-1um
+    where: 'worked example (a): F/A'
+    inputs: {a: 1 um}
+    formula: pi**2*hbar*c/(240*a**4)
+    expected: 1.30e-3 Pa
+    shown: ['The pressure is $F/A = 1.30 \times 10^{-3}$ Pa']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-pressure-atm
+    where: 'worked example (a): the pressure as a fraction of one atmosphere (101325 Pa), "about 10^-8"'
+    inputs: {a: 1 um, atm: 101325 Pa}
+    formula: (pi**2*hbar*c/(240*a**4))/atm
+    expected: '1.3e-8'
+    tolerance: 0.4e-8
+    shown: ['about $10^{-8}$ of atmospheric pressure']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-force-100nm
+    where: 'worked example (b): A = 1 cm², a = 100 nm'
+    inputs: {A: 1 cm**2, a: 100 nm}
+    formula: pi**2*hbar*c*A/(240*a**4)
+    expected: 1.30e-3 N
+    shown: ['$1.30 \times 10^{-3}$ N on a square centimetre']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-pressure-100nm
+    where: 'worked example (b): pressure at 100 nm'
+    inputs: {a: 100 nm}
+    formula: pi**2*hbar*c/(240*a**4)
+    expected: 13.0 Pa
+    shown: ['a pressure of $13.0$ Pa']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-scaling
+    where: 'worked example (b): ten times closer, 10^4 times stronger; quiz 2: halving the gap multiplies by 16'
+    formula: 10**4
+    expected: '1e4'
+    shown: ['ten times closer means $10^4$ times stronger']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-halving
+    where: 'quiz 2: halving a multiplies F ∝ 1/a⁴ by 2⁴'
+    formula: 2**4
+    expected: '16'
+    shown: ['Halving the gap would multiply it by 16']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: ex-force-1d
+    where: 'worked example (c): F = πħc/24a² with a = 1 μm'
+    inputs: {a: 1 um}
+    formula: pi*hbar*c/(24*a**2)
+    expected: 4.14e-15 N
+    shown: ['$ N $= 4.14 \times 10^{-15}$ N']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own
+
+  - id: quiz-1d-distractor
+    where: 'quiz 2 distractor "About 4.1 × 10^-15 N": the one-dimensional force at 1 μm, not the plate force'
+    inputs: {a: 1 um}
+    formula: pi*hbar*c/(24*a**2)
+    expected: 4.1e-15 N
+    shown: ['"About $4.1 \\times 10^{-15}$ N"']
+    source: {cite: reading1, at: '§4.6, p. 40'}
+    origin: page-own

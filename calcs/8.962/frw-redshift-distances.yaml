@@ -1,0 +1,298 @@
+# Calculations on content/year-5/8.962/frw-redshift-distances.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+
+page: content/year-5/8.962/frw-redshift-distances.mdx
+calcs:
+  # ---------------------------------------------------------------- Killing tensor and redshift
+  - id: killing-null
+    kind: identity
+    where: 'formula "Light in an FRW universe": in a local frame where U = (1, 0, 0, 0) and p = (E, E, 0, 0) is null, a^2 (g p p + (U.p)^2) = a^2 E^2 (plus 1)'
+    formula: 1 + a**2*((-E**2 + E**2) + (-1*E)**2)
+    equals: 1 + a**2*E**2
+    samples: {a: [0.2, 0.5, 1.0], E: [1.0, 3.0, 0.4]}
+    tolerance: 1e-12
+    shown: ['= a^2E^2 = \text{constant}']
+    source: {cite: reading1, at: 'transcript p. 7'}
+    origin: mit
+
+  - id: redshift-scale-factor
+    kind: identity
+    where: 'formula "Redshift and scale factor": with lambda_obs = lambda_em/a_em, z = (lambda_obs - lambda_em)/lambda_em gives a_em = 1/(1 + z)'
+    formula: 1/(1 + (le/aem - le)/le)
+    equals: aem
+    samples: {le: [500, 121.6, 656.3], aem: [0.2, 0.5, 0.9]}
+    tolerance: 1e-12
+    shown: ['a_\text{em} = \frac{1}{1 + z}']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: mit
+
+  - id: hughes-z48
+    where: 'section "Redshift measures the scale factor": z = 4.8 gives a = 1/5.8'
+    inputs: {}
+    formula: 1 + 4.8
+    expected: '5.8'
+    shown: ['$z = 4.8$ were emitted when the universe was $1/5.8$ of its present size']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: mit
+
+  - id: quiz-z3
+    where: 'quiz 2: z = 3 gives a = 1/4'
+    inputs: {}
+    formula: 1/(1 + 3)
+    expected: '0.25'
+    shown: ['$a = 1/(1 + z) = 1/4$']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- proper distance
+  - id: hubble-law
+    kind: identity
+    where: 'formula "Hubble''s law": d/dt (a R0 chi) = (adot/a) d_p, checked with a = t^(2/3)'
+    formula: deriv('x**(2/3)*R0*ch', 'x', t, 1)
+    equals: (deriv('x**(2/3)', 'x', t, 1)/t**(2/3))*t**(2/3)*R0*ch
+    samples: {t: [0.5, 1.0, 2.0], R0: [1.0, 3.0, 2.0], ch: [0.3, 1.0, 0.7]}
+    tolerance: 1e-7
+    shown: ['\dot d_p = \dot a\,R_0\,\chi = H\,d_p']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: mit
+
+  # ---------------------------------------------------------------- distances
+  - id: chi-change-of-variables
+    kind: identity
+    where: 'formula "The comoving coordinate of the source": int da/(a^2 H) from 1/(1+z) to 1 equals (1/H0) int dz/E; checked for flat matter only (H = H0 a^(-3/2), H0 = 1)'
+    formula: integrate('1/(x**2*x**(-1.5))', 'x', 1/(1 + z), 1)
+    equals: integrate('1/(1 + x)**1.5', 'x', 0, z)
+    samples: {z: [0.5, 1.0, 3.0]}
+    tolerance: 1e-7
+    shown: ['= \frac{1}{R_0 H_0}\int_0^z\frac{dz''}{E(z'')}']
+    source: {cite: reading1, at: 'transcript pp. 14–15'}
+    origin: mit
+
+  - id: r0-from-omega-curv
+    kind: identity
+    where: 'formula "R0 from the curvature parameter": Omega_curv = -k/(R0^2 H0^2) with k = +1 or -1 gives R0 = 1/(H0 sqrt|Omega_curv|)'
+    formula: 1/(H0*sqrt(abs(-kk/(R0**2*H0**2))))
+    equals: R0
+    samples: {H0: [0.7, 1.0, 2.0], R0: [3.0, 10.0, 1.5], kk: [1, -1, 1]}
+    tolerance: 1e-12
+    shown: ['R_0 = \frac{1}{H_0\sqrt{\left|\Omega_\text{curv}\right|}}']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: mit
+
+  - id: da-closed-branch
+    kind: identity
+    where: 'formula "Angular-diameter distance", k = +1 branch: R0 sin(chi)/(1 + z) with chi = (1/(R0 H0)) I equals (1/(H0(1+z))) sin(sqrt|Oc| I)/sqrt|Oc| when R0 = 1/(H0 sqrt|Oc|)'
+    formula: (1/(H0*sqrt(Oc)))*sin(I*H0*sqrt(Oc)/H0)/(1 + z)
+    equals: (1/(H0*(1 + z)))*sin(sqrt(Oc)*I)/sqrt(Oc)
+    samples: {H0: [0.7, 1.0, 2.0], Oc: [0.02, 0.3, 0.1], I: [0.5, 1.2, 2.0], z: [1.0, 3.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['\dfrac{1}{\sqrt{|\Omega_\text{curv}|}}\,\sin\!\left(\sqrt{|\Omega_\text{curv}|}\displaystyle\int_0^z\frac{dz''}{E(z'')}\right), & k = +1']
+    source: {cite: reading1, at: 'transcript pp. 15–16'}
+    origin: mit
+
+  - id: da-flat-limit
+    kind: limit
+    where: 'formula "Angular-diameter distance": the closed and open branches tend to the k = 0 branch I as Omega_curv -> 0 (I = 1.3)'
+    inputs: {}
+    formula: sinh(sqrt(Oc)*1.3)/sqrt(Oc)
+    limit: '1.3'
+    vary: {Oc: [1e-2, 1e-4, 1e-6, 1e-8]}
+    tolerance: 1e-6
+    shown: ['\displaystyle\int_0^z\frac{dz''}{E(z'')}, & k = 0']
+    source: {cite: reading1, at: 'transcript pp. 15–16'}
+    origin: page-own
+
+  - id: distance-relations
+    kind: identity
+    where: 'formula "Relations between the distances": d_L = (1+z) d_M and d_M = (1+z) d_A give d_L = (1+z)^2 d_A'
+    formula: (1 + z)*((1 + z)*dA)
+    equals: (1 + z)**2*dA
+    samples: {z: [0.5, 1.0, 4.0], dA: [100, 1254, 30]}
+    tolerance: 1e-12
+    shown: ['d_L = (1 + z)\,d_M = (1 + z)^2\,d_A']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-integral-closed-form
+    kind: identity
+    where: 'worked example: int_0^z (1 + z'')^(-3/2) dz'' = 2 (1 - 1/sqrt(1 + z))'
+    formula: integrate('(1 + x)**(-1.5)', 'x', 0, z)
+    equals: 2*(1 - 1/sqrt(1 + z))
+    samples: {z: [0.5, 1.0, 5.0]}
+    tolerance: 1e-8
+    shown: ['= 2\left(1 - 1/\sqrt{1 + z}\right)$']
+    source: {cite: reading1, at: 'transcript pp. 14–15'}
+    origin: page-own
+
+  - id: ex-integral-z1
+    where: 'worked example: 2 (1 - 0.7071) = 0.586'
+    inputs: {}
+    formula: 2*(1 - 1/sqrt(2))
+    expected: '0.586'
+    shown: ['$2(1 - 0.7071) = 0.586$']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-inv-sqrt2
+    where: 'worked example: 1/sqrt(2) = 0.7071'
+    inputs: {}
+    formula: 1/sqrt(2)
+    expected: '0.7071'
+    shown: ['$2(1 - 0.7071)']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-hubble-length
+    where: 'worked example: c/H0 = 4283 Mpc for H0 = 70 km/s/Mpc'
+    inputs: {H: 70 km/s/Mpc}
+    formula: c / H
+    expected: 4283 Mpc
+    tolerance: 1 Mpc
+    shown: ['$c/H_0 = 4283$ Mpc']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-dM
+    where: 'worked example: d_M = 0.586 x 4283 = 2509 Mpc'
+    inputs: {H: 70 km/s/Mpc}
+    formula: (c / H) * 2*(1 - 1/sqrt(2))
+    expected: 2509 Mpc
+    tolerance: 1 Mpc
+    shown: ['$d_M = 0.586 \times 4283 = 2509$ Mpc']
+    source: {cite: reading1, at: 'transcript p. 15'}
+    origin: page-own
+
+  - id: ex-dA
+    where: 'worked example: d_A = d_M/2 = 1254 Mpc'
+    inputs: {H: 70 km/s/Mpc}
+    formula: (c / H) * 2*(1 - 1/sqrt(2)) / 2
+    expected: 1254 Mpc
+    tolerance: 1 Mpc
+    shown: ['$d_A = d_M/2 = 1254$ Mpc']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: ex-dL
+    where: 'worked example: d_L = 2 d_M = 5018 Mpc'
+    inputs: {H: 70 km/s/Mpc}
+    formula: (c / H) * 2*(1 - 1/sqrt(2)) * 2
+    expected: 5018 Mpc
+    tolerance: 1 Mpc
+    shown: ['$d_L = 2\,d_M = 5018$ Mpc']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: ex-dA-max-location
+    where: 'worked example and plot point: d_A H0/c = 2(1 - 1/sqrt(1+z))/(1+z) is largest at z = 1.25'
+    inputs: {}
+    formula: solve('deriv("2*(1 - 1/sqrt(1 + y))/(1 + y)", "y", x, 1)', 'x', 0.5, 3)
+    expected: '1.25'
+    shown: ['at $z = 1.25$', '{ x: 1.25, y: 0.296, label: "maximum of d_A" }']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: ex-dA-max-value
+    where: 'worked example and plot caption: the maximum is 8/27 = 0.296'
+    inputs: {}
+    formula: 2*(1 - 1/sqrt(2.25))/2.25
+    expected: '0.296'
+    shown: ['$8/27 = 0.296$', 'd_A peaks at 0.296 c/H₀ at z = 1.25']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: plot-dM-limit
+    kind: limit
+    where: 'plot caption: d_M H0/c = 2(1 - 1/sqrt(1+z)) approaches 2'
+    inputs: {}
+    formula: 2*(1 - 1/sqrt(1 + Z))
+    limit: '2'
+    vary: {Z: [1e4, 1e6, 1e8, 1e10]}
+    tolerance: 1e-4
+    shown: ['d_M approaches 2c/H₀']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- flatness and inflation
+  - id: flatness-matter
+    kind: identity
+    where: 'formula "The flatness problem": Omega_curv/Omega = (a^-2)/(a^-3) = a for matter (plus 1)'
+    formula: 1 + a**(-2)/a**(-3)
+    equals: 1 + a
+    samples: {a: [0.001, 0.1, 1.0]}
+    tolerance: 1e-12
+    shown: ['\frac{\Omega_\text{curv}}{\Omega} \propto a \ \ \text{(matter)}']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: mit
+
+  - id: flatness-radiation
+    kind: identity
+    where: 'formula "The flatness problem": (a^-2)/(a^-4) = a^2 for radiation (plus 1)'
+    formula: 1 + a**(-2)/a**(-4)
+    equals: 1 + a**2
+    samples: {a: [0.001, 0.1, 1.0]}
+    tolerance: 1e-12
+    shown: ['\frac{\Omega_\text{curv}}{\Omega} \propto a^2 \ \ \text{(radiation)}']
+    source: {cite: reading1, at: 'transcript p. 19'}
+    origin: mit
+
+  - id: inflation-ratio
+    kind: identity
+    where: 'formula "Inflation drives curvature to zero": with a = exp(sqrt(L/3) t), a^-2 = exp(-2 sqrt(L/3) t)'
+    formula: exp(sqrt(L/3)*t)**(-2)
+    equals: exp(-2*sqrt(L/3)*t)
+    samples: {L: [0.3, 1.0, 3.0], t: [0.5, 2.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['\propto a^{-2} \propto \exp\!\left(-2\sqrt{\Lambda/3}\;t\right)']
+    source: {cite: reading1, at: 'transcript pp. 20–22'}
+    origin: mit
+
+  - id: quiz-e60
+    where: 'quiz 4 distractor: e^60 is about 10^26'
+    inputs: {}
+    formula: log10(exp(60))
+    expected: '26'
+    tolerance: 0.1
+    shown: ['By $e^{60}$, about $10^{26}$']
+    source: {cite: reading1, at: 'transcript p. 22'}
+    origin: page-own
+
+  - id: quiz-e120
+    where: 'quiz 4: (e^60)^2 = e^120 = 1.3 x 10^52'
+    inputs: {}
+    formula: exp(120)
+    expected: '1.3e52'
+    shown: ['e^{120} \\approx 1.3\\times10^{52}']
+    source: {cite: reading1, at: 'transcript p. 22'}
+    origin: page-own
+
+  - id: quiz-e120-choice
+    where: 'quiz 4 marked choice: about 10^52'
+    inputs: {}
+    formula: log10(exp(120))
+    expected: '52'
+    tolerance: 0.2
+    shown: ['By $e^{120}$, about $10^{52}$']
+    source: {cite: reading1, at: 'transcript p. 22'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quoted figures
+  - id: cmb-uniformity
+    kind: fact
+    where: 'CMB temperature the same in every direction to a part in 100,000'
+    shown: ['to a part in 100,000']
+    source: {cite: reading1, at: 'transcript pp. 20, 22'}
+    origin: mit
+
+  - id: nearby-candles
+    kind: fact
+    where: 'nearby standard candles, a few tens of millions of light years away'
+    shown: ['a few tens of millions of light years away']
+    source: {cite: reading1, at: 'transcript p. 18'}
+    origin: mit
+
+  - id: hogg-arxiv
+    kind: fact
+    where: 'Hogg, astro-ph/9905116 (1999)'
+    shown: ['*Distance measures in cosmology* (astro-ph/9905116)']
+    source: {cite: hogg, at: 'arXiv'}
+    origin: mit

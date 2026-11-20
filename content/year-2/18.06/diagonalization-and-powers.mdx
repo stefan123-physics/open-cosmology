@@ -1,0 +1,142 @@
+---
+title: Diagonalisation and powers of A
+slug: diagonalization-and-powers
+course: "18.06"
+lecture: 22
+order: 1
+summary: "Put n independent eigenvectors of A into the columns of S. Then AS = SΛ, where Λ is the diagonal matrix of eigenvalues, so S⁻¹AS = Λ and A = SΛS⁻¹: a new factorisation beside LU and QR. Powers become easy: A² = SΛ²S⁻¹ and Aᵏ = SΛᵏS⁻¹, the same eigenvectors with the eigenvalues raised to the k-th power. So Aᵏ → 0 exactly when every eigenvalue has |λ| < 1. A matrix is sure to be diagonalisable when its n eigenvalues are all different; with a repeated eigenvalue it may be (the identity) or may not be ((2 1; 0 2), whose eigenvalue 2 has algebraic multiplicity 2 but only one eigenvector). The difference equation u_(k+1) = Auₖ is solved by uₖ = Aᵏu₀: write u₀ = c₁x₁ + ⋯ + cₙxₙ, and each piece is multiplied by its own λ at every step. Fibonacci's rule, made into a first-order system with uₖ = (F_(k+1), Fₖ) and A = (1 1; 1 0), has eigenvalues (1 ± √5)/2 ≈ 1.618 and −0.618: the numbers grow by about 1.618 per step, and F₁₀₀ ≈ c₁(1.618)¹⁰⁰."
+prerequisites: [eigenvalues-and-eigenvectors]
+source:
+  title: "MIT 18.06 Lecture 22: Diagonalization and powers of A"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-22-diagonalization-and-powers-of-a/
+  readings:
+    - title: "18.06 Lecture 22 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/e6dfacf484d184018188a4e70f93db81_13r9QY6cmjc.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 23
+    why: "The same eigenvector expansion solves differential equations du/dt = Au, with e^(λt) in place of λᵏ."
+quiz:
+  - question: "$A = S\\Lambda S^{-1}$. What is $A^{3}$?"
+    choices: ["$S^3\\Lambda^3 S^{-3}$", "$S\\Lambda^3 S^{-1}$", "$3S\\Lambda S^{-1}$", "$S^{-1}\\Lambda^3 S$"]
+    answer: 1
+    explanation: "In $S\\Lambda S^{-1}S\\Lambda S^{-1}S\\Lambda S^{-1}$ each inner $S^{-1}S$ is $I$: the eigenvectors stay, the eigenvalues are cubed."
+  - question: "A diagonalisable matrix has eigenvalues $0.9$ and $-0.5$. What happens to $A^k$ as $k$ grows?"
+    choices: ["It grows without bound", "It approaches the zero matrix", "It approaches $I$", "It alternates for ever"]
+    answer: 1
+    explanation: "Both $|\\lambda| < 1$, so $\\Lambda^k \\to 0$ and $A^k = S\\Lambda^k S^{-1} \\to 0$."
+  - question: "Which matrix is certainly diagonalisable?"
+    choices: ["A $3 \\times 3$ matrix with eigenvalues $1$, $4$, $-2$", "$\\begin{pmatrix} 2 & 1 \\\\ 0 & 2 \\end{pmatrix}$", "Any matrix with a repeated eigenvalue", "Any triangular matrix"]
+    answer: 0
+    explanation: "Three different eigenvalues give three independent eigenvectors. The first matrix has eigenvalue 2 twice but only one eigenvector."
+  - question: "Why do the Fibonacci numbers grow by a factor of about $1.618$ per step?"
+    choices: ["Because $F_{k+2} = 2F_k$", "Because the trace of the matrix is $1.618$", "Because the determinant is $-1$", "Because $1.618$ is the larger eigenvalue of $\\begin{pmatrix} 1 & 1 \\\\ 1 & 0 \\end{pmatrix}$, and the other eigenvalue's part dies out"]
+    answer: 3
+    explanation: "$u_k = c_1\\lambda_1^k x_1 + c_2\\lambda_2^k x_2$ with $\\lambda_1 = (1 + \\sqrt5)/2$ and $|\\lambda_2| < 1$, so the first term takes over."
+flashcards:
+  - front: "Diagonalisation"
+    back: "With $n$ independent eigenvectors in the columns of $S$: $S^{-1}AS = \\Lambda$ (diagonal, eigenvalues), $A = S\\Lambda S^{-1}$."
+  - front: "Powers of $A$"
+    back: "$A^k = S\\Lambda^k S^{-1}$: same eigenvectors, eigenvalues $\\lambda^k$. $A^k \\to 0$ when every $|\\lambda| < 1$."
+  - front: "When is $A$ diagonalisable?"
+    back: "Surely when all $n$ eigenvalues are different. With repeats: in general, only if each eigenvalue has as many independent eigenvectors (geometric multiplicity) as its multiplicity as a root (algebraic)."
+  - front: "Solving $u_{k+1} = Au_k$"
+    back: "Write $u_0 = c_1x_1 + \\cdots + c_nx_n$; then $u_k = c_1\\lambda_1^kx_1 + \\cdots + c_n\\lambda_n^kx_n$."
+status: reviewed
+---
+
+The [first lecture on eigenvalues](/courses/18-06/eigenvalues-and-eigenvectors) found them. This one uses them: the eigenvectors **diagonalise** the matrix, and that turns powers of $A$, and equations that step forward in time, into simple sums (transcript, p. 1).
+
+## The eigenvector matrix S
+
+Suppose $A$ has $n$ linearly independent eigenvectors $x_1, \dots, x_n$, and put them in the columns of the **eigenvector matrix** $S$ (pp. 1–2). Multiply column by column: $A$ times column $i$ is $Ax_i = \lambda_i x_i$ (p. 2). To pull the numbers $\lambda_i$ out of the columns, multiply $S$ on the right by a diagonal matrix (pp. 2–3):
+
+<Formula label="A times its eigenvectors" tex="AS = A\begin{pmatrix} x_1 & \cdots & x_n \end{pmatrix} = \begin{pmatrix} \lambda_1x_1 & \cdots & \lambda_nx_n \end{pmatrix} = S\Lambda, \qquad \Lambda = \begin{pmatrix} \lambda_1 & & \\ & \ddots & \\ & & \lambda_n \end{pmatrix}" cite="reading1" at="pp. 2–3" />
+
+$\Lambda$ (capital lambda) is the **eigenvalue matrix**, with the eigenvalues down its diagonal (p. 3). Because the eigenvectors are independent, $S$ is invertible, and multiplying on the left or on the right by $S^{-1}$ gives (pp. 4–5)
+
+<Formula label="Diagonalisation" tex="S^{-1}AS = \Lambda \qquad\text{and}\qquad A = S\Lambda S^{-1}" cite="reading1" at="pp. 4–5" />
+
+This is the new factorisation of the chapter, beside $A = LU$ from elimination and $A = QR$ from Gram–Schmidt (p. 5). To keep the order straight: "$A$ multiplies its eigenvectors", so $A$ stands next to $S$ in $AS$ (p. 4). A few matrices do not have $n$ independent eigenvectors, and for them none of this works (p. 4).
+
+## Powers of A
+
+If $Ax = \lambda x$, multiply by $A$ again: $A^2x = \lambda Ax = \lambda^2x$ (pp. 5–6). The same follows from the factorisation, with $S^{-1}S = I$ cancelling in the middle (p. 6):
+
+<Formula label="The square" tex="A^2 = S\Lambda S^{-1}\,S\Lambda S^{-1} = S\Lambda^2S^{-1}" cite="reading1" at="p. 6" />
+
+The eigenvectors are the same and the eigenvalues are squared. With $k$ factors, all the inner pairs cancel (p. 7):
+
+<Formula label="The k-th power" tex="A^k = S\Lambda^kS^{-1}" cite="reading1" at="p. 7" />
+
+Pivots tell nothing about $A^{100}$: a hundred factors $LU$ cannot be simplified. Eigenvalues tell everything (p. 7). For example, when do the powers go to zero, the case Strang calls **stable**? $S$ and $S^{-1}$ do not change, so $\Lambda^k$ must go to zero (pp. 7–8):
+
+<Formula label="Powers going to zero" tex="A^k \to 0 \quad\text{as } k \to \infty \qquad\text{if all } |\lambda_i| < 1" cite="reading1" at="p. 8" />
+
+The absolute value is needed because eigenvalues can be negative or complex (p. 8). The argument rests on $n$ independent eigenvectors (p. 8).
+
+## Which matrices can be diagonalised
+
+**Different eigenvalues are enough** (pp. 9–10). If all $n$ eigenvalues are different, the eigenvectors are automatically independent, and $A$ is diagonalisable; Strang leaves the proof to the book (p. 9). This is the typical case: a random $10 \times 10$ matrix (in MATLAB, `eig(rand(10))`) has ten distinct eigenvalues (p. 9).
+
+**Repeated eigenvalues: look closer** (pp. 10–13). With a repeated eigenvalue there may or may not be enough eigenvectors (p. 10). The $10 \times 10$ identity has eigenvalue 1 ten times, but every vector is an eigenvector, so there is no shortage; and $S^{-1}IS = I$ is already diagonal (pp. 10–11). The trouble case is triangular (p. 11):
+
+<Formula label="Not diagonalisable" tex="A = \begin{pmatrix} 2 & 1 \\ 0 & 2 \end{pmatrix}, \qquad \det(A - \lambda I) = (2 - \lambda)^2, \qquad \lambda = 2, 2" cite="reading1" at="pp. 11–12" />
+
+$A - 2I$ has zeros except the 1 in the corner, and its nullspace is only the line through $(1, 0)$; $(0, 1)$ is not in it (p. 12). Strang names the two counts (p. 12):
+
+- the **algebraic multiplicity** of $\lambda$: how many times it is a root of the characteristic polynomial (here 2);
+- the **geometric multiplicity**: how many independent eigenvectors it has, the dimension of the nullspace of $A - \lambda I$ (here 1).
+
+In general, when the two counts differ for some eigenvalue, $A$ cannot be diagonalised. With distinct eigenvalues both counts are 1 for every eigenvalue (p. 13). The stability rule above was not proved for such matrices (p. 13). (It still holds for them, as the Jordan form later shows.)
+
+## Difference equations
+
+Start from a vector $u_0$ and multiply by $A$ at every step (pp. 13–14):
+
+<Formula label="First-order difference equation" tex="u_{k+1} = Au_k, \qquad u_k = A^ku_0" cite="reading1" at="pp. 13–14" />
+
+Strang calls this a first-order system: first order because it goes up one step at a time, a system because $u$ is a vector (p. 14). The formula $u_{100} = A^{100}u_0$ is compact, but to really compute it, write $u_0$ as a combination of eigenvectors (p. 14). Each piece then goes "its own merry way" (pp. 14–15):
+
+<Formula label="Solution by eigenvectors" tex="u_0 = c_1x_1 + \cdots + c_nx_n \quad\Rightarrow\quad A^ku_0 = c_1\lambda_1^kx_1 + \cdots + c_n\lambda_n^kx_n" cite="reading1" at="pp. 14–15" />
+
+In matrix language $u_0 = Sc$, and $A^ku_0 = S\Lambda^kc$: the same diagonalisation (pp. 15–16). Next lecture the same idea solves differential equations (pp. 14, 25).
+
+## Fibonacci numbers
+
+The Fibonacci numbers start $F_0 = 0$, $F_1 = 1$, and each is the sum of the two before: $0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \dots$ (pp. 16–17, 22). How fast do they grow, and what is $F_{100}$ (p. 17)? The rule $F_{k+2} = F_{k+1} + F_k$ is a single second-order equation. The trick is to make it a first-order system by adding the equation $F_{k+1} = F_{k+1}$ (pp. 17–18):
+
+<Formula label="Fibonacci as a system" tex="u_k = \begin{pmatrix} F_{k+1} \\ F_k \end{pmatrix}, \qquad u_{k+1} = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}u_k" cite="reading1" at="p. 18" />
+
+The matrix is symmetric, so its eigenvalues are real and its eigenvectors will be orthogonal (p. 19). They add to the trace $1$ and multiply to the determinant $-1$ (p. 20). The characteristic equation repeats the Fibonacci rule itself (p. 20):
+
+<Formula label="Fibonacci eigenvalues" tex="\lambda^2 - \lambda - 1 = 0, \qquad \lambda_1 = \frac{1 + \sqrt5}{2} \approx 1.618, \qquad \lambda_2 = \frac{1 - \sqrt5}{2} \approx -0.618" cite="reading1" at="pp. 20–21" />
+
+The eigenvalues are different, so $A$ is diagonalisable (p. 22). The large one controls the growth: the Fibonacci numbers increase by about $1.618$ at every step, and $F_{100} \approx c_1\lambda_1^{100}$ (p. 22). The other term, about $(-0.618)^{100}$, is practically nothing (p. 23). For a $2 \times 2$ matrix the eigenvectors can be spotted: $(\lambda, 1)$ makes the second row of $A - \lambda I$ zero, and the first row gives $-\lambda^2 + \lambda + 1 = 0$, true for these $\lambda$ (pp. 23–24). So $x_1 = (\lambda_1, 1)$ and $x_2 = (\lambda_2, 1)$, and $u_0 = (F_1, F_0) = (1, 0)$ (p. 24).
+
+Strang runs out of time before finding $c_1$ and $c_2$ (p. 24). (Finishing it, as the page's own step: $(1, 0) = (x_1 - x_2)/(\lambda_1 - \lambda_2)$, so $c_1 = 1/\sqrt5$, and $F_k = (\lambda_1^k - \lambda_2^k)/\sqrt5$. That gives $F_{100} \approx 3.54 \times 10^{20}$.) The idea is what matters: for anything evolving in time by a first-order system, the eigenvalues say whether it blows up or dies out, and expanding $u_0$ in eigenvectors gives the exact answer (pp. 24–25).
+
+<WorkedExample title="A hundred steps without a hundred multiplications">
+<Problem>
+Let $A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}$ and $u_0 = (3, 0)$. Diagonalise $A$, find a formula for $u_k = A^ku_0$, and check it for $k = 1$ and $k = 2$.
+</Problem>
+<Step title="Eigenvalues and eigenvectors">
+Trace $7$, determinant $12 - 2 = 10$: $\lambda^2 - 7\lambda + 10 = (\lambda - 5)(\lambda - 2)$, so $\lambda_1 = 5$, $\lambda_2 = 2$. $A - 5I = \begin{pmatrix} -1 & 1 \\ 2 & -2 \end{pmatrix}$ gives $x_1 = (1, 1)$; $A - 2I = \begin{pmatrix} 2 & 1 \\ 2 & 1 \end{pmatrix}$ gives $x_2 = (1, -2)$. So $S = \begin{pmatrix} 1 & 1 \\ 1 & -2 \end{pmatrix}$ and $\Lambda = \begin{pmatrix} 5 & 0 \\ 0 & 2 \end{pmatrix}$.
+</Step>
+<Step title="Expand the start">
+$c_1(1, 1) + c_2(1, -2) = (3, 0)$: $c_1 + c_2 = 3$ and $c_1 - 2c_2 = 0$, so $c_2 = 1$ and $c_1 = 2$. Hence $u_k = 2 \cdot 5^k(1, 1) + 2^k(1, -2)$.
+</Step>
+<Step title="Check">
+$k = 1$: $(10 + 2, 10 - 4) = (12, 6)$, and directly $Au_0 = (12, 6)$. $k = 2$: $(50 + 4, 50 - 8) = (54, 42)$, and $A(12, 6) = (48 + 6, 24 + 18) = (54, 42)$. For large $k$ the $5^k$ term takes over: $u_k$ turns towards the direction $(1, 1)$ and grows about five times per step.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $n$ independent eigenvectors in $S$: $AS = S\Lambda$, so $S^{-1}AS = \Lambda$ and $A = S\Lambda S^{-1}$.
+- $A^k = S\Lambda^kS^{-1}$; the powers go to zero when every $|\lambda| < 1$.
+- Distinct eigenvalues guarantee diagonalisation; a repeated eigenvalue needs as many eigenvectors as its multiplicity, which $\begin{pmatrix} 2 & 1 \\ 0 & 2 \end{pmatrix}$ lacks.
+- $u_{k+1} = Au_k$: expand $u_0$ in eigenvectors, and each part is multiplied by its own $\lambda$ at every step.
+- Fibonacci: $\lambda = (1 \pm \sqrt5)/2$; the numbers grow by about $1.618$ per step.

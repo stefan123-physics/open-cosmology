@@ -1,0 +1,486 @@
+# Calculations on content/year-4/8.08/photon-and-phonon-gases.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005, Wen) Lecture Notes, Chapter VII "The Bose Gas", first file (handwritten scan).
+# Page numbers are Wen's handwritten numbers at the top right of each page: the file runs pp. 48-69 (PDF pages 1-22);
+# this page covers pp. 48-54, points 1 and 2.
+# Numbers from the notes: kappa = 0.23... (p. 50, a slip for 0.2436), the 2.73 K sketch of the Planck curve (p. 51).
+# Page's own examples: Bose/Fermi/Boltzmann occupation plot; Planck plot (peak, area); furnace at 1500 K with a
+# 1.0 cm^2 hole; copper (n = 8.49e28 m^-3, T_D = 343 K) at 10 K; quiz 2; the CMB callout at 2.725 K.
+# Constants: k_B, hbar, c from calcs/constants.yaml; R = 8.314462618 J/(mol K) (exact); eV = 1.602176634e-19 J (exact).
+
+page: content/year-4/8.08/photon-and-phonon-gases.mdx
+calcs:
+  # ---------------------------------------------------------------- the Bose distribution (pp. 48-50)
+  - id: geometric-mean
+    kind: identity
+    where: 'formula "Mean occupation of a level": (1 - q) sum n q^n = q/(1 - q) = 1/(e^(beta eps) - 1) with q = e^(-beta eps) (checked by differentiating the geometric series numerically)'
+    formula: (1 - exp(-bb))*(-deriv('1/(1 - exp(-t))', 't', bb))
+    equals: 1/(exp(bb) - 1)
+    samples: {bb: [0.3, 1.0, 2.5]}
+    tolerance: 1e-6
+    shown: ['\left(-\frac{\partial}{\partial(\beta\varepsilon_k)}\right)\frac{1}{1 - e^{-\beta\varepsilon_k}} = \frac{1}{e^{\beta\varepsilon_k} - 1}']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: mit
+
+  - id: bose-at-half
+    where: 'occupation plot caption: 1/(e^0.5 - 1)'
+    inputs: {}
+    formula: 1/(exp(0.5) - 1)
+    expected: '1.54'
+    shown: ['(at βε = 0.5 it is 1.54)']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- photon density (p. 50)
+  - id: kappa
+    where: 'formula "The constant in the photon density": (1/pi^2) int x^2/(e^x - 1) dx'
+    inputs: {}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2
+    expected: '0.2436'
+    shown: ['dx\,\frac{x^2}{e^x - 1} = \frac{2\zeta(3)}{\pi^2} = 0.2436']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: mit
+
+  - id: kappa-notes
+    kind: fact
+    where: 'remark after "The constant in the photon density": the notes print kappa = 0.23..., a slip for 0.2436'
+    value: '0.23'
+    shown: ['(The notes write $0.23\ldots$; the integral is']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: slip
+
+  - id: two-zeta-3
+    where: 'same remark: int x^2/(e^x - 1) dx = 2 zeta(3)'
+    inputs: {}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)
+    expected: '2.404'
+    shown: ['the integral is $2\zeta(3) = 2.404$']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: zeta-3
+    where: 'same remark: zeta(3)'
+    inputs: {}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/2
+    expected: '1.202'
+    shown: ['1/2^3 + 1/3^3 + \cdots = 1.202$']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- energy density, Planck (p. 51)
+  - id: stefan-integral
+    where: 'text before "Stefan''s law" and Planck plot caption: int x^3/(e^x - 1) dx = pi^4/15 = 6.49'
+    inputs: {}
+    formula: integrate('x**3/(exp(x) - 1)', 'x', 1e-9, 80)
+    expected: '6.49'
+    shown: ['the area under it is π⁴/15 = 6.49']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: stefan-integral-exact
+    kind: identity
+    where: 'text before "Stefan''s law": the integral equals pi^4/15 exactly'
+    formula: integrate('x**3/(exp(x) - 1)', 'x', 1e-9, 80) + 0*aa
+    equals: pi**4/15
+    samples: {aa: [1]}
+    tolerance: 1e-8
+    shown: ['$\int_0^\infty x^3\,dx/(e^x - 1) = \pi^4/15$']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: mit
+
+  - id: radiation-constant
+    where: 'remark after "Stefan''s law": Wen''s sigma = pi^2 k_B^4/15(hbar c)^3'
+    inputs: {}
+    formula: pi**2*k_B**4/(15*hbar**3*c**3)
+    expected: 7.566e-16 J/(m**3*K**4)
+    shown: ['often called the radiation constant, $7.566 \times 10^{-16}$ J m⁻³ K⁻⁴']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: mean-photon-energy
+    where: 'text after "Stefan''s law" and flashcard 3: (pi^4/15)/(2 zeta(3)) k_B T'
+    inputs: {}
+    formula: (pi**4/15)/integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)
+    expected: '2.70'
+    shown: ['$(\pi^4/15)/(2\zeta(3))\,k_BT = 2.70\,k_BT$']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: planck-peak
+    where: 'Planck plot caption and point label: the maximum of x^3/(e^x - 1), where 3(1 - e^-x) = x'
+    inputs: {}
+    formula: solve('3*(1 - exp(-x)) - x', 'x', 1, 5)
+    expected: '2.8214'
+    shown: ['points={[{ x: 2.8214, y: 1.4214', 'The quantum curve peaks at x = 2.82']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: planck-peak-height
+    where: 'Planck plot point: the height x^3/(e^x - 1) at the peak'
+    inputs: {}
+    formula: 2.8214393721**3/(exp(2.8214393721) - 1)
+    expected: '1.4214'
+    shown: ['y: 1.4214, label: "peak, ħω = 2.82 k_BT"']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: cmb-sketch
+    kind: fact
+    where: 'text after "Planck distribution": Wen sketches the curve for T = 2.73 K'
+    value: '2.73 K'
+    shown: ['Wen sketches it for $T = 2.73$ K']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: mit
+
+  # ---------------------------------------------------------------- black-body radiation and pressure (p. 52)
+  - id: mean-cos
+    where: 'formula "Average of the angle factor"'
+    inputs: {}
+    formula: integrate('sin(t)*cos(t)', 't', 0, pi/2)/integrate('sin(t)', 't', 0, pi/2)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['= \frac{1/2}{1} = \frac12']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: mit
+
+  - id: stefan-boltzmann
+    where: 'text after "Power radiated per unit area": c sigma/4'
+    inputs: {}
+    formula: c*pi**2*k_B**4/(60*hbar**3*c**3)
+    expected: 5.670e-8 W/(m**2*K**4)
+    shown: ['With Wen''s $\sigma$, $c\sigma/4 = 5.670 \times 10^{-8}$ W m⁻² K⁻⁴.']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: page-own
+
+  - id: mode-energy-volume
+    kind: identity
+    where: 'text before "Radiation pressure": eps proportional to V^(-1/3) gives d eps/dV = -eps/3V (checked for eps = V^(-1/3))'
+    formula: deriv('t**(-1/3)', 't', VV)
+    equals: -(VV**(-1/3))/(3*VV)
+    samples: {VV: [0.5, 1.0, 3.0]}
+    tolerance: 1e-6
+    shown: ['$\partial\varepsilon_k/\partial V = -\varepsilon_k/3V$. Then']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: furnace at 1500 K
+  - id: ex-kT-hbarc
+    where: 'worked example "A furnace with a peephole", step "Photon density"; quiz 2 explanation'
+    inputs: {T: 1500 K}
+    formula: k_B*T/(hbar*c)
+    expected: 6.55e5 1/m
+    shown: ['$k_BT/\hbar c = 1.380649 \times 10^{-23} \times 1500/(1.0546 \times 10^{-34} \times 2.998 \times 10^8)$ m⁻¹ $= 6.55 \times 10^5$ m⁻¹']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: ex-photon-density
+    where: 'worked example, step "Photon density"; quiz 2 (answer 0)'
+    inputs: {T: 1500 K}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 6.85e16 1/m**3
+    shown: ['$n = 6.85 \times 10^{16}$ photons per m³', 'gives $6.85 \\times 10^{16}$ m⁻³']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: ex-photon-density-cm3
+    where: 'worked example: the same per cm^3'
+    inputs: {T: 1500 K}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 6.85e10 1/cm**3
+    shown: ['or $6.85 \times 10^{10}$ per cm³']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: quiz-no-kappa
+    where: 'quiz 2 explanation: leaving out the factor 0.2436'
+    inputs: {T: 1500 K}
+    formula: (k_B*T/(hbar*c))**3
+    expected: 2.8e17 1/m**3
+    shown: ['leaving out the factor 0.2436 gives $2.8 \\times 10^{17}$']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: ex-T4
+    where: 'worked example, step "Energy density and pressure": T^4'
+    inputs: {}
+    formula: 1500**4
+    expected: '5.06e12'
+    shown: ['and $T^4 = 5.06 \times 10^{12}$ K⁴']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: ex-sigma
+    where: 'worked example: sigma'
+    inputs: {}
+    formula: pi**2*k_B**4/(15*hbar**3*c**3)
+    expected: 7.566e-16 J/(m**3*K**4)
+    shown: ['$\sigma = \pi^2k_B^4/15(\hbar c)^3 = 7.566 \times 10^{-16}$ J m⁻³ K⁻⁴, and']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: ex-energy-density
+    where: 'worked example: U/V = sigma T^4 at 1500 K'
+    inputs: {T: 1500 K}
+    formula: pi**2*k_B**4/(15*hbar**3*c**3)*T**4
+    expected: 3.83e-3 J/m**3
+    shown: ['so $U/V = 3.83 \times 10^{-3}$ J/m³']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: ex-pressure
+    where: 'worked example: P = U/3V at 1500 K'
+    inputs: {T: 1500 K}
+    formula: pi**2*k_B**4/(15*hbar**3*c**3)*T**4/3
+    expected: 1.28e-3 Pa
+    shown: ['The pressure is a third of that, $1.28 \times 10^{-3}$ Pa']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: page-own
+
+  - id: ex-pressure-atm
+    where: 'worked example: the pressure compared with 1 atm (101325 Pa), "about a hundred-millionth"'
+    inputs: {}
+    formula: 1.277e-3/101325
+    expected: '1e-8'
+    tolerance: 0.5e-8
+    shown: ['about a hundred-millionth of an atmosphere']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: page-own
+
+  - id: ex-mean-energy
+    where: 'worked example: 2.70 k_B T at 1500 K'
+    inputs: {T: 1500 K}
+    formula: 2.7011780*k_B*T
+    expected: 5.6e-20 J
+    shown: ['Each photon carries on average $2.70\,k_BT = 5.6 \times 10^{-20}$ J']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: ex-mean-energy-ev
+    where: 'worked example: the same in eV'
+    inputs: {T: 1500 K, eV: 1.602176634e-19 J}
+    formula: 2.7011780*k_B*T/eV
+    expected: '0.35'
+    shown: ['about 0.35 eV, in the infrared']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own
+
+  - id: ex-power
+    where: 'worked example, step "Power through the hole": (c/4) sigma T^4 A, A = 1.0 cm^2'
+    inputs: {T: 1500 K, A: 1.0 cm**2}
+    formula: c/4*pi**2*k_B**4/(15*hbar**3*c**3)*T**4*A
+    expected: 28.7 W
+    shown: ['$\frac{c}{4}\sigma T^4 \times A = 5.670 \times 10^{-8} \times 5.06 \times 10^{12} \times 10^{-4}$ W $= 28.7$ W']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: page-own
+
+  - id: ex-power-double
+    where: 'worked example: twice the temperature, 2^4'
+    inputs: {}
+    formula: 2**4
+    expected: '16'
+    shown: ['at twice the temperature the same hole would radiate 16 times as much']
+    source: {cite: reading1, at: 'p. 52'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- phonons (pp. 53-54)
+  - id: kmax-count
+    kind: identity
+    where: 'formulas "Number of k-levels" and "Largest phonon wave vector": (V/(2 pi)^3)(4 pi/3) k_max^3 = N with k_max = (6 pi^2 N/V)^(1/3)'
+    formula: 1/(2*pi)**3*(4*pi/3)*(6*pi**2*nn)
+    equals: nn
+    samples: {nn: [1.0, 8.49e28]}
+    tolerance: 1e-9
+    shown: ['k_{\text{max}} = \left(\frac{6\pi^2N_{\text{site}}}{V}\right)^{1/3}']
+    source: {cite: reading1, at: 'p. 53'}
+    origin: page-own
+
+  - id: debye-dos-total
+    kind: identity
+    where: 'text after "Debye density of states": int_0^eps_max D = 3 N_site (with V = 1, hbar v = 1, eps_max = k_max)'
+    formula: integrate('3/(2*pi**2)*q**2', 'q', 0, (6*pi**2*nn)**(1/3))
+    equals: 3*nn
+    samples: {nn: [1.0, 5.0]}
+    tolerance: 1e-6
+    shown: ['The total is $\int D\,d\varepsilon = 3N_{\text{site}}$, three modes per atom.']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: debye-small-u
+    kind: identity
+    where: 'formula "The Debye function and its limits": (3/u^3) int_0^u t^3/(e^t - 1) dt = 1 - 3u/8 + ... for u << 1 (checked at u = 0.01, 0.02, to second order)'
+    formula: 3/uu**3*integrate('t**3/(exp(t) - 1)', 't', 1e-12, uu)
+    equals: 1 - 3*uu/8
+    samples: {uu: [0.01, 0.02]}
+    tolerance: 1e-4
+    shown: ['1 - \frac38u + \cdots, & u \ll 1\ (T \gg T_D)']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: mit
+
+  - id: debye-large-u
+    kind: identity
+    where: 'same formula: the limit pi^4/(5u^3) for u >> 1 (checked at u = 40, 60)'
+    formula: 3/uu**3*integrate('t**3/(exp(t) - 1)', 't', 1e-12, uu)
+    equals: pi**4/(5*uu**3)
+    samples: {uu: [40, 60]}
+    tolerance: 1e-9
+    shown: ['\dfrac{\pi^4}{5u^3}, & u \gg 1\ (T \ll T_D)']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: mit
+
+  - id: debye-energy-chain
+    kind: identity
+    where: 'formula "Energy per atom in the Debye model": 9 eps_max^-3 int_0^eps_max eps^3/(e^(beta eps) - 1) = 3 k_B T D(u) with u = eps_max/k_B T (units k_B T = 1, so u = eps_max)'
+    formula: 9*uu**(-3)*integrate('q**3/(exp(q) - 1)', 'q', 1e-12, uu)
+    equals: 3*(3/uu**3)*integrate('t**3/(exp(t) - 1)', 't', 1e-12, uu)
+    samples: {uu: [0.5, 2.0, 10.0]}
+    tolerance: 1e-9
+    shown: ['= 3k_BT\,\mathcal D(u)']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: mit
+
+  - id: low-T-heat-capacity
+    kind: identity
+    where: 'formula "Low-temperature heat capacity": d/dT of (3 pi^4/5) T^4/T_D^3 is (12 pi^4/5)(T/T_D)^3 (units N k_B = 1, T_D = 1)'
+    formula: deriv('3*pi**4/5*t**4', 't', TT)
+    equals: 12*pi**4/5*TT**3
+    samples: {TT: [0.02, 0.05]}
+    tolerance: 1e-6
+    shown: ['C_V = \frac{\partial U}{\partial T} = \frac{12\pi^4}{5}\,Nk_B\left(\frac{T}{T_D}\right)^3']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: copper
+  - id: cu-density
+    kind: fact
+    where: 'worked example "Copper in the Debye model": atoms per m^3 (8.96 g/cm^3, 63.55 g/mol)'
+    value: '8.49e28 1/m**3'
+    shown: ['Copper has $8.49 \times 10^{28}$ atoms per m³']
+    source: {ref: 'copper: density 8.96 g/cm^3, molar mass 63.546 g/mol, giving 8.49e28 atoms per m^3'}
+    origin: later-data
+
+  - id: cu-debye
+    kind: fact
+    where: 'worked example: the Debye temperature of copper, about 343 K (tabulated low-temperature value)'
+    value: '343 K'
+    shown: ['a Debye temperature of about 343 K']
+    source: {ref: 'tabulated Debye temperature of copper, about 343 K'}
+    origin: later-data
+
+  - id: cu-kmax
+    where: 'worked example, step "The cutoff"'
+    inputs: {n: 8.49e28 1/m**3}
+    formula: (6*pi**2*n)**(1/3)
+    expected: 1.71e10 1/m
+    shown: ['$k_{\text{max}} = (6\pi^2 \times 8.49 \times 10^{28})^{1/3}$ m⁻¹ $= 1.71 \times 10^{10}$ m⁻¹']
+    source: {cite: reading1, at: 'p. 53'}
+    origin: page-own
+
+  - id: cu-shortest-wavelength
+    where: 'worked example: 2 pi/k_max'
+    inputs: {n: 8.49e28 1/m**3}
+    formula: 2*pi/(6*pi**2*n)**(1/3)
+    expected: 0.37 nm
+    shown: ['a shortest wavelength $2\pi/k_{\text{max}} = 0.37$ nm']
+    source: {cite: reading1, at: 'p. 53'}
+    origin: page-own
+
+  - id: cu-kmax-notes
+    where: 'worked example: Wen''s boxed (3N/V)^(1/3), which lacks both the (2 pi)^3 and the 4 pi'
+    inputs: {n: 8.49e28 1/m**3}
+    formula: (3*n)**(1/3)
+    expected: 6.3e9 1/m
+    shown: ['Wen''s boxed $(3N/V)^{1/3}$ would give $6.3 \times 10^9$ m⁻¹']
+    source: {cite: reading1, at: 'p. 53'}
+    origin: slip
+
+  - id: cu-sound-speed
+    where: 'worked example, step "The implied sound speed": v = k_B T_D/(hbar k_max)'
+    inputs: {T_D: 343 K, n: 8.49e28 1/m**3}
+    formula: k_B*T_D/(hbar*(6*pi**2*n)**(1/3))
+    expected: 2.62e3 m/s
+    shown: ['$= 2.62 \times 10^3$ m/s']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: cu-ratio
+    where: 'worked example, step "Heat capacity at 10 K": T/T_D'
+    inputs: {}
+    formula: 10/343
+    expected: '0.0292'
+    shown: ['$T/T_D = 0.0292$']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: cu-12pi4-5
+    where: 'worked example: 12 pi^4/5'
+    inputs: {}
+    formula: 12*pi**4/5
+    expected: '233.8'
+    shown: ['$(12\pi^4/5)R(T/T_D)^3 = 233.8 \times 8.314 \times 2.48 \times 10^{-5}$ J/(mol K)']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: cu-ratio-cubed
+    where: 'worked example: (T/T_D)^3'
+    inputs: {}
+    formula: (10/343)**3
+    expected: '2.48e-5'
+    shown: ['233.8 \times 8.314 \times 2.48 \times 10^{-5}$ J/(mol K) $= 0.048$ J/(mol K)']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: cu-c10
+    where: 'worked example: C at 10 K per mole'
+    inputs: {R: 8.314462618 J/(mol*K)}
+    formula: 12*pi**4/5*R*(10/343)**3
+    expected: 0.048 J/(mol*K)
+    shown: ['$= 0.048$ J/(mol K). At room temperature']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: cu-3R
+    where: 'worked example: 3R'
+    inputs: {R: 8.314462618 J/(mol*K)}
+    formula: 3*R
+    expected: 24.9 J/(mol*K)
+    shown: ['the classical $3R = 24.9$ J/(mol K)']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  - id: cu-factor
+    where: 'worked example: 3R against the 10 K value, "some 500 times more"'
+    inputs: {}
+    formula: 3/(12*pi**4/5*(10/343)**3)
+    expected: '500'
+    tolerance: 30
+    shown: ['some 500 times more']
+    source: {cite: reading1, at: 'p. 54'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- CMB callout and quiz 2
+  - id: cmb-photon-density
+    where: 'cosmology callout and quiz 2 explanation: photon density at 2.725 K'
+    inputs: {T: 2.725 K}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 4.1e8 1/m**3
+    shown: ['about $4.1 \times 10^8$ photons per m³', '$4.1 \\times 10^8$ m⁻³ is the value at 2.725 K']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: cmb-photon-density-cm3
+    where: 'cosmology callout: per cm^3'
+    inputs: {T: 2.725 K}
+    formula: integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 411 1/cm**3
+    tolerance: 1 1/cm**3
+    shown: ['(411 per cm³)']
+    source: {cite: reading1, at: 'p. 50'}
+    origin: page-own
+
+  - id: cmb-energy-density
+    where: 'cosmology callout: sigma T^4 at 2.725 K'
+    inputs: {T: 2.725 K}
+    formula: pi**2*k_B**4/(15*hbar**3*c**3)*T**4
+    expected: 4.17e-14 J/m**3
+    shown: ['an energy density of $4.17 \times 10^{-14}$ J/m³']
+    source: {cite: reading1, at: 'p. 51'}
+    origin: page-own

@@ -1,0 +1,146 @@
+---
+title: Solving for time evolution, and the Heisenberg picture
+slug: time-evolution-heisenberg-picture
+course: "8.05"
+lecture: 13
+order: 1
+summary: "The time-evolution operator obeys iħ dU/dt = H U. For a time-independent Hamiltonian, U = exp(−iH(t − t₀)/ħ). If the Hamiltonians at different times commute, the exponent becomes the integral of H; in general U is a time-ordered exponential, a series of nested integrals. In the Heisenberg picture the states stay put and the operators carry the time dependence: A_H(t) = U†A_S U. Products and commutators keep their form, so [x_H, p_H] = iħ at all times, and expectation values agree with the Schrödinger picture. Heisenberg operators obey iħ dA_H/dt = [A_H, H_H] plus any explicit time dependence, so operators commuting with the Hamiltonian are constant. For the oscillator the equations are the classical ones, giving x_H(t) = x̂ cos ωt + (p̂/mω) sin ωt."
+prerequisites: [oscillator-unitary-time-evolution]
+source:
+  title: "MIT 8.05 Lecture 13: Quantum Dynamics (cont.)"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-13-quantum-dynamics-cont/
+  readings:
+    - title: "8.05 Lecture 13 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/ad987410654c49a34349b19c4a66ee54_zOZw3zCLzyE.pdf
+    - title: "Zwiebach, Quantum Dynamics (8.05 lecture notes, chapter 6)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-6/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 14
+    why: "More quantum dynamics: coherent states of the oscillator."
+quiz:
+  - question: "For a time-independent Hamiltonian, what is $U(t, t_0)$?"
+    choices: ["$e^{-iH(t - t_0)/\\hbar}$", "$e^{iH(t - t_0)/\\hbar}$", "$1 - iH(t - t_0)/\\hbar$", "$e^{-iHt/\\hbar}$ for every $t_0$"]
+    answer: 0
+    explanation: "$e^{-iHt/\\hbar}U_0$ solves $i\\hbar\\,dU/dt = HU$, and $U(t_0, t_0) = 1$ fixes $U_0 = e^{iHt_0/\\hbar}$."
+  - question: "When does $U = \\exp\\left(-\\frac{i}{\\hbar}\\int_{t_0}^tH(t')\\,dt'\\right)$ solve the evolution equation for a time-dependent $H$?"
+    choices: ["When the Hamiltonians at different times commute", "Always", "Only when $H$ is Hermitian", "Never"]
+    answer: 0
+    explanation: "Differentiating the exponential series gives $\\dot R$ in the right place only if $\\dot R$ commutes with $R$, which holds when $H(t_1)$ and $H(t_2)$ commute; otherwise a time-ordered exponential is needed."
+  - question: "What is $[\\hat x_H(t), \\hat p_H(t)]$?"
+    choices: ["$i\\hbar$ at all times", "$i\\hbar$ only at $t = 0$", "$0$", "$i\\hbar\\cos\\omega t$"]
+    answer: 0
+    explanation: "Commutators of Schrödinger operators carry over to Heisenberg operators, and the identity operator is the same in both pictures."
+  - question: "A Schrödinger operator with no explicit time dependence commutes with the Hamiltonian. What can be said about its Heisenberg operator?"
+    choices: ["It does not depend on time", "It equals the Hamiltonian", "It is zero", "It oscillates with the frequency of the Hamiltonian"]
+    answer: 0
+    explanation: "The commutator carries over, so $[A_H, H_H] = 0$, and the Heisenberg equation of motion gives $dA_H/dt = 0$."
+flashcards:
+  - front: "Three cases for the time-evolution operator"
+    back: "Time-independent $H$: $U = e^{-iH(t - t_0)/\\hbar}$. $H(t)$ commuting at different times: $U = \\exp(-\\frac{i}{\\hbar}\\int_{t_0}^tH(t')dt')$. General $H(t)$: a time-ordered exponential, a series of nested integrals with later times on the left."
+  - front: "Heisenberg operator"
+    back: "$A_H(t) = U^\\dagger(t, 0)\\,A_S\\,U(t, 0)$; equal to $A_S$ at $t = 0$; products and commutators keep their form; $(\\psi(t), A_S\\psi(t)) = (\\psi(0), A_H(t)\\psi(0))$."
+  - front: "Heisenberg equation of motion"
+    back: "$i\\hbar\\frac{dA_H}{dt} = [A_H, H_H] + i\\hbar\\left(\\frac{\\partial A_S}{\\partial t}\\right)_H$; for the oscillator it gives $\\frac{d^2\\hat x_H}{dt^2} = -\\omega^2\\hat x_H$, the classical equation."
+status: reviewed
+---
+
+Having derived the Schrödinger equation from unitary time evolution, Zwiebach now goes the other way: given a Hamiltonian, find $U$. Then he introduces the **Heisenberg picture**, in which the operators rather than the states depend on time; it is a practical way to calculate and makes the link with classical mechanics clearer (transcript pp. 1–21; notes chapter 6, sections 2.3 and 3, where section 3.3 has two further examples left to recitation). The notes also relate the Hamiltonian to classical Poisson brackets, which the lecture leaves to the reader (transcript p. 2). States are written here as $\psi$ instead of kets. (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example.)
+
+## The equation for U
+
+Multiplying $H = i\hbar\,(\partial U/\partial t)\,U^\dagger$ from the right by $U$ gives a first-order differential equation for the operator itself (transcript p. 2):
+
+<Formula label="Equation for the time-evolution operator" tex="i\hbar\,\frac{d}{dt}U(t, t_0) = H(t)\,U(t, t_0)" cite="reading2" at="eqs. (2.36)–(2.37)" />
+
+Acting on $\psi(t_0)$ it is the Schrödinger equation. It is a set of first-order equations for the matrix elements, so the operator at the initial time determines it uniquely (transcript p. 8). There are three cases.
+
+## Case 1: a time-independent Hamiltonian
+
+Try $U = e^{-iHt/\hbar}U_0$ with a constant operator $U_0$. Since $H$ does not depend on time, the derivative of the exponential is computed as if $H$ were a number, and brings down $-iH/\hbar$; $H$ may stand on either side of the exponential, but not to the right of $U_0$ (transcript pp. 2–3). The condition $U(t_0, t_0) = 1$ fixes $U_0 = e^{iHt_0/\hbar}$, so (transcript p. 3)
+
+<Formula label="Time-independent Hamiltonian" tex="U(t, t_0) = e^{-iH(t - t_0)/\hbar}" cite="reading2" at="eq. (2.45)" />
+
+On an energy eigenstate a function of $H$ acts as the same function of the eigenvalue, so each eigenstate just picks up the phase $e^{-iE_n(t - t_0)/\hbar}$, the rule used since the start of quantum mechanics (transcript p. 3).
+
+## Case 2: Hamiltonians that commute at different times
+
+Sometimes $H$ depends on time but $[H(t_1), H(t_2)] = 0$ for all times. Example: a spin in a magnetic field whose direction is fixed but whose strength varies, $H = -\gamma B_z(t)S_z$, since $S_z$ commutes with itself (transcript p. 4). A magnetic field that rotates, as in magnetic resonance later, is not of this kind. The natural guess replaces $Ht$ by an integral (transcript pp. 4–5):
+
+<Formula label="Commuting Hamiltonians" tex="U(t, t_0) = \exp\left(-\frac{i}{\hbar}\int_{t_0}^{t}H(t')\,dt'\right)" cite="reading2" at="eq. (2.46)" />
+
+To check it, call the exponent $R(t)$. Its derivative is the integrand at the upper limit, $\dot R = -iH(t)/\hbar$ (transcript p. 5; a student's question about it, p. 7). Differentiating the series $1 + R + \frac{1}{2}RR + \dots$ gives terms like $\frac{1}{2}(\dot RR + R\dot R)$, and because $\dot R$ is built from $H(t)$ and $R$ from $H$ at other times, they commute: every $\dot R$ moves to the left, giving $\dot R\,e^R$ (transcript p. 5; notes eqs. (2.47)–(2.50)). That is the evolution equation.
+
+## Case 3: the general case
+
+For a general $H(t)$ there is a formal answer, the **time-ordered exponential** (transcript pp. 5–6):
+
+<Formula label="Time-ordered exponential" tex="U(t, t_0) = 1 + \left(-\frac{i}{\hbar}\right)\int_{t_0}^{t}dt_1H(t_1) + \left(-\frac{i}{\hbar}\right)^2\int_{t_0}^{t}dt_1H(t_1)\int_{t_0}^{t_1}dt_2H(t_2) + \dots" cite="reading2" at="eq. (2.52)" />
+
+Compared with the ordinary exponential, the second integral stops at $t_1$, so $t_1 > t_2$ and the later Hamiltonian always stands to the left; this removes the factor $\frac{1}{2}$, and so on at higher orders. The symbol $T$ written in front of the exponential is an instruction meaning this series, not an operator (transcript p. 8). Differentiating term by term shows that it solves the equation, but summing it is rarely practical; magnetic resonance will be solved another way, and the time-ordered exponential returns in 8.06 (transcript p. 7).
+
+## The Heisenberg picture
+
+Start from a Schrödinger operator $A_S$ (such as $\hat x$, $\hat p$, a spin component or the Hamiltonian) and two evolving states $\alpha(t)$ and $\beta(t)$. Their matrix element can be rewritten with the states at time 0 (transcript p. 9):
+
+<Formula label="Matrix elements in two pictures" tex="(\alpha(t), A_S\,\beta(t)) = (\alpha(0), U^\dagger(t, 0)\,A_S\,U(t, 0)\,\beta(0))" cite="reading2" at="eq. (3.1)" />
+
+The operator in the middle is the **Heisenberg operator** (transcript pp. 9–10):
+
+<Formula label="Heisenberg operator" tex="A_H(t) = U^\dagger(t, 0)\,A_S\,U(t, 0)" cite="reading2" at="eq. (3.2)" />
+
+Operators act on operators from both sides like this; an operator acting from one side only would be suspicious (transcript p. 10). Properties (transcript pp. 10–14):
+
+- At $t = 0$, $A_H = A_S$, since $U(0, 0) = 1$; the identity is the same in both pictures (notes eqs. (3.3)–(3.4)).
+- Products carry over: inserting $UU^\dagger = 1$, if $C_S = A_SB_S$ then $C_H = A_HB_H$, and so do commutators (notes eqs. (3.5)–(3.7)). In particular
+
+<Formula label="The canonical commutator at all times" tex="[\hat x_H(t), \hat p_H(t)] = i\hbar" cite="reading2" at="eq. (3.8)" />
+
+- The Heisenberg Hamiltonian is the Schrödinger Hamiltonian with every $\hat x$ and $\hat p$ replaced by its Heisenberg version, $H_H(t) = H_S(\hat x_H(t), \hat p_H(t), t)$. If the Schrödinger Hamiltonians at different times commute, $U$ commutes with them and $H_H = H_S$: a striking statement, since the same function of different arguments is equal (transcript pp. 12–13; notes eqs. (3.10)–(3.14)). A student pointed out, rightly, that any operator commuting with the Hamiltonian is the same in both pictures (transcript pp. 11–12).
+- Expectation values agree: $(\psi(t), A_S\psi(t)) = (\psi(0), A_H(t)\psi(0))$, written briefly as $\langle A_S\rangle = \langle A_H\rangle$ (transcript pp. 13–14; notes eq. (3.15)).
+
+## The Heisenberg equation of motion
+
+Computing $U$ and then $A_H$ is often hard, so it helps to have a differential equation for $A_H$ instead (transcript p. 14). Differentiate $U^\dagger A_SU$: the derivatives of $U$ and $U^\dagger$ come from the evolution equation and its adjoint, and the $U$'s turn everything into Heisenberg operators; a Schrödinger operator with explicit time dependence adds a third term (transcript pp. 14–15):
+
+<Formula label="Heisenberg equation of motion" tex="i\hbar\,\frac{d}{dt}A_H(t) = [A_H(t), H_H(t)] + i\hbar\left(\frac{\partial A_S}{\partial t}\right)_H" cite="reading2" at="eq. (3.22)" />
+
+For an operator with no explicit time dependence only the commutator remains (notes eq. (3.23)). Taking expectation values in the time-0 states gives $i\hbar\,\frac{d}{dt}\langle A\rangle = \langle[A, H]\rangle$, the result found in Lecture 10 (see [the uncertainty principle](/courses/8-05/uncertainty-principle-energy-time)), now in either picture (transcript pp. 16–17; notes eqs. (3.25)–(3.26)). A time-independent operator is **conserved** if it commutes with the Hamiltonian. Then $[A_H, H_H] = 0$ too, and the Heisenberg operator does not depend on time at all (transcript p. 17; notes eqs. (3.27)–(3.28)).
+
+## The harmonic oscillator in the Heisenberg picture
+
+For $H = \hat p^2/2m + \frac{1}{2}m\omega^2\hat x^2$, the Heisenberg Hamiltonian has the same form with Heisenberg operators (transcript pp. 17–18). Only the kinetic term fails to commute with $\hat x_H$, and only the potential term with $\hat p_H$, which gives the classical equations (transcript pp. 18–19):
+
+<Formula label="Oscillator equations of motion" tex="\frac{d\hat x_H}{dt} = \frac{1}{m}\hat p_H, \qquad \frac{d\hat p_H}{dt} = -m\omega^2\hat x_H \quad\Longrightarrow\quad \frac{d^2\hat x_H}{dt^2} = -\omega^2\hat x_H" cite="reading2" at="eqs. (3.36)–(3.39)" />
+
+The solution is $\hat x_H = \hat A\cos\omega t + \hat B\sin\omega t$ with constant operators, and $\hat p_H = m\,d\hat x_H/dt$. At $t = 0$ the Heisenberg operators equal the Schrödinger ones, so $\hat A = \hat x$ and $\hat B = \hat p/m\omega$ (transcript p. 20):
+
+<Formula label="Heisenberg position and momentum" tex="\hat x_H(t) = \hat x\cos\omega t + \frac{\hat p}{m\omega}\sin\omega t, \qquad \hat p_H(t) = \hat p\cos\omega t - m\omega\,\hat x\sin\omega t" cite="reading2" at="eq. (3.44)" />
+
+Any expectation value of powers of $\hat x$ and $\hat p$ now follows using the states at time 0. As a check, putting these into $H_H$ the cross terms $\hat p\hat x + \hat x\hat p$ cancel and $\cos^2 + \sin^2 = 1$ returns exactly $H_S$, as it must for a time-independent Hamiltonian (transcript pp. 20–21; notes eq. (3.49)).
+
+## Worked example
+
+<WorkedExample title="A constant force, and a decaying field">
+<Problem>
+(a) A particle feels a constant force $F$: $H = \hat p^2/2m - F\hat x$. Solve the Heisenberg equations for $\hat x_H(t)$ and $\hat p_H(t)$, and check that $[\hat x_H, \hat p_H] = i\hbar$ still. (b) A spin has $H(t) = \omega_0e^{-t/\tau}S_z$. Write $U(t, 0)$, and find the total angle through which the spin turns about $z$ as $t \to \infty$.
+</Problem>
+<Step title="(a) Equations of motion">
+$i\hbar\,d\hat p_H/dt = [\hat p_H, -F\hat x_H] = -F(-i\hbar) = i\hbar F$, so $d\hat p_H/dt = F$, Newton's law. And $d\hat x_H/dt = \hat p_H/m$ as for the oscillator.
+</Step>
+<Step title="(a) Solution">
+With the operators equal to $\hat x$ and $\hat p$ at $t = 0$: $\hat p_H(t) = \hat p + Ft$ and $\hat x_H(t) = \hat x + \frac{\hat p}{m}t + \frac{F}{2m}t^2$. Then $[\hat x_H, \hat p_H] = [\hat x, \hat p] + \frac{t}{m}[\hat p, \hat p] = i\hbar$, since the numbers $Ft$ and $Ft^2/2m$ commute with everything.
+</Step>
+<Step title="(b) A commuting Hamiltonian">
+$H$ at different times is a multiple of $S_z$, so case 2 applies: $\int_0^t\omega_0e^{-t'/\tau}dt' = \omega_0\tau(1 - e^{-t/\tau})$, and $U(t, 0) = \exp\left(-\frac{i}{\hbar}\,\omega_0\tau(1 - e^{-t/\tau})\,S_z\right)$. This is a rotation about $z$ by the angle $\omega_0\tau(1 - e^{-t/\tau})$, which tends to $\omega_0\tau$: a field that dies away turns the spin only through a finite angle.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $U$ obeys $i\hbar\,dU/dt = HU$. Time-independent $H$: $U = e^{-iH(t - t_0)/\hbar}$. Commuting $H(t)$: the exponent is the integral of $H$. General $H(t)$: a time-ordered exponential.
+- Heisenberg operators $A_H = U^\dagger A_SU$ equal $A_S$ at $t = 0$, keep all products and commutators (so $[\hat x_H, \hat p_H] = i\hbar$), and give the same expectation values with time-0 states.
+- They obey $i\hbar\,dA_H/dt = [A_H, H_H] + i\hbar(\partial A_S/\partial t)_H$; an operator commuting with the Hamiltonian is constant.
+- For the oscillator the Heisenberg equations are the classical ones: $\hat x_H(t) = \hat x\cos\omega t + (\hat p/m\omega)\sin\omega t$, and $H_H = H_S$.

@@ -1,0 +1,192 @@
+# Calculations on content/year-4/8.09/action-angle-variables-kepler.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) lecture notes, Chapter 4, Section 4.6, pp. 87-91 (several degrees of freedom, Kepler).
+# Page's own worked example: the satellite of the Section 4.5 page (m = 1000 kg, k = 3.986e17 J m, perigee 7000 km,
+# apogee 14000 km, so E = -k/(2.1e7 m), l^2 = m k p with p = 9333.33 km), inclined at 30 degrees.
+
+page: content/year-4/8.09/action-angle-variables-kepler.mdx
+calcs:
+  - id: J-theta-integral
+    kind: identity
+    where: 'formula "Polar action, four quarters": 4 a_th times the integral from theta0 to pi/2 of sqrt(1 - cos^2(g)/sin^2(theta)) equals 2 pi (a_th - a_ph), with cos g = a_ph/a_th and sin theta0 = cos g'
+    formula: 4*ath*integrate('sqrt(abs(1 - (aph/ath)**2/sin(x)**2))', 'x', asin(aph/ath), pi/2)
+    equals: 2*pi*(ath - aph)
+    samples: {ath: [1.0, 2.0, 3.5], aph: [0.5, 0.3, 3.0]}
+    tolerance: 1e-6
+    shown: ['= 2\pi\alpha_\theta(1 - \cos\gamma) = 2\pi(\alpha_\theta - \alpha_\varphi)']
+    source: {cite: reading1, at: 'Section 4.6, eqs. (4.205)-(4.207), p. 89'}
+    origin: mit
+
+  - id: J-theta-u-integral
+    kind: identity
+    where: 'formula "Polar action evaluated": the u integral from 0 to infinity equals (pi/2)(1 - cos g); computed with u = tan v, du = dv/cos^2 v, which maps it to the finite integral of 1 - cg^2/(cos^2 v + cg^2 sin^2 v) over 0 < v < pi/2'
+    formula: integrate('1 - cg**2/(cos(v)**2 + cg**2*sin(v)**2)', 'v', 0, pi/2)
+    equals: (pi/2)*(1 - cg)
+    samples: {cg: [0.5, 0.15, 0.857]}
+    tolerance: 1e-5
+    shown: ['the first gives $\pi/2$, the second $\cos\gamma\,\pi/2$']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.207), p. 89'}
+    origin: mit
+
+  - id: J-r-kepler
+    kind: identity
+    where: 'formula "Kepler radial action": 2 times the integral between the turning points of sqrt(2mE + 2mk/r - l^2/r^2) equals -2 pi l + pi k sqrt(2m/-E) (with J_theta + J_phi = 2 pi l)'
+    formula: 2*integrate('sqrt(abs(2*mm*EE + 2*mm*kk/x - ll**2/x**2))', 'x', (-kk + sqrt(kk**2 + 2*EE*ll**2/mm))/(2*EE), (-kk - sqrt(kk**2 + 2*EE*ll**2/mm))/(2*EE))
+    equals: -2*pi*ll + pi*kk*sqrt(2*mm/(-EE))
+    samples: {mm: [1.0, 2.0, 0.5], kk: [1.0, 3.0, 0.7], ll: [0.8, 1.5, 0.2], EE: [-0.3, -1.2, -0.5]}
+    tolerance: 1e-5
+    shown: ['J_r = -(J_\theta + J_\varphi) + \pi k\sqrt{\frac{2m}{-E}}']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.211), p. 89'}
+    origin: mit
+
+  - id: kepler-energy
+    kind: identity
+    where: 'formula "Kepler energy in action variables": inverting J = pi k sqrt(2m/-E) gives E = -2 pi^2 k^2 m/J^2'
+    formula: -2*pi**2*kk**2*mm/(pi*kk*sqrt(2*mm/(-EE)))**2
+    equals: EE
+    samples: {mm: [1.0, 2.0, 0.5], kk: [1.0, 3.0, 0.7], EE: [-0.3, -1.2, -0.5]}
+    tolerance: 1e-12
+    shown: ['E = -\frac{2\pi^2k^2m}{(J_r + J_\theta + J_\varphi)^2}']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.212), p. 90'}
+    origin: mit
+
+  - id: kepler-frequency
+    kind: identity
+    where: 'formula "Kepler frequency": dE/dJ = 4 pi^2 k^2 m/J^3 equals (1/(pi k)) sqrt(-2E^3/m) (with the factor m the notes leave out)'
+    formula: deriv('-2*pi**2*kk**2*mm/x**2', 'x', pi*kk*sqrt(2*mm/(-EE)), 1)
+    equals: sqrt(-2*EE**3/mm)/(pi*kk)
+    samples: {mm: [1.0, 2.0, 0.5], kk: [1.0, 3.0, 0.7], EE: [-0.3, -1.2, -0.5]}
+    tolerance: 1e-7
+    shown: ['\frac{4\pi^2k^2m}{(J_r + J_\theta + J_\varphi)^3} = \frac{1}{\pi k}\sqrt{\frac{-2E^3}{m}}']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.213), p. 90'}
+    origin: slip
+
+  - id: elements-eccentricity
+    kind: identity
+    where: 'formula "Orbital elements from action-angle constants": sqrt(1 - (J2/J3)^2) with J2 = 2 pi l and E from J3 equals sqrt(1 + 2 E l^2/(m k^2))'
+    formula: sqrt(1 - (2*pi*ll/(pi*kk*sqrt(2*mm/(-EE))))**2)
+    equals: sqrt(1 + 2*EE*ll**2/(mm*kk**2))
+    samples: {mm: [1.0, 2.0, 0.5], kk: [1.0, 3.0, 0.7], ll: [0.8, 1.5, 0.2], EE: [-0.3, -1.2, -0.5]}
+    tolerance: 1e-12
+    shown: ['the eccentricity formula is Section 4.5''s $\varepsilon = \sqrt{1 + 2E\ell^2/(mk^2)}$ rewritten']
+    source: {cite: reading1, at: 'Section 4.6, p. 91'}
+    origin: mit
+
+  - id: elements-a
+    kind: identity
+    where: 'formula "Orbital elements from action-angle constants": J3^2/(4 pi^2 m k) equals -k/(2E)'
+    formula: (pi*kk*sqrt(2*mm/(-EE)))**2/(4*pi**2*mm*kk)
+    equals: -kk/(2*EE)
+    samples: {mm: [1.0, 2.0, 0.5], kk: [1.0, 3.0, 0.7], EE: [-0.3, -1.2, -0.5]}
+    tolerance: 1e-12
+    shown: ['a = -\frac{k}{2E} = \frac{J_3^2}{4\pi^2mk}']
+    source: {cite: reading1, at: 'Section 4.6, p. 91'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example (page-own)
+  - id: ex-J3
+    where: 'worked example step "The actions": J3 = pi k sqrt(2m/-E)'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J}
+    formula: pi * k * sqrt(2 * m / (-E))
+    expected: 4.065e14 J*s
+    shown: ['= 4.065 \times 10^{14}$ J s.']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.211), p. 89'}
+    origin: page-own
+
+  - id: ex-J2
+    where: 'worked example step "The actions": J2 = 2 pi l, l^2 = m k p'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, p: 9333.33 km}
+    formula: 2 * pi * sqrt(m * k * p)
+    expected: 3.832e14 J*s
+    shown: ['$J_2 = 2\pi\ell = 3.832 \times 10^{14}$ J s']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.208), p. 89'}
+    origin: page-own
+
+  - id: ex-J1
+    where: 'worked example step "The actions": J1 = J2 cos 30 degrees'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, p: 9333.33 km}
+    formula: 2 * pi * sqrt(m * k * p) * cos(pi/6)
+    expected: 3.319e14 J*s
+    shown: ['$J_1 = J_2\cos 30° = 3.319 \times 10^{14}$ J s']
+    source: {cite: reading1, at: 'Section 4.6, p. 91'}
+    origin: page-own
+
+  - id: ex-Jr
+    where: 'worked example step "The actions": J_r = J3 - J2'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J, p: 9333.33 km}
+    formula: pi * k * sqrt(2 * m / (-E)) - 2 * pi * sqrt(m * k * p)
+    expected: 2.32e13 J*s
+    shown: ['$J_r = J_3 - J_2 = 2.32 \times 10^{13}$ J s']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.211), p. 89'}
+    origin: page-own
+
+  - id: ex-a
+    where: 'worked example step "Size and shape": a = J3^2/(4 pi^2 m k)'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J}
+    formula: (pi * k * sqrt(2 * m / (-E)))**2 / (4 * pi**2 * m * k)
+    expected: 1.050e7 m
+    shown: ['$a = J_3^2/(4\pi^2mk) = 1.050 \times 10^{7}$ m']
+    source: {cite: reading1, at: 'Section 4.6, p. 91'}
+    origin: page-own
+
+  - id: ex-ratio
+    where: 'worked example step "Size and shape": J2/J3'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J, p: 9333.33 km}
+    formula: 2 * pi * sqrt(m * k * p) / (pi * k * sqrt(2 * m / (-E)))
+    expected: '0.94281'
+    shown: ['$J_2/J_3 = 0.94281$']
+    source: {cite: reading1, at: 'Section 4.6, p. 91'}
+    origin: page-own
+
+  - id: ex-ecc
+    where: 'worked example step "Size and shape": eccentricity sqrt(1 - (J2/J3)^2)'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J, p: 9333.33 km}
+    formula: sqrt(1 - (2 * pi * sqrt(m * k * p) / (pi * k * sqrt(2 * m / (-E))))**2)
+    expected: '0.3333'
+    shown: ['$\varepsilon = \sqrt{1 - 0.94281^2} = 0.3333$']
+    source: {cite: reading1, at: 'Section 4.6, p. 91'}
+    origin: page-own
+
+  - id: ex-nu
+    where: 'worked example step "The period": nu = 4 pi^2 k^2 m/J3^3'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J}
+    formula: 4 * pi**2 * k**2 * m / (pi * k * sqrt(2 * m / (-E)))**3
+    expected: 9.34e-5 Hz
+    shown: ['= 9.34 \times 10^{-5}$ Hz']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.213), p. 90'}
+    origin: page-own
+
+  - id: ex-period
+    where: 'worked example step "The period": 1/nu in seconds and hours'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J}
+    formula: (pi * k * sqrt(2 * m / (-E)))**3 / (4 * pi**2 * k**2 * m)
+    expected: 1.071e4 s
+    shown: ['$1/\nu = 1.071 \times 10^{4}$ s, about 2.97 hours']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.213), p. 90'}
+    origin: page-own
+
+  - id: ex-period-hours
+    where: 'worked example step "The period": about 2.97 hours'
+    inputs: {m: 1000 kg, k: 3.986e17 J*m, E: -1.898095e10 J}
+    formula: (pi * k * sqrt(2 * m / (-E)))**3 / (4 * pi**2 * k**2 * m)
+    expected: 2.97 hour
+    shown: ['about 2.97 hours']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.213), p. 90'}
+    origin: page-own
+
+  - id: ex-kepler3
+    where: 'worked example step "The period": 2 pi sqrt(a^3/GM) gives the same period'
+    inputs: {a: 1.05e7 m, GM: 3.986e14 m**3/s**2}
+    formula: 2 * pi * sqrt(a**3 / GM)
+    expected: 1.071e4 s
+    shown: ['Kepler''s third law $2\pi\sqrt{a^3/GM}$ with $a = 1.05 \times 10^{7}$ m']
+    source: {cite: reading1, at: 'Section 4.6, eq. (4.213), p. 90'}
+    origin: page-own
+
+  - id: lissajous-closes
+    where: 'graph caption: at nu2/nu1 = 3/2 the path closes after two periods of x (the smallest n with 1.5 n whole)'
+    inputs: {}
+    formula: 3 / 1.5
+    expected: '2'
+    shown: ['the path closes after two periods of x']
+    source: {cite: reading1, at: 'Section 4.6, eqs. (4.196)-(4.197), p. 88'}
+    origin: page-own

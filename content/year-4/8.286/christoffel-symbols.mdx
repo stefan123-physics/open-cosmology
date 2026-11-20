@@ -1,0 +1,151 @@
+---
+title: Simplifying the geodesic equation
+slug: christoffel-symbols
+course: "8.286"
+lecture: 14
+order: 1
+summary: Measure the path by its own length and the geodesic equation sheds its square roots; solving for the acceleration brings in the inverse metric and the Christoffel symbols.
+prerequisites: [geodesic-equation]
+source:
+  title: "MIT 8.286 Lecture 14: The Geodesic Equation"
+  url: https://ocw.mit.edu/courses/8-286-the-early-universe-fall-2013/resources/lecture-14-the-geodesic-equation/
+  readings:
+    - title: "8.286 Lecture 14 transcript"
+      url: https://ocw.mit.edu/courses/8-286-the-early-universe-fall-2013/9cf8a66ecf4f21637b50ab2b75bb38e8_-yIKKST-_Mw.pdf
+    - title: "8.286 Lecture 14 slides"
+      url: https://ocw.mit.edu/courses/8-286-the-early-universe-fall-2013/resources/mit8_286f13_lec14/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.286"
+    lecture: 14
+    why: "The same equation, in spacetime form, applied to an object falling into a black hole."
+quiz:
+  - question: "Why does choosing $\\lambda = s$, the arc length, simplify the geodesic equation?"
+    choices: ["It makes the metric constant", "It makes $A = 1$, and a constant $A$ cancels from both sides", "It removes the right-hand side", "It makes the path straight"]
+    answer: 1
+    explanation: "$ds^2 = A\\,d\\lambda^2$, so $\\lambda = s$ means $A = 1$. All that matters is that $A$ is constant: then it is not differentiated and cancels."
+  - question: "What is $g^{ij}$?"
+    choices: ["The metric with its indices renamed", "The matrix inverse of $g_{ij}$: $g^{il}g_{lj} = \\delta^i_j$", "The derivative of the metric", "The determinant of the metric"]
+    answer: 1
+    explanation: "Upper indices denote the inverse metric. Summing over the adjacent index $l$ is matrix multiplication, and the product is the identity, the Kronecker delta."
+  - question: "On a unit sphere ($ds^2 = d\\theta^2 + \\sin^2\\theta\\,d\\phi^2$), a path runs along the circle $\\theta = 60^\\circ$ (latitude $30^\\circ$, since $\\theta$ is measured from the pole) at unit speed. Is it a geodesic?"
+    choices: ["Yes, every circle of latitude is", "No: the $\\theta$ equation needs $d^2\\theta/ds^2 = \\cot\\theta_0 \\neq 0$, but $\\theta$ stays constant", "Only if $\\phi$ is constant", "Yes, because $\\phi$ appears nowhere in the metric"]
+    answer: 1
+    explanation: "With $d\\phi/ds = 1/\\sin\\theta_0$ the equation demands $d^2\\theta/ds^2 = \\sin\\theta_0\\cos\\theta_0/\\sin^2\\theta_0 = \\cot\\theta_0$, about 0.577 at $60^\\circ$. Only the equator ($\\cot 90^\\circ = 0$) passes."
+  - question: "Why do relativists switch to $\\tau$ and Greek indices for particle paths?"
+    choices: ["Because the equation is different in spacetime", "Particles follow timelike paths, so proper time $\\tau$ ($ds^2 = -c^2d\\tau^2$) is the natural length; Greek indices run over time and space", "Because $s$ is imaginary", "To avoid the Einstein convention"]
+    answer: 1
+    explanation: "Guth stresses it is only a change of notation: the derivation goes through unchanged for a metric that is not positive definite."
+flashcards:
+  - front: "Geodesic equation with arc length"
+    back: "$\\frac{d}{ds}\\left[g_{ij}\\frac{dx^j}{ds}\\right] = \\frac12\\,\\partial_i g_{jk}\\,\\frac{dx^j}{ds}\\frac{dx^k}{ds}$"
+  - front: "Inverse metric"
+    back: "$g^{ij}$, defined by $g^{il}g_{lj} = \\delta^i_j$"
+  - front: "Christoffel symbol"
+    back: "$\\Gamma^i_{jk} = \\frac12 g^{il}\\left(\\partial_j g_{lk} + \\partial_k g_{lj} - \\partial_l g_{jk}\\right)$; also called the affine or Levi-Civita connection."
+  - front: "Geodesic equation in spacetime"
+    back: "$\\frac{d}{d\\tau}\\left[g_{\\mu\\nu}\\frac{dx^\\nu}{d\\tau}\\right] = \\frac12\\,\\partial_\\mu g_{\\lambda\\sigma}\\,\\frac{dx^\\lambda}{d\\tau}\\frac{dx^\\sigma}{d\\tau}$"
+status: reviewed
+---
+
+Lecture 14 finishes the geodesic equation. The version derived in Lecture 13 is correct but clumsy: the square root $\sqrt A$ sits in two denominators, and on the left it is even differentiated. One sensible choice of parameter removes it, and a little matrix algebra turns the result into the form found in most relativity books.
+
+## Recap: what ds² means, and why geodesics
+
+Guth's review of Lecture 13 (slide 1) adds one word: the observers who give $ds^2$ its meaning are **local** free-falling observers. The equivalence principle cancels gravity only in a small region, so the special-relativity measurements behind $ds^2$ are made by an observer arbitrarily close to the events. A special case of "$ds^2 < 0$" is someone reading their own wristwatch, which is always at the same place relative to them.
+
+Asked whether time always enters as just $-c^2dt^2$, Guth says no: that relied on isotropy. To describe the real, lumpy universe rather than the ideal one, you would probably need $dt\,dr$ terms (transcript p. 3).
+
+Why care about geodesics? Because according to general relativity, **particles with no forces on them except gravity move along geodesics of spacetime**. Applying this to the Robertson–Walker metric is an 8.286 homework problem; later in the lecture (p. 13) Guth says it shows how massive particles slow down as they travel through the expanding universe, just as photons lose energy.
+
+Guth adds some history (p. 5). The method of varying a path, the **calculus of variations**, dates from 1696, when Johann Bernoulli posed the **brachistochrone** problem: the curve along which a frictionless bead slides between two points in the least time. The answer is a cycloid, the same curve as the closed matter-dominated universe. Newton is said to have solved it overnight after a day at the Royal Mint. [Guth has him coming home at 4 a.m.; the usual version of the story has him home at 4 p.m. and done by 4 a.m.]
+
+## Choose the length itself as the parameter
+
+The parameter $\lambda$ was arbitrary, and the equation holds for every choice. So pick the most convenient one: let $\lambda$ be the **arc length** $s$ along the path. Since $ds^2 = A\,d\lambda^2$, this makes $A = 1$. Guth stresses that what really matters is that $A$ is **constant**: then it is not differentiated, and it cancels between the two sides. The square roots disappear:
+
+<Formula label="Geodesic equation, parametrised by arc length" tex="\frac{d}{ds}\left[g_{ij}\,\frac{dx^j}{ds}\right] = \frac12\,\frac{\partial g_{jk}}{\partial x^i}\,\frac{dx^j}{ds}\frac{dx^k}{ds}" cite="reading1" at="p. 9 (board)" />
+
+Guth boxes this: it is the final geodesic equation, and for solving problems it is almost always the best form.
+
+## Solving for the second derivative
+
+Most books instead give a formula for $d^2x^i/ds^2$. To get it, expand the left side with the product rule. The metric depends on $s$ only through the position $x^k(s)$, so the chain rule gives $\frac{d}{ds}g_{ij} = \partial_k g_{ij}\,\frac{dx^k}{ds}$, where $\partial_k$ is shorthand for $\partial/\partial x^k$. Moving that term to the right:
+
+<Formula label="Expanded form" tex="g_{ij}\,\frac{d^2x^j}{ds^2} = \left(\frac12\,\partial_i g_{jk} - \partial_k g_{ij}\right)\frac{dx^j}{ds}\frac{dx^k}{ds}" cite="reading1" at="pp. 10–11 (board)" />
+
+(On the board this took several attempts: students caught a misplaced bracket and two wrong indices before it came out right.)
+
+The left side is a matrix $g_{ij}$ times a vector $d^2x^j/ds^2$. To isolate the vector, multiply by the inverse matrix. In general relativity the inverse metric is written with **upper** indices, $g^{ij}$:
+
+<Formula label="The inverse metric" tex="g^{il}\,g_{lj} = \delta^i_j" cite="reading1" at="p. 11 (board)" />
+
+Summing over the neighbouring index $l$ is exactly matrix multiplication, and $\delta^i_j$ (1 if $i = j$, 0 otherwise) is the identity matrix.
+
+## The Christoffel symbols
+
+Multiplying through by $g^{il}$ and renaming dummy indices gives the textbook form. The coefficients of the two first derivatives get their own symbol:
+
+<Formula label="Geodesic equation, textbook form" tex="\frac{d^2x^i}{ds^2} = -\,\Gamma^i_{jk}\,\frac{dx^j}{ds}\frac{dx^k}{ds}, \qquad \Gamma^i_{jk} = \frac12\,g^{il}\left(\partial_j g_{lk} + \partial_k g_{lj} - \partial_l g_{jk}\right)" cite="reading1" at="p. 12 (board)" />
+
+$\Gamma^i_{jk}$ is the **affine connection** (Weinberg's name), also called the **Christoffel symbol**, and (according to Sean Carroll's book, which Guth quotes) sometimes the Riemann or Levi-Civita connection. Lots of names, Guth jokes, presumably because lots of people invented it. Everyone agrees on the definition up to a sign, and books differ on that sign. [The transcript does not make the sign on the board audible; with $\Gamma$ defined as above, the derivation gives the minus sign shown, which is the most common convention.]
+
+For Guth this form is "window dressing" to connect with other books; in practice the arc-length form above is usually easier to solve.
+
+<WorkedExample title="Which paths on a sphere are geodesics?">
+<Problem>
+On a sphere of unit radius, $ds^2 = d\theta^2 + \sin^2\theta\,d\phi^2$. Write down the geodesic equations, and check two paths: the equator, and the circle $\theta = 60^\circ$, each travelled at unit speed. ($\theta$ is the polar angle, measured from the north pole, so $\theta = 60^\circ$ is the circle of latitude $30^\circ$.)
+</Problem>
+<Step title="The θ equation">
+Take $i = \theta$. Only $g_{\theta\theta} = 1$ contributes on the left; on the right only $g_{\phi\phi} = \sin^2\theta$ depends on $\theta$, with $\partial_\theta g_{\phi\phi} = 2\sin\theta\cos\theta$. So $\dfrac{d^2\theta}{ds^2} = \sin\theta\cos\theta\left(\dfrac{d\phi}{ds}\right)^2$.
+</Step>
+<Step title="The φ equation">
+Take $i = \phi$. No metric component depends on $\phi$, so the right side vanishes: $\dfrac{d}{ds}\left[\sin^2\theta\,\dfrac{d\phi}{ds}\right] = 0$. The quantity in brackets is conserved along a geodesic.
+</Step>
+<Step title="Christoffel symbols">
+From the definition, the non-zero ones are $\Gamma^\theta_{\phi\phi} = -\sin\theta\cos\theta$ and $\Gamma^\phi_{\theta\phi} = \Gamma^\phi_{\phi\theta} = \cot\theta$. The textbook form then gives the same $\theta$ equation: $d^2\theta/ds^2 = -\Gamma^\theta_{\phi\phi}(d\phi/ds)^2$.
+</Step>
+<Step title="Testing the two circles">
+On a circle $\theta = \theta_0$ at unit speed, $d\phi/ds = 1/\sin\theta_0$ and $d^2\theta/ds^2 = 0$. The $\theta$ equation demands $\sin\theta_0\cos\theta_0/\sin^2\theta_0 = \cot\theta_0$. At the equator, $\cot 90^\circ = 0$: a geodesic. At $\theta_0 = 60^\circ$, $\cot 60^\circ \approx 0.577 \neq 0$: not a geodesic. The φ equation holds for both, since $\sin^2\theta_0 \cdot (1/\sin\theta_0)$ is constant.
+</Step>
+</WorkedExample>
+
+The graph shows what the latitude circle loses. Between two points on the same latitude, the geodesic, a great circle, bulges towards the pole and is shorter.
+
+<Plot
+  variable="x"
+  domain={[-90, 90]}
+  range={[0, 90]}
+  xLabel="longitude φ (degrees)"
+  yLabel="latitude (degrees)"
+  curves={[
+    { expr: "abs(x) <= D ? atan(tan(b0*pi/180)*cos(x*pi/180)/cos(D*pi/180))*180/pi : NaN", label: "great circle (geodesic)" },
+    { expr: "abs(x) <= D ? b0 : NaN", label: "circle of latitude", dash: true }
+  ]}
+  params={{
+    b0: { value: 45, min: 5, max: 80, step: 1, label: "\\beta_0" },
+    D: { value: 60, min: 5, max: 85, step: 1, label: "D" }
+  }}
+  caption="Both paths join two points at the same latitude β₀, at longitudes ±D (both sliders in degrees). The great circle is computed from tan(latitude) = tan(latitude of ends) · cos φ / cos D. For ends at 45° latitude and D = 60°, the great circle peaks at 63.4° latitude and has length 1.318 radii, against 1.481 radii along the circle of latitude."
+/>
+
+## Spacetime notation
+
+A particle moves along a **timelike** path. So instead of $s$ it is natural to use proper time $\tau$, defined by $ds^2 = -c^2d\tau^2$, and (a near-universal convention) Greek indices $\mu, \nu, \lambda, \sigma$ for spacetime (with $0$ for time), keeping Latin $i, j, k$ for space alone. The geodesic equation becomes
+
+<Formula label="Geodesic equation in spacetime" tex="\frac{d}{d\tau}\left[g_{\mu\nu}\,\frac{dx^\nu}{d\tau}\right] = \frac12\,\frac{\partial g_{\lambda\sigma}}{\partial x^\mu}\,\frac{dx^\lambda}{d\tau}\frac{dx^\sigma}{d\tau}" cite="reading1" at="p. 17 (board)" />
+
+[Guth says "the partial of $g_{\lambda\sigma}$ with respect to $x^\nu$"; the free index must be $\mu$, as written here.]
+
+Nothing in the derivation used a positive-definite metric, so it goes through unchanged. The difference is that spacetime geodesics can be maxima or other stationary points as well as minima.
+
+<Callout kind="cosmology" title="Where this leads">
+Applied to the Robertson–Walker metric (an 8.286 homework problem), this equation shows how freely moving particles slow down as the universe expands, the massive-particle counterpart of the photon's redshift. (The standard result is that their momentum falls as $1/a(t)$.) In the lecture, Guth tries it instead on the Schwarzschild metric: the next page.
+</Callout>
+
+## Summary
+
+- Choosing the arc length as parameter makes $A = 1$ (constant is what matters), giving $\frac{d}{ds}\left[g_{ij}\frac{dx^j}{ds}\right] = \frac12\partial_i g_{jk}\frac{dx^j}{ds}\frac{dx^k}{ds}$, usually the best form for solving problems.
+- The inverse metric $g^{ij}$ satisfies $g^{il}g_{lj} = \delta^i_j$; with it, $\frac{d^2x^i}{ds^2} = -\Gamma^i_{jk}\frac{dx^j}{ds}\frac{dx^k}{ds}$, where $\Gamma^i_{jk} = \frac12 g^{il}(\partial_j g_{lk} + \partial_k g_{lj} - \partial_l g_{jk})$ is the Christoffel symbol (sign conventions vary).
+- For particles, use proper time $\tau$ and Greek indices: $\frac{d}{d\tau}\left[g_{\mu\nu}\frac{dx^\nu}{d\tau}\right] = \frac12\partial_\mu g_{\lambda\sigma}\frac{dx^\lambda}{d\tau}\frac{dx^\sigma}{d\tau}$.

@@ -1,0 +1,127 @@
+---
+title: Left and right inverses; the pseudoinverse
+slug: left-right-inverses-pseudoinverse
+course: "18.06"
+lecture: 33
+order: 1
+summary: "For an m × n matrix of rank r, the picture of the four subspaces decides which inverse exists. Full rank r = m = n: a two-sided inverse, A⁻¹A = I = AA⁻¹. Full column rank r = n: the nullspace is only zero, Ax = b has 0 or 1 solutions, AᵀA is invertible, and A_left⁻¹ = (AᵀA)⁻¹Aᵀ gives A_left⁻¹A = I (n × n); in the other order, A(AᵀA)⁻¹Aᵀ is the projection onto the column space. Full row rank r = m: Ax = b always has solutions, infinitely many with n − m free variables, AAᵀ is invertible, and A_right⁻¹ = Aᵀ(AAᵀ)⁻¹ gives AA_right⁻¹ = I; in the other order Aᵀ(AAᵀ)⁻¹A projects onto the row space. A rectangular matrix never has a two-sided inverse. In general (r < m, r < n), A is still one-to-one from the row space onto the column space: if x ≠ y are in the row space then Ax ≠ Ay, because x − y would be in both the row space and the nullspace, hence zero. The inverse of that map is the pseudoinverse A⁺, which statisticians need for least squares when AᵀA is singular. From the SVD A = UΣVᵀ: A⁺ = VΣ⁺Uᵀ, where Σ⁺ inverts the r nonzero σ's (1/σ₁, …, 1/σ_r) and is n × m; ΣΣ⁺ and Σ⁺Σ are the projections onto the column space and the row space of Σ, and AA⁺ = UΣΣ⁺Uᵀ and A⁺A = VΣ⁺ΣVᵀ those of A."
+prerequisites: [singular-value-decomposition, projection-matrices-least-squares]
+source:
+  title: "MIT 18.06 Lecture 33: Left and right inverses; pseudoinverse"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-33-left-and-right-inverses-pseudoinverse/
+  readings:
+    - title: "18.06 Lecture 33 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/9ba2304f3bc403aa625e99238d6195f7_Go2aLo7ZOlU.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo: []
+quiz:
+  - question: "A $5 \\times 3$ matrix has rank 3. Which inverse does it have?"
+    choices: ["A left inverse $(A^TA)^{-1}A^T$", "A two-sided inverse", "A right inverse $A^T(AA^T)^{-1}$", "None at all"]
+    answer: 0
+    explanation: "Full column rank ($r = n = 3$): $A^TA$ is invertible and $(A^TA)^{-1}A^TA = I$. A rectangular matrix has no two-sided inverse."
+  - question: "With full column rank, what is $A(A^TA)^{-1}A^T$?"
+    choices: ["The identity", "The projection onto the row space", "Zero", "The projection onto the column space"]
+    answer: 3
+    explanation: "The left inverse on the wrong side gives $P$, which acts as the identity on the column space and kills its orthogonal complement."
+  - question: "Why does $A$ send different vectors $x \\neq y$ of the row space to different vectors?"
+    choices: ["Because $A$ is square", "Because $x - y$ would be in the nullspace and also in the row space, so it would be zero", "Because $A$ is symmetric", "Because the columns are independent"]
+    answer: 1
+    explanation: "If $Ax = Ay$ then $A(x - y) = 0$. The row space and nullspace meet only in the zero vector."
+  - question: "If $A = U\\Sigma V^T$, what is the pseudoinverse $A^+$?"
+    choices: ["$V\\Sigma^+U^T$", "$U\\Sigma^+V^T$", "$V^T\\Sigma^{-1}U$", "$(A^TA)^{-1}A^T$ always"]
+    answer: 0
+    explanation: "Invert each factor as far as possible: $(V^T)^{-1} = V$, $U^{-1} = U^T$, and $\\Sigma^+$ has $1/\\sigma_1, \\dots, 1/\\sigma_r$. The last choice needs full column rank."
+flashcards:
+  - front: "Left inverse (full column rank $r = n$)"
+    back: "$A^{-1}_{\\text{left}} = (A^TA)^{-1}A^T$; $A^{-1}_{\\text{left}}A = I_n$. Other order: $A(A^TA)^{-1}A^T$ = projection onto $C(A)$."
+  - front: "Right inverse (full row rank $r = m$)"
+    back: "$A^{-1}_{\\text{right}} = A^T(AA^T)^{-1}$; $AA^{-1}_{\\text{right}} = I_m$. Other order: projection onto the row space."
+  - front: "Pseudoinverse"
+    back: "The inverse of $A$ as a map from the row space onto the column space. $A^+ = V\\Sigma^+U^T$, with $\\Sigma^+$ inverting the nonzero $\\sigma$'s."
+  - front: "$\\Sigma\\Sigma^+$ and $\\Sigma^+\\Sigma$"
+    back: "$r$ ones then zeros ($m \\times m$ and $n \\times n$): projections onto the column space and the row space of $\\Sigma$."
+status: reviewed
+---
+
+The quiz is over and the final is coming; this lecture is a first step in the review, about left inverses, right inverses and the **pseudoinverse** (transcript, p. 1). Strang says he had never given it this way before, and that the pseudoinverse itself, from near the end of chapter 7, would not be expected on the final; what matters is the basic picture behind it: for an $m \times n$ matrix of rank $r$, the [four fundamental subspaces](/courses/18-06/four-fundamental-subspaces), with the row space and nullspace orthogonal complements on one side and the column space and left nullspace on the other (p. 1).
+
+## Two-sided inverse: full rank
+
+The inverse of chapter 2 works on both sides (pp. 1–2):
+
+<Formula label="Two-sided inverse" tex="A^{-1}A = I = AA^{-1} \qquad\text{when } r = m = n" cite="reading1" at="pp. 1–2" />
+
+Square, full rank, "period" (p. 2).
+
+## Left inverse: full column rank
+
+Next, from chapter 3, the case of independent columns, $r = n$ (pp. 2–3). The nullspace holds only the zero vector, and the row space is all of $\mathbf{R}^n$ (p. 3). So $Ax = b$ has 0 or 1 solutions: possibly none, since the rows are probably dependent, but never two, because there is nothing in the nullspace to add (p. 4). These were the matrices of least squares, and for them $A^TA$, $n \times n$ and symmetric, is invertible (p. 4). That gives a one-sided inverse (pp. 4–5):
+
+<Formula label="Left inverse" tex="A^{-1}_{\text{left}} = (A^TA)^{-1}A^T, \qquad A^{-1}_{\text{left}}A = (A^TA)^{-1}(A^TA) = I_n" cite="reading1" at="pp. 4–5" />
+
+On the other side it fails: a rectangular matrix cannot have a two-sided inverse, because $A$ or $A^T$ has a nullspace whenever $m \neq n$, and here $AA^T$ is the bad, singular combination (pp. 5–6). What the left inverse gives on the wrong side is familiar (p. 8):
+
+<Formula label="Left inverse on the right" tex="AA^{-1}_{\text{left}} = A(A^TA)^{-1}A^T = P" cite="reading1" at="p. 8" />
+
+the [projection](/courses/18-06/projection-matrices-least-squares) onto the column space. It "tries to be the identity": the identity on the column space, zero on its complement (p. 8).
+
+## Right inverse: full row rank
+
+The flip side: independent rows, $r = m$ (p. 6). Now the left nullspace is only zero, elimination never produces a zero row, and $Ax = b$ always has a solution, with $n - m$ free variables, so infinitely many (pp. 6–7). $AA^T$ is the matrix to invert (p. 7):
+
+<Formula label="Right inverse" tex="A^{-1}_{\text{right}} = A^T(AA^T)^{-1}, \qquad AA^{-1}_{\text{right}} = I_m" cite="reading1" at="p. 7" />
+
+Other left and right inverses exist; these are the favourites (p. 7). On the wrong side, $A^{-1}_{\text{right}}A = A^T(AA^T)^{-1}A$ is the projection onto the **row space** (p. 9).
+
+So far: with full rank both nullspaces are zero; with full column rank the nullspace is zero; with full row rank the left nullspace is zero. In the general case, $r$ smaller than both $m$ and $n$, all four subspaces are there, with dimensions $r$, $n - r$, $r$, $m - r$ (pp. 7–8).
+
+## The general case: the pseudoinverse
+
+The nullspaces are what spoil inverses: a vector sent to zero cannot be brought back to life (p. 10). But take $x$ in the row space. $Ax$ is in the column space, and the row space and column space both have dimension $r$; between them $A$ is one-to-one (pp. 10–11). Most vectors have a row-space part and a nullspace part, and $A$ kills the nullspace part (p. 11). The claim (p. 11):
+
+<Formula label="One-to-one on the row space" tex="x \neq y \text{ both in the row space} \quad\Rightarrow\quad Ax \neq Ay" cite="reading1" at="pp. 11–12" />
+
+**Proof** (pp. 12–13): suppose $Ax = Ay$. Then $A(x - y) = 0$, so $x - y$ is in the nullspace. But the row space is a vector space, so $x - y$ is also in the row space. The only vector in both is zero, so $x = y$ (pp. 12–13). So, restricted to these two spaces, $A$ is an invertible map, and its inverse is the **pseudoinverse** $A^+$ (pp. 11–12):
+
+<Formula label="What the pseudoinverse does" tex="A^+(Ay) = y \quad\text{for } y \text{ in the row space}, \qquad A^+ = 0 \text{ on the left nullspace}" cite="reading1" at="pp. 11–12" />
+
+(Strang first says "$y = A^+x$" and corrects it to $A^+$ applied to $Ay$; pp. 11–12.) Statisticians welcomed it, Strang says, because they live by least squares, $A^TA\hat x = A^Tb$, which needs full column rank; with repeated experiments the columns may be dependent, $A^TA$ is singular, and the pseudoinverse is the right quantity (pp. 13–14).
+
+## Computing A⁺ from the SVD
+
+Start from the [singular value decomposition](/courses/18-06/singular-value-decomposition) $A = U\Sigma V^T$ (p. 14). All the trouble sits in the $m \times n$ diagonal $\Sigma$, with $r$ nonzero entries and zeros elsewhere: the simplest example of the general picture (pp. 14–15). Its pseudoinverse is $n \times m$, inverting what can be inverted (p. 15):
+
+<Formula label="Pseudoinverse of Σ" tex="\Sigma^+ = \begin{pmatrix} 1/\sigma_1 & & & \\ & \ddots & & \\ & & 1/\sigma_r & \\ & & & 0 \end{pmatrix}" cite="reading1" at="p. 15" />
+
+The products give $r$ ones and then zeros, but of different sizes (pp. 15–16):
+
+<Formula label="Two projections" tex="\Sigma\Sigma^+ = \begin{pmatrix} I_r & 0 \\ 0 & 0 \end{pmatrix}_{m \times m}, \qquad \Sigma^+\Sigma = \begin{pmatrix} I_r & 0 \\ 0 & 0 \end{pmatrix}_{n \times n}" cite="reading1" at="pp. 15–16" />
+
+projections onto the column space and the row space of $\Sigma$: the best the pseudoinverse can do (p. 16). For $A$ itself, $AA^+ = U\Sigma\Sigma^+U^T$ and $A^+A = V\Sigma^+\Sigma V^T$ are the projections onto the column space and the row space of $A$. (Strang first says $m \times m$ for $\Sigma^+\Sigma$ and corrects himself to $n \times n$; p. 16.) Then, since $V^T$ and $U$ are orthogonal (p. 16):
+
+<Formula label="Pseudoinverse from the SVD" tex="A^+ = V\Sigma^+U^T" cite="reading1" at="p. 16" />
+
+Extra entries in the zero part of $\Sigma^+$ would multiply zeros and change nothing; the pseudoinverse is the minimal choice, with no extra stuff (p. 17). The SVD is "the champion" for computing it, since its two outer factors are inverted by transposing (p. 17).
+
+<WorkedExample title="Inverses of your own">
+<Problem>
+(a) Find the left inverse of $A = \begin{pmatrix} 1 & 0 \\ 1 & 1 \\ 0 & 1 \end{pmatrix}$ and check it. (b) Find the pseudoinverse of the rank-one matrix $B = \begin{pmatrix} 1 & 2 \\ 2 & 4 \\ 0 & 0 \end{pmatrix}$ and the projection $B^+B$.
+</Problem>
+<Step title="(a) Left inverse">
+The columns are independent. $A^TA = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$, with inverse $\frac13\begin{pmatrix} 2 & -1 \\ -1 & 2 \end{pmatrix}$. So $A^{-1}_{\text{left}} = \frac13\begin{pmatrix} 2 & -1 \\ -1 & 2 \end{pmatrix}\begin{pmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \end{pmatrix} = \frac13\begin{pmatrix} 2 & 1 & -1 \\ -1 & 1 & 2 \end{pmatrix}$. Check: row 1 times the columns of $A$ gives $(2 + 1)/3 = 1$ and $(1 - 1)/3 = 0$; row 2 gives $(-1 + 1)/3 = 0$ and $(1 + 2)/3 = 1$.
+</Step>
+<Step title="(b) SVD of a rank-one matrix">
+$B = (1, 2, 0)^T(1, 2)$. Normalise: $u_1 = (1, 2, 0)/\sqrt5$, $v_1 = (1, 2)/\sqrt5$, so $B = \sigma_1u_1v_1^T$ with $\sigma_1 = \sqrt5 \cdot \sqrt5 = 5$.
+</Step>
+<Step title="(b) Pseudoinverse">
+$B^+ = \frac{1}{\sigma_1}v_1u_1^T = \frac15 \cdot \frac15\begin{pmatrix} 1 \\ 2 \end{pmatrix}\begin{pmatrix} 1 & 2 & 0 \end{pmatrix} = \frac{1}{25}\begin{pmatrix} 1 & 2 & 0 \\ 2 & 4 & 0 \end{pmatrix}$. Then $B^+B = \frac{1}{25}\begin{pmatrix} 5 & 10 \\ 10 & 20 \end{pmatrix} = \begin{pmatrix} 0.2 & 0.4 \\ 0.4 & 0.8 \end{pmatrix}$, the projection onto the row space, the line through $(1, 2)$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $r = m = n$: two-sided inverse. $r = n$: left inverse $(A^TA)^{-1}A^T$. $r = m$: right inverse $A^T(AA^T)^{-1}$.
+- A one-sided inverse on the wrong side gives a projection: onto the column space, or onto the row space.
+- $A$ is one-to-one from the row space onto the column space; its inverse there is the pseudoinverse $A^+$.
+- $A^+ = V\Sigma^+U^T$; $\Sigma\Sigma^+$ and $\Sigma^+\Sigma$ are projections onto the column space and the row space of $\Sigma$ ($AA^+$ and $A^+A$ for $A$).

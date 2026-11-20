@@ -1,0 +1,130 @@
+---
+title: "The unit step and discontinuous inputs"
+slug: laplace-discontinuous-inputs
+course: "18.03"
+lecture: 22
+order: 1
+summary: "The Laplace transform handles jumps well. The unit step u(t) is 0 for t < 0 and 1 for t > 0; u(t − a) jumps at a, and the unit box u(t − a) − u(t − b) is 1 between a and b, so multiplying a function by it keeps only that piece. Because the transform ignores negative t, u(t) and 1 have the same transform 1/s; to make inverse transforms unique, the inverse of F(s) is taken to be u(t)f(t). There is no formula for the transform of f(t − a) alone, but the t-axis translation formula gives L(u(t − a)f(t − a)) = e^(−as)F(s), or, in the form needed in practice, L(u(t − a)f(t)) = e^(−as)L(f(t + a)). An exponential factor e^(−as) in a transform marks a switch-on point t = a, where the function or one of its derivatives may jump: the inverse of (1 + e^(−πs))/(s² + 1) is sin t up to π and 0 afterwards."
+prerequisites: [convolution]
+source:
+  title: "MIT 18.03 Lecture 22: Using Laplace Transform to Solve ODEs with Discontinuous Inputs"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/lecture-22-using-laplace-transform-to-solve-odes-with-discontinuous-inputs/
+  readings:
+    - title: "18.03 Lecture 22 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/419f31071777faa4a1d78a84b4582120_YVcjNmjHik.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.03"
+    lecture: 23
+    why: "Impulse inputs and the delta function."
+quiz:
+  - question: "What is the Laplace transform of the unit box $u(t - a) - u(t - b)$?"
+    choices: ["$\\frac{e^{-as} - e^{-bs}}{s}$", "$\\frac{1}{s}$", "$e^{-as} - e^{-bs}$", "$\\frac{b - a}{s}$"]
+    answer: 0
+    explanation: "Each step $u(t - a)$ has transform $e^{-as}\\cdot\\frac1s$ by the t-axis translation formula."
+  - question: "Which is the correct t-axis translation formula?"
+    choices: ["$\\mathcal{L}(u(t - a)f(t - a)) = e^{-as}F(s)$", "$\\mathcal{L}(f(t - a)) = e^{-as}F(s)$", "$\\mathcal{L}(e^{at}f(t)) = e^{-as}F(s)$", "$\\mathcal{L}(u(t - a)f(t)) = e^{-as}F(s)$"]
+    answer: 0
+    explanation: "The shifted function must be cut off by $u(t - a)$, since the transform of $f$ knows nothing of $f$ for negative $t$."
+  - question: "What is the inverse transform of $\\frac{e^{-3s}}{s^2}$?"
+    choices: ["$u(t - 3)\\,(t - 3)$", "$u(t - 3)\\,t$", "$t - 3$", "$e^{-3t}t$"]
+    answer: 0
+    explanation: "$\\frac{1}{s^2}$ comes from $u(t)\\,t$; the factor $e^{-3s}$ shifts it to start at 3."
+flashcards:
+  - front: "Unit step and unit box"
+    back: "$u(t) = 0$ for $t < 0$, $1$ for $t > 0$; $u_{ab} = u(t - a) - u(t - b)$ is 1 on $(a, b)$ and 0 elsewhere."
+  - front: "t-axis translation formula"
+    back: "$\\mathcal{L}(u(t - a)f(t - a)) = e^{-as}F(s)$; equivalently $\\mathcal{L}(u(t - a)f(t)) = e^{-as}\\mathcal{L}(f(t + a))$."
+  - front: "Uniqueness of inverse transforms"
+    back: "The transform ignores $t < 0$, so the inverse of $F(s)$ is taken to be $u(t)f(t)$: zero for negative $t$."
+status: reviewed
+---
+
+One of the reasons engineers like the Laplace transform is that it handles functions with jumps very nicely (transcript, p. 1). The lecture calls it the last serious topic on the transform; it follows [convolution](/courses/18-03/convolution).
+
+## Steps and boxes
+
+The **unit step function** is 0 for $t < 0$ and 1 for $t > 0$ (transcript, p. 1):
+
+<Formula label="Unit step" tex="u(t) = \begin{cases} 0, & t < 0 \\ 1, & t > 0 \end{cases}" cite="reading1" at="p. 1" />
+
+Its value at 0 is left undefined: some make it 0, some 1 (p. 1). A step at $a$ is the translate $u_a(t) = u(t - a)$, and the **unit box**, equal to 1 between $a$ and $b$ and 0 elsewhere, is a step up at $a$ followed by a step down at $b$ (pp. 1–2):
+
+<Formula label="Unit box" tex="u_{ab}(t) = u(t - a) - u(t - b)" cite="reading1" at="p. 2" />
+
+Writing everything in terms of $u$ makes the transforms easy (p. 2). Multiplying a function by the unit box wipes away its graph except the piece between $a$ and $b$ (pp. 2–3).
+
+## Making inverse transforms unique
+
+$\mathcal{L}(u(t)) = \int_0^\infty e^{-st}u(t)\,dt = \frac{1}{s}$ for $s > 0$, the same as $\mathcal{L}(1)$: the transform does not look at negative $t$ (transcript, p. 3). So which function is the inverse transform of $\frac1s$? The same problem arises for every inverse transform: any function with any tail for $t < 0$ has the same transform (pp. 3–4). Usually it does not matter, since the Laplace transform is used for problems that start now and run into the future; problems that need the past call for the Fourier transform (p. 4). Where it matters, the convention is to make the function zero for negative $t$ (p. 4):
+
+<Formula label="Convention for inverse transforms" tex="\mathcal{L}^{-1}(F(s)) = u(t)\,f(t)" cite="reading1" at="p. 4" />
+
+## The t-axis translation formula
+
+Is there a formula for the transform of $f(t - a)$, the graph shifted right by $a > 0$, in terms of $F(s)$? No (transcript, pp. 5–6). Shifting brings the part of $f$ for $-a < t < 0$ into view, and the transform of $f$ threw that part away (p. 6). What can be done is to cut it off again, multiplying by $u(t - a)$ (pp. 5–6). The textbook calls the result the t-axis translation formula (p. 7):
+
+<Formula label="t-axis translation formula" tex="\mathcal{L}\big(u(t - a)\,f(t - a)\big) = e^{-as}\,F(s)" cite="reading1" at="p. 7" />
+
+In practice the function will be given as something like $t^2$ or $\sin t$, not in terms of $t - a$. Then use the second form (p. 7):
+
+<Formula label="Second form" tex="\mathcal{L}\big(u(t - a)\,f(t)\big) = e^{-as}\,\mathcal{L}\big(f(t + a)\big)" cite="reading1" at="p. 7" />
+
+Here $F(s)$ notation no longer works (p. 7). The formula is dual to the [exponential shift formula](/courses/18-03/laplace-transform-introduction), which translates on the $s$-axis and multiplies by an exponential on the $t$ side; this one translates on the $t$-axis and multiplies by an exponential on the $s$ side (pp. 7–8).
+
+**Proof** (pp. 8–10). Substitute $t_1 = t - a$, so $t = t_1 + a$ and $dt_1 = dt$; the lower limit becomes $-a$:
+
+<Formula label="Change of variable" tex="\int_0^{\infty}e^{-st}u(t - a)f(t - a)\,dt = e^{-as}\int_{-a}^{\infty}e^{-st_1}u(t_1)f(t_1)\,dt_1 = e^{-as}\int_0^{\infty}e^{-st_1}f(t_1)\,dt_1" cite="reading1" at="pp. 8–10" />
+
+since $u(t_1) = 0$ for $t_1 < 0$ and 1 after; the last integral is $F(s)$, whatever the dummy variable is called (pp. 9–10). For the second form, write $f(t) = f((t - a) + a)$ and apply the first: replacing $t$ by $t + a$ turns it into $f(t + a)$ (pp. 10–11).
+
+## Examples
+
+**The unit box** (pp. 11–12). With $\mathcal{L}(u(t)) = \frac1s$:
+
+<Formula label="Transform of the unit box" tex="\mathcal{L}(u_{ab}(t)) = \frac{e^{-as} - e^{-bs}}{s}" cite="reading1" at="p. 12" />
+
+**$t^2$ switched on at 1** (pp. 12–13). By the second form, with $a = 1$:
+
+<Formula label="A switched-on parabola" tex="\mathcal{L}\big(u(t - 1)\,t^2\big) = e^{-s}\,\mathcal{L}\big((t + 1)^2\big) = e^{-s}\left(\frac{2}{s^3} + \frac{2}{s^2} + \frac{1}{s}\right)" cite="reading1" at="p. 13" />
+
+The function is discontinuous at 1, and the factor $e^{-s}$ is what records where (pp. 13–14).
+
+**An inverse transform** (pp. 14–16). Exponential factors in a transform mean the answer is made of pieces switched on at different times: separate the pieces that go with each exponential (p. 14). (The lecture says the answer is discontinuous; here the function itself is continuous at $\pi$, and only its derivative jumps.) $\frac{1}{s^2 + 1}$ comes from $u(t)\sin t$; here the $u(t)$ must be kept, or the formula will not work (p. 14). Multiplying by $e^{-\pi s}$ shifts it (p. 15):
+
+<Formula label="Inverse with a jump" tex="\mathcal{L}^{-1}\left(\frac{1 + e^{-\pi s}}{s^2 + 1}\right) = u(t)\sin t + u(t - \pi)\sin(t - \pi) = \begin{cases} \sin t, & 0 \le t < \pi \\ 0, & t \ge \pi \end{cases}" cite="reading1" at="pp. 15–16" />
+
+since $\sin(t - \pi) = -\sin t$. The answer must be given in this cases form to be intelligible (pp. 15–16).
+
+<Plot variable="t" domain={[0, 8]} range={[-0.2, 1.2]} xLabel="t" yLabel="f(t)"
+  curves={[
+    { expr: "t < pi ? sin(t) : 0", label: "one arch of sin t" },
+    { expr: "t < 1 ? 0 : 1 - exp(-(t - 1))", label: "worked example (c)", dash: true }
+  ]}
+  caption="The inverse transform of (1 + e^(−πs))/(s² + 1), computed from its cases form: one arch of sin t, then 0. Dashed: the solution u(t − 1)(1 − e^(−(t − 1))) of y′ + y = u(t − 1) from the worked example, which stays 0 until the input switches on at t = 1." />
+
+<WorkedExample title="Switching on and off">
+<Problem>
+(a) Find the transform of the box $u(t - 2) - u(t - 4)$. (b) Find $\mathcal{L}(u(t - 2)e^t)$. (c) Solve $y' + y = u(t - 1)$, $y(0) = 0$. (d) Find the inverse transform of $\frac{e^{-3s}}{s^2}$.
+</Problem>
+<Step title="(a) A box">
+$\frac{e^{-2s} - e^{-4s}}{s}$.
+</Step>
+<Step title="(b) An exponential switched on at 2">
+$e^{-2s}\mathcal{L}(e^{t + 2}) = e^{-2s}\cdot\frac{e^2}{s - 1}$, for $s > 1$.
+</Step>
+<Step title="(c) A step input">
+The lecture solves no equation; this one uses the [transform of a derivative](/courses/18-03/laplace-transform-of-derivatives). $sY + Y = \frac{e^{-s}}{s}$, so $Y = e^{-s}\cdot\frac{1}{s(s + 1)} = e^{-s}\left(\frac1s - \frac{1}{s + 1}\right)$. The bracket comes from $1 - e^{-t}$, and $e^{-s}$ shifts it: $y = u(t - 1)\left(1 - e^{-(t - 1)}\right)$, zero until $t = 1$, then rising towards 1.
+</Step>
+<Step title="(d) A delayed ramp">
+$\frac{1}{s^2}$ comes from $u(t)\,t$, so $\frac{e^{-3s}}{s^2}$ comes from $u(t - 3)(t - 3)$: zero until 3, then a ramp of slope 1.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $u(t)$ jumps from 0 to 1 at 0; the unit box $u(t - a) - u(t - b)$ keeps only the piece between $a$ and $b$.
+- The inverse transform is made unique by taking it to be zero for $t < 0$.
+- $\mathcal{L}(u(t - a)f(t - a)) = e^{-as}F(s)$, or $\mathcal{L}(u(t - a)f(t)) = e^{-as}\mathcal{L}(f(t + a))$; there is no formula for $f(t - a)$ alone.
+- A factor $e^{-as}$ in a transform marks a switch-on at $t = a$, where the function or a derivative may jump; write the answer in cases form.

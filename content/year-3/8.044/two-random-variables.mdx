@@ -1,0 +1,140 @@
+---
+title: "Probability: two or more random variables"
+slug: two-random-variables
+course: "8.044"
+lecture: 2
+order: 1
+summary: "Two random variables have a joint density. Integrating out one variable gives the density of the other; slicing the joint density at a fixed value of one gives a conditional density, and Bayes' theorem connects the two. Variables are statistically independent when the joint density factors. These tools derive the Poisson density from first principles and describe correlated noise through the jointly Gaussian density."
+prerequisites: [one-random-variable]
+source:
+  title: "MIT 8.044 Lecture 2: Probability, Two or More Random Variables (slides)"
+  url: https://ocw.mit.edu/courses/8-044-statistical-physics-i-spring-2013/resources/mit8_044s13_l2/
+  readings:
+    - title: "Greytak, Lecture Notes on Probability for 8.044, Chapter 2: Two Random Variables"
+      url: https://ocw.mit.edu/courses/8-044-statistical-physics-i-spring-2013/resources/mit8_044s13_probabilitych2/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.044"
+    lecture: 3
+    why: "Functions of a random variable: the density of y = f(x) from the density of x."
+quiz:
+  - question: "How is the density of $x$ alone found from the joint density $p(x, y)$?"
+    choices: ["Integrate $p(x, y)$ over all values of $y$", "Set $y = 0$ in $p(x, y)$", "Divide $p(x, y)$ by $p(y)$", "Multiply by $p(y)$"]
+    answer: 0
+    explanation: "$p_x(\\zeta) = \\int p_{x,y}(\\zeta, \\eta)\\,d\\eta$: the density of $x$ regardless of $y$."
+  - question: "What does Bayes' theorem say?"
+    choices: ["$p(x, y) = p(x \\text{ given } y)\\,p(y) = p(y \\text{ given } x)\\,p(x)$", "$p(x \\text{ given } y) = p(y \\text{ given } x)$ always", "$p(x, y) = p(x) + p(y)$", "$p(x \\text{ given } y) = p(x)p(y)$"]
+    answer: 0
+    explanation: "The joint density is a conditional density times the density of the conditioning variable, in either order."
+  - question: "Points fall uniformly in a unit disk. Are their coordinates $x$ and $y$ statistically independent?"
+    choices: ["No: knowing $y$ narrows the range of $x$ to $|x| \\le \\sqrt{1 - y^2}$", "Yes, by symmetry", "Yes, because the density is uniform", "Only at the centre"]
+    answer: 0
+    explanation: "$p(x)p(y) \\ne p(x, y)$; the conditional density of $x$ is uniform over a range that depends on $y$."
+  - question: "Two noise voltages are jointly Gaussian with correlation coefficient $\\rho$. Given the first, what is the mean of the second?"
+    choices: ["$\\rho v_1$", "$v_1$", "0", "$\\rho^2v_1$"]
+    answer: 0
+    explanation: "$p(v_2 \\text{ given } v_1)$ is a Gaussian with mean $\\rho v_1$ and variance $\\sigma^2(1 - \\rho^2)$."
+flashcards:
+  - front: "Bayes' theorem (fundamental law of conditional probability)"
+    back: "$p(x, y) = p(x \\text{ given } y)\\,p(y)$, so $p(x \\text{ given } y) = p(x, y)/p(y)$: the conditional density is a slice of the joint density, renormalized."
+  - front: "Statistical independence"
+    back: "$x$ and $y$ are statistically independent if $p(x, y) = p(x)\\,p(y)$, equivalently $p(x \\text{ given } y) = p(x)$: knowing one tells nothing about the other."
+  - front: "Jointly Gaussian variables"
+    back: "Each is Gaussian with variance $\\sigma^2$; given $v_1$, $v_2$ is Gaussian with mean $\\rho v_1$ and variance $\\sigma^2(1 - \\rho^2)$; $\\langle v_1v_2\\rangle = \\sigma^2\\rho$."
+status: reviewed
+---
+
+Physical questions often involve several random variables at once: the velocity components of an atom, or a noise voltage measured at two times. This lecture extends the one-variable tools to two variables and introduces three new ideas: reducing to one variable, conditional probability and statistical independence (slides 1–17; the slides' closing exam problem on collision products is left for the course's problem pages; notes pp. 19–34). (MIT's material for this lecture is Greytak's slides and his probability notes, Chapter 2; this page follows them in its own words, with its own worked example. The notes' figures are not reproduced. The notes write a conditional density with a vertical bar, p(x|y); this page writes it as p(x given y), which read-aloud can say.)
+
+## Joint densities
+
+Much carries over directly from one variable (notes p. 19; slides 2–3):
+
+<Formula label="Joint density and distribution" tex="p_{x,y}(\zeta, \eta)\,d\zeta\,d\eta \equiv \text{prob}\left(\zeta < x \le \zeta + d\zeta \text{ and } \eta < y \le \eta + d\eta\right), \qquad P_{x,y}(\zeta, \eta) = \int_{-\infty}^{\zeta}\int_{-\infty}^{\eta}p_{x,y}(\zeta', \eta')\,d\zeta'\,d\eta'" cite="reading1" at="p. 19" />
+
+with $p_{x,y} = \partial^2P_{x,y}/\partial\zeta\,\partial\eta$, and averages $\langle f(x, y)\rangle = \int\int f(\zeta, \eta)\,p_{x,y}(\zeta, \eta)\,d\zeta\,d\eta$.
+
+**Reduction to a single variable** (notes p. 19). The density of $x$ regardless of $y$ comes from integrating over all $y$:
+
+<Formula label="Reduction to one variable" tex="p_x(\zeta) = \int_{-\infty}^{\infty}p_{x,y}(\zeta, \eta)\,d\eta" cite="reading1" at="p. 19" />
+
+## Conditional probability and Bayes' theorem
+
+At the other extreme, suppose $y$ is known. The **conditional density** $p_x(\zeta \text{ given } y)$ is the density of $x$ given that $y$ has that value; in it $\zeta$ is the variable and $y$ only a parameter (notes pp. 19–20). Knowing $y$ restricts the possibilities to the line $\eta = y$ in the plane, so $p_x(\zeta \text{ given } y)$ must be proportional to the slice $p_{x,y}(\zeta, y)$. Integrating over $\zeta$ fixes the constant as $p_y(y)$ (notes p. 20), which gives **Bayes' theorem**, the fundamental law of conditional probability (slides 4–6):
+
+<Formula label="Bayes' theorem" tex="p(x, y) = p(x \text{ given } y)\,p(y) = p(y \text{ given } x)\,p(x), \qquad p(x \text{ given } y) = \frac{p(x, y)}{p(y)}" cite="reading1" at="pp. 20–21" />
+
+Read one way, it finds a conditional density by slicing the joint density and renormalizing; read the other way, it rebuilds the joint density by stacking the conditional slices, weighted by the density of the conditioning variable, much as a loaf can be reassembled from its slices, in the notes' image (notes p. 21).
+
+**Statistical independence** (notes p. 22; slide 6). Two variables are **statistically independent** (S.I.) if
+
+<Formula label="Statistical independence" tex="p_{x,y}(\zeta, \eta) = p_x(\zeta)\,p_y(\eta), \qquad \text{equivalently} \quad p(x \text{ given } y) = p(x)" cite="reading1" at="p. 22" />
+
+Knowing one then tells nothing more about the other than its own density already did.
+
+**A uniform disk** (notes pp. 22–24; slides 7–8). For points spread uniformly over a disk (the notes take radius 1, density $1/\pi$; the slides radius $a$), integrating across the disk gives $p(x) = \frac{2}{\pi}\sqrt{1 - x^2}$ for $|x| \le 1$, and the same form for $y$. Their product is not $1/\pi$, so $x$ and $y$ are **not** independent. The conditional density is $p(x \text{ given } y) = 1/\left(2\sqrt{1 - y^2}\right)$ for $|x| \le \sqrt{1 - y^2}$: uniform along the chord at height $y$, as one would expect, but over a range that depends on $y$.
+
+## Deriving the Poisson density
+
+The tools are enough to derive the Poisson density quoted in Lecture 1 (notes pp. 24–27; slides 10–12). Events occur along a line with probability $r\,\Delta X$ for one event in a short stretch $\Delta X$, independently in different stretches.
+
+**No events** (notes p. 25). Cut $L$ into pieces $dL$ so short that $p(0) \gg p(1) \gg p(n > 1)$, so $p(0) \approx 1 - r\,dL$. The pieces are independent, so the probability of no event anywhere is the product over the $L/dL$ pieces; taking the logarithm, $\ln p(0; L) \approx \sum(-r\,dL) = -rL$:
+
+<Formula label="Probability of no events" tex="p(n = 0; L) = e^{-rL}" cite="reading1" at="p. 25" />
+
+(This is not a density for $L$: it does not integrate to 1 over $L$. It is one entry of the density for $n$, with $L$ as a parameter.)
+
+**A recursion** (notes p. 26). Extend the interval from $L$ to $L + \Delta L$. Having $n$ events in all means either $n$ in $L$ and none in $\Delta L$, or $n - 1$ in $L$ and one in $\Delta L$; so $p(n; L + \Delta L) = p(n; L)(1 - r\Delta L) + p(n - 1; L)\,r\Delta L$, and in the limit
+
+<Formula label="Recursion for the Poisson probabilities" tex="\frac{d}{dL}p(n; L) + r\,p(n; L) = r\,p(n - 1; L)" cite="reading1" at="pp. 24 and 26" />
+
+**The solution** (notes p. 27). Differentiating $p(n; L) = \frac{1}{n!}(rL)^ne^{-rL}$ gives exactly $r\,p(n - 1; L) - r\,p(n; L)$, and with the boundary conditions $p(0; L) = e^{-rL}$ and $p(n; 0) = 0$ for $n \ne 0$ the solution is unique. The slides reach the same result another way: put $n$ identical events into $N$ boxes of length $L/N$, count the arrangements (the binomial coefficient, N choose n), and let $N \to \infty$ (slides 11–12).
+
+## Jointly Gaussian variables
+
+A circuit with all sources off still shows a fluctuating voltage at high gain: **thermal** (Johnson) noise from the random motion of electrons, distinct from the shot noise of discrete charges (notes pp. 27–28). It has zero mean; a fairly well defined typical size; statistics that do not change in time; and a **correlation time** $\tau_c$, over which it changes little, with values much further apart statistically independent. Such a fluctuating signal is a **random process** (other examples: pressure or temperature fluctuations, thermal radiation fields, seismic background; slide 13). Sampling it at two times gives two random variables, often described by the **jointly Gaussian** density (notes p. 29; slide 14):
+
+<Formula label="Jointly Gaussian density" tex="p(v_1, v_2) = \frac{1}{2\pi\sigma^2\sqrt{1 - \rho^2}}\exp\left(-\frac{v_1^2 - 2\rho v_1v_2 + v_2^2}{2\sigma^2\left(1 - \rho^2\right)}\right)" cite="reading1" at="p. 29" />
+
+$\sigma$ sets the size; the **correlation coefficient** $\rho$, with $|\rho| \le 1$, depends on the time separation $\tau = |t_2 - t_1|$, close to 1 for short separations and falling to 0 for long ones. Contours of constant probability are ellipses with their long axis along $v_1 = v_2$ for $\rho > 0$ (along $v_1 = -v_2$ for $\rho < 0$), long and narrow as $|\rho| \to 1$ and circles at $\rho = 0$ (notes p. 29).
+
+From it (notes pp. 31–33): each voltage alone is a zero-mean Gaussian of variance $\sigma^2$, the same at all times; the two are independent only when $\rho = 0$; and
+
+<Formula label="Conditional density of the second voltage" tex="p(v_2 \text{ given } v_1) = \frac{1}{\sqrt{2\pi\sigma^2\left(1 - \rho^2\right)}}\exp\left(-\frac{\left(v_2 - \rho v_1\right)^2}{2\sigma^2\left(1 - \rho^2\right)}\right)" cite="reading1" at="p. 31" />
+
+a Gaussian with mean $\rho v_1$ and variance $\sigma^2(1 - \rho^2)$. Integrating $v_2$ against this, and then $v_1$, gives the **correlation function** (notes p. 33):
+
+<Formula label="Correlation function" tex="R(\tau) \equiv \langle v(t)\,v(t + \tau)\rangle = \sigma^2\rho(\tau)" cite="reading1" at="p. 33" />
+
+so $\rho$ is the normalized correlation function. It need not stay positive: for noise from a circuit resonant near one frequency, say 500 Hz, a positive value tends to be followed by a negative one half a period (1 ms) later, and $\rho(\tau)$ oscillates as it decays (notes pp. 33–34).
+
+<Plot variable="v" domain={[-4, 4]} range={[0, 1.35]} xLabel="v₂ / σ" yLabel="σ p"
+  curves={[
+    { expr: "exp(-(v - R*1.5)^2/(2*(1 - R^2)))/sqrt(2*pi*(1 - R^2))", label: "p(v₂ given v₁)" },
+    { expr: "exp(-v^2/2)/sqrt(2*pi)", label: "p(v₂)", dash: true }
+  ]}
+  params={{ R: { value: 0.8, min: 0, max: 0.95, step: 0.05, label: "\\rho" } }}
+  caption="The page's own illustration, computed from the formulas above with σ = 1 and a first reading v₁ = 1.5σ: the conditional density of the second reading (solid) against its unconditioned density (dashed). At ρ = 0 they coincide; as ρ grows, knowing v₁ centres the second reading on ρv₁ and narrows it." />
+
+<WorkedExample title="A triangle of probability">
+<Problem>
+(a) Points are spread uniformly over the triangle $0 < y < x < 1$, so $p(x, y) = 2$ there. Find $p(x)$, $p(y)$ and $p(x \text{ given } y)$. Are $x$ and $y$ independent? (b) Find $\langle x\rangle$, $\langle y\rangle$ and $\langle xy\rangle - \langle x\rangle\langle y\rangle$. (c) Two noise samples are jointly Gaussian with $\sigma = 1.0$ mV and $\rho = 0.8$; the first reads 1.5 mV. Find the mean and standard deviation of the second.
+</Problem>
+<Step title="(a) Densities">
+$p(x) = \int_0^x2\,dy = 2x$ and $p(y) = \int_y^12\,dx = 2(1 - y)$, both on $(0, 1)$. Then $p(x \text{ given } y) = \frac{2}{2(1 - y)} = \frac{1}{1 - y}$ for $y < x < 1$: uniform, over a range set by $y$. Since $2x \cdot 2(1 - y) \ne 2$, they are not independent.
+</Step>
+<Step title="(b) Averages">
+$\langle x\rangle = \int_0^12x^2dx = \frac23$, $\langle y\rangle = \int_0^12y(1 - y)dy = \frac13$, and $\langle xy\rangle = \int_0^1\int_0^x2xy\,dy\,dx = \int_0^1x^3dx = \frac14$. So $\langle xy\rangle - \langle x\rangle\langle y\rangle = \frac14 - \frac29 = \frac{1}{36}$: positive, since a large $y$ forces a large $x$.
+</Step>
+<Step title="(c) Correlated noise">
+The second reading has mean $\rho v_1 = 0.8 \times 1.5 = 1.2$ mV and standard deviation $\sigma\sqrt{1 - \rho^2} = 0.6$ mV, compared with 0 and 1.0 mV without the first reading.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- A joint density $p(x, y)$ gives probabilities for pairs; integrating out $y$ gives $p(x)$.
+- Bayes' theorem: $p(x, y) = p(x \text{ given } y)\,p(y)$; the conditional density is a renormalized slice.
+- Statistical independence means $p(x, y) = p(x)p(y)$; points uniform in a disk are not independent in $x$ and $y$.
+- Independence of short intervals yields the Poisson density through $\frac{dp(n)}{dL} = r\,p(n - 1) - r\,p(n)$; jointly Gaussian noise samples have conditional mean $\rho v_1$, variance $\sigma^2(1 - \rho^2)$, and $\langle v(t)v(t + \tau)\rangle = \sigma^2\rho(\tau)$.

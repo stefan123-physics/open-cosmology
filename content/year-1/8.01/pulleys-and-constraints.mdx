@@ -1,0 +1,236 @@
+---
+title: Pulleys and constraint conditions
+slug: pulleys-and-constraints
+course: "8.01"
+lecture: 12
+order: 1
+summary: "A pulley system with a moving pulley has more unknowns than Newton's second law gives equations. The missing equation is a constraint: the rope's length is fixed, so the accelerations are tied together. Write the length in coordinates, differentiate twice, and solve."
+prerequisites: [tension-and-springs, newtons-laws]
+source:
+  title: "MIT 8.01SC Lesson 12: Pulleys and Constraints (12.1–12.5)"
+  url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/pages/week-4-drag-forces-constraints-and-continuous-systems/12-1-pulley-problems-part-i-set-up-the-equations/
+  readings:
+    - title: "8.01SC Course Notes, Chapter 8: Applications of Newton's Second Law"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter8/
+      location: "Example 8.9, Pulleys and Ropes Constraint Conditions"
+    - title: "8.01SC segment 12.1 transcript: Pulley Problems, Part I: Set up the Equations"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/38a82f06f358df8ecce84f9f4be2174c_FNOfxJxceIM.pdf
+    - title: "8.01SC segment 12.2 transcript: Pulley Problem, Part II: Constraint Condition"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/cd1a26f576e5ba5810c0484f3874630a_gWLC3r6EHl0.pdf
+    - title: "8.01SC segment 12.3 transcript: Constraints and Virtual Displacement Arguments"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/8c153f6fd50b8e58e53f71de1e0c7726_GuiIyYbI0HM.pdf
+    - title: "8.01SC segment 12.4 transcript: Solving the System of Equations"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/2da40e804b66611cac1c8a1750089b5f_lw9W32ezQhM.pdf
+    - title: "8.01SC segment 12.5 transcript: Worked Example, 2 Blocks and 2 Pulleys"
+      url: https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/42e7bfd333f22149712e0748c67e58ff_3V5y9uq5au0.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.01"
+    lecture: 13
+    why: "A rope with mass: the tension is no longer the same all along it."
+quiz:
+  - question: "A block hangs from a movable pulley. A rope runs from the ceiling, down under that pulley, up over a fixed pulley and down to a second block. If the movable pulley drops 10 cm, the second block…"
+    choices: ["drops 10 cm", "rises 10 cm", "rises 20 cm", "rises 5 cm"]
+    answer: 2
+    explanation: "The rope's length is fixed. Both strands on either side of the movable pulley get 10 cm longer, so the free end must get 20 cm shorter: $\\Delta y_1 = -2\\,\\Delta y_2$."
+  - question: "In the system of this lesson, a massless movable pulley is pulled up by two strands of a rope with tension $T$. What is the tension in the string that holds the block below it?"
+    choices: ["$T/2$", "$T$", "$2T$", "It depends on the block's acceleration"]
+    answer: 2
+    explanation: "A massless pulley has zero net force whatever its acceleration ($m_P a_P = 0$), so $T_3 - 2T = 0$ and $T_3 = 2T$."
+  - question: "With $m_1 = 2.0$ kg and $m_2 = 6.0$ kg in the lesson's system, which way does block 1 accelerate?"
+    choices: ["Down, because it is lighter", "Up, because $m_2 > 2m_1$", "It stays at rest", "Down, at $g$"]
+    answer: 1
+    explanation: "$a_1 = 2(2m_1 - m_2)g/(4m_1 + m_2)$ is negative when $m_2 > 2m_1$; with the downward unit vector, negative means up. The system balances when $m_2 = 2m_1$."
+  - question: "Why is a constraint condition needed in these problems?"
+    choices: ["Newton's second law does not apply to pulleys", "There are more unknowns than equations from the free-body diagrams", "To find the mass of the rope", "Because the pulleys are rotating"]
+    answer: 1
+    explanation: "Each moving body gives one equation, but every tension and every acceleration is unknown. The fixed rope length supplies the missing equations."
+flashcards:
+  - front: "How do you find a constraint condition between accelerations?"
+    back: "Write each rope's fixed length in the coordinate functions of the moving bodies, then differentiate twice: constants (fixed distances, the πR around each pulley) drop out, and a weighted sum of the accelerations is zero (here 2a_B + a₁ = 0)."
+  - front: "What does a massless pulley tell you about the tensions on it?"
+    back: "The net force on it is zero ($m_P = 0$), so a pulley held by one string and pulled by two strands of tension $T$ has $2T$ in its own string."
+  - front: "What is a virtual displacement argument?"
+    back: "Imagine one body moving a small amount $\\Delta y$ and follow the rope: here $\\Delta y_1 = -2\\,\\Delta y_2$. Differentiating twice gives $a_1 = -2a_2$. Watch the sign."
+status: reviewed
+---
+
+Lesson 7 solved a pulley problem with one rope over one fixed pulley: the two blocks moved together, $a_1 = a_2$. With a pulley that moves, the blocks no longer move by the same amount, and finding how their motions are linked is the real work. This lesson does that in four steps (segments 12.1–12.4), then shows two more systems: a three-block example from the notes and a horizontal one (segment 12.5).
+
+## The system and its assumptions
+
+The lesson's system has four parts (12.1 transcript, p. 1):
+
+1. **Pulley A** hangs from the ceiling by a short string. It does not move.
+2. **Block 1**, mass $m_1$, hangs from one end of a rope.
+3. The rope goes up over pulley A, down under a second pulley, **pulley B**, and up again to a hook in the ceiling.
+4. **Block 2**, mass $m_2$, hangs from pulley B by a second string.
+
+When block 2 goes down, pulley B goes down with it, and both strands of rope around B get longer; block 1 must go up.
+
+Before drawing forces, the lecture states its assumptions (pp. 2–3): both pulleys and the rope are **massless**, and the rope slides over the pulleys. The notes add that the pulleys are **frictionless** and the rope does not stretch (notes, p. 8-39). [The transcript wavers between "not slipping" and "slipping" here; what matters is that a massless, frictionless pulley does not change the tension.] Under these assumptions, as in Lesson 7, the tension $T$ is the same all along the rope.
+
+## Free-body diagrams and the second law
+
+Choose a separate system for each part: block 1, pulley A, pulley B and block 2. Give each one its own unit vector $\hat j$ pointing **down** (p. 3). Then:
+
+- **Block 1:** gravity $m_1 g$ down, the rope's pull $T$ up.
+- **Pulley A:** two strands of rope pulling down, $T$ each, and the string to the ceiling pulling up with tension $T_2$. No gravity, since the pulley is massless.
+- **Pulley B:** two strands pulling **up**, $T$ each, and the string to block 2 pulling down with $T_3$.
+- **Block 2:** gravity $m_2 g$ down, the string pulling up with $T_3$.
+
+Newton's second law, with down positive (pp. 4–5):
+
+<Formula label="Block 1 and block 2" tex="m_1 g - T = m_1 a_1, \qquad m_2 g - T_3 = m_2 a_2" cite="reading2" at="p. 4" />
+
+For a massless pulley the mass times acceleration is zero, so the forces on it must cancel, whether or not it accelerates:
+
+<Formula label="Massless pulleys" tex="2T - T_2 = 0, \qquad T_3 - 2T = 0" cite="reading2" at="pp. 4–5" />
+
+So the ceiling string carries $T_2 = 2T$ and the string under pulley B carries $T_3 = 2T$. Pulley B and block 2 can therefore be treated as **one system**: $T_3$ is then an internal force and drops out, leaving two strands of $T$ pulling up and $m_2 g$ pulling down (p. 5):
+
+<Formula label="Pulley B and block 2 together" tex="m_2 g - 2T = m_2 a_2" cite="reading2" at="p. 5" />
+
+This leaves two equations and **three unknowns**: $T$, $a_1$ and $a_2$. The free-body diagrams cannot give more. The missing equation comes from the rope.
+
+## The constraint condition: count the rope
+
+The rope has a fixed length, so the motions of the blocks are not independent. To turn that into an equation (12.2 transcript, pp. 1–3):
+
+- Put the origin at the ceiling and measure every coordinate **downward**, matching the unit vectors. Then $y_1$ is the position of block 1, $y_B$ that of pulley B's centre and $y_2$ that of block 2, and $a_1 = d^2y_1/dt^2$, $a_2 = d^2y_2/dt^2$.
+- Call $s_1$ the fixed distance from the ceiling to the centre of pulley A, and $R$ the radius of each pulley.
+
+Follow the rope from the hook to block 1: down to pulley B ($y_B$), half way round it ($\pi R$), up to pulley A ($y_B - s_1$), half way round it ($\pi R$), down to block 1 ($y_1 - s_1$). The second string runs from pulley B to block 2:
+
+<Formula label="Lengths of the rope and the string" tex="l_1 = y_B + \pi R + (y_B - s_1) + \pi R + (y_1 - s_1), \qquad l_2 = y_2 - y_B" cite="reading3" at="p. 2" />
+
+Both lengths are constant, so their second time derivatives are zero. Everything that does not move ($s_1$, $\pi R$) drops out:
+
+<Formula label="Differentiate twice" tex="0 = \frac{d^2 l_2}{dt^2} = a_2 - a_B, \qquad 0 = \frac{d^2 l_1}{dt^2} = 2a_B + a_1" cite="reading3" at="p. 3" />
+
+The first equation says pulley B and block 2 move together, as assumed when they were treated as one system. Putting $a_B = a_2$ into the second gives the constraint:
+
+<Formula label="Constraint condition" tex="a_1 = -2\,a_2" cite="reading3" at="p. 3" />
+
+## A quicker check: virtual displacements
+
+The same result follows from imagining a small motion (12.3 transcript, p. 1). Let block 2 and pulley B drop by $\Delta y_2$. Both strands of rope around pulley B grow by $\Delta y_2$, so the rope on block 1's side must get shorter by $2\,\Delta y_2$: block 1 rises.
+
+<Formula label="Virtual displacement" tex="\Delta y_1 = -2\,\Delta y_2" cite="reading4" at="p. 1" />
+
+The fixed lengths say the same: $\Delta l_2 = 0$ gives $\Delta y_B = \Delta y_2$, and $\Delta l_1 = 0$ gives $2\,\Delta y_B + \Delta y_1 = 0$. The proportion survives two time derivatives, so $a_1 = -2a_2$ again (pp. 1–2). The lecture's warning: be careful with the **sign**. When block 2 moves in its positive direction, block 1 moves in its negative one.
+
+## Solving the three equations
+
+Now there are three equations for three unknowns (12.4 transcript, p. 1):
+
+1. $m_1 g - T = m_1 a_1$
+2. $m_2 g - 2T = m_2 a_2$
+3. $a_1 = -2a_2$
+
+To find $a_1$, use (3) to write $a_2 = -a_1/2$ in (2), solve (1) for $T = m_1 g - m_1 a_1$, and substitute (pp. 1–2):
+
+<Formula label="Acceleration of block 1" tex="a_1 = \frac{2m_1 - m_2}{2m_1 + \tfrac12 m_2}\,g = \frac{2\,(2m_1 - m_2)}{4m_1 + m_2}\,g" cite="reading5" at="p. 2" />
+
+The lecture leaves $a_2$ and $T$ as an exercise. From (3) and from $T = m_1(g - a_1)$:
+
+<Formula label="Acceleration of block 2 and the tension" tex="a_2 = \frac{m_2 - 2m_1}{4m_1 + m_2}\,g, \qquad T = \frac{3\,m_1 m_2}{4m_1 + m_2}\,g" cite="reading5" at="p. 2 (left as an exercise; solved on this page)" />
+
+Checks that the answers make sense:
+
+- **Balance.** With $m_2 = 2m_1$ both accelerations are zero and $T = m_1 g$: block 2's weight is shared by two strands, each holding half, which equals block 1's weight.
+- **Limits.** With $m_2 \to 0$, $a_1 \to g$: block 1 falls freely. With $m_2$ very large, $a_2 \to g$ and $a_1 \to -2g$.
+- **Units.** Each acceleration is a pure number times $g$, and $T$ is a mass times $g$.
+
+<Plot variable="r" domain={[0, 10]} range={[-2.2, 1.2]} xLabel="mass ratio m₂/m₁" yLabel="acceleration ÷ g"
+  curves={[
+    { expr: "2 * (2 - r) / (4 + r)", label: "a₁/g (block 1, down positive)" },
+    { expr: "(r - 2) / (4 + r)", label: "a₂/g (block 2, down positive)", dash: true }
+  ]}
+  points={[{ x: 2, y: 0, label: "balance at m₂ = 2m₁" }]}
+  caption="Both accelerations as fractions of g, computed from a₁ = 2(2m₁ − m₂)g/(4m₁ + m₂) and a₂ = −a₁/2. They cross zero together at m₂ = 2m₁; block 1's curve is always twice as steep as block 2's and of opposite sign. For a very heavy block 2, a₂ approaches g and a₁ approaches −2g."
+/>
+
+<WorkedExample title="Unequal blocks on a moving pulley">
+<Problem>
+In the lesson's system, block 1 has mass 2.0 kg and block 2 has mass 6.0 kg. Take $g = 9.81$ m/s². Find both accelerations and the tension in the rope.
+</Problem>
+<Step title="Acceleration of block 1">
+$a_1 = 2(2 \times 2.0 - 6.0) \times 9.81/(4 \times 2.0 + 6.0) = -4 \times 9.81/14 \approx -2.80$ m/s². Negative means **up**.
+</Step>
+<Step title="Acceleration of block 2">
+$a_2 = -a_1/2 \approx 1.40$ m/s², down.
+</Step>
+<Step title="Tension">
+$T = 3 \times 2.0 \times 6.0 \times 9.81/14 \approx 25.2$ N. Check with block 1: $m_1 g - T = 19.62 - 25.23 = -5.61$ N, and $m_1 a_1 = 2.0 \times (-2.80) = -5.61$ N.
+</Step>
+</WorkedExample>
+
+## Three blocks and two strings
+
+The notes work a larger system in the same way (notes, Example 8.9, pp. 8-39–8-43). A fixed pulley carries **string A**, with block 1 on one end and a movable pulley P on the other. Over pulley P runs **string B**, with block 2 on one end and block 3 on the other. Again all pulleys and strings are massless and coordinates point down.
+
+The two lengths are $l_A = y_1 + y_P + \pi R$ and $l_B = (y_3 - y_P) + (y_2 - y_P) + \pi R$. Differentiating twice gives $a_P = -a_1$ and $a_2 + a_3 - 2a_P = 0$, so (notes, pp. 8-39–8-40):
+
+<Formula label="Constraint for three blocks" tex="a_2 + a_3 + 2a_1 = 0" cite="reading1" at="Eqs. (8.6.46)–(8.6.51), pp. 8-39–8-40" />
+
+Each block gives one equation ($m_i g - T = m_i a_i$, with $T_A$ on block 1 and $T_B$ on blocks 2 and 3), and the massless pulley P gives $2T_B = T_A$ (p. 8-41). Writing each acceleration in terms of $T_B$ and using the constraint (p. 8-42):
+
+<Formula label="Tension in string B" tex="T_B = \frac{4g\,m_1 m_2 m_3}{m_1 m_3 + m_1 m_2 + 4m_2 m_3}, \qquad T_A = 2T_B" cite="reading1" at="Eqs. (8.6.67)–(8.6.68), p. 8-42" />
+
+and then each acceleration follows from $a_1 = g - 2T_B/m_1$, $a_2 = g - T_B/m_2$, $a_3 = g - T_B/m_3$ (pp. 8-42–8-43). The notes end with the check that the accelerations satisfy the constraint, a good habit.
+
+<WorkedExample title="Three blocks, own numbers">
+<Problem>
+In the notes' system take $m_1 = 4.0$ kg, $m_2 = 1.0$ kg, $m_3 = 2.0$ kg and $g = 9.81$ m/s². Find the tensions and the accelerations.
+</Problem>
+<Step title="Tensions">
+The denominator is $4 \times 2 + 4 \times 1 + 4 \times 1 \times 2 = 20$ kg². $T_B = 4 \times 9.81 \times 8/20 \approx 15.7$ N and $T_A = 2T_B \approx 31.4$ N.
+</Step>
+<Step title="Accelerations">
+$a_1 = 9.81 - 31.39/4.0 \approx 1.96$ m/s² (down); $a_2 = 9.81 - 15.70/1.0 \approx -5.89$ m/s² (up); $a_3 = 9.81 - 15.70/2.0 \approx 1.96$ m/s² (down).
+</Step>
+<Step title="Check the constraint">
+$a_2 + a_3 + 2a_1 = -5.89 + 1.96 + 3.92 \approx 0$. The light block 2 shoots up while blocks 1 and 3 sink.
+</Step>
+</WorkedExample>
+
+## A horizontal system: two blocks and two pulleys
+
+Segment 12.5 applies the same method to two blocks that move along one line, with a unit vector $\hat i$; the equations contain no gravity or friction, so the motion is horizontal and frictionless. A force of size $F$ pulls block 1. Block 1 is tied by a string to pulley B, and block 2 to pulley A; a rope with one end fixed winds round both pulleys and is tied to block 2 (12.5 transcript, pp. 1–3; the video's figure is not reproduced, and this layout is read from the transcript's length terms).
+
+Measuring the rope's pieces from a fixed origin with block positions $x_1$ and $x_2$, the rope's length comes to $2x_1 - 3x_2$ plus constants (fixed distances and $2\pi R$). Differentiating twice:
+
+<Formula label="Constraint for the horizontal system" tex="2a_1 - 3a_2 = 0, \qquad a_1 = \tfrac32\,a_2" cite="reading6" at="pp. 2–3" />
+
+The four free-body diagrams give four equations: one per block, and zero net force on each massless pulley (p. 4):
+
+<Formula label="Equations of motion" tex="F - T_B = m_1 a_1, \qquad T + T_A = m_2 a_2, \qquad 2T - T_A = 0, \qquad T_B - 2T = 0" cite="reading6" at="p. 4" />
+
+So $T_A = T_B = 2T$, block 2 feels $3T = m_2 a_2$, and with the constraint the system can be solved for $F$ or for either acceleration (pp. 4–5). Eliminating the tensions:
+
+<Formula label="Force needed for a given acceleration" tex="F = \left(m_1 + \tfrac49\,m_2\right) a_1" cite="reading6" at="p. 4 (solved on this page)" />
+
+[The final formula is this page's own step; the lecture stops once the system is set up.] A useful check, also the page's own: with massless rope and pulleys, all the work done by $F$ goes into the two blocks, so $F v_1 = m_1 a_1 v_1 + m_2 a_2 v_2$. With $v_2 = \tfrac23 v_1$ and $a_2 = \tfrac23 a_1$ this gives the same $F$.
+
+<WorkedExample title="Pulling the horizontal system">
+<Problem>
+In segment 12.5's system, $m_1 = 1.0$ kg and $m_2 = 3.0$ kg. What force gives block 1 an acceleration of 0.90 m/s²? Find the tensions too.
+</Problem>
+<Step title="Force">
+$F = (1.0 + \tfrac49 \times 3.0) \times 0.90 = (1.0 + 1.333) \times 0.90 \approx 2.1$ N.
+</Step>
+<Step title="Tensions">
+$a_2 = \tfrac23 \times 0.90 = 0.60$ m/s², so $T = m_2 a_2/3 = 0.60$ N and $T_A = T_B = 1.2$ N. Check block 1: $F - T_B = 2.1 - 1.2 = 0.9$ N $= m_1 a_1$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- When pulleys move, the free-body diagrams give fewer equations than there are unknowns. The extra equations are **constraint conditions** from the fixed lengths of ropes and strings.
+- Recipe: choose a system for each body; draw free-body diagrams with one unit vector per body; use coordinates that point the same way as the unit vectors; write each rope's length in those coordinates; differentiate twice; solve.
+- A **massless pulley** has zero net force: a movable pulley held by two strands of tension $T$ hangs on a string with tension $2T$.
+- In the lesson's system $a_1 = -2a_2$, so $a_1 = 2(2m_1 - m_2)g/(4m_1 + m_2)$ and $T = 3m_1m_2 g/(4m_1 + m_2)$; it balances when $m_2 = 2m_1$.
+- A **virtual displacement** (move one body a little and follow the rope) gives the same constraint quickly; keep track of signs.
+- Check answers with limits, units and the constraint itself.

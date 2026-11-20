@@ -1,0 +1,169 @@
+---
+title: "Simulating galaxy formation: gravity, gas and \"subgrid\" physics"
+slug: simulating-galaxy-formation
+course: "Ferreras"
+lecture: 4.2
+order: 1
+summary: Computer simulations follow dark matter, gas and stars from small early ripples to today's galaxies. Dark matter is the easy part (Poisson's equation for billions of particles, made affordable by softening, trees and Fourier meshes). Gas needs hydrodynamics, and star formation, supernovae and black holes must be added "by hand" as subgrid recipes.
+prerequisites: [dark-matter-halos, linear-perturbations]
+source:
+  title: "Chapter 4, Simulating galaxy formation (Sections 4.1–4.4)"
+  url: https://doi.org/10.14324/111.9781800084704
+  readings: []
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "Ferreras"
+    lecture: 4.6
+    why: "How simulated halos are compared with real galaxies: mass functions, halo occupation and abundance matching."
+quiz:
+  - question: "What are the three pillars of a galaxy formation simulation?"
+    choices: ["Stars, planets and dust", "Collisionless dark matter (gravity only), the hydrodynamics of gas, and subgrid physics for star formation and feedback", "Light, radio and X-rays", "Inflation, nucleosynthesis and recombination"]
+    answer: 1
+    explanation: "Dark matter forms the backbone; gas flows need hydrodynamics; everything below the resolution (star formation, supernovae, black holes) is added as recipes."
+  - question: "Why is the gravitational force between simulation particles 'softened'?"
+    choices: ["To save memory", "Each particle stands for millions of solar masses of dark matter, so the 1/r² divergence at tiny separations is unphysical and would demand ever smaller time steps", "Because gravity is weak", "To include dark energy"]
+    answer: 1
+    explanation: "The Plummer form $-Gm/\\sqrt{r^2 + \\epsilon^2}$ caps the force inside the softening length ε, which sets the force resolution (today about 100 pc at best)."
+  - question: "How does the cost of the direct particle–particle force calculation scale with the number of particles $N$, and what do tree codes achieve?"
+    choices: ["$N$; tree codes reach $\\log N$", "$N^2$; tree codes reach $N\\log N$", "$N^3$; tree codes reach $N^2$", "It does not depend on $N$"]
+    answer: 1
+    explanation: "Every pair interacts. The Barnes–Hut tree replaces distant groups of particles by multipole expansions."
+  - question: "With radiative efficiency 0.1, a black hole growing at the Eddington rate increases its mass by a factor $e$ every $\\varepsilon_r\\sigma_T c/(4\\pi G m_p)$. About how long is that?"
+    choices: ["About 45 thousand years", "About 45 million years", "About 4.5 billion years", "About 45 seconds"]
+    answer: 1
+    explanation: "$0.1 \\times 6.652 \\times 10^{-29} \\times 2.998 \\times 10^8 / (4\\pi \\times 6.674 \\times 10^{-11} \\times 1.673 \\times 10^{-27})$ s ≈ 45 million years."
+flashcards:
+  - front: "Plummer softening"
+    back: "$\\Phi(r) = -Gm/\\sqrt{r^2 + \\epsilon^2}$: forces are capped below the softening length ε (the force resolution)"
+  - front: "Particle–particle, tree and particle–mesh methods"
+    back: "PP: direct sum, $N^2$. Tree (Barnes–Hut): distant cells as multipoles, $N\\log N$. PM: density on a grid, Poisson solved with FFTs, $\\hat\\Phi_k = -4\\pi G\\hat\\rho_k/k^2$."
+  - front: "Eddington-limited black hole growth"
+    back: "$\\dot M_\\text{Edd} = 4\\pi G M m_p/(\\varepsilon_r\\sigma_T c)$; e-folding time ≈ 45 Myr for $\\varepsilon_r = 0.1$"
+status: reviewed
+---
+
+Simple models of gravity rely on symmetries: spherical collapse, spherical or axisymmetric Jeans models. To go further, to see how real galaxies and their halos form, Ferreras's Chapter 4 turns to **numerical simulations**, which today follow billions of particles on large supercomputers. They rest on three pillars:
+
+1. the growth of structure in the **collisionless dark matter**, the backbone of the large-scale structure;
+2. the **hydrodynamics** of the gas, the original baryonic material that eventually makes stars;
+3. **subgrid physics**: everything else (star formation, feedback, black holes) added as recipes because it happens below the resolution.
+
+## Dark matter: solving Poisson's equation with particles
+
+Dark matter dominates the gravitational potential of galaxies, especially in their outer parts, and drives the growth of structure on cosmological scales. So the first simulations followed only dark matter: collisionless particles in an expanding universe, each feeling the potential made by all the others, with no need for costly two-body encounters.
+
+Each simulation particle is a **synthetic** particle that stands for an enormous number of real dark matter particles. In the EAGLE simulation, in a cube 100 Mpc on a side, each dark matter particle has a mass of $9.7 \times 10^6\,M_\odot$, as much as the stars of a dwarf galaxy. The computer's memory fixes the number of particles; the volume then fixes their mass. With $N$ particles of mass $m_\text{DM}$, Poisson's equation becomes
+
+<Formula label="Poisson's equation for simulation particles" tex="\nabla^2\Phi(\vec r) = 4\pi G\,m_\text{DM}\sum_i \delta^3(\vec r - \vec r_i)" cite="mit" at="Eq. (4.1), p. 77" />
+
+Simulations range from a single galaxy's halo (about 100 kpc) to cosmological volumes (about a gigaparsec). One problem is that a point particle's potential $-Gm_\text{DM}/r$, and its force, diverge at small separations. That is unphysical (a synthetic particle is not a point) and numerically harmful: huge forces need tiny time steps and grow errors. So the potential is **softened**:
+
+<Formula label="Softened (Plummer) potential" tex="\Phi(r; \epsilon) = -\frac{G\,m_\text{DM}}{\sqrt{r^2 + \epsilon^2}}" cite="mit" at="Eq. (4.2), p. 78" />
+
+This is the potential of a **Plummer sphere**: the force fades smoothly as separations fall below the **softening length** $\epsilon$, which is therefore the simulation's **force resolution**. The best cosmological simulations reach about 100 pc. **Zoom-in** simulations re-run a small region, chosen from a larger low-resolution run, at much higher resolution.
+
+The acceleration of particle $i$ is then a sum over all the others:
+
+<Formula label="Direct force summation" tex="\ddot{\vec r}_i = -G\,m_\text{DM}\sum_{j \neq i}^{N}\frac{\vec r_i - \vec r_j}{\left(|\vec r_i - \vec r_j|^2 + \epsilon^2\right)^{3/2}}" cite="mit" at="Eq. (4.3), p. 78" />
+
+after which velocities and positions are updated, step by step. This **particle–particle** (PP) method needs about $N^2$ operations per step. Special hardware (such as the GRAPE "Gravity Pipe" computers) and parallel computing help, but two ideas cut the cost far more:
+
+- **Tree codes** (Barnes and Hut, 1986). Space is divided hierarchically into cells (octants in three dimensions), down to single particles. Nearby particles are summed directly; a distant cell is replaced by a low-order **multipole expansion** of its mass. If a cell is far enough away, it is not "opened". Because matter is clustered, the cost drops to about $N\log N$.
+- **Particle–mesh** (PM) codes. The particles' mass is assigned to a grid, and Poisson's equation is solved in Fourier space with fast Fourier transforms:
+
+<Formula label="Poisson's equation on a mesh" tex="\nabla^2\Phi = 4\pi G\rho \;\Longrightarrow\; -k^2\hat\Phi_{\vec k} = 4\pi G\,\hat\rho_{\vec k}, \qquad \hat{\vec F}_{\vec k} = -i\vec k\,\hat\Phi_{\vec k}" cite="mit" at="Eqs. (4.4)–(4.5), pp. 79–80" />
+
+  Its accuracy is limited by the mesh size. The P³M method combines a mesh for distant forces with direct sums for close neighbours.
+
+<WorkedExample title="Why trees matter">
+<Problem>
+A modern simulation has $N = 10^{10}$ particles. Compare the number of pair interactions per time step for direct summation and for a tree code.
+</Problem>
+<Step title="Direct summation">
+$N^2 = 10^{20}$ interactions per step.
+</Step>
+<Step title="Tree code">
+$N\log_2 N \approx 10^{10} \times 33 \approx 3.3 \times 10^{11}$ operations: about 300 million times fewer.
+</Step>
+<Step title="Meaning">
+Even at $10^{15}$ operations per second, direct summation would need about a day per step, and a simulation needs thousands of steps; a tree code takes well under a second of pure arithmetic per step.
+</Step>
+</WorkedExample>
+
+**Initial conditions.** A cosmological run starts early, while fluctuations are still linear, in a comoving box typically about 100 Mpc across with **periodic boundaries** (opposite faces joined). Particles are first laid out uniformly, then displaced and given velocities so that the density field is a **Gaussian random field** with the power spectrum of the chosen cosmology (on this site: [linear perturbations](/courses/8-902/linear-perturbations) and [the power spectrum](/courses/8-902/power-spectrum)). The box size limits what can be studied: objects rarer than about one per (100 Mpc)³, such as massive galaxy clusters, are missed.
+
+## Hydrodynamics
+
+Dark matter dominates the mass, so dark-matter-only simulations already describe halos well. Adding baryons is much harder: gas is **not collisionless**. It feels pressure, obeys an equation of state, exists in several phases (of temperature, density, composition), loses energy by radiating, and is stirred by turbulence and magnetic fields. Stars, formed from gas, behave again as collisionless particles.
+
+The gas equations can be solved on a **grid** of cells (the **Eulerian** approach) or by following parcels of gas as **particles** (the **Lagrangian** approach). For a single gas phase they are:
+
+<Formula label="Equations of gas dynamics" tex="\frac{d\rho}{dt} = -\rho\,\nabla\cdot\vec v, \qquad \frac{d\vec v}{dt} = -\frac{\nabla P}{\rho} - \nabla\Phi, \qquad \frac{du}{dt} = -\frac{P}{\rho}\,\nabla\cdot\vec v + \frac{Q - \Lambda(T, Z, \rho)}{\rho}, \qquad P = (\gamma - 1)\,\rho\,u" cite="mit" at="Eqs. (4.6)–(4.9), p. 83" />
+
+These are the **continuity equation** (mass conservation), the **Euler equation** (pressure gradient and gravity accelerate the gas), **energy conservation** for the internal energy $u$ (compression, heating sources $Q$ and radiative cooling $\Lambda$, which depends on temperature $T$, metallicity $Z$ and density $\rho$), and the **equation of state** of an ideal gas with adiabatic index $\gamma$. [The book calls $u$ the energy density; with $P = (\gamma - 1)\rho u$ and the source terms divided by $\rho$, it is the energy per unit mass, as written here.] The time derivative follows the moving gas:
+
+<Formula label="Lagrangian time derivative" tex="\frac{d}{dt} = \frac{\partial}{\partial t} + \vec v\cdot\nabla" cite="mit" at="Eq. (4.10), p. 83" />
+
+In simulated galaxies (Ferreras shows one from IllustrisTNG) the dark matter halo is far more extended than the stars, and the gas is clumpy. Radio observations trace the atomic gas, optical and near-infrared light the stars and ionised gas, and very deep images reveal faint stellar streams. The dark matter itself can never be mapped directly; it is inferred through the gas and stars.
+
+## Subgrid physics
+
+Many processes act on scales far below what even the best simulations resolve. The standard picture is that gas falling into a halo is shock-heated to the halo's virial temperature, then cools and flows to the centre (**hot-mode accretion**). Early models with only this physics hit the **overcooling problem**: the gas cooled too efficiently, formed stars too early and too fast, and lost its angular momentum, giving too many old, massive, compact galaxies with little rotation. Extra baryonic physics is essential.
+
+An alternative to full hydrodynamics is the **semi-analytic model** (SAM): dark matter halos and their **merger trees** come from Press–Schechter theory or a dark-matter-only simulation, and the gas physics is added as recipes. SAMs run much faster, so the most uncertain part, the subgrid physics, can be explored widely. The main recipes are:
+
+**Star formation.** The star formation rate follows the gas density as a power law, $\dot\rho_\star \propto \rho_g^n$ (Schmidt) or per unit area $\dot\Sigma_\star \propto \Sigma_g^n$ (Kennicutt), with $n \approx 1$–2 and an efficiency in the constant, above a threshold surface density of about $10\,M_\odot$ per pc² where cold gas can exist. Too efficient, and galaxies become too massive for the observed stellar mass function; too inefficient, and they stay too gas-rich. Massive early-type galaxies formed their stars fast and efficiently; low-mass galaxies slowly.
+
+**Supernova feedback.** The most massive stars live only 1–30 Myr and explode as core-collapse supernovae, each releasing about $10^{51}$ erg, in the gas-rich regions where stars are still forming. They heat the gas and drive it out, lowering further star formation: **negative feedback**, strongest in starbursts. Gas may be removed from the galaxy altogether (blow-away), or only from its disc, later raining back in a galactic fountain (blow-out). In massive galaxies gravity wins, and supernova feedback becomes inefficient.
+
+<WorkedExample title="Can supernovae unbind a dwarf galaxy's gas? (adapted from a &quot;How about…?&quot; box in the book)">
+<Problem>
+A dwarf galaxy has $10^9\,M_\odot$ within 2 kpc, modelled as a truncated isothermal sphere with binding energy $GM^2/R$. It forms stars at $1\,M_\odot$ per year for 50 million years, with one supernova for every $100\,M_\odot$ of stars formed. What fraction of the supernova energy would be needed to match the binding energy?
+</Problem>
+<Step title="Binding energy">
+$GM^2/R = 6.674 \times 10^{-11} \times (1.99 \times 10^{39})^2 / (6.17 \times 10^{19})$ J $\approx 4.3 \times 10^{48}$ J $= 4.3 \times 10^{55}$ erg.
+</Step>
+<Step title="Supernova energy">
+$5 \times 10^7\,M_\odot$ of stars gives $5 \times 10^5$ supernovae, releasing $5 \times 10^{56}$ erg in total.
+</Step>
+<Step title="Efficiency">
+Only about 9% of that energy needs to couple to the gas. Most of a supernova's energy is radiated away, but a modest coupling suffices in a small galaxy, while a galaxy a hundred times more massive, of the same size, would be bound ten thousand times more strongly.
+</Step>
+</WorkedExample>
+
+**Black holes and active nuclei.** Supermassive black holes sit at the centres of most galaxies, and their masses correlate with their hosts' bulge velocity dispersions, a sign of **coevolution**. When enough gas falls in, accretion can turn up to about 10% of the infalling rest-mass energy into radiation: an **active galactic nucleus** (AGN), seen at great distances as a quasar. AGN feedback can stop star formation across a whole galaxy, especially in massive ones. This is the most "subgrid" recipe of all. An accretion disc is as small as the Solar System; even the black hole's **radius of influence**, $GM_\text{BH}/c_\infty^2$ with $c_\infty$ the sound speed of the surrounding gas, is only about 0.05 kpc for $M_\text{BH} = 10^7\,M_\odot$ and $c_\infty = 30$ km/s, below the resolution of about 100 pc. Simulations plant **seed** black holes (about $10^5\,M_\odot$) in halos above a threshold mass and let them grow as sink particles, by **Bondi accretion** from gas of density $\rho$ and sound speed $c_s$ when the black hole moves at speed $v$:
+
+<Formula label="Bondi accretion rate" tex="\frac{dM_\text{BH}}{dt} = \frac{4\pi G^2 M_\text{BH}^2\,\rho}{\left(c_s^2 + v^2\right)^{3/2}}" cite="mit" at="Eq. (4.11), p. 90" />
+
+usually with a fudge factor calibrated on observations, and capped at the **Eddington rate**, where radiation pressure halts the infall:
+
+<Formula label="Eddington accretion rate" tex="\frac{dM_\text{Edd}}{dt} = \frac{4\pi G M_\text{BH}\,m_p}{\varepsilon_r\,\sigma_T\,c}" cite="mit" at="Eq. (4.12), p. 90" />
+
+with $\sigma_T$ the Thomson cross-section and $\varepsilon_r = L/(\dot M_\text{BH}c^2) \approx 0.1$ the radiative efficiency. AGN feedback has two modes: at low accretion rates, a **kinetic** ("maintenance") mode that keeps massive galaxies quiescent; at high rates, a **thermal** (quasar) mode that heats the surrounding gas.
+
+<WorkedExample title="How fast can a black hole grow?">
+<Problem>
+A seed black hole of $10^5\,M_\odot$ grows at the Eddington rate with $\varepsilon_r = 0.1$. How long until it reaches $10^9\,M_\odot$?
+</Problem>
+<Step title="Exponential growth">
+The Eddington rate is proportional to $M_\text{BH}$, so the mass grows exponentially with e-folding time $t_E = \varepsilon_r\sigma_T c/(4\pi G m_p) = 0.1 \times 6.652 \times 10^{-29} \times 2.998 \times 10^8 / (4\pi \times 6.674 \times 10^{-11} \times 1.673 \times 10^{-27})$ s $\approx 1.4 \times 10^{15}$ s $\approx 45$ Myr.
+</Step>
+<Step title="Time needed">
+A factor $10^4$ needs $\ln(10^4) \approx 9.2$ e-foldings: about 415 Myr of uninterrupted Eddington-limited growth: possible, but only if gas keeps flowing in, which is why the seeding recipes of different simulations matter so much for early quasars.
+</Step>
+</WorkedExample>
+
+**Stellar populations.** Each synthetic star particle (in IllustrisTNG, $10^5$–$10^7\,M_\odot$) is created from a gas particle and treated as a simple stellar population, with its own age and the chemical composition of its parent gas, and stars of all masses drawn from an IMF. Its evolution returns gas, energy and heavy elements to its surroundings; since most of this comes from short-lived massive stars, some models return it instantly (the instantaneous recycling approximation). Population synthesis then turns star particles into colours and spectra to compare with surveys.
+
+**Dust and radiation.** Cooling rates are first tabulated assuming collisional ionisation equilibrium; strong star formation, AGNs and the epoch of reionisation need radiative transfer. Dust, under one per cent of the interstellar mass, scatters blue light more (Rayleigh-like) or dims all colours (Mie-like) depending on grain size, and re-emits in the infrared. It adds a third member to the age–metallicity degeneracy: a red colour may mean old, metal-rich or dusty.
+
+**Magnetic fields and cosmic rays** add pressure to the interstellar medium and help regulate star formation; including them requires magnetohydrodynamics and a relativistic cosmic-ray fluid from supernovae (typical energies about 1 GeV). These details lie outside dark matter physics, but they control how baryons flow in halos and so the ratio of stars to dark matter.
+
+## Summary
+
+- Simulations rest on collisionless dark matter, gas hydrodynamics and subgrid recipes.
+- Dark matter is followed with synthetic particles (EAGLE: $9.7 \times 10^6\,M_\odot$ each) under a softened potential $-Gm/\sqrt{r^2 + \epsilon^2}$; force resolution reaches about 100 pc. Direct sums cost $N^2$; trees $N\log N$; particle–mesh codes solve Poisson's equation with FFTs.
+- Initial conditions: a Gaussian random field with the cosmological power spectrum, in a periodic box of about 100 Mpc.
+- Gas obeys the continuity, Euler and energy equations with an equation of state, on grids or as particles.
+- Subgrid physics: star formation laws, supernova feedback (about $10^{51}$ erg each), black hole seeding, Bondi and Eddington-limited growth (e-folding time about 45 Myr), AGN feedback, stellar evolution, dust, magnetic fields. It is the main uncertainty, and is calibrated against observed galaxies.

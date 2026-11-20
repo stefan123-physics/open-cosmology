@@ -1,0 +1,100 @@
+# Calculations on content/year-4/8.09/viscous-fluid-equations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.6, pp. 127-130, eqs. (6.107)-(6.119).
+# The notes quote no numbers here. Page's own inputs: water eta = 1.0e-3 Pa s, rho = 1000 kg/m^3; air eta = 1.8e-5 Pa s,
+# rho = 1.2 kg/m^3; a sheared water layer with s = 100 /s; the plot's decaying shear flow (k = 1).
+
+page: content/year-4/8.09/viscous-fluid-equations.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations
+  - id: rotation-symmetric-zero
+    kind: identity
+    where: 'p. 128: for rigid rotation about x, v = omega_x (y z_hat - z y_hat), dv_z/dy + dv_y/dz = 0 (checked with 1 added)'
+    formula: deriv('WW*y', 'y', YY) + deriv('-WW*z', 'z', ZZ) + 1
+    equals: 1
+    samples: {WW: [3.0, 0.4], YY: [0.2, 1.1], ZZ: [0.5, -0.3]}
+    tolerance: 1e-6
+    shown: ['$\partial v_z/\partial y + \partial v_y/\partial z = \omega_x - \omega_x = 0$']
+    source: {cite: reading1, at: 'Section 6.6, p. 128'}
+    origin: mit
+
+  - id: shear-wave-solves
+    kind: identity
+    where: 'plot: v_x = sin(k y) exp(-nu k^2 t) solves dv_x/dt = nu d2v_x/dy2 (the incompressible Navier-Stokes equation for a layered flow with uniform pressure), checked with 1 added'
+    formula: deriv('sin(KK*YY)*exp(-NU*KK**2*t)', 't', TT) - NU*deriv('sin(KK*y)*exp(-NU*KK**2*TT)', 'y', YY, 2) + 1
+    equals: 1
+    samples: {KK: [1.0, 3.0], YY: [0.4, 1.3], TT: [0.2, 0.7], NU: [1.0e-3, 0.5]}
+    tolerance: 1e-4
+    shown: ['It solves the incompressible Navier-Stokes equation exactly']
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.113), p. 129'}
+    origin: page-own
+
+  - id: dissipation-square
+    kind: identity
+    where: 'eq. (6.119), 2D check: sum_ij (a_ij + a_ji) a_ij = (1/2) sum_ij (a_ij + a_ji)^2 for a gradient matrix a'
+    formula: (2*A11)*A11 + (A12 + A21)*A12 + (A21 + A12)*A21 + (2*A22)*A22
+    equals: 0.5*((2*A11)**2 + (A12 + A21)**2 + (A21 + A12)**2 + (2*A22)**2)
+    samples: {A11: [0.3, -1.0], A12: [1.2, 0.5], A21: [-0.7, 2.0], A22: [0.4, 0.9]}
+    tolerance: 1e-9
+    shown: ['The second form follows by swapping the summed indices']
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.119), p. 130'}
+    origin: mit
+
+  # ---------------------------------------------------------------- kinematic viscosity
+  - id: nu-water
+    kind: value
+    where: 'worked example (a) and quiz 2: nu = 1.0e-3/1000 (m^2/s)'
+    formula: 1.0e-3/1000
+    expected: '1.0e-6'
+    tolerance: 1e-9
+    shown: ['Water: $\nu = 10^{-3}/1000 = 1.0 \times 10^{-6}$ m²/s']
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.114), p. 129'}
+    origin: page-own
+
+  - id: nu-air
+    kind: value
+    where: 'worked example (a) and quiz 2: nu = 1.8e-5/1.2 (m^2/s)'
+    formula: 1.8e-5/1.2
+    expected: '1.5e-5'
+    tolerance: 1e-8
+    shown: ['$\nu = 1.8 \times 10^{-5}/1.2 = 1.5 \times 10^{-5}$ m²/s, fifteen times more', '$\\nu = 1.8 \\times 10^{-5}/1.2 = 1.5 \\times 10^{-5}$ m²/s, 15 times larger']
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.114), p. 129'}
+    origin: page-own
+
+  - id: nu-ratio
+    kind: value
+    where: 'quiz 2: nu_air/nu_water'
+    formula: (1.8e-5/1.2)/(1.0e-3/1000)
+    expected: '15'
+    shown: ['"Air, by a factor of about 15"']
+    quiz: 1
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.114), p. 129'}
+    origin: page-own
+
+  - id: eta-ratio
+    kind: value
+    where: 'quiz 2 distractor: eta_water/eta_air'
+    formula: 1.0e-3/1.8e-5
+    expected: '55'
+    tolerance: 1
+    shown: ['"Water, by a factor of about 55"']
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.114), p. 129'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- sheared layer
+  - id: shear-stress
+    kind: value
+    where: 'worked example (b): sigma_xy = eta s = 1e-3 x 100 (Pa)'
+    formula: 1.0e-3*100
+    expected: '0.1'
+    shown: ['$\sigma_{xy} = \sigma_{yx} = \eta s = 10^{-3} \times 100 = 0.1$ Pa', '$F_x = \sigma_{xy} = 0.1$ N/m²']
+    source: {cite: reading1, at: 'Section 6.6, eq. (6.117), p. 129'}
+    origin: page-own
+
+  - id: shear-heating
+    kind: value
+    where: 'worked example (b): eta s^2 = 1e-3 x 1e4 (W/m^3)'
+    formula: 1.0e-3*100**2
+    expected: '10'
+    shown: ['= \eta s^2 = 10^{-3} \times 10^4 = 10$ W/m³']
+    source: {cite: reading1, at: 'Section 6.6, p. 130'}
+    origin: page-own

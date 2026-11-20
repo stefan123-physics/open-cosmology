@@ -1,0 +1,153 @@
+# Calculations on content/year-4/8.09/continuum-limit-fluid-variables.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.1, pp. 104-109, eqs. (6.1)-(6.19).
+# The notes quote no numbers in this section. Slip: p. 107 names the wedge pressures "P1, P1, P1" (meant: P1, P2, P3).
+# Page's own numbers: quiz 2 (beads of 5 g, 1 cm apart, k = 800 N/m); worked example and quiz 4 (wind 10 m/s,
+# gradient -2 K per 100 km, station warming 0.5 K/h); the plot's dots (sin(2 pi x/10) at spacing 1.25).
+
+page: content/year-4/8.09/continuum-limit-fluid-variables.mdx
+calcs:
+  # ---------------------------------------------------------------- the chain and its limit
+  - id: chain-eom
+    kind: identity
+    where: 'eq. (6.3): dL/d(eta_i) from eq. (6.2), for three neighbouring masses; m/a eta_i ddot = ka (eta_{i+1} - 2 eta_i + eta_{i-1})/a^2 (checked as the force on mass i)'
+    formula: -deriv('KK/2*((E2 - e)**2 + (e - E0)**2)', 'e', E1)
+    equals: KK*(E2 - 2*E1 + E0)
+    samples: {KK: [3.0, 800.0], E0: [0.1, -0.2], E1: [0.4, 0.05], E2: [-0.3, 0.7]}
+    tolerance: 1e-6
+    shown: ['\frac{m}{a}\,\ddot\eta_i - ka\left(\frac{\eta_{i+1} - \eta_i}{a^2}\right) + ka\left(\frac{\eta_i - \eta_{i-1}}{a^2}\right) = 0']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.3), p. 105'}
+    origin: mit
+
+  - id: second-difference-limit
+    kind: identity
+    where: 'eq. (6.5): the second difference of sin(x) over a^2 tends to the second derivative -sin(x) for small a (a = 1e-3, checked with 1 added)'
+    formula: (sin(XX + 0.001) - 2*sin(XX) + sin(XX - 0.001))/0.001**2 + 1
+    equals: -sin(XX) + 1
+    samples: {XX: [0.3, 1.2, 2.5]}
+    tolerance: 1e-5
+    shown: ['\frac{\eta(x + a, t) - 2\eta(x, t) + \eta(x - a, t)}{a^2} \to \frac{\partial^2\eta}{\partial x^2}']
+    source: {cite: reading1, at: 'Section 6.1, eqs. (6.4)-(6.6), p. 105'}
+    origin: mit
+
+  - id: wave-equation-solution
+    kind: identity
+    where: 'eq. (6.8) and the remark on the speed: eta = sin(x - c t) with c = sqrt(Y/mu) solves mu eta_tt - Y eta_xx = 0 (checked with 1 added)'
+    formula: MU*deriv('sin(XX - sqrt(YY/MU)*t)', 't', TT, 2) - YY*deriv('sin(x - sqrt(YY/MU)*TT)', 'x', XX, 2) + 1
+    equals: 1
+    samples: {MU: [0.5, 2.0], YY: [8.0, 3.0], XX: [0.3, 1.7], TT: [0.2, 0.9]}
+    tolerance: 1e-4
+    shown: ['Its waves travel at $\sqrt{Y/\mu}$']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.8), p. 105'}
+    origin: page-own
+
+  - id: rod-el-derivatives
+    kind: identity
+    where: 'eq. (6.12): dL/d(eta_dot) of L = (mu eta_dot^2 - Y eta_prime^2)/2 is mu eta_dot'
+    formula: deriv('(MU*w**2 - YY*QQ**2)/2', 'w', WW)
+    equals: MU*WW
+    samples: {MU: [0.5, 2.0], YY: [8.0, 3.0], WW: [0.3, -1.1], QQ: [0.2, 0.6]}
+    tolerance: 1e-6
+    shown: ['\frac{\partial\mathcal{L}}{\partial\dot\eta} = \mu\,\frac{\partial\eta}{\partial t}']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.12), p. 106'}
+    origin: mit
+
+  - id: rod-el-derivatives-2
+    kind: identity
+    where: 'eq. (6.12): dL/d(eta_prime) is -Y eta_prime'
+    formula: deriv('(MU*WW**2 - YY*q**2)/2', 'q', QQ)
+    equals: -YY*QQ
+    samples: {MU: [0.5, 2.0], YY: [8.0, 3.0], WW: [0.3, -1.1], QQ: [0.2, 0.6]}
+    tolerance: 1e-6
+    shown: ['\frac{\partial\mathcal{L}}{\partial\eta''} = -Y\,\frac{\partial\eta}{\partial x}']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.12), p. 106'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the wedge
+  - id: wedge-vertical
+    kind: identity
+    where: 'eqs. (6.14)-(6.15): with dA cos(theta) = dx dy, the vertical balance divided by dx dy gives P3 = P1 + rho g dz/2'
+    formula: (P1*DX*DY + 0.5*RHO*G*DX*DY*DZ)/(DX*DY)
+    equals: P1 + 0.5*RHO*G*DZ
+    samples: {P1: [1.0e5, 2.0e5], RHO: [1000.0, 1.2], G: [9.8, 9.8], DX: [0.01, 0.002], DY: [0.03, 0.03], DZ: [0.02, 0.001]}
+    tolerance: 1e-9
+    shown: ['P_3 = P_1 + \tfrac{1}{2}\rho g\,dz']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.15), p. 108'}
+    origin: mit
+
+  # ---------------------------------------------------------------- quiz 2
+  - id: quiz-mu
+    kind: value
+    where: 'quiz 2: mu = m/a = 0.005 kg / 0.01 m (kg/m)'
+    formula: 0.005/0.01
+    expected: '0.5'
+    shown: ['$\\mu = m/a = 0.005/0.01 = 0.5$ kg/m']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.8), p. 105'}
+    origin: page-own
+
+  - id: quiz-Y
+    kind: value
+    where: 'quiz 2: Y = k a = 800 N/m x 0.01 m (N)'
+    formula: 800*0.01
+    expected: '8'
+    shown: ['$Y = ka = 800 \\times 0.01 = 8$ N']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.8), p. 105'}
+    origin: page-own
+
+  - id: quiz-speed
+    kind: value
+    where: 'quiz 2: sqrt(Y/mu) (m/s)'
+    formula: sqrt(8/0.5)
+    expected: '4'
+    shown: ['\\sqrt{8/0.5} = 4$ m/s']
+    quiz: 1
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.8), p. 105'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example and quiz 4
+  - id: advective-term
+    kind: value
+    where: 'worked example, step "The two terms": v dT/dx = 10 m/s x (-2 K / 1e5 m) in K/s'
+    formula: 10*(-2/1e5)
+    expected: '-2e-4'
+    tolerance: 1e-12
+    shown: ['$v\,\partial T/\partial x = 10 \times (-2 \times 10^{-5}) = -2 \times 10^{-4}$ K/s']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.19), p. 109'}
+    origin: page-own
+
+  - id: advective-term-per-hour
+    kind: value
+    where: 'worked example and quiz 4: -2e-4 K/s in K/h'
+    formula: -2e-4*3600
+    expected: '-0.72'
+    shown: ['which is $-0.72$ K/h', '$-2 \\times 10^{-4}$ K/s $= -0.72$ K/h']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.19), p. 109'}
+    origin: page-own
+
+  - id: total-derivative
+    kind: value
+    where: 'worked example, step "The total derivative", and quiz 4: dT/dt = 0.5 - 0.72 (K/h)'
+    formula: 0.5 + 10*(-2/1e5)*3600
+    expected: '-0.22'
+    shown: ['$dT/dt = \partial T/\partial t + \vec v\cdot\nabla T = 0.5 - 0.72 = -0.22$ K/h', 'about 0.22 K each hour', 'so $dT/dt \\approx -0.22$ K/h']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.19), p. 109'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the plot
+  - id: plot-dots
+    kind: value
+    where: 'plot: the dots at x = 1.25 and 8.75 lie on sin(2 pi x/10), value sin(pi/4)'
+    formula: sin(2*pi*1.25/10)
+    expected: '0.7071'
+    shown: ['{ x: 1.25, y: 0.7071 }', '{ x: 8.75, y: -0.7071 }']
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.7), p. 105'}
+    origin: page-own
+
+  - id: quiz-cooling-rate
+    kind: value
+    where: 'quiz 4: the parcel cools at 0.72 - 0.5 K/h'
+    formula: -(0.5 + 10*(-2/1e5)*3600)
+    expected: '0.22'
+    shown: ['"It falls by about 0.22 K per hour"']
+    quiz: 3
+    source: {cite: reading1, at: 'Section 6.1, eq. (6.19), p. 109'}
+    origin: page-own

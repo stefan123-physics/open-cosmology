@@ -1,0 +1,97 @@
+# Calculations on content/year-4/8.09/fluid-sound-waves.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.5, pp. 124-127, eqs. (6.91)-(6.106).
+# The notes quote no numbers here. Page's own inputs: water B = 2.2e9 Pa, rho = 1000 kg/m^3; air P0 = 101325 Pa,
+# rho0 = 1.225 kg/m^3, adiabatic factor 1.4; wind at 30 m/s; aircraft at Mach 2.
+
+page: content/year-4/8.09/fluid-sound-waves.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations
+  - id: plane-wave-solves
+    kind: identity
+    where: 'eqs. (6.100) and (6.105): P'' = g(x - c t) with g = exp(-u^2) solves P_tt - c^2 P_xx = 0 (1D, checked with 1 added)'
+    formula: deriv('exp(-(XX - CC*t)**2)', 't', TT, 2) - CC**2*deriv('exp(-(x - CC*TT)**2)', 'x', XX, 2) + 1
+    equals: 1
+    samples: {XX: [0.3, 1.2, -0.4], TT: [0.1, 0.5, 0.2], CC: [1.0, 2.0, 0.5]}
+    tolerance: 1e-4
+    shown: ['P'' = P''\left(\vec r\cdot\hat n - c_St\right)']
+    source: {cite: reading1, at: 'Section 6.5, eq. (6.105), p. 126'}
+    origin: mit
+
+  - id: grad-div-identity
+    kind: identity
+    where: 'eq. (6.103) slip: grad(div v) = lap v + curl curl v. x component for v = (x^2 y, y z, x z^2): div v = 2xy + z + 2xz, so d/dx div v = 2y + 2z; lap v_x = 2y; curl v = (-y, -z^2, -x^2), whose curl has x component 2z (the notes'' minus sign would give 2y - 2z)'
+    formula: deriv('2*x*YY + ZZ + 2*x*ZZ', 'x', XX)
+    equals: deriv('x**2*YY', 'x', XX, 2) + deriv('XX**2*y', 'y', YY, 2) + deriv('XX**2*YY', 'z', ZZ, 2) + (deriv('-XX**2', 'y', YY) - deriv('-z**2', 'z', ZZ))
+    samples: {XX: [0.3, 1.2], YY: [0.5, -0.7], ZZ: [0.2, 1.1]}
+    tolerance: 1e-5
+    shown: ['= \frac{B}{\rho_0}\left(\nabla^2\vec v + \nabla\times\left(\nabla\times\vec v\right)\right)']
+    source: {cite: reading1, at: 'Section 6.5, eq. (6.103), p. 126'}
+    origin: slip
+
+  # ---------------------------------------------------------------- water and air
+  - id: water-sound
+    where: 'worked example (a) and quiz 2: sqrt(B/rho) for water'
+    inputs: {B: 2.2e9 Pa, rho: 1000 kg/m^3}
+    formula: sqrt(B/rho)
+    expected: 1480 m/s
+    tolerance: 5 m/s
+    shown: ['$c_S = \sqrt{2.2 \times 10^9/1000} \approx 1480$ m/s', '\\sqrt{2.2 \\times 10^6} \\approx 1480$ m/s']
+    quiz: 1
+    source: {cite: reading1, at: 'Section 6.5, p. 125 (after eq. 6.100)'}
+    origin: page-own
+
+  - id: water-over-air
+    kind: value
+    where: 'quiz 2 explanation: 1480/340, more than four times'
+    formula: 1480/340
+    expected: '4.4'
+    shown: ['more than four times the speed in air']
+    source: {cite: reading1, at: 'Section 6.5, p. 125 (after eq. 6.100)'}
+    origin: page-own
+
+  - id: air-isothermal
+    where: 'worked example (b): sqrt(P0/rho0)'
+    inputs: {P0: 101325 Pa, rho0: 1.225 kg/m^3}
+    formula: sqrt(P0/rho0)
+    expected: 288 m/s
+    shown: ['$c_S = \sqrt{101{,}325/1.225} \approx 288$ m/s']
+    source: {cite: reading1, at: 'Section 6.5, p. 125 (after eq. 6.100)'}
+    origin: page-own
+
+  - id: air-adiabatic
+    where: 'worked example (b): sqrt(1.4 P0/rho0)'
+    inputs: {P0: 101325 Pa, rho0: 1.225 kg/m^3}
+    formula: sqrt(1.4*P0/rho0)
+    expected: 340 m/s
+    shown: ['$c_S \approx 288 \times \sqrt{1.4} \approx 340$ m/s']
+    source: {cite: reading1, at: 'Section 6.5, p. 125 (after eq. 6.100)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Mach number
+  - id: wind-mach
+    kind: value
+    where: 'quiz 3 and the Mach-number section: 30 m/s over 340 m/s'
+    formula: 30/340
+    expected: '0.09'
+    shown: ['Air flowing at 30 m/s has $M \\approx 0.09$', 'Wind at 30 m/s, for example, has $M \approx 0.09$']
+    source: {cite: reading1, at: 'Section 6.5, eq. (6.106), p. 126'}
+    origin: page-own
+
+  - id: mach2-angle
+    kind: value
+    where: 'quiz 4, plot point and caption: arcsin(1/2) in degrees'
+    formula: asin(1/2)*180/pi
+    expected: '30'
+    shown: ['so $\\gamma = 30°$', '{ x: 2, y: 30, label: "Mach 2" }', 'at Mach 2 it is 30°']
+    quiz: 3
+    source: {cite: reading1, at: 'Section 6.5, unnumbered, p. 127'}
+    origin: page-own
+
+  - id: mach1-angle
+    kind: value
+    where: 'plot caption: arcsin(1) in degrees'
+    formula: asin(1)*180/pi
+    expected: '90'
+    shown: ['opens to a flat front (90°)']
+    source: {cite: reading1, at: 'Section 6.5, unnumbered, p. 127'}
+    origin: page-own

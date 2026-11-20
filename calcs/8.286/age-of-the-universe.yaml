@@ -1,0 +1,87 @@
+# Calculations on content/year-4/8.286/age-of-the-universe.mdx (docs/CALC_TESTS_PLAN.md).
+# Each entry is recomputed by tests/calc/test_calculations.py.
+#   inputs:   values with units (pint syntax)
+#   formula:  expression in the inputs and calcs/constants.yaml
+#   expected: the value as printed on the page, with its unit
+#   shown:    text that must appear in the page file, exactly (so the data cannot drift from the page)
+#   tolerance (optional): default is half a unit in the last printed digit of `expected`
+#   quiz (optional): index of a quiz question whose marked answer must match, and no other choice
+#   source / origin: where the number comes from (mit | page-own | later-data | slip)
+
+page: content/year-4/8.286/age-of-the-universe.mdx
+calcs:
+  - id: hubble-unit
+    where: 'formula "Flat matter-dominated age with Planck''s H"'
+    inputs: {}
+    formula: 1 / (1e10 * yr)
+    expected: 97.8 km/s/Mpc
+    shown: ['= 97.8\ \tfrac{\text{km/s}}{\text{Mpc}}']
+    source: {cite: reading1, at: "p. 12"}
+    origin: mit
+
+  - id: age-planck
+    where: 'formula "Flat matter-dominated age with Planck''s H"; quiz 3; flashcard 2'
+    inputs: {H: 67.3 km/s/Mpc}
+    formula: 2/3 / H
+    expected: 9.7 Gyr
+    shown: ['t = 9.7 \pm 0.2\ \text{billion years}', 'about 9.7 billion years old', 'About 9.7 billion years']
+    source: {cite: reading1, at: "p. 12"}
+    origin: mit
+
+  - id: age-planck-uncertainty
+    where: 'formula "Flat matter-dominated age with Planck''s H"'
+    inputs: {H: 67.3 km/s/Mpc, dH: 1.2 km/s/Mpc}
+    formula: 2/3 / H * (dH / H)
+    expected: 0.2 Gyr
+    shown: ['9.7 \pm 0.2']
+    source: {cite: reading1, at: "p. 12"}
+    origin: mit
+
+  - id: hubble-1929-ratio
+    where: '"A long-running age problem": about seven times too large'
+    inputs: {H_1929: 500 km/s/Mpc, H: 67.3 km/s/Mpc}
+    formula: H_1929 / H
+    expected: '7'
+    shown: ['about seven times too large']
+    source: {cite: reading1, at: "p. 12"}
+    origin: page-own
+
+  - id: hubble-time-1929
+    where: 'worked example, step "Hubble''s value"; quiz 2 explanation'
+    inputs: {H: 500 km/s/Mpc}
+    formula: 1 / H
+    expected: 1.96e9 yr
+    shown: ['= 1.96\times10^{9}$ years', '$1/H \\approx 2$ billion years']
+    source: {cite: reading1, at: "p. 12"}
+    origin: page-own
+
+  - id: age-1929
+    where: 'worked example, step "Hubble''s value"'
+    inputs: {H: 500 km/s/Mpc}
+    formula: 2/3 / H
+    expected: 1.3 Gyr
+    shown: ['t = \tfrac23 \times 1.96 = 1.3$ billion years']
+    source: {cite: reading1, at: "p. 12"}
+    origin: page-own
+
+  - id: hubble-time-planck
+    where: 'worked example, step "Planck''s value"'
+    inputs: {H: 67.3 km/s/Mpc}
+    formula: 1 / H
+    expected: 14.5e9 yr
+    shown: ['= 14.5\times10^{9}$ years']
+    source: {cite: reading1, at: "p. 12"}
+    origin: page-own
+
+  # ---- formula checks added by the calculation audit (reviews/calc-audit.md)
+
+  - id: matter-solution-hubble-rate
+    kind: identity
+    where: 'formula "Hubble rate and age, flat matter-dominated universe": a = b t^(2/3) gives H = ȧ/a = 2/(3t) at every time'
+    formula: deriv('b * x**(2/3)', 'x', t) / (b * t**(2/3))
+    equals: 2 / (3 * t)
+    samples: {t: [1e-4, 0.5, 13.8, 1e4], b: [1, 2.5, 0.3, 7]}
+    tolerance: 1e-6
+    shown: ['= \frac{2}{3t} \qquad\Longrightarrow\qquad t = \frac23\,H^{-1}']
+    source: {cite: reading1, at: 'p. 12'}
+    origin: mit

@@ -1,0 +1,122 @@
+---
+title: "Matrix multiplication and inverse matrices"
+slug: multiplication-and-inverse-matrices
+course: "18.06"
+lecture: 3
+order: 1
+summary: "Matrix multiplication can be seen in several ways, all giving the same answer. The (i, j) entry of AB is row i of A times column j of B, a sum over k of a_ik b_kj, which needs A to be m × n and B n × p, giving m × p. Each column of AB is A times a column of B, so a combination of the columns of A; each row of AB is a row of A times B, a combination of the rows of B. AB is also the sum of (column k of A)(row k of B), and each such column times row is a full matrix whose rows all lie on one line. Matrices can also be multiplied by blocks. A square matrix A is invertible if some A⁻¹ gives A⁻¹A = I = AA⁻¹. It is not invertible if Ax = 0 for some nonzero x, as for [1 3; 2 6] with x = (3, −1). Gauss–Jordan finds A⁻¹ by eliminating on [A I] until the left half is I; the right half is then A⁻¹, because EA = I means E = A⁻¹."
+prerequisites: [elimination-with-matrices]
+source:
+  title: "MIT 18.06 Lecture 3: Multiplication and inverse matrices"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-3-multiplication-and-inverse-matrices/
+  readings:
+    - title: "18.06 Lecture 3 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/07f82f7a07458fb3d79d1ba5cf53fa1e_FX4C-JpTFgY.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 4
+    why: "Elimination written as a factorization, A = LU."
+quiz:
+  - question: "If $A$ is $3 \\times 2$ and $B$ is $2 \\times 5$, what shape is $AB$?"
+    choices: ["$2 \\times 2$", "$3 \\times 5$", "$5 \\times 3$", "it is not defined"]
+    answer: 1
+    explanation: "$(m \\times n)(n \\times p) = m \\times p$: the inner sizes match and the outer ones remain."
+  - question: "The columns of $AB$ are combinations of…"
+    choices: ["the rows of $B$", "the columns of $B$", "the rows of $A$", "the columns of $A$"]
+    answer: 3
+    explanation: "Column $j$ of $AB$ is $A$ times column $j$ of $B$, a combination of the columns of $A$."
+  - question: "Why is $\\begin{pmatrix} 1 & 3 \\\\ 2 & 6 \\end{pmatrix}$ not invertible?"
+    choices: ["$Ax = 0$ for the nonzero $x = (3, -1)$", "Its entries are positive", "It has no zero entries", "It is not symmetric"]
+    answer: 0
+    explanation: "If $A^{-1}$ existed, $A^{-1}Ax = x$ would be both $x \\ne 0$ and $A^{-1}0 = 0$."
+flashcards:
+  - front: "Four ways to compute $AB$"
+    back: "Entry: row $i$ of $A$ · column $j$ of $B$. Columns: $A$ times each column of $B$. Rows: each row of $A$ times $B$. Sum of (column $k$ of $A$)(row $k$ of $B$)."
+  - front: "When is a square matrix not invertible?"
+    back: "When some nonzero $x$ has $Ax = 0$: a combination of the columns gives the zero column."
+  - front: "Gauss–Jordan"
+    back: "Eliminate on $[A\\;\\,I]$ until it is $[I\\;\\,A^{-1}]$: the elimination $E$ with $EA = I$ is $A^{-1}$, and $EI = A^{-1}$."
+status: reviewed
+---
+
+Matrices have been multiplied already; this lecture states the rules, in several ways that all give the same answer and are all important, and then turns to inverses (transcript, p. 1). It continues [elimination with matrices](/courses/18-06/elimination-with-matrices).
+
+## Entry by entry
+
+In $AB = C$, the entry $c_{34}$ in row 3, column 4 comes from **row 3 of $A$** and **column 4 of $B$**: a dot product (transcript, pp. 1–2), which in index notation is (pp. 2–3)
+
+<Formula label="Entry of a product" tex="c_{34} = a_{31}b_{14} + a_{32}b_{24} + \cdots = \sum_{k=1}^{n} a_{3k}\,b_{k4}" cite="reading1" at="pp. 2–3" />
+
+For the product to exist, the number of columns of $A$ must match the number of rows of $B$ (p. 3):
+
+<Formula label="Shapes" tex="(m \times n)(n \times p) = m \times p" cite="reading1" at="pp. 3–4" />
+
+## By columns, by rows, by columns times rows
+
+**Columns** (pp. 4–6). Think of $B$ as $p$ columns side by side. $A$ times column $j$ of $B$ is column $j$ of $C$, so **every column of $AB$ is a combination of the columns of $A$**, with the coefficients taken from $B$ (pp. 5–6).
+
+**Rows** (p. 6). Likewise, row $i$ of $A$ times $B$ is row $i$ of $C$: **every row of $AB$ is a combination of the rows of $B$** (p. 6).
+
+**Columns times rows** (pp. 7–9). A row times a column is a number; a column times a row is a full matrix (p. 7). For example (pp. 7–8)
+
+<Formula label="Column times row" tex="\begin{pmatrix} 2 \\ 3 \\ 4 \end{pmatrix}\begin{pmatrix} 1 & 6 \end{pmatrix} = \begin{pmatrix} 2 & 12 \\ 3 & 18 \\ 4 & 24 \end{pmatrix}" cite="reading1" at="p. 8" />
+
+a very special matrix: its columns are multiples of $(2, 3, 4)$, its rows multiples of $(1, 6)$ (p. 8). Its **row space**, the combinations of its rows, is just the line through $(1, 6)$, and its **column space** the line through $(2, 3, 4)$: a minimal matrix (pp. 9–10). The fourth way to multiply is then (p. 8)
+
+<Formula label="Sum of columns times rows" tex="AB = \sum_{k=1}^{n} (\text{column } k \text{ of } A)(\text{row } k \text{ of } B)" cite="reading1" at="pp. 8–9" />
+
+**Blocks** (pp. 10–11). Cut $A$ and $B$ into blocks that match, for example four $10 \times 10$ blocks each of a $20 \times 20$ matrix. The blocks multiply like entries, block rows times block columns (p. 11):
+
+<Formula label="Block multiplication" tex="\begin{pmatrix} A_1 & A_2 \\ A_3 & A_4 \end{pmatrix}\begin{pmatrix} B_1 & B_2 \\ B_3 & B_4 \end{pmatrix} = \begin{pmatrix} A_1B_1 + A_2B_3 & \cdots \\ \cdots & \cdots \end{pmatrix}" cite="reading1" at="pp. 10–11" />
+
+All these ways do the same multiplications, just grouped differently (p. 11).
+
+## Inverses
+
+For a square matrix, the key question is whether it is invertible (transcript, pp. 11–12). If it is (pp. 11–12),
+
+<Formula label="Inverse" tex="A^{-1}A = I = AA^{-1}" cite="reading1" at="p. 12" />
+
+For square matrices a left inverse is automatically a right inverse, a fact that is not easy to prove; rectangular matrices will be different (p. 12). Invertible matrices are also called **non-singular** (p. 12).
+
+**A singular matrix** (pp. 12–16). Take $A = \begin{pmatrix} 1 & 3 \\ 2 & 6 \end{pmatrix}$. Its determinant is 0, but Strang gives other reasons, all of them important (pp. 13–14). The columns of any product $AB$ are combinations of the columns of $A$, which lie on one line, so $(1, 0)$, the first column of $I$, cannot be reached (p. 14). The reason Strang likes best (pp. 14–16):
+
+<Formula label="A nonzero solution of Ax = 0" tex="\begin{pmatrix} 1 & 3 \\ 2 & 6 \end{pmatrix}\begin{pmatrix} 3 \\ -1 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix}" cite="reading1" at="pp. 14–15" />
+
+Three of column 1 minus one of column 2 is the zero column. If $A^{-1}$ existed, multiplying $Ax = 0$ by it would give $x = 0$; but $x$ is not 0 (pp. 15–16). **A square matrix with $Ax = 0$ for some nonzero $x$ has no inverse** (p. 16).
+
+## Gauss–Jordan
+
+Take the invertible $A = \begin{pmatrix} 1 & 3 \\ 2 & 7 \end{pmatrix}$: its columns point in different directions (transcript, p. 17). Finding $A^{-1}$ is **solving systems**: $A$ times column $j$ of $A^{-1}$ is column $j$ of $I$ (p. 18). Here, two systems with right-hand sides $(1, 0)$ and $(0, 1)$ (pp. 18–19). Jordan's idea is to solve them together: augment $A$ by both columns, that is by $I$, and eliminate (pp. 19–20). Subtract 2 times row 1 from row 2; then, going upwards, which Gauss would not do, subtract 3 times row 2 from row 1 (pp. 21–22):
+
+<Formula label="Gauss–Jordan" tex="\left(\begin{array}{cccc} 1 & 3 & 1 & 0 \\ 2 & 7 & 0 & 1 \end{array}\right) \to \left(\begin{array}{cccc} 1 & 3 & 1 & 0 \\ 0 & 1 & -2 & 1 \end{array}\right) \to \left(\begin{array}{cccc} 1 & 0 & 7 & -3 \\ 0 & 1 & -2 & 1 \end{array}\right)" cite="reading1" at="pp. 21–22" />
+
+The left half is now $I$, and the right half is $A^{-1} = \begin{pmatrix} 7 & -3 \\ -2 & 1 \end{pmatrix}$; check: $7 - 6 = 1$, $21 - 21 = 0$, $-2 + 2 = 0$, $-6 + 7 = 1$ (p. 22).
+
+**Why it works** (pp. 23–24). All the elimination steps together are one matrix $E$, the product of the elimination matrices (dividing a row by its pivot is a multiplication by a diagonal matrix, so it belongs to $E$ too). It turned $A$ into $I$, so $EA = I$, which says $E = A^{-1}$; and on the right it turned $I$ into $EI = A^{-1}$ (p. 24):
+
+<Formula label="Why Gauss–Jordan gives the inverse" tex="E\,[A\;\; I] = [EA\;\; E] = [I\;\; A^{-1}]" cite="reading1" at="pp. 23–24" />
+
+<WorkedExample title="Products and inverses">
+<Problem>
+(a) For $A = \begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix}$ and $B = \begin{pmatrix} 3 & 1 \\ 1 & 4 \end{pmatrix}$, compute $AB$ by entries and as a sum of columns times rows. (b) Invert $\begin{pmatrix} 2 & 5 \\ 1 & 3 \end{pmatrix}$ by Gauss–Jordan. (c) Show that $\begin{pmatrix} 2 & 4 \\ 3 & 6 \end{pmatrix}$ is not invertible.
+</Problem>
+<Step title="(a) Two ways">
+By entries: $AB = \begin{pmatrix} 3 + 2 & 1 + 8 \\ 1 & 4 \end{pmatrix} = \begin{pmatrix} 5 & 9 \\ 1 & 4 \end{pmatrix}$. As a sum: $\begin{pmatrix} 1 \\ 0 \end{pmatrix}\begin{pmatrix} 3 & 1 \end{pmatrix} + \begin{pmatrix} 2 \\ 1 \end{pmatrix}\begin{pmatrix} 1 & 4 \end{pmatrix} = \begin{pmatrix} 3 & 1 \\ 0 & 0 \end{pmatrix} + \begin{pmatrix} 2 & 8 \\ 1 & 4 \end{pmatrix}$, the same.
+</Step>
+<Step title="(b) Gauss–Jordan">
+From $\left(\begin{array}{cccc} 2 & 5 & 1 & 0 \\ 1 & 3 & 0 & 1 \end{array}\right)$, subtract $\frac{1}{2}$ of row 1 from row 2: $(0, \frac{1}{2})$ on the left and $(-\frac{1}{2}, 1)$ on the right. Subtract 10 times the new row 2 from row 1: $(2, 0)$ and $(6, -10)$. Divide the rows by the pivots 2 and $\frac{1}{2}$: $A^{-1} = \begin{pmatrix} 3 & -5 \\ -1 & 2 \end{pmatrix}$. Check: $2\cdot3 + 5\cdot(-1) = 1$.
+</Step>
+<Step title="(c) A singular matrix">
+$x = (2, -1)$ gives $2\begin{pmatrix} 2 \\ 3 \end{pmatrix} - \begin{pmatrix} 4 \\ 6 \end{pmatrix} = 0$, so there is no inverse.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $(AB)_{ij}$ = row $i$ of $A$ · column $j$ of $B$; shapes $(m \times n)(n \times p) = m \times p$.
+- Columns of $AB$ combine columns of $A$; rows of $AB$ combine rows of $B$; $AB$ is a sum of columns times rows; blocks multiply like entries.
+- $A^{-1}A = I = AA^{-1}$; no inverse if $Ax = 0$ for some $x \ne 0$.
+- Gauss–Jordan: eliminate $[A\;\,I]$ to $[I\;\,A^{-1}]$.

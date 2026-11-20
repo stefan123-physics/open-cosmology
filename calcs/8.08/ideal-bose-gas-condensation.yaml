@@ -1,0 +1,382 @@
+# Calculations on content/year-4/8.08/ideal-bose-gas-condensation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005, Wen) Lecture Notes, Chapter VII "The Bose Gas", first file (handwritten scan).
+# Page numbers are Wen's handwritten numbers at the top right of each page (pp. 48-69 = PDF pages 1-22); this page
+# covers pp. 55-61, point 3.
+# Numbers from the notes: g_3/2(1) = 2.612 (pp. 56, 61); sodium at n = 1e14 cm^-3 gives T_c = 1.5 uK; helium at
+# 0.12 g/cm^3, n = 1.8e22 cm^-3, printed T_c = 1.8 K (a slip: the numbers give 2.76 K), actual 2.17 K (p. 61).
+# Page's own examples: plot captions; potassium-41 worked example; quizzes 2-4; the g = 10 3/4 count in the callout.
+# The plot curves use the expansion of g_nu(e^-s) in powers of s (Robinson's): Gamma(1 - nu) s^(nu - 1) +
+# sum_k zeta(nu - k)(-s)^k/k!, k = 0..5; the identities below check the printed coefficients against the integral
+# g_nu(z) = (1/Gamma(nu)) int x^(nu-1)/(e^(x+s) - 1) dx.
+# Constants: k_B, hbar from calcs/constants.yaml; u = 1.66053906660e-27 kg (CODATA 2018).
+
+page: content/year-4/8.08/ideal-bose-gas-condensation.mdx
+calcs:
+  # ---------------------------------------------------------------- the g functions
+  - id: g32-at-1
+    where: 'g_3/2(1) = zeta(3/2) = (2/sqrt(pi)) int sqrt(x)/(e^x - 1) dx, quoted throughout (text after "Condensation: the chemical potential gets stuck")'
+    inputs: {}
+    formula: 2/sqrt(pi)*integrate('sqrt(x)/(exp(x) - 1)', 'x', 1e-12, 80)
+    expected: '2.612'
+    shown: ['the equation has **no solution** when $n\lambda^3 > g_{3/2}(1) = 2.612$']
+    source: {cite: reading1, at: 'p. 56'}
+    origin: mit
+
+  - id: g52-at-1
+    where: 'text after "Heat capacity below the transition": g_5/2(1) = zeta(5/2) = (4/(3 sqrt(pi))) int x^(3/2)/(e^x - 1) dx'
+    inputs: {}
+    formula: 4/(3*sqrt(pi))*integrate('x**1.5/(exp(x) - 1)', 'x', 1e-12, 80)
+    expected: '1.341'
+    shown: ['with $g_{5/2}(1) = \zeta(5/2) = 1.341$']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: plot-g32-expansion
+    kind: identity
+    where: 'g_3/2 plot and C_V plot: the printed expansion of g_3/2(e^-s) against the integral representation'
+    formula: -3.5449077*sqrt(ss) + 2.6123753 + 1.4603545*ss - 0.1039431*ss**2 + 0.0042475*ss**3 + 0.0003549*ss**4 - 0.0000370*ss**5
+    equals: 2/sqrt(pi)*integrate('sqrt(x)/(exp(x + ss) - 1)', 'x', 1e-12, 80)
+    samples: {ss: [0.001, 0.1, 0.5, 1.0, 2.0]}
+    tolerance: 4e-3
+    shown: ['y: "-3.5449077*sqrt(s) + 2.6123753 + 1.4603545*s - 0.1039431*s^2 + 0.0042475*s^3 + 0.0003549*s^4 - 0.0000370*s^5", range: [0.00001, 2], label: "g₃/₂(z)"']
+    source: {cite: reading1, at: 'p. 56'}
+    origin: page-own
+
+  - id: plot-g52-expansion
+    kind: identity
+    where: 'C_V plot: the printed expansion of g_5/2(e^-s)'
+    formula: 2.3632718*ss**1.5 + 1.3414873 - 2.6123753*ss - 0.7301773*ss**2 + 0.0346477*ss**3 - 0.0010619*ss**4 - 0.0000710*ss**5
+    equals: 4/(3*sqrt(pi))*integrate('x**1.5/(exp(x + ss) - 1)', 'x', 1e-12, 80)
+    samples: {ss: [0.001, 0.1, 0.5, 1.0, 2.0]}
+    tolerance: 4e-3
+    shown: ['3.75*(2.3632718*s^1.5 + 1.3414873 - 2.6123753*s - 0.7301773*s^2 + 0.0346477*s^3 - 0.0010619*s^4 - 0.0000710*s^5)']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: plot-g12-expansion
+    kind: identity
+    where: 'C_V plot: the printed expansion of g_1/2(e^-s)'
+    formula: 1.7724539/sqrt(ss) - 1.4603545 + 0.2078862*ss - 0.0127426*ss**2 - 0.0014195*ss**3 + 0.0001850*ss**4 + 0.0000258*ss**5
+    equals: 1/sqrt(pi)*integrate('1/(sqrt(x)*(exp(x + ss) - 1))', 'x', 1e-12, 80)
+    samples: {ss: [0.01, 0.1, 0.5, 1.0, 2.0]}
+    tolerance: 4e-3
+    shown: ['(1.7724539/sqrt(s) - 1.4603545 + 0.2078862*s - 0.0127426*s^2 - 0.0014195*s^3 + 0.0001850*s^4 + 0.0000258*s^5)']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: plot-g32-small-z
+    kind: identity
+    where: 'g_3/2 plot: the first four terms of the sum, used for z <= 0.14 (within 1e-4 of the sum there)'
+    formula: zz + zz**2/2.828427 + zz**3/5.196152 + zz**4/8
+    equals: 2/sqrt(pi)*integrate('sqrt(x)/(exp(x)/zz - 1)', 'x', 1e-12, 80)
+    samples: {zz: [0.05, 0.1, 0.14]}
+    tolerance: 1e-4
+    shown: ['{ expr: "z <= 0.14 ? z + z^2/2.828427 + z^3/5.196152 + z^4/8 : NaN" }']
+    source: {cite: reading1, at: 'p. 56'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- classical limit and T_c (pp. 56-57)
+  - id: gaussian-integral
+    kind: identity
+    where: 'formula "Classical limit": int d^3k/(2 pi)^3 e^(-beta hbar^2 k^2/2m) = 1/lambda^3 (units hbar^2/2m = 1, so lambda = sqrt(4 pi beta))'
+    formula: integrate('4*pi*k**2*exp(-bb*k**2)', 'k', 0, 60)/(2*pi)**3
+    equals: (4*pi*bb)**(-1.5)
+    samples: {bb: [0.2, 1.0, 3.0]}
+    tolerance: 1e-8
+    shown: ['n\lambda^3 = e^{\beta\mu} = z, \qquad \lambda = \sqrt{\frac{2\pi\hbar^2}{mk_BT}}']
+    source: {cite: reading1, at: 'p. 56'}
+    origin: mit
+
+  - id: condensate-fraction
+    kind: identity
+    where: 'formula "Bosons in the condensate": 1 - g_3/2(1)/(n lambda^3) = 1 - (T/T_c)^(3/2), since n lambda^3 = g_3/2(1) (T_c/T)^(3/2)'
+    formula: 1 - 1/(rr**(-1.5))
+    equals: 1 - rr**1.5
+    samples: {rr: [0.3, 0.5, 0.9]}
+    tolerance: 1e-12
+    shown: ['= 1 - \left(\frac{T}{T_c}\right)^{3/2}" cite="reading1" at="p. 58"']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: mit
+
+  - id: fraction-09
+    where: 'condensate plot caption: 1 - 0.9^1.5'
+    inputs: {}
+    formula: 1 - 0.9**1.5
+    expected: '0.15'
+    shown: ['(at T = 0.9 T_c it is already 0.15)']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: fraction-05
+    where: 'condensate plot caption, quiz 3 (answer 2), worked example: 1 - 0.5^1.5'
+    inputs: {}
+    formula: 1 - 0.5**1.5
+    expected: '0.646'
+    shown: ['= 1 - 0.354 = 0.646$', '$N_0/N = 1 - 0.5^{1.5} = 0.646$, so about 64,600 atoms']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: fraction-05-rounded
+    where: 'condensate plot caption: 0.65 at half the transition temperature'
+    inputs: {}
+    formula: 1 - 0.5**1.5
+    expected: '0.65'
+    shown: ['reaches 0.65 at half the transition temperature']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: quiz-excited
+    where: 'quiz 3 explanation: 0.5^1.5, the fraction still excited'
+    inputs: {}
+    formula: 0.5**1.5
+    expected: '0.354'
+    shown: ['$N_0/N = 1 - (T/T_c)^{3/2} = 1 - 0.5^{1.5} = 1 - 0.354']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: quiz-cubed
+    where: 'quiz 3 explanation: the distractor 1 - 0.5^3'
+    inputs: {}
+    formula: 1 - 0.5**3
+    expected: '0.88'
+    tolerance: 0.0051
+    shown: ['0.88 would be $1 - (T/T_c)^3$']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- equation of state (pp. 59-60)
+  - id: energy-derivative
+    kind: identity
+    where: 'formula "Energy of the ideal Bose gas": d(lambda^-3)/d beta = -(3/2) lambda^-3/beta, as lambda^-3 is proportional to beta^(-3/2)'
+    formula: deriv('t**(-1.5)', 't', bb)
+    equals: -1.5*bb**(-1.5)/bb
+    samples: {bb: [0.5, 1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['$\partial\lambda^{-3}/\partial\beta = -\frac32\lambda^{-3}/\beta$']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: mit
+
+  - id: kinetic-volume
+    kind: identity
+    where: 'formula "Pressure and energy": eps proportional to V^(-2/3) gives d eps/dV = -(2/3) eps/V'
+    formula: deriv('t**(-2/3)', 't', VV)
+    equals: -2/3*VV**(-2/3)/VV
+    samples: {VV: [0.5, 1.0, 3.0]}
+    tolerance: 1e-6
+    shown: ['so $\partial\varepsilon_k/\partial V = -\frac23\varepsilon_k/V$ and']
+    source: {cite: reading1, at: 'p. 59'}
+    origin: mit
+
+  - id: cv-condensed
+    kind: identity
+    where: 'formula "Heat capacity below the transition": d/dT of (3/2) T g_5/2(1)/lambda^3 with lambda^-3 = T^(3/2) gives (15/4) g_5/2(1) T^(3/2)'
+    formula: deriv('1.5*t*1.341487*t**1.5', 't', TT)
+    equals: 15/4*1.341487*TT**1.5
+    samples: {TT: [0.3, 1.0]}
+    tolerance: 1e-6
+    shown: ['= \frac{15}{4}\,k_B\,\frac{g_{5/2}(1)}{\lambda^3}\,V" cite="reading1" at="p. 60"']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: mit
+
+  - id: cv-at-tc
+    where: 'text after "Heat capacity above the transition", quiz 4, flashcard 5: (15/4) g_5/2(1)/g_3/2(1)'
+    inputs: {}
+    formula: 15/4*integrate('x**1.5/(exp(x) - 1)', 'x', 1e-12, 80)*(4/(3*sqrt(pi)))/(2/sqrt(pi)*integrate('sqrt(x)/(exp(x) - 1)', 'x', 1e-12, 80))
+    expected: '1.93'
+    shown: ['reaching $\frac{15}{4}\times 1.341/2.612 = 1.93$ times $Nk_B$', '(1.341/2.612)Nk_B = 1.93Nk_B$ at $T_c$']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: cv-plot-coefficient
+    where: 'C_V plot: the coefficient 1.92567 of the condensed branch'
+    inputs: {}
+    formula: 15/4*1.3414873/2.6123753
+    expected: '1.92567'
+    shown: ['{ expr: "x <= 1 ? 1.92567*x^1.5 : NaN", label: "condensed" }']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: cv-gas-high-T
+    where: 'C_V plot and text: the gas-phase formula tends to the classical 3/2 as z -> 0 (g_nu(z) -> z; checked at z = 1e-6)'
+    inputs: {}
+    formula: 3.75*(1e-6 + 1e-12/5.656854)/(1e-6 + 1e-12/2.828427) - 2.25*(1e-6 + 1e-12/2.828427)/(1e-6 + 1e-12/1.414214)
+    expected: '1.5'
+    tolerance: 1e-5
+    shown: ['At high temperature it falls to the classical $\frac32Nk_B$.']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  - id: cv-gas-formula
+    kind: identity
+    where: 'formula "Heat capacity above the transition" (corrected): C_V/Nk_B = (15/4) g52/g32 - (9/4) g32/g12, checked against dU/dT at fixed density, both taken along z (units with n = 1 and lambda^-3 = T^(3/2), so T = g32(z)^(-2/3) and U/N = (3/2) T g52/g32)'
+    formula: "deriv(\"1.5*(2/sqrt(pi)*integrate('sqrt(x)/(exp(x)/w - 1)', 'x', 1e-12, 80))**(-2/3)*(4/(3*sqrt(pi))*integrate('x**1.5/(exp(x)/w - 1)', 'x', 1e-12, 80))/(2/sqrt(pi)*integrate('sqrt(x)/(exp(x)/w - 1)', 'x', 1e-12, 80))\", 'w', zz)/deriv(\"(2/sqrt(pi)*integrate('sqrt(x)/(exp(x)/w - 1)', 'x', 1e-12, 80))**(-2/3)\", 'w', zz)"
+    equals: "3.75*(4/(3*sqrt(pi))*integrate('x**1.5/(exp(x)/zz - 1)', 'x', 1e-12, 80))/(2/sqrt(pi)*integrate('sqrt(x)/(exp(x)/zz - 1)', 'x', 1e-12, 80)) - 2.25*(2/sqrt(pi)*integrate('sqrt(x)/(exp(x)/zz - 1)', 'x', 1e-12, 80))/(1/sqrt(pi)*integrate('1/(sqrt(x)*(exp(x)/zz - 1))', 'x', 1e-12, 80))"
+    samples: {zz: [0.3, 0.8]}
+    tolerance: 1e-3
+    shown: ['C_V = k_B\,\frac{V}{\lambda^3}\left[\frac{15}{4}\,g_{5/2}(z) - \frac94\,\frac{g_{3/2}(z)^2}{g_{1/2}(z)}\right]']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- laboratory numbers (p. 61)
+  - id: sodium-tc
+    where: 'section "Condensates in the laboratory": sodium (A = 23) at n = 1e14 cm^-3 (mass 22.99 u)'
+    inputs: {m: 3.8175e-26 kg, n: 1e14 1/cm**3}
+    formula: 2*pi*hbar**2/(m*k_B)*(n/2.6123753)**(2/3)
+    expected: 1.5 uK
+    shown: ['in a trap at $n = 10^{14}$ cm⁻³, $T_c = 1.5$ μK']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: mit
+
+  - id: helium-density
+    where: 'section "Condensates in the laboratory": helium at 0.12 g/cm^3, n = rho/m (m = 4.0026 u)'
+    inputs: {rho: 0.12 g/cm**3, m: 6.6465e-27 kg}
+    formula: rho/m
+    expected: 1.8e22 1/cm**3
+    shown: ['$n = 1.8 \times 10^{22}$ cm⁻³ and the formula gives about 2.8 K']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: mit
+
+  - id: helium-density-quiz
+    where: 'quiz 2 explanation: n = 120/(4.0026 x 1.6605e-27) m^-3'
+    inputs: {}
+    formula: 120/(4.0026*1.6605e-27)
+    expected: '1.81e28'
+    shown: ['m⁻³ $= 1.81 \\times 10^{28}$ m⁻³']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: helium-tc
+    where: 'quiz 2 (answer 2) and the laboratory section: T_c of an ideal Bose gas at Wen''s helium density'
+    inputs: {rho: 0.12 g/cm**3, m: 6.6465e-27 kg}
+    formula: 2*pi*hbar**2/(m*k_B)*(rho/m/2.6123753)**(2/3)
+    expected: 2.76 K
+    shown: ['(n/2.612)^{2/3} = 2.76$ K']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: helium-tc-rounded
+    where: 'laboratory section: the same, rounded'
+    inputs: {rho: 0.12 g/cm**3, m: 6.6465e-27 kg}
+    formula: 2*pi*hbar**2/(m*k_B)*(rho/m/2.6123753)**(2/3)
+    expected: 2.8 K
+    shown: ['the formula gives about 2.8 K. (The notes print']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: helium-tc-notes
+    kind: fact
+    where: 'laboratory section and quiz 2: the notes print T_c = 1.8 K, which does not follow from their numbers'
+    value: '1.8 K'
+    shown: ['(The notes print $T_c = 1.8$ K, which does not follow from their numbers.)']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: slip
+
+  - id: helium-lambda
+    kind: fact
+    where: 'laboratory section, heat-capacity section and summary: the superfluid transition of helium-4 at 2.17 K (Wen: actual T_c = 2.17)'
+    value: '2.17 K'
+    shown: ['The actual transition of liquid helium, to a superfluid, is at 2.17 K']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: potassium-41
+  - id: k41-mass
+    where: 'worked example "A potassium condensate": m = 40.96 u'
+    inputs: {}
+    formula: 40.96*1.66053906660e-27
+    expected: '6.802e-26'
+    shown: ['(6.802 \times 10^{-26} \times 1.381 \times 10^{-23})$ K m²']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: k41-prefactor
+    where: 'worked example, step "The transition": 2 pi hbar^2/(m k_B)'
+    inputs: {m: 6.8016e-26 kg}
+    formula: 2*pi*hbar**2/(m*k_B)
+    expected: 7.44e-20 K*m**2
+    shown: ['$= 7.44 \times 10^{-20}$ K m²']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: k41-density-term
+    where: 'worked example: (n/2.612)^(2/3)'
+    inputs: {n: 5.0e19 1/m**3}
+    formula: (n/2.6123753)**(2/3)
+    expected: 7.16e12 1/m**2
+    shown: ['$(n/2.612)^{2/3} = 7.16 \times 10^{12}$ m⁻²']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: k41-tc
+    where: 'worked example: T_c'
+    inputs: {m: 6.8016e-26 kg, n: 5.0e19 1/m**3}
+    formula: 2*pi*hbar**2/(m*k_B)*(n/2.6123753)**(2/3)
+    expected: 5.3e-7 K
+    shown: ['So $T_c = 5.3 \times 10^{-7}$ K, about half a microkelvin.']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: k41-lambda
+    where: 'worked example, step "Wavelength and spacing": lambda at T_c = (2.612/n)^(1/3)'
+    inputs: {n: 5.0e19 1/m**3}
+    formula: (2.6123753/n)**(1/3)
+    expected: 0.37 um
+    shown: ['$\lambda = (2.612/n)^{1/3} = 0.37$ μm']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: k41-spacing
+    where: 'worked example: n^(-1/3)'
+    inputs: {n: 5.0e19 1/m**3}
+    formula: n**(-1/3)
+    expected: 0.27 um
+    shown: ['the spacing $n^{-1/3}$ is 0.27 μm']
+    source: {cite: reading1, at: 'p. 61'}
+    origin: page-own
+
+  - id: k41-n0
+    where: 'worked example, step "Half the transition temperature": N_0 = 1e5 x 0.646'
+    inputs: {}
+    formula: 1e5*(1 - 0.5**1.5)
+    expected: '64600'
+    tolerance: 100
+    shown: ['so about 64,600 atoms are in the lowest level']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: k41-one-minus-z
+    where: 'worked example: 1 - z = 1/N_0'
+    inputs: {}
+    formula: 1/(1e5*(1 - 0.5**1.5))
+    expected: '1.5e-5'
+    shown: ['$1 - z = 1.5 \times 10^{-5}$']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: k41-mu
+    where: 'worked example: mu/k_B = -T/N_0 at T = T_c/2'
+    inputs: {m: 6.8016e-26 kg, n: 5.0e19 1/m**3}
+    formula: -(2*pi*hbar**2/(m*k_B)*(n/2.6123753)**(2/3))/2/(1e5*(1 - 0.5**1.5))
+    expected: -4e-12 K
+    shown: ['$\mu/k_B \approx -4 \times 10^{-12}$ K']
+    source: {cite: reading1, at: 'p. 58'}
+    origin: page-own
+
+  - id: k41-cv
+    where: 'worked example: C_V at T_c/2, 1.93 x 0.354'
+    inputs: {}
+    formula: 1.92567*0.5**1.5
+    expected: '0.68'
+    shown: ['The heat capacity there is $1.93 \times 0.354 = 0.68$ times $Nk_B$.']
+    source: {cite: reading1, at: 'p. 60'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- callout
+  - id: g-count
+    where: 'cosmology callout: g = 2 + (7/8)(6 + 4) for photons, three neutrino species with antineutrinos, and e+ e- pairs (8.286 Lecture 17)'
+    inputs: {}
+    formula: 2 + 7/8*(6 + 4)
+    expected: '10.75'
+    shown: ['which gives $g = 10\frac34$ for photons, neutrinos and electron-positron pairs']
+    source: {cite: reading1, at: 'p. 55 (the Bose distribution; the count itself is from 8.286 Lecture 17)'}
+    origin: page-own

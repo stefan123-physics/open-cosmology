@@ -1,0 +1,231 @@
+# Calculations on content/year-4/8.09/one-dimensional-bifurcations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 7 (Stewart, typed), Section 7.2, printed pp. 153-163.
+# The notes quote no numbers beyond the bifurcation point r_C = 1 of eq. (7.21). The page's own numbers: the crossings
+# at r = 1.5, the hysteresis loop of eq. (7.34), the bead-on-a-hoop example (a = 0.20 m, omega = 10 rad/s), the
+# bottleneck period of eq. (7.36), and the laser expansion (checked as an identity).
+
+page: content/year-4/8.09/one-dimensional-bifurcations.mdx
+calcs:
+  # ---------------------------------------------------------------- linearization and normal forms
+  - id: linearize-x2-minus-1
+    kind: identity
+    where: '"Fixed points of a single variable": f(x) = x^2 - 1 has f''(x*) = 2x*, giving eta ~ e^(-2t) at x* = -1 and e^(2t) at x* = 1'
+    formula: deriv('x**2 - 1', 'x', xs)
+    equals: 2*xs
+    samples: {xs: [-1, 1]}
+    tolerance: 1e-6
+    shown: ['$\dot\eta \approx 2x_*\eta$']
+    source: {cite: reading1, at: 'p. 154'}
+    origin: mit
+
+  - id: transcendental-rc
+    where: 'eqs. (7.21)-(7.23): -1 + e^(-x*) = 0 gives x* = 0, then r_C = x* + e^(-x*) = 1; quiz 1'
+    inputs: {xs: 0}
+    formula: xs + exp(-xs)
+    expected: '1'
+    shown: ['and then (7.22) gives $r_C = 1$']
+    source: {cite: reading1, at: 'p. 156'}
+    origin: mit
+
+  - id: crossing-left
+    kind: identity
+    where: 'plot 3 caption: for r = 1.5 the crossing near x = -0.86 is a zero of r - x - e^(-x)'
+    formula: 1.5 - x - exp(-x)
+    equals: '0'
+    samples: {x: [-0.85768]}
+    tolerance: 1e-4
+    shown: ['(near x = −0.86 and x = 1.20)']
+    source: {cite: reading1, at: 'p. 156 (the page''s own value of r)'}
+    origin: page-own
+
+  - id: crossing-right
+    kind: identity
+    where: 'plot 3 caption: for r = 1.5 the crossing near x = 1.20'
+    formula: 1.5 - x - exp(-x)
+    equals: '0'
+    samples: {x: [1.19829]}
+    tolerance: 1e-4
+    shown: ['(near x = −0.86 and x = 1.20)']
+    source: {cite: reading1, at: 'p. 156 (the page''s own value of r)'}
+    origin: page-own
+
+  - id: normal-form-rescaling
+    kind: identity
+    where: 'bracket after (7.25): with X = |b|(x - x*) and R = |b| a (r - r_C), a(r - r_C) + b(x - x*)^2 times |b| equals R + sign(b) X^2'
+    formula: abs(b)*(a*(r - rc) + b*(x - xs)**2)
+    equals: abs(b)*a*(r - rc) + (b/abs(b))*(abs(b)*(x - xs))**2
+    samples: {a: [1.3, -0.7], b: [2.0, -0.5], r: [0.4, 1.1], rc: [0.2, 1.0], x: [0.5, -0.3], xs: [0.1, 0.2]}
+    tolerance: 1e-9
+    shown: ['$x'' = |b|(x - x_*)$, $r'' = |b|a(r - r_C)$ works directly']
+    source: {cite: reading1, at: 'p. 157'}
+    origin: slip
+
+  # ---------------------------------------------------------------- the laser (eqs. 7.27-7.31)
+  - id: laser-expansion
+    kind: limit
+    where: 'formula "Laser near threshold": [n_dot(n)/n - r]/n tends to -b = -G^2 p/f^2 as n -> 0 (G = 2, p = 3, K = 1, f = 1.5)'
+    inputs: {}
+    formula: ((1/(2*nn + 1.5))*(3*2 - 1*(2*nn + 1.5)) - (3*2/1.5 - 1))/nn
+    limit: -(2**2*3/1.5**2)
+    vary: {nn: [1e-2, 1e-3, 1e-4, 1e-5]}
+    tolerance: 1e-3
+    shown: ['b \equiv \frac{G^2p}{f^2}']
+    source: {cite: reading1, at: 'p. 159, eqs. (7.30), (7.31)'}
+    origin: mit
+
+  - id: laser-threshold
+    kind: identity
+    where: '"The laser threshold": r = pG/f - K vanishes at p = Kf/G'
+    formula: (K*f/G)*G/f - K
+    equals: '0'
+    samples: {K: [1.0, 3.0], f: [1.5, 0.2], G: [2.0, 7.0]}
+    tolerance: 1e-12
+    shown: ['Below threshold, $p < Kf/G$']
+    source: {cite: reading1, at: 'p. 159'}
+    origin: mit
+
+  # ---------------------------------------------------------------- pitchforks and hysteresis
+  - id: super-pitchfork-slope
+    kind: identity
+    where: '"Supercritical pitchfork": f'' = r - 3x^2 at x* = sqrt(r) is -2r'
+    formula: deriv('r*x - x**3', 'x', sqrt(r))
+    equals: -2*r
+    samples: {r: [0.5, 2.0]}
+    tolerance: 1e-6
+    shown: ['the new points have $f'' = -2r < 0$']
+    source: {cite: reading1, at: 'pp. 159-160'}
+    origin: page-own
+
+  - id: quintic-roots
+    kind: identity
+    where: '"Subcritical pitchfork": x*^2 = (1 + sqrt(1 + 4r))/2 solves r + x^2 - x^4 = 0'
+    formula: r + (0.5*(1 + sqrt(1 + 4*r))) - (0.5*(1 + sqrt(1 + 4*r)))**2
+    equals: '0'
+    samples: {r: [-0.2, -0.1, 0.5]}
+    tolerance: 1e-12
+    shown: ['$x_*^2 = \frac12\bigl(1 \pm \sqrt{1 + 4r}\bigr)$']
+    source: {cite: reading1, at: 'p. 161'}
+    origin: page-own
+
+  - id: hysteresis-fold-r
+    where: 'hysteresis: the saddle-node where 1 + 4r = 0'
+    inputs: {}
+    formula: -1/4
+    expected: '-0.25'
+    shown: ['saddle-node $r_C = -\frac14$']
+    source: {cite: reading1, at: 'p. 161'}
+    origin: page-own
+
+  - id: hysteresis-fold-x
+    where: 'hysteresis: |x*| at the fold, sqrt(1/2); plot caption'
+    inputs: {}
+    formula: sqrt(0.5)
+    expected: '0.71'
+    shown: ['$|x| = 0.71$', '|x*| = 0.71']
+    source: {cite: reading1, at: 'p. 161'}
+    origin: page-own
+
+  - id: hysteresis-jump
+    where: 'hysteresis: at r = 0 the outer branch is at x*^2 = (1 + 1)/2'
+    inputs: {r: 0}
+    formula: sqrt(0.5*(1 + sqrt(1 + 4*r)))
+    expected: '1'
+    shown: ['to an outer branch, at $|x| = 1$']
+    source: {cite: reading1, at: 'p. 161'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- bead on a hoop (worked example, quiz 2, plot)
+  - id: hoop-critical-omega
+    where: 'worked example "A bead on a fast hoop" (a); quiz 2 explanation'
+    inputs: {g: 9.81 m/s^2, a: 0.20 m}
+    formula: sqrt(g/a)
+    expected: 7.00 1/s
+    shown: ['$\omega_C = \sqrt{g/a} = \sqrt{49.05} = 7.00$ rad/s']
+    source: {cite: reading1, at: 'p. 162'}
+    origin: page-own
+
+  - id: hoop-rpm
+    where: 'same: in revolutions per minute (g in m/s^2, a in m)'
+    inputs: {g: 9.81, a: 0.20}
+    formula: sqrt(g/a)/(2*pi)*60
+    expected: '67'
+    shown: ['about 67 revolutions per minute']
+    source: {cite: reading1, at: 'p. 162'}
+    origin: page-own
+
+  - id: hoop-cos
+    where: 'worked example (b)'
+    inputs: {g: 9.81, a: 0.20, w: 10}
+    formula: g/(a*w**2)
+    expected: '0.4905'
+    shown: ['$\cos\theta_* = 9.81/20 = 0.4905$']
+    source: {cite: reading1, at: 'p. 162'}
+    origin: page-own
+
+  - id: hoop-angle
+    where: 'worked example (b); quiz 2; plot caption'
+    inputs: {g: 9.81, a: 0.20, w: 10}
+    formula: acos(g/(a*w**2))*180/pi
+    expected: '60.6'
+    shown: ['and $\theta_* = \pm 60.6°$', 'it sits at ±60.6°']
+    quiz: 1
+    source: {cite: reading1, at: 'p. 162'}
+    origin: page-own
+
+  - id: hoop-angle-rad
+    where: 'plot caption: the same angle in radians'
+    inputs: {g: 9.81, a: 0.20, w: 10}
+    formula: acos(g/(a*w**2))
+    expected: '1.06'
+    shown: ['= ±1.06 rad']
+    source: {cite: reading1, at: 'p. 162'}
+    origin: page-own
+
+  - id: hoop-ratio
+    where: 'plot caption: a omega^2 / g for the worked example'
+    inputs: {g: 9.81, a: 0.20, w: 10}
+    formula: a*w**2/g
+    expected: '2.04'
+    shown: ['at aω²/g = 2.04']
+    source: {cite: reading1, at: 'p. 162'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- bottleneck (worked example, quiz 4, plot)
+  - id: bottleneck-integral
+    kind: identity
+    where: 'worked example "Time through the bottleneck": the integral of 1/(tau - b sin theta) over a turn is 2 pi/sqrt(tau^2 - b^2)'
+    formula: integrate('1/(tau - b*sin(th))', 'th', 0, 2*pi)
+    equals: 2*pi/sqrt(tau**2 - b**2)
+    samples: {tau: [2.0, 1.3], b: [1.0, 1.0]}
+    tolerance: 1e-6
+    shown: ['$T = \int_0^{2\pi} d\theta/(\tau - b\sin\theta) = 2\pi/\sqrt{\tau^2 - b^2}$']
+    source: {cite: reading1, at: 'p. 163'}
+    origin: page-own
+
+  - id: bottleneck-fast
+    where: 'worked example: tau = 2, b = 1; plot caption'
+    inputs: {tau: 2.0, b: 1.0}
+    formula: 2*pi/sqrt(tau**2 - b**2)
+    expected: '3.63'
+    shown: ['$T = 2\pi/\sqrt3 = 3.63$ s', 'it is 3.63/b']
+    source: {cite: reading1, at: 'p. 163'}
+    origin: page-own
+
+  - id: bottleneck-slow
+    where: 'worked example: tau = 1.01, b = 1; quiz 4; plot caption'
+    inputs: {tau: 1.01, b: 1.0}
+    formula: 2*pi/sqrt(tau**2 - b**2)
+    expected: '44.3'
+    shown: ['$T = 2\pi/\sqrt{0.0201} = 44.3$ s', 'it is 44.3/b']
+    quiz: 3
+    source: {cite: reading1, at: 'p. 163'}
+    origin: page-own
+
+  - id: bottleneck-square
+    where: 'worked example: tau^2 - b^2'
+    inputs: {tau: 1.01, b: 1.0}
+    formula: tau**2 - b**2
+    expected: '0.0201'
+    shown: ['\sqrt{0.0201} = 44.3']
+    source: {cite: reading1, at: 'p. 163'}
+    origin: page-own

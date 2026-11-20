@@ -1,0 +1,147 @@
+---
+title: The oscillator spectrum and unitary time evolution
+slug: oscillator-unitary-time-evolution
+course: "8.05"
+lecture: 12
+order: 1
+summary: "Writing the oscillator Hamiltonian as V†V plus a constant shows at once that no energy is below ħω/2. With a and a† the Hamiltonian becomes ħω(N + 1/2), and the norms of states built with a and a† decide the spectrum: raising is always safe, lowering a non-integer number would eventually give a negative norm, so the number eigenvalues are 0, 1, 2, …, ending at a Gaussian ground state killed by a. Then Zwiebach derives the Schrödinger equation in Dirac's way: if one unitary operator U(t, t0) evolves every state, then U is the identity at equal times, composes like matrix multiplication and is inverted by swapping its times; its derivative times U† is anti-Hermitian and independent of t0, and iħ times it is a Hermitian operator with units of energy, the Hamiltonian."
+prerequisites: [ground-state-bounds-spectral-theorem, creation-annihilation-operators]
+source:
+  title: "MIT 8.05 Lecture 12: Quantum Dynamics"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-12-quantum-dynamics/
+  readings:
+    - title: "8.05 Lecture 12 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/e8dd95027ab0c781ffbe20761c19af96_7Nrymx1ULis.pdf
+    - title: "Zwiebach, Quantum Dynamics (8.05 lecture notes, chapter 6)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-6/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 13
+    why: "Finding U from the Hamiltonian, and the Heisenberg picture."
+quiz:
+  - question: "What does the factorisation $H = \\frac{1}{2}m\\omega^2V^\\dagger V + \\frac{1}{2}\\hbar\\omega$ prove at once?"
+    choices: ["Every energy is at least $\\hbar\\omega/2$", "Every energy is a multiple of $\\hbar\\omega$", "The ground state is a Gaussian", "The spectrum is degenerate"]
+    answer: 0
+    explanation: "In a normalised state the first term is $\\frac{1}{2}m\\omega^2$ times the squared length of $V\\psi$, never negative, so $\\langle H\\rangle \\ge \\hbar\\omega/2$; for an energy eigenstate this is a bound on $E$."
+  - question: "Why can there be no energy eigenstate with a non-integer number eigenvalue?"
+    choices: ["Lowering it repeatedly would produce a state with negative squared norm", "Raising it would produce a negative norm", "It would not be normalisable as a Gaussian", "Its energy would be below zero"]
+    answer: 0
+    explanation: "$(a\\psi, a\\psi) = N(\\psi, \\psi)$. Lowering never stops at a state killed by $a$ (that requires $N = 0$), so the number eventually goes below zero and the next norm turns negative."
+  - question: "What property of $\\Lambda = \\frac{dU}{dt}U^\\dagger$ makes $i\\hbar\\Lambda$ a candidate Hamiltonian?"
+    choices: ["$\\Lambda$ is anti-Hermitian, so $i\\hbar\\Lambda$ is Hermitian", "$\\Lambda$ is unitary", "$\\Lambda$ is Hermitian", "$\\Lambda$ commutes with $U$"]
+    answer: 0
+    explanation: "Differentiating $UU^\\dagger = 1$ gives $\\Lambda + \\Lambda^\\dagger = 0$. Multiplying by $i$ makes it Hermitian, and the $\\hbar$ turns units of 1/time into units of energy."
+  - question: "How is $U(t_0, t)$ related to $U(t, t_0)$?"
+    choices: ["$U(t_0, t) = U(t, t_0)^\\dagger$", "$U(t_0, t) = U(t, t_0)$", "$U(t_0, t) = -U(t, t_0)$", "$U(t_0, t) = U(t, t_0)^2$"]
+    answer: 0
+    explanation: "Composition gives $U(t_0, t)U(t, t_0) = U(t_0, t_0) = 1$, so swapping the times gives the inverse, which for a unitary operator is the adjoint."
+flashcards:
+  - front: "Oscillator in terms of a and a†"
+    back: "$H = \\hbar\\omega(\\hat N + \\frac{1}{2})$, $\\hat N = a^\\dagger a$, $[a, a^\\dagger] = 1$; the normalised eigenstates are $\\psi_n = (a^\\dagger)^n\\psi_0/\\sqrt{n!}$ with energies $\\hbar\\omega(n + \\frac{1}{2})$."
+  - front: "Properties of the time-evolution operator"
+    back: "$U(t_0, t_0) = 1$; $U(t_2, t_0) = U(t_2, t_1)U(t_1, t_0)$; $U(t_0, t) = U(t, t_0)^{-1} = U(t, t_0)^\\dagger$."
+  - front: "The Schrödinger equation from unitarity"
+    back: "$\\frac{d}{dt}\\psi(t) = \\Lambda(t)\\psi(t)$ with $\\Lambda = \\frac{dU}{dt}U^\\dagger$ anti-Hermitian and independent of $t_0$; $H = i\\hbar\\Lambda$ gives $i\\hbar\\frac{d\\psi}{dt} = H\\psi$."
+status: reviewed
+---
+
+Half of this lecture reviews the harmonic oscillator from Zwiebach's notes, needed for the homework; the other half begins dynamics with the derivation of the Schrödinger equation that Dirac gives in his textbook. Zwiebach finds it extremely insightful, though perhaps not the way to meet the equation for the first time; it shows how hard it would be to change the equation at all (transcript pp. 1, 16–24; notes chapter 6, section 1 and sections 2.1–2.2 up to eq. (2.27)). Number states are written here as $\psi_n$, Dirac's |n⟩. (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example.)
+
+## The quantum oscillator, factorised
+
+The classical oscillator has energy $p^2/2m + \frac{1}{2}m\omega^2x^2$, with $m\omega^2$ the spring constant $k$. (In the lecture it is called "$k$ squared"; the spring constant is $k = m\omega^2$.) The quantum system is defined by the same expression with operators, $[\hat x, \hat p] = i\hbar$, acting on square-integrable complex functions on the line (transcript pp. 1–2; notes eqs. (1.1)–(1.3)).
+
+The best thing that can happen to a Hamiltonian is a **factorisation** $H = V^\dagger V + E_0$ (transcript pp. 2–3; notes eq. (1.4)). For a normalised state, $(\psi, V^\dagger V\psi) = |V\psi|^2 \ge 0$, so $\langle H\rangle \ge E_0$, and every energy eigenvalue is at least $E_0$ (transcript p. 4; notes eqs. (1.5)–(1.7)). For the oscillator, try $a^2 + b^2 = (a - ib)(a + ib)$; because $\hat x$ and $\hat p$ do not commute, the cross terms leave a constant (transcript pp. 3–4):
+
+<Formula label="Factorising the oscillator" tex="H = \frac{1}{2}m\omega^2\,V^\dagger V + \frac{1}{2}\hbar\omega, \qquad V = \hat x + \frac{i\hat p}{m\omega}" cite="reading2" at="eqs. (1.10)–(1.12)" />
+
+So every energy is at least $\hbar\omega/2$ (notes eq. (1.13)). A student asked whether $VV$ would do as well; Zwiebach insisted on $V^\dagger V$, and the sandwich argument shows why: only that combination is a squared length (transcript pp. 3–4). Such factorisations are worth trying for any Hamiltonian; the hydrogen atom has one too (transcript p. 4).
+
+Rescaling gives the annihilation and creation operators $a = \sqrt{m\omega/2\hbar}\,V$ and $a^\dagger$, with $[a, a^\dagger] = 1$, and the Hamiltonian in terms of the **number operator** $\hat N = a^\dagger a$ (transcript pp. 5–6):
+
+<Formula label="Oscillator Hamiltonian" tex="H = \hbar\omega\left(\hat N + \frac{1}{2}\right), \qquad [a, a^\dagger] = 1" cite="reading2" at="eqs. (1.16)–(1.20)" />
+
+Here $\hat x$ is proportional to $a + a^\dagger$ and $\hat p$ to $i(a^\dagger - a)$ (notes eq. (1.18)). Energy eigenstates and number eigenstates are the same, and $N \ge 0$. Two commutators do the work: $[H, a] = -\hbar\omega\,a$ and $[H, a^\dagger] = \hbar\omega\,a^\dagger$ (transcript pp. 6–7; notes eq. (1.25)).
+
+## The spectrum from norms
+
+Assume an energy eigenstate $\psi_E$ exists, nonzero, with number eigenvalue $N_E$ (transcript p. 7). Then $a^\dagger\psi_E$ has energy $E + \hbar\omega$ and $a\psi_E$ has $E - \hbar\omega$ (notes eqs. (1.28)–(1.30)). Are these states acceptable? A state might be zero, or worse, have a **negative** squared norm, which no wavefunction can have. Their norms follow from $aa^\dagger = 1 + \hat N$ (transcript pp. 8–9):
+
+<Formula label="Norms of the raised and lowered states" tex="(a^\dagger\psi_E, a^\dagger\psi_E) = (N_E + 1)(\psi_E, \psi_E), \qquad (a\psi_E, a\psi_E) = N_E\,(\psi_E, \psi_E)" cite="reading2" at="eqs. (1.31)–(1.32)" />
+
+Raising is **safe**: the number grows, the factor stays positive, and every state $a^\dagger a^\dagger\cdots\psi_E$ has positive norm (transcript p. 10). Lowering is **dangerous** (transcript pp. 10–13):
+
+- If $N_E$ is an integer, lowering steps down through $N_E - 1, \dots, 1, 0$. The state with number 0 is good, but the norm of $a$ acting on it is $0$ times its norm, so that next state is the zero vector: not a state at all. The ladder stops before reaching a negative number.
+- If $N_E$ is not an integer, say 2.5, lowering gives positive norms at 1.5 and 0.5 and a state at −0.5 with positive norm, but the next step has squared norm −0.5 times a positive number: inconsistent. The only escape would be a state at a non-integer number that $a$ kills, but $a\psi = 0$ implies $\hat N\psi = a^\dagger a\psi = 0$, so only $N = 0$ can be killed.
+
+So the number eigenvalues are $0, 1, 2, \dots$, and the bottom state satisfies $a\psi_0 = 0$. In the position representation this is a first-order differential equation (transcript pp. 12–13):
+
+<Formula label="The ground state" tex="\left(x + \frac{\hbar}{m\omega}\frac{d}{dx}\right)\psi_0(x) = 0 \quad\Longrightarrow\quad \psi_0(x) = N_0\,e^{-m\omega x^2/2\hbar}" cite="reading2" at="eqs. (1.37)–(1.39)" />
+
+with a unique solution up to the constant $N_0$; choosing $N_0 = (m\omega/\pi\hbar)^{1/4}$ normalises it. Two warnings: $\psi_0$ is not the zero vector, and it does not have zero energy; its number is 0 and its energy $\hbar\omega/2$ (transcript pp. 13–14). Since $\hat Na^\dagger\psi_0 = a^\dagger\psi_0$, the state $a^\dagger\psi_0$ has number 1, and in general (transcript p. 14)
+
+<Formula label="Number states" tex="\psi_n = \frac{1}{\sqrt{n!}}\,(a^\dagger)^n\psi_0, \qquad (\psi_m, \psi_n) = \delta_{mn}" cite="reading2" at="eq. (1.52)" />
+
+They are orthogonal because they are eigenstates of the Hermitian $\hat N$ with different eigenvalues, and there is no degeneracy anywhere (transcript pp. 14–15). The state space splits into one-dimensional orthogonal subspaces, one per number (notes eq. (1.54)). Expectation values such as $\Delta x$ in $\psi_n$ take a few minutes with $a$ and $a^\dagger$, instead of half an hour of integrals (transcript pp. 15–16).
+
+## Unitary time evolution
+
+There is no time in the state space: it is a space of vectors, and time enters through clocks (transcript pp. 16–17). At each time the system is a vector; later it is another vector. A normalised state should stay normalised, so the vector moves on the unit sphere, and an operator that preserves all lengths is unitary. The **postulate of unitary time evolution** (transcript pp. 17–18):
+
+<Formula label="Unitary time evolution" tex="\psi(t) = U(t, t_0)\,\psi(t_0) \quad \text{for all } t, t_0, \qquad U(t, t_0)^\dagger\,U(t, t_0) = 1" cite="reading2" at="eqs. (2.3)–(2.7)" />
+
+The same $U$ evolves **every** state: that is where the physics is hidden. Asked whether time could be added to the vector space, Zwiebach doubts that it would even mean anything; nobody has yet succeeded in changing quantum mechanics (transcript p. 18). Consequences (transcript pp. 19–20):
+
+- $U$ is unique: two operators acting the same way on every state are equal.
+- $U(t_0, t_0) = 1$, since the only operator leaving every state unchanged is the identity (notes eq. (2.9)).
+- Composition works like matrix multiplication (notes eq. (2.11)):
+
+<Formula label="Composition" tex="U(t_2, t_0) = U(t_2, t_1)\,U(t_1, t_0)" cite="reading2" at="eq. (2.11)" />
+
+- Setting $t_2 = t_0$ gives the inverse: swapping the times inverts $U$, and since $U$ is unitary, it also takes the adjoint (notes eq. (2.14)):
+
+<Formula label="Inverse and adjoint" tex="U(t_0, t) = U(t, t_0)^{-1} = U(t, t_0)^\dagger" cite="reading2" at="eq. (2.14)" />
+
+(The transcript on p. 20 says "since the operator is Hermitian" here; the property used is unitarity.)
+
+## The Schrödinger equation
+
+Differentiate $\psi(t) = U(t, t_0)\psi(t_0)$: only the operator depends on $t$. Write $\psi(t_0) = U(t_0, t)\psi(t) = U(t, t_0)^\dagger\psi(t)$ (transcript p. 20):
+
+<Formula label="Evolution as a differential equation" tex="\frac{d}{dt}\psi(t) = \Lambda(t, t_0)\,\psi(t), \qquad \Lambda(t, t_0) = \frac{\partial U(t, t_0)}{\partial t}\,U(t, t_0)^\dagger" cite="reading2" at="eqs. (2.18)–(2.19)" />
+
+Two facts about $\Lambda$ (transcript pp. 21–23). It is **anti-Hermitian**: differentiating $UU^\dagger = 1$ with respect to $t$ gives $\Lambda + \Lambda^\dagger = 0$, the adjoint passing through the time derivative (notes eqs. (2.21)–(2.23)). And it does **not depend on $t_0$**: inserting $1 = U(t_0, t_1)U(t_0, t_1)^\dagger$ and using composition turns $\Lambda(t, t_0)$ into $\Lambda(t, t_1)$ for any $t_1$ (notes eq. (2.24)). So it is a function $\Lambda(t)$ of $t$ alone. Unitary operators have no units, so $\Lambda$ has units of 1/time; $i\hbar\Lambda$ is then Hermitian with units of energy, and it is named the Hamiltonian (transcript p. 23):
+
+<Formula label="The Hamiltonian from U" tex="H(t) = i\hbar\,\frac{\partial U(t, t_0)}{\partial t}\,U(t, t_0)^\dagger" cite="reading2" at="eq. (2.26)" />
+
+Multiplying the differential equation by $i\hbar$:
+
+<Formula label="Schrödinger equation" tex="i\hbar\,\frac{d}{dt}\psi(t) = H(t)\,\psi(t)" cite="reading2" at="eq. (2.27)" />
+
+The Schrödinger equation contains no more and no less than unitary time evolution (transcript pp. 23–24). The two can be read either way: knowing $U$ gives $H$ by differentiation; in practice one knows the energy of a system, invents $H$, and must solve a first-order matrix differential equation for $U$, the subject of the next lecture.
+
+## Worked example
+
+<WorkedExample title="A superposition of the two lowest states, and H from U">
+<Problem>
+(a) With $\hat x = \sqrt{\hbar/2m\omega}\,(a + a^\dagger)$, find $\langle\hat x\rangle$ and $\Delta x$ in the normalised state $\chi = (\psi_0 + \psi_1)/\sqrt{2}$, and compare with the ground state. (b) A two-state system evolves with $U(t, 0) = \begin{pmatrix}e^{-i\omega_1t} & 0\\ 0 & e^{-i\omega_2t}\end{pmatrix}$. Find its Hamiltonian.
+</Problem>
+<Step title="(a) Expectation of x">
+$a\psi_0 = 0$ and $a\psi_1 = \psi_0$, so $a\chi = \psi_0/\sqrt{2}$ and $\langle a\rangle = (\chi, a\chi) = \frac{1}{2}$; likewise $\langle a^\dagger\rangle = \frac{1}{2}$. Hence $\langle\hat x\rangle = \sqrt{\frac{\hbar}{2m\omega}}\,(\frac{1}{2} + \frac{1}{2}) = \sqrt{\frac{\hbar}{2m\omega}}$: unlike any single number state, this one is displaced.
+</Step>
+<Step title="(a) Uncertainty">
+$\hat x^2 = \frac{\hbar}{2m\omega}(a^2 + a^{\dagger 2} + 2\hat N + 1)$. In $\chi$, $a^2$ and $a^{\dagger 2}$ give zero and $\langle\hat N\rangle = \frac{1}{2}$, so $\langle\hat x^2\rangle = \frac{\hbar}{2m\omega}(1 + 1) = \frac{\hbar}{m\omega}$. Then $(\Delta x)^2 = \frac{\hbar}{m\omega} - \frac{\hbar}{2m\omega} = \frac{\hbar}{2m\omega}$, the same as in the ground state, even though the energy is higher.
+</Step>
+<Step title="(b) The Hamiltonian">
+$\partial U/\partial t$ has diagonal entries $-i\omega_1e^{-i\omega_1t}$ and $-i\omega_2e^{-i\omega_2t}$, and $U^\dagger$ has $e^{i\omega_1t}$ and $e^{i\omega_2t}$. So $i\hbar\,\frac{\partial U}{\partial t}U^\dagger = \begin{pmatrix}\hbar\omega_1 & 0\\ 0 & \hbar\omega_2\end{pmatrix}$: a time-independent Hamiltonian with energies $\hbar\omega_1$ and $\hbar\omega_2$, as expected for states that only pick up phases.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Factorising $H = \frac{1}{2}m\omega^2V^\dagger V + \frac{1}{2}\hbar\omega$ proves every oscillator energy is at least $\hbar\omega/2$; with $a$, $a^\dagger$, $H = \hbar\omega(\hat N + \frac{1}{2})$.
+- Norms decide the spectrum: $(a\psi_E, a\psi_E) = N_E(\psi_E, \psi_E)$ forces integer numbers $0, 1, 2, \dots$ and a Gaussian ground state with $a\psi_0 = 0$; $\psi_n = (a^\dagger)^n\psi_0/\sqrt{n!}$ are orthonormal.
+- Unitary time evolution: one $U(t, t_0)$ evolves every state; $U(t_0, t_0) = 1$, $U(t_2, t_0) = U(t_2, t_1)U(t_1, t_0)$, $U(t_0, t) = U(t, t_0)^\dagger$.
+- $\Lambda = (\partial U/\partial t)U^\dagger$ is anti-Hermitian and independent of $t_0$; $H = i\hbar\Lambda$ gives $i\hbar\,d\psi/dt = H\psi$, so the Schrödinger equation is equivalent to unitary time evolution.

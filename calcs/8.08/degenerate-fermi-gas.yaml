@@ -1,0 +1,552 @@
+# Calculations on content/year-4/8.08/degenerate-fermi-gas.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter VIII notes, "The Fermi Gas" (Wen, handwritten scan). Page numbers are Wen's
+# handwritten numbers, top right (76-92 = PDF pages 1-13 and 15-18; PDF page 14 is an unnumbered homework sketch).
+# This page uses pp. 82-88 (PDF pages 7-13). The "86" on PDF page 11 is written unclearly (it looks like 85) but
+# lies between 85 and 87. Numbers quoted by the notes: n ~ 1e22 cm^-3, eps_F a few eV, kT ~ 1/40 eV, P0 ~ 1e4 atm
+# (p. 83); chi ~ 1/(1e6 atm), 1e4 atm to halve V, 1 atm ~ 10 m of water, 1e5 m (p. 84); m_n, m_p, m_e, 6200 km,
+# 3.4 km, M_sun = 1.99e33 g (p. 88). Identities use units hbar = 1 unless stated.
+# Page's own example: lithium, n = 4.70e28 m^-3, free-electron mass.
+
+page: content/year-4/8.08/degenerate-fermi-gas.mdx
+calcs:
+  # ---------------------------------------------------------------- density of states (p. 82)
+  - id: count-below-ef
+    kind: identity
+    where: 'formula "Number of states below the Fermi energy": V kF^3/(6 pi^2) with kF = sqrt(2m epsF) equals V/(6 pi^2) (sqrt(2m))^3 epsF^(3/2)'
+    formula: VV*(sqrt(2*mm*ef))**3/(6*pi**2)
+    equals: VV/(6*pi**2)*sqrt(2*mm)**3*ef**1.5
+    samples: {VV: [1.0, 3.0], mm: [1.0, 0.4], ef: [2.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['= \frac{V}{6\pi^2}\,k_F^3 = \frac{V}{6\pi^2}\left(\frac{\sqrt{2m}}{\hbar}\right)^3\epsilon_F^{3/2}']
+    source: {cite: reading1, at: 'p. 82'}
+    origin: mit
+
+  - id: dos-derivative
+    kind: identity
+    where: 'formula "Density of states in three dimensions": d/de of V (2m)^(3/2) e^(3/2)/(6 pi^2) is (sqrt 2/2 pi^2) m^(3/2) e^(1/2) V'
+    formula: deriv('VV*(2*mm)**1.5*x**1.5/(6*pi**2)', 'x', ee)
+    equals: sqrt(2)/(2*pi**2)*mm**1.5*sqrt(ee)*VV
+    samples: {VV: [1.0, 3.0], mm: [1.0, 0.4], ee: [2.0, 0.7]}
+    tolerance: 1e-6
+    shown: ['D(\epsilon) = \frac{\partial N(\epsilon)}{\partial\epsilon} = \frac{\sqrt2}{2\pi^2}']
+    source: {cite: reading1, at: 'p. 82'}
+    origin: mit
+
+  - id: dos-delta-form
+    kind: identity
+    where: 'formula "Density of states": V integral d^3k/(2 pi)^3 delta(eps_k - eps) = V k^2 /(2 pi^2) / (d eps/dk) at k = sqrt(2 m eps); equals the sqrt form'
+    formula: VV*(2*mm*ee)/(2*pi**2)/(sqrt(2*mm*ee)/mm)
+    equals: sqrt(2)/(2*pi**2)*mm**1.5*sqrt(ee)*VV
+    samples: {VV: [1.0, 3.0], mm: [1.0, 0.4], ee: [2.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['D(\epsilon) = V\int\frac{d^3k}{(2\pi)^3}\,\delta(\epsilon_k - \epsilon)" cite']
+    source: {cite: reading1, at: 'p. 82'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- ground state (p. 83)
+  - id: u0-integral
+    kind: identity
+    where: 'formula "Ground-state energy and number": integral of e * e^(1/2) from 0 to epsF is (2/5) epsF^(5/2)'
+    formula: integrate('x*sqrt(x)', 'x', 0, ef)
+    equals: 0.4*ef**2.5
+    samples: {ef: [1.0, 2.5]}
+    tolerance: 1e-9
+    shown: ['V\,\frac25\epsilon_F^{5/2}, \qquad N']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: mit
+
+  - id: u0-ratio
+    kind: identity
+    where: 'formula "Ground-state energy": (2/5 epsF^(5/2))/(2/3 epsF^(3/2)) = (3/5) epsF'
+    formula: (0.4*ef**2.5)/(2/3*ef**1.5)
+    equals: 0.6*ef
+    samples: {ef: [1.0, 2.5]}
+    tolerance: 1e-12
+    shown: ['<Formula label="Ground-state energy" tex="U_0 = \frac35N\epsilon_F"']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: mit
+
+  - id: p0-from-u0
+    kind: identity
+    where: 'formula "Pressure of the Fermi sea": (2/3)(3/5) n epsF = (2/5) n epsF'
+    formula: 2/3*0.6*nn*ef
+    equals: 0.4*nn*ef
+    samples: {nn: [1.0, 2.0], ef: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['P_0 = \frac23\,\frac{U_0}{V} = \frac25\,n\epsilon_F']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: mit
+
+  - id: wen-room-kt
+    where: 'text: kT at room temperature (300 K) is about 1/40 eV (notes p. 83); 1/(kT in eV)'
+    inputs: {T: 300 K, eV: 1.602176634e-19 J}
+    formula: eV/(k_B*T)
+    expected: '40'
+    tolerance: '2'
+    shown: ['$k_BT \approx \frac1{40}$ eV at room temperature']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: mit
+
+  - id: wen-metal-p0
+    where: 'text: Wen''s P0 of order 1e4 atm for n = 1e22 cm^-3 and eps_F a few (here 3) eV'
+    inputs: {n: 1e22 cm**-3, ef: 3 eV}
+    formula: 0.4*n*ef
+    expected: 1e4 atm
+    tolerance: 100%
+    shown: ['$n \sim 10^{22}$ cm⁻³ and $\epsilon_F$ of a few eV', 'a pressure $P_0$ of order $10^4$ atm']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: mit
+
+  # ---------------------------------------------------------------- compressibility (p. 84)
+  - id: kf-two-spins
+    kind: identity
+    where: 'text: n = 2 kF^3/(6 pi^2) gives kF = (3 pi^2 n)^(1/3)'
+    formula: 2*(3*pi**2*nn)/(6*pi**2)
+    equals: nn
+    samples: {nn: [1.0, 4.0]}
+    tolerance: 1e-12
+    shown: ['$n_e = 2k_F^3/6\pi^2$, so $k_F = (3\pi^2n_e)^{1/3}$']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: mit
+
+  - id: u0-c-form
+    kind: identity
+    where: 'formula "Electron energy as a function of volume": (3/5) N epsF = C N n^(2/3) with C = (3/5)(3 pi^2)^(2/3)/(2m) (hbar = 1)'
+    formula: 0.6*NN*(3*pi**2*NN/VV)**(2/3)/(2*mm)
+    equals: 0.6*(3*pi**2)**(2/3)/(2*mm)*NN**(5/3)/VV**(2/3)
+    samples: {NN: [1.0, 5.0], VV: [1.0, 2.0], mm: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['C = \frac35\,\frac{\hbar^2(3\pi^2)^{2/3}}{2m}" cite']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: mit
+
+  - id: equilibrium-volume
+    kind: identity
+    where: 'formula "Equilibrium volume": dU_tot/dV = 0 at V0 = (3 P0/(2 C N^(5/3)))^(-3/5) (numerical derivative)'
+    formula: deriv('cc*NN**(5/3)/x**(2/3) + pp*x', 'x', (3*pp/(2*cc*NN**(5/3)))**(-0.6)) + 1
+    equals: 1
+    samples: {cc: [1.0, 0.5], NN: [2.0, 1.0], pp: [0.3, 2.0]}
+    tolerance: 1e-6
+    shown: ['V_0 = \left(\frac{3P_0}{2CN^{5/3}}\right)^{-3/5}']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: slip
+
+  - id: compressibility-curvature
+    kind: identity
+    where: 'formula "Compressibility of the electron gas": 1/(V d2U/dV2) for U = C N^(5/3) V^(-2/3) + P0 V equals (9/10)/(C n^(5/3)) (numerical second derivative)'
+    formula: 1/(VV*deriv('cc*NN**(5/3)/x**(2/3) + 0.3*x', 'x', VV, 2))
+    equals: 0.9/(cc*(NN/VV)**(5/3))
+    samples: {cc: [1.0, 0.5], NN: [2.0, 1.0], VV: [1.5, 0.8]}
+    tolerance: 1e-5
+    shown: ['= \frac{9}{10}\,\frac{1}{Cn_e^{5/3}} = \frac{3}{2\,n_e\epsilon_F}']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: mit
+
+  - id: compressibility-epsf
+    kind: identity
+    where: 'formula "Compressibility of the electron gas": (9/10)/(C n^(5/3)) with C = (3/5)(3 pi^2)^(2/3)/2m equals 3/(2 n epsF), epsF = (3 pi^2 n)^(2/3)/2m (hbar = 1); the notes'' 9/2 is 3 times too large'
+    formula: 0.9/(0.6*(3*pi**2)**(2/3)/(2*mm)*nn**(5/3))
+    equals: 1.5/(nn*(3*pi**2*nn)**(2/3)/(2*mm))
+    samples: {nn: [1.0, 3.0], mm: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['the notes write 9 for the 3:']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: slip
+
+  - id: nine-tenths-five-thirds
+    kind: identity
+    where: 'text: (9/10)(5/3) = 3/2'
+    formula: 0.9*5/3
+    equals: 1.5
+    samples: {dd: [1.0]}
+    tolerance: 1e-12
+    shown: ['$\frac{9}{10}\cdot\frac53 = \frac32$']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: slip
+
+  - id: halving-factor
+    where: 'text and worked example: extra pressure to halve the volume in the model, (2^(5/3) - 1) P0'
+    inputs: {}
+    formula: 2**(5/3) - 1
+    expected: '2.2'
+    shown: ['$(2^{5/3} - 1)P_0 \approx 2.2\,P_0$']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: water-column
+    where: 'text: 1e4 atm as a water column, 1 atm per 10 m (Wen, p. 84): 1e5 m'
+    inputs: {P: 1e4 atm, h1: 10 m, P1: 1 atm}
+    formula: P/P1*h1
+    expected: 1e5 m
+    shown: ['some $10^5$ m, a hundred kilometres, deep']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: mit
+
+  - id: water-atm
+    where: 'text: one atmosphere is the weight of about 10 m of water (rho g h)'
+    inputs: {rho: 1000 kg/m**3, gg: 9.81 m/s**2, P1: 1 atm}
+    formula: P1/(rho*gg)
+    expected: 10 m
+    tolerance: 1 m
+    shown: ['one atmosphere is the weight of about 10 m of water']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: mit
+
+  - id: wen-bulk-modulus
+    where: 'text: with the corrected formula, Wen''s n = 1e22 cm^-3 and eps_F of 1 to 10 eV and eps_F = 3 eV give (2/3) n eps_F of about 3e4 atm, three times Wen''s slipped value'
+    inputs: {n: 1e22 cm**-3, ef: 3 eV}
+    formula: 2/3*n*ef
+    expected: 3e4 atm
+    tolerance: 20%
+    shown: ['of order $3 \times 10^4$ atm, still consistent']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: slip
+
+  - id: wen-chi-quoted
+    kind: fact
+    where: 'text: the notes quote a compressibility of order 1/(1e4 atm) (the exponent read as 4, written as on p. 83)'
+    shown: ['He also quotes a compressibility of order $1/(10^4$ atm$)$']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: mit
+
+  - id: plot-u-tot
+    kind: identity
+    where: 'plot caption (U_tot): with P0 = (2/3) C N^(5/3)/V0^(5/3), the electron term C N^(5/3)/V^(2/3) is (3/2) P0 V0 (V/V0)^(-2/3)'
+    formula: cc*NN**(5/3)/(xx*V0)**(2/3)
+    equals: 1.5*(2/3*cc*NN**(5/3)/V0**(5/3))*V0*xx**(-2/3)
+    samples: {cc: [1.0, 0.4], NN: [2.0, 1.0], V0: [1.0, 3.0], xx: [0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['the electron term is (3/2)P₀V₀(V/V₀)^(−2/3)']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- spin susceptibility (p. 85)
+  - id: pauli-n-form
+    kind: identity
+    where: 'formula "Pauli spin susceptibility": 2 muB^2 (sqrt2/2 pi^2) m^(3/2) epsF^(1/2) with epsF = (3 pi^2 n)^(2/3)/2m equals muB^2 3^(1/3)/pi^(4/3) m n^(1/3) (hbar = V = 1)'
+    formula: 2*mb**2*sqrt(2)/(2*pi**2)*mm**1.5*sqrt((3*pi**2*nn)**(2/3)/(2*mm))
+    equals: mb**2*3**(1/3)/pi**(4/3)*mm*nn**(1/3)
+    samples: {mb: [1.0, 0.3], mm: [1.0, 2.0], nn: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['= \mu_B^2\,\frac{3^{1/3}}{\pi^{4/3}}\,\frac{m}{\hbar^2}\,n^{1/3}\,V']
+    source: {cite: reading1, at: 'p. 85'}
+    origin: slip
+
+  - id: pauli-three-halves
+    kind: identity
+    where: 'text: chi = (3/2) N muB^2/epsF, since D_one-spin(epsF) = 3N/(4 epsF) for two spin states (hbar = V = 1)'
+    formula: 2*mb**2*sqrt(2)/(2*pi**2)*mm**1.5*sqrt((3*pi**2*nn)**(2/3)/(2*mm))
+    equals: 1.5*nn*mb**2/((3*pi**2*nn)**(2/3)/(2*mm))
+    samples: {mb: [1.0, 0.3], mm: [1.0, 2.0], nn: [1.0, 5.0]}
+    tolerance: 1e-12
+    shown: ['Equivalently $\chi = \frac32N\mu_B^2/\epsilon_F$']
+    source: {cite: reading1, at: 'p. 85'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- heat capacity (pp. 86-87)
+  - id: i0
+    kind: identity
+    where: 'text: I_0 = 2 integral_0^inf e^t/(1 + e^t)^2 dt = 1'
+    formula: 2*integrate('exp(t)/(1 + exp(t))**2', 't', 0, 60)
+    equals: 1
+    samples: {dd: [1.0]}
+    tolerance: 1e-8
+    shown: ['with $I_0 = 1$ and $I_2 = \pi^2/3$']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: mit
+
+  - id: i2
+    kind: identity
+    where: 'formula "Low-temperature heat capacity": the integral over all t of t^2 e^t/(1 + e^t)^2 is pi^2/3'
+    formula: integrate('t**2*exp(t)/(1 + exp(t))**2', 't', -60, 60)
+    equals: pi**2/3
+    samples: {dd: [1.0]}
+    tolerance: 1e-8
+    shown: ['C = \frac{\pi^2}{3}\,k_B^2T\,D(\mu)']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: mit
+
+  - id: heat-capacity-numeric
+    kind: identity
+    where: 'formula "Heat capacity": with constant D = 1 and fixed mu, d/dT of the integral of (eps - mu) n_F over eps equals (pi^2/3) T (k_B = 1)'
+    formula: deriv('integrate("(y - 5)/(exp((y - 5)/x) + 1)", "y", 0, 10)', 'x', TT)
+    equals: pi**2/3*TT
+    samples: {TT: [0.1, 0.2]}
+    tolerance: 1e-4
+    shown: ['= \int d\epsilon\,D(\epsilon)\,(\epsilon - \mu)\left.\frac{\partial n_F}{\partial T}\right|_{N,V}" cite']
+    source: {cite: reading1, at: 'p. 86'}
+    origin: page-own
+
+  - id: dn-dt-explicit
+    kind: identity
+    where: 'formula "Temperature derivative of the occupation": d/dT of 1/(exp((e - mu)/T) + 1) at fixed mu is (e - mu)/T^2 * e^x/(1 + e^x)^2 (k_B = 1)'
+    formula: deriv('1/(exp((ee - mu)/x) + 1)', 'x', TT)
+    equals: (ee - mu)/TT**2*exp((ee - mu)/TT)/(1 + exp((ee - mu)/TT))**2
+    samples: {ee: [1.2, 0.5], mu: [1.0, 1.0], TT: [0.3, 0.2]}
+    tolerance: 1e-6
+    shown: ['\left.\frac{\partial n_F}{\partial T}\right|_{N,V} = \frac{\epsilon - \mu}{k_BT^2}']
+    source: {cite: reading1, at: 'p. 86'}
+    origin: mit
+
+  - id: d-at-ef
+    kind: identity
+    where: 'text: for D proportional to e^(1/2), N = (2/3) a epsF^(3/2), so D(epsF) = a epsF^(1/2) = 3N/(2 epsF)'
+    formula: aa*sqrt(ef)
+    equals: 3*(2/3*aa*ef**1.5)/(2*ef)
+    samples: {aa: [1.0, 2.0], ef: [1.0, 4.0]}
+    tolerance: 1e-12
+    shown: ['give $D(\epsilon_F) = 3N/2\epsilon_F$']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: mit
+
+  - id: c-3d
+    kind: identity
+    where: 'formula "Heat capacity of the 3D Fermi gas": (pi^2/3) kB^2 T (3N/2 epsF) = (pi^2/2) kB (kB T/epsF) N = (3/2) kB ((pi^2/3) kB T/epsF) N'
+    formula: pi**2/3*TT*1.5*NN/ef
+    equals: 1.5*(pi**2/3*TT/ef)*NN
+    samples: {TT: [0.1, 0.02], NN: [1.0, 7.0], ef: [1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['C = \frac{\pi^2}{2}\,k_B\,\frac{k_BT}{\epsilon_F}\,N = \frac32k_B']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: mit
+
+  - id: mu-falls
+    kind: identity
+    where: 'text: for D proportional to e^(1/2), the Sommerfeld shift is mu = epsF (1 - (pi^2/12)(T/epsF)^2): negative T^2 coefficient (checked numerically at T = 0.05 epsF: N(mu) with that mu equals N at T = 0 to 1e-5)'
+    formula: integrate('sqrt(y)/(exp((y - (1 - pi**2/12*0.0025))/0.05) + 1)', 'y', 0, 3)
+    equals: 2/3
+    samples: {dd: [1.0]}
+    tolerance: 1e-4
+    shown: ['(For the 3D density of states the constant is negative']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: page-own
+
+  - id: plot-dos-mu
+    kind: identity
+    where: 'plot caption: mu differs from epsF only at order (kT/epsF)^2 (same check as mu-falls, the shift at kT = 0.05 epsF is 0.2%)'
+    formula: pi**2/12*0.05**2*100
+    equals: 0.2056
+    samples: {dd: [1.0]}
+    tolerance: 1e-3
+    shown: ['it differs from ε_F only at order (k_BT/ε_F)²']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- white dwarfs and neutron stars (p. 88)
+  - id: mp-over-me
+    where: 'text and quiz 4: m_p/m_e'
+    inputs: {mp: 1.67262192e-27 kg, me: 9.1093837e-31 kg}
+    formula: mp/me
+    expected: '1836'
+    shown: ['the protons, being 1836 times heavier', 'divides the radius by $m_p/m_e \approx 1836$', 'and $m_p/m_e \\approx 1836$']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: page-own
+
+  - id: wd-balance
+    kind: identity
+    where: 'formula "Radius of a white dwarf": solving G M m_p m_e/R = hbar^2 M^(2/3)/(m_p^(2/3) R^2) for R gives hbar^2/(m_e m_p^(5/3) G M^(1/3))'
+    formula: GG*MM*mp*me/(hh**2/(me*mp**(5/3)*GG*MM**(1/3)))
+    equals: hh**2*MM**(2/3)/(mp**(2/3)*(hh**2/(me*mp**(5/3)*GG*MM**(1/3)))**2)
+    samples: {GG: [1.0, 2.0], MM: [3.0, 0.5], mp: [2.0, 1.5], me: [0.1, 0.3], hh: [1.0, 0.7]}
+    tolerance: 1e-12
+    shown: ['R_{\text{WD}} = M^{-1/3}\,\frac{\hbar^2}{m_em_p^{5/3}}\,G^{-1}']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: mit
+
+  - id: wd-radius
+    where: 'formula "Radius of a white dwarf", summary, flashcard, plot: hbar^2/(m_e m_p^(5/3) M_sun^(1/3) G)'
+    inputs: {mp: 1.67262192e-27 kg, me: 9.1093837e-31 kg}
+    formula: hbar**2/(me*mp**(5/3)*M_sun**(1/3)*G)
+    expected: 6200 km
+    shown: ['\approx \left(\frac{M_\odot}{M}\right)^{1/3}\,6200\ \text{km}', 'R ≈ 6200 km × (M_⊙/M)^(1/3)', '\approx 6200$ km $\\times(M_\\odot/M)^{1/3}$', '$R_{\text{WD}} \approx 6200\ \text{km}\,(M_\odot/M)^{1/3}$', 'R_WD ≈ 6200 km × (M_⊙/M)^(1/3)', 'expr: "6.2*x^(-1/3)"']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: mit
+
+  - id: ns-radius
+    where: 'formula "Radius of a neutron star", summary, flashcard, quiz 4: m_e replaced by m_n'
+    inputs: {mp: 1.67262192e-27 kg, mn: 1.67492750e-27 kg}
+    formula: hbar**2/(mn*mp**(5/3)*M_sun**(1/3)*G)
+    expected: 3.4 km
+    shown: ['R_{\text{NS}} \approx \left(\frac{M_\odot}{M}\right)^{1/3}\,3.4\ \text{km}', 'and of neutron stars, a few kilometres', 'with neutrons, about 3.4 km', '6200 km becomes about 3.4 km', '$R_{\text{NS}} \approx 3.4\ \text{km}\,(M_\odot/M)^{1/3}$']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: mit
+
+  - id: quiz-cube-root-two
+    where: 'quiz 3: 2^(1/3)'
+    inputs: {}
+    formula: 2**(1/3)
+    expected: '1.26'
+    shown: ['"It shrinks by a factor $2^{1/3} \\approx 1.26$"']
+    quiz: 2
+    source: {cite: reading1, at: 'p. 88'}
+    origin: page-own
+
+  - id: quiz-079
+    where: 'quiz 3 explanation: 2^(-1/3)'
+    inputs: {}
+    formula: 2**(-1/3)
+    expected: '0.79'
+    shown: ['$R/2^{1/3} \\approx 0.79\\,R$']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: page-own
+
+  - id: neutron-masses
+    kind: fact
+    where: 'text: Wen''s margin masses m_n = 939.565 MeV, m_p = 938.271 MeV, m_e = 0.51 MeV'
+    shown: ['$m_n = 939.565$ MeV, $m_p = 938.271$ MeV and $m_e = 0.51$ MeV']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: mit
+
+  - id: neutron-excess
+    where: 'text: m_n - m_p = 1.3 MeV (Wen: 1.3 MeV), larger than m_e = 0.51 MeV'
+    inputs: {mn: 939.565 MeV, mp: 938.271 MeV}
+    formula: mn - mp
+    expected: 1.3 MeV
+    shown: ['the neutron outweighs the proton by $1.3$ MeV']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: mit
+
+  - id: ns-real-radius
+    kind: fact
+    where: 'text: real neutron stars have radii of about ten kilometres (standard astrophysics, quoted as context)'
+    shown: ['have radii of about ten kilometres']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: page-own
+
+  - id: wd-earth-size
+    where: 'text: a one-solar-mass white dwarf (about 6200 km) is about the size of the Earth (radius 6371 km): ratio'
+    inputs: {R: 6172 km, RE: 6371 km}
+    formula: R/RE
+    expected: '1'
+    tolerance: '0.1'
+    shown: ['A white dwarf of one solar mass is about the size of the Earth']
+    source: {cite: reading1, at: 'p. 88'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: lithium
+  - id: ex-kf
+    where: 'worked example (a): kF = (3 pi^2 n)^(1/3)'
+    inputs: {n: 4.70e28 m**-3}
+    formula: (3*pi**2*n)**(1/3)
+    expected: 1.12e10 m**-1
+    shown: ['\approx 1.12 \times 10^{10}$ m⁻¹']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-epsf
+    where: 'worked example (a): eps_F = hbar^2 kF^2/2m'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 7.61e-19 J
+    shown: ['\approx 7.61 \times 10^{-19}$ J']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-epsf-ev
+    where: 'worked example (a): eps_F in eV'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 4.75 eV
+    shown: ['\approx 4.75$ eV']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-tf
+    where: 'worked example (a): T_F; also (c)'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: hbar**2*(3*pi**2*n)**(2/3)/(2*me)/k_B
+    expected: 55000 K
+    shown: ['$T_F = \epsilon_F/k_B \approx 55\,000$ K', '\times 300/55\,000 \approx 0.018$']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-p0
+    where: 'worked example (b): P0 = (2/5) n eps_F'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: 0.4*n*hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 1.43e10 Pa
+    shown: ['$P_0 = \frac25n\epsilon_F \approx 1.43 \times 10^{10}$ Pa']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: page-own
+
+  - id: ex-p0-atm
+    where: 'worked example (b): P0 in atm'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: 0.4*n*hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 1.4e5 atm
+    shown: ['about $1.4 \times 10^5$ atm']
+    source: {cite: reading1, at: 'p. 83'}
+    origin: page-own
+
+  - id: ex-bulk
+    where: 'worked example (b): bulk modulus (5/3) P0 = (2/3) n eps_F'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: 2/3*n*hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 2.38e10 Pa
+    shown: ['$\frac53P_0 \approx 2.38 \times 10^{10}$ Pa']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-bulk-atm
+    where: 'worked example (b): bulk modulus in atm'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: 2/3*n*hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 2.4e5 atm
+    shown: ['about $2.4 \times 10^5$ atm']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-halve-factor
+    where: 'worked example (b): 2^(5/3) - 1'
+    inputs: {}
+    formula: 2**(5/3) - 1
+    expected: '2.17'
+    shown: ['$(2^{5/3} - 1)P_0 = 2.17\,P_0']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-halve
+    where: 'worked example (b): extra pressure to halve the volume'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: (2**(5/3) - 1)*0.4*n*hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 3.1e10 Pa
+    shown: ['2.17\,P_0 \approx 3.1 \times 10^{10}$ Pa']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-halve-atm
+    where: 'worked example (b): the same in atm, "some 3e5"'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg}
+    formula: (2**(5/3) - 1)*0.4*n*hbar**2*(3*pi**2*n)**(2/3)/(2*me)
+    expected: 3e5 atm
+    shown: ['some $3 \times 10^5$ atm']
+    source: {cite: reading1, at: 'p. 84'}
+    origin: page-own
+
+  - id: ex-c-ratio
+    where: 'worked example (c): C/(3/2 N k) = (pi^2/3) kT/eps_F at 300 K'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg, T: 300 K}
+    formula: pi**2/3*k_B*T/(hbar**2*(3*pi**2*n)**(2/3)/(2*me))
+    expected: '0.018'
+    shown: ['\approx 0.018$: under 2% of the classical value']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: page-own
+
+  - id: ex-pauli-curie
+    where: 'worked example (c): Pauli/Curie = (3/2) kT/eps_F at 300 K'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg, T: 300 K}
+    formula: 1.5*k_B*T/(hbar**2*(3*pi**2*n)**(2/3)/(2*me))
+    expected: '0.0082'
+    shown: ['$\frac32\,k_BT/\epsilon_F \approx 0.0082$']
+    source: {cite: reading1, at: 'p. 85'}
+    origin: page-own
+
+  - id: ex-one-in-fifty
+    where: 'worked example (c): "fewer than one electron in fifty": the fraction (pi^2/3) kT/eps_F = 0.018 < 1/50'
+    inputs: {n: 4.70e28 m**-3, me: 9.1093837e-31 kg, T: 300 K}
+    formula: 50*pi**2/3*k_B*T/(hbar**2*(3*pi**2*n)**(2/3)/(2*me))
+    expected: '0.9'
+    tolerance: '0.1'
+    shown: ['fewer than one electron in fifty takes part']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: page-own

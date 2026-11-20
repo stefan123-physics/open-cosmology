@@ -1,0 +1,399 @@
+# Calculations on content/year-4/8.08/particle-number-fluctuations.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter VI notes, "Thermal Fluctuations" (Wen, handwritten scan). Page numbers are
+# Wen's handwritten numbers, top right (41-47 = PDF pages 1-7); this page uses pp. 41-44, point 1.
+# The notes quote two numbers: V_c ~ (1 A)^3 for water and V_c ~ (5000 A)^3 for milky water near the critical point.
+# Page's own example: water at 25 C (K_T = 4.52e-10 1/Pa, n = 3.33e28 1/m^3) and air at 25 C, 1 atm, in a 10 nm cube.
+# Constants: k_B (exact 2019 SI), N_A = 6.02214076e23 /mol (exact 2019 SI).
+
+page: content/year-4/8.08/particle-number-fluctuations.mdx
+calcs:
+  # ---------------------------------------------------------------- counting (p. 41)
+  - id: second-moment
+    kind: identity
+    where: 'formula "The first two moments": N0 p + (N0^2 - N0) p^2 equals <N> + <N>^2 - <N> p with <N> = N0 p'
+    formula: N0*p + (N0**2 - N0)*p**2
+    equals: N0*p + (N0*p)**2 - N0*p*p
+    samples: {N0: [100.0, 7.0, 2500.0], p: [0.1, 0.5, 0.003]}
+    tolerance: 1e-12
+    shown: ['The second line is $\langle N\rangle + \langle N\rangle^2 - \langle N\rangle p$']
+    source: {cite: reading1, at: 'p. 41, point 1'}
+    origin: mit
+
+  - id: binomial-variance
+    kind: identity
+    where: 'formula "The spread of the number of atoms": <N^2> - <N>^2 = <N>(1 - p)'
+    formula: N0*p + (N0**2 - N0)*p**2 - (N0*p)**2
+    equals: N0*p*(1 - p)
+    samples: {N0: [100.0, 7.0, 2500.0], p: [0.1, 0.5, 0.003]}
+    tolerance: 1e-9
+    shown: ['= \sqrt{\langle N\rangle(1 - p)} \;\to\; \sqrt{\langle N\rangle}']
+    source: {cite: reading1, at: 'p. 41, point 1'}
+    origin: mit
+
+  - id: hundred-atoms
+    where: 'text: a region holding a hundred atoms fluctuates by about 10%: 1/sqrt(100)'
+    inputs: {}
+    formula: 100/sqrt(100)
+    expected: '10'
+    shown: ['A region holding a hundred atoms fluctuates by about 10%']
+    source: {cite: reading1, at: 'p. 41, point 1'}
+    origin: page-own
+
+  - id: cm3-air
+    where: 'text: a cubic centimetre of air at 25 C and 1 atm holds about 2.5e19 molecules (some 10^19), so 1/sqrt(N) is about 2e-10, a few parts in 10^10'
+    inputs: {P: 101325 Pa, V: 1e-6 m**3, T: 298.15 K}
+    formula: 1/sqrt(P*V/(k_B*T))/1e-10
+    expected: '2'
+    tolerance: 1.5
+    shown: ['with some $10^{19}$ molecules, by a few parts in $10^{10}$']
+    source: {cite: reading1, at: 'p. 41, point 1'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- free energy and reservoir (p. 42)
+  - id: ideal-dA-dN
+    kind: identity
+    where: 'text: for the ideal gas A = N kT [ln(N lam^3/V) - 1], dA/dN = kT ln(n lam^3) (numerical derivative)'
+    formula: deriv('x*TT*(log(x*lam**3/VV) - 1)', 'x', NN)
+    equals: TT*log(NN*lam**3/VV)
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-6
+    shown: ['peaks where $\partial A/\partial N = k_BT\ln(n\lambda^3)$ vanishes, at $n\lambda^3 = 1$']
+    source: {cite: reading1, at: 'p. 42'}
+    origin: page-own
+
+  - id: ideal-d2A-dN2
+    kind: identity
+    where: 'formula "The ideal gas again": d2A/dN2 = kT/N (numerical second derivative), so kT over it is N'
+    formula: TT/deriv('x*TT*(log(x*lam**3/VV) - 1)', 'x', NN, 2)
+    equals: NN
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0], VV: [10.0, 30.0, 5.0], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-5
+    shown: ['\frac{\partial^2A}{\partial N^2} = \frac{k_BT}{N} \quad\Longrightarrow\quad \langle(N - \bar N)^2\rangle = \bar N']
+    source: {cite: reading1, at: 'p. 42'}
+    origin: mit
+
+  - id: notes-form-same-curvature
+    kind: identity
+    where: 'text: the notes'' form dA/dN = kT ln N + kT (from A = N kT ln N) has the same second derivative kT/N'
+    formula: deriv('x*TT*log(x)', 'x', NN, 2)
+    equals: TT/NN
+    samples: {TT: [1.0, 2.0, 0.5], NN: [100.0, 50.0, 20.0]}
+    tolerance: 1e-6
+    shown: ['(the notes'' form, $k_BT\ln N + k_BT$, has the same second derivative)']
+    source: {cite: reading1, at: 'p. 42'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the compressibility (p. 43), on a van der Waals free energy per particle
+  # a(v) = kT [ln(lam^3/(v - b1)) - 1] - a1/v (per particle), so A = N a(V/N); P = kT/(v - b1) - a1/v^2.
+  - id: chain-rule
+    kind: identity
+    where: 'formula "Changing variables": d(V/N)/dN at fixed V is -V/N^2 = -v^2/V'
+    formula: deriv('VV/x', 'x', NN)
+    equals: -(VV/NN)**2/VV
+    samples: {VV: [10.0, 30.0, 5.0], NN: [100.0, 50.0, 20.0]}
+    tolerance: 1e-6
+    shown: ['= -\frac{V}{N^2}\left(\frac{\partial}{\partial v}\right)_{V,T} = -\frac{v^2}{V}\left(\frac{\partial}{\partial v}\right)_{V,T}']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: mit
+
+  - id: pressure-from-a
+    kind: identity
+    where: 'text: P = -da/dv at fixed T (van der Waals a(v) as a test case)'
+    formula: -deriv('TT*(log(lam**3/(x - b1)) - 1) - a1/x', 'x', vv)
+    equals: TT/(vv - b1) - a1/vv**2
+    samples: {TT: [1.0, 2.0, 0.5], vv: [3.0, 1.5, 0.8], b1: [0.3, 0.2, 0.1], a1: [0.5, 1.0, 0.05], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-6
+    shown: ['and since $A = N a(T, v)$ that is $-\partial a/\partial v$ at fixed $T$']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: slip
+
+  - id: chemical-potential
+    kind: identity
+    where: 'formula "The chemical potential": dA/dN of A = N a(V/N) is a + v P (correct sign; the notes write a - vP)'
+    formula: deriv('x*(TT*(log(lam**3/(VV/x - b1)) - 1) - a1*x/VV)', 'x', NN)
+    equals: TT*(log(lam**3/(VV/NN - b1)) - 1) - a1*NN/VV + (VV/NN)*(TT/(VV/NN - b1) - a1*(NN/VV)**2)
+    samples: {TT: [1.0, 2.0, 0.5], NN: [10.0, 20.0, 5.0], VV: [30.0, 30.0, 4.0], b1: [0.3, 0.2, 0.1], a1: [0.5, 1.0, 0.05], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-6
+    shown: ['= a(v, T) + v\,P(v, T)" cite=']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: slip
+
+  - id: second-derivative-compressibility
+    kind: identity
+    where: 'formula "The second derivative": d2A/dN2 = -(v^3/V) dP/dv = v^2/(V K_T) with K_T = -1/(v dP/dv), positive'
+    formula: deriv('x*(TT*(log(lam**3/(VV/x - b1)) - 1) - a1*x/VV)', 'x', NN, 2)
+    equals: -((VV/NN)**3/VV)*deriv('TT/(y - b1) - a1/y**2', 'y', VV/NN)
+    samples: {TT: [1.0, 2.0, 0.5], NN: [10.0, 20.0, 5.0], VV: [30.0, 30.0, 4.0], b1: [0.3, 0.2, 0.1], a1: [0.5, 1.0, 0.05], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-5
+    shown: ['= -\frac{v^3}{V}\left(\frac{\partial P}{\partial v}\right)_T = \frac{v^2}{V}\,\frac{1}{K_T}']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: slip
+
+  - id: variance-compressibility
+    kind: identity
+    where: 'formula "Number fluctuations and the compressibility": kT/(d2A/dN2) = kT V K_T/v^2 with K_T = -1/(v dP/dv)'
+    formula: TT/deriv('x*(TT*(log(lam**3/(VV/x - b1)) - 1) - a1*x/VV)', 'x', NN, 2)
+    equals: TT*VV*(-1/((VV/NN)*deriv('TT/(y - b1) - a1/y**2', 'y', VV/NN)))/(VV/NN)**2
+    samples: {TT: [1.0, 2.0, 0.5], NN: [10.0, 20.0, 5.0], VV: [30.0, 30.0, 4.0], b1: [0.3, 0.2, 0.1], a1: [0.5, 1.0, 0.05], lam: [0.3, 1.0, 0.7]}
+    tolerance: 1e-5
+    shown: ['tex="\langle(N - \bar N)^2\rangle = k_BT\,\frac{V K_T}{v^2}"']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: mit
+
+  - id: ideal-gas-check
+    kind: identity
+    where: 'text: for an ideal gas K_T = 1/P and kT V/(P v^2) = N'
+    formula: TT*VV/((NN*TT/VV)*(VV/NN)**2)
+    equals: NN
+    samples: {TT: [1.0, 2.0, 0.5], NN: [10.0, 20.0, 5.0], VV: [30.0, 30.0, 4.0]}
+    tolerance: 1e-12
+    shown: ['For an ideal gas $K_T = 1/P$ and $k_BTV/(Pv^2) = N$']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the critical point (p. 44)
+  - id: relative-density
+    kind: identity
+    where: 'formula "Relative density fluctuation": sqrt(kT V K_T/v^2)/N = sqrt(kT K_T/v)/sqrt(N) = sqrt(kT K_T/V)'
+    formula: sqrt(TT*VV*KT/(VV/NN)**2)/NN
+    equals: sqrt(TT*KT/VV)
+    samples: {TT: [1.0, 2.0, 0.5], NN: [10.0, 20.0, 5.0], VV: [30.0, 30.0, 4.0], KT: [0.1, 3.0, 0.02]}
+    tolerance: 1e-12
+    shown: ['= \sqrt{k_BT\,\frac{K_T}{v}}\;\frac{1}{\sqrt N} = \sqrt{k_BTK_T}\;\frac{1}{\sqrt V} = \sqrt{\frac{V_c}{V}}']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: mit
+
+  - id: vdw-reduced-slope
+    kind: identity
+    where: 'text: the reduced van der Waals equation P/Pc = 8 t/(3 x - 1) - 3/x^2 has slope -6 (t - 1) at x = v/v_c = 1 (checked as slope + 6 t = 6)'
+    formula: deriv('8*t/(3*x - 1) - 3/x**2', 'x', 1.0) + 6*t
+    equals: 6 + 0*t
+    samples: {t: [1.1, 2.0, 0.9]}
+    tolerance: 1e-6
+    shown: ['gives $\partial(P/P_c)/\partial(v/v_c) = -6(T/T_c - 1)$']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: vdw-critical-isochore
+    kind: identity
+    where: 'text and plot: on v = 3 b1 the variance per particle kT K_T/v equals (4/9) t/(t - 1), with k T_c = 8 a1/(27 b1), t = T/T_c (direct van der Waals derivative; a1 = 1)'
+    formula: (t*8/(27*b1))*(-1/(3*b1*deriv('t*8/(27*b1)/(y - b1) - 1/y**2', 'y', 3*b1)))/(3*b1)
+    equals: (4/9)*t/(t - 1)
+    samples: {t: [1.1, 2.0, 4.0], b1: [0.3, 1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['k_BTK_T/v = \frac49\,(T/T_c)/(T/T_c - 1)$']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: vdw-high-t
+    kind: limit
+    where: 'text: far above T_c the van der Waals variance per particle along the critical density tends to 4/9 (with hard core b1, (v - b1)^2/v^2 at v = 3 b1)'
+    formula: (4/9)*t/(t - 1)
+    limit: 4/9
+    vary: {t: [1e2, 1e4, 1e6]}
+    tolerance: 1e-5
+    shown: ['Far above $T_c$ it tends to $\frac49$, below the ideal gas''s 1']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: kTc-PcVc
+    kind: identity
+    where: 'text: k_B T_c = (8/3) P_c v_c for the van der Waals gas (P_c = a1/(27 b1^2), v_c = 3 b1, k T_c = 8 a1/(27 b1))'
+    formula: 8*a1/(27*b1)
+    equals: (8/3)*(a1/(27*b1**2))*(3*b1)
+    samples: {a1: [1.0, 0.3, 5.0], b1: [0.3, 1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['and with $k_BT_c = \frac83 P_cv_c$']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: notes-water-vc
+    kind: fact
+    where: 'text: Wen gives V_c of order (1 A)^3 for ordinary water'
+    value: '1 A^3'
+    shown: ['For ordinary water it is about an ångström cubed']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: mit
+
+  - id: notes-milky
+    kind: fact
+    where: 'text and quiz 4: water turns milky when V_c ~ (5000 A)^3'
+    value: '(5000 A)^3'
+    shown: ['When $V_c$ reaches roughly $(5000\ \text{Å})^3$']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: water and air in a 10 nm cube
+  - id: water-compressibility
+    kind: fact
+    where: 'worked example: isothermal compressibility of water at 25 C, 4.52e-10 1/Pa (handbook value, about 45.2e-11 1/Pa)'
+    value: '4.52e-10 1/Pa'
+    shown: ['has an isothermal compressibility of about $4.52 \times 10^{-10}$ Pa⁻¹']
+    source: {ref: 'isothermal compressibility of liquid water at 25 C, 4.52e-10 1/Pa (IAPWS-95; CRC Handbook)'}
+    origin: later-data
+
+  - id: water-density
+    where: 'worked example: number density of water at 25 C from rho = 997.0 kg/m^3 and M = 18.015 g/mol'
+    inputs: {rho: 997.0 kg/m**3, M: 18.015 g/mol, NA: 6.02214076e23 1/mol}
+    formula: rho/M*NA
+    expected: 3.33e28 1/m**3
+    shown: ['a number density of $3.33 \times 10^{28}$ molecules per m³']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-kT
+    where: 'worked example: k_B T at 298.15 K'
+    inputs: {T: 298.15 K}
+    formula: k_B*T
+    expected: 4.116e-21 J
+    shown: ['$k_BT = 1.380649 \times 10^{-23} \times 298.15 \approx 4.116 \times 10^{-21}$ J']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-vc-water
+    where: 'worked example: V_c = k_B T K_T for water'
+    inputs: {T: 298.15 K, KT: 4.52e-10 1/Pa}
+    formula: k_B*T*KT
+    expected: 1.86e-30 m**3
+    shown: ['\approx 1.86 \times 10^{-30}$ m³, or 1.86 Å³']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-vc-water-angstrom
+    where: 'worked example and quiz 3: the same in cubic angstroms'
+    inputs: {T: 298.15 K, KT: 4.52e-10 1/Pa}
+    formula: k_B*T*KT
+    expected: 1.9 angstrom**3
+    shown: ['has $V_c = k_BTK_T \\approx 1.9$ Å³']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-nvc
+    where: 'worked example: variance per molecule n V_c for water'
+    inputs: {n: 3.33e28 1/m**3, Vc: 1.86e-30 m**3}
+    formula: n*Vc
+    expected: '0.062'
+    shown: ['= nV_c \approx 3.33 \times 10^{28} \times 1.86 \times 10^{-30} \approx 0.062$']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: page-own
+
+  - id: ex-nvc-percent
+    where: 'worked example: 0.062 is about 6% of the ideal-gas value 1'
+    inputs: {}
+    formula: 0.062*100
+    expected: '6'
+    tolerance: 0.5
+    shown: ['are only about 6% of those of an ideal gas']
+    source: {cite: reading1, at: 'p. 43'}
+    origin: page-own
+
+  - id: ex-water-cube
+    where: 'worked example: delta n/n = sqrt(V_c/V) for a 10 nm cube of water'
+    inputs: {Vc: 1.86e-30 m**3, L: 10 nm}
+    formula: sqrt(Vc/L**3)
+    expected: 1.36e-3
+    shown: ['\delta n/n = \sqrt{1.86 \times 10^{-30}/10^{-24}} \approx 1.36 \times 10^{-3}$, about 0.14%']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: quiz-water-cube
+    where: 'quiz 3: the same, in percent'
+    inputs: {Vc: 1.86e-30 m**3, L: 10 nm}
+    formula: 100*sqrt(Vc/L**3)
+    expected: '0.14'
+    quiz: 2
+    shown: ['\\approx 1.4 \\times 10^{-3}$, about 0.14%. The same cube']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-water-molecules
+    where: 'worked example: molecules in a 10 nm cube of water, n V'
+    inputs: {n: 3.33e28 1/m**3, L: 10 nm}
+    formula: n*L**3
+    expected: '33000'
+    tolerance: 500
+    shown: ['although the cube holds some 33 000 molecules']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-vc-air
+    where: 'worked example: V_c = k_B T/P for air at 25 C and 101325 Pa'
+    inputs: {T: 298.15 K, P: 101325 Pa}
+    formula: k_B*T/P
+    expected: 4.06e-26 m**3
+    shown: ['V_c = k_BT/P \approx 4.116 \times 10^{-21}/101\,325 \approx 4.06 \times 10^{-26}$ m³']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-vc-air-nm3
+    where: 'worked example: the same in nm^3'
+    inputs: {T: 298.15 K, P: 101325 Pa}
+    formula: k_B*T/P
+    expected: 40.6 nm**3
+    shown: ['about 40.6 nm³, the volume per molecule']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-air-molecules
+    where: 'worked example: molecules of air in the 10 nm cube'
+    inputs: {Vc: 4.06e-26 m**3, L: 10 nm}
+    formula: L**3/Vc
+    expected: '24.6'
+    shown: ['10^{-24}/4.06 \times 10^{-26} \approx 24.6$ molecules']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-air-cube
+    where: 'worked example: delta n/n = sqrt(V_c/V) for air in the 10 nm cube, equal to 1/sqrt(24.6)'
+    inputs: {Vc: 4.06e-26 m**3, L: 10 nm}
+    formula: sqrt(Vc/L**3)
+    expected: '0.20'
+    shown: ['\delta n/n = \sqrt{4.06 \times 10^{-26}/10^{-24}} \approx 0.20$: a 20% fluctuation']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: quiz-air-cube
+    where: 'quiz 3 explanation: about 20% for air'
+    inputs: {Vc: 4.06e-26 m**3, L: 10 nm}
+    formula: 100*sqrt(Vc/L**3)
+    expected: '20'
+    shown: ['at atmospheric pressure fluctuates by about 20%']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-one-percent-volume
+    where: 'worked example: V = V_c/0.01^2 for a 1% fluctuation in water'
+    inputs: {Vc: 1.86e-30 m**3}
+    formula: Vc/0.01**2
+    expected: 1.86e-26 m**3
+    shown: ['needs $V = V_c/10^{-4} \approx 1.86 \times 10^{-26}$ m³']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-one-percent-side
+    where: 'worked example: side of that cube'
+    inputs: {Vc: 1.86e-30 m**3}
+    formula: (Vc/0.01**2)**(1/3)
+    expected: 2.65 nm
+    shown: ['a cube of side about 2.65 nm']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-one-percent-molecules
+    where: 'worked example: molecules in that cube'
+    inputs: {Vc: 1.86e-30 m**3, n: 3.33e28 1/m**3}
+    formula: n*Vc/0.01**2
+    expected: '620'
+    tolerance: 5
+    shown: ['holding some 620 molecules']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own
+
+  - id: ex-one-percent-ideal
+    where: 'worked example: an ideal gas with 620 molecules fluctuates by 1/sqrt(620)'
+    inputs: {}
+    formula: 1/sqrt(620)
+    expected: '0.04'
+    shown: ['$1/\sqrt{620} \approx 0.04$, or 4%']
+    source: {cite: reading1, at: 'p. 44'}
+    origin: page-own

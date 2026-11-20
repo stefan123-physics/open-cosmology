@@ -1,0 +1,32 @@
+# Runs on every push and pull request: content check, type check and calculation tests.
+# (docs/CALC_TESTS_PLAN.md §4; the Vercel build itself stays Node-only.)
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Content check
+        run: npm run content:check
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Calculation tests
+        run: python -m pytest tests/calc -q

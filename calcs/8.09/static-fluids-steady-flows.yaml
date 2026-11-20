@@ -1,0 +1,168 @@
+# Calculations on content/year-4/8.09/static-fluids-steady-flows.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 6 (Stewart, typed), Section 6.3, pp. 115-120, eqs. (6.52)-(6.68).
+# The notes quote no numbers here. Slip: p. 120, the Pitot-tube pressure P_s is printed with a factor 1/2 on the
+# hydrostatic term rho_a g (z_o + z_s); (6.67) follows only without it (entry pitot-elimination).
+# Page's own examples: isothermal air at 250 K (R' = 287 J/(kg K), g = 9.81 m/s^2) up to 8.8 km; pipe 20 -> 5 cm^2 at 1 m/s;
+# tank hole 1.8 m below the surface; Pitot tube with water (1000 kg/m^3) in air (1.2 kg/m^3), 10 cm column.
+
+page: content/year-4/8.09/static-fluids-steady-flows.mdx
+calcs:
+  # ---------------------------------------------------------------- derivations
+  - id: isothermal-solution
+    kind: identity
+    where: 'eqs. (6.54)-(6.55): P0 exp(-g z/(R''T)) solves dP/dz = -(g/(R''T)) P'
+    formula: deriv('P0*exp(-9.81*z/(287*TT))', 'z', ZZ)
+    equals: -(9.81/(287*TT))*P0*exp(-9.81*ZZ/(287*TT))
+    samples: {P0: [101325.0, 1.0], TT: [250.0, 300.0], ZZ: [1000.0, 8800.0]}
+    tolerance: 1e-9
+    shown: ['P(z) = P_0\,e^{-gz/R''T}']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.55), p. 116'}
+    origin: mit
+
+  - id: pipe-pressure-drop
+    kind: identity
+    where: 'eqs. (6.59)-(6.60): with v1 = v2 A2/A1, rho (v2^2 - v1^2)/2 = rho v2^2 (1 - (A2/A1)^2)/2'
+    formula: RHO*(V2**2 - (V2*A2/A1)**2)/2
+    equals: RHO*V2**2*(1 - (A2/A1)**2)/2
+    samples: {RHO: [1000.0, 1.2], V2: [4.0, 30.0], A1: [20.0, 3.0], A2: [5.0, 1.0]}
+    tolerance: 1e-9
+    shown: ['P_1 = P_2 + \frac{1}{2}\rho v_2^2\left(1 - \left(\frac{A_2}{A_1}\right)^2\right)']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.60), p. 117'}
+    origin: mit
+
+  - id: pitot-elimination
+    kind: identity
+    where: 'p. 120 and eq. (6.67): equating the two expressions for Po - Ps, (1/2) rho_a v^2 - rho_a g (zo + zs) = rho_l g dh - rho_a g (zo + zs + dh), gives (1/2) rho_a v^2 = g (rho_l - rho_a) dh (the hydrostatic term without the notes'' 1/2)'
+    formula: RL*G*DH - RA*G*(ZO + ZS + DH) + RA*G*(ZO + ZS)
+    equals: G*(RL - RA)*DH
+    samples: {RL: [1000.0, 13600.0], RA: [1.2, 1.3], G: [9.81, 9.81], DH: [0.1, 0.02], ZO: [0.3, 0.5], ZS: [0.05, 0.02]}
+    tolerance: 1e-9
+    shown: ['\frac{1}{2}\rho_av_\infty^2 = g\left(\rho_l - \rho_a\right)\Delta h']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.67), p. 120'}
+    origin: slip
+
+  # ---------------------------------------------------------------- atmosphere example
+  - id: scale-height
+    where: 'worked example "The scale height of a cold atmosphere": R''T/g'
+    inputs: {Rp: 287 J/kg/K, T: 250 K, g: 9.81 m/s^2}
+    formula: Rp*T/g
+    expected: 7310 m
+    tolerance: 10 m
+    shown: ['$R''T/g = 287 \times 250/9.81 \approx 7310$ m, about 7.3 km']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.55), p. 116'}
+    origin: page-own
+
+  - id: exponent-everest
+    kind: value
+    where: 'worked example: 8800 m / 7314 m'
+    formula: 8800/(287*250/9.81)
+    expected: '1.20'
+    shown: ['$P/P_0 = e^{-8800/7314} = e^{-1.20} \approx 0.30$']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.55), p. 116'}
+    origin: page-own
+
+  - id: pressure-everest
+    kind: value
+    where: 'worked example: P/P0 at 8.8 km'
+    formula: exp(-8800/(287*250/9.81))
+    expected: '0.30'
+    shown: ['\approx 0.30$. In this model']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.55), p. 116'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 2: narrowing pipe
+  - id: quiz-pipe-v2
+    kind: value
+    where: 'quiz 2: v2 = v1 A1/A2 = 1 x 20/5 (m/s)'
+    formula: 1*20/5
+    expected: '4'
+    shown: ['$v_2 = v_1A_1/A_2 = 4$ m/s']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.60), p. 117'}
+    origin: page-own
+
+  - id: quiz-pipe-dp
+    kind: value
+    where: 'quiz 2: (1/2) 1000 (16 - 1) in kPa'
+    formula: 0.5*1000*(16 - 1)/1000
+    expected: '7.5'
+    shown: ['= 7500$ Pa $= 7.5$ kPa']
+    quiz: 1
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.60), p. 117'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz 3: tank
+  - id: quiz-jet-speed
+    kind: value
+    where: 'quiz 3: sqrt(2 x 9.81 x 1.8) (m/s)'
+    formula: sqrt(2*9.81*1.8)
+    expected: '5.9'
+    shown: ['= \\sqrt{2 \\times 9.81 \\times 1.8} \\approx 5.9$ m/s']
+    quiz: 2
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.62), p. 117'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Pitot example
+  - id: density-ratio
+    kind: value
+    where: 'Pitot worked example: rho_l/rho_a = 1000/1.2'
+    formula: 1000/1.2
+    expected: '833.3'
+    shown: ['$\rho_l/\rho_a = 833.3$']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own
+
+  - id: pitot-v2-exact
+    kind: value
+    where: 'Pitot worked example: 2 g (833.3 - 1) 0.10 (m^2/s^2)'
+    formula: 2*9.81*(1000/1.2 - 1)*0.10
+    expected: '1633'
+    shown: ['\times 0.10 \approx 1633$ m²/s²']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own
+
+  - id: pitot-v-exact
+    kind: value
+    where: 'Pitot worked example: v (m/s), both forms round to 40.4'
+    formula: sqrt(2*9.81*(1000/1.2 - 1)*0.10)
+    expected: '40.4'
+    shown: ['and $v_\infty \approx 40.4$ m/s, about 145 km/h']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own
+
+  - id: pitot-kmh
+    kind: value
+    where: 'Pitot worked example: 40.41 m/s in km/h'
+    formula: sqrt(2*9.81*(1000/1.2 - 1)*0.10)*3.6
+    expected: '145'
+    tolerance: 1
+    shown: ['about 145 km/h']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own
+
+  - id: pitot-v2-approx
+    kind: value
+    where: 'Pitot worked example: 2 g 833.3 0.10 (m^2/s^2)'
+    formula: 2*9.81*(1000/1.2)*0.10
+    expected: '1635'
+    shown: ['\times 0.10 \approx 1635$ m²/s²']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own
+
+  - id: pitot-v-approx
+    kind: value
+    where: 'Pitot worked example: v with the approximation (m/s)'
+    formula: sqrt(2*9.81*(1000/1.2)*0.10)
+    expected: '40.4'
+    shown: ['m²/s², $v_\infty \approx 40.4$ m/s. The correction']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own
+
+  - id: pitot-correction
+    kind: value
+    where: 'Pitot worked example: the dropped 1 is one part in rho_l/rho_a of v^2'
+    formula: 1000/1.2
+    expected: '830'
+    tolerance: 5
+    shown: ['one part in about 830 in $v^2$']
+    source: {cite: reading1, at: 'Section 6.3, eq. (6.68), p. 120'}
+    origin: page-own

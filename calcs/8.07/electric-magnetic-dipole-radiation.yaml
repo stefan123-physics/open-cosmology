@@ -1,0 +1,394 @@
+# Calculations on content/year-4/8.07/electric-magnetic-dipole-radiation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 16, "Radiation" (Guth, slides, Lecture 37, December 12, 2012), slides 1-13,
+# eqs. (1)-(24). The slides quote no numbers. Slips: eq. (11) has 1/(4 pi eps0) in front of the vector-potential integral
+# (should be mu0/4pi, as eq. (13) uses); eq. (22) has a minus sign that contradicts the slide's own rule (23) (entry
+# mag-dipole-sign below). Page's own worked example: q0 = 5 nC, d = 10 cm, 10 MHz, r = 1 km; loop b = 5 cm with the
+# same current amplitude. mu0 = 1.2566e-6 T m/A, c = 2.998e8 m/s.
+
+page: content/year-4/8.07/electric-magnetic-dipole-radiation.mdx
+calcs:
+  # ---------------------------------------------------------------- approximations
+  - id: inverse-distance-expansion
+    kind: identity
+    where: 'slide 4, eq. (7): 1/r_pm = 1/sqrt(r^2 -+ r d cos(theta) + (d/2)^2) = (1/r)(1 +- (d/2r) cos(theta)) to first order in d/r (checked for the upper sign with d/r = 1e-4)'
+    formula: 1/sqrt(RR**2 - RR*DD*cos(TH) + (DD/2)**2)
+    equals: (1/RR)*(1 + DD/(2*RR)*cos(TH))
+    samples: {RR: [1.0, 3.0, 1.0], DD: [1e-4, 3e-4, 1e-4], TH: [0.3, 1.2, 2.5]}
+    tolerance: 1e-6
+    shown: ['\frac{1}{r_\pm} \approx \frac{1}{r}\left(1 \pm \frac{d}{2r}\cos\theta\right)']
+    source: {cite: reading1, at: 'slide 4, eq. (7)'}
+    origin: mit
+
+  - id: phase-expansion
+    kind: identity
+    where: 'slide 4, eq. (8): cos(x + eps) = cos x - eps sin x to first order, eps = (omega d/2c) cos(theta) small'
+    formula: cos(XX + EE)
+    equals: cos(XX) - EE*sin(XX)
+    samples: {XX: [0.4, 1.7, 3.0], EE: [1e-5, -2e-5, 1e-5]}
+    tolerance: 1e-9
+    shown: ['\cos[\omega(t - r_\pm/c)] \approx \cos[\omega(t - r/c)] \mp \frac{\omega d}{2c}\cos\theta\,\sin[\omega(t - r/c)]']
+    source: {cite: reading1, at: 'slide 4, eq. (8)'}
+    origin: mit
+
+  - id: dipole-potential-from-two-spheres
+    kind: identity
+    where: 'slide 5, eq. (9) from eq. (6): the exact two-sphere potential (q0 = 1, 1/(4 pi eps0) = 1, c = 1) divided by d tends to (cos(theta)/r){(1/r) cos[w(t - r)] - w sin[w(t - r)]} as d -> 0 (d = 1e-5)'
+    formula: (cos(WW*(TT - sqrt(RR**2 - RR*DD*cos(TH) + DD**2/4)))/sqrt(RR**2 - RR*DD*cos(TH) + DD**2/4) - cos(WW*(TT - sqrt(RR**2 + RR*DD*cos(TH) + DD**2/4)))/sqrt(RR**2 + RR*DD*cos(TH) + DD**2/4))/DD
+    equals: (cos(TH)/RR)*((1/RR)*cos(WW*(TT - RR)) - WW*sin(WW*(TT - RR)))
+    samples: {RR: [2.0, 5.0], DD: [1e-5, 1e-5], TH: [0.4, 1.1], WW: [0.7, 1.9], TT: [0.0, 1.3]}
+    tolerance: 1e-4
+    shown: ['V(r, \theta, t) = \frac{p_0\cos\theta}{4\pi\varepsilon_0r}\left\{\frac{1}{r}\cos[\omega(t - r/c)] - \frac{\omega}{c}\sin[\omega(t - r/c)]\right\}']
+    source: {cite: reading1, at: 'slide 5, eq. (9)'}
+    origin: mit
+
+  - id: radiation-zone-ratio
+    kind: identity
+    where: 'slide 5: the second term in the braces of eq. (9) is larger than the first by omega r/c = 2 pi r/lambda, with lambda = 2 pi c/omega'
+    formula: WW*RR/CC
+    equals: 2*pi*RR/(2*pi*CC/WW)
+    samples: {WW: [6.283e7, 1.0e9], RR: [1000.0, 5.0], CC: [2.998e8, 2.998e8]}
+    tolerance: 1e-12
+    shown: ['larger than the first by $\omega r/c = 2\pi r/\lambda$']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- fields
+  - id: e-theta-from-vector-potential
+    kind: identity
+    where: 'slide 7, eq. (14): the theta component of -dA/dt, with A_z from eq. (13) and z-hat . theta-hat = -sin(theta), equals -(mu0 p0 w^2/4 pi)(sin(theta)/r) cos[w(t - r/c)]'
+    formula: -deriv('-(MU*P0*WW/(4*pi*RR))*sin(WW*(t - RR/CC))', 't', TT, 1)*(-sin(TH))
+    equals: -(MU*P0*WW**2/(4*pi))*(sin(TH)/RR)*cos(WW*(TT - RR/CC))
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], P0: [5e-10, 5e-10], WW: [6.283e7, 6.283e7], RR: [1000.0, 2500.0], CC: [2.998e8, 2.998e8], TT: [1e-8, 3.3e-08], TH: [0.5, 1.4]}
+    tolerance: 1e-6
+    shown: ['\vec E = -\nabla V - \frac{\partial\vec A}{\partial t} = -\frac{\mu_0p_0\omega^2}{4\pi}\left(\frac{\sin\theta}{r}\right)\cos[\omega(t - r/c)]\,\hat\theta']
+    source: {cite: reading1, at: 'slide 7, eq. (14)'}
+    origin: mit
+
+  - id: radial-parts-cancel
+    kind: identity
+    where: 'slide 7: the leading radial part of -grad V (from eq. (10)) cancels the radial part of -dA/dt (z-hat . r-hat = cos(theta)), because mu0 eps0 c^2 = 1'
+    formula: -(P0*WW**2/(4*pi*EPS*CC**2))*(cos(TH)/RR)*cos(XX) + (MU*P0*WW**2/(4*pi*RR))*cos(XX)*cos(TH)
+    equals: 0*RR
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], EPS: [8.8541878e-12, 8.8541878e-12], CC: [2.99792458e8, 2.99792458e8], P0: [5e-10, 5e-10], WW: [6.283e7, 6.283e7], RR: [1000.0, 1000.0], TH: [0.5, 1.4], XX: [0.3, 2.0]}
+    tolerance: 1e-12
+    shown: ['the parts along $\hat r$ cancel and leave (slide 7)']
+    source: {cite: reading1, at: 'slide 7, eq. (14)'}
+    origin: mit
+
+  - id: poynting-from-fields
+    kind: identity
+    where: 'slide 8, eq. (16): |E x B|/mu0 with |B| = |E|/c is E^2/(mu0 c) = (mu0/c){p0 w^2 sin(theta) cos/(4 pi r)}^2'
+    formula: (MU*P0*WW**2*sin(TH)*cos(XX)/(4*pi*RR))**2/(MU*CC)
+    equals: (MU/CC)*(P0*WW**2/(4*pi)*(sin(TH)/RR)*cos(XX))**2
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], CC: [2.998e8, 2.998e8], P0: [5e-10, 5e-10], WW: [6.283e7, 6.283e7], RR: [1000.0, 1000.0], TH: [0.5, 1.4], XX: [0.3, 2.0]}
+    tolerance: 1e-9
+    shown: ['\vec S = \frac{1}{\mu_0}(\vec E \times \vec B) = \frac{\mu_0}{c}\left\{\frac{p_0\omega^2}{4\pi}\left(\frac{\sin\theta}{r}\right)\cos[\omega(t - r/c)]\right\}^2\hat r']
+    source: {cite: reading1, at: 'slide 8, eq. (16)'}
+    origin: mit
+
+  - id: cos-squared-average
+    kind: value
+    where: 'slide 8: the average of cos^2 over a complete cycle'
+    formula: integrate('cos(x)**2', 'x', 0, 2*pi)/(2*pi)
+    expected: '1/2'
+    tolerance: 1e-9
+    shown: ['uses $\langle\cos^2\rangle = 1/2$']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: intensity-coefficient
+    kind: identity
+    where: 'slide 8, eq. (17): (1/2)(mu0/c)(p0 w^2/(4 pi))^2 = mu0 p0^2 w^4/(32 pi^2 c)'
+    formula: 0.5*(MU/CC)*(P0*WW**2/(4*pi))**2
+    equals: MU*P0**2*WW**4/(32*pi**2*CC)
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], CC: [2.998e8, 2.998e8], P0: [5e-10, 2e-9], WW: [6.283e7, 6.283e7]}
+    tolerance: 1e-12
+    shown: ['\langle\vec S\rangle = \left(\frac{\mu_0p_0^2\omega^4}{32\pi^2c}\right)\frac{\sin^2\theta}{r^2}\,\hat r']
+    source: {cite: reading1, at: 'slide 8, eq. (17)'}
+    origin: mit
+
+  - id: sphere-integral
+    kind: value
+    where: 'slide 11: integral of sin^3(theta) dtheta dphi over the sphere = 2 pi x 4/3 = 8 pi/3'
+    formula: 2*pi*integrate('sin(x)**3', 'x', 0, pi)
+    expected: '8*pi/3'
+    tolerance: 1e-9
+    shown: ['since $\int\sin^3\theta\,d\theta\,d\phi = 2\pi \times \frac43 = \frac{8\pi}{3}$']
+    source: {cite: reading1, at: 'slide 11, eq. (18)'}
+    origin: mit
+
+  - id: total-power
+    kind: identity
+    where: 'slide 11, eq. (18): (mu0 p0^2 w^4/(32 pi^2 c)) x 8 pi/3 = mu0 p0^2 w^4/(12 pi c)'
+    formula: MU*P0**2*WW**4/(32*pi**2*CC)*(8*pi/3)
+    equals: MU*P0**2*WW**4/(12*pi*CC)
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], CC: [2.998e8, 2.998e8], P0: [5e-10, 2e-9], WW: [6.283e7, 1e9]}
+    tolerance: 1e-12
+    shown: ['= \frac{\mu_0p_0^2\omega^4}{12\pi c}" cite="reading1" at="slide 11, eq. (18) (boxed)"']
+    source: {cite: reading1, at: 'slide 11, eq. (18)'}
+    origin: mit
+
+  - id: plot-pattern-range
+    kind: value
+    where: 'plot: the largest height of the pattern curve, sin^2(theta) cos(theta), is 2/(3 sqrt 3) = 0.385 at cos(theta) = 1/sqrt 3, inside the range +-0.6; its largest width, sin^3, is 1, inside +-1.2'
+    formula: 2/(3*sqrt(3))
+    expected: '0.385'
+    tolerance: 0.0005
+    shown: ['range={[-0.6, 0.6]}']
+    source: {cite: reading1, at: 'slide 8, eq. (17)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- blue sky
+  - id: blue-red-ratio
+    kind: value
+    where: 'blue sky: (700/450)^4, the omega^4 ratio of scattering for 450 nm and 700 nm light'
+    formula: (700/450)**4
+    expected: '5.9'
+    tolerance: 0.05
+    shown: ['$(700/450)^4 \approx 5.9$ times more strongly']
+    source: {cite: reading1, at: 'slide 9'}
+    origin: page-own
+
+  - id: visible-wavelengths
+    kind: fact
+    where: 'blue sky: 450 nm (blue) and 700 nm (red) as typical wavelengths at the two ends of the visible spectrum (about 380 to 750 nm)'
+    value: 450 nm and 700 nm
+    shown: ['Blue light of wavelength 450 nm has a frequency']
+    source: {cite: reading1, at: 'slide 9 (blue is the highest frequency in the visible spectrum; the wavelengths are the page''s own choice)'}
+    origin: page-own
+
+  - id: cmb-polarization-detected
+    kind: fact
+    where: 'cosmology callout: CMB polarization first detected in 2002 (DASI, Kovac et al., Nature 420, 772, 2002), since mapped across the sky by WMAP and Planck'
+    value: '2002'
+    shown: ['this polarization was first detected in 2002']
+    source: {ref: 'Kovac et al. 2002, Nature 420, 772: Detection of polarization in the cosmic microwave background using DASI'}
+    origin: later-data
+
+  # ---------------------------------------------------------------- magnetic dipole
+  - id: mag-dipole-sign
+    kind: identity
+    where: 'slide 13, eq. (22) vs (23): applying p0 -> m0/c and theta-hat -> -phi-hat to eq. (14) gives +mu0 m0 w^2/(4 pi c) (sin(theta)/r) cos along phi-hat; the slide prints a minus sign (slip). Coefficients compared.'
+    formula: -(MU*(M0/CC)*WW**2/(4*pi))*(-1)
+    equals: MU*M0*WW**2/(4*pi*CC)
+    samples: {MU: [1.25663706e-06], CC: [2.998e8], M0: [0.00247], WW: [6.283e7]}
+    tolerance: 1e-12
+    shown: ['[The slide has a minus sign in front.']
+    source: {cite: reading1, at: 'slide 13, eqs. (22)-(23)'}
+    origin: slip
+
+  - id: mag-dipole-sign-direct
+    kind: identity
+    where: 'slide 13, eq. (22) from the loop vector potential: A_phi = -(mu0 m0 w/(4 pi c))(sin(theta)/r) sin[w(t - r/c)] (radiation term of (mu0/4 pi) m-dot x r-hat/(r c)); E_phi = -dA_phi/dt = +mu0 m0 w^2/(4 pi c)(sin(theta)/r) cos[w(t - r/c)]'
+    formula: -deriv('-(MU*M0*WW/(4*pi*CC))*(sin(TH)/RR)*sin(WW*(t - RR/CC))', 't', TT, 1)
+    equals: (MU*M0*WW**2/(4*pi*CC))*(sin(TH)/RR)*cos(WW*(TT - RR/CC))
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], CC: [2.998e8, 2.998e8], M0: [0.00247, 0.00247], WW: [6.283e7, 6.283e7], RR: [1000.0, 1000.0], TH: [0.5, 1.4], TT: [1e-8, 3.3e-08]}
+    tolerance: 1e-6
+    shown: ['differentiating the loop''s vector potential directly gives the plus sign too.]']
+    source: {cite: reading1, at: 'slide 13, eq. (22)'}
+    origin: page-own
+
+  - id: mag-dipole-power
+    kind: identity
+    where: 'page''s own step: eq. (18) with p0 -> m0/c gives mu0 m0^2 w^4/(12 pi c^3)'
+    formula: MU*(M0/CC)**2*WW**4/(12*pi*CC)
+    equals: MU*M0**2*WW**4/(12*pi*CC**3)
+    samples: {MU: [1.25663706e-06, 1.25663706e-06], CC: [2.998e8, 2.998e8], M0: [0.00247, 1.0], WW: [6.283e7, 6.283e7]}
+    tolerance: 1e-12
+    shown: ['$\langle P\rangle = \mu_0m_0^2\omega^4/(12\pi c^3)$ (this step is ours']
+    source: {cite: reading1, at: 'slide 13, eq. (23); slide 11, eq. (18)'}
+    origin: page-own
+
+  - id: loop-to-dipole-ratio
+    kind: identity
+    where: 'same size b = d and same current amplitude I0 = q0 w: (m0/c)/p0 = (pi b^2 q0 w/c)/(q0 b) = pi b w/c = 2 pi^2 b/lambda with lambda = 2 pi c/w'
+    formula: (pi*BB**2*Q0*WW/CC)/(Q0*BB)
+    equals: 2*pi**2*BB/(2*pi*CC/WW)
+    samples: {BB: [0.05, 0.1], Q0: [5e-9, 5e-9], WW: [6.283e7, 6.283e7], CC: [2.998e8, 2.998e8]}
+    tolerance: 1e-12
+    shown: ['a ratio of about $\pi b\omega/c = 2\pi^2b/\lambda$']
+    source: {cite: reading1, at: 'slide 13, eq. (23)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-wavelength
+    kind: value
+    where: 'worked example: lambda = c/f = 2.998e8/1e7 (m)'
+    formula: 2.998e8/1e7
+    expected: '30.0'
+    tolerance: 0.05
+    shown: ['At 10 MHz the wavelength is $\lambda$ = 30.0 m']
+    source: {cite: reading1, at: 'slide 4'}
+    origin: page-own
+
+  - id: ex-omega
+    kind: value
+    where: 'worked example: omega = 2 pi x 1e7 (1/s)'
+    formula: 2*pi*1e7
+    expected: '6.283e7'
+    tolerance: 5e3
+    shown: ['$\omega = 2\pi \times 10^7 = 6.283 \times 10^7$ per second']
+    source: {cite: reading1, at: 'slide 3, eq. (5)'}
+    origin: page-own
+
+  - id: ex-p0
+    kind: value
+    where: 'worked example: p0 = q0 d = 5e-9 x 0.1 (C m)'
+    formula: 5e-9*0.1
+    expected: '5e-10'
+    tolerance: 1e-22
+    shown: ['$p_0 = q_0d = 5 \times 10^{-10}$ C m']
+    source: {cite: reading1, at: 'slide 5'}
+    origin: page-own
+
+  - id: ex-omega4
+    kind: value
+    where: 'worked example: omega^4 (1/s^4)'
+    formula: (2*pi*1e7)**4
+    expected: '1.559e31'
+    tolerance: 0.001e31
+    shown: ['Then $\omega^4 = 1.559 \times 10^{31}$ per second to the fourth']
+    source: {cite: reading1, at: 'slide 11, eq. (18)'}
+    origin: page-own
+
+  - id: ex-power
+    kind: value
+    where: 'worked example: <P> = mu0 p0^2 w^4/(12 pi c) (W)'
+    formula: 1.2566e-6*(5e-10)**2*(2*pi*1e7)**4/(12*pi*2.998e8)
+    expected: '4.33e-4'
+    tolerance: 0.005e-4
+    shown: ['= 4.33 \times 10^{-4}$ W, about 0.43 mW', 'radiate 0.43 mW; a 5 cm loop', 'radiate 0.43 mW, and a 5 cm loop']
+    source: {cite: reading1, at: 'slide 11, eq. (18)'}
+    origin: page-own
+
+  - id: ex-intensity
+    kind: value
+    where: 'worked example: <S> at r = 1000 m, theta = 90 degrees (W/m^2)'
+    formula: 1.2566e-6*(5e-10)**2*(2*pi*1e7)**4/(32*pi**2*2.998e8*1000**2)
+    expected: '5.17e-11'
+    tolerance: 0.005e-11
+    shown: ['= 5.17 \times 10^{-11}$ W/m²']
+    source: {cite: reading1, at: 'slide 8, eq. (17)'}
+    origin: page-own
+
+  - id: ex-omega2
+    kind: value
+    where: 'worked example: omega^2 (1/s^2)'
+    formula: (2*pi*1e7)**2
+    expected: '3.948e15'
+    tolerance: 0.001e15
+    shown: ['\times 3.948 \times 10^{15}/1000']
+    source: {cite: reading1, at: 'slide 7, eq. (14)'}
+    origin: page-own
+
+  - id: ex-field-amplitude
+    kind: value
+    where: 'worked example: E amplitude mu0 p0 w^2/(4 pi r) at 1000 m (V/m), with mu0/4 pi = 1e-7'
+    formula: 1.2566e-6*5e-10*(2*pi*1e7)**2/(4*pi*1000)
+    expected: '1.97e-4'
+    tolerance: 0.005e-4
+    shown: ['= 1.97 \times 10^{-4}$ V/m, about 0.2 mV/m']
+    source: {cite: reading1, at: 'slide 7, eq. (14)'}
+    origin: page-own
+
+  - id: ex-field-intensity-check
+    kind: identity
+    where: 'worked example cross-check: E0^2/(2 mu0 c) equals the averaged Poynting vector (17) at theta = 90 degrees'
+    formula: (MU*P0*WW**2/(4*pi*RR))**2/(2*MU*CC)
+    equals: MU*P0**2*WW**4/(32*pi**2*CC*RR**2)
+    samples: {MU: [1.2566e-06], P0: [5e-10], WW: [6.283e7], RR: [1000.0], CC: [2.998e8]}
+    tolerance: 1e-12
+    shown: ['The field amplitude from (14) is']
+    source: {cite: reading1, at: 'slide 8, eq. (17)'}
+    origin: page-own
+
+  - id: ex-sin2-45
+    kind: value
+    where: 'worked example and quiz 2: sin^2(45 degrees)'
+    formula: sin(pi/4)**2
+    expected: '1/2'
+    tolerance: 1e-12
+    shown: ['smaller by $\sin^2 45° = 1/2$', 'at 45° it is half the maximum']
+    source: {cite: reading1, at: 'slide 8, eq. (17)'}
+    origin: page-own
+
+  - id: ex-intensity-45
+    kind: value
+    where: 'worked example: <S> at 45 degrees, half of 5.171e-11 (W/m^2)'
+    formula: 0.5*1.2566e-6*(5e-10)**2*(2*pi*1e7)**4/(32*pi**2*2.998e8*1000**2)
+    expected: '2.59e-11'
+    tolerance: 0.005e-11
+    shown: ['$2.59 \times 10^{-11}$ W/m²']
+    source: {cite: reading1, at: 'slide 8, eq. (17)'}
+    origin: page-own
+
+  - id: ex-current
+    kind: value
+    where: 'worked example: I0 = q0 omega = 5e-9 x 2 pi x 1e7 (A)'
+    formula: 5e-9*2*pi*1e7
+    expected: '0.314'
+    tolerance: 0.0005
+    shown: ['$I_0 = q_0\omega = 0.314$ A']
+    source: {cite: reading1, at: 'slide 6, eq. (12)'}
+    origin: page-own
+
+  - id: ex-m0
+    kind: value
+    where: 'worked example: m0 = pi b^2 I0 with b = 0.05 m (A m^2)'
+    formula: pi*0.05**2*5e-9*2*pi*1e7
+    expected: '2.47e-3'
+    tolerance: 0.005e-3
+    shown: ['$m_0 = \pi b^2I_0 = \pi \times 0.0025 \times 0.314 = 2.47 \times 10^{-3}$ A m²']
+    source: {cite: reading1, at: 'slide 12, eq. (21)'}
+    origin: page-own
+
+  - id: ex-c-p0
+    kind: value
+    where: 'worked example: c p0 = 2.998e8 x 5e-10 (A m^2)'
+    formula: 2.998e8*5e-10
+    expected: '0.1499'
+    tolerance: 0.00005
+    shown: ['(2.47 \times 10^{-3}/0.1499)^2']
+    source: {cite: reading1, at: 'slide 13, eq. (23)'}
+    origin: page-own
+
+  - id: ex-ratio
+    kind: value
+    where: 'worked example: m0/(c p0)'
+    formula: (pi*0.05**2*5e-9*2*pi*1e7)/(2.998e8*5e-10)
+    expected: '0.0165'
+    tolerance: 0.00005
+    shown: ['= (0.0165)^2']
+    source: {cite: reading1, at: 'slide 13, eq. (23)'}
+    origin: page-own
+
+  - id: ex-ratio-squared
+    kind: value
+    where: 'worked example: (m0/(c p0))^2, the power ratio loop/spheres'
+    formula: ((pi*0.05**2*5e-9*2*pi*1e7)/(2.998e8*5e-10))**2
+    expected: '2.71e-4'
+    tolerance: 0.005e-4
+    shown: ['= 2.71 \times 10^{-4}$, about 3700 times less']
+    source: {cite: reading1, at: 'slide 13, eq. (23)'}
+    origin: page-own
+
+  - id: ex-ratio-inverse
+    kind: value
+    where: 'worked example and summary: 1/2.709e-4, "about 3700 times less"'
+    formula: 1/((pi*0.05**2*5e-9*2*pi*1e7)/(2.998e8*5e-10))**2
+    expected: '3700'
+    tolerance: 50
+    shown: ['radiates about 3700 times less', 'with the same current about 3700 times less']
+    source: {cite: reading1, at: 'slide 13, eq. (23)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-omega4
+    kind: value
+    where: 'quiz 1: doubling omega multiplies the power by 2^4; the field amplitude by 2^2'
+    formula: 2**4
+    expected: '16'
+    tolerance: 1e-12
+    shown: ['multiplies the power by $2^4 = 16$']
+    source: {cite: reading1, at: 'slide 11, eq. (18)'}
+    origin: page-own

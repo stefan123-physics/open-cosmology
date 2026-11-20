@@ -1,0 +1,539 @@
+# Calculations on content/year-3/8.06/phase-shifts-integral-scattering-equation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 21 transcripts L21.1-L21.3 and lecture notes chapter 7
+# ("Scattering"), pp. 142-147, eqs. (7.2.43)-(7.2.54) and (7.3.1)-(7.3.23).
+# Spherical Bessel functions in closed form: j0 = sin x/x, n0 = −cos x/x; j1 = sin x/x² − cos x/x, n1 = −cos x/x² − sin x/x.
+# Page's own worked example: square well V = −V0 for r < a, a = 2 fm, k = 0.25 fm⁻¹, K = √(k² + 2mV0/ħ²) = 0.7 fm⁻¹,
+# so ka = 0.5, Ka = 1.4; inside R0 = sin(Kr)/r, R1 = j1(Kr).
+# The phase-factor form (7.2.47)-(7.2.48) of the notes is complex and was checked by hand (solving (7.2.46) for e^(2iδ),
+# and n + ij = i(j − in), n − ij = −i(j + in)); the harness has no complex numbers.
+
+page: content/year-3/8.06/phase-shifts-integral-scattering-equation.mdx
+calcs:
+  # ---------------------------------------------------------------- matching and the phase shift (L21.1)
+  - id: matching-ratio
+    kind: identity
+    where: 'eq. (7.2.45): ka(A j'' + B n'')/(A j + B n) = ka(j'' − tan δ n'')/(j − tan δ n) with B/A = −tan δ'
+    formula: xx*(AA*jp + BB*np)/(AA*jj + BB*nn)
+    equals: xx*(jp - (-BB/AA)*np)/(jj - (-BB/AA)*nn)
+    samples: {xx: [0.5, 1.7], AA: [1.0, -0.6], BB: [0.3, 2.2], jj: [0.9, 0.4], nn: [-1.7, -0.3], jp: [-0.16, 0.25], np: [4.4, 0.8]}
+    tolerance: 1e-12
+    shown: ['ka\,\frac{j_l''(ka) - \tan\delta_l\;n_l''(ka)}{j_l(ka) - \tan\delta_l\;n_l(ka)}']
+    source: {cite: reading4, at: 'eq. (7.2.45), p. 143'}
+    origin: mit
+
+  - id: tan-delta-formula
+    kind: identity
+    where: 'L21.1 p. 4: tan δ = (j'' − γ j)/(n'' − γ n) solves γ = (j'' − tan δ n'')/(j − tan δ n), with γ = R''(a)/(kR(a)) = β/ka'
+    formula: (jp - ((jp - gg*jj)/(np - gg*nn))*np)/(jj - ((jp - gg*jj)/(np - gg*nn))*nn)
+    equals: gg
+    samples: {gg: [-1.5, 0.7, 2.3], jj: [0.9, 0.4, 0.2], nn: [-1.7, -0.3, -2.5], jp: [-0.16, 0.25, 0.3], np: [4.4, 0.8, 1.9]}
+    tolerance: 1e-9
+    shown: ['tex="\tan\delta_l = \frac{j_l''(ka) - \gamma_l\,j_l(ka)}{n_l''(ka) - \gamma_l\,n_l(ka)}, \qquad']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  - id: hard-sphere-factor
+    kind: identity
+    where: 'p. 143, (7.2.48)-(7.2.49): the first factor −(j − in)/(j + in) = −(j − in)²/(j² + n²) is the hard-sphere e^(2iδ) with tan δ = j/n; real part (n² − j²)/(j² + n²) = cos 2δ'
+    formula: (nn**2 - jj**2)/(jj**2 + nn**2)
+    equals: cos(2*atan(jj/nn))
+    samples: {jj: [0.9, 0.4, 0.2], nn: [-1.7, -0.3, 2.5]}
+    tolerance: 1e-12
+    shown: ['$n_l + i\,j_l = i\,(j_l - i\,n_l)$']
+    source: {cite: reading4, at: 'eqs. (7.2.48)-(7.2.49), p. 143'}
+    origin: mit
+
+  - id: first-ten
+    kind: fact
+    where: 'L21.1 p. 4: for a given potential one computes the first 10 phase shifts numerically'
+    value: 'ten'
+    shown: ['one often computes the first ten or so phase shifts numerically']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example: square well
+  - id: ex-Ka
+    kind: value
+    where: 'example: Ka = 0.7 fm⁻¹ × 2 fm = 1.4, ka = 0.25 × 2 = 0.5, and K²a² − k²a² = 1.71 (plot)'
+    inputs: {K: 0.7 1/fm, k: 0.25 1/fm, a: 2 fm}
+    formula: K*a
+    expected: '1.4'
+    shown: ['$ka = 0.5$ and $Ka = 1.4$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-well-strength
+    kind: value
+    where: 'plot: (Ka)² − (ka)² = 1.96 − 0.25 = 1.71'
+    inputs: {}
+    formula: 1.4**2 - 0.5**2
+    expected: '1.71'
+    shown: ['K²a² − k²a² = 1.71']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-gamma0
+    kind: value
+    where: 'example (a): R0 = sin(Kr)/r, R0''/R0 = K cot Ka − 1/a, γ0 = (Ka cot Ka − 1)/ka; Ka cot Ka = 0.2415'
+    inputs: {}
+    formula: (1.4/tan(1.4) - 1)/0.5
+    expected: '-1.517'
+    shown: ['$\gamma_0 = (Ka\cot Ka - 1)/ka = (0.2415 - 1)/0.5$, about $-1.517$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-kacot
+    kind: value
+    where: 'example (a): Ka cot Ka at Ka = 1.4'
+    inputs: {}
+    formula: 1.4/tan(1.4)
+    expected: '0.2415'
+    shown: ['$R_0''(a)/R_0(a) = K\cot Ka - 1/a$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-R0-logderiv
+    kind: identity
+    where: 'example (a): d/dr ln(sin(Kr)/r) = K cot Kr − 1/r'
+    formula: deriv('sin(KK*s)/s', 's', r0)/(sin(KK*r0)/r0)
+    equals: KK/tan(KK*r0) - 1/r0
+    samples: {KK: [0.7, 1.3], r0: [2.0, 0.8]}
+    tolerance: 1e-6
+    shown: ['so $R_0 = \sin(Kr)/r$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-j0
+    kind: value
+    where: 'example (b): j0(0.5) = sin 0.5/0.5'
+    inputs: {}
+    formula: sin(0.5)/0.5
+    expected: '0.9589'
+    shown: ['$j_0 = \sin x/x = 0.9589$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-n0
+    kind: value
+    where: 'example (b): n0(0.5) = −cos 0.5/0.5'
+    inputs: {}
+    formula: -cos(0.5)/0.5
+    expected: '-1.7552'
+    shown: ['$n_0 = -\cos x/x = -1.7552$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-j0p
+    kind: value
+    where: 'example (b): j0''(x) = cos x/x − sin x/x² at x = 0.5, checked against the derivative of sin x/x'
+    inputs: {}
+    formula: deriv('sin(s)/s', 's', 0.5)
+    expected: '-0.1625'
+    shown: ['$j_0'' = \cos x/x - \sin x/x^2 = -0.1625$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-n0p
+    kind: value
+    where: 'example (b): n0''(x) = sin x/x + cos x/x² at x = 0.5, checked against the derivative of −cos x/x'
+    inputs: {}
+    formula: deriv('-cos(s)/s', 's', 0.5)
+    expected: '4.4692'
+    shown: ['$n_0'' = \sin x/x + \cos x/x^2 = 4.4692$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-num
+    kind: value
+    where: 'example (b): numerator j0'' − γ0 j0 with unrounded values'
+    inputs: {}
+    formula: (cos(0.5)/0.5 - sin(0.5)/0.25) - ((1.4/tan(1.4) - 1)/0.5)*sin(0.5)/0.5
+    expected: '1.2921'
+    shown: ['$\tan\delta_0 = (-0.1625 + 1.517 \times 0.9589)/(4.4692 - 1.517 \times 1.7552) = 1.2921/1.8065$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-den
+    kind: value
+    where: 'example (b): denominator n0'' − γ0 n0 with unrounded values'
+    inputs: {}
+    formula: (sin(0.5)/0.5 + cos(0.5)/0.25) - ((1.4/tan(1.4) - 1)/0.5)*(-cos(0.5)/0.5)
+    expected: '1.8065'
+    shown: ['(with unrounded values)']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-tan0
+    kind: value
+    where: 'example (b): tan δ0 = 1.2921/1.8065'
+    inputs: {}
+    formula: ((cos(0.5)/0.5 - sin(0.5)/0.25) - ((1.4/tan(1.4) - 1)/0.5)*sin(0.5)/0.5)/((sin(0.5)/0.5 + cos(0.5)/0.25) - ((1.4/tan(1.4) - 1)/0.5)*(-cos(0.5)/0.5))
+    expected: '0.7153'
+    shown: ['about 0.7153, so']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-delta0
+    kind: value
+    where: 'example (b): δ0 = arctan 0.7153 = 0.621 rad = 35.6°'
+    inputs: {}
+    formula: atan(((cos(0.5)/0.5 - sin(0.5)/0.25) - ((1.4/tan(1.4) - 1)/0.5)*sin(0.5)/0.5)/((sin(0.5)/0.5 + cos(0.5)/0.25) - ((1.4/tan(1.4) - 1)/0.5)*(-cos(0.5)/0.5)))
+    expected: '0.621'
+    shown: ['so $\delta_0$ is about 0.621 rad']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-delta0-deg
+    kind: value
+    where: 'example (b): 0.6209 rad in degrees'
+    inputs: {}
+    formula: atan(0.71526)*180/pi
+    expected: '35.6'
+    shown: ['or $35.6°$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-closed-arg
+    kind: value
+    where: 'example (b) check: (k/K) tan Ka = (0.25/0.7) tan 1.4'
+    inputs: {}
+    formula: 0.25/0.7*tan(1.4)
+    expected: '2.071'
+    shown: ['$-0.5 + \arctan(2.071)$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-closed-delta0
+    kind: value
+    where: 'example (b) check: δ0 = −ka + arctan((k/K) tan Ka), the standard closed form for the square well (matching sin(Kr) to sin(kr + δ0) at r = a)'
+    inputs: {}
+    formula: -0.5 + atan(0.25/0.7*tan(1.4))
+    expected: '0.621'
+    shown: ['the same 0.621 rad']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-closed-equals-formula
+    kind: identity
+    where: 'example: the general tan δ0 formula with γ0 = (Ka cot Ka − 1)/ka agrees with δ0 = −ka + arctan((k/K) tan Ka) (for |δ0| < π/2)'
+    formula: atan(((cos(xx)/xx - sin(xx)/xx**2) - ((XX/tan(XX) - 1)/xx)*sin(xx)/xx)/((sin(xx)/xx + cos(xx)/xx**2) - ((XX/tan(XX) - 1)/xx)*(-cos(xx)/xx)))
+    equals: -xx + atan(xx/XX*tan(XX))
+    samples: {xx: [0.5, 0.2, 0.8], XX: [1.4, 1.0, 1.2]}
+    tolerance: 1e-9
+    shown: ['$\delta_0 = -ka + \arctan\left(\frac{k}{K}\tan Ka\right)$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-unitarity-bound
+    kind: value
+    where: 'example (c): 4π/k² at k = 0.25 fm⁻¹'
+    inputs: {k: 0.25 1/fm}
+    formula: 4*pi/k**2
+    expected: '201.1 fm**2'
+    shown: ['$4\pi/k^2 = 201.1$ fm²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-sin2-delta0
+    kind: value
+    where: 'example (c): sin²δ0; also "a third of the bound", since σ0/(4π/k²) = sin²δ0'
+    inputs: {}
+    formula: sin(-0.5 + atan(0.25/0.7*tan(1.4)))**2
+    expected: '0.338'
+    shown: ['$\sin^2\delta_0 = 0.338$', 'It is a third of the bound']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-sigma0
+    kind: value
+    where: 'example (c) and plot caption: σ0 = (4π/k²) sin²δ0 = 68.0 fm²'
+    inputs: {k: 0.25 1/fm}
+    formula: 4*pi/k**2*sin(-0.5 + atan(0.25/0.7*tan(1.4)))**2
+    expected: '68.0 fm**2'
+    shown: ['is about 68.0 fm²', 'or 68.0 fm² for a = 2 fm']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-sigma0-barn
+    kind: value
+    where: 'example (c): 68.0 fm² = 0.680 b'
+    inputs: {k: 0.25 1/fm}
+    formula: 4*pi/k**2*sin(-0.5 + atan(0.25/0.7*tan(1.4)))**2
+    expected: '0.680 barn'
+    shown: ['or 0.680 b']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-hard-sphere-area
+    kind: value
+    where: 'example (c): 4πa² for a = 2 fm'
+    inputs: {a: 2 fm}
+    formula: 4*pi*a**2
+    expected: '50.3 fm**2'
+    shown: ['$4\pi a^2 = 50.3$ fm²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-gamma1
+    kind: value
+    where: 'example (d): γ1 = (K/k) j1''(Ka)/j1(Ka) at Ka = 1.4'
+    inputs: {}
+    formula: (0.7/0.25)*deriv('sin(s)/s**2 - cos(s)/s', 's', 1.4)/(sin(1.4)/1.4**2 - cos(1.4)/1.4)
+    expected: '1.168'
+    shown: ['$\gamma_1 = (K/k)\,j_1''(Ka)/j_1(Ka)$, about 1.168']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-tan1
+    kind: value
+    where: 'example (d): tan δ1 = (j1''(x) − γ1 j1(x))/(n1''(x) − γ1 n1(x)) at x = 0.5'
+    inputs: {}
+    formula: (deriv('sin(s)/s**2 - cos(s)/s', 's', 0.5) - 1.167873*(sin(0.5)/0.25 - cos(0.5)/0.5))/(deriv('-cos(s)/s**2 - sin(s)/s', 's', 0.5) - 1.167873*(-cos(0.5)/0.25 - sin(0.5)/0.5))
+    expected: '0.0056'
+    shown: ['gives $\tan\delta_1$ of about 0.0056']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-delta1-deg
+    kind: value
+    where: 'example (d): δ1 = arctan 0.005571 in degrees'
+    inputs: {}
+    formula: atan(0.0055705)*180/pi
+    expected: '0.32'
+    shown: ['so $\delta_1$ is only about $0.32°$']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-sigma1
+    kind: value
+    where: 'example (d): σ1 = 3(4π/k²) sin²δ1'
+    inputs: {k: 0.25 1/fm}
+    formula: 3*4*pi/k**2*sin(atan(0.0055705))**2
+    expected: '0.019 fm**2'
+    shown: ['is about 0.019 fm²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: ex-sigma1-fraction
+    kind: value
+    where: 'example (d): σ1/σ0 = 0.0187/68.05 = 0.000275, less than 0.03%'
+    inputs: {}
+    formula: 3*sin(atan(0.0055705))**2/sin(-0.5 + atan(0.25/0.7*tan(1.4)))**2*100
+    expected: '0.0275'
+    tolerance: '1%'
+    shown: ['less than 0.03% of $\sigma_0$']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- plot caption
+  - id: plot-low-energy
+    kind: value
+    where: 'plot: σ0/a² = 4π sin²δ0/(ka)² as ka → 0 (taken at ka = 0.0001) with (Ka)² = (ka)² + 1.71'
+    inputs: {}
+    formula: 4*pi*sin(-0.0001 + atan(0.0001/sqrt(0.0001**2 + 1.71)*tan(sqrt(0.0001**2 + 1.71))))**2/0.0001**2
+    expected: '42.5'
+    shown: ['levels off near 42.5a²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: plot-example-point
+    kind: value
+    where: 'plot: σ0/a² at ka = 0.5 (the worked example), 68.05 fm²/(2 fm)²'
+    inputs: {}
+    formula: 4*pi*sin(-0.5 + atan(0.5/sqrt(0.25 + 1.71)*tan(sqrt(0.25 + 1.71))))**2/0.25
+    expected: '17.0'
+    shown: ['it is 17.0a²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: plot-example-point-y
+    kind: value
+    where: 'plot: the marked point y = 17.01'
+    inputs: {}
+    formula: 4*pi*sin(-0.5 + atan(0.5/sqrt(0.25 + 1.71)*tan(sqrt(0.25 + 1.71))))**2/0.25
+    expected: '17.01'
+    shown: ['y: 17.01']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: plot-ka-2
+    kind: value
+    where: 'plot: σ0/a² at ka = 2'
+    inputs: {}
+    formula: 4*pi*sin(-2 + atan(2/sqrt(4 + 1.71)*tan(sqrt(4 + 1.71))))**2/4
+    expected: '0.66'
+    shown: ['fallen to 0.66a²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- impact parameter and unitarity (L21.2)
+  - id: impact-parameter
+    kind: identity
+    where: 'eq. (7.2.50): ħl = b ħk gives b = l/k'
+    formula: hb*ll/(hb*kk)
+    equals: ll/kk
+    samples: {hb: [1.0, 2.0], ll: [1, 4], kk: [0.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['\hbar l \simeq b\,\hbar k \quad\to\quad b \simeq \frac{l}{k}']
+    source: {cite: reading4, at: 'eq. (7.2.50), p. 143'}
+    origin: mit
+
+  - id: turning-point
+    kind: identity
+    where: 'eqs. (7.2.52)-(7.2.53): ħ²l(l + 1)/(2m r*²) = ħ²k²/2m at r* = √(l(l + 1))/k'
+    formula: hb**2*ll*(ll + 1)/(2*mm*(sqrt(ll*(ll + 1))/kk)**2)
+    equals: hb**2*kk**2/(2*mm)
+    samples: {hb: [1.0, 2.0, 1.5], ll: [1, 4, 9], kk: [0.5, 2.0, 1.1], mm: [1.0, 3.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['k^2r_\star^2 = l(l+1) \quad\to\quad kr_\star \simeq l']
+    source: {cite: reading4, at: 'eqs. (7.2.52)-(7.2.54), p. 144'}
+    origin: mit
+
+  - id: turning-point-large-l
+    kind: limit
+    where: 'eq. (7.2.54): k r* = √(l(l + 1)) ≈ l for large l (ratio → 1)'
+    inputs: {}
+    formula: sqrt(ll*(ll + 1))/ll
+    limit: 1
+    vary: {ll: [100, 10000, 1000000]}
+    tolerance: 1e-5
+    shown: ['So $j_l(kr)$ is essentially zero for $r < l/k$']
+    source: {cite: reading4, at: 'eq. (7.2.54), p. 144'}
+    origin: mit
+
+  - id: ka-five
+    kind: fact
+    where: 'L21.2 p. 2: for ka about 5, l up to about 5 contributes (rule of thumb)'
+    value: '5'
+    shown: ['for $ka$ about 5, one can hope that $l$ up to about 5 gives most of it']
+    source: {cite: reading2, at: 'p. 2'}
+    origin: mit
+
+  - id: quiz-ka
+    kind: value
+    where: 'quiz 2: ka = 0.1 fm⁻¹ × 3 fm'
+    inputs: {k: 0.1 1/fm, a: 3 fm}
+    formula: k*a
+    expected: '0.3'
+    shown: ['Here $ka = 0.3$']
+    source: {cite: reading4, at: 'eq. (7.2.51), p. 144'}
+    origin: page-own
+
+  - id: quiz-bound
+    kind: value
+    where: 'quiz 3: 4π/k² at k = 0.5 fm⁻¹'
+    inputs: {k: 0.5 1/fm}
+    formula: 4*pi/k**2
+    expected: '50.3 fm**2'
+    shown: ['$4\\pi/0.25$ fm², about 50.3 fm²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: classical-ring
+    kind: identity
+    where: 'L21.2 p. 5: 2π b Δb with b = l/k, Δb = 1/k is 2πl/k² = (1/4)(4π/k²)(2l)'
+    formula: 2*pi*(ll/kk)*(1/kk)
+    equals: 0.25*(4*pi/kk**2)*(2*ll)
+    samples: {ll: [1, 3, 10], kk: [0.5, 2.0, 1.1]}
+    tolerance: 1e-12
+    shown: ['2\pi b\,\Delta b = 2\pi\,\frac{l}{k}\cdot\frac{1}{k} = \frac{1}{4}\cdot\frac{4\pi}{k^2}\,(2l)']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: mit
+
+  - id: classical-rings-sum
+    kind: limit
+    where: 'page: Σ from l = 0 to L of 2πl/k² = πL(L + 1)/k²; with L = ka its ratio to πa² = π(L/k)² tends to 1 for large ka'
+    inputs: {kk: 0.5}
+    formula: (pi*LL*(LL + 1)/kk**2)/(pi*(LL/kk)**2)
+    limit: 1
+    vary: {LL: [100, 10000, 1000000]}
+    tolerance: 1e-5
+    shown: ['gives about $\pi(ka)^2/k^2 = \pi a^2$']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- integral equation and Green's function (L21.3)
+  - id: U-units
+    kind: units
+    where: 'eq. (7.3.2): U = 2mV/ħ² has units of one over length squared, like k²'
+    inputs: {m: 1 kg, V: 1 J, k: 1 1/m}
+    terms: ['2*m*V/hbar**2', 'k**2']
+    unit: '1/m**2'
+    shown: ['$U$ has units of one over length squared']
+    source: {cite: reading4, at: 'eq. (7.3.2), p. 145'}
+    origin: page-own
+
+  - id: spherical-wave-free
+    kind: identity
+    where: 'eq. (7.3.9): (∇² + k²)(cos kr/r) = 0 for r ≠ 0 (real part of e^(ikr)/r), with ∇²g = (1/r) d²(rg)/dr²; first derivative of r g = cos kr is −k sin kr'
+    formula: deriv('-kk*sin(kk*s)', 's', r0)/r0 + kk**2*cos(kk*r0)/r0
+    equals: 0
+    samples: {kk: [0.5, 2.0], r0: [0.7, 3.0]}
+    tolerance: 1e-6
+    shown: ['as the radial Laplacian $\nabla^2 g = \frac{1}{r}\,\frac{d^2}{dr^2}(rg)$ quickly shows']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: mit
+
+  - id: laplacian-of-exp
+    kind: identity
+    where: 'eq. (7.3.13): ∇² e^(ikr) = (−k² + 2ik/r) e^(ikr); real part: ∇² cos kr = −k² cos kr − 2k sin(kr)/r, with d(r cos kr)/dr = cos kr − kr sin kr'
+    formula: deriv('cos(kk*s) - kk*s*sin(kk*s)', 's', r0)/r0
+    equals: -kk**2*cos(kk*r0) - 2*kk*sin(kk*r0)/r0
+    samples: {kk: [0.5, 2.0], r0: [0.7, 3.0]}
+    tolerance: 1e-6
+    shown: ['$\nabla^2e^{\pm ikr} = \left(-k^2 \pm 2ik/r\right)e^{\pm ikr}$']
+    source: {cite: reading4, at: 'eq. (7.3.13), p. 146'}
+    origin: mit
+
+  - id: green-cross-term-cancels
+    kind: identity
+    where: 'eq. (7.3.14): (2ik/r)(1/(4πr)) from the first term equals 2 (ik)(1/(4πr²)) from the cross term, so they cancel (magnitudes over i e^(ikr))'
+    formula: 2*kk/r0*(1/(4*pi*r0))
+    equals: 2*kk*(1/(4*pi*r0**2))
+    samples: {kk: [0.5, 2.0], r0: [0.7, 3.0]}
+    tolerance: 1e-12
+    shown: ['which cancels the leftover piece']
+    source: {cite: reading4, at: 'eq. (7.3.14), p. 146'}
+    origin: mit
+
+  - id: one-percent
+    kind: fact
+    where: 'L21.3 p. 6: at a hundred times the range, replacing |r − r''| by r in the denominator is an error of about 1% (at most r''/r)'
+    value: '1%'
+    shown: ['a hundred times the range away, the error is about 1%']
+    source: {cite: reading3, at: 'p. 6'}
+    origin: mit
+
+  - id: far-distance
+    kind: limit
+    where: 'eq. (7.3.19): |r − r''| − (r − n·r'') → 0 for large r (angle α between r and r'', r'' = 1.3)'
+    inputs: {rp: 1.3, al: 0.7}
+    formula: sqrt(rr**2 - 2*rr*rp*cos(al) + rp**2) - (rr - rp*cos(al))
+    limit: 0
+    vary: {rr: [1000, 100000, 10000000]}
+    tolerance: 1e-5
+    shown: ['|\vec r - \vec r''| \simeq r - \hat n\cdot\vec r'' \quad \text{(phase)}']
+    source: {cite: reading4, at: 'eq. (7.3.19), p. 146'}
+    origin: mit
+
+  - id: far-next-term
+    kind: limit
+    where: 'page: the next term of |r − r''| is (r''² − (n·r'')²)/2r: r times the remainder tends to r''² sin²α/2, so the phase error k(r''² sin²α)/2r is small only if r ≫ k a²'
+    inputs: {rp: 1.3, al: 0.7}
+    formula: rr*(sqrt(rr**2 - 2*rr*rp*cos(al) + rp**2) - (rr - rp*cos(al))) + 5
+    limit: rp**2*sin(al)**2/2 + 5
+    vary: {rr: [100, 1000, 10000]}
+    tolerance: 1e-4
+    shown: ['it is about $(r''^2 - (\hat n\cdot\vec r'')^2)/2r$']
+    source: {cite: reading3, at: 'p. 6'}
+    origin: page-own
+
+  - id: ex-hard-sphere-s-wave
+    kind: value
+    where: 'example (c), after review: the hard sphere of radius 2 fm at k = 0.25 fm⁻¹ (ka = 0.5) has δ0 = −ka, so its s-wave cross section is (4π/k²) sin²(0.5)'
+    inputs: {k: 0.25 1/fm}
+    formula: 4*pi/k**2*sin(0.5)**2
+    expected: '46.2 fm**2'
+    shown: ['about 46.2 fm²']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own

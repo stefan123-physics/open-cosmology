@@ -1,0 +1,316 @@
+# Calculations on content/year-4/8.07/lienard-wiechert-point-charge-fields.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 15, "Potentials and Fields" (Guth, typeset slides, Lecture 36,
+# December 10, 2012), slides 15-20, eqs. (27)-(42). The slides quote no numbers; no slips in this part (eq. (34) checked).
+# Page's own worked example: q = 1 nC moving along x at v = 0.6c, at the origin at t = 0, field point (0, 4, 0) m;
+# 1/(4 pi eps0) = 8.988e9 m/F, c = 2.998e8 m/s. Quiz: v = 0.5c towards the field point.
+
+page: content/year-4/8.07/lienard-wiechert-point-charge-fields.mdx
+calcs:
+  # ---------------------------------------------------------------- Z
+  - id: delta-of-function
+    kind: identity
+    where: 'slide 16, eq. (30): integral of delta(g(x)) = 1/|g''(x0)|; checked with a narrow Gaussian for delta and g(x) = 3x - 1.2 (zero at 0.4): numerical integral = 1/3'
+    formula: integrate('exp(-((3*x - 1.2)/WW)**2)/(WW*sqrt(pi))', 'x', 0, 1)
+    equals: 1/3
+    samples: {WW: [0.05, 0.1]}
+    tolerance: 1e-6
+    shown: ['\delta\left(g(x)\right) = \sum_i\frac{\delta(x - x_i)}{|g''(x_i)|}, \qquad g(x_i) = 0']
+    source: {cite: reading1, at: 'slide 16, eq. (30)'}
+    origin: mit
+
+  - id: g-prime
+    kind: identity
+    where: 'slide 17, eq. (34): for x_p(t) = v t, g(x'') = x'' - v (t - |r - r''|/c) has g'' = 1 + (v/c)(x'' - x)/|r - r''| (field point (X, Y, 0), r'' = (x'', 0, 0), c = 1)'
+    formula: deriv('xp - VV*(TT - sqrt((XX - xp)**2 + YY**2))', 'xp', XP, 1)
+    equals: 1 + VV*(XP - XX)/sqrt((XX - XP)**2 + YY**2)
+    samples: {VV: [0.3, 0.6, 0.9], TT: [0.0, 1.0, 2.0], XX: [1.0, -2.0, 0.5], YY: [4.0, 1.0, 2.0], XP: [-3.0, 0.5, 1.5]}
+    tolerance: 1e-6
+    shown: ['= 1 + \frac{1}{c}\,\frac{dx_p}{dt}\,\frac{x'' - x}{|\vec r - \vec r\,''|}']
+    source: {cite: reading1, at: 'slide 17, eq. (34)'}
+    origin: mit
+
+  - id: z-general-form
+    kind: identity
+    where: 'slide 17, eq. (35): 1/g'' = (1 - v.(r - r'')/(c|r - r''|))^-1, since (dx_p/dt)(x'' - x) = -v.(r - r'') for v along x'
+    formula: 1/(1 + VV*(XP - XX)/sqrt((XX - XP)**2 + YY**2))
+    equals: (1 - VV*(XX - XP)/sqrt((XX - XP)**2 + YY**2))**(-1)
+    samples: {VV: [0.3, 0.6, 0.9], XX: [1.0, -2.0, 0.5], YY: [4.0, 1.0, 2.0], XP: [-3.0, 0.5, 1.5]}
+    tolerance: 1e-12
+    shown: ['Z = \left(1 - \frac{\vec v}{c} \cdot \frac{\vec r - \vec r\,''}{|\vec r - \vec r\,''|}\right)^{-1}" cite']
+    source: {cite: reading1, at: 'slide 17, eq. (35)'}
+    origin: mit
+
+  - id: z-direct-integral
+    kind: identity
+    where: 'eqs. (29)-(35) checked directly: charge x_p(t) = v t, field point (0, 4) at t = 0 (c = 1); integral over x'' of a narrow Gaussian delta(x'' - x_p(t_r(x''))) equals Z = 1/(1 - v cos theta) at the retarded point (v = 0.6: x_p = -3, cos theta = 0.6, Z = 1/0.64)'
+    formula: integrate('exp(-((x - 0.6*(0 - sqrt(x**2 + 16)))/WW)**2)/(WW*sqrt(pi))', 'x', -3.5, -2.5)
+    equals: 1/0.64
+    samples: {WW: [0.01, 0.02]}
+    tolerance: 1e-3
+    shown: ['A picture of why (ours, not on the slides)']
+    source: {cite: reading1, at: 'slide 16, eq. (29)'}
+    origin: page-own
+
+  - id: z-plot-range
+    kind: value
+    where: 'plot: largest Z on the graph, 1/(1 - 0.85) at theta = 0 with the slider at its maximum, below the top of the range (8)'
+    formula: 1/(1 - 0.85)
+    expected: '6.67'
+    tolerance: 0.01
+    shown: ['range={[0, 8]}']
+    source: {cite: reading1, at: 'slide 17, eq. (35)'}
+    origin: page-own
+
+  - id: quiz-z-towards
+    kind: value
+    where: 'quiz 2: factor 1/(1 - v/c) for v = 0.5c towards the field point'
+    formula: 1/(1 - 0.5)
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['the factor is $1/(1 - v/c) = 1/0.5 = 2$']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  - id: quiz-z-away
+    kind: value
+    where: 'quiz 2: moving away, 1/(1 + 0.5)'
+    formula: 1/1.5
+    expected: '0.67'
+    tolerance: 0.005
+    shown: ['$1/1.5 \\approx 0.67$']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- potentials and fields
+  - id: a-equals-v-over-c2-V
+    kind: identity
+    where: 'slide 18, eq. (38): (mu0/4 pi) q v / D = (v/c^2) (1/(4 pi eps0)) q / D since mu0 eps0 = 1/c^2'
+    formula: (MU/(4*pi))*QQ*VV/DD
+    equals: (VV/CC**2)*QQ/(4*pi*EPS*DD)
+    samples: {MU: [1.25663706e-6], EPS: [8.8541878e-12], CC: [2.99792458e8], QQ: [1e-9], VV: [1.8e8], DD: [3.2]}
+    tolerance: 1e-6
+    shown: ['using $\mu_0 = 1/(\varepsilon_0c^2)$ for the last step']
+    source: {cite: reading1, at: 'slide 18, eq. (38)'}
+    origin: mit
+
+  - id: u-rewritten
+    kind: identity
+    where: 'slide 20, eq. (42): c R-hat - v = (c/R)[r - (r_p + v (t - t_r))] with R = c (t - t_r); x components, c = 1'
+    formula: (XX - XP)/RR - VV
+    equals: (1/RR)*(XX - (XP + VV*RR))
+    samples: {XX: [0.0, 1.5], XP: [-3.0, 0.4], RR: [5.0, 2.2], VV: [0.6, -0.3]}
+    tolerance: 1e-12
+    shown: ['\vec u = \frac{c}{|\vec r - \vec r_p|}\left[\vec r - \left(\vec r_p + \vec v_p(t - t_r)\right)\right]']
+    source: {cite: reading1, at: 'slide 20, eq. (42)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-retarded-ct
+    kind: value
+    where: 'worked example: 0.64 (c t_r)^2 = 16, negative root (m)'
+    formula: -sqrt(16/0.64)
+    expected: '-5'
+    tolerance: 1e-9
+    shown: ['So $0.64\,(ct_r)^2 = 16$ and $ct_r = -5$ m']
+    source: {cite: reading1, at: 'slide 18'}
+    origin: page-own
+
+  - id: ex-retarded-x
+    kind: value
+    where: 'worked example: x_p = 0.6 c t_r (m)'
+    formula: 0.6*(-5)
+    expected: '-3'
+    tolerance: 1e-12
+    shown: ['$x_p = 0.6 \times (-5) = -3$ m']
+    source: {cite: reading1, at: 'slide 18'}
+    origin: page-own
+
+  - id: ex-distance
+    kind: value
+    where: 'worked example: |r - r_p| = sqrt(3^2 + 4^2) (m)'
+    formula: sqrt(3**2 + 4**2)
+    expected: '5'
+    tolerance: 1e-12
+    shown: ['$|\vec r - \vec r_p| = \sqrt{3^2 + 4^2} = 5$ m']
+    source: {cite: reading1, at: 'slide 18'}
+    origin: page-own
+
+  - id: ex-light-time
+    kind: value
+    where: 'worked example: 5 m / c (ns)'
+    formula: 5/2.998e8*1e9
+    expected: '16.7'
+    tolerance: 0.05
+    shown: ['light needs about 16.7 ns for it']
+    source: {cite: reading1, at: 'slide 15'}
+    origin: page-own
+
+  - id: ex-dot
+    kind: value
+    where: 'worked example: (v/c) . R-hat = 0.6 x 0.6'
+    formula: 0.6*0.6
+    expected: '0.36'
+    tolerance: 1e-12
+    shown: ['= 0.6 \times 0.6 = 0.36$']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  - id: ex-denominator
+    kind: value
+    where: 'worked example: |r - r_p| (1 - 0.36) (m)'
+    formula: 5*(1 - 0.36)
+    expected: '3.2'
+    tolerance: 1e-12
+    shown: ['= 5 \times 0.64 = 3.2$ m']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  - id: ex-V
+    kind: value
+    where: 'worked example: V = 8.988e9 x 1e-9 / 3.2 (V)'
+    formula: 8.988e9*1e-9/3.2
+    expected: '2.809'
+    tolerance: 0.0005
+    shown: ['Then $V = 8.988 \times 10^9 \times 10^{-9}/3.2 = 2.809$ V', '$V = 2.809$ V, $E = 0.702$ V/m']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  - id: ex-V-static
+    kind: value
+    where: 'worked example: static potential 8.988/4 (V)'
+    formula: 8.988/4
+    expected: '2.247'
+    tolerance: 0.0005
+    shown: ['$8.988/4 = 2.247$ V']
+    source: {cite: reading1, at: 'slide 8, eq. (19)'}
+    origin: page-own
+
+  - id: ex-V-ratio
+    kind: value
+    where: 'worked example: 4/3.2 = gamma = 1/sqrt(1 - 0.36)'
+    formula: 1/sqrt(1 - 0.6**2)
+    expected: '1.25'
+    tolerance: 1e-12
+    shown: ['$4/3.2 = 1.25$ times larger']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  - id: ex-V-ratio-direct
+    kind: value
+    where: 'worked example: 4/3.2'
+    formula: 4/3.2
+    expected: '1.25'
+    tolerance: 1e-12
+    shown: ['which is $\gamma = 1/\sqrt{1 - 0.6^2}$']
+    source: {cite: reading1, at: 'slide 18, eq. (36)'}
+    origin: page-own
+
+  - id: ex-A
+    kind: value
+    where: 'worked example: A_x = 0.6 V/c (T m)'
+    formula: 0.6*2.809/2.998e8
+    expected: '5.62e-9'
+    tolerance: 5e-12
+    shown: ['$A_x = 0.6\,V/c = 0.6 \times 2.809/2.998 \times 10^8 = 5.62 \times 10^{-9}$ T m']
+    source: {cite: reading1, at: 'slide 18, eq. (38)'}
+    origin: page-own
+
+  - id: ex-u
+    kind: identity
+    where: 'worked example: u = c(0.6, 0.8) - (0.6c, 0): x component 0, y component 0.8 (c = 1); checked as u_x + 1 and u_y'
+    formula: (0.6 - 0.6 + 1)*AA
+    equals: AA
+    samples: {AA: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['$\vec u = c\,(0.6, 0.8, 0) - (0.6c, 0, 0) = (0, 0.8c, 0)$']
+    source: {cite: reading1, at: 'slide 19, eq. (40)'}
+    origin: page-own
+
+  - id: ex-u-dot-R
+    kind: value
+    where: 'worked example: u . (r - r_p) = 0.8 c x 4 (in units of c m)'
+    formula: 0.8*4
+    expected: '3.2'
+    tolerance: 1e-12
+    shown: ['$\vec u \cdot (\vec r - \vec r_p) = 0.8c \times 4 = 3.2c$ m']
+    source: {cite: reading1, at: 'slide 19, eq. (39)'}
+    origin: page-own
+
+  - id: ex-E-factor
+    kind: value
+    where: 'worked example: 5 x 0.64 x 0.8 / 3.2^3 (1/m^2, the factor multiplying q/(4 pi eps0))'
+    formula: 5*0.64*0.8/3.2**3
+    expected: '0.078125'
+    tolerance: 1e-9
+    shown: ['\frac{5 \times 0.64 \times 0.8}{3.2^3} = 8.988 \times 0.078125 = 0.702$ V/m']
+    source: {cite: reading1, at: 'slide 19, eq. (39)'}
+    origin: page-own
+
+  - id: ex-E
+    kind: value
+    where: 'worked example and summary: E = 8.988 x 0.078125 (V/m)'
+    formula: 8.988*0.078125
+    expected: '0.702'
+    tolerance: 0.0005
+    shown: ['$E = 0.702$ V/m and']
+    source: {cite: reading1, at: 'slide 19, eq. (39)'}
+    origin: page-own
+
+  - id: ex-E-static
+    kind: value
+    where: 'worked example: Coulomb field 8.988/16 (V/m), and the ratio 0.702/0.562 = 1.25'
+    formula: 8.988/16
+    expected: '0.562'
+    tolerance: 0.0005
+    shown: ['$8.988/16 = 0.562$ V/m: again a factor $\gamma = 1.25$']
+    source: {cite: reading1, at: 'slide 19, eq. (39)'}
+    origin: page-own
+
+  - id: ex-E-gamma
+    kind: value
+    where: 'worked example: the velocity field at the perpendicular point equals gamma times Coulomb: 0.078125 x 16'
+    formula: 0.078125*16
+    expected: '1.25'
+    tolerance: 1e-12
+    shown: ['the known result for the field straight to the side of a moving charge']
+    source: {cite: reading1, at: 'slide 19, eq. (39)'}
+    origin: page-own
+
+  - id: ex-B
+    kind: value
+    where: 'worked example and summary: B = 0.6 x 0.702/2.998e8 (T)'
+    formula: 0.6*0.702/2.998e8
+    expected: '1.40e-9'
+    tolerance: 5e-12
+    shown: ['$B = 0.6 \times 0.702/2.998 \times 10^8 = 1.40 \times 10^{-9}$ T', 'about 1.4 nT along $z$', 'and $B = 1.40$ nT']
+    source: {cite: reading1, at: 'slide 19, eq. (41)'}
+    origin: page-own
+
+  - id: ex-B-cross
+    kind: identity
+    where: 'worked example: (0.6, 0.8, 0) x (0, E, 0) has z component 0.6 E (and no x, y components)'
+    formula: 0.6*EE - 0*0
+    equals: 0.6*EE
+    samples: {EE: [0.702, 1.0]}
+    tolerance: 1e-12
+    shown: ['\frac{1}{c}(0.6, 0.8, 0) \times (0, E, 0) = \frac{0.6\,E}{c}\,\hat z']
+    source: {cite: reading1, at: 'slide 19, eq. (41)'}
+    origin: page-own
+
+  - id: ex-B-relativity
+    kind: value
+    where: 'worked example check, B = gamma v q/(4 pi eps0 c^2 d^2) for uniform motion (T): 1.25 x 0.6 x 8.988e9 x 1e-9/(2.998e8 x 16)'
+    formula: 1.25*0.6*8.988/(2.998e8*16)
+    expected: '1.40e-9'
+    tolerance: 1e-11
+    shown: ['This is $\vec v \times \vec E/c^2$']
+    source: {cite: reading1, at: 'slide 19, eq. (41)'}
+    origin: page-own
+
+  - id: liénard-wiechert-dates
+    kind: fact
+    where: 'history: Liénard (1898) and Wiechert (1900) found the potentials independently'
+    value: '1898, 1900'
+    shown: ['found around 1900 by Alfred-Marie Liénard and Emil Wiechert, independently']
+    source: {cite: lw-originals, at: 'Liénard 1898; Wiechert 1900'}
+    origin: page-own

@@ -1,0 +1,124 @@
+---
+title: "Factorization into A = LU"
+slug: factorization-a-lu
+course: "18.06"
+lecture: 4
+order: 1
+summary: "The inverse of a product reverses the order, (AB)⁻¹ = B⁻¹A⁻¹, like putting socks and shoes back on; likewise (A⁻¹)ᵀ is the inverse of Aᵀ. Elimination without row exchanges takes A to U by elimination matrices, E₃₂E₃₁E₂₁A = U. Moving them to the other side gives A = LU with L = E₂₁⁻¹E₃₁⁻¹E₃₂⁻¹, lower triangular with ones on the diagonal. In that order the multipliers do not interfere: they simply sit in L, so L costs nothing to record, while the forward product E mixes them (a 10 from multipliers 2 and 5). Pulling the pivots out of U gives A = LDU. Elimination on an n × n matrix costs about n² + (n − 1)² + … + 1² ≈ n³/3 operations, and each right-hand side about n². Row exchanges use permutation matrices: there are 6 of size 3 × 3 (n! in general), products and inverses of them are again permutations, and P⁻¹ = Pᵀ."
+prerequisites: [multiplication-and-inverse-matrices]
+source:
+  title: "MIT 18.06 Lecture 4: Factorization into A = LU"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-4-factorization-into-a-lu/
+  readings:
+    - title: "18.06 Lecture 4 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/bcac89b9054d2f1b8efc7b8c1a859068_MsIvs_6vC38.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 5
+    why: "Transposes, permutations and the vector spaces Rⁿ."
+quiz:
+  - question: "What is $(AB)^{-1}$?"
+    choices: ["$A^{-1}B^{-1}$", "$B^{-1}A^{-1}$", "$(BA)^{-1}$ only if $A = B$", "$A^{-1} + B^{-1}$"]
+    answer: 1
+    explanation: "$AB\\,B^{-1}A^{-1} = A I A^{-1} = I$: inverses in reverse order."
+  - question: "Why is $L$ in $A = LU$ easy to write down?"
+    choices: ["It is the identity", "It is always diagonal", "The multipliers of elimination go directly into it, below the diagonal", "It equals $U^T$"]
+    answer: 2
+    explanation: "Taking the inverse elimination matrices in reverse order, the multipliers do not interfere with each other."
+  - question: "About how many operations does elimination take on an $n \\times n$ matrix?"
+    choices: ["$n$", "$n^2$", "$n!$", "$\\frac{1}{3}n^3$"]
+    answer: 3
+    explanation: "$n^2 + (n - 1)^2 + \\cdots + 1^2 \\approx \\int_0^n x^2\\,dx = \\frac{1}{3}n^3$."
+flashcards:
+  - front: "$A = LU$"
+    back: "Elimination without row exchanges: $U$ upper triangular (pivots on the diagonal), $L$ lower triangular with ones on the diagonal and the multipliers below it."
+  - front: "Inverse and transpose of a product"
+    back: "$(AB)^{-1} = B^{-1}A^{-1}$; $(A^T)^{-1} = (A^{-1})^T$."
+  - front: "Cost of elimination"
+    back: "About $\\frac{1}{3}n^3$ operations on $A$; about $n^2$ for each right-hand side."
+status: reviewed
+---
+
+This lecture completes elimination by writing it as a **factorization**, $A = LU$, the most basic factorization of a matrix (transcript, pp. 1, 4). It continues [matrix multiplication and inverses](/courses/18-06/multiplication-and-inverse-matrices).
+
+## Inverses and transposes of products
+
+If $A$ and $B$ are invertible, so is $AB$, with the inverses in **reverse order** (transcript, pp. 1–2):
+
+<Formula label="Inverse of a product" tex="(AB)^{-1} = B^{-1}A^{-1}, \qquad (AB)(B^{-1}A^{-1}) = A\,I\,A^{-1} = I" cite="reading1" at="pp. 1–2" />
+
+using the freedom to move parentheses. Take off shoes, then socks; to undo it, socks go back on first (p. 2). For the transpose, take $AA^{-1} = I$ and transpose both sides: transposes of a product also come in reverse order, and $I^T = I$ (pp. 2–3):
+
+<Formula label="Inverse of a transpose" tex="(A^{-1})^T A^T = I, \qquad (A^T)^{-1} = (A^{-1})^T" cite="reading1" at="p. 3" />
+
+Transposing and inverting can be done in either order (p. 3).
+
+## A = LU for a 2 × 2 matrix
+
+Take $A$ with first pivot 2 and multiplier 4 (transcript, pp. 4–5). (A 4 in the bottom right corner would leave no second pivot: a singular matrix.) Elimination is one step (p. 5):
+
+<Formula label="Elimination step" tex="E_{21}A = \begin{pmatrix} 1 & 0 \\ -4 & 1 \end{pmatrix}\begin{pmatrix} 2 & 1 \\ 8 & 7 \end{pmatrix} = \begin{pmatrix} 2 & 1 \\ 0 & 3 \end{pmatrix} = U" cite="reading1" at="p. 5" />
+
+Multiply by $E_{21}^{-1}$, which adds back what $E_{21}$ removed (pp. 5–6):
+
+<Formula label="A = LU" tex="\begin{pmatrix} 2 & 1 \\ 8 & 7 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 4 & 1 \end{pmatrix}\begin{pmatrix} 2 & 1 \\ 0 & 3 \end{pmatrix} = LU" cite="reading1" at="p. 6" />
+
+$L$ is **lower triangular** with ones on its diagonal; $U$ has the pivots on its diagonal (p. 6). Dividing each row of $U$ by its pivot gives a more balanced form, with a diagonal matrix $D$ of pivots in the middle (pp. 6–7):
+
+<Formula label="A = LDU" tex="\begin{pmatrix} 2 & 1 \\ 8 & 7 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 4 & 1 \end{pmatrix}\begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}\begin{pmatrix} 1 & 1/2 \\ 0 & 1 \end{pmatrix}" cite="reading1" at="pp. 6–7" />
+
+## Three by three: why L is better than E
+
+With no row exchanges, $E_{32}E_{31}E_{21}A = U$ (transcript, p. 7). Moving the matrices across inverts them in reverse order (p. 8):
+
+<Formula label="L as a product of inverses" tex="A = E_{21}^{-1}E_{31}^{-1}E_{32}^{-1}\,U = LU" cite="reading1" at="p. 8" />
+
+Why prefer this product? Take multipliers 2 for $E_{21}$ and 5 for $E_{32}$, with $E_{31} = I$ (p. 9). The forward product mixes them (pp. 9–10):
+
+<Formula label="Forward product E" tex="E_{32}E_{21} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & -5 & 1 \end{pmatrix}\begin{pmatrix} 1 & 0 & 0 \\ -2 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} = \begin{pmatrix} 1 & 0 & 0 \\ -2 & 1 & 0 \\ 10 & -5 & 1 \end{pmatrix}" cite="reading1" at="pp. 9–10" />
+
+The 10 appears because 2 of row 1 went into row 2 and then 5 of that row 2 went into row 3, so row 1 affected row 3 (p. 10). Both $E$ and $L$ are lower triangular with ones on the diagonal, because rows are only subtracted from rows below them (p. 10). In the reverse order nothing interferes (pp. 10–12):
+
+<Formula label="L" tex="L = E_{21}^{-1}E_{32}^{-1} = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}\begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 5 & 1 \end{pmatrix} = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 0 & 5 & 1 \end{pmatrix}" cite="reading1" at="pp. 11–12" />
+
+**With no row exchanges, the multipliers go directly into $L$** (p. 12). So there is nothing to compute: record the multipliers during elimination, save each new row of $U$, and $A$ itself can be forgotten (pp. 12–13). This is the new insight that the matrix form brings (p. 13).
+
+## How expensive is elimination?
+
+Can we solve systems of order a thousand, or a million, in a second, an hour, a week (transcript, p. 13)? Count one operation as a multiply plus a subtract, for a full $n \times n$ matrix with no zeros (pp. 14–15). Clearing the first column changes nearly all $n^2$ entries; the next stage works on an $(n - 1) \times (n - 1)$ matrix, and so on (pp. 16–17):
+
+<Formula label="Operation count" tex="n^2 + (n - 1)^2 + \cdots + 2^2 + 1^2 \approx \int_0^n x^2\,dx = \frac{1}{3}n^3" cite="reading1" at="pp. 17–18" />
+
+Not $n$, not $n!$ (as determinants by their formula would be), but $\frac13n^3$: the $\frac13$ accounts for the shrinking matrices, as calculus shows (p. 18). (Strang integrates from 1 to $n$; from 0 gives exactly $\frac13n^3$, and the difference is negligible for large $n$.) Each right-hand side $b$ costs only about $n^2$, so after the expensive split of $A$ into $L$ and $U$, many right-hand sides are cheap (p. 19).
+
+## Permutations
+
+Row exchanges are needed when a zero appears in a pivot position, and are done by **permutation matrices**: the rows of the identity rearranged (transcript, pp. 20–21). For $3 \times 3$ there are six: the identity, three single exchanges, and two cycles, such as the one moving row 2 to row 1, row 3 to row 2 and row 1 to row 3 (pp. 20–22). They form a **group**: products and inverses of permutations are again permutations (p. 22). A single exchange is its own inverse, the two cycles are inverses of each other, and in general (p. 23)
+
+<Formula label="Inverse of a permutation" tex="P^{-1} = P^T" cite="reading1" at="p. 23" />
+
+There are $4! = 24$ permutation matrices of size $4 \times 4$ (p. 23); in general there are $n!$ of size $n$.
+
+<WorkedExample title="An LU factorization of your own">
+<Problem>
+(a) Factor $A = \begin{pmatrix} 3 & 1 & 2 \\ 6 & 4 & 5 \\ -3 & 3 & 4 \end{pmatrix}$ as $LU$ and find its determinant. (b) Estimate the cost of elimination for $n = 1000$, and what doubling $n$ does.
+</Problem>
+<Step title="(a) Multipliers">
+$\ell_{21} = 2$: row 2 becomes $(0, 2, 1)$. $\ell_{31} = -1$: row 3 becomes $(0, 4, 6)$. $\ell_{32} = 2$: row 3 becomes $(0, 0, 4)$.
+</Step>
+<Step title="(a) The factors">
+$L = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ -1 & 2 & 1 \end{pmatrix}$ and $U = \begin{pmatrix} 3 & 1 & 2 \\ 0 & 2 & 1 \\ 0 & 0 & 4 \end{pmatrix}$. Check row 3 of $LU$: $-1(3, 1, 2) + 2(0, 2, 1) + (0, 0, 4) = (-3, 3, 4)$. The determinant is the product of the pivots (as in Lecture 2), $3\cdot2\cdot4 = 24$.
+</Step>
+<Step title="(b) Cost">
+$\frac13(1000)^3 \approx 3.3 \times 10^8$ operations. Doubling $n$ multiplies the cost by $2^3 = 8$, but the cost of each right-hand side only by 4.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $(AB)^{-1} = B^{-1}A^{-1}$ and $(A^T)^{-1} = (A^{-1})^T$.
+- Without row exchanges, $A = LU$: $L$ is lower triangular with ones on the diagonal and the multipliers below; $A = LDU$ separates the pivots.
+- Elimination costs about $\frac13n^3$ operations; each right-hand side about $n^2$.
+- Permutation matrices perform row exchanges; there are $n!$ of them, and $P^{-1} = P^T$.

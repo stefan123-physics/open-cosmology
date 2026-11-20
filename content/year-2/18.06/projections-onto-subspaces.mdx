@@ -1,0 +1,118 @@
+---
+title: "Projections onto subspaces"
+slug: projections-onto-subspaces
+course: "18.06"
+lecture: 15
+order: 1
+summary: "Projecting b onto the line through a gives the closest point p = x̂a, found from the right angle: the error e = b − x̂a is perpendicular to a, so aᵀ(b − x̂a) = 0 and x̂ = aᵀb/aᵀa. The projection matrix P = aaᵀ/aᵀa has rank one, column space the line through a, and the two defining properties Pᵀ = P and P² = P (projecting twice changes nothing). Doubling b doubles p; doubling a changes nothing. Projections are needed because Ax = b often has no solution: replace b by its projection p onto the column space and solve Ax̂ = p. For a subspace with basis a₁, …, aₙ, the columns of A, the error must be perpendicular to every column: Aᵀ(b − Ax̂) = 0, so e is in N(Aᵀ), the orthogonal complement of C(A). That gives AᵀAx̂ = Aᵀb, x̂ = (AᵀA)⁻¹Aᵀb, p = Ax̂ and P = A(AᵀA)⁻¹Aᵀ, again symmetric with P² = P. The inverse cannot be split unless A is square, and then P = I. The first application, fitting the points (1, 1), (2, 2), (3, 2) by a line b = C + Dt, gives three equations in two unknowns with no solution, to be solved by least squares."
+prerequisites: [orthogonal-vectors-and-subspaces]
+source:
+  title: "MIT 18.06 Lecture 15: Projections onto subspaces"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-15-projections-onto-subspaces/
+  readings:
+    - title: "18.06 Lecture 15 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/96a31504ec5d489d84113320b593eb0d_Y_Ac6KiQ1t0.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 16
+    why: "Projection matrices and least squares: the best line through the three points."
+quiz:
+  - question: "Which two properties characterize a projection matrix $P$?"
+    choices: ["$P^T = P$ and $P^2 = P$", "$P^T = P^{-1}$ and $P^2 = I$", "$P$ invertible and symmetric", "$P^2 = 0$"]
+    answer: 0
+    explanation: "Projections are symmetric, and projecting a second time leaves the projection where it is."
+  - question: "If the vector $a$ is doubled, the projection of $b$ onto the line through $a$…"
+    choices: ["doubles", "halves", "does not change", "is multiplied by 4"]
+    answer: 2
+    explanation: "The line is the same. In $p = a\\,a^Tb/a^Ta$ the factor 2 appears twice above and twice below."
+  - question: "The error $e = b - A\\hat x$ lies in which subspace?"
+    choices: ["$C(A)$", "$N(A)$", "$C(A^T)$", "$N(A^T)$"]
+    answer: 3
+    explanation: "$A^Te = 0$, so $e$ is in the left nullspace, perpendicular to the column space."
+flashcards:
+  - front: "Projection onto a line through $a$"
+    back: "$\\hat x = \\frac{a^Tb}{a^Ta}$, $p = a\\hat x$, $P = \\frac{aa^T}{a^Ta}$ (rank one)."
+  - front: "Projection onto $C(A)$"
+    back: "$A^TA\\hat x = A^Tb$; $\\hat x = (A^TA)^{-1}A^Tb$, $p = A\\hat x$, $P = A(A^TA)^{-1}A^T$."
+  - front: "Properties of a projection matrix"
+    back: "$P^T = P$ and $P^2 = P$. If $A$ is square and invertible, $P = I$."
+status: reviewed
+---
+
+An important lecture, about **projections** (transcript, p. 1). It continues [orthogonal vectors and subspaces](/courses/18-06/orthogonal-vectors-and-subspaces), where the equation $A^TA\hat x = A^Tb$ was announced.
+
+## Projecting onto a line
+
+Find the point $p$ on the line through $a$ that is **closest to $b$** (transcript, p. 1). (Strang says "closest to a" once; he means $b$.) The key is the right angle: the **error** $e = b - p$ is perpendicular to $a$ (p. 1). Trigonometry with angles would give clumsy formulas; linear algebra does better (p. 2). Since $p$ is on the line, $p = \hat xa$ for some number $\hat x$, and (pp. 2–3)
+
+<Formula label="Projection onto a line" tex="a^T(b - \hat x a) = 0 \;\Rightarrow\; \hat x\,a^Ta = a^Tb \;\Rightarrow\; \hat x = \frac{a^Tb}{a^Ta}, \qquad p = a\hat x = a\,\frac{a^Tb}{a^Ta}" cite="reading1" at="pp. 2–3" />
+
+Doubling $b$ doubles $p$; doubling $a$ (or reversing it) changes nothing, since the line is the same: the factor appears twice above and twice below (pp. 3–4).
+
+**The projection matrix** (pp. 4–5). $p$ is a matrix times $b$:
+
+<Formula label="Projection matrix onto a line" tex="p = Pb, \qquad P = \frac{aa^T}{a^Ta}" cite="reading1" at="pp. 4–5" />
+
+$aa^T$ is a column times a row, an $n \times n$ matrix, divided by the number $a^Ta = \|a\|^2$ (p. 5). Every $Pb$ lands on the line, so the **column space of $P$ is the line through $a$** and the rank is 1 (p. 6). Two more facts (pp. 6–8):
+
+<Formula label="Properties of P" tex="P^T = P, \qquad P^2 = P" cite="reading1" at="p. 7" />
+
+$P$ is symmetric, and **projecting twice gives the same result as projecting once**: a point already on the line stays put (p. 7). (The transcript prints capital $P$ for both the projection and the matrix; Strang says "capital P" for the matrix, p. 8. Here the vector is $p$.)
+
+## Why project?
+
+$Ax = b$ may have no solution, typically when there are more equations than unknowns (transcript, p. 8). $Ax$ is always in the column space, and $b$ probably is not. So solve the closest problem that can be solved (p. 9):
+
+<Formula label="The solvable problem" tex="A\hat x = p, \qquad p = \text{projection of } b \text{ onto } C(A)" cite="reading1" at="p. 9" />
+
+The hat marks the best possible $\hat x$, not the $x$ that does not exist (p. 9).
+
+## Projecting onto a subspace
+
+Describe a plane in $\mathrm{R}^3$ by a basis $a_1$, $a_2$, independent but not necessarily perpendicular; it is the column space of $A = [a_1\;\;a_2]$, and the same works for $n$ columns (transcript, p. 10). If $b$ is already in the column space, then $p = b$ and $e = 0$; otherwise the projection is a combination of the columns, $p = A\hat x$ (p. 11). The error $e = b - A\hat x$ must be **perpendicular to the plane**, so to $a_1$ and to $a_2$ (pp. 11–13):
+
+<Formula label="The error is perpendicular to the columns" tex="a_1^T(b - A\hat x) = 0, \quad a_2^T(b - A\hat x) = 0 \;\Longrightarrow\; A^T(b - A\hat x) = 0" cite="reading1" at="p. 13" />
+
+With one column this is the line case again (p. 13). And it fits the four subspaces: $A^Te = 0$ puts $e$ in $N(A^T)$, which is exactly the space perpendicular to $C(A)$ (pp. 13–14). Rewritten, the key equation and its three answers are (pp. 15–17):
+
+<Formula label="Projection onto C(A)" tex="A^TA\hat x = A^Tb; \qquad \hat x = (A^TA)^{-1}A^Tb, \qquad p = A\hat x = A(A^TA)^{-1}A^Tb, \qquad P = A(A^TA)^{-1}A^T" cite="reading1" at="pp. 15–17" />
+
+$A^TA$ is now an $n \times n$ matrix, so division becomes an inverse; for one column $a$ these are the line formulas (pp. 15–16).
+
+**A tempting mistake** (pp. 17–18). Why not write $(A^TA)^{-1} = A^{-1}(A^T)^{-1}$, so that $P = AA^{-1}(A^T)^{-1}A^T = I$? Because $A$ is not square and has no inverse. If $A$ were square and invertible, its column space would be all of $\mathrm{R}^n$, and then indeed $P = I$: projecting onto the whole space changes nothing (p. 18).
+
+The general $P$ still has the two properties (pp. 18–19). It is symmetric because $A^TA$ and its inverse are; and $P^2 = P$ because in the product the middle $A^TA$ cancels against $(A^TA)^{-1}$:
+
+<Formula label="P squared" tex="P^2 = A(A^TA)^{-1}(A^TA)(A^TA)^{-1}A^T = A(A^TA)^{-1}A^T = P" cite="reading1" at="p. 19" />
+
+## The first application: fitting a line
+
+The most common use is fitting data points that lie close to a line but not on it (transcript, p. 19). Take the points $(t, b) = (1, 1)$, $(2, 2)$, $(3, 2)$ and look for the best line $b = C + Dt$ (p. 20). (Strang first gives the second point as $(2, 1)$ and corrects it.) Going through all three points would need (p. 21)
+
+<Formula label="Three equations, two unknowns" tex="C + D = 1, \quad C + 2D = 2, \quad C + 3D = 2: \qquad \begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}\begin{pmatrix} C \\ D \end{pmatrix} = \begin{pmatrix} 1 \\ 2 \\ 2 \end{pmatrix}" cite="reading1" at="p. 21" />
+
+which has no solution. Multiplying by $A^T$ gives the equation $A^TA\hat x = A^Tb$ that can be solved; the numbers come next lecture (pp. 21–22).
+
+<WorkedExample title="Projections of your own">
+<Problem>
+(a) Project $b = (3, 0, 3)$ onto the line through $a = (1, 1, 1)$, and write $P$. (b) Project $b = (1, 2, 3)$ onto the plane spanned by $a_1 = (1, 1, 0)$ and $a_2 = (0, 1, 1)$.
+</Problem>
+<Step title="(a) A line">
+$\hat x = a^Tb/a^Ta = 6/3 = 2$, so $p = (2, 2, 2)$ and $e = (1, -2, 1)$, with $a^Te = 1 - 2 + 1 = 0$. $P = \frac{1}{3}\begin{pmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{pmatrix}$: each entry of $Pb$ is the average of the entries of $b$.
+</Step>
+<Step title="(b) The normal equations">
+With $A = [a_1\;\;a_2]$: $A^TA = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ and $A^Tb = (3, 5)$. Solving, $\hat x = (\frac{1}{3}, \frac{7}{3})$.
+</Step>
+<Step title="(b) Projection and error">
+$p = \frac{1}{3} a_1 + \frac{7}{3} a_2 = (\frac{1}{3}, \frac{8}{3}, \frac{7}{3})$ and $e = b - p = (\frac{2}{3}, -\frac{2}{3}, \frac{2}{3})$. Check: $a_1^Te = \frac{2}{3} - \frac{2}{3} = 0$ and $a_2^Te = -\frac{2}{3} + \frac{2}{3} = 0$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Onto a line: $\hat x = a^Tb/a^Ta$, $p = a\hat x$, $P = aa^T/a^Ta$.
+- Onto $C(A)$: $A^TA\hat x = A^Tb$, $p = A\hat x$, $P = A(A^TA)^{-1}A^T$; the error $e$ is in $N(A^T)$, perpendicular to $C(A)$.
+- Every projection matrix has $P^T = P$ and $P^2 = P$; for square invertible $A$, $P = I$.
+- Unsolvable $Ax = b$ becomes the solvable $A\hat x = p$: least squares, starting with the best line through data points.

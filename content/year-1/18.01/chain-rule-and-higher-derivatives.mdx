@@ -1,0 +1,213 @@
+---
+title: The chain rule and higher derivatives
+slug: chain-rule-and-higher-derivatives
+course: "18.01"
+lecture: 4
+order: 1
+summary: "Proofs of the product and quotient rules, which also extend the power rule to negative powers; the chain rule, which differentiates a function of a function by multiplying the two derivatives; and higher derivatives, with their notations, from u″ to dⁿu/dxⁿ, and the fact that the n-th derivative of xⁿ is n!."
+prerequisites: [derivatives-of-sine-and-cosine]
+source:
+  title: "MIT 18.01 Lecture 4: Chain Rule, and Higher Derivatives"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-4-chain-rule/
+  readings:
+    - title: "18.01 Lecture 4 notes"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec4/
+    - title: "18.01 Lecture 4 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/4sTKcvYMNxk.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.01"
+    lecture: 5
+    why: "Implicit differentiation: the chain rule applied to equations that define y only indirectly."
+  - course: "8.286"
+    lecture: 9
+    why: "A closed universe is described through a parameter θ, with a and t both functions of θ; the chain rule turns that into the expansion rate da/dt."
+quiz:
+  - question: "What is $\\dfrac{d}{dt}\\sin(10t)$?"
+    choices: ["$\\cos(10t)$", "$10\\cos t$", "$10\\cos(10t)$", "$\\cos 10$"]
+    answer: 2
+    explanation: "Outside function sine, inside $10t$: the derivative of the outside, $\\cos(10t)$, times the derivative of the inside, 10."
+  - question: "Using the quotient rule with $u = 1$, what is the derivative of $1/v$?"
+    choices: ["$1/v'$", "$-v'/v^2$", "$v'/v^2$", "$-1/v^2$"]
+    answer: 1
+    explanation: "$(u'v - uv')/v^2$ with $u' = 0$ and $u = 1$ gives $-v'/v^2$."
+  - question: "What is $\\dfrac{d}{dx}x^{-3}$?"
+    choices: ["$-3x^{-2}$", "$-3x^{-4}$", "$3x^{-4}$", "$-x^{-4}$"]
+    answer: 1
+    explanation: "The power rule also holds for negative powers: $-3x^{-3-1} = -3x^{-4}$."
+  - question: "What is the fourth derivative of $\\sin x$?"
+    choices: ["$\\cos x$", "$-\\sin x$", "$-\\cos x$", "$\\sin x$"]
+    answer: 3
+    explanation: "$\\sin \\to \\cos \\to -\\sin \\to -\\cos \\to \\sin$: after four derivatives sine comes back."
+  - question: "What is $D^5 x^5$, the fifth derivative of $x^5$?"
+    choices: ["0", "5", "25", "120"]
+    answer: 3
+    explanation: "$D^n x^n = n!$, and $5! = 5 \\cdot 4 \\cdot 3 \\cdot 2 \\cdot 1 = 120$. One more derivative gives 0."
+flashcards:
+  - front: "Chain rule"
+    back: "If $y = f(x)$ and $x = g(t)$: $\\dfrac{dy}{dt} = \\dfrac{dy}{dx}\\,\\dfrac{dx}{dt}$, or $\\dfrac{d}{dt}f(g(t)) = f'(g(t))\\,g'(t)$"
+  - front: "Derivative of a reciprocal"
+    back: "$\\left(\\dfrac{1}{v}\\right)' = -\\dfrac{v'}{v^2}$; for $v = x^n$ this gives $\\dfrac{d}{dx}x^{-n} = -nx^{-n-1}$"
+  - front: "Notations for the second derivative"
+    back: "$u'' = \\dfrac{d}{dx}\\dfrac{du}{dx} = \\left(\\dfrac{d}{dx}\\right)^2 u = \\dfrac{d^2u}{dx^2} = D^2u$ (the denominator is $(dx)^2$, not $d(x^2)$)"
+  - front: "n-th derivative of xⁿ"
+    back: "$D^n x^n = n! = n(n-1)\\cdots 2\\cdot 1$, and $D^{n+1}x^n = 0$"
+status: reviewed
+---
+
+Lecture 4 completes the toolkit for differentiating combinations of functions. (The recorded lecture was given by Haynes Miller, substituting for David Jerison.) It proves the product and quotient rules stated at the end of [Lecture 3](/courses/18-01/derivatives-of-sine-and-cosine), adds the most powerful rule of all, the **chain rule** for a function of a function, and ends with derivatives of derivatives.
+
+## The product rule, once more
+
+The rule from Lecture 3, $(uv)' = u'v + uv'$, already gives derivatives that were out of reach before, such as
+
+<Formula label="A product" tex="\frac{d}{dx}\bigl(x^n\sin x\bigr) = nx^{n-1}\sin x + x^n\cos x" cite="reading2" at="p. 1" />
+
+Longer products can be done one factor at a time. To see why the rule holds, look at how much the product changes when $x$ changes by $\Delta x$. Adding and subtracting $u(x)\,v(x + \Delta x)$ splits the change into a change of $u$ and a change of $v$:
+
+<Formula label="Change of a product" tex="\Delta(uv) = u(x+\Delta x)\,v(x+\Delta x) - u(x)\,v(x) = (\Delta u)\,v(x+\Delta x) + u(x)\,(\Delta v)" cite="reading2" at="p. 2" />
+
+Divide by $\Delta x$ and let $\Delta x \to 0$. Because $v$ is differentiable, it is continuous, so $v(x + \Delta x) \to v(x)$:
+
+<Formula label="Product rule" tex="\frac{\Delta(uv)}{\Delta x} = \frac{\Delta u}{\Delta x}\,v(x+\Delta x) + u\,\frac{\Delta v}{\Delta x} \;\to\; \frac{du}{dx}\,v + u\,\frac{dv}{dx}" cite="reading2" at="pp. 2–3" />
+
+(The [Lecture 3 page](/courses/18-01/derivatives-of-sine-and-cosine) gives the notes' version, which splits the same change the other way round, with $u(x + \Delta x)$ in the second term, and the rectangle picture; either works.)
+
+## The quotient rule and negative powers
+
+For a quotient, write the new values as $u + \Delta u$ and $v + \Delta v$ and put the difference over a common denominator. The terms $uv$ cancel:
+
+<Formula label="Change of a quotient" tex="\Delta\left(\frac{u}{v}\right) = \frac{u + \Delta u}{v + \Delta v} - \frac{u}{v} = \frac{(\Delta u)\,v - u\,(\Delta v)}{(v + \Delta v)\,v}" cite="reading2" at="pp. 3–4" />
+
+Dividing by $\Delta x$ and letting $\Delta x \to 0$, with $\Delta v \to 0$ because $v$ is continuous:
+
+<Formula label="Quotient rule" tex="\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2} \qquad (v \neq 0)" cite="reading2" at="pp. 3–4" />
+
+A first use: take $u = 1$, so $u' = 0$. The derivative of a reciprocal is
+
+<Formula label="Derivative of a reciprocal" tex="\left(\frac{1}{v}\right)' = -\frac{v'}{v^2} = -v^{-2}\,v'" cite="reading2" at="p. 4" />
+
+and with $v = x^n$ this gives the derivative of a **negative power**:
+
+<Formula label="Negative powers" tex="\frac{d}{dx}\,x^{-n} = -x^{-2n}\cdot nx^{n-1} = -n\,x^{-n-1}" cite="reading2" at="p. 5" />
+
+This is exactly the old power rule, $\frac{d}{dx}x^m = mx^{m-1}$, with $m = -n$: the rule holds for negative exponents as well as positive ones. The notes reach the same result in two ways (notes, p. 2): writing $x^{-n} = (1/x)^n$ and using the chain rule below with the derivative of $1/x$ from Lecture 1, and writing it as $1/u$ with $u = x^n$, as here.
+
+<WorkedExample title="A quotient">
+<Problem>
+Differentiate $f(x) = \dfrac{x}{x^2 + 1}$ and find its slope at $x = 2$.
+</Problem>
+<Step title="Quotient rule">
+$u = x$, $v = x^2 + 1$, so $u' = 1$, $v' = 2x$, and $f'(x) = \dfrac{(x^2 + 1) - x\cdot 2x}{(x^2 + 1)^2} = \dfrac{1 - x^2}{(x^2 + 1)^2}$.
+</Step>
+<Step title="At x = 2">
+$f'(2) = \dfrac{1 - 4}{25} = -0.12$: the graph is falling there.
+</Step>
+</WorkedExample>
+
+## The chain rule
+
+Many functions are made by doing one function and then another: a **composition**. For instance $y = (\sin t)^{10}$, also written $\sin^{10} t$, means "take the sine of $t$, then the tenth power". The trick is to name the intermediate result:
+
+<Formula label="Naming the inside" tex="x = \sin t, \qquad y = x^{10}" cite="reading2" at="p. 6" />
+
+Now $y$ depends on $x$, and $x$ on $t$. For a small change $\Delta t$, the change in the intermediate variable cancels algebraically:
+
+<Formula label="Proof of the chain rule" tex="\frac{\Delta y}{\Delta t} = \frac{\Delta y}{\Delta x}\,\frac{\Delta x}{\Delta t} \;\to\; \frac{dy}{dt} = \frac{dy}{dx}\,\frac{dx}{dt}" cite="reading2" at="p. 6" />
+
+As $\Delta t \to 0$, also $\Delta x \to 0$, because $x$ is a continuous function of $t$ (notes, p. 1). [This short argument divides by $\Delta x$, so it assumes $\Delta x \neq 0$ for small $\Delta t$; a careful proof also covers the case $\Delta x = 0$, and the rule holds in general.] So the derivative of a composition is the **product** of the two derivatives: the "dx's cancel". In function notation, with $y = f(x)$ and $x = g(t)$:
+
+<Formula label="Chain rule in function notation" tex="\frac{d}{dt}\,f(g(t)) = f'(g(t))\,g'(t)" cite="reading1" at="p. 1" />
+
+Order matters in a composition: with $f(x) = \sin x$ and $g(x) = x^2$, $f(g(x)) = \sin(x^2)$ but $g(f(x)) = \sin^2 x$, two different functions (notes, p. 1).
+
+Back to the example: the outside function is the tenth power, the inside one the sine. Differentiate the outside, keeping the inside as it is, then multiply by the derivative of the inside, and finally substitute $x = \sin t$ back:
+
+<Formula label="First example" tex="\frac{d}{dt}(\sin t)^{10} = 10x^9\cdot\cos t = 10\sin^9 t\,\cos t" cite="reading2" at="pp. 6–7" />
+
+With practice the intermediate name can stay in your head. For $\sin(10t)$ the outside is the sine and the inside is $10t$:
+
+<Formula label="Second example" tex="\frac{d}{dt}\sin(10t) = \cos(10t)\cdot 10 = 10\cos(10t)" cite="reading2" at="p. 7" />
+
+The notes add an example with an inside function $u = 1/x$:
+
+<Formula label="Third example" tex="\frac{d}{dx}\cos\frac{1}{x} = \Bigl(-\sin\frac{1}{x}\Bigr)\Bigl(-\frac{1}{x^2}\Bigr) = \frac{1}{x^2}\sin\frac{1}{x}" cite="reading1" at="p. 2" />
+
+<Plot variable="x" domain={[0, 3]} range={[-6, 6]} xLabel="x" yLabel="value"
+  curves={[
+    { expr: "sin(x^2)", label: "sin(x²)" },
+    { expr: "2*x*cos(x^2)", label: "its derivative 2x cos(x²)", dash: true },
+    { tangentOf: 0, at: "a" }
+  ]}
+  params={{ a: { value: 1.5, min: 0, max: 3, step: 0.02, label: "a" } }}
+  points={[{ curve: 0, at: "a" }]}
+  caption="sin(x²) and its derivative from the chain rule, 2x cos(x²), both computed from their formulas. The straight line is the tangent at x = a (slider); its slope equals the height of the dashed curve there (at a = 1.5, about −1.88). The inside function x² makes sin(x²) wiggle faster and faster, and the factor 2x makes the slopes grow."
+/>
+
+<WorkedExample title="A power of a polynomial">
+<Problem>
+Differentiate $y = (3x^2 + 1)^5$ and evaluate the derivative at $x = 1$.
+</Problem>
+<Step title="Outside and inside">
+Inside: $u = 3x^2 + 1$, with $du/dx = 6x$. Outside: $y = u^5$, with $dy/du = 5u^4$.
+</Step>
+<Step title="Multiply">
+$dy/dx = 5(3x^2 + 1)^4 \cdot 6x = 30x\,(3x^2 + 1)^4$.
+</Step>
+<Step title="At x = 1">
+$30 \cdot 1 \cdot 4^4 = 30 \cdot 256 = 7680$. Multiplying out $(3x^2 + 1)^5$ first and differentiating term by term gives the same, with much more work.
+</Step>
+</WorkedExample>
+
+## Higher derivatives
+
+The derivative of a function is a new function, so it can be differentiated again. Doing that over and over gives the **higher derivatives**: $u''$ is the second derivative, the third has three primes (also written $u^{(3)}$), and after a while one writes $u^{(4)}$ instead of four primes. For the sine:
+
+<Formula label="Derivatives of the sine" tex="u = \sin x,\quad u' = \cos x,\quad u'' = -\sin x,\quad u^{(3)} = -\cos x,\quad u^{(4)} = \sin x" cite="reading2" at="p. 8" />
+
+After four derivatives the sine comes back. That is special to sines and cosines; most functions do not repeat.
+
+## Notations
+
+The derivative can be seen as an **operator**: something applied to a function to make a new function. It is written $\frac{d}{dx}$, or simply $D$. The second derivative is that operator applied twice, and the notations reflect it:
+
+<Formula label="Notations for the second derivative" tex="u'' = \frac{d}{dx}\frac{du}{dx} = \Bigl(\frac{d}{dx}\Bigr)^2 u = \frac{d^2}{dx^2}\,u = \frac{d^2u}{dx^2} = D^2u" cite="reading2" at="pp. 8–9" />
+
+The last notation is the strangest. Its denominator is $(dx)^2$, part of the symbol for the second derivative; it does **not** mean $d(x^2)$. The third derivative is $d^3u/dx^3 = D^3u$, and the $n$-th is written $u^{(n)}$, $D^n u$ or $d^nu/dx^n$ (notes, p. 3).
+
+## The n-th derivative of xⁿ
+
+Differentiate $x^n$ again and again, for $n = 1, 2, 3, \ldots$. Each time the exponent comes down as a factor and drops by one:
+
+<Formula label="Repeated derivatives of a power" tex="Dx^n = nx^{n-1},\quad D^2x^n = n(n-1)x^{n-2},\quad D^3x^n = n(n-1)(n-2)x^{n-3},\ \ldots" cite="reading2" at="p. 9" />
+
+After $n - 1$ steps only $x^1$ is left, with the factor $n(n-1)\cdots 2$ in front, and one more derivative leaves a constant:
+
+<Formula label="The n-th derivative of xⁿ" tex="D^n x^n = n(n-1)\cdots 2\cdot 1 = n!" cite="reading2" at="p. 10" />
+
+the number called **n factorial**. The notes prove it by **induction**: it is true for $n = 1$, since $Dx = 1$; and if it holds for $n$, then $D^{n+1}x^{n+1} = D^n\bigl((n+1)x^n\bigr) = (n+1)\,D^n x^n = (n+1)\cdot n!$, which is the factorial of $n + 1$ (notes, p. 3). One derivative more, $D^{n+1}x^n$, is the derivative of a constant: 0.
+
+<WorkedExample title="Higher derivatives of x⁵">
+<Problem>
+Find the third derivative of $x^5$ at $x = 1$, and the fifth derivative.
+</Problem>
+<Step title="Third derivative">
+$D x^5 = 5x^4$, $D^2 x^5 = 20x^3$, $D^3 x^5 = 60x^2$; at $x = 1$ this is 60.
+</Step>
+<Step title="Fifth derivative">
+$D^5 x^5 = 5! = 5 \cdot 4 \cdot 3 \cdot 2 \cdot 1 = 120$, a constant; the sixth derivative is 0.
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology">
+In MIT's cosmology course the size of a closed universe is given through a parameter $\theta$: $a/\sqrt k = \alpha(1 - \cos\theta)$ and $ct = \alpha(\theta - \sin\theta)$. Both $a$ and $t$ are known as functions of $\theta$, not $a$ as a function of $t$. The chain rule still gives the expansion rate: $da/dt = (da/d\theta)\,(d\theta/dt) = (da/d\theta)/(dt/d\theta)$, which with the derivatives of Lecture 3 is $c\sqrt k\,\sin\theta/(1 - \cos\theta)$. Differentiating once more, a second derivative, says whether the expansion is slowing down.
+</Callout>
+
+## Summary
+
+- Product rule: $\Delta(uv) = (\Delta u)\,v(x + \Delta x) + u\,\Delta v$ gives $(uv)' = u'v + uv'$; continuity of $v$ is used in the limit.
+- Quotient rule: $(u/v)' = (u'v - uv')/v^2$; with $u = 1$, $(1/v)' = -v'/v^2$, so $\frac{d}{dx}x^{-n} = -nx^{-n-1}$: the power rule holds for negative powers too.
+- Chain rule: for $y = f(x)$, $x = g(t)$, $\dfrac{dy}{dt} = \dfrac{dy}{dx}\,\dfrac{dx}{dt}$, or $(f(g(t)))' = f'(g(t))\,g'(t)$; differentiate the outside, keep the inside, multiply by the derivative of the inside.
+- Higher derivatives: $u''$, $u^{(3)}$, $u^{(n)} = D^nu = d^nu/dx^n$; sine repeats after four derivatives.
+- $D^nx^n = n!$ (by induction), and $D^{n+1}x^n = 0$.

@@ -1,0 +1,89 @@
+# Calculations on content/year-4/8.286/open-universe-geometry.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+
+page: content/year-4/8.286/open-universe-geometry.mdx
+calcs:
+  - id: closed-equator
+    where: 'worked example "How far is the edge of a hemisphere?", step "Closed"'
+    inputs: {}
+    formula: asin(1)
+    expected: '1.57'
+    shown: ['$\ell = \sin^{-1}(1) = \pi/2 \approx 1.57$']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: page-own
+
+  - id: open-r-for-3
+    where: 'worked example, step "Open": r = sinh 3 ≈ 10.0'
+    inputs: {l: 3}
+    formula: (exp(l) - exp(-l)) / 2
+    expected: '10.0'
+    shown: ['gives $r = \sinh 3 \approx 10.0$']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: page-own
+
+  - id: open-r-for-1
+    where: 'worked example, step "Open": r = 1.18 where ℓ = 1'
+    inputs: {l: 1}
+    formula: (exp(l) - exp(-l)) / 2
+    expected: '1.18'
+    shown: ['Going from $r = 1.18$ (where $\ell = 1$)']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: page-own
+
+  # ---- formula checks (docs/CALC_TESTS_PLAN.md §6)
+  - id: closed-radius-equals-metric-integral
+    kind: identity
+    where: 'worked example, step "Closed": ℓ = sin⁻¹(√k r)/√k must equal the integral of the metric, ∫ dr/√(1 − kr²)'
+    formula: asin(sqrt(k) * r) / sqrt(k)
+    equals: integrate('1 / sqrt(1 - k * x**2)', 'x', 0, r)
+    samples: {k: [0.5, 1, 2, 1, 0.5], r: [0.3, 0.6, 0.5, 0.999, 0.001]}
+    tolerance: 1e-6
+    shown: ['$\ell = \sin^{-1}(\sqrt k\,r)/\sqrt k$']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: page-own
+
+  - id: open-radius-equals-metric-integral
+    kind: identity
+    where: 'formula "Proper radius in an open universe": a sinh⁻¹(√−k r)/√−k must equal a ∫ dr/√(1 − kr²) with k < 0'
+    inputs: {a: 1.7}
+    formula: a * asinh(sqrt(-k) * r) / sqrt(-k)
+    equals: a * integrate('1 / sqrt(1 - k * x**2)', 'x', 0, r)
+    samples: {k: [-0.5, -1, -3, -0.01, -1], r: [0.5, 2, 1, 50, 0.001]}
+    tolerance: 1e-6
+    shown: ['a(t)\,\frac{\sinh^{-1}\!\left(\sqrt{-k}\,r\right)}{\sqrt{-k}}']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: mit
+
+  - id: open-radius-flat-limit
+    kind: limit
+    where: 'formula "Proper radius in an open universe": as k → 0 the proper radius must become a·r (flat space)'
+    inputs: {a: 1.7, r: 2.3}
+    formula: a * asinh(sqrt(-k) * r) / sqrt(-k)
+    limit: a * r
+    vary: {k: [-0.1, -0.001, -0.00001, -0.0000001]}
+    tolerance: 1e-6
+    shown: ['a(t)\,\frac{\sinh^{-1}\!\left(\sqrt{-k}\,r\right)}{\sqrt{-k}}']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: mit
+
+  - id: closed-radius-flat-limit
+    kind: limit
+    where: 'worked example, step "Closed": as k → 0 the proper radius sin⁻¹(√k r)/√k must become r'
+    inputs: {r: 0.9}
+    formula: asin(sqrt(k) * r) / sqrt(k)
+    limit: r
+    vary: {k: [0.1, 0.001, 0.00001, 0.0000001]}
+    tolerance: 1e-6
+    shown: ['$\ell = \sin^{-1}(\sqrt k\,r)/\sqrt k$']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: page-own
+
+  - id: chi-substitution
+    kind: identity
+    where: 'formula "The open universe with an imaginary angle": with r = sinh χ/√|k|, dr²/(1 − kr²) must equal dχ²/|k| (checked as (dr/dχ)²/(1 + |k| r²) = 1/|k|)'
+    formula: deriv('sinh(x) / sqrt(K)', 'x', chi)**2 / (1 + K * (sinh(chi) / sqrt(K))**2)
+    equals: 1 / K
+    samples: {chi: [0.01, 0.4, 1.2, 2.0, 5.0], K: [1, 0.5, 1, 2, 0.1]}
+    tolerance: 1e-6
+    shown: ['r = \frac{\sinh\chi}{\sqrt{|k|}}, \qquad ds^2 = \frac{a^2(t)}{|k|}\left[d\chi^2 + \sinh^2\chi']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: mit

@@ -1,0 +1,135 @@
+---
+title: Integration by parts and reduction formulas
+slug: integration-by-parts
+course: "18.01"
+lecture: 30
+order: 1
+summary: "Partial fractions always work, though the general case can need a machine. Then the last technique: integration by parts, ∫uv′ dx = uv − ∫u′v dx, the product rule read backwards. Choose u to get simpler when differentiated and v′ not to get worse when integrated. Applied repeatedly it gives reduction formulas, such as ∫(ln x)ⁿ dx and ∫xⁿeˣ dx, and it computes the volume of an exponential wine glass two ways."
+prerequisites: [partial-fractions, volumes]
+source:
+  title: "MIT 18.01 Lecture 30: Integration by Parts"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-30-integration-by-parts/
+  readings:
+    - title: "18.01 Lecture 30 notes: Integration by Parts, Reduction Formulae"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec30/
+      location: "pp. 1–3 (the arc length and parametric curves on pp. 4–8 belong to the next lecture)"
+    - title: "18.01 Lecture 30 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/aeXp1zC6Hls.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.01"
+    lecture: 31
+    why: "Parametric curves and arc length."
+  - course: "8.286"
+    lecture: 16
+    why: "The number of photons in black-body radiation involves the integral of x²/(eˣ − 1), which can be evaluated by integrating by parts."
+quiz:
+  - question: "To find $\\int x\\cos x\\,dx$ by parts, the better choice is…"
+    choices: ["$u = x$, $v' = \\cos x$", "$u = \\cos x$, $v' = x$", "$u = x\\cos x$, $v' = 1$", "neither works"]
+    answer: 0
+    explanation: "Differentiating $x$ makes it simpler (1), and integrating $\\cos x$ gives $\\sin x$, no worse. The other choice raises the power of $x$."
+  - question: "$\\int \\ln x\\,dx = $"
+    choices: ["$\\frac{1}{x} + c$", "$x\\ln x - x + c$", "$x\\ln x + c$", "$\\frac{(\\ln x)^2}{2} + c$"]
+    answer: 1
+    explanation: "With $u = \\ln x$, $v' = 1$: $x\\ln x - \\int x \\cdot \\frac{1}{x}\\,dx = x\\ln x - x + c$."
+  - question: "With $G_n(x) = \\int x^n e^x\\,dx$, the reduction formula is…"
+    choices: ["$G_n = x^n e^x - nG_{n-1}$", "$G_n = x^n e^x + nG_{n-1}$", "$G_n = nG_{n-1}$", "$G_n = x^n e^x - G_{n-1}$"]
+    answer: 0
+    explanation: "Take $u = x^n$, $v' = e^x$: $\\int x^n e^x\\,dx = x^n e^x - \\int nx^{n-1}e^x\\,dx$."
+  - question: "$\\int_0^1 x e^x\\,dx = $"
+    choices: ["$1$", "$e - 1$", "$e$", "$\\frac{e}{2}$"]
+    answer: 0
+    explanation: "$\\big[xe^x - e^x\\big]_0^1 = (e - e) - (0 - 1) = 1$."
+flashcards:
+  - front: "Integration by parts"
+    back: "$\\int uv'\\,dx = uv - \\int u'v\\,dx$, or $\\int_a^b uv'\\,dx = \\Big[uv\\Big]_a^b - \\int_a^b u'v\\,dx$: the product rule $(uv)' = u'v + uv'$ integrated."
+  - front: "Choosing u and v′"
+    back: "Pick $u$ that gets simpler when differentiated (a power of $x$, a logarithm) and $v'$ that does not get worse when integrated ($e^x$, $\\sin x$, $\\cos x$, 1)."
+  - front: "Two reduction formulas"
+    back: "$F_n = \\int(\\ln x)^n dx = x(\\ln x)^n - nF_{n-1}$; $G_n = \\int x^n e^x dx = x^n e^x - nG_{n-1}$."
+status: reviewed
+---
+
+The lecture first finishes partial fractions in general, then turns to the last technique of integration in the course (transcript, pp. 1, 5).
+
+## Partial fractions in general
+
+The full method is: **Step 0**, long division, so the remainder has lower degree than the denominator; **Step 1**, factor the denominator; **Step 2**, set up; **Step 3**, solve (transcript, p. 1; Steps 1–3 are those of the previous lecture). The set-up follows a pattern: for a linear factor raised to the fourth power, four terms with constant numerators, one per power; for each power of a quadratic factor, a term with a **linear** numerator, the numerator staying linear as the power rises (p. 2). For a denominator of degree 12 such as $(x + 2)^4(x^2 + 2x + 3)(x^2 + 4)^3$ (as the lecture's example is reconstructed here), the set-up is
+
+<Formula label="A general set-up" tex="\frac{A_1}{x + 2} + \frac{A_2}{(x + 2)^2} + \frac{A_3}{(x + 2)^3} + \frac{A_4}{(x + 2)^4} + \frac{B_0x + C_0}{x^2 + 2x + 3} + \frac{B_1x + C_1}{x^2 + 4} + \frac{B_2x + C_2}{(x^2 + 4)^2} + \frac{B_3x + C_3}{(x^2 + 4)^3}" cite="reading2" at="p. 2" />
+
+with 12 unknowns, as many as the coefficients of a numerator of degree at most 11 (p. 2). That is twelve equations in twelve unknowns; cover-up finds only $A_4$, and the rest is a job for a machine (pp. 2–3). Two more pieces of bad news: factoring a big polynomial is itself hard in practice (p. 1), and each piece must still be integrated (p. 3). For example $\int\frac{x\,dx}{(x^2 + 4)^3} = -\frac{1}{4}(x^2 + 4)^{-2} + c$ by advanced guessing, while $\int\frac{dx}{(x^2 + 4)^3}$ needs $x = 2\tan u$, which gives $\frac{1}{32}\int\cos^4u\,du$, then the double-angle formula, and so on (p. 4). The quadratic $x^2 + 2x + 3$ needs completing the square (p. 5). The method **always works**, maybe slowly; the answers really are this complicated, and computer programs do it routinely (p. 5).
+
+## Integration by parts
+
+Integration by parts is the product rule read backwards (transcript, p. 5; notes, p. 1). From $(uv)' = u'v + uv'$, write $uv' = (uv)' - u'v$ and integrate; integrating a derivative gives back the function (pp. 5–6):
+
+<Formula label="Integration by parts" tex="\int u\,v'\,dx = u\,v - \int u'\,v\,dx" cite="reading2" at="pp. 5–6" />
+
+and for a definite integral, by the fundamental theorem (p. 6; notes, p. 2):
+
+<Formula label="Integration by parts, definite" tex="\int_a^b u\,v'\,dx = \Big[u\,v\Big]_a^b - \int_a^b u'\,v\,dx" cite="reading1" at="p. 2" />
+
+Another notation is $\int u\,dv = uv - \int v\,du$ (notes, p. 2). Despite the name, it has nothing to do with partial fractions (transcript, p. 5).
+
+**Example: $\int\ln x\,dx$.** It looks hopeless, but take $u = \ln x$, which gets nicer when differentiated, $u' = 1/x$; and $v' = 1$, so $v = x$ (p. 6). Then (p. 6; notes, Example 2, p. 2):
+
+<Formula label="Integral of the logarithm" tex="\int \ln x\,dx = x\ln x - \int x\cdot\frac{1}{x}\,dx = x\ln x - x + c" cite="reading2" at="p. 6" />
+
+The notes check it by advanced guessing: $(x\ln x)' = \ln x + 1$, so subtract $x$ (notes, p. 2). They also do $\int\tan^{-1}x\,dx = x\tan^{-1}x - \frac{1}{2}\ln(1 + x^2) + c$ with $u = \tan^{-1}x$, $v' = 1$ (notes, Example 1, p. 1).
+
+## Reduction formulas
+
+For $\int(\ln x)^2\,dx$, take $u = (\ln x)^2$ and $v = x$; then $u' = 2\ln x\cdot\frac{1}{x}$, the $x$ and $\frac{1}{x}$ cancel, and what is left is the previous integral (transcript, pp. 6–7). The same step works for any power. With $F_n(x) = \int(\ln x)^n\,dx$ (dropping the constant), it gives a **reduction formula** (p. 7; notes, Example 3, p. 2):
+
+<Formula label="Reduction formula for powers of the logarithm" tex="F_n(x) = x(\ln x)^n - n\,F_{n-1}(x)" cite="reading2" at="p. 7" />
+
+Starting from $F_0(x) = \int dx = x$, it gives $F_1 = x\ln x - x$ and $F_2 = x(\ln x)^2 - 2(x\ln x - x)$ (p. 8). Each step lowers $n$ by one until the bottom is reached (p. 7).
+
+For $\int x^n e^x\,dx$, the choice matters: take $u = x^n$, which drops a degree when differentiated, and $v' = e^x$, which stays the same when integrated; the other way round makes no progress (p. 8). With $G_n(x) = \int x^n e^x\,dx$ (pp. 8–9; notes, Example 4, pp. 2–3):
+
+<Formula label="Reduction formula for powers times the exponential" tex="G_n(x) = x^n e^x - n\,G_{n-1}(x), \qquad G_0 = e^x, \qquad G_1 = x e^x - e^x" cite="reading2" at="p. 9" />
+
+(On p. 9 the lecturer first writes $xe^x - x$ and corrects it on p. 10.) The method has a chance when one factor gets simpler when differentiated and the other no worse when integrated, as in $x^n e^x$, $x^n\cos x$, $x^n\sin x$ and powers of the logarithm; only practice tells (p. 9). Advanced guessing works for many of these too (p. 10).
+
+The notes add a warning: change these integrals a little and they have no formula at all, for example $\int(\tan^{-1}x)^2\,dx$ or $\int\frac{e^x}{x}\,dx$. Then the integral itself is the answer; setting it up is what matters, and a computer can evaluate it (notes, p. 3).
+
+## The exponential wine glass
+
+Rotate the curve $y = e^x$ about the $y$-axis, between the heights $y = 1$ and $y = e$ (so $0 \le x \le 1$), to make a wine glass, and find the volume it holds (transcript, p. 10). With **disks**, horizontal slices of radius $x = \ln y$ (pp. 10–11):
+
+<Formula label="Wine glass by disks" tex="V = \int_1^e \pi(\ln y)^2\,dy = \pi\Big[y(\ln y)^2 - 2(y\ln y - y)\Big]_1^e = \pi(e - 2)" cite="reading2" at="pp. 10–11" />
+
+using $F_2$. With **shells**, vertical strips at $x$ from height $e^x$ up to $e$ (p. 11):
+
+<Formula label="Wine glass by shells" tex="V = \int_0^1 (e - e^x)\,2\pi x\,dx = 2\pi e\int_0^1 x\,dx - 2\pi\int_0^1 x e^x\,dx = \pi e - 2\pi \cdot 1" cite="reading2" at="pp. 11–12" />
+
+using $G_1$: $\int_0^1 xe^x\,dx = \big[xe^x - e^x\big]_0^1 = 1$. Both give $\pi(e - 2) \approx 2.26$. (The lecture says "$\pi e - 2$" for this, and corrects a missing minus sign in the evaluation the next time, pp. 11 and 12.)
+
+<WorkedExample title="Three integrals by parts">
+<Problem>
+Evaluate (a) $\int_0^{\pi/2}x\cos x\,dx$, (b) $\int_0^1 x^2e^x\,dx$, (c) $\int_1^e x\ln x\,dx$.
+</Problem>
+<Step title="(a) u = x, v′ = cos x">
+$\int x\cos x\,dx = x\sin x - \int\sin x\,dx = x\sin x + \cos x + c$. From 0 to $\pi/2$: $\left(\frac{\pi}{2} + 0\right) - (0 + 1) = \frac{\pi}{2} - 1 \approx 0.571$.
+</Step>
+<Step title="(b) The reduction formula">
+$G_2 = x^2e^x - 2G_1 = x^2e^x - 2(xe^x - e^x)$. At 1 this is $e - 2(e - e) = e$; at 0 it is $0 - 2(0 - 1) = 2$. So the integral is $e - 2 \approx 0.718$.
+</Step>
+<Step title="(c) u = ln x, v′ = x">
+$\int x\ln x\,dx = \frac{x^2}{2}\ln x - \int\frac{x^2}{2}\cdot\frac{1}{x}\,dx = \frac{x^2}{2}\ln x - \frac{x^2}{4} + c$. From 1 to $e$: $\left(\frac{e^2}{2} - \frac{e^2}{4}\right) - \left(0 - \frac{1}{4}\right) = \frac{e^2 + 1}{4} \approx 2.097$.
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology" title="Counting photons">
+The number of photons per unit volume in black-body radiation is proportional to $\int_0^\infty\frac{x^2\,dx}{e^x - 1}$. Write $\frac{1}{e^x - 1} = e^{-x} + e^{-2x} + e^{-3x} + \cdots$; integrating by parts twice gives $\int_0^\infty x^2e^{-kx}\,dx = \frac{2}{k^3}$, so the integral is $2\left(1 + \frac{1}{2^3} + \frac{1}{3^3} + \cdots\right) = 2\zeta(3) \approx 2.404$. That $\zeta(3)$ is the one in the formula for the number of photons in the cosmic background.
+</Callout>
+
+## Summary
+
+- Partial fractions always work, but large cases need long division, hard factoring, many unknowns and several techniques for the pieces.
+- Integration by parts: $\int uv'\,dx = uv - \int u'v\,dx$, the product rule integrated.
+- Choose $u$ to simplify when differentiated and $v'$ not to worsen when integrated.
+- Reduction formulas: $F_n = x(\ln x)^n - nF_{n-1}$, $G_n = x^ne^x - nG_{n-1}$.
+- Disks and shells give the same volume of the wine glass, $\pi(e - 2)$.

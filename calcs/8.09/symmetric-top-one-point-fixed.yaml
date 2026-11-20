@@ -1,0 +1,234 @@
+# Calculations on content/year-4/8.09/symmetric-top-one-point-fixed.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) lecture notes, Chapter 2, Section 2.5, pp. 45-51 (printed page = PDF page + 28).
+# Page's own worked example: toy top m = 0.1 kg, R = 0.04 m, I1 = 1.8e-4 kg m^2, I3 = 4e-5 kg m^2, omega3 = 300 1/s,
+# released at theta = 30 deg with thetadot = phidot = 0; g = 9.8 m/s^2. p_psi = 0.012, mgR = 0.0392, a = 2 mgR I1 / p_psi^2 = 0.098.
+# Lower turning point: a(1 - u^2) = u0 - u, i.e. u1 = [1 - sqrt(1 - 4a(u0 - a))]/(2a).
+
+page: content/year-4/8.09/symmetric-top-one-point-fixed.mdx
+calcs:
+  # ---------------------------------------------------------------- free top: checks of the solution
+  - id: free-solution
+    kind: identity
+    where: 'eq. (2.79) solves (2.77): d/dt[C sin(W t + D)] + W (-C cos(W t + D)) = 0'
+    formula: C*W*cos(W*t + D) + W*(-C*cos(W*t + D)) + 1
+    equals: 1
+    samples: {C: [0.5, 2.0], W: [1.3, -0.7], t: [0.4, 3.0], D: [0.2, 1.9]}
+    tolerance: 1e-12
+    shown: ['\omega_1 = C\sin(\Omega t + D) \quad\text{and}\quad \omega_2 = -C\cos(\Omega t + D)']
+    source: {cite: reading1, at: 'Section 2.5, eqs. (2.77), (2.79), p. 46'}
+    origin: mit
+
+  - id: free-psi
+    kind: identity
+    where: 'eq. (2.80) with psi = pi - W t - D: sin(psi) = sin(W t + D) and cos(psi) = -cos(W t + D) (checked as a weighted sum)'
+    formula: sin(pi - x) + 2*cos(pi - x)
+    equals: sin(x) - 2*cos(x)
+    samples: {x: [0.3, 1.7, 4.0]}
+    tolerance: 1e-12
+    shown: ['since $\sin\psi = \sin(\Omega t + D)$ and $\cos\psi = -\cos(\Omega t + D)$']
+    source: {cite: reading1, at: 'Section 2.5, eqs. (2.80)-(2.82), p. 47'}
+    origin: mit
+
+  - id: free-precession-L-over-I1
+    kind: identity
+    where: 'formula "Free precession rate in terms of L": with W = (I3 - I1) w3/I1 and w3 = C cot(th) - W, C/sin(th) = I3 w3/(I1 cos th)'
+    formula: (I3*w3*tan(th)/I1) / sin(th)
+    equals: I3*w3/(I1*cos(th))
+    samples: {I1: [1.0, 2.0], I3: [2.0, 0.5], w3: [10.0, 3.0], th: [0.3, 1.1]}
+    tolerance: 1e-12
+    shown: ['\dot\phi = \frac{C}{\sin\theta_0} = \frac{I_3\,\omega_3}{I_1\cos\theta_0} = \frac{L}{I_1}']
+    source: {cite: reading1, at: 'Section 2.5, eqs. (2.76), (2.82), (2.83), pp. 46-48'}
+    origin: page-own
+
+  - id: free-C-from-283
+    kind: identity
+    where: 'own step: inserting W = (I3 - I1) w3 / I1 into (2.83), C cot(th) = w3 + W = I3 w3 / I1'
+    formula: w3 + (I3 - I1)*w3/I1
+    equals: I3*w3/I1
+    samples: {I1: [1.0, 2.0], I3: [2.0, 0.5], w3: [10.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['so $C = I_3\omega_3\tan\theta_0/I_1$']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.83), p. 48'}
+    origin: page-own
+
+  - id: quiz2-Omega
+    where: 'quiz 2: Omega = (I3 - I1) w3 / I1 with I3 = 2 I1, w3 = 10'
+    inputs: {}
+    formula: (2 - 1)*10/1
+    expected: '10'
+    shown: ['= (2I_1 - I_1)\\times 10/I_1 = 10$ s⁻¹']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.76), p. 46'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- heavy top: algebra
+  - id: kinetic-energy-286
+    kind: identity
+    where: 'eq. (2.86) from (2.85): w1^2 + w2^2 = thetadot^2 + sin^2(theta) phidot^2'
+    formula: (sin(th)*sin(ps)*pd + cos(ps)*td)**2 + (sin(th)*cos(ps)*pd - sin(ps)*td)**2
+    equals: td**2 + sin(th)**2*pd**2
+    samples: {th: [0.4, 1.2], ps: [0.7, 3.1], pd: [1.5, -0.3], td: [0.2, 2.2]}
+    tolerance: 1e-12
+    shown: ['T = \frac{I_1}{2}\left(\dot\theta^2 + \sin^2\theta\,\dot\phi^2\right) + \frac{I_3}{2}\left(\dot\psi + \cos\theta\,\dot\phi\right)^2']
+    source: {cite: reading1, at: 'Section 2.5, eqs. (2.85)-(2.86), p. 48'}
+    origin: mit
+
+  - id: phidot-290
+    kind: identity
+    where: 'eq. (2.90) inverts (2.87)-(2.88): with phidot from (2.90) and psidot = p_psi/I3 - phidot cos, p_phi is reproduced'
+    formula: (I1*sin(th)**2 + I3*cos(th)**2)*((pf - pp*cos(th))/(I1*sin(th)**2)) + I3*cos(th)*(pp/I3 - (pf - pp*cos(th))*cos(th)/(I1*sin(th)**2))
+    equals: pf
+    samples: {I1: [1.0, 2.5], I3: [0.4, 1.7], th: [0.6, 1.3], pf: [0.8, 2.0], pp: [1.5, 0.3]}
+    tolerance: 1e-12
+    shown: ['\dot\phi = \frac{p_\phi - p_\psi\cos\theta}{I_1\sin^2\theta}']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.90), p. 48'}
+    origin: mit
+
+  - id: veff-293
+    kind: identity
+    where: 'eq. (2.93) from (2.91): (1 - u^2)/I1 * [E - p_psi^2/(2 I3) - mgR u - (p_phi - p_psi u)^2/(2 I1 (1 - u^2))] equals the right side of (2.93) (k = mgR)'
+    formula: (1 - u**2)/I1*(E - pp**2/(2*I3) - k*u - (pf - pp*u)**2/(2*I1*(1 - u**2)))
+    equals: ((2*E*I3 - pp**2)/(2*I1*I3) - k/I1*u)*(1 - u**2) - 0.5*((pf - pp*u)/I1)**2
+    samples: {I1: [1.0, 2.5], I3: [0.4, 1.7], E: [3.0, 10.0], pp: [1.5, 0.3], pf: [0.8, 2.0], k: [0.5, 1.2], u: [0.2, -0.6]}
+    tolerance: 1e-12
+    shown: ['\frac{\dot u^2}{2} = \left(\frac{2EI_3 - p_\psi^2}{2I_1I_3} - \frac{mgR}{I_1}\,u\right)(1 - u^2)']
+    source: {cite: reading1, at: 'Section 2.5, eqs. (2.91)-(2.93), p. 49'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example
+  - id: ex-mgR
+    where: 'worked example: m g R; quiz 4'
+    inputs: {}
+    formula: 0.1*9.8*0.04
+    expected: '0.0392'
+    shown: ['$mgR = 0.1 \times 9.8 \times 0.04 = 0.0392$ J', '$mgR = 0.0392$ J']
+    source: {cite: reading1, at: 'Section 2.5, p. 48'}
+    origin: page-own
+
+  - id: ex-ppsi
+    where: 'worked example: p_psi = I3 w3; quiz 4'
+    inputs: {}
+    formula: 4e-5*300
+    expected: '0.012'
+    shown: ['$p_\psi = I_3\omega_3 = 0.012$ kg m²/s', '$p_\\psi = 0.012$ kg m²/s']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.88), p. 48'}
+    origin: page-own
+
+  - id: ex-turns
+    where: 'worked example: 300 rad/s in turns per second'
+    inputs: {}
+    formula: 300/(2*pi)
+    expected: '48'
+    tolerance: 0.5
+    shown: ['(about 48 turns per second)']
+    source: {cite: reading1, at: 'Section 2.5, p. 48'}
+    origin: page-own
+
+  - id: ex-u0
+    where: 'worked example: u0 = cos 30 deg; plot point'
+    inputs: {}
+    formula: cos(pi/6)
+    expected: '0.866'
+    shown: ['$u_0 = \cos 30^\circ = 0.866$', '{ x: 0.8660, y: 0']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.92), p. 49'}
+    origin: page-own
+
+  - id: ex-a
+    where: 'worked example: a = 2 mgR I1 / p_psi^2'
+    inputs: {}
+    formula: 2*0.0392*1.8e-4/0.012**2
+    expected: '0.098'
+    shown: ['$a = 2mgRI_1/p_\psi^2 = 0.098$']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.93), p. 49'}
+    origin: page-own
+
+  - id: ex-u1
+    where: 'worked example and plot caption: lower root u1 of a(1 - u^2) = u0 - u'
+    inputs: {}
+    formula: (1 - sqrt(1 - 4*0.098*(cos(pi/6) - 0.098)))/(2*0.098)
+    expected: '0.837'
+    shown: ['$u_1 = 0.837$', 'between u₁ = 0.837']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.95), p. 50'}
+    origin: page-own
+
+  - id: ex-u1-plot
+    where: 'plot point u1 to four places'
+    inputs: {}
+    formula: (1 - sqrt(1 - 4*0.098*(cos(pi/6) - 0.098)))/(2*0.098)
+    expected: '0.8366'
+    shown: ['{ x: 0.8366, y: 0']
+    source: {cite: reading1, at: 'Section 2.5, p. 50'}
+    origin: page-own
+
+  - id: ex-theta1
+    where: 'worked example, plot point label and caption: theta1 = acos(u1) in degrees'
+    inputs: {}
+    formula: acos((1 - sqrt(1 - 4*0.098*(cos(pi/6) - 0.098)))/(2*0.098))*180/pi
+    expected: '33.2'
+    shown: ['a tilt of $\theta_1 = 33.2^\circ$', 'between $30^\circ$ and $33.2^\circ$', 'u₁ (33.2°)', 'between 33.2° and 30°']
+    source: {cite: reading1, at: 'Section 2.5, p. 50'}
+    origin: page-own
+
+  - id: ex-root-check
+    kind: identity
+    where: 'worked example: V_eff(u) from (2.93) with p_phi = p_psi u0 and E = p_psi^2/(2 I3) + mgR u0 factorises as (u0 - u)[(1/2)(p_psi/I1)^2 (u0 - u) - (mgR/I1)(1 - u^2)] (k = mgR, q = p_psi)'
+    formula: -((((2*(q**2/(2*I3) + k*u0)*I3 - q**2)/(2*I1*I3)) - k/I1*u)*(1 - u**2) - 0.5*((q*u0 - q*u)/I1)**2)
+    equals: (u0 - u)*(0.5*(q/I1)**2*(u0 - u) - k/I1*(1 - u**2))
+    samples: {I1: [1.8e-4, 1.0], I3: [4e-5, 0.3], q: [0.012, 0.7], k: [0.0392, 0.4], u0: [0.866, 0.2], u: [0.84, -0.5]}
+    tolerance: 1e-9
+    shown: ['$V_\text{eff}(u) = (u_0 - u)\left[\tfrac{1}{2}(p_\psi/I_1)^2(u_0 - u) - (mgR/I_1)(1 - u^2)\right]$']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.93), p. 49'}
+    origin: page-own
+
+  - id: ex-phidot-max
+    where: 'worked example and quiz 4: phidot at the bottom = 2 mgR / p_psi'
+    inputs: {}
+    formula: 2*0.0392/0.012
+    expected: '6.53'
+    shown: ['$2mgR/p_\psi = 6.53$ rad/s', '2mgR/p_\\psi = 6.5$ rad/s']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.90), p. 48'}
+    origin: page-own
+
+  - id: ex-phidot-max-direct
+    where: 'worked example: phidot = p_psi (u0 - u1)/[I1 (1 - u1^2)] computed directly'
+    inputs: {}
+    formula: 0.012*(cos(pi/6) - (1 - sqrt(1 - 4*0.098*(cos(pi/6) - 0.098)))/(2*0.098))/(1.8e-4*(1 - ((1 - sqrt(1 - 4*0.098*(cos(pi/6) - 0.098)))/(2*0.098))**2))
+    expected: '6.53'
+    shown: ['which by the root condition is exactly']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.90), p. 48'}
+    origin: page-own
+
+  - id: ex-phidot-avg
+    where: 'worked example and quiz 4: slow precession mgR / p_psi'
+    inputs: {}
+    formula: 0.0392/0.012
+    expected: '3.27'
+    shown: ['$mgR/p_\psi = 3.27$ rad/s', '\\approx 3.3$ rad/s']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.90), p. 48 (fast-top estimate, page-own)'}
+    origin: page-own
+
+  - id: ex-period
+    where: 'worked example: one precession turn 2 pi / 3.27'
+    inputs: {}
+    formula: 2*pi/(0.0392/0.012)
+    expected: '1.9'
+    shown: ['one turn in about 1.9 s']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.90), p. 48 (fast-top estimate, page-own)'}
+    origin: page-own
+
+  - id: plot-coefficients
+    where: 'plot and caption: p_psi/I1 = 66.7 1/s and mgR/I1 = 217.8 1/s^2'
+    inputs: {}
+    formula: 0.0392/1.8e-4
+    expected: '217.8'
+    shown: ['mgR/I₁ = 217.8 s⁻²', '217.778*(1 - u^2)']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.93), p. 49'}
+    origin: page-own
+
+  - id: plot-coefficient-p
+    where: 'plot and caption: p_psi/I1'
+    inputs: {}
+    formula: 0.012/1.8e-4
+    expected: '66.7'
+    shown: ['p_ψ/I₁ = 66.7 s⁻¹', '0.5*66.6667^2']
+    source: {cite: reading1, at: 'Section 2.5, eq. (2.93), p. 49'}
+    origin: page-own

@@ -1,0 +1,120 @@
+---
+title: "Graphs, networks and incidence matrices"
+slug: graphs-networks-incidence-matrices
+course: "18.06"
+lecture: 12
+order: 1
+summary: "Real matrices come from applications and have structure. A graph with n nodes and m edges, each edge given a direction, has an m × n incidence matrix A: row k has −1 at the node edge k leaves and +1 at the node it enters. For Strang's graph with 4 nodes and 5 edges, Ax lists the potential differences across the edges, so Ax = 0 exactly when all potentials are equal: N(A) is the line through (1, 1, 1, 1), potentials are fixed only up to a constant (grounding a node removes it), and the rank is n − 1 = 3. Rows of A around a loop are dependent. Currents y on the edges satisfy Kirchhoff's current law Aᵀy = 0, a balance at each node; its solutions are currents around loops, and N(Aᵀ) has dimension m − r = 2, with one basis vector for each independent loop. The pivot rows of A (here edges 1, 2 and 4) form a tree, a graph with no loops. The count dim N(Aᵀ) = m − (n − 1) gives Euler's formula: nodes − edges + loops = 1. With Ohm's law y = Ce and current sources f, the three steps e = Ax, y = Ce, Aᵀy = f combine into AᵀCAx = f, the basic equation of applied mathematics in equilibrium; AᵀA is always symmetric."
+prerequisites: [four-fundamental-subspaces]
+source:
+  title: "MIT 18.06 Lecture 12: Graphs, networks, incidence matrices"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-12-graphs-networks-incidence-matrices/
+  readings:
+    - title: "18.06 Lecture 12 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/a587f8613d33cc5ccd1428584defaf61_6-wh6yvk6uc.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.06"
+    lecture: 14
+    why: "Orthogonal vectors and subspaces: the row space is perpendicular to the nullspace."
+quiz:
+  - question: "A connected graph has 6 nodes and 9 edges. How many independent loops does it have?"
+    choices: ["3", "4", "15", "5"]
+    answer: 1
+    explanation: "Euler's formula: nodes − edges + loops = 1, so loops = 1 − 6 + 9 = 4. Equivalently $m - r = 9 - 5$."
+  - question: "What is in the nullspace of the incidence matrix of a connected graph?"
+    choices: ["Only zero", "Currents around loops", "Constant potentials $c(1, 1, \\dots, 1)$", "The rows of $A$"]
+    answer: 2
+    explanation: "$Ax$ gives potential differences across edges, which all vanish exactly when the potentials are equal."
+  - question: "What does Kirchhoff's current law $A^Ty = 0$ say?"
+    choices: ["Potentials are constant", "Current is proportional to potential difference", "The rank is $n - 1$", "At every node, current in equals current out"]
+    answer: 3
+    explanation: "Each row of $A^T$ belongs to a node and adds the currents on its edges, with signs for in and out."
+flashcards:
+  - front: "Incidence matrix of a graph"
+    back: "One row per edge, one column per node: $-1$ where the edge starts, $+1$ where it ends. $Ax$ = potential differences across the edges."
+  - front: "Dimensions for a connected graph"
+    back: "$\\text{dim}\\, N(A) = 1$ (constant potentials), rank $r = n - 1$, $\\text{dim}\\, N(A^T) = m - n + 1$ = number of independent loops."
+  - front: "Euler's formula"
+    back: "Nodes − edges + loops = 1, for any connected graph."
+  - front: "The framework of applied mathematics"
+    back: "$e = Ax$ (potential differences), $y = Ce$ (Ohm's law), $A^Ty = f$ (Kirchhoff's current law with sources): $A^TCAx = f$."
+status: reviewed
+---
+
+Strang confesses that the matrices in his examples are invented on the spot, while real linear algebra uses matrices that come from somewhere and have structure; chemists, for instance, row reduce matrices that describe reactions (transcript, p. 1). This lecture takes the most important model in applied mathematics, whose discrete version is a **graph** (p. 2). It continues [the four fundamental subspaces](/courses/18-06/four-fundamental-subspaces).
+
+## The incidence matrix
+
+A graph has **nodes** and **edges** (transcript, p. 2). Strang's graph has $n = 4$ nodes and $m = 5$ edges, each given a direction by an arrow, chosen arbitrarily, to say which way a current counts as positive (pp. 2–3). The words will be those of an electrical network (potentials, currents), but the same model fits water or oil networks and structures such as bridges and domes (p. 3).
+
+The **incidence matrix** has a row for each edge and a column for each node: $-1$ where the edge leaves, $+1$ where it arrives (pp. 3–5). With edge 1 from node 1 to 2, edge 2 from 2 to 3, edge 3 from 1 to 3, edge 4 from 1 to 4 and edge 5 from 3 to 4 (pp. 4–5):
+
+<Formula label="The incidence matrix" tex="A = \begin{pmatrix} -1 & 1 & 0 & 0 \\ 0 & -1 & 1 & 0 \\ -1 & 0 & 1 & 0 \\ -1 & 0 & 0 & 1 \\ 0 & 0 & -1 & 1 \end{pmatrix}" cite="reading1" at="pp. 3–5" />
+
+Edges 1, 2 and 3 form a **loop**, and their rows are dependent: row 1 plus row 2 gives row 3 (p. 5). Loops will correspond to dependent rows. A large graph gives a large but **sparse** matrix: each row has exactly two nonzeros, $2m$ in all (pp. 5–6).
+
+## The nullspace: potentials
+
+Think of $x = (x_1, x_2, x_3, x_4)$ as **potentials** at the nodes (transcript, p. 7). Then $A$ computes the **potential differences** across the edges (p. 7):
+
+<Formula label="Potential differences" tex="Ax = \begin{pmatrix} x_2 - x_1 \\ x_3 - x_2 \\ x_3 - x_1 \\ x_4 - x_1 \\ x_4 - x_3 \end{pmatrix}" cite="reading1" at="p. 7" />
+
+These all vanish exactly when the potentials are equal, so (p. 8)
+
+<Formula label="Nullspace of A" tex="N(A) = \left\{\, c\begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} \,\right\}, \qquad \text{dim}\, N(A) = 1" cite="reading1" at="p. 8" />
+
+Physically, potentials are determined only up to a constant: differences make current flow, and nothing moves if all potentials are equal, just as temperature can be measured from any zero point, or as an indefinite integral carries a $+C$ (pp. 8–9). In practice one node is **grounded**, its potential set to zero; its column drops out, and the other three columns are independent (p. 9). So the **rank is 3**; any three columns are independent, so any node can be grounded (p. 10).
+
+## The left nullspace: Kirchhoff's current law
+
+$A^Ty = 0$ is perhaps the most fundamental equation of applied mathematics (transcript, p. 10). $A^T$ is $4 \times 5$, and its nullspace has dimension $m - r = 5 - 3 = 2$ (pp. 11–12). The picture (pp. 12–13): potentials $x$ give potential differences $e = Ax$; **Ohm's law** gives currents on the edges, $y = Ce$, where $C$ holds the conductances (one over the resistances); and $A^Ty = 0$ is **Kirchhoff's current law** (p. 13). Written out (pp. 14–15):
+
+<Formula label="Kirchhoff's current law" tex="A^Ty = 0: \qquad -y_1 - y_3 - y_4 = 0, \quad y_1 - y_2 = 0, \quad y_2 + y_3 - y_5 = 0, \quad y_4 + y_5 = 0" cite="reading1" at="pp. 14–15" />
+
+Each equation belongs to a node and says **current in equals current out**: a balance, a conservation law; charge does not pile up at the nodes (pp. 14–15). Elimination on $A^T$ would end in a zero row, as the rank is 3 (pp. 15–16). But the solutions can be found by thinking about the graph: send one unit of current **around a loop** (pp. 16–17):
+
+<Formula label="Loop currents" tex="y = \begin{pmatrix} 1 \\ 1 \\ -1 \\ 0 \\ 0 \end{pmatrix}, \qquad y = \begin{pmatrix} 0 \\ 0 \\ 1 \\ -1 \\ 1 \end{pmatrix}" cite="reading1" at="pp. 16–17" />
+
+These two are a basis of $N(A^T)$. Current around the big outer loop, $(1, 1, 0, -1, 1)$, also satisfies the law, but it is their sum: on edge 3 the two currents cancel (pp. 17–18).
+
+## The row space and trees
+
+The row space of $A$ has dimension 3 (transcript, p. 18). The first three columns of $A^T$ are not independent, since they come from a loop; the pivot columns are 1, 2 and 4, so **edges 1, 2 and 4** give independent rows (p. 19). Those three edges connect all four nodes **without a loop**: such a graph is a **tree** (pp. 19–20). Dependencies come from loops.
+
+## Euler's formula
+
+The dimension count for $N(A^T)$ is a count of loops (transcript, pp. 20–21). With $r = n - 1$ (one dependency among the columns, the constant vector):
+
+<Formula label="Loops and Euler's formula" tex="\text{loops} = \text{dim}\, N(A^T) = m - r = \text{edges} - (\text{nodes} - 1) \;\Rightarrow\; \text{nodes} - \text{edges} + \text{loops} = 1" cite="reading1" at="pp. 20–21" />
+
+**Euler's formula** holds for every connected graph (Strang says every graph; a graph in several separate pieces has more constant vectors in $N(A)$, and the right-hand side becomes the number of pieces): points, lines and areas, of dimension 0, 1 and 2 (p. 21). Here $4 - 5 + 2 = 1$; Strang draws another graph with 5 nodes, 7 edges and 3 loops: again $5 - 7 + 3 = 1$ (pp. 21–22). Linear algebra proves a fact of topology (p. 21).
+
+## The basic equation of applied mathematics
+
+Adding outside **current sources** $f$ at the nodes (batteries in the edges would be the other way to drive the network) puts a right-hand side into the current law (transcript, pp. 22–23). The three steps combine (pp. 22–23):
+
+<Formula label="The framework" tex="e = Ax, \qquad y = Ce, \qquad A^Ty = f \qquad \Rightarrow \qquad A^TCAx = f" cite="reading1" at="pp. 22–23" />
+
+This is the equilibrium problem, with no time and no Newton's law, and solving it is the basic task of numerical linear algebra (p. 24). Strang's closing question: what is special about $A^TA$? It is **always symmetric** (p. 24). (Strang's symbols are $E$ for the potential differences and $F$ for the sources; lowercase is used here. With this $A$, $Ax$ is the rise in potential along each arrow, while current flows downhill; Strang leaves the minus sign out, and so does this page.)
+
+<WorkedExample title="A square network of your own">
+<Problem>
+Four nodes form a square with edges $1 \to 2$, $2 \to 3$, $3 \to 4$ and $4 \to 1$. (a) Write $A$, find its rank and a basis of $N(A^T)$, and check Euler's formula. (b) For potentials $x = (3, 1, 0, 0)$, find $Ax$ and add up its entries. Why is the sum 0?
+</Problem>
+<Step title="(a) Matrix and subspaces">
+$A = \begin{pmatrix} -1 & 1 & 0 & 0 \\ 0 & -1 & 1 & 0 \\ 0 & 0 & -1 & 1 \\ 1 & 0 & 0 & -1 \end{pmatrix}$. $N(A)$ is still the constant vectors, so $r = 4 - 1 = 3$, and $\text{dim}\, N(A^T) = 4 - 3 = 1$: one loop, with current $y = (1, 1, 1, 1)$ all the way round. Euler: $4 - 4 + 1 = 1$.
+</Step>
+<Step title="(b) Differences around a loop">
+$Ax = (1 - 3, 0 - 1, 0 - 0, 3 - 0) = (-2, -1, 0, 3)$, which adds to 0. Adding the entries is $y^TAx$ with the loop current $y = (1, 1, 1, 1)$, and $y^TA = 0^T$: going round a loop, the potential differences cancel.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- The incidence matrix of a graph has one row per edge ($-1$, $+1$) and one column per node; it is sparse and structured.
+- $Ax$ = potential differences; $N(A)$ = constant potentials; rank $n - 1$ for a connected graph.
+- $A^Ty = 0$ is Kirchhoff's current law; its solutions are loop currents, and $\text{dim}\, N(A^T)$ is the number of independent loops.
+- Independent rows form a tree. Euler: nodes − edges + loops = 1.
+- $e = Ax$, $y = Ce$, $A^Ty = f$ give $A^TCAx = f$; $A^TA$ is symmetric.

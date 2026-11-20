@@ -1,0 +1,246 @@
+---
+title: Derivatives of sine and cosine, and the product and quotient rules
+slug: derivatives-of-sine-and-cosine
+course: "18.01"
+lecture: 3
+order: 1
+summary: "The derivative of sin x is cos x, and the derivative of cos x is −sin x. Both follow from the addition formulas and two limits at zero, which a picture of the unit circle explains: short pieces of curves are nearly straight. A second, purely geometric argument gives the same result, and only works with angles in radians. Two general rules, for products and quotients, multiply what we can differentiate."
+prerequisites: [limits-and-continuity]
+source:
+  title: "MIT 18.01 Lecture 3: Derivatives of Products, Quotients, Sine, and Cosine"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-3-derivatives/
+  readings:
+    - title: "18.01 Lecture 3 notes"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec3/
+    - title: "18.01 Lecture 3 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/kCPVBl953eY.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.01"
+    lecture: 4
+    why: "The proofs of the product and quotient rules, and the chain rule for functions of functions."
+  - course: "8.01"
+    lecture: 9
+    why: "The acceleration of circular motion comes from differentiating cos θ(t) and sin θ(t), together with the chain rule."
+  - course: "8.286"
+    lecture: 9
+    why: "A closed universe grows like a cycloid, a/√k = α(1 − cos θ); its expansion rate needs exactly these derivatives."
+quiz:
+  - question: "What is the derivative of $\\cos x$?"
+    choices: ["$\\sin x$", "$-\\sin x$", "$\\cos x$", "$-\\cos x$"]
+    answer: 1
+    explanation: "The addition formula $\\cos(x + \\Delta x) = \\cos x\\cos\\Delta x - \\sin x\\sin\\Delta x$ and the two limits A and B give $-\\sin x$."
+  - question: "Which two limits does the proof rely on?"
+    choices: ["$\\dfrac{\\sin\\theta}{\\theta} \\to 0$ and $\\dfrac{1 - \\cos\\theta}{\\theta} \\to 1$", "$\\dfrac{\\sin\\theta}{\\theta} \\to 1$ and $\\dfrac{\\cos\\theta - 1}{\\theta} \\to 0$", "$\\sin\\theta \\to 1$ and $\\cos\\theta \\to 0$", "$\\dfrac{\\theta}{\\sin\\theta} \\to 0$ and $\\cos\\theta \\to 1$"]
+    answer: 1
+    explanation: "Property B: $\\sin\\theta/\\theta \\to 1$ (the bow string and the bow have nearly the same length). Property A: $(\\cos\\theta - 1)/\\theta \\to 0$ (the gap between them shrinks faster than θ)."
+  - question: "Why must the angle be measured in radians for $\\dfrac{d}{dx}\\sin x = \\cos x$?"
+    choices: ["Calculators only work in radians", "Because the proof compares the length of a chord with the length of an arc, and only radians measure the angle by that arc length", "Because sine is periodic", "It does not matter"]
+    answer: 1
+    explanation: "The step $\\sin\\theta/\\theta \\to 1$ compares the vertical chord (the bow string) with the arc of length θ. That only works if θ is the arc length on the unit circle, which is what a radian is. In degrees the slope of sine at 0 would be $\\pi/180$."
+  - question: "Using the product rule, what is the derivative of $x^2\\sin x$?"
+    choices: ["$2x\\cos x$", "$2x\\sin x + x^2\\cos x$", "$2x\\sin x - x^2\\cos x$", "$x^2\\cos x$"]
+    answer: 1
+    explanation: "$(uv)' = u'v + uv'$ with $u = x^2$, $v = \\sin x$: $2x\\sin x + x^2\\cos x$."
+  - question: "For which $x$ does the quotient rule fail to give $(u/v)'$?"
+    choices: ["Where $u = 0$", "Where $v = 0$", "Where $u' = 0$", "Never"]
+    answer: 1
+    explanation: "$(u/v)' = (u'v - uv')/v^2$ only makes sense where $v \\neq 0$; there the quotient $u/v$ itself is not defined."
+flashcards:
+  - front: "Derivatives of sine and cosine (x in radians)"
+    back: "$\\dfrac{d}{dx}\\sin x = \\cos x$, $\\dfrac{d}{dx}\\cos x = -\\sin x$"
+  - front: "Why the derivatives at 0 decide everything"
+    back: "The derivatives of cos and sin at $x = 0$ are the limits A (= 0) and B (= 1); the addition formulas carry them to every $x$"
+  - front: "Geometric proof that (sin θ)′ = cos θ"
+    back: "A point moving from angle θ to θ + Δθ on the unit circle rises by $\\Delta y \\approx \\Delta\\theta\\cos\\theta$"
+  - front: "Addition formulas"
+    back: "$\\sin(a + b) = \\sin a\\cos b + \\cos a\\sin b$, $\\cos(a + b) = \\cos a\\cos b - \\sin a\\sin b$"
+  - front: "Product rule"
+    back: "$(uv)' = u'v + uv'$: change one factor at a time"
+  - front: "Quotient rule"
+    back: "$\\left(\\dfrac{u}{v}\\right)' = \\dfrac{u'v - uv'}{v^2}$, where $v \\neq 0$"
+status: reviewed
+---
+
+The goal of the first part of 18.01 is to be able to differentiate every function we meet. Lecture 3 adds the trigonometric functions and two powerful general rules. (OpenCourseWare lists David Jerison as the instructor of the recorded lectures; the written notes for this lecture record the 2006 class as presented by Kobi Kremnizer.)
+
+## Two kinds of derivative formulas
+
+Derivative formulas come in two kinds. **Specific** ones give the derivative of one particular function, such as $x^n$ or $1/x$ from Lecture 1. **General** ones say how derivatives combine, whatever the functions are: the derivative of a sum is the sum of the derivatives, and a constant factor comes along unchanged.
+
+<Formula label="Sum and constant rules" tex="(u + v)' = u' + v', \qquad (cu)' = cu' \quad (c \text{ constant})" cite="reading2" at="p. 1" />
+
+Both follow at once from the definition: the difference quotient of $u + v$ splits into the difference quotient of $u$ plus that of $v$, and each tends to its derivative.
+
+<Formula label="Proof of the sum rule" tex="\frac{(u+v)(x+\Delta x) - (u+v)(x)}{\Delta x} = \frac{u(x+\Delta x) - u(x)}{\Delta x} + \frac{v(x+\Delta x) - v(x)}{\Delta x} \;\to\; u'(x) + v'(x)" cite="reading1" at="PDF p. 2" />
+
+With a few specific formulas and these general rules we can already differentiate every polynomial. This lecture adds sine and cosine.
+
+## The derivative of sin x
+
+Start, as always, with the difference quotient, and use the addition formula for sine:
+
+<Formula label="Addition formula for sine" tex="\sin(a + b) = \sin a\cos b + \cos a\sin b" cite="reading2" at="p. 2" />
+
+with $a = x$ and $b = \Delta x$:
+
+<Formula label="Difference quotient of sine" tex="\frac{\sin(x + \Delta x) - \sin x}{\Delta x} = \frac{\sin x\cos\Delta x + \cos x\sin\Delta x - \sin x}{\Delta x}" cite="reading2" at="pp. 1–2" />
+
+Setting $\Delta x = 0$ gives $0/0$, as every derivative does. The trick is to **group the terms so that each zero stays over a zero**. Since $\cos 0 = 1$, the term $\sin x\cos\Delta x$ only cancels against $-\sin x$, so they go together:
+
+<Formula label="Grouping the terms" tex="\frac{\sin(x + \Delta x) - \sin x}{\Delta x} = \sin x\,\frac{\cos\Delta x - 1}{\Delta x} + \cos x\,\frac{\sin\Delta x}{\Delta x}" cite="reading2" at="p. 2" />
+
+Two limits from Lecture 2 finish the job. Call them A and B:
+
+<Formula label="The limits A and B" tex="\text{A:}\ \lim_{\Delta x\to 0}\frac{\cos\Delta x - 1}{\Delta x} = 0, \qquad \text{B:}\ \lim_{\Delta x\to 0}\frac{\sin\Delta x}{\Delta x} = 1" cite="reading2" at="pp. 2–3" />
+
+The first term goes to $\sin x \cdot 0$, the second to $\cos x \cdot 1$:
+
+<Formula label="Derivative of sine" tex="\frac{d}{dx}\sin x = \cos x" cite="reading2" at="p. 3" />
+
+## The derivative of cos x
+
+The same steps work for cosine, with its own addition formula:
+
+<Formula label="Addition formula for cosine" tex="\cos(a + b) = \cos a\cos b - \sin a\sin b" cite="reading2" at="p. 3" />
+
+<Formula label="Difference quotient of cosine, regrouped" tex="\frac{\cos(x + \Delta x) - \cos x}{\Delta x} = \cos x\,\frac{\cos\Delta x - 1}{\Delta x} - \sin x\,\frac{\sin\Delta x}{\Delta x}" cite="reading2" at="p. 3" />
+
+By A the first term vanishes, by B the second tends to $-\sin x$:
+
+<Formula label="Derivative of cosine" tex="\frac{d}{dx}\cos x = -\sin x" cite="reading2" at="p. 3" />
+
+The minus sign is the crucial difference.
+
+<Plot variable="x" domain={[0, 6.2832]} range={[-1.4, 1.4]} xLabel="x (radians)" yLabel="value"
+  curves={[
+    { expr: "sin(x)", label: "sin x" },
+    { expr: "cos(x)", label: "cos x (the slope of sin x)", dash: true },
+    { tangentOf: 0, at: "a" }
+  ]}
+  params={{ a: { value: 1, min: 0, max: 6.28, step: 0.02, label: "a" } }}
+  points={[{ curve: 0, at: "a" }]}
+  caption="sin x and cos x, computed from their formulas. The straight line is the tangent to sin x at x = a (move the slider): its slope always equals the height of the dashed cos x curve at the same a. Where sin x peaks (a ≈ 1.57) the tangent is flat and cos x crosses zero."
+/>
+
+## Everything comes from one place
+
+Look at the derivatives **at zero**. By definition, and because $\cos 0 = 1$ and $\sin 0 = 0$,
+
+<Formula label="Derivatives at zero" tex="\frac{d}{dx}\cos x\,\Big|_{x=0} = \lim_{\Delta x\to 0}\frac{\cos\Delta x - 1}{\Delta x}, \qquad \frac{d}{dx}\sin x\,\Big|_{x=0} = \lim_{\Delta x\to 0}\frac{\sin\Delta x}{\Delta x}" cite="reading2" at="pp. 3–4" />
+
+These are exactly A and B. So the proof shows something striking: the rate of change of sine and cosine at **one** point, $x = 0$, determines it everywhere. The addition formulas carry it round the circle.
+
+## Why A and B are true: short curves are nearly straight
+
+Sine and cosine are defined geometrically, so the proofs are geometric. Rename $\Delta x$ as an angle $\theta$, and draw it at the centre of the **unit circle**. Then $\sin\theta$ is the vertical distance from the circle to the horizontal axis, and, measured in radians, $\theta$ is also the **length of the arc** it cuts off.
+
+**B.** Double the picture, with a copy of the angle below the axis. It looks like a bow and its string: the string is the vertical chord, of length $2\sin\theta$, and the bow is the arc, of length $2\theta$. So
+
+<Formula label="Bow string over bow" tex="\frac{\sin\theta}{\theta} = \frac{2\sin\theta}{2\theta} = \frac{\text{length of the string}}{\text{length of the bow}}" cite="reading2" at="p. 5" />
+
+As $\theta$ shrinks, the bow straightens and the two lengths become nearly equal, so the ratio tends to 1. The principle: **short pieces of curves are nearly straight**.
+
+**A.** Write the limit with a positive numerator, $(1 - \cos\theta)/\theta$. In the same bow, the distance from the centre to the string is $\cos\theta$, so $1 - \cos\theta$ is the small **gap** between the string and the middle of the bow. Zoom in as $\theta$ shrinks, keeping the picture big enough to see: the bow flattens onto the string and the gap disappears. Both the gap and $\theta$ tend to 0, but the gap does so much faster, so
+
+<Formula label="The gap goes to zero faster" tex="\lim_{\theta\to 0}\frac{1 - \cos\theta}{\theta} = 0" cite="reading2" at="pp. 5–6 and 9" />
+
+<Plot variable="x" domain={[-0.1, 1.2]} range={[-1.05, 1.05]} xLabel="x" yLabel="y"
+  curves={[
+    { x: "cos(th * s)", y: "sin(th * s)", range: [-1, 1], label: "the bow: an arc of length 2θ" },
+    { x: "cos(th)", y: "sin(th) * s", range: [-1, 1], label: "the string: a chord of length 2 sin θ", dash: true },
+    { x: "cos(th) + (1 - cos(th)) * s", y: "0", range: [0, 1], label: "the gap 1 − cos θ" }
+  ]}
+  params={{ th: { value: 0.8, min: 0.05, max: 1.5, step: 0.05, label: "\\theta\\ (\\text{rad})" } }}
+  caption="The bow and its string on the unit circle (centre at the origin), drawn from x = cos s, y = sin s for −θ ≤ s ≤ θ. Make θ smaller with the slider: the string's length 2 sin θ and the bow's length 2θ become nearly equal (limit B), while the gap 1 − cos θ between them shrinks much faster than θ (limit A)."
+/>
+
+## Radians, not degrees
+
+The proof of B compares a **straight length** with an **arc length** on the unit circle. It only works if the angle is measured by that arc length, and that is exactly what a radian is. (For A the unit hardly matters: changing it only rescales a quantity that tends to 0.) In degrees, which divide the circle into 360 arbitrary parts, B and so both formulas fail:
+
+<Formula label="Only in radians" tex="\frac{d}{dx}\sin x = \cos x, \qquad \frac{d}{dx}\cos x = -\sin x \qquad (x \text{ in radians})" cite="reading2" at="p. 8" />
+
+As [Lecture 2](/courses/18-01/limits-and-continuity) showed, if $x$ were in degrees, sine at 0 would rise by only $\pi/180 \approx 0.01745$ per degree, not by 1: the formulas would carry this extra factor everywhere.
+
+## A second, purely geometric proof
+
+The lecture then derives $d(\sin\theta)/d\theta = \cos\theta$ for every $\theta$ at once, directly from a picture. A point $P$ moves round the unit circle; its height is $y = \sin\theta$. Move it a little further, by an angle $\Delta\theta$, to a point $Q$, and let $R$ be the corner of the right-angled triangle with $PR$ vertical and $RQ$ horizontal. Then the change in height is $\Delta y = PR$.
+
+- The arc from $P$ to $Q$ has length $\Delta\theta$, and, short curves being nearly straight, the straight segment $PQ$ has almost the same length: $PQ \approx \Delta\theta$.
+- The segment $PQ$ is nearly perpendicular to the radius $OP$ (in the limit it is the tangent). The radius makes the angle $\theta$ with the horizontal; turn both lines by 90° and the horizontal becomes the vertical $PR$, while $OP$ becomes $PQ$. So the angle between $PQ$ and $PR$ is also about $\theta$.
+
+In the right-angled triangle $PQR$, the vertical side is the hypotenuse times the cosine of that angle:
+
+<Formula label="The geometric proof" tex="\Delta y = PR \approx PQ\cos\theta \approx \Delta\theta\cos\theta \quad\Longrightarrow\quad \frac{dy}{d\theta} = \lim_{\Delta\theta\to 0}\frac{\Delta y}{\Delta\theta} = \cos\theta" cite="reading2" at="pp. 9–12" />
+
+<Plot variable="x" domain={[-0.1, 1.1]} range={[-0.05, 1.1]} xLabel="x" yLabel="y"
+  curves={[
+    { x: "cos(s)", y: "sin(s)", range: [0, 1.5708], label: "the unit circle" },
+    { x: "cos(th)", y: "sin(th) + (sin(th + dth) - sin(th)) * s", range: [0, 1], label: "PR = Δy (vertical)" },
+    { x: "cos(th) + (cos(th + dth) - cos(th)) * s", y: "sin(th + dth)", range: [0, 1], label: "RQ (horizontal)", dash: true },
+    { x: "cos(th) + (cos(th + dth) - cos(th)) * s", y: "sin(th) + (sin(th + dth) - sin(th)) * s", range: [0, 1], label: "PQ ≈ Δθ" },
+    { x: "cos(th) * s", y: "sin(th) * s", range: [0, 1], label: "the radius OP", dash: true }
+  ]}
+  params={{
+    th: { value: 0.6, min: 0.1, max: 1.3, step: 0.05, label: "\\theta" },
+    dth: { value: 0.3, min: 0.02, max: 0.5, step: 0.02, label: "\\Delta\\theta" }
+  }}
+  caption="The triangle PQR of the geometric proof, computed from P = (cos θ, sin θ) and Q = (cos(θ + Δθ), sin(θ + Δθ)), with R straight above P at Q's height. As Δθ shrinks, the chord PQ hugs the arc, becomes perpendicular to the radius OP, and makes the angle θ with the vertical PR, so PR ≈ Δθ cos θ."
+/>
+
+At any visible scale the result is an approximation; in the limit it is exact. Reasoning like this, with small $\Delta x$'s and $\Delta y$'s, is how arc length is developed later, in 18.02 (multivariable calculus).
+
+<WorkedExample title="The derivative of sine, checked numerically">
+<Problem>
+Estimate the slope of $\sin x$ at $x = 1$ with a difference quotient, $\Delta x = 0.001$, and compare with $\cos 1$.
+</Problem>
+<Step title="Difference quotient">
+$(\sin 1.001 - \sin 1)/0.001 \approx 0.53988$.
+</Step>
+<Step title="The formula">
+$\cos 1 \approx 0.54030$. The two agree to within 0.0005, and the agreement improves as $\Delta x$ shrinks.
+</Step>
+</WorkedExample>
+
+## The product and quotient rules
+
+Two more general rules, stated at the end of the lecture and proved next time, let us differentiate products and quotients of functions we already know.
+
+<Formula label="Product rule" tex="(uv)' = u'v + uv'" cite="reading2" at="p. 12" />
+
+The way to remember it, and to prove it, is to **change one factor at a time**: change $u$ while $v$ stays fixed, then change $v$ while $u$ stays fixed, and add the two effects.
+
+<Formula label="Quotient rule" tex="\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2} \qquad (v \neq 0)" cite="reading2" at="p. 12" />
+
+The lecture notes already give the proof of the product rule. Add and subtract $u(x + \Delta x)\,v(x)$ in the numerator of the difference quotient:
+
+<Formula label="Proof of the product rule" tex="\frac{(uv)(x+\Delta x) - (uv)(x)}{\Delta x} = \frac{u(x+\Delta x) - u(x)}{\Delta x}\,v(x) + u(x+\Delta x)\,\frac{v(x+\Delta x) - v(x)}{\Delta x} \;\to\; u'(x)v(x) + u(x)v'(x)" cite="reading1" at="PDF p. 3" />
+
+using $u(x + \Delta x) \to u(x)$, which holds because $u$, being differentiable, is continuous (Lecture 2). The notes (PDF p. 4) picture this as a rectangle with sides $u$ and $v$: increasing $v$ by $\Delta v$ adds a strip of area $u\,\Delta v$, increasing $u$ adds $v\,\Delta u$, and the small corner $\Delta u\,\Delta v$ is negligible, so the area changes by about $u\,\Delta v + v\,\Delta u$. They also begin the proof of the quotient rule (PDF p. 5), writing $u(x + \Delta x)/v(x + \Delta x) - u(x)/v(x)$ over a common denominator; the next lecture completes both proofs.
+
+<WorkedExample title="Using the new rules">
+<Problem>
+Differentiate (a) $x^2\sin x$, and evaluate it at $x = \pi/2$; (b) $\tan x = \sin x/\cos x$.
+</Problem>
+<Step title="(a) Product rule">
+$(x^2\sin x)' = 2x\sin x + x^2\cos x$. At $x = \pi/2$: $2 \cdot \frac{\pi}{2} \cdot 1 + \frac{\pi^2}{4} \cdot 0 = \pi \approx 3.14$.
+</Step>
+<Step title="(b) Quotient rule">
+With $u = \sin x$, $v = \cos x$: $(\tan x)' = \dfrac{\cos x\cdot\cos x - \sin x\cdot(-\sin x)}{\cos^2 x} = \dfrac{1}{\cos^2 x}$, using $\cos^2 x + \sin^2 x = 1$. At $x = \pi/4$ this is $1/(1/2) = 2$.
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology">
+In MIT's cosmology course, a closed universe (one with enough matter to stop its own expansion) grows and shrinks like a cycloid: its scale factor $a$ and the time $t$ are written as $a/\sqrt k = \alpha(1 - \cos\theta)$ and $ct = \alpha(\theta - \sin\theta)$, with $\theta$ a parameter. How fast it expands at any moment, $da/dt$, starts from the two derivatives on this page (and the chain rule of the next lecture, which combines them): $d(a/\sqrt k)/d\theta = \alpha\sin\theta$ and $c\,dt/d\theta = \alpha(1 - \cos\theta)$.
+</Callout>
+
+## Summary
+
+- Derivative formulas are specific (one function) or general (how derivatives combine): $(u + v)' = u' + v'$, $(cu)' = cu'$.
+- With the addition formulas and the limits A, $(\cos\Delta x - 1)/\Delta x \to 0$, and B, $\sin\Delta x/\Delta x \to 1$: $\dfrac{d}{dx}\sin x = \cos x$ and $\dfrac{d}{dx}\cos x = -\sin x$.
+- A and B are the derivatives of cosine and sine at 0; they determine the derivatives everywhere.
+- Geometrically: short pieces of curves are nearly straight (the bow and its string). The formulas hold only for angles in radians.
+- A second picture, a point moving round the unit circle, gives $\Delta y \approx \Delta\theta\cos\theta$ directly.
+- Product rule $(uv)' = u'v + uv'$ (change one factor at a time); quotient rule $(u/v)' = (u'v - uv')/v^2$ where $v \neq 0$.

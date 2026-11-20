@@ -1,0 +1,147 @@
+---
+title: Linear operators, matrices and eigenvalues
+slug: linear-operators-matrices
+course: "8.05"
+lecture: 6
+order: 1
+summary: "Linear operators are the abstract form of matrices. On polynomials, differentiation and multiplication by x are operators whose commutator is the identity; on infinite sequences, the left and right shifts lose or make room for information. The operators on a space form a vector space with an associative but non-commutative product. The null space and range decide whether an operator is injective or surjective, with dim V = dim null + dim range; in finite dimensions injective, surjective and invertible are equivalent, but not in infinite dimensions. Choosing a basis turns an operator into a matrix, deriving matrix multiplication. Invariant subspaces lead to eigenvalues and eigenvectors, which a real rotation may not have."
+prerequisites: [vector-spaces-dimensionality]
+source:
+  title: "MIT 8.05 Lecture 6: Linear Algebra: Vector Spaces and Operators (cont.)"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-6-linear-algebra-vector-spaces-and-operators-cont/
+  readings:
+    - title: "8.05 Lecture 6 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/41822d74577d0c4f2a8b9b00eba1a37e_8yvmHBGcNbg.pdf
+    - title: "Zwiebach, Linear Algebra: Vector Spaces and Operators (8.05 lecture notes, chapter 3)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-3/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 7
+    why: "Eigenvalues over the complex numbers, and inner products."
+quiz:
+  - question: "On polynomials, let T = d/dx and S = multiplication by x. What is the commutator [T, S]?"
+    choices: ["The identity", "Zero", "−1 times the identity", "Multiplication by x"]
+    answer: 0
+    explanation: "$TS\\,x^n = (n + 1)x^n$ and $ST\\,x^n = nx^n$, so $[T, S]x^n = x^n$ for every $n$: the commutator is the identity, mirroring $[\\hat x, \\hat p]$."
+  - question: "An operator on a 5-dimensional space has a 2-dimensional null space. What is the dimension of its range?"
+    choices: ["3", "2", "5", "7"]
+    answer: 0
+    explanation: "$\\text{dim}\\,V = \\text{dim}\\,(\\text{null}\\,T) + \\text{dim}\\,(\\text{range}\\,T)$, so the range has dimension $5 - 2 = 3$."
+  - question: "Which operator on infinite sequences is surjective but not injective?"
+    choices: ["The left shift", "The right shift", "The identity", "The zero operator"]
+    answer: 0
+    explanation: "The left shift can produce any sequence, but it sends $(x_1, 0, 0, \\dots)$ to zero, so it loses information. In infinite dimensions surjective and injective are no longer equivalent."
+  - question: "Why can a 90° rotation of the plane have no eigenvectors over the real numbers?"
+    choices: ["No nonzero real vector is mapped to a multiple of itself", "Its determinant is zero", "Rotations are not linear", "Its trace is 1"]
+    answer: 0
+    explanation: "Every nonzero vector is turned through 90°, so it is never parallel to its image. Over the complex numbers the eigenvalues $\\pm i$ appear."
+flashcards:
+  - front: "Null space and range"
+    back: "$\\text{null}\\,T = \\{v : Tv = 0\\}$ (injective if and only if it is $\\{0\\}$); $\\text{range}\\,T = \\{Tv\\}$ (surjective if and only if it is $V$); in finite dimensions $\\text{dim}\\,V = \\text{dim}\\,(\\text{null}\\,T) + \\text{dim}\\,(\\text{range}\\,T)$."
+  - front: "Invertibility"
+    back: "Left inverse exists if and only if T is injective; right inverse if and only if surjective; if both exist they are equal. Finite dimensions: injective, surjective and invertible are equivalent. Infinite: invertible means both."
+  - front: "Matrix of an operator"
+    back: "In a basis $v_1, \\dots, v_n$: $Tv_j = \\sum_iT_{ij}v_i$. Then $b_i = \\sum_jT_{ij}a_j$ for components, and $(TS)_{ik} = \\sum_jT_{ij}S_{jk}$: matrix multiplication follows from composing operators."
+status: reviewed
+---
+
+This lecture, given by Aram Harrow while Zwiebach was away, turns from vector spaces to the maps between them. Operators are how quantum mechanics describes observables (the Hamiltonian above all), later also states (density matrices) and symmetries, so their structure matters (transcript pp. 1–25; notes chapter 3, section 2 and the start of section 3). (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example.)
+
+## Linear operators
+
+A map $T$ from a vector space $V$ to a vector space $W$ is **linear** if it respects sums and multiples (transcript p. 2):
+
+<Formula label="Linearity" tex="T(u + v) = Tu + Tv, \qquad T(au) = a\,Tu" cite="reading2" at="p. 5" />
+
+for all vectors $u$, $v$ and numbers $a$ in the field $F$. So $T$ behaves like multiplication, which is why the brackets in $T(u)$ are usually dropped (squaring each entry of a vector, for instance, is not linear). The linear maps from $V$ to itself are the **operators** on $V$ (transcript pp. 2–3).
+
+**Examples** (transcript pp. 3–6):
+
+- On real polynomials $p(x)$: **differentiation**, $Tp = p'$, and **multiplication by $x$**, $Sp = xp$.
+- On infinite sequences: the **left shift** $L(x_1, x_2, \dots) = (x_2, x_3, \dots)$, which throws the first entry away, and the **right shift** $R(x_1, x_2, \dots) = (0, x_1, x_2, \dots)$. The new first entry must be $0$, because a linear map always sends the zero vector to zero.
+- The **zero operator**, sending everything to $0$, and the **identity** $I$, sending every vector to itself.
+
+The output need not fill the space: the zero operator maps everything to one point.
+
+## The algebra of operators
+
+The operators on $V$ themselves form a vector space: sums and multiples of operators are operators, and the zero operator is its zero (transcript p. 6). They can also be **multiplied**, by applying one after the other, $(ST)v = S(Tv)$. This product is **associative** and has an identity, but inverses do not always exist and it is **not commutative** (transcript pp. 6–8). With the polynomial operators above (transcript p. 8):
+
+<Formula label="Two operators that do not commute" tex="TS\,x^n = (n + 1)\,x^n, \qquad ST\,x^n = n\,x^n \quad\Longrightarrow\quad [T, S] = I" cite="reading2" at="eqs. (2.15)–(2.17)" />
+
+since the powers $x^n$ form a basis of the polynomials. This is the same structure as $[\hat x, \hat p] = i\hbar$.
+
+## Null space and range
+
+Two subspaces describe an operator's overall behaviour (transcript pp. 9–11):
+
+<Formula label="Null space and range" tex="\text{null}\,T = \{v \in V : Tv = 0\}, \qquad \text{range}\,T = \{Tv : v \in V\}" cite="reading2" at="eqs. (2.18), (2.19)" />
+
+Both are subspaces. The null space always contains $0$: for the identity it is only $\{0\}$, for the zero operator it is all of $V$, for the right shift $\{0\}$, and for the left shift every sequence of the form $(x_1, 0, 0, \dots)$.
+
+- $T$ is **injective** (one-to-one) if and only if $\text{null}\,T = \{0\}$: $Tu = Tv$ for $u \ne v$ would mean $T(u - v) = 0$ with $u - v \ne 0$.
+- $T$ is **surjective** (onto) if and only if $\text{range}\,T = V$, which is just the definition.
+
+In finite dimensions the two are linked (transcript p. 11):
+
+<Formula label="Rank–nullity" tex="\text{dim}\,V = \text{dim}\left(\text{null}\,T\right) + \text{dim}\left(\text{range}\,T\right)" cite="reading2" at="eq. (2.20)" />
+
+Intuitively, of $n$ input degrees of freedom $T$ kills some and the rest still affect the output. But the picture is subtler than it looks (transcript pp. 12–14). For the diagonal matrix with entries $3, 0, -1, 4$, the null space is spanned by $e_2$ and the range by $e_1$, $e_3$, $e_4$: neatly perpendicular. For the $2 \times 2$ matrix with a $1$ in the upper right corner and zeros elsewhere, null space and range are **both** the span of $e_1$, and no change of basis separates them. Null space and range live on different sides of the map (input and output), so comparing them directly is misleading.
+
+## Inverses
+
+$S$ is a **left inverse** of $T$ if $ST = I$, and $S'$ a **right inverse** if $TS' = I$. If both exist they are equal, $S = SI = S(TS') = (ST)S' = S'$, and $T$ is **invertible** (transcript pp. 14–15). A left inverse exists exactly when $T$ is injective (it has lost no information), and a right inverse exactly when $T$ is surjective (its output covers everything) (transcript pp. 15–16).
+
+In finite dimensions, rank–nullity makes these the same (transcript p. 16):
+
+<Formula label="Invertibility" tex="\text{finite dimension:}\ T\ \text{injective} \text{ if and only if } T\ \text{surjective} \text{ if and only if } T\ \text{invertible}; \qquad \text{infinite:}\ T\ \text{invertible} \text{ if and only if } T\ \text{injective and surjective}" cite="reading2" at="eqs. (2.23), (2.24)" />
+
+In infinite dimensions they come apart (transcript p. 17). The **left shift** is surjective but not injective; the **right shift** is injective but not surjective, like an infinite hotel whose staff, though every room is full, move each guest one room along to free the first.
+
+## Matrices
+
+Choose a basis $v_1, \dots, v_n$. By linearity, $T$ is fixed by what it does to the basis vectors, and each image is again a combination of them (transcript pp. 18–19):
+
+<Formula label="Matrix of an operator" tex="Tv_j = \sum_{i=1}^nT_{ij}\,v_i" cite="reading2" at="eqs. (2.25)–(2.26)" />
+
+The numbers $T_{ij}$ are the **matrix** of $T$ in this basis. For a vector $v = \sum_ja_jv_j$, $Tv = \sum_ib_iv_i$ with $b_i = \sum_jT_{ij}a_j$: matrix-vector multiplication, derived rather than assumed (transcript pp. 19–20). Composing two operators gives, the same way, $(TS)v_k = \sum_i\left(\sum_jT_{ij}S_{jk}\right)v_i$ (transcript pp. 20–21):
+
+<Formula label="Matrix of a product" tex="(TS)_{ik} = \sum_jT_{ij}S_{jk}" cite="reading2" at="eq. (2.32)" />
+
+So matrices faithfully represent operators once a basis is chosen; the identity is the matrix with 1s on the diagonal. But a basis is like a choice of coordinates, and physics should not depend on it. Quantities such as the **trace** and the **determinant** are the same in every basis (the notes prove it, eqs. (2.47)–(2.48)); they are, respectively, the sum and the product of the eigenvalues, and Harrow suggests that many basis-independent quantities can be built from the eigenvalues in this way (transcript pp. 21–22). Not all can: the corner matrix above and the zero matrix have the same eigenvalues (both $0$) but different ranks.
+
+## Invariant subspaces and eigenvalues
+
+A subspace $U$ is **invariant** under $T$ if $T$ maps every vector of $U$ back into $U$ (transcript p. 23). $\{0\}$ and $V$ always are (the trivial cases). A one-dimensional invariant subspace, spanned by a vector $u$, is a direction that $T$ preserves: $Tu$ must be a multiple of $u$ (transcript pp. 23–24),
+
+<Formula label="Eigenvalue equation" tex="Tu = \lambda u, \qquad u \ne 0" cite="reading2" at="eq. (3.50)" />
+
+$\lambda$ is an **eigenvalue** and $u$ an **eigenvector**. What makes $\lambda$ an eigenvalue is that some **nonzero** $u$ solves the equation, since $u = 0$ solves it for every $\lambda$. (The notes, for convenience, still count $0$ among the eigenvectors of $\lambda$, so that they form a subspace.) The set of eigenvalues is the **spectrum** of $T$, a word used throughout mathematics for methods based on eigenvalues.
+
+**Eigenvalues may not exist** (transcript pp. 24–25). A rotation of three-dimensional real space by angle $\theta$ about the $z$ axis,
+
+<Formula label="Rotation about z" tex="T = \begin{pmatrix}\cos\theta & -\sin\theta & 0\\ \sin\theta & \cos\theta & 0\\ 0 & 0 & 1\end{pmatrix}" cite="reading1" at="p. 24" />
+
+has the eigenvalue $1$ with eigenvector along $z$ and, for an angle that is not $0$ or $180°$, no other real eigenvector. A $90°$ rotation of the plane has none at all. Allowing complex numbers cures this: every polynomial factors over the complex numbers, so every operator on a finite-dimensional complex space has an eigenvalue (the right shift shows that infinite dimensions are different), the subject of the next lecture.
+
+<WorkedExample title="Differentiation and rotation as matrices">
+<Problem>
+(a) On polynomials of degree at most 2, with basis $(1, x, x^2)$, write the matrix of $D = d/dx$. Find its null space and range and check rank–nullity. Is $D$ invertible? (b) Find the complex eigenvalues and eigenvectors of the $90°$ rotation $R = \begin{pmatrix}0 & -1\\ 1 & 0\end{pmatrix}$ and check them against its trace and determinant.
+</Problem>
+<Step title="(a) Differentiation">
+$D(1) = 0$, $D(x) = 1$, $D(x^2) = 2x$, so the columns are the images: $D = \begin{pmatrix}0 & 1 & 0\\ 0 & 0 & 2\\ 0 & 0 & 0\end{pmatrix}$. The null space is the constants (dimension 1) and the range the polynomials of degree at most 1 (dimension 2): $1 + 2 = 3$. $D$ is not injective, so not invertible; indeed $D^3 = 0$, and its only eigenvalue is $0$.
+</Step>
+<Step title="(b) Rotation">
+$R\begin{pmatrix}1\\ -i\end{pmatrix} = \begin{pmatrix}i\\ 1\end{pmatrix} = i\begin{pmatrix}1\\ -i\end{pmatrix}$, so $\lambda = i$ with eigenvector $(1, -i)$; likewise $\lambda = -i$ with $(1, i)$. Trace $0 = i + (-i)$ and determinant $1 = i \times (-i)$, as the sum and product of the eigenvalues should be.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- A linear operator respects sums and multiples; examples are $d/dx$ and multiplication by $x$ on polynomials (with $[d/dx, x] = I$), the left and right shifts, $0$ and $I$.
+- Operators form a vector space with an associative, non-commutative product.
+- Null space and range: injective if and only if the null space is $\{0\}$, surjective if and only if the range is $V$; $\text{dim}\,V = \text{dim}\,(\text{null}) + \text{dim}\,(\text{range})$ in finite dimensions, where injective, surjective and invertible coincide. The shifts show they differ in infinite dimensions.
+- A basis gives a matrix, $Tv_j = \sum_iT_{ij}v_i$, and matrix multiplication follows; trace and determinant are basis-independent.
+- Invariant subspaces of dimension one give eigenvectors, $Tu = \lambda u$ with $u \ne 0$; real rotations may have none.

@@ -1,0 +1,163 @@
+---
+title: Hermitian and unitary operators, position states and uncertainty
+slug: hermitian-unitary-position-states
+course: "8.05"
+lecture: 9
+order: 1
+summary: "Hermitian operators have real eigenvalues, and eigenvectors with different eigenvalues are orthogonal. Unitary operators preserve lengths; they are invertible with inverse U†, preserve inner products and map orthonormal bases to orthonormal bases. Position states, one for every point of the line, form a non-denumerable basis with delta-function inner products; the wavefunction is the component of a state along them, and momentum states are related to them by plane waves, so the momentum-space wavefunction is the Fourier transform and p̂ acts as (ħ/i) d/dx. The uncertainty of a Hermitian operator in a state is the length of (A − ⟨A⟩)ψ: it vanishes exactly for eigenstates, equals ⟨A²⟩ − ⟨A⟩² when squared, and is the part of Aψ orthogonal to ψ."
+prerequisites: [adjoints-hermitian-operators, position-momentum-stern-gerlach]
+source:
+  title: "MIT 8.05 Lecture 9: Dirac's Bra and Ket Notation"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-9-diracs-bra-and-ket-notation/
+  readings:
+    - title: "8.05 Lecture 9 transcript"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/16bde348019239eb06131b47afae21db_r2NMWEsNcTs.pdf
+    - title: "Zwiebach, Linear Algebra: Vector Spaces and Operators (8.05 lecture notes, chapter 3)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-3/
+    - title: "Zwiebach, Dirac's Bra and Ket Notation (8.05 lecture notes, chapter 4)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-4/
+    - title: "Zwiebach, Uncertainty Principle and Compatible Observables (8.05 lecture notes, chapter 5)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-5/
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "8.05"
+    lecture: 10
+    why: "The uncertainty principle, proved with the Schwarz inequality."
+quiz:
+  - question: "What can be said about the eigenvalues of a Hermitian operator?"
+    choices: ["They are real", "They are all equal", "They are purely imaginary", "They have absolute value 1"]
+    answer: 0
+    explanation: "For $Tv = \\lambda v$ with $v \\ne 0$, $(v, Tv)$ equals both $\\lambda(v, v)$ and $(Tv, v) = \\lambda^*(v, v)$, so $\\lambda = \\lambda^*$. (Eigenvalues of absolute value 1 belong to unitary operators, which is not shown here.)"
+  - question: "An operator $S$ preserves the length of every vector of a finite-dimensional complex space. What follows?"
+    choices: ["$S^\\dagger S = I$", "$S^\\dagger = S$", "$S^2 = I$", "$S$ is diagonal in every basis"]
+    answer: 0
+    explanation: "Squaring $|Su| = |u|$ gives $(u, (S^\\dagger S - I)u) = 0$ for every $u$, and on a complex space that forces $S^\\dagger S = I$: $S$ is unitary."
+  - question: "Is the position state at the point $2x$ the same as twice the position state at $x$?"
+    choices: ["No: the first is a particle at 2x, the second a particle at x with a doubled amplitude", "Yes, by linearity", "Only for x > 0", "Only if the states are normalised"]
+    answer: 0
+    explanation: "The label inside the ket is a position, not a vector of the state space, so scaling the label moves the particle. Multiplying the ket by 2 only changes its amplitude."
+  - question: "When is the uncertainty of a Hermitian operator $A$ in a normalised state zero?"
+    choices: ["Exactly when the state is an eigenstate of $A$", "Only for the ground state", "When $\\langle A\\rangle = 0$", "Never"]
+    answer: 0
+    explanation: "The uncertainty is the length of $(A - \\langle A\\rangle I)\\psi$. It is zero only if that vector is zero, that is $A\\psi = \\langle A\\rangle\\psi$, an eigenstate; conversely in an eigenstate the eigenvalue equals $\\langle A\\rangle$ and the vector vanishes."
+flashcards:
+  - front: "Two theorems on Hermitian operators"
+    back: "Their eigenvalues are real; eigenvectors with different eigenvalues are orthogonal. Both follow by evaluating one inner product, such as $(v_2, Tv_1)$, in two ways."
+  - front: "Unitary operator"
+    back: "$|Su| = |u|$ for all $u$. Then the null space is zero, $S^\\dagger S = I$ (so $S^\\dagger$ is the inverse), $(Su, Sv) = (u, v)$, and an orthonormal basis is mapped to an orthonormal basis. (In infinite dimensions $S$ must also be surjective.)"
+  - front: "Uncertainty of A in the state ψ"
+    back: "$\\Delta A(\\psi) = |(A - \\langle A\\rangle I)\\psi|$ for normalised $\\psi$; it is zero exactly for eigenstates, $(\\Delta A)^2 = \\langle A^2\\rangle - \\langle A\\rangle^2$, and it is the length of the part of $A\\psi$ orthogonal to $\\psi$."
+status: reviewed
+---
+
+The lecture is called "Dirac's bra and ket notation", but it covers more: two short theorems about Hermitian operators, unitary operators, the position and momentum bases where Dirac notation is at its best, and the definition of uncertainty (transcript pp. 1–22; notes chapter 3, eqs. (7.31)–(7.45); chapter 4, section 3; chapter 5, section 1). Zwiebach postpones diagonalisation to a later lecture to spread out the mathematics. In homework, students check the theorem of the last lecture with $2 \times 2$ matrices: if $(v, Tv) = 0$ for every $v$, then $T = 0$ on a complex space but not on a real one (transcript p. 1). (MIT's material for this lecture is the recorded lecture and Zwiebach's notes; this page follows them in its own words, with its own worked example. Dirac's brackets are written here in prose, and formulas use the inner product $(u, v)$ of the notes, so that read-aloud can say them.)
+
+## Hermitian operators: real eigenvalues
+
+A Hermitian operator ($T^\dagger = T$) has real expectation values, $(v, Tv)$, which Dirac writes ⟨v|T|v⟩ (transcript pp. 1–2). Its eigenvalues are real too. Let $Tv = \lambda v$ with $v \ne 0$, and evaluate $(v, Tv)$ in two ways: once with the eigenvalue equation in the second entry, once by moving $T$ to the first entry, where the number comes out conjugated (transcript pp. 2–3):
+
+<Formula label="Eigenvalues of a Hermitian operator are real" tex="(v, Tv) = \lambda\,(v, v), \qquad (v, Tv) = (Tv, v) = \lambda^*(v, v) \quad\Longrightarrow\quad (\lambda - \lambda^*)(v, v) = 0" cite="reading2" at="eqs. (7.31)–(7.32)" />
+
+Since $(v, v) \ne 0$, $\lambda = \lambda^*$.
+
+## Hermitian operators: orthogonal eigenvectors
+
+If $Tv_1 = \lambda_1v_1$ and $Tv_2 = \lambda_2v_2$ with $\lambda_1 \ne \lambda_2$, then $v_1$ and $v_2$ are orthogonal (transcript pp. 3–4). An eigenvalue may have a whole subspace of eigenvectors (**degeneracy**, which "makes life interesting" in quantum mechanics); the theorem then says that every eigenvector of one eigenvalue is orthogonal to every eigenvector of the other. The proof evaluates $(v_2, Tv_1)$ in two ways, using that the eigenvalues are already known to be real (transcript p. 4):
+
+<Formula label="Orthogonality of eigenvectors" tex="(v_2, Tv_1) = \lambda_1(v_2, v_1), \qquad (v_2, Tv_1) = (Tv_2, v_1) = \lambda_2(v_2, v_1) \quad\Longrightarrow\quad (\lambda_1 - \lambda_2)(v_1, v_2) = 0" cite="reading2" at="eqs. (7.34)–(7.36)" />
+
+## Unitary operators
+
+An operator $S$ is **unitary** if it does not change the length of any vector (mathematicians call this an isometry; the notes also require it to be surjective, so that the definition works in infinite dimensions) (transcript p. 5):
+
+<Formula label="Unitary operator" tex="|Su| = |u| \quad \text{for all } u" cite="reading2" at="eq. (7.37)" />
+
+A simple example is $\lambda I$ with $|\lambda| = 1$, a pure phase. A unitary operator kills only the zero vector, since every other vector has a length to keep, so it is invertible (transcript pp. 5–6). Squaring the definition and moving one $S$ across gives $(u, (S^\dagger S - I)u) = 0$ for every $u$, and the theorem of the last lecture turns this into (transcript p. 6)
+
+<Formula label="The adjoint is the inverse" tex="S^\dagger S = I" cite="reading2" at="eqs. (7.39)–(7.40)" />
+
+(Zwiebach assumes, as holds in the course's examples, that the left inverse is also a right inverse in infinite dimensions.) Unitary operators preserve not just lengths but all inner products, $(Su, Sv) = (u, S^\dagger Sv) = (u, v)$ (transcript p. 7). So if $e_1, \dots, e_n$ is an orthonormal basis and $U$ is unitary (Zwiebach switches here to the usual letter $U$, transcript p. 6), $f_i = Ue_i$ is another one (transcript p. 7):
+
+<Formula label="A unitary operator maps orthonormal bases to orthonormal bases" tex="(f_i, f_j) = (Ue_i, Ue_j) = (e_i, e_j) = \delta_{ij}" cite="reading2" at="eq. (7.43)" />
+
+A curiosity: the matrix elements of $U$ in the new basis equal those in the old one, since $(f_k, Uf_i) = (Ue_k, Uf_i) = (e_k, f_i) = (e_k, Ue_i)$; Zwiebach leaves the reason as a puzzle (transcript p. 7; notes eq. (7.45)). A student asked whether any two orthonormal bases are related by a unitary operator; the answer is yes (transcript p. 8).
+
+## Position states
+
+Dirac notation is used by everyone for position and momentum, because there it prevents a real confusion (transcript p. 8). For each point $x$ of the line there is a **position state** |x⟩, a particle at $x$. The label $x$ is a real number, but the ket is a vector in an infinite-dimensional complex vector space. So |ax⟩, a particle at the point $ax$, has nothing to do with $a$|x⟩, a particle at $x$ with a different amplitude, and |−x⟩ is not −|x⟩ (transcript pp. 8–9; notes chapter 4, after eq. (3.87)). In three dimensions the label is an ordinary vector of space, and the ket is a vector of the state space. The basis is **non-denumerable**: its states cannot be listed one by one. The inner product is (transcript pp. 9–10)
+
+<Formula label="Inner product of position states" tex="(x, y) = \delta(x - y)" cite="reading3" at="eq. (3.88)" />
+
+so different positions are orthogonal, and position states cannot be normalised: they are idealisations. The identity is the integral over $x$ of |x⟩⟨x|, with no extra factor, as acting on a state |y⟩ confirms (transcript p. 10; notes eqs. (3.89)–(3.90)). The position operator is defined by $\hat x$|x⟩ = $x$|x⟩, so position states are its eigenstates (transcript p. 10; notes eq. (3.91)).
+
+A state $\psi$ has the **wavefunction** (transcript pp. 10–11)
+
+<Formula label="The wavefunction as a component" tex="\psi(x) = (x, \psi)" cite="reading3" at="eq. (3.94)" />
+
+Inserting the identity shows that the state is the superposition of position states with weights $\psi(x)$: the wavefunction is the component of the state along each basis state (transcript p. 11; notes eq. (3.95)). Inserting it again gives the familiar overlap and matrix element (transcript pp. 11–12):
+
+<Formula label="Overlap and position matrix element" tex="(\phi, \psi) = \int dx\,\phi^*(x)\,\psi(x), \qquad (\phi, \hat x\psi) = \int dx\,\phi^*(x)\,x\,\psi(x)" cite="reading3" at="eqs. (3.96)–(3.97)" />
+
+## Momentum states
+
+Momentum states |p⟩ work in exactly the same way: $(p', p) = \delta(p - p')$, the identity is the integral over $p$ of |p⟩⟨p|, and $\hat p$|p⟩ = $p$|p⟩ (transcript p. 12; notes eq. (3.98)). The physics enters only in how the two bases are related. A particle with momentum $p$ has a plane-wave wavefunction (transcript p. 12):
+
+<Formula label="Position-momentum overlap" tex="(x, p) = \frac{e^{ipx/\hbar}}{\sqrt{2\pi\hbar}}" cite="reading3" at="eq. (3.100)" />
+
+with the normalisation chosen to match the delta functions. The component of a state along |p⟩ is then the Fourier transform of the wavefunction, the **momentum-space wavefunction** (transcript pp. 12–13):
+
+<Formula label="Momentum-space wavefunction" tex="\tilde\psi(p) = (p, \psi) = \int dx\,\frac{e^{-ipx/\hbar}}{\sqrt{2\pi\hbar}}\,\psi(x)" cite="reading3" at="eq. (3.107)" />
+
+Finally, what is $(x, \hat p\psi)$? Insert momentum states so that $\hat p$ acts on its eigenstates, note that $p$ times $(x, p)$ equals $(\hbar/i)\,d/dx$ of $(x, p)$, take the derivative outside the $p$ integral (nothing else there depends on $x$), and remove the identity (transcript pp. 13–14):
+
+<Formula label="Momentum in the position representation" tex="(x, \hat p\psi) = \frac{\hbar}{i}\frac{d}{dx}\,\psi(x)" cite="reading3" at="eq. (3.112)" />
+
+This derives, rather than assumes, the rule $\hat p = (\hbar/i)\,d/dx$. The reverse exercise gives $i\hbar\,d\tilde\psi/dp$ for $\hat x$ in momentum space (notes eq. (3.113)). Asked what the basis vectors "look like", Zwiebach answered that they are delta functions; mathematicians who want to avoid them put the system on a large circle, where integrals become Fourier sums. Position and momentum are not bounded operators in the mathematicians' sense, but physicists know how to use them safely (transcript pp. 14–15).
+
+## Uncertainty
+
+When a state is an eigenstate of an observable, a measurement gives the eigenvalue with certainty. Otherwise the result is uncertain, and the uncertainty must refer to a state (transcript p. 16). For a Hermitian operator $A$ and a normalised state $\psi$, the expectation value is $\langle A\rangle = (\psi, A\psi)$, which is real. The uncertainty should be real, never negative, and zero exactly for eigenstates. A norm does all of this (transcript p. 17):
+
+<Formula label="Definition of uncertainty" tex="\Delta A(\psi) = \left|\left(A - \langle A\rangle I\right)\psi\right|" cite="reading4" at="eq. (1.2)" />
+
+If $\Delta A = 0$, the vector vanishes and $A\psi = \langle A\rangle\psi$: $\psi$ is an eigenstate, with eigenvalue $\langle A\rangle$. Conversely, in an eigenstate $A\psi = \lambda\psi$, the inner product with $\psi$ gives $\lambda = \langle A\rangle$, so the vector vanishes. The uncertainty is zero **if and only if** the state is an eigenstate; the step from zero uncertainty to an eigenstate uses that only the zero vector has zero length (transcript pp. 17–18). (The state must be normalised: rescaling it would rescale the uncertainty.)
+
+Squaring, moving the Hermitian operator $A - \langle A\rangle I$ across and expanding gives the more familiar form (transcript pp. 18–19):
+
+<Formula label="Uncertainty squared" tex="(\Delta A)^2 = \langle A^2\rangle - \langle A\rangle^2" cite="reading4" at="eq. (1.9)" />
+
+Because the left side is not negative, $\langle A^2\rangle \ge \langle A\rangle^2$ always; the formula is a standard deviation, as in statistics (transcript p. 20).
+
+**A picture** (transcript pp. 20–21). Unless $\psi$ is an eigenstate, $A\psi$ points in a different direction. Project $A\psi$ orthogonally onto the line through $\psi$, using the projector |ψ⟩⟨ψ|: the projection is $\langle A\rangle\psi$. What is left is orthogonal to $\psi$, as taking its inner product with $\psi$ confirms (notes eqs. (1.11)–(1.12), and the text after (1.13); transcript p. 21):
+
+<Formula label="The orthogonal part" tex="A\psi - \langle A\rangle\psi = \psi_\perp, \qquad (\psi, \psi_\perp) = \langle A\rangle - \langle A\rangle = 0" cite="reading4" at="eq. (1.13)" />
+
+and its length is exactly the uncertainty. To make the uncertainty vanish, $A\psi$ must lie along $\psi$. Zwiebach finds this picture suggestive, though he suspects it is not widely known.
+
+The lecture ends by pointing at the uncertainty principle for two Hermitian operators $A$ and $B$. Uncertainties are norms, and the only inequality relating norms to an inner product is the Schwarz inequality; applying it to $f = (A - \langle A\rangle)\psi$ and $g = (B - \langle B\rangle)\psi$ is the next lecture (transcript p. 22).
+
+## Worked example
+
+<WorkedExample title="Uncertainty of a two-state observable">
+<Problem>
+Let $A = \begin{pmatrix}1 & 0\\ 0 & -1\end{pmatrix}$ and $\psi = (3/5, 4/5)$. Find $\langle A\rangle$, $\Delta A$ from $\langle A^2\rangle - \langle A\rangle^2$, and check the result with the orthogonal part $\psi_\perp$.
+</Problem>
+<Step title="Normalisation and expectation value">
+$(\psi, \psi) = 9/25 + 16/25 = 1$. Then $A\psi = (3/5, -4/5)$ and $\langle A\rangle = 9/25 - 16/25 = -7/25$.
+</Step>
+<Step title="Uncertainty from the formula">
+$A^2 = I$, so $\langle A^2\rangle = 1$, and $(\Delta A)^2 = 1 - 49/625 = 576/625$: $\Delta A = 24/25$.
+</Step>
+<Step title="Check with the picture">
+$\langle A\rangle\psi = (-21/125, -28/125)$, so $\psi_\perp = A\psi - \langle A\rangle\psi = (96/125, -72/125)$. It is orthogonal to $\psi$: $(3 \times 96 - 4 \times 72)/625 = 0$. Its squared length is $(9216 + 5184)/15625 = 14400/15625$, and $\sqrt{14400}/125 = 120/125 = 24/25$, the same uncertainty.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- Hermitian operators have real eigenvalues, and eigenvectors with different eigenvalues are orthogonal; degenerate eigenvalues have whole subspaces of eigenvectors.
+- Unitary operators preserve lengths; then $S^\dagger S = I$, they preserve inner products and map orthonormal bases to orthonormal bases.
+- Position states form a non-denumerable basis with $(x, y) = \delta(x - y)$; the label is a number, not a vector of the state space; $\psi(x) = (x, \psi)$ is the component of the state along |x⟩.
+- With $(x, p) = e^{ipx/\hbar}/\sqrt{2\pi\hbar}$, the momentum-space wavefunction is the Fourier transform, and $(x, \hat p\psi) = (\hbar/i)\,d\psi/dx$ follows by inserting complete sets of states.
+- The uncertainty $\Delta A(\psi) = |(A - \langle A\rangle I)\psi|$ vanishes exactly for eigenstates, satisfies $(\Delta A)^2 = \langle A^2\rangle - \langle A\rangle^2$, and is the length of the part of $A\psi$ orthogonal to $\psi$.

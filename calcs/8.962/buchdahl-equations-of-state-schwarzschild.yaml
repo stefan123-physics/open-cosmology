@@ -1,0 +1,349 @@
+# Calculations on content/year-5/8.962/buchdahl-equations-of-state-schwarzschild.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+
+page: content/year-5/8.962/buchdahl-equations-of-state-schwarzschild.mdx
+calcs:
+  # ---------------------------------------------------------------- constant-density star (G = 1)
+  - id: tov-constant-density
+    kind: identity
+    where: 'formula "TOV for constant density": with m = (4/3) pi rho r^3, (rho + P) G(m + 4 pi r^3 P)/(r(r - 2Gm)) = (4 pi/3) r (rho + P)(rho + 3P)/(1 - 8 pi rho r^2/3)'
+    formula: (rho + P)*((4/3)*pi*rho*r**3 + 4*pi*r**3*P)/(r*(r - 2*(4/3)*pi*rho*r**3))
+    equals: (4*pi/3)*r*(rho + P)*(rho + 3*P)/(1 - 8*pi*rho*r**2/3)
+    samples: {rho: [0.01, 0.05, 0.002], P: [0.001, 0.02, 0.0005], r: [1.0, 0.8, 3.0]}
+    tolerance: 1e-10
+    shown: ['\frac{dP}{dr} = -\frac{4\pi G}{3}\,r\,\frac{(\rho + P)(\rho + 3P)}{1 - 8\pi G\rho r^2/3}']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: mit
+
+  - id: profile-solves-tov
+    kind: identity
+    where: 'formula "Pressure profile of a uniform star": P = rho (1 - y)/(3y - 1) with y = Q/sqrt(1 - 8 pi rho r^2/3), Q = (rho + Pc)/(rho + 3Pc), satisfies the constant-density TOV equation (numerical derivative; rho = 0.01, Pc = 0.002, G = 1)'
+    formula: deriv('0.01*(1 - ((0.012/0.016)/sqrt(1 - 8*pi*0.01*x**2/3)))/(3*((0.012/0.016)/sqrt(1 - 8*pi*0.01*x**2/3)) - 1)', 'x', r, 1)
+    equals: -(4*pi/3)*r*(0.01 + 0.01*(1 - ((0.012/0.016)/sqrt(1 - 8*pi*0.01*r**2/3)))/(3*((0.012/0.016)/sqrt(1 - 8*pi*0.01*r**2/3)) - 1))*(0.01 + 3*0.01*(1 - ((0.012/0.016)/sqrt(1 - 8*pi*0.01*r**2/3)))/(3*((0.012/0.016)/sqrt(1 - 8*pi*0.01*r**2/3)) - 1))/(1 - 8*pi*0.01*r**2/3)
+    samples: {r: [0.5, 1.5, 2.5]}
+    tolerance: 1e-6
+    shown: ['\frac{\rho + P}{\rho + 3P} = \frac{\rho + P_c}{\rho + 3P_c}\,\frac{1}{\sqrt{1 - 8\pi G\rho r^2/3}}']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: mit
+
+  - id: central-pressure-formula
+    kind: identity
+    where: 'formula "Central pressure and radius": P = 0 at the surface with 8 pi rho R^2/3 = 2GM/R gives (rho + Pc)/(rho + 3Pc) = sqrt(1 - 2GM/R); checked with Pc from the formula'
+    formula: (rho + rho*(1 - sqrt(1 - u))/(3*sqrt(1 - u) - 1))/(rho + 3*rho*(1 - sqrt(1 - u))/(3*sqrt(1 - u) - 1))
+    equals: sqrt(1 - u)
+    samples: {rho: [0.01, 1.0, 5.0], u: [0.1, 0.4, 0.8]}
+    tolerance: 1e-10
+    shown: ['P_c = \rho\,\frac{1 - \sqrt{1 - 2GM/r_\star}}{3\sqrt{1 - 2GM/r_\star} - 1}']
+    source: {cite: reading1, at: 'transcript pp. 3–4'}
+    origin: mit
+
+  - id: buchdahl-four-ninths
+    where: 'formula "Maximum compactness": 3 sqrt(1 - 2C) = 1 gives C = 4/9'
+    inputs: {}
+    formula: solve('3*sqrt(1 - 2*x) - 1', 'x', 0.1, 0.49)
+    expected: '0.4444'
+    shown: ['\frac{GM}{r_\star} = \frac{4}{9}', 'as C approaches 4/9 = 0.444']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: mit
+
+  - id: plot-pc-01
+    where: 'plot caption: P_c = 0.063 rho at C = 0.1'
+    inputs: {}
+    formula: (1 - sqrt(0.8))/(3*sqrt(0.8) - 1)
+    expected: '0.063'
+    shown: ['only 0.063ρ']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: plot-pc-03
+    where: 'plot caption: P_c = 0.41 rho at C = 0.3'
+    inputs: {}
+    formula: (1 - sqrt(0.4))/(3*sqrt(0.4) - 1)
+    expected: '0.41'
+    shown: ['at C = 0.3 it is 0.41ρ']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: plot-pc-044
+    where: 'plot caption: P_c = 16.7 rho at C = 0.44'
+    inputs: {}
+    formula: (1 - sqrt(0.12))/(3*sqrt(0.12) - 1)
+    expected: '16.7'
+    shown: ['(16.7ρ already at C = 0.44)']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Buchdahl worked example and quiz
+  - id: gm-14
+    where: 'worked example and quiz 1: GM/c^2 = 2068 m for 1.4 solar masses'
+    inputs: {}
+    formula: G*(1.4*M_sun)/c**2
+    expected: 2068 m
+    tolerance: 2 m
+    shown: ['$GM/c^2 = 2068$ m, so', '$GM/c^2 = 1.4 \\times 1477 = 2068$ m']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: buchdahl-14
+    where: 'worked example and quiz 1: 9/4 x 2068 m = 4653 m = 4.65 km'
+    inputs: {gm: 1477 m}
+    formula: 9/4*1.4*gm
+    expected: 4653 m
+    tolerance: 4 m
+    shown: ['$r_\star > 9/4 \times 2068 = 4653$ m $\approx 4.65$ km', '$9GM/(4c^2) = 4.65$ km']
+    source: {cite: reading1, at: 'transcript pp. 4–5'}
+    origin: page-own
+
+  - id: horizon-14
+    where: 'worked example and quiz 1: 2GM/c^2 = 4.13 km'
+    inputs: {gm: 1477 m}
+    formula: 2*1.4*gm
+    expected: 4.14 km
+    shown: ['against $2GM/c^2 = 4.14$ km', '["$2GM/c^2 = 4.14$ km"']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: quiz-3gm
+    where: 'quiz 1 distractor: 3GM/c^2 = 6.20 km'
+    inputs: {gm: 1477 m}
+    formula: 3*1.4*gm
+    expected: 6.20 km
+    shown: ['$3GM/c^2 = 6.20$ km']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: gm-20
+    where: 'worked example: GM/c^2 = 2954 m for 2.0 solar masses'
+    inputs: {}
+    formula: G*(2.0*M_sun)/c**2
+    expected: 2954 m
+    tolerance: 2 m
+    shown: ['$GM/c^2 = 2954$ m']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: buchdahl-20
+    where: 'worked example: 9/4 x 2954 m = 6.65 km'
+    inputs: {gm: 1477 m}
+    formula: 9/4*2.0*gm
+    expected: 6.65 km
+    shown: ['$r_\star > 6.65$ km']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: horizon-20
+    where: 'worked example: 2GM/c^2 = 5.91 km for 2.0 solar masses'
+    inputs: {gm: 1477 m}
+    formula: 2*2.0*gm
+    expected: 5.91 km
+    shown: ['against $5.91$ km']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: buchdahl-margin
+    where: 'worked example and summary: 9/4 = 1.125 x 2, 12.5% outside 2GM/c^2'
+    inputs: {}
+    formula: (9/4)/2
+    expected: '1.125'
+    shown: ['$9/4 = 1.125 \times 2$', 'only 12.5% outside $2GM/c^2$.']
+    source: {cite: reading1, at: 'transcript p. 4'}
+    origin: page-own
+
+  - id: ns-radii
+    kind: fact
+    where: 'worked example: later measurements give neutron-star radii of roughly 11 to 13 km'
+    shown: ['radii of roughly 11 to 13 km']
+    source: {ref: 'NICER X-ray timing (Riley et al. 2019, Miller et al. 2019, https://arxiv.org/abs/1912.05702) and GW170817 radius constraints (LIGO/Virgo 2018, https://arxiv.org/abs/1805.11581)'}
+    origin: later-data
+
+  - id: wrong-ten-quarters
+    kind: fact
+    where: 'Hughes''s example star at 10GM/(4c^2)'
+    shown: ['at, say, $10GM/(4c^2)$']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: mit
+
+  # ---------------------------------------------------------------- cold matter
+  - id: fermi-temps
+    kind: fact
+    where: 'Fermi temperature about 1e13 K; observed 1e6 to 1e9 K; factor 1e4 to 1e7'
+    shown: ['$T_F$ is around $10^{13}$ K, while observed neutron stars are at $10^6$ to $10^9$ K, a factor $10^4$ to $10^7$ colder']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: mit
+
+  - id: fermi-ratio-check
+    where: 'factor 1e4 to 1e7: 1e13/1e9 = 1e4'
+    inputs: {}
+    formula: 1e13/1e9
+    expected: '1e4'
+    shown: ['a factor $10^4$ to $10^7$ colder']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: mit
+
+  - id: polytrope-first-law
+    kind: identity
+    where: 'formula "First law per particle": -P d(1/rho0) = K rho0^(Gamma - 2) d rho0 for P = K rho0^Gamma'
+    formula: -K*r0**G*deriv('1/x', 'x', r0, 1)
+    equals: K*r0**(G - 2)
+    samples: {K: [0.5, 2.0, 1.0], r0: [0.3, 1.5, 4.0], G: [1.5, 2.0, 1.3333]}
+    tolerance: 1e-7
+    shown: ['= K\rho_0^{\Gamma - 2}\,d\rho_0']
+    source: {cite: reading1, at: 'transcript p. 8'}
+    origin: page-own
+
+  - id: polytrope-energy-density
+    kind: identity
+    where: 'formula "Energy density of a polytrope": rho = rho0 + P/(Gamma - 1) satisfies d(rho/rho0)/d rho0 = K rho0^(Gamma-2)'
+    formula: deriv('(x + K*x**G/(G - 1))/x', 'x', r0, 1)
+    equals: K*r0**(G - 2)
+    samples: {K: [0.5, 2.0, 1.0], r0: [0.3, 1.5, 4.0], G: [1.5, 2.0, 1.3333]}
+    tolerance: 1e-6
+    shown: ['\rho = \rho_0 + \frac{P}{\Gamma - 1}']
+    source: {cite: reading1, at: 'transcript pp. 8–9'}
+    origin: mit
+
+  - id: part-in-million
+    kind: fact
+    where: 'numerical integration typically good to a part in a million'
+    shown: ['good to a part in a million']
+    source: {cite: reading1, at: 'transcript p. 10'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Schwarzschild singularities
+  - id: kretschmann-at-horizon
+    where: 'quiz 3: I(2GM) = 48/(2^6) = 3/4 (G = M = 1)'
+    inputs: {}
+    formula: 48/2**6
+    expected: '0.75'
+    shown: ['$I(2GM) = 3/(4G^4M^4)$']
+    source: {cite: reading1, at: 'transcript pp. 12–13'}
+    origin: page-own
+
+  - id: tube-area
+    kind: identity
+    where: 'formula "Area of the world tube": integral of sqrt(-g_tt g_phiphi) over phi and t = 2 pi r sqrt(1 - 2GM/r) Delta t (GM = 1)'
+    formula: 2*pi*sqrt((1 - 2/r)*r**2)*dt
+    equals: 2*pi*r*sqrt(1 - 2/r)*dt
+    samples: {r: [2.5, 4.0, 10.0], dt: [1.0, 3.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['= 2\pi r\sqrt{1 - \frac{2GM}{r}}\;\Delta t']
+    source: {cite: reading1, at: 'transcript pp. 13–14'}
+    origin: mit
+
+  - id: tides-10
+    where: 'worked example "Tides at r = 2GM": r = 29.5 km, sqrt(48) GM/r^3 = 3.6e8 s^-2 for 10 solar masses'
+    inputs: {}
+    formula: sqrt(48)*G*(10*M_sun)/(2*G*(10*M_sun)/c**2)**3
+    expected: 3.6e8 1/s**2
+    shown: ['$r = 2GM/c^2 = 29.5$ km, and $\sqrt{48}\,GM/r^3 = 3.6\times10^8$ s⁻²']
+    source: {cite: reading1, at: 'transcript pp. 12–13'}
+    origin: page-own
+
+  - id: horizon-10
+    where: 'worked example: 2GM/c^2 = 29.5 km for 10 solar masses'
+    inputs: {}
+    formula: 2*G*(10*M_sun)/c**2
+    expected: 29.5 km
+    shown: ['$r = 2GM/c^2 = 29.5$ km']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  - id: tides-sgra
+    where: 'worked example: r = 1.18e10 m, sqrt(48) GM/r^3 = 2.2e-3 s^-2 for 4e6 solar masses'
+    inputs: {}
+    formula: sqrt(48)*G*(4e6*M_sun)/(2*G*(4e6*M_sun)/c**2)**3
+    expected: 2.2e-3 1/s**2
+    shown: ['$r = 1.18\times10^{10}$ m and $\sqrt{48}\,GM/r^3 = 2.2\times10^{-3}$ s⁻²']
+    source: {cite: reading1, at: 'transcript pp. 12–13'}
+    origin: page-own
+
+  - id: horizon-sgra
+    where: 'worked example: 2GM/c^2 = 1.18e10 m for 4e6 solar masses'
+    inputs: {}
+    formula: 2*G*(4e6*M_sun)/c**2
+    expected: 1.18e10 m
+    shown: ['$r = 1.18\times10^{10}$ m']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  - id: tides-ratio
+    where: 'worked example: (4e5)^2 = 1.6e11'
+    inputs: {}
+    formula: (4e6/10)**2
+    expected: '1.6e11'
+    shown: ['$(4\times10^5)^2 = 1.6\times10^{11}$']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  - id: tides-10-across-2m
+    where: 'worked example: across 2 m, 3.6e8 x 2 = 7e8 m/s^2, of order 1e9'
+    inputs: {}
+    formula: log10(2*sqrt(48)*1.32712e20*10/(2*1.32712e20*10/299792458**2)**3)
+    expected: '8.85'
+    tolerance: 0.1
+    shown: ['a difference in acceleration of several times $10^8$ m/s²']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  - id: sun-gm-si
+    kind: fact
+    where: 'worked example input GM_sun = 1.327e20 m^3/s^2 and GM_sun/c^2 = 1477 m'
+    shown: ['$GM_\odot = 1.327\times10^{20}$ m³/s²', 'Using $GM_\odot/c^2 = 1477$ m, find']
+    source: {cite: reading1, at: 'transcript p. 13'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- infall
+  - id: cycloid-proper-time
+    kind: identity
+    where: 'formula "Radial infall in proper time": r = (r0/2)(1 + cos eta), tau = sqrt(r0^3/8M)(eta + sin eta) satisfies (dr/dtau)^2 = 2M/r - 2M/r0 (G = 1, M = 1, r0 = 10)'
+    formula: (deriv('5*(1 + cos(x))', 'x', e, 1)/deriv('sqrt(125)*(x + sin(x))', 'x', e, 1))**2
+    equals: 2/(5*(1 + cos(e))) - 2/10
+    samples: {e: [0.3, 1.0, 2.5]}
+    tolerance: 1e-6
+    shown: ['r = \frac{r_0}{2}\left(1 + \cos\eta\right), \qquad \tau = \sqrt{\frac{r_0^3}{8GM}}\left(\eta + \sin\eta\right)']
+    source: {cite: reading1, at: 'transcript pp. 15–16'}
+    origin: mit
+
+  - id: coordinate-time-infall
+    kind: identity
+    where: 'formula "Radial infall in Schwarzschild time": dt/deta = [sqrt(1 - 2M/r0)/(1 - 2M/r)] dtau/deta (G = M = 1, r0 = 10)'
+    formula: deriv('2*log(abs((2 + tan(x/2))/(2 - tan(x/2)))) + 4*(x + 2.5*(x + sin(x)))', 'x', e, 1)
+    equals: sqrt(0.8)/(1 - 2/(5*(1 + cos(e))))*sqrt(125)*(1 + cos(e))
+    samples: {e: [0.3, 1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['\frac{t}{2GM} = \ln\left|']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: plot-proper-time-total
+    where: 'plot caption and quiz 4: pi sqrt(125) = 35.1 GM for r0 = 10 GM'
+    inputs: {}
+    formula: pi*sqrt(10**3/8)
+    expected: '35.1'
+    shown: ['π√125 = 35.1 GM', '\\approx 35\\,GM$']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: plot-t-end
+    where: 'plot caption: at eta = 2.2, r = 2.06 GM and t = 48.3 GM'
+    inputs: {}
+    formula: 2*log((2 + tan(1.1))/(2 - tan(1.1))) + 4*(2.2 + 2.5*(2.2 + sin(2.2)))
+    expected: '48.3'
+    shown: ['reached at t = 48.3GM']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: plot-r-end
+    where: 'plot caption: r = 5(1 + cos 2.2) = 2.06 GM'
+    inputs: {}
+    formula: 5*(1 + cos(2.2))
+    expected: '2.06'
+    shown: ['drawn to r = 2.06GM']
+    source: {cite: reading1, at: 'transcript p. 16'}
+    origin: page-own
+
+  - id: r0-example
+    kind: fact
+    where: 'Hughes''s example release radius r0 = 4GM; plot uses r0 = 10GM; 2.001GM, 1.999GM'
+    shown: ['(say $r_0 = 4GM$)', 'from $2.001GM$ to $1.999GM$', 'at r₀ = 10GM']
+    source: {cite: reading1, at: 'transcript pp. 13, 15'}
+    origin: mit

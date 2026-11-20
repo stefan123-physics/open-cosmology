@@ -1,0 +1,368 @@
+# Calculations on content/year-4/8.07/spherical-harmonics-from-traceless-tensors.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.07 (Fall 2012) Lecture Notes 8, "The Traceless Symmetric Tensor Expansion and Standard Spherical Harmonics"
+# (Guth, typed, October 11, 2012), eqs. (8.1)-(8.45), pp. 1-8. The notes quote no numbers, only exact coefficients.
+# Checked separately with SymPy (sources/807/L8/check.py, outside the repo): d_lm {u..z} n..n equals Jackson's Y_lm for every
+# m >= 0 up to l = 3; for m < 0 the notes' eqs. (8.42)-(8.43) are off by (-1)^m (the page uses the corrected form).
+# Page's own worked example: F = n_x^2 = sin^2(th) cos^2(ph), checked at th = 60 deg, ph = 30 deg.
+
+page: content/year-4/8.07/spherical-harmonics-from-traceless-tensors.mdx
+calcs:
+  # ---------------------------------------------------------------- counting (p. 2)
+  - id: count-rank2
+    kind: value
+    where: 'section "Two expansions": a symmetric 3 x 3 matrix has 6 independent entries, the zero trace removes one'
+    formula: 6 - 1
+    expected: '5'
+    shown: ['a symmetric $3 \times 3$ matrix has 6 independent entries and the zero trace removes one, leaving 5']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  - id: quiz-count-rank3
+    kind: value
+    where: 'quiz 1: a symmetric rank-3 tensor has 10 independent components, minus 3 trace conditions'
+    formula: 10 - 3
+    expected: '7'
+    shown: ['leaving $10 - 3 = 7 = 2\\ell + 1$']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- traceless parts (8.14)
+  - id: trace-rank3
+    kind: identity
+    where: 'check after eq. (8.14): the j = k trace of {z_i z_j z_k} is z_i - (3 z_i + z_i + z_i)/5 = 0 (checked as that plus 1)'
+    formula: zz - (3*zz + zz + zz)/5 + 1
+    equals: 1
+    samples: {zz: [1.0, 0.0, -1.0]}
+    tolerance: 1e-12
+    shown: ['the factor $\frac15$ is exactly what that takes']
+    source: {cite: reading1, at: 'eq. (8.14)'}
+    origin: page-own
+
+  - id: trace-rank4
+    kind: identity
+    where: 'eq. (8.14), rank-4 line: the k = m trace (with z.z = 1) is z_i z_j - (7 z_i z_j + delta_ij)/7 + 5 delta_ij/35 = 0 (checked as that plus 1)'
+    formula: zi*zj - (7*zi*zj + dij)/7 + 5*dij/35 + 1
+    equals: 1
+    samples: {zi: [1.0, 0.0, 0.0], zj: [1.0, 0.0, 1.0], dij: [1.0, 1.0, 0.0]}
+    tolerance: 1e-12
+    shown: ['The first five are (notes p. 3)']
+    source: {cite: reading1, at: 'eq. (8.14)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Legendre polynomials (8.17)-(8.18)
+  - id: leading-coefficient
+    kind: identity
+    where: 'eq. (8.17): (2l)(2l - 1)...(l + 1)/(2^l l!) = (2l)!/(2^l (l!)^2), written out for l = 2 (as 4 x 3/(4 x 2)) against 24/(4 x 4)'
+    formula: 4*3/(4*2)*xx
+    equals: 24/(4*4)*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['Matching the two leading coefficients fixes the constant (notes p. 4):']
+    source: {cite: reading1, at: 'eq. (8.17)'}
+    origin: mit
+
+  - id: legendre-l3-constant
+    kind: value
+    where: 'check after eq. (8.18): 6!/(2^3 x 36) = 5/2'
+    formula: 720/(8*36)
+    expected: '2.5'
+    shown: ['and the constant is $6!/(2^3 \times 36) = \frac52$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: legendre-l3
+    kind: identity
+    where: 'check after eq. (8.18): (5/2)(cos^3 - (3/5) cos) = (5 cos^3 - 3 cos)/2 = P3'
+    formula: 5/2*(cc**3 - 3*cc/5)
+    equals: (5*cc**3 - 3*cc)/2
+    samples: {cc: [0.3, -0.7, 0.95]}
+    tolerance: 1e-12
+    shown: ['which is $P_3$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: legendre-l4-constant
+    kind: value
+    where: 'check after eq. (8.18): 8!/(2^4 (4!)^2) = 40320/9216 = 35/8'
+    formula: 40320/(16*576)
+    expected: '4.375'
+    shown: ['the constant is $\frac{35}{8}$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: legendre-l4
+    kind: identity
+    where: 'check after eq. (8.18): the rank-4 traceless part contracted with n gives c^4 - (6/7) c^2 + 3/35; times 35/8 it is P4'
+    formula: 35/8*(cc**4 - 6*cc**2/7 + 3/35)
+    equals: (35*cc**4 - 30*cc**2 + 3)/8
+    samples: {cc: [0.3, -0.7, 0.95]}
+    tolerance: 1e-12
+    shown: ['the product is $\frac18(35\cos^4\theta - 30\cos^2\theta + 3) = P_4$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: quiz-l3
+    kind: value
+    where: 'quiz 3: (2l)!/(2^l (l!)^2) for l = 3'
+    formula: 720/288
+    expected: '2.5'
+    shown: ['720/288 = 5/2']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: quiz-l3-distractor
+    kind: value
+    where: 'quiz 3, a wrong choice: 1/(2^3 3!) = 1/48'
+    formula: 1/(8*6)
+    expected: '0.020833'
+    tolerance: 1e-6
+    shown: ['$1/48 = 1/(2^3\\,3!)$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- rotations (8.20)-(8.24)
+  - id: characteristic-equation
+    kind: identity
+    where: 'eq. (8.23): det(R - lambda I) = (cos psi - lambda)^2 + sin^2 psi = lambda^2 - 2 lambda cos psi + 1'
+    formula: (cos(ps) - lam)**2 + sin(ps)**2
+    equals: lam**2 - 2*lam*cos(ps) + 1
+    samples: {ps: [0.3, 1.2, 2.9], lam: [0.5, -1.3, 2.0]}
+    tolerance: 1e-12
+    shown: ['The roots are a pair of phases:']
+    source: {cite: reading1, at: 'eq. (8.23)'}
+    origin: mit
+
+  - id: eigenvector-sign
+    kind: identity
+    where: 'bracket after eq. (8.27): with lambda = e^{+i psi} the first row of eq. (8.26), -i sin psi v_x - sin psi v_y = 0, holds for v_y = -i v_x (imaginary parts: -sin psi * 1 - sin psi * (-1) = 0, checked plus 1)'
+    formula: -sin(ps)*1 - sin(ps)*(-1) + 1
+    equals: 1
+    samples: {ps: [0.3, 1.2, 2.9]}
+    tolerance: 1e-12
+    shown: ['goes with $v_y = -i\,v_x$, that is with $\hat u^{-}$']
+    source: {cite: reading1, at: 'eq. (8.26)'}
+    origin: page-own
+
+  - id: u-plus-self-dot
+    kind: value
+    where: 'u+ . u+ = (1 + i^2)/2 = 0, and u+ . u- = (1 - i^2)/2 = 1 (with i^2 = -1)'
+    formula: (1 + (-1))/2
+    expected: '0'
+    shown: ['Without it, $\hat u^{+} \cdot \hat u^{+} = \frac12(1 + i^2) = 0$']
+    source: {cite: reading1, at: 'p. 6'}
+    origin: mit
+
+  - id: u-plus-u-minus
+    kind: value
+    where: 'derivation of eq. (8.45): u+ . u- = (1 - i^2)/2 = 1'
+    formula: (1 - (-1))/2
+    expected: '1'
+    shown: ['Without conjugation $\hat u^{+} \cdot \hat u^{-} = \frac12(1 - i^2) = 1$']
+    source: {cite: reading1, at: 'eq. (8.45)'}
+    origin: page-own
+
+  - id: u-plus-dot-n
+    kind: identity
+    where: 'eq. (8.31): u+ . n = (sin th cos ph + i sin th sin ph)/sqrt2; its modulus squared is sin^2 th / 2'
+    formula: ((sin(th)*cos(ph))**2 + (sin(th)*sin(ph))**2)/2
+    equals: sin(th)**2/2
+    samples: {th: [0.4, 1.3, 2.5], ph: [0.2, 2.0, 4.5]}
+    tolerance: 1e-12
+    shown: ['the $x$ and $y$ components of $\hat n$ combine into']
+    source: {cite: reading1, at: 'eq. (8.31)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- the constants d_lm (8.41)-(8.43)
+  - id: d20-from-formula
+    kind: identity
+    where: 'eq. (8.41) for l = 2, m = 0: 4!/(2^2 2!) sqrt(5/(4 pi 2! 2!)) = 3 sqrt5/(4 sqrt pi)'
+    formula: 24/(4*2)*sqrt(5/(4*pi*2*2))*xx
+    equals: 3*sqrt(5)/(4*sqrt(pi))*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['and $d_{20} = 3\sqrt5/(4\sqrt\pi)$']
+    source: {cite: reading1, at: 'eq. (8.41)'}
+    origin: page-own
+
+  - id: d-m0-consistent
+    kind: identity
+    where: 'remark after eq. (8.41): d_l0 = (2l)!/(2^l (l!)^2) sqrt((2l + 1)/(4 pi)), for l = 2 and l = 3'
+    formula: FL/(2**LL*FL2)*sqrt((2*LL + 1)/(4*pi*FL2))
+    equals: FL/(2**LL*FL2)*sqrt((2*LL + 1)/(4*pi))/sqrt(FL2)
+    samples: {LL: [2, 3], FL: [24, 720], FL2: [4, 36]}
+    tolerance: 1e-12
+    shown: ['as it must.']
+    source: {cite: reading1, at: 'eqs. (8.9), (8.18), (8.41)'}
+    origin: page-own
+
+  - id: d22-from-formula
+    kind: identity
+    where: 'worked example: eq. (8.41) for l = 2, m = 2: 4!/(2^2 2!) sqrt(2^2 5/(4 pi 4! 0!)) = sqrt(15/(8 pi))'
+    formula: 24/(4*2)*sqrt(4*5/(4*pi*24*1))*xx
+    equals: sqrt(15/(8*pi))*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['eq. (8.41) gives $d_{22} = \sqrt{15/(8\pi)}$']
+    source: {cite: reading1, at: 'eq. (8.41)'}
+    origin: page-own
+
+  - id: y22-textbook
+    kind: identity
+    where: 'worked example: d22 (u+ . n)^2 = d22 sin^2 th e^{2i ph}/2, so the prefactor is sqrt(15/(8 pi))/2 = sqrt(15/(32 pi))'
+    formula: sqrt(15/(8*pi))/2*xx
+    equals: sqrt(15/(32*pi))*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['the textbook form']
+    source: {cite: reading1, at: 'eq. (8.36)'}
+    origin: page-own
+
+  - id: negative-m-sign-l1
+    kind: identity
+    where: 'bracket after eq. (8.43): with the corrected d_{1,-1} = +2!/(2 1!) sqrt(2 x 3/(4 pi 0! 2!)), d (u- . n) = sqrt(3/(8 pi)) sin th e^{-i ph}, the standard Y_{1,-1}; the notes'' (-1)^m gives minus this'
+    formula: 2/2*sqrt(2*3/(4*pi*1*2))/sqrt(2)*xx
+    equals: sqrt(3/(8*pi))*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['the notes'' version gives $-Y_{1, -1}$']
+    source: {cite: reading1, at: 'eqs. (8.42)-(8.43)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- mixing u+ and u- (8.45)
+  - id: mixed-traceless
+    kind: identity
+    where: 'derivation of eq. (8.45): (delta - z z)/2 - delta/3 = delta/6 - z z/2 = -(z z - delta/3)/2, for the components (zz, delta) = (1, 1), (0, 1), (0, 0) (checked plus 1)'
+    formula: (dd - zz)/2 - dd/3 + 1
+    equals: -(zz - dd/3)/2 + 1
+    samples: {dd: [1.0, 1.0, 0.0], zz: [1.0, 0.0, 0.0]}
+    tolerance: 1e-12
+    shown: ['which leaves $\frac16\delta_{ij} - \frac12\hat z_i\hat z_j = -\frac12\left(\hat z_i\hat z_j - \frac13\delta_{ij}\right)$']
+    source: {cite: reading1, at: 'eq. (8.45)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example (page's own)
+  - id: example-series
+    kind: identity
+    where: 'worked example: 1/3 - P2/3 + (1/2) sin^2 th cos 2ph = sin^2 th cos^2 ph (the l = 0, m = 0 and m = +-2 pieces)'
+    formula: 1/3 - (3*cos(th)**2 - 1)/2/3 + sin(th)**2*cos(2*ph)/2
+    equals: (sin(th)*cos(ph))**2
+    samples: {th: [0.4, 1.3, 2.5], ph: [0.2, 2.0, 4.5]}
+    tolerance: 1e-12
+    shown: ['There is an $\ell = 0$ part and an $\ell = 2$ part and nothing else.']
+    source: {cite: reading1, at: 'eqs. (8.14), (8.45)'}
+    origin: page-own
+
+  - id: example-a22
+    kind: identity
+    where: 'worked example: the m = 2 coefficient (1/2)/d22 = sqrt(2 pi/15)'
+    formula: 0.5/sqrt(15/(8*pi))*xx
+    equals: sqrt(2*pi/15)*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['Altogether']
+    source: {cite: reading1, at: 'eqs. (8.40)-(8.41)'}
+    origin: page-own
+
+  - id: example-a20
+    kind: identity
+    where: 'worked example: the m = 0 coefficient (-1/2)/d20 = -(2/3) sqrt(pi/5)'
+    formula: -0.5/(3*sqrt(5)/(4*sqrt(pi)))*xx
+    equals: -2/3*sqrt(pi/5)*xx
+    samples: {xx: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['Divide by the constants']
+    source: {cite: reading1, at: 'eqs. (8.40)-(8.41)'}
+    origin: page-own
+
+  - id: example-a00-value
+    kind: value
+    where: 'worked example: a00 = sqrt(4 pi)/3'
+    formula: sqrt(4*pi)/3
+    expected: '1.18'
+    shown: ['with the coefficients $a_{00} \approx 1.18$']
+    source: {cite: reading1, at: 'eq. (8.3)'}
+    origin: page-own
+
+  - id: example-a20-value
+    kind: value
+    where: 'worked example: a20 = -(2/3) sqrt(pi/5)'
+    formula: -2/3*sqrt(pi/5)
+    expected: '-0.528'
+    shown: ['$a_{20} \approx -0.528$']
+    source: {cite: reading1, at: 'eq. (8.3)'}
+    origin: page-own
+
+  - id: example-a22-value
+    kind: value
+    where: 'worked example: a22 = a2,-2 = sqrt(2 pi/15)'
+    formula: sqrt(2*pi/15)
+    expected: '0.647'
+    shown: ['$a_{2,\pm2} \approx 0.647$']
+    source: {cite: reading1, at: 'eq. (8.3)'}
+    origin: page-own
+
+  - id: example-nx
+    kind: value
+    where: 'worked example, check: n_x = sin 60 deg cos 30 deg'
+    formula: sin(pi/3)*cos(pi/6)
+    expected: '0.75'
+    shown: ['$\hat n_x = \sin 60°\cos 30° = 0.75$']
+    source: {cite: reading1, at: 'eq. (8.2)'}
+    origin: page-own
+
+  - id: example-F
+    kind: value
+    where: 'worked example, check: F = n_x^2'
+    formula: (sin(pi/3)*cos(pi/6))**2
+    expected: '0.5625'
+    shown: ['so $F = 0.5625$']
+    source: {cite: reading1, at: 'eq. (8.2)'}
+    origin: page-own
+
+  - id: example-P2
+    kind: value
+    where: 'worked example, check: P2 at cos^2 th = 1/4 is (3/4 - 1)/2'
+    formula: (3*0.25 - 1)/2
+    expected: '-0.125'
+    shown: ['so $P_2 = -\frac18$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: example-m0-term
+    kind: identity
+    where: 'worked example, check: the m = 0 term -P2/3 at th = 60 deg is 1/24'
+    formula: -(3*cos(th)**2 - 1)/2/3
+    equals: 1/24
+    samples: {th: [1.0471975511965976]}
+    tolerance: 1e-9
+    shown: ['and the $m = 0$ term is $-\frac13 P_2$']
+    source: {cite: reading1, at: 'eq. (8.18)'}
+    origin: page-own
+
+  - id: example-m2-term
+    kind: value
+    where: 'worked example, check: the m = +-2 pair, (1/2) sin^2 60 deg cos 60 deg'
+    formula: sin(pi/3)**2*cos(pi/3)/2
+    expected: '0.1875'
+    shown: ['adds up to $\frac12\sin^2\theta\cos 2\phi = \frac12 \times \frac34 \times \frac12$']
+    source: {cite: reading1, at: 'eq. (8.31)'}
+    origin: page-own
+
+  - id: example-sum
+    kind: value
+    where: 'worked example, check: 1/3 + 1/24 + 3/16 = 27/48 = 9/16'
+    formula: 1/3 + 1/24 + 3/16
+    expected: '0.5625'
+    shown: ['The sum is $\frac{16 + 2 + 9}{48} = \frac{9}{16} = 0.5625$']
+    source: {cite: reading1, at: 'eq. (8.3)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- cosmology callout
+  - id: quadrupole-count
+    kind: value
+    where: 'callout: the quadrupole l = 2 has 2l + 1 = 5 independent real numbers'
+    formula: 2*2 + 1
+    expected: '5'
+    shown: ['is measured from just five']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own

@@ -1,0 +1,197 @@
+---
+title: "Orbits around a black hole: effective potentials, the innermost stable orbit and the photon ring"
+slug: schwarzschild-orbits-photon-ring
+course: "8.962"
+lecture: 23
+order: 1
+summary: "Symmetry turns geodesics around a Schwarzschild black hole into a one-dimensional problem: conserved energy and angular momentum leave (dr/dτ)² = Ê² − V_eff(r). The effective potential shows scattering, bound and circular orbits; circular orbits obey Kepler's law exactly in Schwarzschild coordinates, but none is stable inside 6GM, which carves the inner edge of accretion disks. For light, only the impact parameter b = L/E matters: rays with b < 3√3 GM are captured, and the unstable photon orbit at 3GM makes the bright ring that the Event Horizon Telescope imaged."
+prerequisites: [conserved-momenta-riemann-tensor, event-horizons-kruskal-kerr, schwarzschild-orbits-perihelion]
+source:
+  title: "MIT 8.962 Lecture 23: Black Holes II"
+  url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/lecture-23-black-holes-ii/
+  readings:
+    - title: "8.962 Lecture 23 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/7ed0f53936bf28b5578be29776d6bb9c_uNWqE3LS1E.pdf
+license: CC BY-NC-SA 4.0
+references:
+  eht2019:
+    title: "Event Horizon Telescope Collaboration, First M87 Event Horizon Telescope Results. I. The Shadow of the Supermassive Black Hole, ApJL 875, L1 (2019)"
+    url: https://arxiv.org/abs/1906.11238
+leadsTo: []
+quiz:
+  - question: "Where is the innermost stable circular orbit of a Schwarzschild black hole of 10 solar masses? ($GM_\\odot/c^2 = 1477$ m)"
+    choices: ["At $2GM/c^2 = 29.5$ km", "At $3GM/c^2 = 44.3$ km", "At $6GM/c^2 = 88.6$ km", "There is none: circular orbits are stable down to the horizon"]
+    answer: 2
+    explanation: "$r_\\text{ms} = 6GM/c^2 = 6 \\times 14\\,770$ m $= 88.6$ km. Inside it circular orbits exist down to $3GM$, but they are unstable."
+  - question: "A gas element spirals slowly through circular orbits from far away down to $r = 6GM$, radiating as it goes. What fraction of its rest energy has it radiated?"
+    choices: ["About 0.1%", "About 5.7%", "About 42%", "100%"]
+    answer: 1
+    explanation: "$\\hat E = (1 - 2GM/r)/\\sqrt{1 - 3GM/r} = (2/3)/\\sqrt{1/2} = 0.943$ at $6GM$, so $1 - 0.943 = 0.057$: 5.7% of the rest energy has been radiated."
+  - question: "Why does $\\Omega = d\\phi/dt = \\sqrt{GM/r^3}$, exactly Kepler's law, hold for circular orbits in Schwarzschild coordinates?"
+    choices: ["Because the orbits are in the weak-field limit", "Mostly because of what $r$ and $t$ mean: $r$ is the areal radius (the orbit's circumference is $2\\pi r$) and $t$ is the time of distant observers", "Because general relativity reduces to Newton's theory for circular orbits", "It does not hold; there are large corrections"]
+    answer: 1
+    explanation: "Hughes warns against reading too much into it: the result says more about the areal coordinate than about deep physics. The proper distance between two orbits is not $r_2 - r_1$."
+  - question: "A light ray approaches a Schwarzschild black hole with impact parameter $b = 5GM$. What happens?"
+    choices: ["It is deflected and escapes", "It is captured, since $b < 3\\sqrt3\\,GM \\approx 5.20\\,GM$", "It orbits forever at $r = 3GM$", "It cannot be computed without its energy"]
+    answer: 1
+    explanation: "$1/b^2 = 0.040/(GM)^2$ exceeds the peak of the photon potential, $1/(27G^2M^2) = 0.037/(GM)^2$, so the ray passes over the barrier and falls in."
+flashcards:
+  - front: "Conserved quantities of a Schwarzschild orbit (per unit rest mass)"
+    back: "$\\hat E = (1 - 2GM/r)\\,dt/d\\tau$ and $\\hat L = r^2\\,d\\phi/d\\tau$, from the Killing vectors $\\partial_t$ and $\\partial_\\phi$."
+  - front: "Radial equation and effective potential"
+    back: "$\\left(\\dfrac{dr}{d\\tau}\\right)^2 = \\hat E^2 - V_\\text{eff}$, $V_\\text{eff} = \\left(1 - \\dfrac{2GM}{r}\\right)\\left(1 + \\dfrac{\\hat L^2}{r^2}\\right)$"
+  - front: "Circular orbits"
+    back: "$\\hat L = \\pm\\dfrac{\\sqrt{GMr}}{\\sqrt{1 - 3GM/r}}$, $\\hat E = \\dfrac{1 - 2GM/r}{\\sqrt{1 - 3GM/r}}$, $\\Omega = \\pm\\sqrt{GM/r^3}$; stable only for $r > 6GM$."
+  - front: "Photon orbits"
+    back: "$\\left(\\dfrac{dr}{d\\tilde\\lambda}\\right)^2 = \\dfrac{1}{b^2} - \\dfrac{1}{r^2}\\left(1 - \\dfrac{2GM}{r}\\right)$, $b = L/E$; peak at $r = 3GM$, critical $b = 3\\sqrt3\\,GM$."
+  - front: "Black-hole ring (shadow) size"
+    back: "Photons near the critical impact parameter make a ring of radius $3\\sqrt3\\,GM \\approx 5.2\\,GM$, diameter $6\\sqrt3\\,GM$, as seen far away."
+status: reviewed
+---
+
+In the last recorded lecture of the 2020 course Hughes asks how the black-hole spacetime could be tested: what does matter orbiting a black hole do? The answer is geodesics. One could grind out all the Christoffel symbols of the Schwarzschild or Kerr metric and integrate the geodesic equation. That is correct, but a more fruitful route **exploits the symmetries** and their Killing vectors to cut down the degrees of freedom. Hughes does this in detail for Schwarzschild; the ideas carry over to Kerr and Kerr–Newman. The signature is $(-,+,+,+)$ and $c = 1$, with $G$ kept. The 8.033 page [Schwarzschild orbits and the perihelion](/courses/8-033/schwarzschild-orbits-perihelion) meets the same potential at an introductory level.
+
+## Three symmetries
+
+Start from the Schwarzschild metric, $ds^2 = -(1 - 2GM/r)dt^2 + dr^2/(1 - 2GM/r) + r^2(d\theta^2 + \sin^2\theta\,d\phi^2)$.
+
+- **Spherical symmetry.** There is no preferred equator and so no torque that could turn the orbital plane: angular momentum is conserved and each orbit stays in a plane. Rotate the coordinates to make it $\theta = \pi/2$; a short exercise with the geodesic equation shows an orbit that starts there with velocity in that plane stays there. The problem drops from three spatial dimensions to two. (For Kerr this fails, and the extra $\theta$ motion, Hughes says, is beautiful and has kept him busy for much of his career, but it is no place to start.)
+- **Time independence.** No metric component depends on $t$, so there is a timelike Killing vector and $p_t$ is constant along the orbit. Its negative is the **energy** $E$ (the sign is chosen so that $E$ is positive far away, where the metric is flat).
+- **Axial symmetry.** Nothing depends on $\phi$, so $p_\phi$ is constant: the axial angular momentum $L_z$ about the axis normal to the orbital plane.
+
+All three hold for Reissner–Nordström too; Kerr keeps the last two but not spherical symmetry (pp. 1–3).
+
+## Reducing the motion to one dimension
+
+For a body of rest mass $m$ with four-momentum $p^\mu = m\,dx^\mu/d\tau$ in the equatorial plane, lowering the index gives the two conserved components (p. 4):
+
+<Formula label="Energy and angular momentum" tex="p_t = -m\left(1 - \frac{2GM}{r}\right)\frac{dt}{d\tau} = -E, \qquad p_\phi = m\,r^2\,\frac{d\phi}{d\tau} = L_z" cite="reading1" at="transcript p. 4" />
+
+Divided by the rest mass ($\hat E = E/m$, $\hat L = L_z/m$), these give two velocity components in terms of $r$ and constants. They cannot depend on $m$: one says how the orbit's clock runs against clocks far away, the other how fast it turns by its own clock.
+
+<Formula label="Two velocity components" tex="\frac{dt}{d\tau} = \frac{\hat E}{1 - 2GM/r}, \qquad \frac{d\phi}{d\tau} = \frac{\hat L}{r^2}" cite="reading1" at="transcript p. 4" />
+
+The normalisation $p_\mu p^\mu = -m^2$ supplies the third. Every term carries $m^2$; divide it out, insert the two velocities and rearrange:
+
+<Formula label="Radial equation" tex="\left(\frac{dr}{d\tau}\right)^2 = \hat E^2 - V_\text{eff}(r), \qquad V_\text{eff} = \left(1 - \frac{2GM}{r}\right)\left(1 + \frac{\hat L^2}{r^2}\right)" cite="reading1" at="transcript p. 5" />
+
+This is strikingly like the Newtonian problem of motion in a $1/r$ potential with an angular-momentum barrier. Pick $\hat E$, $\hat L$ and a starting point and integrate $dr/d\tau$, $dt/d\tau$ and $d\phi/d\tau$: the system is closed. But the effective potential tells much more.
+
+## Reading the effective potential
+
+$V_\text{eff}$ is dimensionless here, like $\hat E^2$, and tends to 1 as $r \to \infty$. Since $(dr/d\tau)^2$ cannot be negative, motion is allowed only where $\hat E^2 \ge V_\text{eff}$ (pp. 6–7):
+
+- **$\hat E > 1$:** the body comes in from large $r$, reaches a turning point where $\hat E^2 = V_\text{eff}$ (where $dr/d\tau$ would turn imaginary), and goes back out, whipping around the hole. Newton would call it a hyperbolic orbit.
+- **$\hat E < 1$:** the body is trapped between a periastron $r_p$ and an apoastron $r_a$: an **eccentric orbit**. In general relativity it is not an ellipse; far away it is nearly an ellipse whose long axis slowly precesses, which gives the perihelion precession of Mercury that Einstein first computed (a problem set does it from this setup).
+- **$\hat E^2$ at an extremum of $V_\text{eff}$:** $dr/d\tau = 0$ only at one radius: a **circular orbit**. At the minimum (point "s") a small kick produces small oscillations: **stable**. At the maximum (point "u") a small kick sends the body either into the hole or out to large $r$: **unstable**.
+
+<Plot
+  variable="x"
+  domain={[2, 30]}
+  range={[0.8, 1.1]}
+  xLabel="r (units of GM)"
+  yLabel="V_eff"
+  curves={[
+    { expr: "(1 - 2/x)*(1 + 16/x^2)", label: "L̂ = 4GM" },
+    { expr: "(1 - 2/x)*(1 + 12/x^2)", label: "L̂ = √12 GM (marginal)", dash: true },
+    { expr: "(1 - 2/x)*(1 + L^2/x^2)", label: "L̂ (slider)" }
+  ]}
+  params={{ L: { value: 3.8, min: 3, max: 4.5, step: 0.05, label: "L̂/GM" } }}
+  points={[{ x: 12, y: 0.9259, label: "stable circular orbit, r = 12GM" }, { x: 6, y: 0.8889, label: "r_ms = 6GM" }]}
+  caption="The Schwarzschild effective potential, computed from V_eff = (1 − 2GM/r)(1 + L̂²/r²). For L̂ = 4GM there is a maximum at r = 4GM (V_eff = 1, an unstable circular orbit) and a minimum at r = 12GM (V_eff = 0.926, a stable one). Lowering L̂ brings them together; at L̂ = √12 GM = 3.46GM they merge at r = 6GM (V_eff = 0.889), the marginally stable orbit. Below that there is no minimum at all."
+/>
+
+## Circular orbits
+
+A circular orbit needs $dr/d\tau = 0$, so $\hat E^2 = V_\text{eff}$, at an extremum, $dV_\text{eff}/dr = 0$. After, in Hughes's words, the "algebraic smoke clears" (p. 8):
+
+<Formula label="Angular momentum of a circular orbit" tex="\hat L = \pm\frac{\sqrt{GMr}}{\sqrt{1 - 3GM/r}}" cite="reading1" at="transcript p. 8" />
+
+For large $r$ this is $\pm\sqrt{GMr}$, the Newtonian value: a good sanity check. Substituting back:
+
+<Formula label="Energy of a circular orbit" tex="\hat E = \frac{1 - 2GM/r}{\sqrt{1 - 3GM/r}} \;\approx\; 1 - \frac{GM}{2r} \quad (r \gg GM)" cite="reading1" at="transcript pp. 8–9" />
+
+Two remarks (p. 9). $\hat E < 1$: energy per unit rest mass includes rest, kinetic and potential energy, and a bound orbit has negative kinetic-plus-potential energy. And far away $-GM/2r$ is exactly the Newtonian kinetic plus potential energy per unit mass of a circular orbit. Both expressions misbehave at $r = 3GM$, a hint to hold on to.
+
+**Orbital frequency.** Distant observers see periodicities in gravitational waves, in the light curve of a star orbiting a black hole, or in the X-rays from a lump in an accretion disk, all timed in Schwarzschild $t$. So the useful frequency is $\Omega = d\phi/dt = (d\phi/d\tau)/(dt/d\tau)$. The factors $1 - 2GM/r$ and $\sqrt{1 - 3GM/r}$ all cancel:
+
+<Formula label="Orbital frequency seen from far away" tex="\Omega = \frac{d\phi}{dt} = \frac{\hat L/r^2}{\hat E/(1 - 2GM/r)} = \pm\sqrt{\frac{GM}{r^3}}" cite="reading1" at="transcript pp. 9–10" />
+
+The sign just says which way the orbit turns (for Kerr, frame dragging makes prograde and retrograde frequencies differ). This is **exactly Kepler's law**. Useful, and easy to remember, but Hughes warns not to read too much into it: it reflects the areal radius. The proper distance between orbits at $r_1$ and $r_2$ is not $r_2 - r_1$, but each orbit's circumference is $2\pi r$, and that is why Kepler's law survives (pp. 10–11).
+
+## The innermost stable circular orbit
+
+A circular orbit is stable if $d^2V_\text{eff}/dr^2 > 0$. As $\hat L$ is lowered, the minimum (stable orbit) moves inward and becomes shallower, and the maximum (unstable orbit) comes down faster, until they merge. [Hughes says the stable orbit "tends to go up"; the bottom of the well actually goes down, from 0.926 at $\hat L = 4GM$ to 0.889 at the merger, but the well flattens because the peak falls faster.] With $\hat L$ from the circular-orbit formula, the merger point, the **marginally stable orbit**, is at
+
+<Formula label="Marginally stable orbit" tex="r_\text{ms} = 6GM" cite="reading1" at="transcript p. 11" />
+
+No stable circular orbits exist inside $6GM$: if someone "sneezes on" one, it falls into the hole or flies off (p. 12). Newtonian gravity has nothing like it: there, circular orbits around a compact body are fine down to its surface.
+
+The astrophysical consequence: gas fed onto a black hole forms a disk whose elements rub, heat up, radiate and slowly spiral inward. On reaching $6GM$ the gas plunges in almost at once, so the density drops sharply and the disk has an inner edge, a hole around the hole. For Kerr the radius splits: orbits going with the spin can come closer, those going against it stay farther out; but the existence of an innermost stable orbit is robust (pp. 12–13).
+
+<WorkedExample title="The inner edge of a disk">
+<Problem>
+For a Schwarzschild black hole of 10 solar masses ($GM_\odot/c^2 = 1477$ m), find the radius of the innermost stable orbit, the orbital frequency there, and the fraction of rest energy a gas element has radiated by the time it gets there. Repeat the frequency for $4\times10^6$ solar masses.
+</Problem>
+<Step title="Radius">
+$GM/c^2 = 14\,770$ m, so $r_\text{ms} = 6GM/c^2 = 88.6$ km.
+</Step>
+<Step title="Frequency">
+$\Omega = \sqrt{GM/r^3} = c^3/(6^{3/2}GM)$, so $f = \Omega/2\pi = 220$ Hz (gravitational waves from such an orbit would come at twice this, 440 Hz). For $4\times10^6$ solar masses, $f$ scales as $1/M$: $5.5\times10^{-4}$ Hz, a period of about 30 minutes.
+</Step>
+<Step title="Energy radiated">
+$\hat E = (1 - 1/3)/\sqrt{1 - 1/2} = 0.943$, so $1 - 0.943 = 0.057$: 5.7% of the rest energy has been radiated, several times what nuclear fusion releases (0.7% for hydrogen to helium).
+</Step>
+</WorkedExample>
+
+## Photon orbits
+
+Light moves on null geodesics, $p^\mu = dx^\mu/d\lambda$ with affine parameter $\lambda$ and $p_\mu p^\mu = 0$ in place of $-m^2$. Energy and angular momentum are still conserved, now without a rest mass to divide by (pp. 13–14):
+
+<Formula label="Light: conserved quantities and radial equation" tex="E = \left(1 - \frac{2GM}{r}\right)\frac{dt}{d\lambda}, \qquad L = r^2\,\frac{d\phi}{d\lambda}, \qquad \left(\frac{dr}{d\lambda}\right)^2 = E^2 - \left(1 - \frac{2GM}{r}\right)\frac{L^2}{r^2}" cite="reading1" at="transcript pp. 13–14" />
+
+This seems to depend on the energy, which should bother you: gamma rays and infrared light should follow the same paths, at least while the wavelength is negligible compared with $2GM$ (geometric optics). The dependence is only apparent. Rescale the affine parameter, $\tilde\lambda = L\lambda$, and define the **impact parameter** $b = L/E$; dividing by $L^2$,
+
+<Formula label="Photon potential" tex="\left(\frac{dr}{d\tilde\lambda}\right)^2 = \frac{1}{b^2} - V_\text{phot}, \qquad V_\text{phot} = \frac{1}{r^2}\left(1 - \frac{2GM}{r}\right)" cite="reading1" at="transcript p. 14" />
+
+Only $b$ matters, and $V_\text{phot}$ has no free parameter. It peaks at $r = 3GM$ (the radius where the circular-orbit $\hat E$ and $\hat L$ blew up: a massive particle's energy per unit mass becomes infinite as its mass goes to zero, so those formulas were hinting at a light orbit), with peak value
+
+<Formula label="Peak of the photon potential" tex="V_\text{phot}(3GM) = \frac{1}{27\,G^2M^2} = \left(\frac{1}{3\sqrt3\,GM}\right)^2" cite="reading1" at="transcript pp. 14–15" />
+
+Why "impact parameter"? Far away, a ray aimed parallel to the line through the hole but offset sideways by $b$ has angular momentum $b$ times its momentum, $L = bE$, just as in freshman mechanics (pp. 15–16). Three cases:
+
+- **$b < 3\sqrt3\,GM$:** $1/b^2$ exceeds the peak; the ray passes over the barrier and falls in, perhaps bent on the way, ending at $r = 0$.
+- **$b > 3\sqrt3\,GM$:** the ray reaches a turning point outside the peak, is bent and returns to infinity.
+- **$b = 3\sqrt3\,GM$:** the ray climbs exactly to the peak and stays: the **photon orbit** at $r = 3GM$. It is unstable: a photon slightly off it whirls around a number of times and then leaves (pp. 16–17).
+
+[At one point Hughes calls the critical value "$b$ equals 3GM", and at one point phrases the capture condition as $b$ less than $1/(3\sqrt3\,GM)$ (he means $1/b^2$ above the peak); the critical impact parameter is $3\sqrt3\,GM$ and the photon orbit's radius is $3GM$.]
+
+<Plot
+  variable="x"
+  domain={[2, 15]}
+  range={[0, 0.05]}
+  xLabel="r (units of GM)"
+  yLabel="V_phot × (GM)²"
+  curves={[
+    { expr: "(1 - 2/x)/x^2", label: "V_phot" },
+    { expr: "1/b^2", label: "1/b² (slider)", dash: true }
+  ]}
+  params={{ b: { value: 6, min: 4.5, max: 9, step: 0.1, label: "b/GM" } }}
+  points={[{ x: 3, y: 0.037, label: "photon orbit, r = 3GM" }]}
+  caption="The photon potential V_phot = (1 − 2GM/r)/r², computed from the formula, with its peak 1/27 = 0.037 at r = 3GM. Move b: below 3√3 = 5.20 (in units of GM) the line 1/b² clears the peak and the ray is captured; above it the ray turns back."
+/>
+
+## The ring the Event Horizon Telescope saw
+
+Illuminate a black hole from behind or around with a bright source. Some photons fall in, some scatter away, and those near the critical impact parameter linger near $r = 3GM$ and escape towards us. Rotated about the line of sight, they form a **ring of radius $3\sqrt3\,GM$**, diameter $6\sqrt3\,GM$, as seen from far away. [Hughes first calls the radius twice the critical impact parameter, then gives these values.] This is what the **Event Horizon Telescope** imaged, announced in 2019 (for the black hole in the galaxy M87), a few lectures before Hughes reached this topic that year. Real black holes spin, so the Schwarzschild calculation is the simple version; mapping the ring, or "shadow", of a Kerr black hole is harder but solvable, and much work has gone into it (p. 17). (A second image, of the black hole at the centre of our Galaxy, followed in 2022, a later development.)
+
+<Callout kind="cosmology" title="Black holes as cosmological probes">
+A close relative of this conserved-quantity method (a Killing tensor rather than Killing vectors) gave $1 + z = 1/a$ in [Lecture 19](/courses/8-962/frw-redshift-distances); here Killing vectors give the orbits. In both, symmetries replace brute-force integration. Supermassive black holes grow by accretion through disks whose inner edge is set by $r_\text{ms}$, radiating several per cent of the infalling rest energy, which makes quasars visible across most of the observable universe.
+</Callout>
+
+## Summary
+
+- Spherical symmetry puts each Schwarzschild orbit in a plane; the Killing vectors $\partial_t$ and $\partial_\phi$ give conserved $\hat E$ and $\hat L$, and the normalisation leaves $(dr/d\tau)^2 = \hat E^2 - V_\text{eff}$ with $V_\text{eff} = (1 - 2GM/r)(1 + \hat L^2/r^2)$.
+- $\hat E > 1$: scattering; $\hat E < 1$: bound, precessing eccentric orbits; extrema of $V_\text{eff}$: circular orbits, stable at minima and unstable at maxima.
+- Circular orbits have $\hat L = \pm\sqrt{GMr}/\sqrt{1 - 3GM/r}$, $\hat E = (1 - 2GM/r)/\sqrt{1 - 3GM/r}$ and exactly Keplerian $\Omega = \sqrt{GM/r^3}$ (a property of the areal radius). None is stable inside $r_\text{ms} = 6GM$, the inner edge of accretion disks.
+- For light only $b = L/E$ matters: $V_\text{phot} = (1 - 2GM/r)/r^2$ peaks at $3GM$; rays with $b < 3\sqrt3\,GM$ are captured, and the unstable photon orbit produces a ring of radius $3\sqrt3\,GM$, as the Event Horizon Telescope saw.

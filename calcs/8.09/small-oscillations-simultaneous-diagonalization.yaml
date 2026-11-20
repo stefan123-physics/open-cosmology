@@ -1,0 +1,183 @@
+# Calculations on content/year-4/8.09/small-oscillations-simultaneous-diagonalization.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014, Stewart) Lecture Notes, Chapter 3 introduction and Section 3.1, pp. 52-55 (printed page numbers).
+# The notes quote no numbers in these pages. Page's own worked example: the equal double pendulum (masses m, lengths l),
+# T = m l^2 (2 1; 1 1), V = m g l (2 0; 0 1); lambda = mu g/l with mu^2 - 4 mu + 2 = 0; l = 0.50 m, g = 9.81 m/s^2.
+# Notation in the formulas: mu = mu, gg = g, ll = l, th1/th2 = angles, w1/w2 = angular velocities.
+
+page: content/year-4/8.09/small-oscillations-simultaneous-diagonalization.mdx
+calcs:
+  # ---------------------------------------------------------------- the matrices of the double pendulum
+  - id: lower-bob-speed
+    kind: identity
+    where: 'worked example, step "The two matrices": the lower bob at (l sin th1 + l sin th2, -l cos th1 - l cos th2) has squared speed l^2 (w1^2 + w2^2 + 2 w1 w2 cos(th1 - th2))'
+    formula: (ll*cos(th1)*w1 + ll*cos(th2)*w2)**2 + (ll*sin(th1)*w1 + ll*sin(th2)*w2)**2
+    equals: ll**2*(w1**2 + w2**2 + 2*w1*w2*cos(th1 - th2))
+    samples: {ll: [0.5, 1.3, 2.0], th1: [0.1, -0.4, 1.2], th2: [0.3, 0.7, -0.5], w1: [1.0, -2.0, 0.4], w2: [0.5, 1.5, -1.1]}
+    tolerance: 1e-12
+    shown: ['so its squared speed is $l^2(\dot\theta_1^2 + \dot\theta_2^2 + 2\dot\theta_1\dot\theta_2\cos(\theta_1 - \theta_2))$']
+    source: {cite: reading1, at: 'Chapter 3 introduction, eq. (3.2), p. 52'}
+    origin: page-own
+
+  - id: potential-quadratic
+    kind: identity
+    where: 'same step: V = m g l (3 - 2 cos th1 - cos th2) has second derivatives m g l (2, 0; 0, 1) at the bottom (checked: d2V/dth1^2 / (m g l) = 2, d2V/dth2^2 / (m g l) = 1, written as their sum 2 + 10*1)'
+    formula: deriv('3 - 2*cos(t)', 't', 0, 2) + 10*deriv('2 - cos(t)', 't', 0, 2) + 0*x
+    equals: 12 + 0*x
+    samples: {x: [1.0]}
+    tolerance: 1e-6
+    shown: ['$V \approx \tfrac12 mgl(2\theta_1^2 + \theta_2^2)$']
+    source: {cite: reading1, at: 'Chapter 3 introduction, eq. (3.1), p. 52'}
+    origin: page-own
+
+  - id: potential-zero
+    kind: identity
+    where: 'same step: V/(m g l) = 3 - 2 cos th1 - cos th2 vanishes at th1 = th2 = 0 (checked as value + 1 = 1)'
+    formula: 3 - 2*cos(0*x) - cos(0*x) + 1
+    equals: 1 + 0*x
+    samples: {x: [1.0]}
+    tolerance: 1e-12
+    shown: ['$V = mgl(3 - 2\cos\theta_1 - \cos\theta_2)$']
+    source: {cite: reading1, at: 'Chapter 3 introduction, eq. (3.1), p. 52'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the frequencies
+  - id: characteristic-polynomial
+    kind: identity
+    where: 'step "The frequencies": (2 - 2 mu)(1 - mu) - mu^2 = mu^2 - 4 mu + 2'
+    formula: (2 - 2*mu)*(1 - mu) - mu**2
+    equals: mu**2 - 4*mu + 2
+    samples: {mu: [0.0, 0.5, 1.7, 3.2, -2.0]}
+    tolerance: 1e-12
+    shown: ['$(2 - 2\mu)(1 - \mu) - \mu^2 = 0$, that is $\mu^2 - 4\mu + 2 = 0$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: mu-slow
+    where: 'step "The frequencies" and the plot caption: mu = 2 - sqrt 2'
+    inputs: {}
+    formula: 2 - sqrt(2)
+    expected: '0.586'
+    shown: ['$\mu = 2 \mp \sqrt 2 \approx 0.586$', 'μ = 2 − √2 ≈ 0.586']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: mu-fast
+    where: 'step "The frequencies", the plot caption and quiz 2 (the distractor 2 + sqrt 2)'
+    inputs: {}
+    formula: 2 + sqrt(2)
+    expected: '3.414'
+    shown: ['and $3.414$. The frequencies', '2 + √2 ≈ 3.414', '$2 + \\sqrt 2 \\approx 3.414$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: mu-roots-check
+    kind: identity
+    where: 'the two roots satisfy mu^2 - 4 mu + 2 = 0 (checked as the polynomial + 1 = 1 at each root)'
+    formula: mu**2 - 4*mu + 2 + 1
+    equals: 1
+    samples: {mu: [0.5857864376269049, 3.414213562373095]}
+    tolerance: 1e-12
+    shown: ['$\omega_1^2 = (g/l)(2 - \sqrt 2)$ and $\omega_2^2 = (g/l)(2 + \sqrt 2)$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: frequency-ratio
+    where: 'step "The frequencies"; quiz 2: omega_2/omega_1 = sqrt((2 + sqrt 2)/(2 - sqrt 2)) = 1 + sqrt 2'
+    inputs: {}
+    formula: sqrt((2 + sqrt(2))/(2 - sqrt(2)))
+    expected: '2.414'
+    quiz: 1
+    shown: ['$\omega_2/\omega_1 = 1 + \sqrt 2 \approx 2.414$', '$1 + \\sqrt 2 \\approx 2.414$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: ratio-square
+    kind: identity
+    where: 'step "The frequencies": (2 + sqrt 2)/(2 - sqrt 2) = 3 + 2 sqrt 2 = (1 + sqrt 2)^2'
+    formula: (2 + sqrt(2))/(2 - sqrt(2)) + 0*x
+    equals: (1 + sqrt(2))**2 + 0*x
+    samples: {x: [1.0]}
+    tolerance: 1e-12
+    shown: ['$(2 + \sqrt 2)/(2 - \sqrt 2) = 3 + 2\sqrt 2 = (1 + \sqrt 2)^2$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: g-over-l
+    where: 'step "The frequencies": g/l for l = 0.50 m'
+    inputs: {g: 9.81 m/s^2, l: 0.50 m}
+    formula: g / l
+    expected: 19.62 1/s^2
+    shown: ['With $g/l = 19.62$ s⁻²']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: omega-slow
+    where: 'step "The frequencies": omega_1 = sqrt((2 - sqrt 2) g/l)'
+    inputs: {g: 9.81 m/s^2, l: 0.50 m}
+    formula: sqrt((2 - sqrt(2)) * g / l)
+    expected: 3.39 1/s
+    shown: ['$\omega_1 \approx 3.39$ rad/s']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  - id: omega-fast
+    where: 'step "The frequencies": omega_2 = sqrt((2 + sqrt 2) g/l)'
+    inputs: {g: 9.81 m/s^2, l: 0.50 m}
+    formula: sqrt((2 + sqrt(2)) * g / l)
+    expected: 8.18 1/s
+    shown: ['$\omega_2 \approx 8.18$ rad/s']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.9), p. 53'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the mode shapes and orthogonality
+  - id: shape-slow
+    where: 'step "The mode shapes": a2/a1 = (2 - 2 mu)/mu at mu = 2 - sqrt 2 equals sqrt 2, about 1.41'
+    inputs: {}
+    formula: (2 - 2*(2 - sqrt(2)))/(2 - sqrt(2))
+    expected: '1.41'
+    shown: ['the lower one about 1.41 times further out']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.10), p. 53'}
+    origin: page-own
+
+  - id: shape-fast
+    kind: identity
+    where: 'same step: a2/a1 at mu = 2 + sqrt 2 equals -sqrt 2 (checked as ratio + 2 sqrt 2 = sqrt 2)'
+    formula: (2 - 2*(2 + sqrt(2)))/(2 + sqrt(2)) + 2*sqrt(2) + 0*x
+    equals: sqrt(2) + 0*x
+    samples: {x: [1.0]}
+    tolerance: 1e-12
+    shown: ['For $\mu = 2 + \sqrt 2$ it is $-\sqrt 2$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.10), p. 53'}
+    origin: page-own
+
+  - id: t-orthogonality
+    kind: identity
+    where: 'step "Orthogonality" and quiz 3: (1, sqrt 2) . (2 1; 1 1) . (1, -sqrt 2) = 0 (checked as product + 1 = 1)'
+    formula: 1*(2*1 + 1*(-sqrt(2))) + sqrt(2)*(1*1 + 1*(-sqrt(2))) + 1 + 0*x
+    equals: 1 + 0*x
+    samples: {x: [1.0]}
+    tolerance: 1e-12
+    shown: ['2 - \sqrt 2 + \sqrt 2 - 2 = 0$, exactly']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.19), p. 54'}
+    origin: page-own
+
+  - id: plain-dot
+    where: 'step "Orthogonality" and quiz 3: the ordinary dot product of (1, sqrt 2) and (1, -sqrt 2)'
+    inputs: {}
+    formula: 1*1 + sqrt(2)*(-sqrt(2))
+    expected: '-1'
+    tolerance: 1e-9
+    shown: ['$(1, -\sqrt 2)$ is $1 - 2 = -1$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.19), p. 54'}
+    origin: page-own
+
+  - id: t-norms
+    kind: identity
+    where: 'same step: (1, s sqrt 2) . (2 1; 1 1) . (1, s sqrt 2) = 4 + 2 s sqrt 2 for s = +1 and -1'
+    formula: 2*1 + 2*1*(s*sqrt(2)) + (s*sqrt(2))**2
+    equals: 4 + 2*s*sqrt(2)
+    samples: {s: [1, -1]}
+    tolerance: 1e-12
+    shown: ['$\vec a^{(\alpha)\dagger}\cdot\hat T\cdot\vec a^{(\alpha)} = ml^2(4 \pm 2\sqrt 2)$']
+    source: {cite: reading1, at: 'Section 3.1, eq. (3.20), p. 55'}
+    origin: page-own

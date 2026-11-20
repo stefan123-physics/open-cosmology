@@ -1,0 +1,142 @@
+---
+title: "Introduction to the Laplace transform"
+slug: laplace-transform-introduction
+course: "18.03"
+lecture: 19
+order: 1
+summary: "The Laplace transform is the continuous analogue of a power series: summing a(n)xⁿ over n becomes integrating f(t)xᵗ over t, and writing x = e^(−s) gives F(s) = ∫₀^∞ f(t)e^(−st) dt. It is a transform, not an operator: a function of t goes in and a function of s comes out. It is linear. L(1) = 1/s, but only for s > 0. The exponential shift formula L(e^(at)f(t)) = F(s − a) gives L(e^(at)) = 1/(s − a), and with complex a, L(cos at) = s/(s² + a²) and L(sin at) = a/(s² + a²). Integrating by parts gives L(tⁿ) = n!/s^(n+1). Inverting a transform, the hardest step in solving equations, usually needs partial fractions: 1/(s(s + 3)) comes from 1/3 − (1/3)e^(−3t)."
+prerequisites: [fourier-series-particular-solutions]
+source:
+  title: "MIT 18.03 Lecture 19: Introduction to the Laplace Transform"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/lecture-19-introduction-to-the-laplace-transform/
+  readings:
+    - title: "18.03 Lecture 19 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/2116b9196632772128de7ad16c322aef_sZ2qulI6GEk.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.03"
+    lecture: 20
+    why: "The Laplace transform of a derivative, which turns differential equations into algebra."
+quiz:
+  - question: "What is the Laplace transform of $e^{-2t}$?"
+    choices: ["$\\frac{1}{s + 2}$ for $s > -2$", "$\\frac{1}{s - 2}$ for $s > 2$", "$\\frac{1}{s}$", "$-\\frac{2}{s}$"]
+    answer: 0
+    explanation: "By the exponential shift, $\\mathcal{L}(e^{at}) = \\frac{1}{s - a}$ for $s > a$, here with $a = -2$."
+  - question: "What is $\\mathcal{L}(t^3)$?"
+    choices: ["$\\frac{6}{s^4}$", "$\\frac{3}{s^3}$", "$\\frac{1}{s^4}$", "$\\frac{6}{s^3}$"]
+    answer: 0
+    explanation: "$\\mathcal{L}(t^n) = \\frac{n!}{s^{n+1}}$ with $n = 3$: $\\frac{3!}{s^4} = \\frac{6}{s^4}$."
+  - question: "What does the formula $\\mathcal{L}(1) = \\frac1s$ say for $s = -1$?"
+    choices: ["Nothing: the integral diverges, and the transform is only defined for $s > 0$", "$-1$", "$1$", "$\\infty$"]
+    answer: 0
+    explanation: "$\\int_0^\\infty e^{-st}dt$ converges only for $s > 0$; the question is meaningless for negative $s$."
+flashcards:
+  - front: "Laplace transform"
+    back: "$F(s) = \\mathcal{L}(f) = \\int_0^\\infty f(t)\\,e^{-st}\\,dt$: the continuous analogue of summing a power series."
+  - front: "Exponential shift formula"
+    back: "$\\mathcal{L}(e^{at}f(t)) = F(s - a)$; so $\\mathcal{L}(e^{at}) = \\frac{1}{s - a}$ for $s > a$."
+  - front: "Basic transforms"
+    back: "$\\mathcal{L}(\\cos at) = \\frac{s}{s^2 + a^2}$, $\\mathcal{L}(\\sin at) = \\frac{a}{s^2 + a^2}$, $\\mathcal{L}(t^n) = \\frac{n!}{s^{n+1}}$ ($s > 0$)."
+status: reviewed
+---
+
+For the next two weeks the subject is the Laplace transform, for many engineers the favourite way of solving differential equations (transcript, p. 1). To dispel its mystery, the lecture starts with where it comes from (p. 1). It follows the [Fourier series lectures](/courses/18-03/fourier-series-particular-solutions).
+
+## From power series to an integral
+
+Write a power series in "computer notation", with the coefficients as a function $a(n)$ of the discrete variable $n$, and call its sum $A(x)$ (transcript, p. 1):
+
+<Formula label="A power series" tex="\sum_{n=0}^{\infty}a(n)\,x^n = A(x)" cite="reading1" at="p. 1" />
+
+Examples (p. 2): $a(n) = 1$ gives $\frac{1}{1 - x}$, but only for $|x| < 1$; $a(n) = \frac{1}{n!}$ gives $e^x$, for all $x$. A discrete function goes in, a continuous function of a new variable comes out (p. 2).
+
+Now make it continuous (pp. 3–5): replace $n$ by a real variable $t \ge 0$ and the sum by an integral, $\int_0^\infty a(t)\,x^t\,dt$. To have a convenient base, write $x^t = e^{t\ln x}$; the base $x$ must be positive (a negative base raised to a fractional power is not real), and for a function such as 1 the integral only has a chance of converging when $0 < x < 1$, where $\ln x < 0$. So set $\ln x = -s$ with $s > 0$ (pp. 3–4). Renaming $a$ as $f$ gives (pp. 4–5)
+
+<Formula label="Laplace transform" tex="F(s) = \int_0^{\infty}f(t)\,e^{-st}\,dt" cite="reading1" at="p. 5" />
+
+the continuous analogue of summing a power series (p. 5).
+
+**A transform, not an operator** (p. 5). An operator such as $D$ takes a function of $t$ to another function of $t$; a transform changes the variable: $f(t)$ goes in, $F(s)$ comes out. In applications $t$ is often time and $s$ often a frequency (p. 5). Notation: $\mathcal{L}(f(t)) = F(s)$, or a squiggly arrow from $f(t)$ to $F(s)$ (p. 6). The transform is **linear**, because integration is (p. 6):
+
+<Formula label="Linearity" tex="\mathcal{L}(f + g) = \mathcal{L}(f) + \mathcal{L}(g), \qquad \mathcal{L}(cf) = c\,\mathcal{L}(f)" cite="reading1" at="p. 6" />
+
+## The transform of 1, carefully
+
+The integral is improper, so go back to its definition (transcript, pp. 7–8):
+
+<Formula label="Transform of 1" tex="\mathcal{L}(1) = \lim_{R \to \infty}\int_0^{R}e^{-st}\,dt = \lim_{R \to \infty}\frac{e^{-sR} - 1}{-s} = \frac{1}{s}, \qquad s > 0" cite="reading1" at="pp. 8–9" />
+
+The limit is 0 only when $s > 0$; for $s = -3$, say, $e^{-sR} = e^{3R}$ grows without bound (p. 9). What is the transform for negative $s$? The question is meaningless: the graph of $\mathcal{L}(1)$ is only the right-hand branch of $\frac1s$ (p. 9).
+
+<Plot variable="s" domain={[0, 5]} range={[0, 4]} xLabel="s" yLabel="F(s)"
+  curves={[
+    { expr: "s > 0 ? 1/s : NaN", label: "L(1) = 1/s" },
+    { expr: "s > 1 ? 1/(s - 1) : NaN", label: "L(e^t)", dash: true }
+  ]}
+  caption="The transforms of 1 and of e^t, computed from 1/s (s > 0) and 1/(s − 1) (s > 1): each exists only to the right of its own starting point." />
+
+## The exponential shift formula
+
+The functions whose transforms matter are those met with constant-coefficient equations: exponentials, sines and cosines (really complex exponentials), and polynomials (transcript, pp. 9–10). Multiplying by $e^{at}$ combines the exponentials, $e^{at}e^{-st} = e^{-(s - a)t}$ (pp. 10–11):
+
+<Formula label="Exponential shift formula" tex="\mathcal{L}(e^{at}f(t)) = F(s - a), \qquad s > a \text{ when } F(s) \text{ holds for } s > 0" cite="reading1" at="p. 11" />
+
+Multiplying by an exponential on one side shifts the argument on the other: a disguised form of the [exponential shift rule](/courses/18-03/exponential-input-theorem) for operators (p. 12). With $f = 1$ (p. 12):
+
+<Formula label="Transform of an exponential" tex="\mathcal{L}(e^{at}) = \frac{1}{s - a}, \qquad s > a" cite="reading1" at="p. 12" />
+
+It holds for complex exponents too: $\mathcal{L}(e^{(a + bi)t}) = \frac{1}{s - (a + bi)}$, for $s > a$ (p. 12).
+
+**Sines and cosines** (pp. 12–14). Write $\cos at$ by Euler's formula backwards and use linearity:
+
+<Formula label="Transform of a cosine" tex="\mathcal{L}(\cos at) = \frac{1}{2}\left(\frac{1}{s - ia} + \frac{1}{s + ia}\right) = \frac{s}{s^2 + a^2}" cite="reading1" at="pp. 13–14" />
+
+The result must be real: changing $i$ to $-i$ swaps the two terms (p. 13). Likewise (p. 14)
+
+<Formula label="Transform of a sine" tex="\mathcal{L}(\sin at) = \frac{a}{s^2 + a^2}" cite="reading1" at="p. 14" />
+
+both for $s > 0$.
+
+## Inverse transforms and partial fractions
+
+In solving differential equations, the hardest step is going back: from the transform of the answer to the answer (transcript, p. 14). Tables rarely contain the transform as it comes; it must first be split by partial fractions, which is why 18.01 taught them (p. 14). For example, with the cover-up method (p. 15):
+
+<Formula label="An inverse transform" tex="\frac{1}{s(s + 3)} = \frac{1/3}{s} - \frac{1/3}{s + 3} \quad\text{is the transform of}\quad \frac{1}{3} - \frac{1}{3}\,e^{-3t}" cite="reading1" at="p. 15" />
+
+using linearity of the inverse transform and the table entries for $\frac1s$ and $\frac{1}{s - a}$ (p. 15).
+
+## Powers of t
+
+For $t^n$, integrate by parts, differentiating $t^n$ and integrating $e^{-st}$ (transcript, pp. 15–17). The boundary term vanishes at 0 (for $n \ge 1$) and at infinity when $s > 0$, since the exponential wins the race, by L'Hôpital's rule applied $n$ times (pp. 16–17). What remains is a reduction formula (pp. 17–18):
+
+<Formula label="Reduction formula" tex="\mathcal{L}(t^n) = \frac{n}{s}\,\mathcal{L}(t^{n-1})" cite="reading1" at="pp. 17–18" />
+
+Applying it $n$ times and ending with $\mathcal{L}(1) = \frac1s$ (p. 18):
+
+<Formula label="Transform of a power" tex="\mathcal{L}(t^n) = \frac{n!}{s^{n+1}}, \qquad s > 0" cite="reading1" at="p. 18" />
+
+<WorkedExample title="Transforms and an inverse">
+<Problem>
+Find (a) $\mathcal{L}(e^{2t}\cos 3t)$; (b) $\mathcal{L}(t^3 - 4t)$; (c) the function whose transform is $\frac{s + 1}{s(s - 2)}$; (d) check $\mathcal{L}(\sin at)$ from complex exponentials.
+</Problem>
+<Step title="(a) Shift a cosine">
+$\mathcal{L}(\cos 3t) = \frac{s}{s^2 + 9}$, so by the shift formula $\mathcal{L}(e^{2t}\cos 3t) = \frac{s - 2}{(s - 2)^2 + 9}$, for $s > 2$.
+</Step>
+<Step title="(b) A polynomial">
+By linearity, $\frac{3!}{s^4} - 4\cdot\frac{1!}{s^2} = \frac{6}{s^4} - \frac{4}{s^2}$.
+</Step>
+<Step title="(c) Partial fractions">
+$\frac{s + 1}{s(s - 2)} = \frac{A}{s} + \frac{B}{s - 2}$. Cover up $s$ and put $s = 0$: $A = \frac{1}{-2} = -\frac{1}{2}$. Cover up $s - 2$ and put $s = 2$: $B = \frac{3}{2}$. So the function is $-\frac{1}{2} + \frac{3}{2}e^{2t}$.
+</Step>
+<Step title="(d) The sine">
+$\sin at = \frac{e^{iat} - e^{-iat}}{2i}$, so $\mathcal{L}(\sin at) = \frac{1}{2i}\left(\frac{1}{s - ia} - \frac{1}{s + ia}\right) = \frac{1}{2i}\cdot\frac{2ia}{s^2 + a^2} = \frac{a}{s^2 + a^2}$.
+</Step>
+</WorkedExample>
+
+## Summary
+
+- $F(s) = \int_0^\infty f(t)e^{-st}dt$, the continuous analogue of a power series; a linear transform from $t$ to $s$, valid only for large enough $s$.
+- $\mathcal{L}(1) = \frac1s$; shift: $\mathcal{L}(e^{at}f) = F(s - a)$, so $\mathcal{L}(e^{at}) = \frac{1}{s - a}$.
+- $\mathcal{L}(\cos at) = \frac{s}{s^2 + a^2}$, $\mathcal{L}(\sin at) = \frac{a}{s^2 + a^2}$, $\mathcal{L}(t^n) = \frac{n!}{s^{n+1}}$.
+- Inverse transforms usually need partial fractions.

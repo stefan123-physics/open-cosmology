@@ -1,0 +1,293 @@
+# Calculations on content/year-3/8.06/quantum-adiabatic-theorem-landau-zener.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.06 (Spring 2018, Zwiebach) Lecture 16 transcripts (L16.1-L16.5) and notes chapter 6 (sections 3-4),
+# with the page's own worked example: a two-level system with |H12| = 0.20 μeV swept at α = 1.0 μeV/ns
+# (1 μeV/ns = 1e3 eV/s), ħ = 6.582119569e-16 eV s (CODATA, exact).
+
+page: content/year-3/8.06/quantum-adiabatic-theorem-landau-zener.mdx
+calcs:
+  - id: ramp-derivative
+    kind: identity
+    where: 'ramp model: d/dt [H0 + (t/T) V] = V/T (scalar stand-in for the operators)'
+    formula: deriv('h0 + x/tt*vv', 'x', t0)
+    equals: vv/tt
+    samples: {h0: [1.0, -2.0], tt: [0.5, 4.0], vv: [0.3, 2.0], t0: [0.1, 0.4]}
+    tolerance: 1e-6
+    shown: ['\dot H = \frac{V}{T}, \qquad \dot H_{kn} = \frac{V_{kn}}{T}']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: mit
+
+  - id: toy-phase-integral
+    kind: identity
+    where: 'eq. (4.4): (1/iħ) ∫₀ᵗ αt′/2 dt′ = −iαt²/4ħ; since 1/i = −i, both sides are −i times (1/ħ)∫₀ᵗ αt′/2 dt′ = αt²/4ħ, checked here'
+    formula: integrate('aa*x/2', 'x', 0, t0)/hb
+    equals: aa*t0**2/(4*hb)
+    samples: {aa: [0.5, 3.0], hb: [1.0, 0.3], t0: [-2.0, 1.5]}
+    tolerance: 1e-6
+    shown: ['\frac{1}{i\hbar}\int_0^t \frac{\alpha t''}{2}\,dt'' = -\frac{i\alpha t^2}{4\hbar}']
+    source: {cite: reading6, at: 'eq. (4.4)'}
+    origin: mit
+
+  - id: toy-solution
+    kind: identity
+    where: 'eqs. (4.4)-(4.5): iħ d/dt e^{−iαt²/4ħ} = (αt/2) e^{−iαt²/4ħ}, i.e. ħ d/dt (αt²/4ħ) = αt/2 = E₁(t)'
+    formula: hb*deriv('aa*x**2/(4*hb)', 'x', t0)
+    equals: aa*t0/2
+    samples: {aa: [0.5, 3.0], hb: [1.0, 0.2], t0: [-2.0, 1.5]}
+    tolerance: 1e-6
+    shown: ['|\Psi_1(t)\rangle = e^{-i\alpha t^2/4\hbar}\,|1\rangle']
+    source: {cite: reading6, at: 'eqs. (4.4), (4.5)'}
+    origin: mit
+
+  - id: lz-eigenvalues
+    kind: identity
+    where: 'eq. (4.8): E = √(|H12|² + α²t²/4) solves det(H − E) = (αt/2 − E)(−αt/2 − E) − |H12|² = 0'
+    formula: (aa*t0/2 - sqrt(hh**2 + aa**2*t0**2/4))*(-aa*t0/2 - sqrt(hh**2 + aa**2*t0**2/4)) - hh**2
+    equals: 0
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5], t0: [-2.0, 1.5]}
+    tolerance: 1e-9
+    shown: ['E_\pm(t) = \pm\sqrt{|H_{12}|^2 + \frac{\alpha^2t^2}{4}}']
+    source: {cite: reading6, at: 'eq. (4.8)'}
+    origin: mit
+
+  - id: lz-gap
+    kind: identity
+    where: 'smallest gap E₊ − E₋ at t = 0 is 2|H12|'
+    formula: 2*sqrt(hh**2 + aa**2*0**2/4)
+    equals: 2*hh
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5]}
+    tolerance: 1e-12
+    shown: ['the **smallest gap**, at $t = 0$, is $E_+ - E_- = 2|H_{12}|$']
+    source: {cite: reading6, at: 'eq. (4.8)'}
+    origin: page-own
+
+  - id: tau-d
+    kind: identity
+    where: 'eq. (4.11): the line αt/2 reaches |H12| at t = 2τ_d with τ_d = |H12|/α'
+    formula: aa/2*(2*hh/aa)
+    equals: hh
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5]}
+    tolerance: 1e-12
+    shown: ['\frac{\alpha}{2}\,(2\tau_d) = |H_{12}| \quad\Rightarrow\quad \tau_d = \frac{|H_{12}|}{\alpha}']
+    source: {cite: reading6, at: 'eq. (4.11)'}
+    origin: mit
+
+  - id: lz-exponent
+    kind: identity
+    where: 'eqs. (4.12), (4.18): ω12 τ_d = (|H12|/ħ)(|H12|/α) = |H12|²/ħα'
+    formula: 2*pi*(hh/hb)*(hh/aa)
+    equals: 2*pi*hh**2/(hb*aa)
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5], hb: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['P = e^{-2\pi\,\omega_{12}\,\tau_d} = e^{-2\pi|H_{12}|^2/\hbar\alpha}']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: mit
+
+  - id: alt-derivative
+    kind: identity
+    where: 'notes (4.16)-(4.17), corrected: d/dt [ħ/√(|H12|² + α²t²/4)] = −ħα²t/(4E₊³) (the notes drop the 1/4)'
+    formula: deriv('hb/sqrt(hh**2 + aa**2*x**2/4)', 'x', t0)
+    equals: -hb*aa**2*t0/(4*(hh**2 + aa**2*t0**2/4)**1.5)
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5], hb: [1.0, 0.3], t0: [0.3, 1.2]}
+    tolerance: 1e-6
+    shown: ['$d(\hbar/E_+)/dt = -\hbar\alpha^2t/(4E_+^3)$']
+    source: {cite: reading6, at: 'eq. (4.17)'}
+    origin: page-own
+
+  - id: alt-maximum-location
+    kind: identity
+    where: 'the size of −ħα²t/(4E₊³) is stationary at α²t²/4 = |H12|²/2, i.e. t = √2 |H12|/α'
+    formula: deriv('hb*aa**2*x/(4*(hh**2 + aa**2*x**2/4)**1.5)', 'x', sqrt(2)*hh/aa)
+    equals: 0
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5], hb: [1.0, 0.3]}
+    tolerance: 1e-6
+    shown: ['whose size is largest at $\alpha^2t^2/4 = |H_{12}|^2/2$']
+    source: {cite: reading6, at: 'p. 12, margin note'}
+    origin: page-own
+
+  - id: alt-maximum-value
+    kind: identity
+    where: 'the largest size: ħα²t/(4E₊³) at t = √2|H12|/α equals ħα/(3√3 |H12|²)'
+    formula: hb*aa**2*(sqrt(2)*hh/aa)/(4*(hh**2 + hh**2/2)**1.5)
+    equals: hb*aa/(3*sqrt(3)*hh**2)
+    samples: {aa: [0.5, 3.0], hh: [0.2, 1.5], hb: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['where it equals $\hbar\alpha/(3\sqrt{3}\,|H_{12}|^2)$']
+    source: {cite: reading6, at: 'eq. (4.17)'}
+    origin: page-own
+
+  - id: quiz-lz
+    where: 'quiz 4: e^(−2π) for |H12|²/ħα = 1'
+    inputs: {}
+    formula: exp(-2*pi)
+    expected: '0.0019'
+    shown: ['e^{-2\\pi} \\approx 0.0019', 'about 0.0019']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: plot-even-odds
+    where: 'plot caption: P = 1/2 at |H12|²/ħα = ln 2/2π'
+    inputs: {}
+    formula: log(2)/(2*pi)
+    expected: '0.11'
+    shown: ['A parameter of 0.11 gives even odds']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: plot-one-percent
+    where: 'plot caption: P = 0.01 at |H12|²/ħα = ln 100/2π'
+    inputs: {}
+    formula: log(100)/(2*pi)
+    expected: '0.73'
+    shown: ['and 0.73 already makes a jump only 1% likely']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: hbar-ev
+    kind: fact
+    where: 'example: ħ in eV s (CODATA 6.582119569e-16, exact)'
+    value: '6.582e-16'
+    shown: ['Take $\hbar = 6.582 \times 10^{-16}$ eV s']
+    source: {cite: codata, at: 'hbar in eV s'}
+    origin: page-own
+
+  - id: ex-gap
+    where: 'example (a): smallest gap 2|H12| in μeV'
+    inputs: {}
+    formula: 2*0.20
+    expected: '0.40'
+    shown: ['The smallest gap is $2|H_{12}| = 0.40$ μeV']
+    source: {cite: reading6, at: 'eq. (4.8)'}
+    origin: page-own
+
+  - id: ex-tau-d
+    where: 'example (a): τ_d = |H12|/α = 0.20e-6 eV / 1.0e3 eV/s, in ns'
+    inputs: {}
+    formula: 0.20e-6/1.0e3*1e9
+    expected: '0.20'
+    shown: ['$\tau_d = |H_{12}|/\alpha = 0.20$ ns']
+    source: {cite: reading6, at: 'eq. (4.11)'}
+    origin: page-own
+
+  - id: ex-omega12
+    where: 'example (a): ω12 = |H12|/ħ in 1/s'
+    inputs: {}
+    formula: 0.20e-6/6.582119569e-16
+    expected: '3.04e8'
+    shown: ['about $3.04 \times 10^{8}$ per second']
+    source: {cite: reading6, at: 'p. 11'}
+    origin: page-own
+
+  - id: ex-T12
+    where: 'example (a), (c): T12 = 2π/ω12 in ns'
+    inputs: {}
+    formula: 2*pi/(0.20e-6/6.582119569e-16)*1e9
+    expected: '20.7'
+    shown: ['$T_{12} = 2\pi/\omega_{12} \approx 20.7$ ns', 'than $T_{12} \approx 20.7$ ns']
+    source: {cite: reading6, at: 'eq. (4.13)'}
+    origin: page-own
+
+  - id: ex-parameter
+    where: 'example (a): ω12 τ_d = |H12|²/(ħα)'
+    inputs: {}
+    formula: 0.20e-6**2/(6.582119569e-16*1.0e3)
+    expected: '0.061'
+    shown: ['$\omega_{12}\tau_d = |H_{12}|^2/\hbar\alpha \approx 0.061$']
+    source: {cite: reading6, at: 'eq. (4.12)'}
+    origin: page-own
+
+  - id: ex-probability
+    where: 'example (a): P = exp(−2π ω12 τ_d)'
+    inputs: {}
+    formula: exp(-2*pi*0.20e-6**2/(6.582119569e-16*1.0e3))
+    expected: '0.68'
+    shown: ['$P = e^{-2\pi \times 0.061} \approx 0.68$']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: ex-needed-parameter
+    where: 'example (b): |H12|²/ħα = ln 100/2π for P = 0.01'
+    inputs: {}
+    formula: log(100)/(2*pi)
+    expected: '0.733'
+    shown: ['= \ln 100/2\pi \approx 0.733$']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: ex-needed-rate
+    where: 'example (b): α = 2π|H12|²/(ħ ln 100), converted from eV/s to μeV/ns (divide by 1e3)'
+    inputs: {}
+    formula: 2*pi*0.20e-6**2/(6.582119569e-16*log(100))/1e3
+    expected: '0.083'
+    shown: ['$\alpha = 2\pi|H_{12}|^2/(\hbar\ln 100) \approx 0.083$ μeV/ns']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: ex-slowdown
+    where: 'example (b): ratio of the two sweep rates'
+    inputs: {}
+    formula: 1.0e3/(2*pi*0.20e-6**2/(6.582119569e-16*log(100)))
+    expected: '12'
+    shown: ['about 12 times slower than in (a)']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: ex-slow-tau-d
+    where: 'example (c): τ_d = |H12|/α at the slower rate, in ns'
+    inputs: {}
+    formula: 0.20e-6/(2*pi*0.20e-6**2/(6.582119569e-16*log(100)))*1e9
+    expected: '2.4'
+    shown: ['Now $\tau_d = |H_{12}|/\alpha \approx 2.4$ ns']
+    source: {cite: reading6, at: 'eq. (4.11)'}
+    origin: page-own
+
+  - id: ex-ratio
+    where: 'example (c): T12/τ_d at the slower rate = 2π/(ω12 τ_d) = 2π/0.733'
+    inputs: {}
+    formula: (2*pi/(0.20e-6/6.582119569e-16))/(0.20e-6/(2*pi*0.20e-6**2/(6.582119569e-16*log(100))))
+    expected: '8.6'
+    shown: ['still about 8.6 times shorter']
+    source: {cite: reading6, at: 'eq. (4.13)'}
+    origin: page-own
+
+  - id: ex-99
+    where: 'example (c): 1 − P = 0.99 at the slower rate'
+    inputs: {}
+    formula: (1 - 0.01)*100
+    expected: '99'
+    shown: ['the passage is already 99% adiabatic']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: ex-twice-slower-parameter
+    where: 'example (c): twice slower again, ω12 τ_d = 2 ln 100/2π'
+    inputs: {}
+    formula: 2*log(100)/(2*pi)
+    expected: '1.47'
+    shown: ['with $\omega_{12}\tau_d \approx 1.47$']
+    source: {cite: reading6, at: 'eq. (4.12)'}
+    origin: page-own
+
+  - id: ex-twice-slower-probability
+    where: 'example (c): P = exp(−2π × 2 ln 100/2π) = 1e-4'
+    inputs: {}
+    formula: exp(-2*log(100))
+    expected: '1e-4'
+    shown: ['would give $P = e^{-2\pi \times 1.47} \approx 10^{-4}$']
+    source: {cite: reading6, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: born-fock
+    kind: fact
+    where: 'history: Born and Fock, 1928 (as quoted in the lecture)'
+    value: '1928'
+    shown: ['Max Born and Vladimir Fock in 1928', 'Born and Fock (1928) proved it']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  - id: kato
+    kind: fact
+    where: 'history: Kato, J. Phys. Soc. Japan 5, 435 (1950); the lecture says "the middle 50s"'
+    value: '1950'
+    shown: ['appeared in 1950; the lecture says', 'Kato (1950) sharpened the proof']
+    source: {cite: kato, at: 'the paper'}
+    origin: page-own

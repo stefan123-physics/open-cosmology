@@ -1,0 +1,162 @@
+---
+title: Definite integrals and Riemann sums
+slug: definite-integrals
+course: "18.01"
+lecture: 18
+order: 1
+summary: "The definite integral of f from a to b is the area under the graph: cut the interval into n thin strips, add up the areas of rectangles, and take the limit as the strips get thin. Done by hand for x², with a staircase pyramid to estimate 1² + 2² + ⋯ + n², it gives b³/3, and the pattern b, b²/2, b³/3 hints at a much faster way. Integrals are also cumulative sums: totals of anything that accumulates at a varying rate."
+prerequisites: [antiderivatives, limits-and-continuity]
+source:
+  title: "MIT 18.01 Lecture 18: Definite Integrals"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lecture-18-definite-integrals/
+  readings:
+    - title: "18.01 Lecture 18 notes: Definite Integrals"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec18/
+    - title: "18.01 Lecture 18 transcript"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/hjZhPczMkL4.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+leadsTo:
+  - course: "18.01"
+    lecture: 19
+    why: "The first fundamental theorem: definite integrals from antiderivatives, without rectangles."
+  - course: "8.286"
+    lecture: 8
+    why: "The horizon distance: light's travel added up over the history of an expanding universe."
+quiz:
+  - question: "Which of these is the definite integral $\\int_a^b f(x)\\,dx$, for $f \\ge 0$?"
+    choices: ["The slope of $f$ between $a$ and $b$", "The area under the graph of $f$ above the interval $[a, b]$", "A family of functions differing by a constant", "The average of $f(a)$ and $f(b)$"]
+    answer: 1
+    explanation: "It is a number, the area under the curve, defined as the limit of Riemann sums. The indefinite integral is the family of antiderivatives."
+  - question: "Using right endpoints with $n = 4$, the Riemann sum for $\\int_0^1 x^2\\,dx$ is…"
+    choices: ["0.21875", "0.328125", "0.33333", "0.46875"]
+    answer: 3
+    explanation: "$\\tfrac14\\left[(\\tfrac14)^2 + (\\tfrac24)^2 + (\\tfrac34)^2 + 1^2\\right] = \\tfrac{30}{64} = 0.46875$, an overestimate of the true $\\tfrac13$."
+  - question: "Following the pattern $\\int_0^b 1\\,dx = b$, $\\int_0^b x\\,dx = b^2/2$, $\\int_0^b x^2\\,dx = b^3/3$, what is $\\int_0^2 x^3\\,dx$?"
+    choices: ["2", "8/3", "4", "16"]
+    answer: 2
+    explanation: "The guess $b^4/4$ gives $2^4/4 = 4$; the next lecture shows why the pattern holds."
+  - question: "Water flows into a tank at $f(t) = 2 + t$ litres per minute. How much flows in during the first 4 minutes?"
+    choices: ["6 litres", "14 litres", "16 litres", "18 litres"]
+    answer: 2
+    explanation: "$\\int_0^4 (2 + t)\\,dt$ is a trapezoid under a straight line: $\\tfrac12(2 + 6)\\times 4 = 16$ litres. Left and right sums with 1-minute steps give 14 and 18."
+flashcards:
+  - front: "Riemann sum for $\\int_a^b f(x)\\,dx$"
+    back: "Cut $[a, b]$ into $n$ pieces of width $\\Delta x = (b - a)/n$, pick any $c_i$ in each, and add $\\sum_{i=1}^{n} f(c_i)\\,\\Delta x$. The integral is the limit as $n \\to \\infty$."
+  - front: "$\\int_0^b x^2\\,dx$ by rectangles"
+    back: "Right-end rectangles give $\\frac{b^3}{n^3}(1^2 + 2^2 + \\cdots + n^2)$; a staircase pyramid traps the sum between $\\tfrac13 n^3$ and $\\tfrac13(n+1)^3$, so the limit is $b^3/3$."
+  - front: "Integrals as cumulative sums"
+    back: "If something accumulates at rate $f(t)$ (per unit time), the total from $t = a$ to $b$ is $\\int_a^b f(t)\\,dt$: the units of $f$ times the units of $dt$."
+status: reviewed
+---
+
+The third unit of the course, and the second half of calculus, is **integration** (transcript, p. 1). This lecture defines the definite integral in two ways: as the **area under a curve**, the geometric view the course has used throughout, and as a **cumulative sum** (p. 1; notes, p. 1).
+
+## Area under a curve
+
+Take a curve $y = f(x)$ above the $x$-axis, between $x = a$ and $x = b$. The area of the region between the curve and the axis has its own notation (transcript, p. 1):
+
+<Formula label="Definite integral" tex="\text{area} = \int_a^b f(x)\,dx" cite="reading2" at="p. 1" />
+
+It is the **definite integral**: unlike the indefinite integral of the [last lectures](/courses/18-01/antiderivatives), it has limits, where it starts ($a$) and where it ends ($b$), and its value is a number. To compute it, three steps (pp. 1–2; notes, p. 1):
+
+1. **Divide** the region into thin strips and replace each by a rectangle. These are not exactly the strips: some rectangles overshoot the curve, some fall short.
+2. **Add up** the areas of the rectangles: easy, base times height.
+3. **Take the limit** as the rectangles get thinner. The small pieces missed or added shrink to nothing, and the sum hits the area on the nose.
+
+## The parabola, by hand
+
+The lecture does one example in full, $f(x) = x^2$ from $a = 0$ to an arbitrary $b$, so that the pattern shows (transcript, pp. 2–5; notes, pp. 1–3). Cut $[0, b]$ into $n$ equal pieces of width $b/n$, and give each rectangle the height of the curve at its **right** end: $(b/n)^2$, $(2b/n)^2$, …, $(nb/n)^2$. Each overshoots. Factor out the common $(b/n)^3$:
+
+<Formula label="Sum of the rectangles" tex="\frac{b}{n}\Big(\frac{b}{n}\Big)^2 + \frac{b}{n}\Big(\frac{2b}{n}\Big)^2 + \cdots + \frac{b}{n}\Big(\frac{nb}{n}\Big)^2 = \frac{b^3}{n^3}\left(1^2 + 2^2 + \cdots + n^2\right)" cite="reading2" at="p. 3" />
+
+How big is $1^2 + 2^2 + \cdots + n^2$? Build a **staircase pyramid** of unit-thick layers: an $n \times n$ layer at the bottom, $(n-1)\times(n-1)$ on top, up to a single block (transcript, pp. 4–5; notes, pp. 2–3). Its volume is exactly the sum. An ordinary pyramid with base $n^2$ and height $n$ fits inside it, and one with base $(n+1)^2$ and height $n + 1$ fits around it. With volume $\tfrac13$ base × height:
+
+<Formula label="Trapping the sum" tex="\tfrac13 n^3 \;<\; 1^2 + 2^2 + \cdots + n^2 \;<\; \tfrac13 (n+1)^3" cite="reading1" at="pp. 2–3" />
+
+Divide by $n^3$: the middle lies between $\tfrac13$ and $\tfrac13(1 + 1/n)^3$, which tends to $\tfrac13$ as $n \to \infty$. (The transcript has "$\tfrac13 + (1 + 1/n)^3$" at this point; it is a product, p. 5.) So
+
+<Formula label="The area under x²" tex="\int_0^b x^2\,dx = \lim_{n\to\infty}\frac{b^3}{n^3}\left(1^2 + 2^2 + \cdots + n^2\right) = \frac{b^3}{3}" cite="reading2" at="p. 5" />
+
+Factoring out the simple part, $b^3/n^3$, and analysing the hard sum on its own, is what you always do with such sums (pp. 5–6).
+
+<Plot variable="x" domain={[0, 1]} range={[0, 1.1]} xLabel="x" yLabel="y"
+  curves={[
+    { expr: "x^2", label: "y = x²" },
+    { expr: "(ceil(4*x)/4)^2", label: "right-end rectangles, n = 4", dash: true }
+  ]}
+  caption="The parabola y = x² on [0, 1] and the tops of the four right-end rectangles, height (k/4)² on the k-th strip, all from the formulas. The rectangles overshoot: their total area is 30/64 ≈ 0.469, against the true area 1/3." />
+
+## Summation notation
+
+Long sums like these are abbreviated with a capital sigma (transcript, p. 6):
+
+<Formula label="Summation notation" tex="\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n, \qquad \frac{1}{n^3}\sum_{i=1}^{n} i^2 \;\to\; \frac13 \ (n \to \infty)" cite="reading2" at="p. 6" />
+
+The parabola's sum is $\sum_{i=1}^{n}\frac{b}{n}\left(\frac{ib}{n}\right)^2$, and factoring out $(b/n)^3$ is just the distributive law (p. 6). Writing the first term as $1^2$ shows that it follows the same pattern as the rest.
+
+## A pattern
+
+Two more examples need no sums at all, because their areas are known shapes (transcript, pp. 6–7; the notes, p. 3, do $f(x) = x$ with a sum): under $f(x) = x$ the region is a triangle, area $\tfrac12 b^2$; under $f(x) = 1$ it is a rectangle, area $b$. Line them up:
+
+<Formula label="The pattern" tex="\int_0^b 1\,dx = b, \qquad \int_0^b x\,dx = \frac{b^2}{2}, \qquad \int_0^b x^2\,dx = \frac{b^3}{3}" cite="reading2" at="p. 7" />
+
+so a good guess is $\int_0^b x^3\,dx = b^4/4$ (p. 7). The notes point out the key: the derivative of each area with respect to $b$ is the function itself, $\frac{d}{db}\frac{b^3}{3} = b^2$ (notes, p. 3). The next lecture makes this the **fundamental theorem of calculus**, and then integrals become as quick as derivatives. The lecturer adds a historical remark: Archimedes found the area under a parabola by a method so brilliant and difficult that, in the lecturer's view, it may have held mathematics back, because others could not see the simple pattern (p. 7). (Historians would add that Cavalieri and Fermat found the rule for $x^n$ in the 1630s, before Newton and Leibniz.)
+
+## Riemann sums
+
+The general procedure (transcript, p. 8; notes, p. 4): divide $[a, b]$ into $n$ equal pieces of width $\Delta x = (b - a)/n$; in the $i$-th piece choose **any** point $c_i$ and use $f(c_i)$ as the height. (The parabola used right ends; left ends or midpoints work as well.) The sum of the areas is a **Riemann sum**, after the nineteenth-century mathematician Bernhard Riemann, and its limit is the definite integral:
+
+<Formula label="Riemann sum and definite integral" tex="\lim_{n\to\infty}\sum_{i=1}^{n} f(c_i)\,\Delta x = \int_a^b f(x)\,dx" cite="reading1" at="p. 4" />
+
+In the limit, $\Delta x$ becomes Leibniz's $dx$ (p. 8).
+
+<WorkedExample title="Three Riemann sums for x²">
+<Problem>
+Estimate $\int_0^1 x^2\,dx$ with $n = 4$ strips, using right ends, left ends and midpoints.
+</Problem>
+<Step title="Right ends">
+$\tfrac14\left[(\tfrac14)^2 + (\tfrac24)^2 + (\tfrac34)^2 + 1^2\right] = \tfrac{30}{64} \approx 0.469$.
+</Step>
+<Step title="Left ends and midpoints">
+Left: $\tfrac14\left[0 + \tfrac1{16} + \tfrac4{16} + \tfrac9{16}\right] = \tfrac{14}{64} \approx 0.219$. Midpoints ($\tfrac18, \tfrac38, \tfrac58, \tfrac78$): $\approx 0.328$.
+</Step>
+<Step title="Compare">
+The true value is $\tfrac13 \approx 0.333$. The right sum overshoots and the left one falls short, because $x^2$ is increasing; the midpoint sum is much closer. All three tend to $\tfrac13$ as $n$ grows.
+</Step>
+</WorkedExample>
+
+## Integrals as cumulative sums
+
+The other interpretation: an integral adds up something that accumulates at a varying rate (transcript, pp. 9–10; notes, pp. 4–5). Suppose you borrow money at a rate $f(t)$ in **dollars per year**, varying through the year, with $t$ in years. Over a short time $\Delta t$ (a day, $1/365$ of a year) you borrow $f(t)\,\Delta t$ dollars: the units work out. The total for the year is a Riemann sum, very close to an integral:
+
+<Formula label="Total borrowed" tex="\sum_{i=1}^{365} f\!\left(\tfrac{i}{365}\right)\Delta t \;\approx\; \int_0^1 f(t)\,dt" cite="reading2" at="p. 9" />
+
+The $dt$ is not decoration: it keeps the units consistent (p. 9). What you **owe** at the end of the year also depends on how long each amount was borrowed. With interest compounded continuously at rate $r$, an amount borrowed at time $t$ grows by a factor of $e^{r(1 - t)}$ by the end of the year, so the total owed is $\int_0^1 f(t)\,e^{r(1-t)}\,dt$ (p. 10). The notes take monthly steps ($\Delta t = 1/12$) and simple interest instead, $\int_0^1 f(t)\,\big(1 + r(1 - t)\big)\,dt$ (notes, p. 5, which call the total borrowed "dollars per year"; it is in dollars).
+
+<WorkedExample title="Filling a tank and paying back a loan">
+<Problem>
+(a) Water flows into a tank at $f(t) = 2 + t$ litres per minute. How much flows in during the first 4 minutes? (b) You borrow steadily at \$9000 per year. How much do you owe at the year's end, at 4% simple interest, and at 4% compounded continuously?
+</Problem>
+<Step title="(a) The tank">
+Left and right sums with 1-minute steps give $2 + 3 + 4 + 5 = 14$ and $3 + 4 + 5 + 6 = 18$ litres. The exact area under the straight line is a trapezoid: $\tfrac12(2 + 6) \times 4 = 16$ litres.
+</Step>
+<Step title="(b) Simple interest">
+$\int_0^1 9000\,\big(1 + 0.04(1 - t)\big)\,dt = 9000 \times (1 + 0.02) = 9180$ dollars: on average each dollar is borrowed for half a year.
+</Step>
+<Step title="(b) Continuous compounding">
+$\int_0^1 9000\,e^{0.04(1 - t)}\,dt = 9000 \times \dfrac{e^{0.04} - 1}{0.04} \approx 9182$ dollars, a little more.
+</Step>
+</WorkedExample>
+
+<Callout kind="cosmology" title="The horizon as a cumulative sum">
+How far could light have travelled since the big bang? In each short interval $dt$ light covers $c\,dt$, but the universe keeps expanding afterwards, stretching that piece by $a(t_0)/a(t)$ by today. Adding up all the pieces gives the horizon distance, $\ell = a(t_0)\int_0^{t_0} \frac{c\,dt}{a(t)}$: a cumulative sum, just like the money borrowed through the year. For a flat universe of matter, $a \propto t^{2/3}$, it comes to $3ct_0$, three times the naive light-travel distance.
+</Callout>
+
+## Summary
+
+- The definite integral $\int_a^b f(x)\,dx$ is the area under $y = f(x)$ above $[a, b]$: a number.
+- Compute it by rectangles: divide, add, take the limit. For $x^2$, a staircase pyramid traps $1^2 + \cdots + n^2$ between $\tfrac13 n^3$ and $\tfrac13(n+1)^3$, giving $\int_0^b x^2\,dx = b^3/3$.
+- Riemann sum: $\sum f(c_i)\,\Delta x$ with $\Delta x = (b - a)/n$ and any $c_i$ in each piece; its limit is the integral.
+- The pattern $b$, $b^2/2$, $b^3/3$ (each area's derivative in $b$ is the function) leads to the fundamental theorem.
+- Integrals are cumulative sums: a rate in units per time, times $dt$, added up, gives a total.

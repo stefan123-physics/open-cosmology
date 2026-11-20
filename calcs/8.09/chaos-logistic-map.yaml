@@ -1,0 +1,286 @@
+# Calculations on content/year-4/8.09/chaos-logistic-map.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.09 (Fall 2014) Lecture Notes, Chapter 7 (Stewart, typed), Section 7.5, printed pp. 182-188.
+# MIT numbers: r = 3, 1 + sqrt(6), 3.5699456 (fact), the 3-cycle window near 3.83 (fact), the Feigenbaum number (fact)
+# and the estimate 3.572 of eq. (7.83). Page's own: the iteration at r = 2.5, the 2-cycle formula and its multiplier,
+# the 2-cycle example at r = 3.2, the Lyapunov exponents on periodic orbits, the Feigenbaum check with r3.
+
+page: content/year-4/8.09/chaos-logistic-map.mdx
+calcs:
+  # ---------------------------------------------------------------- fixed points (eqs. 7.71-7.74)
+  - id: max-of-map
+    where: '"From flows to maps": f(1/2) = r/4'
+    inputs: {r: 4}
+    formula: r*0.5*(1 - 0.5)
+    expected: '1'
+    shown: ['the largest value of $f$ is $f(\frac12) = r/4$']
+    source: {cite: reading1, at: 'p. 182'}
+    origin: mit
+
+  - id: fixed-point
+    kind: identity
+    where: 'eq. (7.71): x* = 1 - 1/r satisfies x* = r x*(1 - x*)'
+    formula: r*(1 - 1/r)*(1/r)
+    equals: 1 - 1/r
+    samples: {r: [1.5, 2.5, 3.7]}
+    tolerance: 1e-12
+    shown: ['x_* = 1 - \frac{1}{r} \ \text{for } r > 1']
+    source: {cite: reading1, at: 'p. 183, eq. (7.71)'}
+    origin: mit
+
+  - id: multiplier
+    kind: identity
+    where: 'eq. (7.74): f''(1 - 1/r) = 2 - r'
+    formula: deriv('r*x*(1 - x)', 'x', 1 - 1/r)
+    equals: 2 - r
+    samples: {r: [1.5, 2.5, 3.7]}
+    tolerance: 1e-6
+    shown: ['\left.\frac{df}{dx}\right|_{x_* = 1 - 1/r} = 2 - r']
+    source: {cite: reading1, at: 'p. 184, eq. (7.74)'}
+    origin: mit
+
+  # ---------------------------------------------------------------- worked example r = 2.5 (quiz 1)
+  - id: r25-fixed
+    where: 'worked example "Converging to the fixed point at r = 2.5"; quiz 1'
+    inputs: {r: 2.5}
+    formula: 1 - 1/r
+    expected: '0.6'
+    shown: ['$x_* = 1 - 1/2.5 = 0.6$']
+    source: {cite: reading1, at: 'p. 183 (the page''s own example)'}
+    origin: page-own
+
+  - id: r25-x1
+    where: 'same: x1'
+    inputs: {r: 2.5, x0: 0.3}
+    formula: r*x0*(1 - x0)
+    expected: '0.525'
+    shown: ['= 0.525$, then']
+    source: {cite: reading1, at: 'p. 183 (the page''s own example)'}
+    origin: page-own
+
+  - id: r25-x2
+    where: 'same: x2'
+    inputs: {r: 2.5, x0: 0.3}
+    formula: r*(r*x0*(1 - x0))*(1 - r*x0*(1 - x0))
+    expected: '0.6234'
+    shown: ['$x_2 = 0.6234$']
+    source: {cite: reading1, at: 'p. 183 (the page''s own example)'}
+    origin: page-own
+
+  - id: r25-x3
+    where: 'same: x3 (from x2 = 0.6234375)'
+    inputs: {r: 2.5, x2: 0.6234375}
+    formula: r*x2*(1 - x2)
+    expected: '0.5869'
+    shown: ['$x_3 = 0.5869$']
+    source: {cite: reading1, at: 'p. 183 (the page''s own example)'}
+    origin: page-own
+
+  - id: r25-x4
+    where: 'same: x4 (from x3 = 0.58690796)'
+    inputs: {r: 2.5, x3: 0.58690796}
+    formula: r*x3*(1 - x3)
+    expected: '0.6061'
+    shown: ['$x_4 = 0.6061$']
+    source: {cite: reading1, at: 'p. 183 (the page''s own example)'}
+    origin: page-own
+
+  - id: r25-x5
+    where: 'same: x5 (from x4 = 0.60611752)'
+    inputs: {r: 2.5, x4: 0.60611752}
+    formula: r*x4*(1 - x4)
+    expected: '0.5968'
+    shown: ['$x_5 = 0.5968$']
+    source: {cite: reading1, at: 'p. 183 (the page''s own example)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- the 2-cycle
+  - id: two-cycle-solves
+    kind: identity
+    where: 'formula "The 2-cycle of the logistic map": p = [r + 1 + sqrt((r - 3)(r + 1))]/2r satisfies f(f(p)) = p and f(p) = q'
+    formula: r*((r + 1 + sqrt((r - 3)*(r + 1)))/(2*r))*(1 - (r + 1 + sqrt((r - 3)*(r + 1)))/(2*r))
+    equals: (r + 1 - sqrt((r - 3)*(r + 1)))/(2*r)
+    samples: {r: [3.1, 3.2, 3.4]}
+    tolerance: 1e-12
+    shown: ['p,\ q = \frac{r + 1 \pm \sqrt{(r - 3)(r + 1)}}{2r}']
+    source: {cite: reading1, at: 'p. 185 (worked out here)'}
+    origin: page-own
+
+  - id: two-cycle-multiplier
+    kind: identity
+    where: '"When the 2-cycle fails": f''(p) f''(q) = 4 + 2r - r^2'
+    formula: (r*(1 - 2*(r + 1 + sqrt((r - 3)*(r + 1)))/(2*r)))*(r*(1 - 2*(r + 1 - sqrt((r - 3)*(r + 1)))/(2*r)))
+    equals: 4 + 2*r - r**2
+    samples: {r: [3.1, 3.2, 3.4]}
+    tolerance: 1e-9
+    shown: ['the product works out to $4 + 2r - r^2$']
+    source: {cite: reading1, at: 'p. 185, eq. (7.77) (worked out here)'}
+    origin: page-own
+
+  - id: second-doubling
+    where: '4 + 2r - r^2 = -1 at r = 1 + sqrt(6); quiz 2; plot captions'
+    inputs: {}
+    formula: 1 + sqrt(6)
+    expected: '3.449'
+    shown: ['to $-1$ at $r = 1 + \sqrt6 \approx 3.449$']
+    quiz: 1
+    source: {cite: reading1, at: 'p. 186, Fig. 7.64'}
+    origin: mit
+
+  - id: plot-r32-unstable
+    where: 'f(f(x)) plot caption: 1 - 1/r at r = 3.2'
+    inputs: {r: 3.2}
+    formula: 1 - 1/r
+    expected: '0.6875'
+    shown: ['unstable 1 − 1/r = 0.6875']
+    source: {cite: reading1, at: 'p. 184 (the page''s own value of r)'}
+    origin: page-own
+
+  - id: r32-root
+    where: 'worked example "Stability of the 2-cycle at r = 3.2": sqrt(0.84)'
+    inputs: {r: 3.2}
+    formula: sqrt((r - 3)*(r + 1))
+    expected: '0.9165'
+    shown: ['= \sqrt{0.84} = 0.9165$']
+    source: {cite: reading1, at: 'p. 185 (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-p
+    where: 'same: p; plot caption'
+    inputs: {r: 3.2}
+    formula: (r + 1 + sqrt((r - 3)*(r + 1)))/(2*r)
+    expected: '0.7995'
+    shown: ['/6.4 = 0.7995$', 'p = 0.7995']
+    source: {cite: reading1, at: 'p. 185 (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-q
+    where: 'same: q; plot caption'
+    inputs: {r: 3.2}
+    formula: (r + 1 - sqrt((r - 3)*(r + 1)))/(2*r)
+    expected: '0.5130'
+    shown: ['(4.2 - 0.9165)/6.4 = 0.5130$', 'q = 0.5130']
+    source: {cite: reading1, at: 'p. 185 (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-fp
+    where: 'same: f''(p)'
+    inputs: {r: 3.2}
+    formula: r*(1 - 2*(r + 1 + sqrt((r - 3)*(r + 1)))/(2*r))
+    expected: '-1.917'
+    shown: ['= -1.917$']
+    source: {cite: reading1, at: 'p. 185 (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-fq
+    where: 'same: f''(q)'
+    inputs: {r: 3.2}
+    formula: r*(1 - 2*(r + 1 - sqrt((r - 3)*(r + 1)))/(2*r))
+    expected: '-0.0835'
+    shown: ['= -0.0835$']
+    source: {cite: reading1, at: 'p. 185 (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-product
+    where: 'same: product of multipliers'
+    inputs: {r: 3.2}
+    formula: 4 + 2*r - r**2
+    expected: '0.160'
+    shown: ['the product is $0.160 = 4 + 6.4 - 10.24$']
+    source: {cite: reading1, at: 'p. 185 (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-lyapunov
+    where: 'same: lambda = (1/2) ln 0.16'
+    inputs: {r: 3.2}
+    formula: 0.5*log(4 + 2*r - r**2)
+    expected: '-0.916'
+    shown: ['= -0.916$']
+    source: {cite: reading1, at: 'p. 187, eq. (7.80) (the page''s own example)'}
+    origin: page-own
+
+  - id: r32-factor
+    where: 'same: average contraction per step e^lambda'
+    inputs: {r: 3.2}
+    formula: sqrt(4 + 2*r - r**2)
+    expected: '0.4'
+    shown: ['by a factor 0.4 per step']
+    source: {cite: reading1, at: 'p. 187 (the page''s own example)'}
+    origin: page-own
+
+  - id: superstable-2cycle
+    where: 'Lyapunov plot caption: 4 + 2r - r^2 = 0 at r = 1 + sqrt(5)'
+    inputs: {}
+    formula: 1 + sqrt(5)
+    expected: '3.236'
+    shown: ['r = 1 + √5 = 3.236']
+    source: {cite: reading1, at: 'p. 187 (worked out here)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Feigenbaum (eqs. 7.81-7.83)
+  - id: feigenbaum-delta1
+    where: 'eq. (7.82): delta_1 = sqrt(6) - 2; quiz 3'
+    inputs: {}
+    formula: sqrt(6) - 2
+    expected: '0.4495'
+    shown: ['the first ratio is $0.4495/0.0946 = 4.75$']
+    source: {cite: reading1, at: 'p. 187, eq. (7.82)'}
+    origin: mit
+
+  - id: feigenbaum-onset
+    where: 'eq. (7.83): 3 + delta_1/(1 - 1/delta_F); quiz 3; summary'
+    inputs: {dF: 4.669201}
+    formula: 3 + (sqrt(6) - 2)/(1 - 1/dF)
+    expected: '3.572'
+    shown: ['\simeq 3 + \frac{\delta_1}{1 - 1/\delta_F} = 3.572']
+    quiz: 2
+    source: {cite: reading1, at: 'p. 188, eq. (7.83)'}
+    origin: mit
+
+  - id: feigenbaum-first-ratio
+    where: '"Feigenbaum''s number": (r2 - r1)/(r3 - r2) with r3 = 3.5441'
+    inputs: {r3: 3.5440904}
+    formula: (sqrt(6) - 2)/(r3 - 1 - sqrt(6))
+    expected: '4.75'
+    shown: ['the first ratio is $0.4495/0.0946 = 4.75$']
+    source: {cite: reading1, at: 'p. 187 (the page''s own check)'}
+    origin: page-own
+
+  - id: r3-value
+    kind: fact
+    where: 'the third period doubling of the logistic map, r3 = 3.5440904 (standard computed value, not in the notes)'
+    value: '3.5441'
+    shown: ['$r_3 = 3.5441$']
+    source: {ref: 'standard numerical value of the third period-doubling point of the logistic map, r3 = 3.5440903596'}
+    origin: later-data
+
+  - id: feigenbaum-number
+    kind: fact
+    where: 'eq. (7.81): the Feigenbaum number'
+    value: '4.669201'
+    shown: ['{r_{\alpha+1} - r_\alpha} \approx 4.669201']
+    source: {cite: reading1, at: 'p. 187, eq. (7.81)'}
+    origin: mit
+
+  - id: chaos-onset
+    kind: fact
+    where: 'the accumulation point of period doublings, 3.5699456 (quoted in the notes)'
+    value: '3.5699456'
+    shown: ['until $r = 3.5699456\ldots$', 'close to the true $3.5699456$']
+    source: {cite: reading1, at: 'pp. 185, 188'}
+    origin: mit
+
+  - id: window-3cycle
+    kind: fact
+    where: 'the largest periodic window, a 3-cycle near r = 3.83'
+    value: '3.83'
+    shown: ['the largest is a 3-cycle near $r \approx 3.83$']
+    source: {cite: reading1, at: 'p. 187'}
+    origin: mit
+
+  - id: lyapunov-r4
+    kind: fact
+    where: 'Lyapunov plot: at r = 4 the exponent is exactly ln 2 (a known result for the fully chaotic logistic map, not in the notes)'
+    value: 'ln 2 = 0.693'
+    shown: ['where it is exactly ln 2 = 0.693']
+    source: {ref: 'standard result: the logistic map at r = 4 is conjugate to the tent map, whose Lyapunov exponent is ln 2'}
+    origin: later-data

@@ -1,0 +1,478 @@
+# Calculations on content/year-4/8.08/viscosity-conduction-boltzmann-equation.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.08 (Spring 2005) Chapter IX notes, "Transport" (Wen, handwritten scan). Page numbers are Wen's
+# handwritten numbers, top right (93-111 = PDF pages 1-19; the numbering skips 112, so 113-126 = PDF pages 20-33);
+# this page uses pp. 102-113. Numbers in the notes: the freezing estimate (a ~ 3 Angstrom, vbar = 300 m/s,
+# sqrt(a vbar) = 0.3 mm/sqrt(s), p. 105) and "1 eV ~ 1160 K" for k_B/e (p. 113; the conversion is 11605 K, a slip).
+# Page's own examples: argon viscosity (with the previous page's argon numbers); ice on a pond (Delta T = 10 K, 10 h;
+# measured ice constants K = 2.2 W/(m K), 917 kg/m^3, 334 kJ/kg); electrons in copper (n = 8.47e28 m^-3,
+# resistivity 1.68e-8 Ohm m, 1 T, 1 A, strip 0.1 mm, 300 K).
+# Constants: k_B, hbar (CODATA); e = 1.602176634e-19 C and m_e = 9.1093837e-31 kg given as inputs.
+
+page: content/year-4/8.08/viscosity-conduction-boltzmann-equation.mdx
+calcs:
+  # ---------------------------------------------------------------- viscosity (p. 102)
+  - id: viscosity-forms
+    kind: identity
+    where: 'formula "Viscosity of a gas": (1/6) n vbar m lambda with lambda = 1/(sigma n) and vbar = sqrt(2kT/m) is sqrt(2 m kT)/(6 sigma) (k = 1); the notes write 3 sigma'
+    formula: nn*sqrt(2*TT/mm)*mm*(1/(ss*nn))/6
+    equals: sqrt(2*mm*TT)/(6*ss)
+    samples: {nn: [1.0, 5.0, 0.2], TT: [1.0, 2.0, 0.5], mm: [1.0, 0.3, 4.0], ss: [1.0, 0.1, 2.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{m\bar v}{6\sigma} = \frac{\sqrt{2mk_BT}}{6\sigma}', '(The notes write $3\sigma$ in the denominator']
+    source: {cite: reading1, at: 'p. 102'}
+    origin: slip
+
+  - id: viscosity-argon
+    where: 'text: viscosity of argon, m vbar/(6 sigma) with the first page''s numbers'
+    inputs: {m: 6.6335e-26 kg, vb: 353.4 m/s, sigma: 4.0715e-19 m**2}
+    formula: m*vb/(6*sigma)
+    expected: 9.6e-6 Pa*s
+    shown: ['$\nu \approx 9.6 \times 10^{-6}$ Pa s']
+    source: {cite: reading1, at: 'p. 102'}
+    origin: page-own
+
+  - id: viscosity-argon-measured
+    kind: fact
+    where: 'text: measured viscosity of argon at 300 K, about 2.3e-5 Pa s (handbook value about 22.7 micro-Pa s)'
+    shown: ['the measured value is about $2.3 \times 10^{-5}$ Pa s']
+    source: {cite: reading1, at: 'p. 102'}
+    origin: page-own
+
+  - id: viscosity-argon-ratio
+    where: 'text: the estimate is low by a factor 2.3e-5/9.6e-6'
+    inputs: {meas: 2.3e-5 Pa*s, est: 9.6e-6 Pa*s}
+    formula: meas/est
+    expected: '2.4'
+    shown: ['good to a factor of about 2.4']
+    source: {cite: reading1, at: 'p. 102'}
+    origin: page-own
+
+  - id: viscous-stress-traceless
+    kind: identity
+    where: 'formula "Pressure tensor": the trace of P''_ij is -nu (2 div u - 2 div u) = 0 (checked with div u = u11 + u22 + u33 for sample gradients)'
+    formula: -nu*((2*a1 - 2/3*(a1 + a2 + a3)) + (2*a2 - 2/3*(a1 + a2 + a3)) + (2*a3 - 2/3*(a1 + a2 + a3)))
+    equals: 0
+    samples: {nu: [1.0, 0.3], a1: [0.2, 1.0], a2: [-0.5, 0.7], a3: [1.3, -0.1]}
+    tolerance: 1e-12
+    shown: ['a traceless viscous part']
+    source: {cite: reading1, at: 'p. 102'}
+    origin: mit
+
+  - id: quiz-reynolds
+    where: 'quiz 2: R = rho L u0/nu for water, 2 cm pipe, 0.1 m/s'
+    inputs: {rho: 1000 kg/m**3, L: 0.02 m, u0: 0.1 m/s, nu: 1e-3 Pa*s}
+    formula: rho*L*u0/nu
+    expected: '2000'
+    shown: ['$R = 1000 \\times 0.02 \\times 0.1/10^{-3} = 2000$']
+    quiz: 1
+    source: {cite: reading1, at: 'p. 103'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- heat conduction (p. 104)
+  - id: heat-conductivity-forms
+    kind: identity
+    where: 'formula "Heat conductivity of a gas": (1/6) n vbar lambda c_v with lambda = 1/(sigma n), vbar = sqrt(2kT/m) is (c_v/6 sigma) sqrt(2kT/m); the notes write 3 sigma'
+    formula: nn*sqrt(2*TT/mm)*(1/(ss*nn))*cv/6
+    equals: cv/(6*ss)*sqrt(2*TT/mm)
+    samples: {nn: [1.0, 5.0, 0.2], TT: [1.0, 2.0, 0.5], mm: [1.0, 0.3, 4.0], ss: [1.0, 0.1, 2.0], cv: [1.5, 1.0, 3.0]}
+    tolerance: 1e-12
+    shown: ['K = \frac{1}{6} n\bar v\lambda c_v = \frac{c_v}{6\sigma}\sqrt{\frac{2k_BT}{m}}', '(The notes write $3\sigma$ here too']
+    source: {cite: reading1, at: 'p. 104'}
+    origin: slip
+
+  - id: heat-flux-wen-form
+    kind: identity
+    where: 'formula "Heat flux": Wen''s (1/12) lambda l n vbar k with c_v = l k/2 equals (1/6) lambda n vbar c_v'
+    formula: ll*lf*nn*vb*kk/12
+    equals: ll*nn*vb*(lf*kk/2)/6
+    samples: {ll: [1.0, 0.3], lf: [3.0, 5.0], nn: [1.0, 2.0], vb: [1.0, 4.0], kk: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['(Wen writes the energy as $l\,k_BT/2$ for $l$ degrees of freedom, so $c_v = lk_B/2$']
+    source: {cite: reading1, at: 'p. 104'}
+    origin: mit
+
+  - id: heat-diffusion-constant
+    kind: identity
+    where: 'text: K/(n c_v) = lambda vbar/6'
+    formula: (nn*vb*ll*cv/6)/(nn*cv)
+    equals: ll*vb/6
+    samples: {nn: [1.0, 2.0], vb: [1.0, 4.0], ll: [1.0, 0.3], cv: [1.5, 2.0]}
+    tolerance: 1e-12
+    shown: ['with diffusion constant $K/nc_v = \lambda\bar v/6$']
+    source: {cite: reading1, at: 'p. 104'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- freezing (p. 105)
+  - id: freezing-solution
+    kind: identity
+    where: 'formula "Growth of the ice": x = sqrt(2 A t) with A = K dT/(n l) solves dx/dt = A/x (numerical derivative)'
+    formula: deriv('sqrt(2*AA*s)', 's', tt)
+    equals: AA/sqrt(2*AA*tt)
+    samples: {AA: [1.0, 0.3], tt: [1.0, 5.0]}
+    tolerance: 1e-6
+    shown: ['x = \sqrt{\frac{2K\Delta T}{n\ell}}\,\sqrt t']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: mit
+
+  - id: freezing-entropy
+    where: 'text: Delta S = k ln(v_water/v_ice) = k ln e = k (in units of k_B)'
+    inputs: {}
+    formula: log(exp(1))
+    expected: '1'
+    shown: ['then $\Delta S = k_B$ and $\ell = k_BT_0$']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: mit
+
+  - id: freezing-wen-estimate
+    kind: identity
+    where: 'formula "Wen''s estimate": 2 K dT/(n l) with K = (k/sigma) sqrt(kT/m) ~ (k/sigma) vbar, sigma = a^2, n = 1/a^3, l = k T0 gives a vbar dT/T0 (k = 1)'
+    formula: 2*(1/aa**2)*vb*dT/((1/aa**3)*T0)/2
+    equals: aa*vb*dT/T0
+    samples: {aa: [1.0, 0.3], vb: [1.0, 3.0], dT: [1.0, 10.0], T0: [273.0, 100.0]}
+    tolerance: 1e-12
+    shown: ['x \sim \sqrt{a\bar v\,\frac{\Delta T}{T_0}}\,\sqrt t']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: mit
+
+  - id: freezing-sqrt-av
+    where: 'formula "Wen''s estimate": sqrt(a vbar) with a = 3 Angstrom, vbar = 300 m/s'
+    inputs: {a: 3e-10 m, vb: 300 m/s}
+    formula: sqrt(a*vb)
+    expected: 0.3 mm/s**0.5
+    shown: ['so that $\sqrt{a\bar v} = 0.3$ mm per square root of a second', '= 0.3\ \text{mm}\,\sqrt{\frac{\Delta T}{T_0}}']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: mit
+
+  - id: plot-ice-coefficient
+    where: 'plot: 2 K/(n l) times 3600 s/h, the coefficient 5.172e-5 m^2/(K h) of the solid curve'
+    inputs: {K: 2.2 W/m/K, rho: 917 kg/m**3, L: 334 kJ/kg, hr: 3600 s}
+    formula: 2*K/(rho*L)*hr
+    expected: 5.172e-5 m**2/K
+    shown: ['100*sqrt(5.172e-5*dT*x)']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ex-wen-sqrt-ratio
+    where: 'worked example (a): sqrt(10/273)'
+    inputs: {}
+    formula: sqrt(10/273)
+    expected: '0.191'
+    shown: ['0.3\ \text{mm} \times 0.191 \times 190']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ex-wen-sqrt-time
+    where: 'worked example (a): sqrt(36000)'
+    inputs: {}
+    formula: sqrt(36000)
+    expected: '190'
+    shown: ['0.3\ \text{mm} \times 0.191 \times 190']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ex-wen-thickness
+    where: 'worked example (a): Wen''s estimate after 10 h at Delta T = 10 K'
+    inputs: {t: 36000 s, one: 1 s, len: 1 m}
+    formula: 0.3e-3*sqrt(10/273)*sqrt(t/one)*len
+    expected: 11 mm
+    shown: ['\approx 11$ mm']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ex-latent-volume
+    where: 'worked example (b): latent heat per volume n l = 917 kg/m^3 x 334 kJ/kg'
+    inputs: {rho: 917 kg/m**3, L: 334 kJ/kg}
+    formula: rho*L
+    expected: 3.06e8 J/m**3
+    shown: ['$n\ell = 917 \times 334\,000 \approx 3.06 \times 10^8$ J/m³']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ex-ice-thickness
+    where: 'worked example (b): x = sqrt(2 K dT t/(n l)) with measured ice constants'
+    inputs: {K: 2.2 W/m/K, dT: 10 K, t: 36000 s, nl: 3.0628e8 J/m**3}
+    formula: sqrt(2*K*dT*t/nl)
+    expected: 0.072 m
+    shown: ['\approx 0.072$ m, about 7.2 cm']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ex-ice-ratio
+    where: 'worked example: ratio of (b) to (a)'
+    inputs: {xb: 0.07192 m, xa: 0.010894 m}
+    formula: xb/xa
+    expected: '6.6'
+    shown: ['low by a factor of about 6.6']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  - id: ice-constants
+    kind: fact
+    where: 'worked example and plot caption: measured ice constants near 0 C (thermal conductivity about 2.2 W/(m K), density 917 kg/m^3, latent heat of fusion 334 kJ/kg)'
+    shown: ['$K = 2.2$ W/(m K), density 917 kg/m³ and latent heat 334 kJ/kg']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Drude and Hall (pp. 106-107)
+  - id: drude-steady
+    kind: identity
+    where: 'formula "Ohm''s law": steady state of du/dt = -u/tau + eE/m is u = e tau E/m, so j = e n u = (e^2 n tau/m) E'
+    formula: ee*nn*(ee*tau*EE/mm)
+    equals: ee**2*nn*tau/mm*EE
+    samples: {ee: [1.0, -1.6], nn: [1.0, 3.0], tau: [1.0, 0.2], EE: [1.0, 5.0], mm: [1.0, 0.5]}
+    tolerance: 1e-12
+    shown: ['\sigma = \frac{e^2n\tau}{m}']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: mit
+
+  - id: hall-inverse
+    kind: identity
+    where: 'formula "Resistivity tensor": j = sigma0 E + wc tau (j_y, -j_x) inverts to E_x = (j_x - wc tau j_y)/sigma0 (x component checked: sigma0 E_x + wc tau j_y = j_x)'
+    formula: s0*((jx - w*jy)/s0) + w*jy
+    equals: jx
+    samples: {s0: [1.0, 2.0], jx: [1.0, 0.3], jy: [0.5, -1.0], w: [0.2, 1.5]}
+    tolerance: 1e-12
+    shown: ['\sigma_0^{-1}\begin{pmatrix}1 & -\omega_c\tau\\ \omega_c\tau & 1\end{pmatrix}']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: mit
+
+  - id: hall-inverse-y
+    kind: identity
+    where: 'formula "Resistivity tensor": y component, sigma0 E_y - wc tau j_x = j_y with E_y = (wc tau j_x + j_y)/sigma0'
+    formula: s0*((w*jx + jy)/s0) - w*jx
+    equals: jy
+    samples: {s0: [1.0, 2.0], jx: [1.0, 0.3], jy: [0.5, -1.0], w: [0.2, 1.5]}
+    tolerance: 1e-12
+    shown: ['\sigma_0^{-1}\begin{pmatrix}1 & -\omega_c\tau\\ \omega_c\tau & 1\end{pmatrix}']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: mit
+
+  - id: hall-resistivity
+    kind: identity
+    where: 'formula "Hall resistivity": (eB tau/mc)(m/(e^2 n tau)) = B/(e n c)'
+    formula: (ee*BB*tau/(mm*cc))*(mm/(ee**2*nn*tau))
+    equals: BB/(ee*nn*cc)
+    samples: {ee: [1.0, 1.6], BB: [1.0, 3.0], tau: [1.0, 0.2], mm: [1.0, 0.5], cc: [1.0, 3.0], nn: [1.0, 7.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{B}{enc} = R_HB']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: mit
+
+  # ---------------------------------------------------------------- Boltzmann equation (pp. 110-111)
+  - id: fermi-gradient
+    kind: identity
+    where: 'text p. 110: d/dx of 1/(exp((e - mu(x))/T(x)) + 1) equals -(df/de)(mu'' + (e - mu) T''/T) (numerical, mu = 0.3 x, T = 1 + 0.2 x, at x = 0.5)'
+    formula: deriv('1/(exp((ep - 0.3*x)/(1 + 0.2*x)) + 1)', 'x', 0.5)
+    equals: -deriv('1/(exp((y - 0.15)/1.1) + 1)', 'y', ep)*(0.3 + (ep - 0.15)*0.2/1.1)
+    samples: {ep: [0.0, 0.7, -0.4]}
+    tolerance: 1e-6
+    shown: ['$\partial f/\partial\vec r = -(\partial f/\partial\epsilon)[\nabla\mu + \frac{\epsilon - \mu}{T}\nabla T]$']
+    source: {cite: reading1, at: 'p. 110'}
+    origin: mit
+
+  - id: L11-drude
+    kind: identity
+    where: 'formula "The conductivity from the Boltzmann equation": (1/3)(2 pi)^-3 2 pi kF (2m/hbar^2) tau e^2 vF^2 with vF = hbar kF/m equals e^2 tau n/m with n = (4 pi/3) kF^3/(2 pi)^3'
+    formula: 1/3/(2*pi)**3*2*pi*kF*(2*mm/hb**2)*tau*ee**2*(hb*kF/mm)**2
+    equals: ee**2*tau*(4*pi/3*kF**3/(2*pi)**3)/mm
+    samples: {kF: [1.0, 2.0], mm: [1.0, 0.5], hb: [1.0, 1.3], tau: [1.0, 0.2], ee: [1.0, 1.6]}
+    tolerance: 1e-12
+    shown: ['= \frac{e^2\tau n}{m}" cite="reading1" at="p. 111"']
+    source: {cite: reading1, at: 'p. 111'}
+    origin: mit
+
+  - id: fermi-derivative-normalized
+    kind: identity
+    where: 'text p. 111: the integral of -df/de over all energies is 1 (T = 0.1, mu = 1)'
+    formula: zz*integrate('exp((e - 1)/0.1)/(0.1*(exp((e - 1)/0.1) + 1)**2)', 'e', -2, 4)
+    equals: zz
+    samples: {zz: [1.0]}
+    tolerance: 1e-6
+    shown: ['$\int d\epsilon\,(-\partial f/\partial\epsilon) = 1$']
+    source: {cite: reading1, at: 'p. 111'}
+    origin: mit
+
+  # ---------------------------------------------------------------- thermopower (p. 113)
+  - id: thermopower-estimate
+    kind: identity
+    where: 'formula "Size of the thermopower": (n^(1/3) e tau k^2 T/hbar^2)/(e^2 tau n/m) = (k/e) m k T/(n^(2/3) hbar^2)'
+    formula: (nn**(1/3)*ee*tau*kk**2*TT/hb**2)/(ee**2*tau*nn/mm)
+    equals: kk/ee*mm*kk*TT/(nn**(2/3)*hb**2)
+    samples: {nn: [1.0, 8.0], ee: [1.0, 1.6], tau: [1.0, 0.2], kk: [1.0, 0.5], TT: [1.0, 3.0], hb: [1.0, 1.3], mm: [1.0, 2.0]}
+    tolerance: 1e-12
+    shown: ['= \frac{k_B}{e}\,\frac{mk_BT}{n^{2/3}\hbar^2}']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: mit
+
+  - id: kB-over-e
+    where: 'text: e/k_B, the temperature equivalent of 1 eV (the notes write 1160)'
+    inputs: {e: 1.602176634e-19 C, volt: 1 V}
+    formula: e*volt/k_B
+    expected: 11605 K
+    shown: ['$k_B/e = 1/11\,605$ V/K', 'the conversion is 1 eV ↔ 11 605 K']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: slip
+
+  - id: eV-11600
+    where: 'text: 1 eV corresponds to about 11 600 K'
+    inputs: {e: 1.602176634e-19 C, volt: 1 V}
+    formula: e*volt/k_B
+    expected: 11600 K
+    tolerance: 50 K
+    shown: ['1 eV corresponds to about 11 600 K']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- worked example: copper
+  - id: ex-tau
+    where: 'worked example "Mean free time": tau = m/(rho e^2 n)'
+    inputs: {me: 9.1093837e-31 kg, rho: 1.68e-8 ohm*m, e: 1.602176634e-19 C, n: 8.47e28 m**-3}
+    formula: me/(rho*e**2*n)
+    expected: 2.5e-14 s
+    shown: ['\approx 2.5 \times 10^{-14}$ s']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-kF
+    where: 'worked example: k_F = (3 pi^2 n)^(1/3)'
+    inputs: {n: 8.47e28 m**-3}
+    formula: (3*pi**2*n)**(1/3)
+    expected: 1.36e10 m**-1
+    shown: ['$k_F = (3\pi^2n)^{1/3} \approx 1.36 \times 10^{10}$ m⁻¹']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-vF
+    where: 'worked example: v_F = hbar k_F/m'
+    inputs: {me: 9.1093837e-31 kg, kF: 1.35863e10 m**-1}
+    formula: hbar*kF/me
+    expected: 1.57e6 m/s
+    shown: ['$v_F = \hbar k_F/m \approx 1.57 \times 10^6$ m/s']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-EF
+    where: 'worked example: E_F = hbar^2 k_F^2/2m'
+    inputs: {me: 9.1093837e-31 kg, kF: 1.35863e10 m**-1}
+    formula: hbar**2*kF**2/(2*me)
+    expected: 7.0 eV
+    shown: ['$E_F = \hbar^2k_F^2/2m \approx 7.0$ eV']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-mfp
+    where: 'worked example: mean free path v_F tau'
+    inputs: {vF: 1.5729e6 m/s, tau: 2.4939e-14 s}
+    formula: vF*tau
+    expected: 39 nm
+    shown: ['The mean free path is $v_F\tau \approx 39$ nm']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-spacing
+    where: 'worked example: atomic spacing n^(-1/3)'
+    inputs: {n: 8.47e28 m**-3}
+    formula: n**(-1/3)
+    expected: 0.23 nm
+    shown: ['$n^{-1/3} \approx 0.23$ nm']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-mfp-ratio
+    where: 'worked example: mean free path over spacing'
+    inputs: {l: 39.225 nm, a: 0.22764 nm}
+    formula: l/a
+    expected: '170'
+    tolerance: 5
+    shown: ['about 170 times the spacing between atoms']
+    source: {cite: reading1, at: 'p. 106'}
+    origin: page-own
+
+  - id: ex-omega-c
+    where: 'worked example "Cyclotron frequency": eB/m in 1 T'
+    inputs: {e: 1.602176634e-19 C, B: 1 T, me: 9.1093837e-31 kg}
+    formula: e*B/me
+    expected: 1.76e11 s**-1
+    shown: ['$\omega_c = eB/m \approx 1.76 \times 10^{11}$ s⁻¹']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-omega-c-tau
+    where: 'worked example: omega_c tau'
+    inputs: {w: 1.7588e11 s**-1, tau: 2.4939e-14 s}
+    formula: w*tau
+    expected: '0.0044'
+    shown: ['$\omega_c\tau \approx 0.0044$']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-RH
+    where: 'worked example "Hall voltage": R_H = 1/(n e) in SI'
+    inputs: {n: 8.47e28 m**-3, e: 1.602176634e-19 C}
+    formula: 1/(n*e)
+    expected: 7.4e-11 m**3/C
+    shown: ['$R_H = 1/(ne) \approx 7.4 \times 10^{-11}$ m³/C']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-VH
+    where: 'worked example: Hall voltage I B/(n e d), 1 A, 1 T, d = 0.1 mm'
+    inputs: {I: 1 A, B: 1 T, n: 8.47e28 m**-3, e: 1.602176634e-19 C, d: 0.1 mm}
+    formula: I*B/(n*e*d)
+    expected: 0.74 microvolt
+    shown: ['\approx 0.74$ μV']
+    source: {cite: reading1, at: 'p. 107'}
+    origin: page-own
+
+  - id: ex-kT-EF
+    where: 'worked example "Thermopower": k_B T/E_F at 300 K'
+    inputs: {T: 300 K, EF: 7.0328 eV}
+    formula: k_B*T/EF
+    expected: '0.0037'
+    shown: ['$k_BT/E_F = 0.02585/7.03 \approx 0.0037$']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: page-own
+
+  - id: ex-kT-eV
+    where: 'worked example: k_B T at 300 K in eV'
+    inputs: {T: 300 K}
+    formula: k_B*T
+    expected: 0.02585 eV
+    shown: ['0.02585/7.03']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: page-own
+
+  - id: ex-kB-e-microvolt
+    where: 'worked example: k_B/e in microvolt per kelvin'
+    inputs: {e: 1.602176634e-19 C}
+    formula: k_B/e
+    expected: 86.2 microvolt/K
+    shown: ['86.2\ \mu\text{V/K}']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: page-own
+
+  - id: ex-Q
+    where: 'worked example: Q = (pi^2/2)(k_B/e)(k_B T/E_F)'
+    inputs: {e: 1.602176634e-19 C, T: 300 K, EF: 7.0328 eV}
+    formula: pi**2/2*k_B/e*k_B*T/EF
+    expected: 1.6 microvolt/K
+    shown: ['\approx 1.6$ μV/K']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: page-own
+
+  - id: copper-measured-thermopower
+    kind: fact
+    where: 'worked example: measured thermopower of copper at room temperature, about +2 microvolt/K (handbook values about 1.8-1.9)'
+    shown: ['The measured thermopower of copper has this size, about 2 μV/K']
+    source: {cite: reading1, at: 'p. 113'}
+    origin: page-own
+
+  - id: fusion-entropy-measured
+    where: 'text after Wen''s freezing estimate: measured entropy of fusion of water per molecule, L M/(N_A T0 k_B) (review finding)'
+    inputs: {L: 334 kJ/kg, M: 0.018015 kg/mol, NA: 6.02214076e23 mol**-1, T0: 273.15 K}
+    formula: L*M/(NA*T0*k_B)
+    expected: '2.6'
+    tolerance: 0.1
+    shown: ['the measured entropy of fusion is about $2.6\,k_B$ per molecule']
+    source: {cite: reading1, at: 'p. 105'}
+    origin: page-own

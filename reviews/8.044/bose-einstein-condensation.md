@@ -1,0 +1,83 @@
+---
+page: content/year-3/8.044/bose-einstein-condensation.mdx
+reviewed: 2026-11-17
+sources_read:
+  - https://ocw.mit.edu/courses/8-044-statistical-physics-i-spring-2013/resources/mit8_044s13_l22/ (read: the 49-page slide PDF mit8_044s13_l22.pdf; the text extraction is garbled for the formula slides, so PDF pages 2–10 were checked as images, slides 7–9 at 90 dpi; the history pages 11–48 were read as text and the figure-only ones (22–24, 30, 42, 43, 46, 48) as images)
+  - content/year-3/8.044/grand-canonical-ensemble.mdx (read in part, for the "as in Lecture 18" adsorption reference)
+  - content/year-4/8.286/black-body-radiation.mdx (read in part, for a possible cosmology link)
+  - calcs/8.044/bose-einstein-condensation.yaml (read; every number recomputed independently in Python with SciPy, the suite itself not run)
+verdict: pass-with-notes
+---
+
+# Review: Bose–Einstein condensation
+
+Slide numbering (checked on the images): PDF page 1 = L19B15 (a repeat of a Lecture 19 slide: N and U as integrals over ⟨n⟩D(E)); PDF 2–10 = L22B1–B9; PDF 11–48 = an unnumbered illustrated history with a 1900–2000 timeline bar and a 300 K–30 nK temperature bar on each slide; PDF 49 = the standard OCW notice. The page cites slides 1–9 by their printed labels and the history as "history slides after slide 9", which is correct. OCW has no transcript or lecture notes for this lecture; only the slides were compared.
+
+What slides 1–6 show (images, no text): B1 Fermi–Dirac and Bose–Einstein ⟨n⟩ against (ε − μ)/k_BT; B2 a Fermi gas, ⟨n(ε)⟩ and D(ε) with μ(T) marked inside the spectrum with arrows (μ can move either way); B3 a Bose occupation drawn with μ inside the spectrum, diverging there (my reading: the impossible case, showing why μ cannot sit above the bottom of the spectrum; uncertain, since the slide has no words); B4 T = T₁, μ well below 0; B5 T = T₁/2, μ closer to 0; B6 T = T_c, μ(T_c) = 0.
+
+## Differences from the MIT source
+| # | Severity | Where on page | MIT says | Page says | Suggested fix |
+|---|----------|---------------|----------|-----------|---------------|
+| 1 | warning | End of page (`leadsTo: []`, no cosmology callout) | n/a (writing rule 6) | No `Callout kind="cosmology"`. A real connection exists: photons (and other relativistic bosons in the early universe) obey the same Bose–Einstein occupation with μ = 0, and the same family of Bose integrals gives their number density, with ζ(3) ≈ 1.202 in 8.286 Lecture 16 (`black-body-radiation`, formula "Number density of photons") in place of ζ(3/2) here. | Add a short cosmology callout stating this as the page's own connection, with `leadsTo` 8.286 Lecture 16 (and optionally Lecture 17, `neutrinos-and-particle-counting`, for the fermion counterpart). Do not claim BEC itself plays a role in standard cosmology. |
+| 2 | warning | "How it was found", bullets 2, 4 and 6 | History slides 18–20: "They applied their theory to the simplest possible case: a gas of non-interacting atoms"; "As the atoms get colder their velocity diminishes and their wavelength grows. When the wavelength becomes comparable to the separation, a phase transition occurs. Some of the atoms lose their identity and become part of a single wave spanning the container." Slide 35: "Atomic hydrogen will remain a gas down to absolute zero if its magnetic moments are aligned by a magnetic field." Slide 37: "Walls cause the moments to flip; then the atoms recombine into molecules and freeze out. A magnetic trap keeps the atoms off the walls." Slide 45: "In the trap, atoms in the condensate are almost at rest, the remainder have thermal speeds. When the trap is turned off the thermal atoms speed away, but the condensate atoms remain near the origin." | "applied it to the simplest case, a gas of non-interacting atoms. As the atoms cool their wavelength grows, and when it reaches the spacing between them a phase transition occurs: some atoms lose their separate identity and join a single wave filling the container"; "atomic hydrogen with its magnetic moments aligned by a field should remain a gas down to absolute zero"; "Walls flipped the moments and let atoms recombine into molecules, so the atoms were instead held off the walls in a magnetic trap"; "condensate atoms sit almost at rest at the centre while thermal atoms move at thermal speeds. Switch off the trap and the thermal cloud flies apart while the condensate stays nearly in place". Each follows the slide caption clause by clause with synonyms swapped. | Rewrite in the page's own structure, e.g. "Cooling makes each atom's wave packet longer; once neighbouring packets overlap, the gas changes phase and part of it behaves as one wave across the whole container." and "Release the trap: atoms with thermal speeds spread out, while the condensate, nearly at rest, barely moves." |
+| 3 | info | "How it was found", bullet 5: "at hundreds of nanokelvin"; also the Summary and flashcard 3 | Slides 42–43 place the marker on the temperature bar a little above 300 nK; no temperatures per group are given. | "produced Bose–Einstein condensates at hundreds of nanokelvin". Fact check (not from the slides): JILA's 1995 rubidium condensate formed near 170 nK, but MIT's 1995 sodium condensate near 2 µK. | "at temperatures from below a microkelvin to a few microkelvin", or "around a microkelvin". |
+| 4 | info | Bullet 5: "with Hulet's group (lithium) close behind" | Slide 42 lists the three groups (Cornell & Wieman/JILA/Rb, Hulet/Rice/Li, Ketterle/MIT/Na); slide 43 ("Race to BEC") plots Rice data points alongside, without ranking. | "close behind" is the page's own reading. Historically Hulet's 1995 lithium report was disputed and clear evidence came in 1997 (fact from outside the slides; not verified here against a primary source). | Optional: "and Hulet's group at Rice, working with lithium, in the same race", or mark the lithium result as later/contested. |
+| 5 | info | Bullet 5: "In 1995" | The year is not stated in words; it is supported by slide 43's date axis (5/94 … 5/95, 9/95, 4/96, with the BEC line crossed in 1995) and the timeline marker on slides 42–48. | "In 1995". | None needed; the year is supported by the chart. Optionally note "the slides' race chart". |
+| 6 | info | Bullet 4: "in 1986 the MIT hydrogen group proposed cooling them further by evaporation" | Slide 38: "In 1986 Harald Hess, a postdoctoral fellow in MIT's hydrogen group, proposes magnetic trapping and evaporative cooling." | Attributes the proposal to the group. | "in 1986 Harald Hess, a postdoc in MIT's hydrogen group, proposed …". |
+| 7 | info | Bullet 4: "In 1976 it was pointed out" | Slide 34: "The search begins for Bose-Einstein condensation in a real gas", citing "Possible 'New' Quantum Systems", Phys. Rev. Lett. 36, 910–913 (1976); slide 35 gives the claim. | Supported. The slide gives no authors (the paper is by Stwalley and Nosanow; from general knowledge, not from the slides). | Optional: cite the PRL as a `references` entry. |
+| 8 | info | Bullet 3: superfluid helium-4 as "a strongly interacting relative of condensation"; helium-3 "a Fermi liquid" | Slide 29 shows the superflow experiment and says only "Superfluidity was discovered in helium-4 in the 1930s at a temperature of 2 Kelvin". Slides 31–33 say nothing about Fermi liquids. | Both characterizations are the page's own. Both are standard physics and correct. | Optional: mark as the page's own ("today understood as …"). |
+| 9 | info | Bullet 6: "Two condensates released together interfere like waves" | Slide 48: an image titled "Interference of matter waves", no further text. | Adds "two condensates released together". Correct (MIT, 1997), but not on the slide. | None needed, or "the slides end with an image of interfering matter waves". |
+| 10 | info | "The chemical potential of a Bose gas" | The rule that μ must lie below the bottom of the spectrum is shown by slides 1–3 together (B2 Fermi case, μ free to move; B3 Bose case, divergence with μ inside the spectrum). | Attributes it to slide 1 and cites "slides 2–6" for cooling at fixed N; the Fermi contrast of slide 2 is not mentioned. | Cite "slides 1–3" for the bound on μ and add one sentence: for fermions μ can lie anywhere (slide 2), for bosons it cannot (slide 3). |
+| 11 | info | Formula "Particles in the excited states at μ = 0", `at="slide 7"` | Slide 7 writes ε, k_B and shows the substitution x = ε/k_BT. | Writes $E$ and $k$, and gives only the first and last lines. Same physics; prefactor (2S+1)V/(4π²)(2m/ħ²)^{3/2} is correct. | Optional: use ε as the text and the slide do, so the integral and the prose match. |
+| 12 | info | History slides 22–24 and 44, slide 28 | Slides 22–24 contrast Fermi (step, smeared by kT), a Bose "good guess" (smooth spread of width kT) and the "actual" Bose result (N₀(T)δ(ε) plus a continuous part, N₀/N vanishing at T_c). Slide 44: BEC in a parabolic trap (energy, density and momentum scales, condensate vs normal component). Slide 28: Nobel Prize 1972 to Bardeen, Cooper and Schrieffer (BCS theory). | Summarized as "fermions fill a Fermi sea while bosons condense"; the "good guess vs actual" point, the trap slide and BCS are omitted. | Optional: one sentence on slides 22–24 (a naive guess would let the ground-state share fall smoothly; in fact it is zero until T_c and then rises sharply), and a mention that in a harmonic trap the density profile shows a narrow condensate on a broad thermal cloud. |
+| 13 | info | Prerequisites | n/a | Only `zero-point-energy-fluctuations`. The page relies on the Bose–Einstein occupation (Lecture 18) and on $D(\epsilon) \propto \epsilon^{1/2}$ (Lecture 19). | Add `grand-canonical-ensemble` and `free-fermi-gas`. |
+
+## Formula citations (all checked against the slide images)
+- Bose–Einstein occupation $1/(e^{(\epsilon-\mu)/kT} - 1)$ and its divergence as ε → μ: slide 1 (figure). Correct.
+- $N = \int\langle n\rangle D\,d\epsilon$ with $D \propto \epsilon^{1/2}$: L19B15 (PDF 1) and slide 7. Correct.
+- Excited-state integral at μ = 0, $= (2S+1)\zeta(3/2)V/\lambda^3(T)$, using $\int_0^\infty x^{1/2}/(e^x-1)\,dx = (\sqrt\pi/2)\zeta(3/2)$: slide 7, identical. The prefactor was checked independently: $\frac{1}{4\pi^2}(2mkT/\hbar^2)^{3/2}\frac{\sqrt\pi}{2} = 2^{3/2}/(8\pi^{3/2})\,(mkT/\hbar^2)^{3/2} = \lambda^{-3}$. Correct.
+- $\zeta(3/2) = 2.612\ldots$, $\lambda(T) = h/\sqrt{2\pi mkT}$, $T_c = \frac{h^2}{2\pi mk}(n/\zeta(3/2))^{2/3} \propto n^{2/3}$ (spin 0), $n_c = \zeta(3/2)\lambda^{-3}(T) \propto T^{3/2}$: slide 8, identical. Correct.
+- $N_0 = N - \int\langle n\rangle D\,d\epsilon = N[1 - (T/T_c)^{3/2}]$: slide 9, identical (the slide marks the integral as ∝ T^{3/2}). Correct.
+- The plot (1 − x^1.5 for x < 1, 0 above) matches slide 9's N₀(T) sketch, computed from the formula, not copied. Correct.
+- "(The smooth density of states misses this state entirely …)" and "μ stays at 0 below T_c": the page's own explanations, consistent with slide 9; correct at the macroscopic level (strictly μ is of order −kT/N₀, negligible).
+
+## Arithmetic and answer checks
+- $\int_0^\infty x^{1/2}/(e^x-1)\,dx = 2.31516$ (2.3152); divided by $\sqrt\pi/2$: 2.61238, equal to SciPy's ζ(1.5) = 2.612375. Correct.
+- Example (a): $h^2/(2\pi mk) = 3.5074 \times 10^{-20}$ K m² (3.51); $(10^{20}/2.612)^{2/3} = 1.1359 \times 10^{13}$ m⁻² (1.14); $T_c = 3.984 \times 10^{-7}$ K (3.98, "about 400 nK"). Correct. The Rb-87 mass 1.443 × 10⁻²⁵ kg agrees with 86.909 u = 1.4432 × 10⁻²⁵ kg.
+- Example (b): $1 - (100/398)^{3/2} = 0.8741$ (0.87); with the unrounded T_c, 0.8743. Correct.
+- Example (c): $\lambda(T_c) = 2.967 \times 10^{-7}$ m (2.97); $n^{-1/3} = 2.154 \times 10^{-7}$ m (2.15); $n\lambda^3 = 2.612$ exactly, as it must. Correct.
+- Example (d): $n = 145/6.6465 \times 10^{-27} = 2.1816 \times 10^{28}$ m⁻³ (2.18); $T_c = 3.135$ K (3.1). Correct. The helium-4 mass agrees with 4.0026 u = 6.6465 × 10⁻²⁷ kg; 145 kg/m³ is the liquid's density near the lambda point. The comparison with 2.17 K (lambda point, standard value, stored as `kind: fact`, origin later-data) is correct and honestly caveated ("far from an ideal gas"). The example treats the trapped gas as uniform and says so; fine.
+- The example is original: the slides contain no numerical example.
+- Quiz 1: answer 0. Correct (slides 4–6).
+- Quiz 2: answer 0 ($n\lambda^3 = \zeta(3/2) \approx 2.612$). Correct; explanation consistent with slides 7–8.
+- Quiz 3: $1 - 0.5^{1.5} = 0.6464$ (0.65). Correct.
+- Quiz 4: answer 0. Correct (slide 35). The explanation's "aligned hydrogen atoms cannot bind into molecules" is not stated on the slides but is correct (the electron-spin triplet potential has no bound state) and fits slide 37.
+- Flashcards 1–3: correct (flashcard 3: see #3 on "hundreds of nanokelvin").
+- calcs/8.044/bose-einstein-condensation.yaml: every expected value matches the recomputation above; tolerances are sensible. Minor: `bose-integral` integrates from 1e-12 to 60, which is adequate (the tail beyond 60 is below 10⁻²⁵).
+
+## Coverage and order
+- Slides 1–9 are all covered, in order: occupations (1), μ as T falls at fixed N (2–6), the μ = 0 integral (7), T_c and n_c (8), N₀ and its graph (9). Slide 2's fermion picture is passed over (#10).
+- The history (PDF 11–48) is summarized in order: quantum vs classical and λ < atom size at 300 K (11–13); electrons in atoms, fusion in the Sun, adsorption (14–16; the "as in Lecture 18" link is correct, the Lecture 18 page has an adsorption example); Bose and Einstein 1924–25 (17–20); bosons and fermions (21–24, thinly, #12); liquefaction temperatures O₂ 90 K, H₂ 20 K/14 K, He 4 K and pumping below 4.2 K (25–26; O₂ freezing at 50 K omitted, fine); Kamerlingh Onnes 1911 (27; BCS slide 28 omitted); superfluid He-4 in the 1930s near 2 K (29); He-3 melting-curve glitches, two superfluid phases, Nobel 1996 (30–33); 1976 proposal and spin-polarized hydrogen, groups including MIT (34–36); walls vs magnetic trap (37); Hess 1986 evaporative cooling (38); laser cooling from the 1980s, Nobel 1997, Li/Na/Rb, evaporation for the last stage (39–41); the three groups and the race chart (42–43; trap slide 44 omitted); time-of-flight signature and condensate images (45–46); Nobel 2001 (47); interference (48). All dates and names on the page agree with the slides.
+- Added by the page: the worked example, the plot, and the explanations noted in #8, #9.
+
+## Licensing
+- No "All rights reserved" or "Courtesy of" notice in the text extraction (grep found none). The history slides contain photographs, Nobel Prize citations and figures from other sources (e.g. the French-labelled He-3 melting curve on PDF 30, the "Race to BEC" chart, condensate images); the page reproduces none of them and describes them in words only. Correct.
+- Nobel citations: the page quotes none; it names the prize year only (1996, 1997, 2001). Correct.
+- No OpenStax or LibreTexts material. The one graph is generated from the formula.
+- No em dashes (—) in the page or the calcs file (checked by script; en dashes in "Bose–Einstein", "1924–25" and slide ranges are fine).
+- Wording: several history sentences follow the slide captions too closely (#2). The physics sections are rewritten.
+
+## Notes
+- No errors found. Every formula matches its slide, every number on the page and in the calcs file is correct, and every quiz answer is right. Recommended: a cosmology callout and `leadsTo` to 8.286 Lecture 16 (#1), and rewording of the history captions that follow the slides closely (#2). The rest are factual precision on the 1995 condensate temperatures and the lithium result (#3, #4), naming Hess (#6), citation refinements and optional coverage (#10–#13).
+- Uncertain: my reading of slide 3 (no words on it) as the "impossible μ inside the Bose spectrum" case; the historical details in #3 and #4 come from general knowledge, not from the slides.
+
+## Resolution (2026-11-17, by the page author)
+
+- Warning 1: a cosmology callout (photons as bosons with μ = 0; ζ(3)T³ photon density) and a `leadsTo` to 8.286 Lecture 16 are added.
+- Warning 2: the history sentences that followed slides 18–20, 35, 37 and 45 are rewritten in the page's own words.
+- Info:
+  - The 1995 condensates are now described as ranging from about a hundred nanokelvin to a few microkelvin, in the history section, the Summary and flashcard 3. The year is marked as read from the timeline.
+  - The claim that Hulet's group was "close behind" is replaced by a neutral mention, and the 1986 proposal is credited to Harald Hess.
+  - The μ argument now cites slides 1–6 and mentions slide 2's Fermi-gas contrast.
+  - grand-canonical-ensemble and free-fermi-gas are added as prerequisites.
+  - The other info items are left as they are.
