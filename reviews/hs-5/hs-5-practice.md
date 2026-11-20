@@ -123,3 +123,15 @@ No statement was ambiguous or missing data.
 - Other info notes (unused `reading5`, "octave", combined I₀ meanings): left as they are, harmless.
 
 Checks after the fixes: `npm run calc:test -- -k hs-5-practice` 76 passed; `npm run test:answers` 65 passed; `npx tsc --noEmit` clean; `npm run content:check` 0 error(s), no warning for this page. Status set to reviewed.
+
+## Follow-up (2026-11-20)
+
+A later review (reviews/hs-6/hs-6-practice.md, finding 2) noted that the correct option of the choice boxes was almost always the first. The options were reordered so the correct choice sits at varied positions (no wording of any explanation refers to an option's position):
+
+- p1-d: unchanged, correct option 2 (index 1).
+- p6-c: correct option moved from 1st to 3rd (answer 0 -> 2) and shortened to "The bouncing at the worst speed becomes larger, over a narrower range of speeds" so it is no longer clearly the longest; the distractor "becomes smaller" was lengthened to "becomes smaller, over a wider range of speeds".
+- p7-d: correct option moved from 1st to 4th (answer 0 -> 3).
+- p9-c: correct option moved from 1st to 4th (answer 0 -> 3).
+- p10-c: correct option moved from 1st to 3rd (answer 0 -> 2); the distractor "20 W/m²" became "20 W/m², half of what reaches the last filter" so the options are of similar length.
+
+Correct positions are now 2, 3, 4, 4, 3 (indices 1, 2, 3, 3, 2). No calcs entry refers to a choice index, so calcs/hs-5/hs-5-practice.yaml is unchanged. calc:test (-k hs-5-practice), test:answers and content:check pass with 0 errors.
