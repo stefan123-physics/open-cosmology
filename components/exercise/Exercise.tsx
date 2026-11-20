@@ -32,7 +32,8 @@ export function Exercise({ id, title, points, mit, optional, children, source }:
         )}
       </header>
       <div className="ex-body">{children}</div>
-      {source && (
+      {/* "After:" only for a problem adapted from the source (it has `mit`); our own problems carry no such line. */}
+      {source && mit && (
         <div className="ex-cite" data-noread>
           After:{" "}
           {source.url ? (
