@@ -82,3 +82,7 @@ Formula citations (all checked against the slides PDF):
 - Warning 1: the worked example now uses its own numbers (10⁻²⁶ cm to 3 cm at 5×10⁻³⁷ s per doubling: 88 doublings, 4.4×10⁻³⁵ s), with Guth's figures only as a comparison.
 - Warning 2: the Lecture 3 leadsTo now says the course begins with the Doppler effect and special relativity.
 - Info: source title now ends "Part I"; the 15-decimal bracket now says Lecture 21 explains the numbers; Miracle 1 is a heading like Miracle 2; added "accelerating for about the last 5 billion years" and Guth's "half a percent, or maybe 1%".
+
+## Correction (2026-11-20)
+
+The calcs entries `doublings`, `doublings-guth` and `duration` cited slide 10 for Guth's inflation figures; slide 10 is about Ω. Checked in the Lecture 1 slides PDF: the patch of 10⁻²⁸ cm and the doubling time of 10⁻³⁷ s are on slide 4, and the factor of at least 10²⁸ (about 100 doublings), the 10⁻³⁵ s and the marble on slide 5. The entries now cite slides 4–5 and say that the 10⁻²⁶ cm, 3 cm and 5 × 10⁻³⁷ s inputs are the page's own variant. The page itself was correct (its Ω formula rightly cites slide 10). Found by the review of High School lesson 0.9; fixed with the owner's approval.
