@@ -81,7 +81,49 @@ const UNIT_WORDS: Record<string, string> = {
   au: "astronomical units", eV: "electronvolts", keV: "kilo-electronvolts", MeV: "mega-electronvolts",
   GeV: "giga-electronvolts", TeV: "tera-electronvolts", erg: "ergs", ergs: "ergs", sr: "steradians", rad: "radians",
   mol: "moles", A: "amperes", V: "volts", C: "coulombs", T: "teslas", "Å": "ångström", L: "litres", cal: "calories",
+  // Added for the High School; only inside \text{…}, so not in UNIT_AFTER_NUMBER (TEXT_ONLY_UNITS).
+  F: "farads", "Ω": "ohms", S: "siemens", Wb: "webers", Wh: "watt-hours", Gy: "grays", Sv: "sieverts", Bq: "becquerels",
+  dB: "decibels", u: "atomic mass units", year: "years", years: "years", "light-year": "light-years",
+  "light-years": "light-years",
 };
+const TEXT_ONLY_UNITS = new Set(["F", "Ω", "S", "Wb", "Wh", "Gy", "Sv", "Bq", "dB", "u", "year", "years", "light-year", "light-years"]);
+/** SI units that also appear with a prefix (kV, mSv, nC, μF, fm): said as prefix + unit ("millisieverts"). */
+const PREFIXED = new Set(["m", "g", "s", "N", "J", "W", "Wh", "Pa", "Hz", "V", "A", "C", "F", "T", "Wb", "Ω", "S", "Gy", "Sv", "Bq", "L"]);
+const PREFIXES: Record<string, string> = {
+  T: "tera", G: "giga", M: "mega", k: "kilo", c: "centi", m: "milli", "μ": "micro", n: "nano", p: "pico", f: "femto",
+};
+/** The words for one unit abbreviation, or undefined when it is not one. */
+function unitWord(t: string): string | undefined {
+  if (Object.hasOwn(UNIT_WORDS, t)) return UNIT_WORDS[t];
+  const base = t.slice(1);
+  if (Object.hasOwn(PREFIXES, t[0]) && PREFIXED.has(base)) return PREFIXES[t[0]] + UNIT_WORDS[base];
+  return undefined;
+}
+/** Unit words that stay the same in the singular (1 hertz, 1 siemens, 1 million years). */
+const SAME_IN_SINGULAR = /(?:hertz|siemens|kelvin|ångström|million years|billion years|thousand years)$/;
+const singular = (words: string) => (SAME_IN_SINGULAR.test(words) ? words : words.replace(/s$/, ""));
+/**
+ * The contents of \text{…} in words when every part is a unit ("km/s" → "kilometres per second"), else null.
+ * `before` is the TeX before it: after exactly 1 the unit is singular ("1 farad"), and in a product every unit but
+ * the last always is ("newton metres"); a unit after "per" is singular too. `product` = another unit follows
+ * (\text{Ω}\,\text{m} "ohm metres"). Never in an exponent or index (h^{\text{TT}}, x_\text{s} are labels).
+ */
+function unitText(text: string, before: string, product = false): string | null {
+  if (/[_^]\s*\{?\s*$/.test(before)) return null;
+  const tokens = text.trim().split(/(\s+|\/|·|\\,|\\;)/).filter((t) => t.trim() !== "" && !/^(·|\\,|\\;)$/.test(t));
+  if (!tokens.some((t) => t !== "/") || !tokens.every((t) => t === "/" || unitWord(t) !== undefined)) return null;
+  const one = /(?:^|[^\w.\\])1\s*(?:(?:\\[ ,;:!]|~)\s*)*$/.test(before);
+  const slash = tokens.indexOf("/");
+  const top = slash < 0 ? tokens.length : slash;
+  return tokens
+    .map((t, k) => {
+      if (t === "/") return "per";
+      const w = unitWord(t)!;
+      if (slash >= 0 && k > slash) return tokens[k - 1] === "/" ? singular(w) : w;
+      return k < top - 1 || one || (product && slash < 0) ? singular(w) : w;
+    })
+    .join(" ");
+}
 /** Letters that engines read as units after a number, and how to say them as letters instead. */
 const LETTER_SOUNDS: Record<string, string> = {
   m: "em", s: "ess", g: "gee", K: "kay", N: "en", J: "jay", W: "double-u", A: "ay", V: "vee", C: "see", T: "tee",
@@ -89,7 +131,7 @@ const LETTER_SOUNDS: Record<string, string> = {
 };
 /** A number followed by something an engine would read as a unit (content:check: symbolReadAsUnit). */
 export const UNIT_AFTER_NUMBER = new RegExp(
-  String.raw`(?:^|\s)\d+(?:\.\d+)?\s+(?:${[...new Set([...Object.keys(UNIT_WORDS), ...Object.keys(LETTER_SOUNDS)])]
+  String.raw`(?:^|\s)\d+(?:\.\d+)?\s+(?:${[...new Set([...Object.keys(UNIT_WORDS).filter((u) => !TEXT_ONLY_UNITS.has(u)), ...Object.keys(LETTER_SOUNDS)])]
     .map((u) => u.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
     .join("|")})(?=\s|[,;.]|$)`
 );
@@ -166,22 +208,22 @@ function nameSymbols(tex: string, names: string[], capitals: Set<string>): strin
       .replace(/[{}\s]/g, "");
   while (i < n) {
     const rest = tex.slice(i);
-    // Text: units are written out (5\ \text{km/s} → "5 kilometres over seconds" → engines need no guessing).
-    let m = /^\\(text|mathrm|textrm|mbox)\s*\{([^{}]*)\}/.exec(rest);
+    // Text: units are written out (5\ \text{km/s} → "5 kilometres per second" → engines need no guessing). A \mu
+    // just before the text is its prefix (4.7\ \mu\text{F} → "4.7 microfarads").
+    let m = /^\\mu\s*\\text\s*\{([^{}]*)\}/.exec(rest);
+    const micro = m && unitText("μ" + m[1].trim(), out);
+    if (m && micro) {
+      out += mark(micro);
+      i += m[0].length;
+      continue;
+    }
+    m = /^\\(text|mathrm|textrm|mbox)\s*\{([^{}]*)\}/.exec(rest);
     if (m) {
-      const tokens = m[2].trim().split(/(\s+|\/|·|\\,|\\;)/).filter((t) => t !== "");
-      const units = tokens.filter((t) => t.trim() && !/^(\/|·|\\,|\\;)$/.test(t));
       // \mathrm{d} is a differential, never "days": only \text{…} holds units.
-      if (m[1] !== "mathrm" && units.length && units.every((t) => t in UNIT_WORDS))
-        out += mark(
-          tokens
-            .map((t) => (t in UNIT_WORDS ? UNIT_WORDS[t] : t === "/" ? "per" : " "))
-            .join(" ")
-            .replace(/\s+/g, " ")
-            .replace(/\bper (\w+?)s\b/g, "per $1") // "kilometres per second"
-            .trim()
-        );
-      else out += m[0];
+      const next = /^(?:\s|\\[ ,;:!])*\\text\s*\{([^{}]*)\}/.exec(tex.slice(i + m[0].length));
+      const product = !!next && !next[1].trim().startsWith("/") && unitText(next[1], "") !== null;
+      const words = m[1] !== "mathrm" ? unitText(m[2], out, product) : null;
+      out += words ? mark(words) : m[0];
       i += m[0].length;
       continue;
     }
