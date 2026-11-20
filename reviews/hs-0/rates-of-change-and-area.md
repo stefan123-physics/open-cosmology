@@ -85,3 +85,14 @@ Left out:
 ## Notes
 - Overall the physics and maths are correct and every number checks; the page improves on Siyavula 5.2 by not setting h = 0. No errors found. Rows 1 to 5 are warnings to fix before `status: reviewed`.
 - `<PhET title="Calculus Grapher" />` has no `id`; the sim is taken from frontmatter `phet: calculus-grapher`, as in graphs-and-slope.mdx. Fine.
+
+## Resolution (2026-11-20, by the page author)
+
+- 1: "acceleration" is now glossed on first use: the rate at which the velocity changes, treated in full in Block 1.
+- 2: new paragraph "Below the axis": area below the time axis counts as negative; displacement = area above − area below, distance adds both. Own example: 3.0 m/s for 4.0 s then −2.0 m/s for 3.0 s gives displacement 6.0 m and distance 18 m (calcs `trolley-displacement`, `trolley-distance`).
+- 3: the page now shows the algebra at any time t: (0.80(t + h)² − 0.80t²)/h = 1.6t + 0.80h → 1.6t, with the check 3.2 + 0.08 = 3.28 m/s against the table (calcs `general-slope-check`).
+- 4: the area formula and the calcs entry `triangle-area` now cite Sec. 21.6, Motion at constant velocity.
+- 5: new calcs entries `ball-x2`, `ball-x21`, `ball-x201`, `ball-rise`.
+- Info: the many digits in the table are exact values of the formula, shown so the limit can be seen; reading a slope from a hand-drawn tangent is left for Block 1.
+
+`npm run calc:test` (22 entries for this page) and `npm run content:check` pass.
