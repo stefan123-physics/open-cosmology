@@ -140,3 +140,7 @@ No statement was ambiguous or missing data. Open-ended wordings ("What happens?"
 Other infos (combined meanings of n, N, r; overlap of P12 with lesson 6.13; mass spectrometer described in full) left as they are, as the review accepts them.
 
 Checks: `npm run calc:test -- -k hs-6-practice` 107 passed; `npm run test:answers` 65 passed; `npm run content:check` 0 error(s), no line for this page. Status set to reviewed.
+
+## Follow-up (2026-11-20): Siyavula 5.5 removed
+
+Siyavula Physical Sciences Grade 12, 5.5 Power may contain examples taken from OpenStax without credit, so it is no longer cited (Writing rule 10; the page was not opened again). The reference siy55 was removed. The kilowatt-hour formula in Problem 7(d) now cites reading4 (MIT 8.02T Course Notes, Chapter 6) at "Eq. (6.3.1), power as energy per unit time; 1000 W × 3600 s is our own step". In calcs/hs-6/hs-6-practice.yaml the three entries hs6p-p7-d-energy, hs6p-p7-d and hs6p-p7-d-joule now cite reading4, Eq. (6.3.1), with the kilowatt-hour as our own step. No number, `shown` text or prose changed. calc:test, test:answers and content:check pass. Status stays reviewed.
