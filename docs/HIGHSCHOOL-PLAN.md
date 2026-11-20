@@ -144,6 +144,8 @@ One High School glossary page (`/symbols`) with all meanings; the "used in" list
 ### 3.5 PhET
 Sims are hosted locally (unmodified, pinned versions, `public/phet/manifest.json`) so they work offline. Each sim is 2.5–5 MB; every sim named below exists as an HTML5 sim (checked 2026-11-18). About 30 sims ≈ 100 MB of static files, which Vercel allows (the 20 MB limit is per page/function output, not total), but it lengthens the build and the offline download — see flag F7.
 
+**2026-11-20:** all 34 sims named below are installed in `public/phet/` (pinned versions with checksums in `manifest.json`), 99 MB in all. PhET's licence page and Terms of Use were read that day: CC BY-NC 4.0, and no clause about AI (AGENTS.md, "The High School").
+
 ---
 
 ## 4. The lesson list
