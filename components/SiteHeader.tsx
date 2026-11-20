@@ -169,22 +169,28 @@ export function SiteHeader({ years, tools }: { years: NavYear[]; tools: Tool[] }
       </header>
 
       <nav className="main-nav" aria-label="Main">
+        {/* Two groups: on wide screens they flow as one line (display: contents); on tablets each becomes its own
+            centred row (the programme, then the extras), instead of a long line with two stray links below. */}
         <div className="nav-row">
-          {ROW_BEFORE.map((l) => (
-            <Link key={l.href} href={l.href} aria-current={current(l.href)}>
-              {l.label}
-            </Link>
-          ))}
-          {years.map((y) => (
-            <Link key={y.number} href={y.rowHref} className="nav-year" aria-current={y.number === 0 ? current(y.rowHref) : undefined}>
-              {y.label}
-            </Link>
-          ))}
-          {ROW_AFTER.map((l) => (
-            <Link key={l.href} href={l.href} aria-current={current(l.href)}>
-              {l.label}
-            </Link>
-          ))}
+          <span className="nav-group">
+            {ROW_BEFORE.map((l) => (
+              <Link key={l.href} href={l.href} aria-current={current(l.href)}>
+                {l.label}
+              </Link>
+            ))}
+            {years.map((y) => (
+              <Link key={y.number} href={y.rowHref} className="nav-year" aria-current={y.number === 0 ? current(y.rowHref) : undefined}>
+                {y.label}
+              </Link>
+            ))}
+          </span>
+          <span className="nav-group">
+            {ROW_AFTER.map((l) => (
+              <Link key={l.href} href={l.href} aria-current={current(l.href)}>
+                {l.label}
+              </Link>
+            ))}
+          </span>
         </div>
       </nav>
 
