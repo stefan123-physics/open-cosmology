@@ -1,0 +1,676 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for Part II; every answer is still checked here by an independent route:
+# transforms by numerical integration of the defining integral, responses by putting them back into their
+# differential equations (numerical derivatives) and through their Laplace transforms, the convolution by numerical
+# integration, and the partial-fraction constants by solving the decomposition for each of them at sample values of s.
+# The step response of Problem 27(a) and the whole of the optional problem (D⁴ + I) are our own solutions.
+
+page: content/year-2/18.03/18-03-problem-set-7.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the three problems of Part II (26 + 22 + 20)'
+    inputs: {}
+    formula: 26 + 22 + 20
+    expected: '68'
+    shown: ['three problems (68 points)']
+    source: {cite: solutions, at: 'Part II solutions, pp. 1–2'}
+    origin: mit
+
+  - id: intro-part-i-points
+    where: 'Introduction and last section: the points of MIT''s Part I (6 + 10 + 12)'
+    inputs: {}
+    formula: 6 + 10 + 12
+    expected: '28'
+    shown: ['(28 points at MIT, not scored here)']
+    source: {cite: solutions, at: 'Part I points, p. 1'}
+    origin: mit
+
+  # ---- Problem 26
+
+  - id: p26-a-cube
+    kind: identity
+    answer: p26-a-cube
+    where: 'Problem 26(a), answer box: the transform of (at)³, against the numerically integrated defining integral'
+    formula: 6*a**3/s**4
+    equals: integrate('(a*x)**3*exp(-s*x)', 'x', 0, 150)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      s: [1, 3, 2, 0.8]
+    tolerance: 1e-6
+    shown: ['expr="6*a^3/s^4"']
+    source: {cite: solutions, at: 'Problem 26(a), p. 1'}
+    origin: mit
+
+  - id: p26-a-rule-power
+    kind: identity
+    where: 'Problem 26(a), formula "The rule for a power": (1/a) F(s/a) with F = n!/s^(n+1), for n = 2, against the numerically integrated transform of (at)²'
+    formula: (1/a)*2/(s/a)**3
+    equals: integrate('(a*x)**2*exp(-s*x)', 'x', 0, 150)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      s: [1, 3, 2, 0.8]
+    tolerance: 1e-6
+    shown: ['\frac{1}{a}\,F\!\left(\frac{s}{a}\right) = \frac{1}{a}\cdot\frac{n!}{(s/a)^{n+1}}']
+    source: {cite: solutions, at: 'Problem 26(a), p. 1'}
+    origin: mit
+
+  - id: p26-a-rule-exp
+    kind: identity
+    where: 'Problem 26(a), check: the rule for f = e^(−t), (1/a)·1/(s/a + 1), against the numerically integrated transform of e^(−at)'
+    formula: (1/a)*1/(s/a + 1)
+    equals: integrate('exp(-a*x)*exp(-s*x)', 'x', 0, 150)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      s: [1, 3, 2, 0.8]
+    tolerance: 1e-8
+    shown: ['\dfrac{1}{a}\cdot\dfrac{1}{s/a + 1} = \dfrac{1}{s + a}']
+    source: {cite: mit, at: 'Part II, Problem 26(a) (our own check)'}
+    origin: page-own
+
+  - id: p26-b-ones
+    kind: identity
+    where: 'Problem 26(b), check: the transform of 1 ∗ 1 = t (integrated numerically) equals (1/s)(1/s)'
+    formula: integrate('x*exp(-s*x)', 'x', 0, 150)
+    equals: (1/s)*(1/s)
+    samples: {s: [0.8, 1, 2, 3]}
+    tolerance: 1e-8
+    shown: ['$F(s)\,G(s) = \dfrac{1}{s}\cdot\dfrac{1}{s}$ is the same']
+    source: {cite: mit, at: 'Part II, Problem 26(b) (our own check)'}
+    origin: page-own
+
+  - id: p26-b-example
+    kind: identity
+    where: 'Problem 26(b), a further test of the convolution formula (not printed): e^(−t) ∗ t, has the transform 1/((s + 1)s²); checked through its closed form t − 1 + e^(−t)'
+    formula: integrate('(x - 1 + exp(-x))*exp(-s*x)', 'x', 0, 150)
+    equals: 1/((s + 1)*s**2)
+    samples: {s: [0.8, 1, 2, 3]}
+    tolerance: 1e-7
+    shown: ['F(s)\,G(s) = \int_0^{\infty}\left(\int_0^{t}f(t - \tau)\,g(\tau)\,d\tau\right)e^{-st}\,dt']
+    source: {cite: solutions, at: 'Problem 26(b), p. 1'}
+    origin: page-own
+
+  - id: p26-b-example-conv
+    kind: identity
+    where: 'Problem 26(b), the same test: the convolution integral of e^(−(t−τ)) with τ equals t − 1 + e^(−t)'
+    formula: integrate('exp(-(t - x))*x', 'x', 0, t)
+    equals: t - 1 + exp(-t)
+    samples: {t: [0.3, 1, 2, 3.5]}
+    tolerance: 1e-9
+    shown: ['f(t) * g(t) = \int_0^{t}f(t - \tau)\,g(\tau)\,d\tau']
+    source: {cite: solutions, at: 'Problem 26(b), p. 1'}
+    origin: page-own
+
+  - id: p26-c
+    kind: identity
+    answer: p26-c
+    where: 'Problem 26(c), answer box: the transform of the box, against the numerical integral of e^(−st) from 0 to 1 (negative s included)'
+    formula: (1 - exp(-s))/s
+    equals: integrate('exp(-s*x)', 'x', 0, 1)
+    samples: {s: [0.3, 1, 4, -2]}
+    tolerance: 1e-9
+    shown: ['expr="(1 - exp(-s))/s"']
+    source: {cite: solutions, at: 'Problem 26(c), p. 1'}
+    origin: mit
+
+  - id: p26-c-num
+    where: 'Problem 26(c), check: F(1), by numerical integration of e^(−t) from 0 to 1'
+    inputs: {}
+    formula: integrate('exp(-x)', 'x', 0, 1)
+    expected: '0.6321'
+    shown: ['$F(1) = 1 - e^{-1} = 0.6321$']
+    source: {cite: solutions, at: 'Problem 26(c), p. 1'}
+    origin: page-own
+
+  - id: p26-c-zero
+    where: 'Problem 26(c), check: the formula close to s = 0 has the limit 1 (value at s = 10⁻⁶)'
+    inputs: {}
+    formula: (1 - exp(-1e-6))/1e-6
+    expected: '1'
+    tolerance: 1e-5
+    shown: ['the formula has the limit $1$ there too']
+    source: {cite: solutions, at: 'Problem 26(c), p. 1'}
+    origin: mit
+
+  # ---- Problem 27
+
+  - id: p27-a-w
+    kind: identity
+    answer: p27-a-w
+    where: 'Problem 27(a), answer box: the unit impulse response, against the numerical derivative of the unit step response'
+    formula: exp(-b*t/a)/a
+    equals: deriv('(1 - exp(-b*x/a))/b', 'x', t)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.2, 1, 3, 2.1]
+    tolerance: 1e-7
+    shown: ['expr="exp(-b*t/a)/a"']
+    source: {cite: solutions, at: 'Problem 27(a), p. 1'}
+    origin: mit
+
+  - id: p27-a-w-laplace
+    kind: identity
+    where: 'Problem 27(a): the Laplace transform of the impulse response (integrated numerically) equals 1/(as + b)'
+    formula: integrate('exp(-b*x/a)/a*exp(-s*x)', 'x', 0, 150)
+    equals: 1/(a*s + b)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      s: [0.5, 1, 2, 3]
+    tolerance: 1e-8
+    shown: ['W(s) = \frac{1}{as + b} = \frac{1/a}{s + b/a}']
+    source: {cite: solutions, at: 'Problem 27(a), p. 1'}
+    origin: mit
+
+  - id: p27-a-v
+    kind: identity
+    answer: p27-a-v
+    where: 'Problem 27(a), answer box: the unit step response, against the numerical integral of the impulse response from 0 to t'
+    formula: (1 - exp(-b*t/a))/b
+    equals: integrate('exp(-b*x/a)/a', 'x', 0, t)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.2, 1, 3, 2.1]
+    tolerance: 1e-9
+    shown: ['expr="(1 - exp(-b*t/a))/b"']
+    source: {cite: mit, at: 'Part II, Problem 27(a) (our own solution)'}
+    origin: page-own
+
+  - id: p27-a-v-ode
+    kind: identity
+    where: 'Problem 27(a): for t > 0 the step response solves aẋ + bx = 1'
+    formula: a*deriv('(1 - exp(-b*x/a))/b', 'x', t) + (1 - exp(-b*t/a))
+    equals: 1 + 0*t
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.2, 1, 3, 2.1]
+    tolerance: 1e-7
+    shown: ['v(t) = \frac{1}{b}\,u(t)\left(1 - e^{-bt/a}\right)']
+    source: {cite: mit, at: 'Part II, Problem 27(a) (our own solution)'}
+    origin: page-own
+
+  - id: p27-a-v-laplace
+    kind: identity
+    where: 'Problem 27(a): the Laplace transform of the step response (integrated numerically) equals 1/(s(as + b))'
+    formula: integrate('(1 - exp(-b*x/a))/b*exp(-s*x)', 'x', 0, 150)
+    equals: 1/(s*(a*s + b))
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      s: [0.5, 1, 2, 3]
+    tolerance: 1e-8
+    shown: ['V(s) = \frac{1}{s\,(as + b)} = \frac{1}{b}\left(\frac{1}{s} - \frac{1}{s + b/a}\right)']
+    source: {cite: mit, at: 'Part II, Problem 27(a) (our own solution)'}
+    origin: page-own
+
+  - id: p27-a-v-zero
+    kind: identity
+    where: 'Problem 27(a): for very small b the step response is close to t/a'
+    formula: (1 - exp(-0.0001*t/a))/0.0001
+    equals: t/a
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      t: [0.2, 1, 3, 2.1]
+    tolerance: 1e-3
+    shown: ['$v(t) = u(t)\,\dfrac{t}{a}$']
+    source: {cite: mit, at: 'Part II, Problem 27(a) (our own solution)'}
+    origin: page-own
+
+  - id: p27-a-num-v
+    where: 'Problem 27(a), check: v(2) for a = 2, b = 1, by integrating the impulse response from 0 to 2'
+    inputs: {}
+    formula: integrate('exp(-x/2)/2', 'x', 0, 2)
+    expected: '0.6321'
+    shown: ['$v(2) = 1 - e^{-1} = 0.6321$']
+    source: {cite: mit, at: 'Part II, Problem 27(a) (our own solution)'}
+    origin: page-own
+
+  - id: p27-a-num-w
+    where: 'Problem 27(a), check: the slope of v at t = 2 for a = 2, b = 1 (numerical derivative) equals w(2)'
+    inputs: {}
+    formula: deriv('1 - exp(-x/2)', 'x', 2)
+    expected: '0.1839'
+    shown: ['$w(2) = \frac{1}{2}e^{-1} = 0.1839$']
+    source: {cite: solutions, at: 'Problem 27(a), p. 1'}
+    origin: page-own
+
+  - id: p27-b-i
+    kind: identity
+    answer: p27-b-i
+    where: 'Problem 27(b)(i), answer box: the unit ramp response, against the numerical convolution integral of the impulse response with τ'
+    formula: t/b - a*(1 - exp(-b*t/a))/b**2
+    equals: integrate('exp(-b*(t - x)/a)/a*x', 'x', 0, t)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-9
+    shown: ['expr="t/b - a*(1 - exp(-b*t/a))/b^2"']
+    source: {cite: solutions, at: 'Problem 27(b)(i), p. 1'}
+    origin: mit
+
+  - id: p27-b-i-ode
+    kind: identity
+    where: 'Problem 27(b)(i): for t > 0 the ramp response solves aẋ + bx = t'
+    formula: a*deriv('x/b - a*(1 - exp(-b*x/a))/b**2', 'x', t) + b*(t/b - a*(1 - exp(-b*t/a))/b**2)
+    equals: t
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-7
+    shown: ['x(t) = u(t)\left(\frac{1}{b}\,t - \frac{a}{b^2}\left(1 - e^{-bt/a}\right)\right)']
+    source: {cite: solutions, at: 'Problem 27(b)(i), p. 1'}
+    origin: mit
+
+  - id: p27-b-i-slope
+    where: 'Problem 27(b)(i), check: the slope of the ramp response at t = 0 is zero (a = 2, b = 1)'
+    inputs: {}
+    formula: deriv('x - 2*(1 - exp(-x/2))', 'x', 0)
+    expected: '0'
+    tolerance: 1e-7
+    shown: ['The slope at $t = 0$ is $\dfrac{1}{b} - \dfrac{a}{b^2}\cdot\dfrac{b}{a} = 0$']
+    source: {cite: solutions, at: 'Problem 27(b)(i), p. 1'}
+    origin: page-own
+
+  - id: p27-b-i-particular
+    kind: identity
+    where: 'Problem 27(b)(i), formula "Particular solution": a times the slope 1/b plus b times (t/b − a/b²) equals t'
+    formula: a*(1/b) + b*(t/b - a/b**2)
+    equals: t
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-12
+    shown: ['x_p = \frac{1}{b}\,t - \frac{a}{b^2}']
+    source: {cite: solutions, at: 'Problem 27(b)(i), p. 1'}
+    origin: mit
+
+  - id: p27-b-i-zero
+    kind: identity
+    answer: p27-b-i-zero
+    where: 'Problem 27(b)(i), answer box for b = 0: against the numerical integral of τ/a from 0 to t'
+    formula: t**2/(2*a)
+    equals: integrate('x/a', 'x', 0, t)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-9
+    shown: ['expr="t^2/(2*a)"']
+    source: {cite: solutions, at: 'Problem 27(b)(i), p. 1'}
+    origin: mit
+
+  - id: p27-b-i-zero-limit
+    kind: identity
+    where: 'Problem 27(b)(i), check: for very small b the formula for b ≠ 0 is close to t²/(2a)'
+    formula: t/0.001 - a*(1 - exp(-0.001*t/a))/0.001**2
+    equals: t**2/(2*a)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      t: [0.3, 1, 1.5, 0.7]
+    tolerance: 2e-3
+    shown: ['\dfrac{t}{b} - \dfrac{t}{b} + \dfrac{t^2}{2a} = \dfrac{t^2}{2a}']
+    source: {cite: solutions, at: 'Problem 27(b)(i), p. 1'}
+    origin: page-own
+
+  - id: p27-b-ii-parts
+    kind: identity
+    where: 'Problem 27(b)(ii), formula "The integral": the result of the integration by parts, against the numerical integral of τ e^(bτ/a)'
+    formula: (a/b)*t*exp(b*t/a) - (a**2/b**2)*(exp(b*t/a) - 1)
+    equals: integrate('x*exp(b*x/a)', 'x', 0, t)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-9
+    shown: ['= \frac{a}{b}\,t\,e^{bt/a} - \frac{a^2}{b^2}\left(e^{bt/a} - 1\right)']
+    source: {cite: solutions, at: 'Problem 27(b)(ii), p. 2'}
+    origin: mit
+
+  - id: p27-b-ii-num
+    answer: p27-b-ii-num
+    where: 'Problem 27(b)(ii), answer box: for a = 2, b = 1, t = 2, the numerical convolution integral of the impulse response with τ'
+    inputs: {}
+    formula: integrate('exp(-(2 - x)/2)/2*x', 'x', 0, 2)
+    expected: '0.736'
+    shown: ['$2 - 2\left(1 - e^{-1}\right) = 2e^{-1} = 0.736$']
+    source: {cite: mit, at: 'Part II, Problem 27(b)(ii) (our own number)'}
+    origin: page-own
+
+  - id: p27-b-ii-num-formula
+    where: 'Problem 27(b)(ii), check: the same number from the formula, 2/e'
+    inputs: {}
+    formula: 2/1 - 2*(1 - exp(-1*2/2))/1**2
+    expected: '0.736'
+    shown: ['the formula gives $2 - 2\left(1 - e^{-1}\right)']
+    source: {cite: solutions, at: 'Problem 27(b)(ii), p. 2'}
+    origin: page-own
+
+  - id: p27-b-iii-a
+    kind: identity
+    answer: p27-b-iii-a
+    where: 'Problem 27(b)(iii), answer box A: against the decomposition solved for A at sample values of s, with B = 1/b and C = a²/b²'
+    formula: -a/b**2
+    equals: (1/(s**2*(a*s + b)) - (1/b)/s**2 - (a**2/b**2)/(a*s + b))*s
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      s: [0.7, 1, 2, 3]
+    tolerance: 1e-9
+    shown: ['expr="-a/b^2"']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: mit
+
+  - id: p27-b-iii-b
+    kind: identity
+    answer: p27-b-iii-b
+    where: 'Problem 27(b)(iii), answer box B: against the decomposition solved for B at sample values of s, with A = −a/b² and C = a²/b²'
+    formula: 1/b
+    equals: (1/(s**2*(a*s + b)) + (a/b**2)/s - (a**2/b**2)/(a*s + b))*s**2
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      s: [0.7, 1, 2, 3]
+    tolerance: 1e-9
+    shown: ['expr="1/b"']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: mit
+
+  - id: p27-b-iii-c
+    kind: identity
+    answer: p27-b-iii-c
+    where: 'Problem 27(b)(iii), answer box C: against the decomposition solved for C at sample values of s, with A = −a/b² and B = 1/b'
+    formula: a**2/b**2
+    equals: (1/(s**2*(a*s + b)) + (a/b**2)/s - (1/b)/s**2)*(a*s + b)
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      s: [0.7, 1, 2, 3]
+    tolerance: 1e-9
+    shown: ['expr="a^2/b^2"']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: mit
+
+  - id: p27-b-iii-laplace
+    kind: identity
+    where: 'Problem 27(b)(iii), formula "The response": its Laplace transform (integrated numerically) equals 1/(s²(as + b))'
+    formula: integrate('(-a/b**2 + x/b + a/b**2*exp(-b*x/a))*exp(-s*x)', 'x', 0, 150)
+    equals: 1/(s**2*(a*s + b))
+    samples:
+      a: [0.5, 1, 2, 1.3]
+      b: [2, 1, 0.5, 1.7]
+      s: [0.7, 1, 2, 3]
+    tolerance: 1e-7
+    shown: ['x(t) = -\frac{a}{b^2} + \frac{1}{b}\,t + \frac{a}{b^2}\,e^{-bt/a}']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: mit
+
+  - id: p27-b-iii-test-left
+    where: 'Problem 27(b)(iii), check: the left side 1/(s²(as + b)) for a = b = s = 1'
+    inputs: {}
+    formula: 1/(1**2*(1*1 + 1))
+    expected: '0.5'
+    shown: ['the left side is $\dfrac{1}{1\cdot 2} = 0.5$']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: page-own
+
+  - id: p27-b-iii-test-right
+    where: 'Problem 27(b)(iii), check: the right side A/s + B/s² + C/(as + b) for a = b = s = 1'
+    inputs: {}
+    formula: -1/1 + 1/1 + 1/(1 + 1)
+    expected: '0.5'
+    shown: ['the right side is $-1 + 1 + \dfrac{1}{2} = 0.5$']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: page-own
+
+  - id: p27-b-iii-hint-left
+    where: 'Problem 27(b)(iii), hint of a listed mistake: the left side for a = 2, b = 1, s = 1 is 1/3 (times 3)'
+    inputs: {}
+    formula: 3/(1**2*(2*1 + 1))
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['the left side 1/(s²(as + b)) is 1/3']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: page-own
+
+  - id: p27-b-iii-hint-right
+    where: 'Problem 27(b)(iii), hint of a listed mistake: with A = −1/b², B = 1/b and C = a²/b² the right side for a = 2, b = 1, s = 1 is 4/3 (times 3)'
+    inputs: {}
+    formula: 3*(-1/1 + 1/1 + 4/(2*1 + 1))
+    expected: '4'
+    tolerance: 1e-12
+    shown: ['your A makes the right side 4/3']
+    source: {cite: solutions, at: 'Problem 27(b)(iii), p. 2'}
+    origin: page-own
+
+  # ---- Problem 28
+
+  - id: p28-a
+    kind: identity
+    answer: p28-a
+    where: 'Problem 28(a), answer box: the impulse response, against −(ẅ + 2ẇ)/2 from the equation 3ẅ + 6ẇ + 6w = 0 (numerical derivatives)'
+    formula: exp(-t)*sin(t)/3
+    equals: -(deriv('exp(-x)*sin(x)/3', 'x', t, 2) + 2*deriv('exp(-x)*sin(x)/3', 'x', t))/2
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-6
+    shown: ['expr="exp(-t)*sin(t)/3"']
+    source: {cite: solutions, at: 'Problem 28(a), p. 2'}
+    origin: mit
+
+  - id: p28-a-laplace
+    kind: identity
+    where: 'Problem 28(a): the Laplace transform of the impulse response (integrated numerically) equals 1/(3s² + 6s + 6)'
+    formula: integrate('exp(-s*x)*exp(-x)*sin(x)/3', 'x', 0, 80)
+    equals: 1/(3*s**2 + 6*s + 6)
+    samples: {s: [0.5, 1, 2, 3.5]}
+    tolerance: 1e-8
+    shown: ['W(s) = \frac{1}{3s^2 + 6s + 6} = \frac{1}{3}\cdot\frac{1}{(s + 1)^2 + 1}']
+    source: {cite: solutions, at: 'Problem 28(a), p. 2'}
+    origin: mit
+
+  - id: p28-a-slope
+    where: 'Problem 28(a), check: the slope of the impulse response just after the kick, 1 over the coefficient of D² (times 3)'
+    inputs: {}
+    formula: 3*deriv('exp(-x)*sin(x)/3', 'x', 0)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['the slope just after the kick is $\frac{1}{3}$']
+    source: {cite: solutions, at: 'Problem 28(a), p. 2'}
+    origin: page-own
+
+  - id: p28-b
+    kind: identity
+    answer: p28-b
+    where: 'Problem 28(b), answer box: the impulse response of D⁴ − I, against the numerical second derivative of its own second derivative (sinh t + sin t)/2, so that the fourth derivative equals w'
+    formula: (sinh(t) - sin(t))/2
+    equals: deriv('(sinh(x) + sin(x))/2', 'x', t, 2)
+    samples: {t: [0.3, 0.9, 1.7, 3]}
+    tolerance: 1e-5
+    shown: ['expr="(sinh(t) - sin(t))/2"']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: mit
+
+  - id: p28-b-second
+    kind: identity
+    where: 'Problem 28(b): the numerical second derivative of w is (sinh t + sin t)/2'
+    formula: deriv('(sinh(x) - sin(x))/2', 'x', t, 2)
+    equals: (sinh(t) + sin(t))/2
+    samples: {t: [0.3, 0.9, 1.7, 3]}
+    tolerance: 1e-5
+    shown: ['Differentiating four times gives back $\frac{1}{2}(\sinh t - \sin t) = w$']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: page-own
+
+  - id: p28-b-third
+    where: 'Problem 28(b), check: the third derivative of w at t = 0, as the numerical derivative of (sinh t + sin t)/2'
+    inputs: {}
+    formula: deriv('(sinh(x) + sin(x))/2', 'x', 0)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['the third derivative $\frac{1}{2}(\cosh t + \cos t)$ is $1$ there']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: page-own
+
+  - id: p28-b-laplace
+    kind: identity
+    where: 'Problem 28(b): the Laplace transform of the impulse response (integrated numerically to t = 40, for s well above 1) equals 1/(s⁴ − 1)'
+    formula: integrate('(sinh(x) - sin(x))/2*exp(-s*x)', 'x', 0, 40)
+    equals: 1/(s**4 - 1)
+    samples: {s: [2, 2.5, 3, 4]}
+    tolerance: 1e-7
+    shown: ['W(s) = \frac{1}{s^4 - 1} = \frac{c_1}{s - 1} + \frac{c_2}{s + 1} + \frac{c_3}{s - i} + \frac{c_4}{s + i}']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: mit
+
+  - id: p28-b-real-route
+    kind: identity
+    where: 'Problem 28(b), check: the real partial fractions (1/2)(1/(s² − 1) − 1/(s² + 1)) equal 1/(s⁴ − 1)'
+    formula: (1/(s**2 - 1) - 1/(s**2 + 1))/2
+    equals: 1/(s**4 - 1)
+    samples: {s: [2, 2.5, 3, 0.4]}
+    tolerance: 1e-12
+    shown: ['\dfrac{1}{s^4 - 1} = \dfrac{1}{2}\left(\dfrac{1}{s^2 - 1} - \dfrac{1}{s^2 + 1}\right)']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own check)'}
+    origin: page-own
+
+  - id: p28-b-real-constants
+    kind: identity
+    where: 'Problem 28(b), the two real cover-up constants: 1/4 over (s − 1) and −1/4 over (s + 1) add up to (1/2)/(s² − 1)'
+    formula: (1/4)/(s - 1) - (1/4)/(s + 1)
+    equals: (1/2)/(s**2 - 1)
+    samples: {s: [2, 2.5, 3, 0.4]}
+    tolerance: 1e-12
+    shown: ['gives $c_2 = -\dfrac{1}{4}$']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: page-own
+
+  - id: p28-b-num
+    where: 'Problem 28(b), check: w(2) for D⁴ − I'
+    inputs: {}
+    formula: (sinh(2) - sin(2))/2
+    expected: '1.359'
+    shown: ['A number: $w(2) = 1.359$.']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: page-own
+
+  # ---- Problem 28 as printed (optional): D⁴ + I, our own solution
+
+  - id: p28x
+    kind: identity
+    answer: p28x-w
+    where: 'Optional problem, answer box: the impulse response of D⁴ + I, against minus the numerical second derivative of its own second derivative, so that the fourth derivative equals −w'
+    formula: (cosh(t/sqrt(2))*sin(t/sqrt(2)) - sinh(t/sqrt(2))*cos(t/sqrt(2)))/sqrt(2)
+    equals: -deriv('(cosh(x/sqrt(2))*sin(x/sqrt(2)) + sinh(x/sqrt(2))*cos(x/sqrt(2)))/sqrt(2)', 'x', t, 2)
+    samples: {t: [0.5, 1.2, 2.4, 4]}
+    tolerance: 1e-5
+    shown: ['expr="(cosh(t/sqrt(2))*sin(t/sqrt(2)) - sinh(t/sqrt(2))*cos(t/sqrt(2)))/sqrt(2)"']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-first
+    kind: identity
+    where: 'Optional problem, formula "Four derivatives": the numerical first derivative of w is sinh(t/√2) sin(t/√2)'
+    formula: deriv('(cosh(x/sqrt(2))*sin(x/sqrt(2)) - sinh(x/sqrt(2))*cos(x/sqrt(2)))/sqrt(2)', 'x', t)
+    equals: sinh(t/sqrt(2))*sin(t/sqrt(2))
+    samples: {t: [0.5, 1.2, 2.4, 4]}
+    tolerance: 1e-6
+    shown: ['\dot w = \sinh\frac{t}{\sqrt 2}\,\sin\frac{t}{\sqrt 2}']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-second
+    kind: identity
+    where: 'Optional problem, formula "Four derivatives": the numerical second derivative of w'
+    formula: deriv('(cosh(x/sqrt(2))*sin(x/sqrt(2)) - sinh(x/sqrt(2))*cos(x/sqrt(2)))/sqrt(2)', 'x', t, 2)
+    equals: (cosh(t/sqrt(2))*sin(t/sqrt(2)) + sinh(t/sqrt(2))*cos(t/sqrt(2)))/sqrt(2)
+    samples: {t: [0.5, 1.2, 2.4, 4]}
+    tolerance: 1e-5
+    shown: ['\ddot w = \frac{1}{\sqrt 2}\left(\cosh\frac{t}{\sqrt 2}\,\sin\frac{t}{\sqrt 2} + \sinh\frac{t}{\sqrt 2}\,\cos\frac{t}{\sqrt 2}\right)']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-third
+    kind: identity
+    where: 'Optional problem, formula "Four derivatives": the third derivative, as the numerical second derivative of ẇ = sinh(t/√2) sin(t/√2), is cosh(t/√2) cos(t/√2)'
+    formula: deriv('sinh(x/sqrt(2))*sin(x/sqrt(2))', 'x', t, 2)
+    equals: cosh(t/sqrt(2))*cos(t/sqrt(2))
+    samples: {t: [0, 0.5, 1.2, 2.4]}
+    tolerance: 1e-5
+    shown: ['\frac{d^3w}{dt^3} = \cosh\frac{t}{\sqrt 2}\,\cos\frac{t}{\sqrt 2}']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-laplace
+    kind: identity
+    where: 'Optional problem: the Laplace transform of the impulse response (integrated numerically to t = 60, for s well above 1/√2) equals 1/(s⁴ + 1)'
+    formula: integrate('(cosh(x/sqrt(2))*sin(x/sqrt(2)) - sinh(x/sqrt(2))*cos(x/sqrt(2)))/sqrt(2)*exp(-s*x)', 'x', 0, 60)
+    equals: 1/(s**4 + 1)
+    samples: {s: [1.5, 2, 3, 4]}
+    tolerance: 1e-7
+    shown: ['w(t) = \frac{1}{\sqrt 2}\,u(t)\left(\cosh\frac{t}{\sqrt 2}\,\sin\frac{t}{\sqrt 2} - \sinh\frac{t}{\sqrt 2}\,\cos\frac{t}{\sqrt 2}\right)']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-num
+    where: 'Optional problem, check: w(2) for D⁴ + I'
+    inputs: {}
+    formula: (cosh(2/sqrt(2))*sin(2/sqrt(2)) - sinh(2/sqrt(2))*cos(2/sqrt(2)))/sqrt(2)
+    expected: '1.308'
+    shown: ['A number: $w(2) = 1.308$.']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-num-minus
+    where: 'Optional problem, check: w(2) for D⁴ − I, quoted for comparison'
+    inputs: {}
+    formula: (sinh(2) - sin(2))/2
+    expected: '1.359'
+    shown: ['where $w(2) = 1.359$']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: page-own
+
+  - id: p28x-num-cubic
+    where: 'Optional problem, check: t³/6 at t = 2, the impulse response of D⁴ alone'
+    inputs: {}
+    formula: 2**3/6
+    expected: '1.333'
+    shown: ['$\dfrac{t^3}{6} = 1.333$']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-num-gap-below
+    where: 'Optional problem, check: how far w(2) for D⁴ + I lies below t³/6'
+    inputs: {}
+    formula: 2**3/6 - (cosh(2/sqrt(2))*sin(2/sqrt(2)) - sinh(2/sqrt(2))*cos(2/sqrt(2)))/sqrt(2)
+    expected: '0.025'
+    tolerance: 0.001
+    shown: ['about $0.025$']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own
+
+  - id: p28x-num-gap-above
+    where: 'Optional problem, check: how far w(2) for D⁴ − I lies above t³/6'
+    inputs: {}
+    formula: (sinh(2) - sin(2))/2 - 2**3/6
+    expected: '0.025'
+    tolerance: 0.001
+    shown: ['by nearly the same amount']
+    source: {cite: solutions, at: 'Problem 28(b), p. 2'}
+    origin: page-own
+
+  - id: p28x-mistake-4I
+    kind: identity
+    where: 'Optional problem, hint of a listed mistake: (cosh t sin t − sinh t cos t)/4 is the impulse response of D⁴ + 4I (its Laplace transform, integrated numerically, equals 1/(s⁴ + 4))'
+    formula: integrate('(cosh(x)*sin(x) - sinh(x)*cos(x))/4*exp(-s*x)', 'x', 0, 40)
+    equals: 1/(s**4 + 4)
+    samples: {s: [2, 2.5, 3, 4]}
+    tolerance: 1e-7
+    shown: ['That is the impulse response of D⁴ + 4I']
+    source: {cite: mit, at: 'Part II, Problem 28(b) (our own solution)'}
+    origin: page-own

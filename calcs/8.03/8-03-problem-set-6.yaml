@@ -1,0 +1,638 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# a numerical solve of the boundary condition, numerical derivatives of the fields put into Maxwell's equations,
+# a numerical time average, or the sum of the two travelling waves evaluated directly.
+# In the nested expressions q and p are the variables of the integral, derivative or solve.
+# The speed of light c is a sample value here (it overrides the constant of calcs/constants.yaml), not 3e8.
+
+page: content/year-2/8.03/8-03-problem-set-6.mdx
+calcs:
+  # ---- Problem 1: the organ pipe (L = 1.5 m, v = 300 m/s; frequencies in Hz, lengths in m as plain numbers)
+
+  - id: p1-given
+    kind: fact
+    where: 'Problem 1, statement: the constant of the wave equation and the length of the pipe'
+    shown: ['A = 90\,000\ \text{m}^2/\text{s}^2', '$x = L = 1.5$ m']
+    source: {cite: mit, at: 'Problem 6.1, p. 1'}
+    origin: mit
+
+  - id: p1-speed
+    where: 'Problem 1(a), solution: the wave speed is the square root of the constant A'
+    inputs: {A: 90000}
+    formula: sqrt(A)
+    expected: 300
+    tolerance: 1e-9
+    shown: ['$v = \sqrt{A} = 300$ m/s']
+    source: {cite: mit, at: 'Problem 6.1, p. 1'}
+    origin: page-own
+
+  # The frequencies as numerical roots of the open-end condition: the slope of sin(2 pi f x/v) is zero at x = L,
+  # cos(2 pi f L/v) = 0. One root lies in each of the brackets below.
+  - id: p1-f1
+    answer: p1-f1
+    where: 'Problem 1(a), answer box: lowest frequency, as the first root of cos(2 pi f L/v) = 0'
+    inputs: {L: 1.5, v: 300}
+    formula: solve('cos(2*pi*q*L/v)', 'q', 1, 99)
+    expected: 50
+    tolerance: 1e-6
+    shown: ['id="p1-f1"']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-f2
+    answer: p1-f2
+    where: 'Problem 1(a), answer box: second frequency, as the second root of cos(2 pi f L/v) = 0'
+    inputs: {L: 1.5, v: 300}
+    formula: solve('cos(2*pi*q*L/v)', 'q', 101, 199)
+    expected: 150
+    tolerance: 1e-6
+    shown: ['id="p1-f2"']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-f3
+    answer: p1-f3
+    where: 'Problem 1(a), answer box: third frequency, as the third root of cos(2 pi f L/v) = 0'
+    inputs: {L: 1.5, v: 300}
+    formula: solve('cos(2*pi*q*L/v)', 'q', 201, 299)
+    expected: 250
+    tolerance: 1e-6
+    shown: ['id="p1-f3"']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-frequencies-shown
+    where: 'Problem 1(a), solution: the frequencies (2m - 1) v/(4L), here for m = 3; v/(4L) is the 50 Hz of m = 1'
+    inputs: {L: 1.5, v: 300, m: 3}
+    formula: (2*m - 1)*v/(4*L)
+    expected: 250
+    tolerance: 1e-9
+    shown: ['= 50,\ 150,\ 250\ \text{Hz}', '\frac{300\ \text{m/s}}{6\ \text{m}}']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-f2-shown
+    where: 'Problem 1(a), solution: the second frequency from the formula'
+    inputs: {L: 1.5, v: 300, m: 2}
+    formula: (2*m - 1)*v/(4*L)
+    expected: 150
+    tolerance: 1e-9
+    shown: ['= 50,\ 150,\ 250\ \text{Hz}']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-lambda1
+    where: 'Problem 1(a), solution: wavelength of mode 1, 4L'
+    inputs: {L: 1.5, m: 1}
+    formula: 4*L/(2*m - 1)
+    expected: 6
+    tolerance: 1e-9
+    shown: ['the wavelengths are $6$ m, $2$ m and $1.2$ m']
+    source: {cite: reading1, at: 'p. 5 (case B)'}
+    origin: page-own
+
+  - id: p1-lambda2
+    where: 'Problem 1(a), solution: wavelength of mode 2, 4L/3'
+    inputs: {L: 1.5, m: 2}
+    formula: 4*L/(2*m - 1)
+    expected: 2
+    tolerance: 1e-9
+    shown: ['the wavelengths are $6$ m, $2$ m and $1.2$ m']
+    source: {cite: reading1, at: 'p. 5 (case B)'}
+    origin: page-own
+
+  - id: p1-lambda3
+    where: 'Problem 1(a), solution: wavelength of mode 3, 4L/5'
+    inputs: {L: 1.5, m: 3}
+    formula: 4*L/(2*m - 1)
+    expected: 1.2
+    tolerance: 1e-9
+    shown: ['the wavelengths are $6$ m, $2$ m and $1.2$ m']
+    source: {cite: reading1, at: 'p. 5 (case B)'}
+    origin: page-own
+
+  # The mode shape sin(k_m x) must solve the wave equation with the frequency of the page:
+  # (2 pi nu)^2 = -A S''/S, here for the three modes.
+  - id: p1-mode-solves-wave-equation
+    kind: identity
+    where: 'Problem 1(a): each mode sin(k_m x) with nu_m = (2m - 1) v/(4L) solves the wave equation with A = 90000'
+    formula: (2*m - 1)*sqrt(A)/(4*L)
+    equals: sqrt(-A*deriv('sin((m - 0.5)*pi*q/L)', 'q', x, 2)/sin((m - 0.5)*pi*x/L))/(2*pi)
+    samples:
+      m: [1, 2, 3]
+      A: [90000, 90000, 90000]
+      L: [1.5, 1.5, 1.5]
+      x: [0.4, 0.7, 0.2]
+    tolerance: 1e-5
+    shown: ['\nu_m = \frac{v}{\lambda_m} = (2m - 1)\,\frac{v}{4L}']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-omega1
+    where: 'Problem 1(a), check: angular frequency of the lowest mode'
+    inputs: {nu: 50}
+    formula: 2*pi*nu
+    expected: 314
+    shown: ['$\omega_1 = 2\pi \times 50 = 314$ rad/s']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-lesson-speed
+    kind: fact
+    where: 'Problem 1(a), check: the speed of sound in air found in the lesson'
+    shown: ['a little below the 342 m/s that the lesson finds for air']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: mit
+
+  # Points where the air stays at rest (zeros of sin(k_m x) inside the pipe).
+  - id: p1-rest-mode2
+    where: 'Problem 1(a), caption: displacement node of mode 2, root of sin(pi x) between 0.5 and 1.4'
+    formula: solve('sin(pi*q)', 'q', 0.5, 1.4)
+    expected: 1.0
+    tolerance: 1e-9
+    shown: ['at x = 1.0 m']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-rest-mode3-first
+    where: 'Problem 1(a), caption: first displacement node of mode 3, root of sin(5 pi x/3)'
+    formula: solve('sin(5*pi*q/3)', 'q', 0.3, 0.9)
+    expected: 0.6
+    tolerance: 1e-9
+    shown: ['at 0.6 m and 1.2 m']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-rest-mode3-second
+    where: 'Problem 1(a), caption: second displacement node of mode 3, root of sin(5 pi x/3)'
+    formula: solve('sin(5*pi*q/3)', 'q', 0.9, 1.45)
+    expected: 1.2
+    tolerance: 1e-9
+    shown: ['at 0.6 m and 1.2 m']
+    source: {cite: mit, at: 'Problem 6.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Pressure nodes (zeros of cos(k_m x), that is of the numerical slope of the displacement).
+  - id: p1-pressure-node-mode2
+    where: 'Problem 1(b): pressure node of mode 2, root of the slope of sin(pi x)'
+    formula: solve("deriv('sin(pi*p)', 'p', q)", 'q', 0.1, 0.9)
+    expected: 0.5
+    tolerance: 1e-6
+    shown: ['at $x = L/3 = 0.5$ m', 'Mode 2 is also zero at x = 0.5 m']
+    source: {cite: mit, at: 'Problem 6.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-pressure-node-mode3-first
+    where: 'Problem 1(b): first pressure node of mode 3, root of the slope of sin(5 pi x/3)'
+    formula: solve("deriv('sin(5*pi*p/3)', 'p', q)", 'q', 0.1, 0.5)
+    expected: 0.3
+    tolerance: 1e-6
+    shown: ['$L/5 = 0.3$ m and $3L/5 = 0.9$ m', 'mode 3 at 0.3 m and 0.9 m']
+    source: {cite: mit, at: 'Problem 6.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-pressure-node-mode3-second
+    where: 'Problem 1(b): second pressure node of mode 3, root of the slope of sin(5 pi x/3)'
+    formula: solve("deriv('sin(5*pi*p/3)', 'p', q)", 'q', 0.7, 1.1)
+    expected: 0.9
+    tolerance: 1e-6
+    shown: ['$L/5 = 0.3$ m and $3L/5 = 0.9$ m']
+    source: {cite: mit, at: 'Problem 6.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-pressure-node-spacing
+    where: 'Problem 1(b), check: spacing of the pressure nodes of mode 3 is half its wavelength'
+    inputs: {lam: 1.2}
+    formula: lam/2
+    expected: 0.6
+    tolerance: 1e-9
+    shown: ['$0.9 - 0.3 = 0.6$ m, which is half of $\lambda_3 = 1.2$ m']
+    source: {cite: mit, at: 'Problem 6.1(b), p. 1 (our own check)'}
+    origin: page-own
+
+  # The open pipe: its lowest mode cos(pi x/L') has zero pressure change, sin(2 pi f L'/v) = 0, at the far end.
+  # With f = 50 Hz and v = 300 m/s the first root in L' is the length asked for.
+  - id: p1-c
+    answer: p1-c
+    where: 'Problem 1(c), answer box: length of the open pipe, as the first root of sin(2 pi f L/v) = 0 at 50 Hz'
+    inputs: {f: 50, v: 300}
+    formula: solve('sin(2*pi*f*q/v)', 'q', 1, 5)
+    expected: 3
+    tolerance: 1e-6
+    shown: ['id="p1-c"']
+    source: {cite: mit, at: 'Problem 6.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-shown
+    where: 'Problem 1(c), solution: the new length is twice the old one'
+    inputs: {L: 1.5}
+    formula: 2*L
+    expected: 3
+    tolerance: 1e-9
+    shown: ["L' = 2L = 3\\ \\text{m}"]
+    source: {cite: mit, at: 'Problem 6.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-check
+    where: 'Problem 1(c), check: lowest frequency of the open pipe of 3 m'
+    inputs: {v: 300, Lp: 3}
+    formula: v/(2*Lp)
+    expected: 50
+    tolerance: 1e-9
+    shown: ["$v/(2L') = 300/6 = 50$ Hz"]
+    source: {cite: reading1, at: 'p. 5 (case C)'}
+    origin: page-own
+
+  - id: p1-c-quarter
+    where: 'Problem 1(c), check: a quarter of the 6 m wavelength is the old pipe'
+    inputs: {lam: 6}
+    formula: lam/4
+    expected: 1.5
+    tolerance: 1e-9
+    shown: ['the old pipe holds a quarter of it (1.5 m), the new one a half (3 m)']
+    source: {cite: mit, at: 'Problem 6.1(c), p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: the curl of a curl and the wave equation for B
+
+  # The x component of both sides for the test field
+  # A = (x y^2 z + sin(y) z^2, x^2 y z, x y z^2 + x^3), with every derivative taken numerically.
+  # Left: d/dy(dAy/dx) - d2Ax/dy2 - d2Ax/dz2 + d/dz(dAz/dx).
+  # Right: d/dx(dAx/dx) + d/dx(dAy/dy) + d/dx(dAz/dz) - (d2/dx2 + d2/dy2 + d2/dz2) Ax.
+  - id: p2-curl-curl-x
+    kind: identity
+    where: 'Problem 2(a): x component of curl(curl A) against that of grad(div A) minus the Laplacian of A, for a test field'
+    formula: deriv("deriv('p**2*q*z', 'p', x)", 'q', y) - deriv('x*q**2*z + sin(q)*z**2', 'q', y, 2) - deriv('x*y**2*q + sin(y)*q**2', 'q', z, 2) + deriv("deriv('p*y*q**2 + p**3', 'p', x)", 'q', z)
+    equals: deriv("deriv('p*y**2*z + sin(y)*z**2', 'p', q)", 'q', x) + deriv("deriv('q**2*p*z', 'p', y)", 'q', x) + deriv("deriv('q*y*p**2 + q**3', 'p', z)", 'q', x) - deriv('q*y**2*z + sin(y)*z**2', 'q', x, 2) - deriv('x*q**2*z + sin(q)*z**2', 'q', y, 2) - deriv('x*y**2*q + sin(y)*q**2', 'q', z, 2)
+    samples:
+      x: [0.7, 1.3, 0.4]
+      y: [0.5, 1.1, 1.6]
+      z: [0.9, 0.6, 1.2]
+    tolerance: 1e-4
+    shown: ['label="Regrouped"']
+    source: {cite: mit, at: 'Problem 6.2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The worked check A = x^2 z-hat: curl A = -2x y-hat (y component -dAz/dx); curl of that has z component d(-2x)/dx.
+  - id: p2-example-curl
+    where: 'Problem 2(a), check: y component of the curl of x^2 z-hat at x = 1 is -2x'
+    inputs: {x: 1}
+    formula: -deriv('q**2', 'q', x)
+    expected: -2
+    tolerance: 1e-6
+    shown: ['Its curl is $-2x\,\hat y$']
+    source: {cite: mit, at: 'Problem 6.2(a), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-example-curl-curl
+    where: 'Problem 2(a), check: z component of the curl of -2x y-hat'
+    inputs: {x: 0.8}
+    formula: deriv('-2*q', 'q', x)
+    expected: -2
+    tolerance: 1e-6
+    shown: ['the curl of that is $-2\,\hat z$']
+    source: {cite: mit, at: 'Problem 6.2(a), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-example-laplacian
+    where: 'Problem 2(a), check: the Laplacian of x^2 is 2'
+    inputs: {x: 0.8}
+    formula: deriv('q**2', 'q', x, 2)
+    expected: 2
+    tolerance: 1e-6
+    shown: ['$\nabla^2\vec A = 2\,\hat z$']
+    source: {cite: mit, at: 'Problem 6.2(a), p. 1 (our own check)'}
+    origin: page-own
+
+  # A plane wave B_y = cos(k z - w t) with w = k/sqrt(mu0 eps0): d2B/dz2 = mu0 eps0 d2B/dt2.
+  - id: p2-wave-equation-b
+    kind: identity
+    where: 'Problem 2(b), check: a plane wave with omega/k = 1/sqrt(mu0 eps0) solves the wave equation for B'
+    formula: deriv('cos(k*q - k/sqrt(mu0*eps0)*t)', 'q', z, 2)
+    equals: mu0*eps0*deriv('cos(k*z - k/sqrt(mu0*eps0)*q)', 'q', t, 2)
+    samples:
+      k: [0.8, 1.5, 2.1]
+      mu0: [0.5, 1.3, 2.0]
+      eps0: [0.7, 0.4, 1.1]
+      z: [0.3, 1.1, 0.6]
+      t: [0.2, 0.5, 0.9]
+    tolerance: 1e-5
+    shown: ['gives $-k^2$ on the left and $-\mu_0\varepsilon_0\,\omega^2$ on the right']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: page-own
+
+  # ---- Problem 3: the plane pulse, tested with the shape f(u) = exp(-u^2) + 0.3 u
+
+  - id: p3-wave-equation
+    kind: identity
+    where: 'Problem 3(a): the pulse f(x - c t) solves the wave equation: d2E/dx2 = (1/c^2) d2E/dt2'
+    formula: deriv('E0*(exp(-(q - c*t)**2) + 0.3*(q - c*t))', 'q', x, 2)
+    equals: deriv('E0*(exp(-(x - c*q)**2) + 0.3*(x - c*q))', 'q', t, 2)/c**2
+    samples:
+      E0: [1.5, 2.0, 3.2]
+      c: [2.0, 3.0, 4.5]
+      x: [0.6, 1.9, 2.4]
+      t: [0.1, 0.5, 0.6]
+    tolerance: 1e-5
+    shown: ['label="The wave equation holds"']
+    source: {cite: mit, at: 'Problem 6.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Faraday's law gives the size of B: with B_z = b f(x - c t), dE_y/dx = -dB_z/dt, so
+  # b = (dE_y/dx)/(-d f(x - c t)/dt), both derivatives taken numerically.
+  - id: p3-b-amp
+    kind: identity
+    answer: p3-b-amp
+    where: 'Problem 3(c), answer box: the size of B over f, from Faraday''s law with numerical derivatives'
+    formula: E0/c
+    equals: deriv('E0*(exp(-(q - c*t)**2) + 0.3*(q - c*t))', 'q', x)/(-deriv('exp(-(x - c*q)**2) + 0.3*(x - c*q)', 'q', t))
+    samples:
+      E0: [1.5, 2.0, 3.2]
+      c: [2.0, 3.0, 4.5]
+      x: [0.6, 1.9, 2.4]
+      t: [0.1, 0.5, 0.6]
+    tolerance: 1e-5
+    shown: ['id="p3-b-amp"']
+    source: {cite: mit, at: 'Problem 6.3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Ampere's law, y component: -dB_z/dx = (1/c^2) dE_y/dt with B_z = (E0/c) f(x - c t).
+  - id: p3-ampere
+    kind: identity
+    where: 'Problem 3(c), check: the fields of the pulse satisfy Ampere''s law in vacuum'
+    formula: -deriv('E0/c*(exp(-(q - c*t)**2) + 0.3*(q - c*t))', 'q', x)
+    equals: deriv('E0*(exp(-(x - c*q)**2) + 0.3*(x - c*q))', 'q', t)/c**2
+    samples:
+      E0: [1.5, 2.0, 3.2]
+      c: [2.0, 3.0, 4.5]
+      x: [0.6, 1.9, 2.4]
+      t: [0.1, 0.5, 0.6]
+    tolerance: 1e-5
+    shown: ['$\mu_0\varepsilon_0\,\partial E_y/\partial t = (1/c^2)(-c)\,E_0 f'' = -(E_0/c)\,f''$']
+    source: {cite: mit, at: 'Problem 6.3(c), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: two waves in opposite directions.
+  # E1 = E0 cos(k x - w t), E2 = -E0 cos(k x + w t); B1 = E1/c along +z, B2 = E0 cos(k x + w t)/c along +z.
+  # The samples keep w = k c, as in vacuum, and (where both appear) c = 1/sqrt(eps0 mu0).
+
+  # The wave moves to +x at the speed w/k: after a time d the same value is found a distance (w/k) d further on.
+  - id: p4-wave
+    kind: identity
+    answer: p4-wave
+    where: 'Problem 4(a), answer box: the wave keeps its value when x grows by (w/k) d while t grows by d'
+    formula: E0*cos(k*x - w*t)
+    equals: E0*cos(k*(x + w/k*d) - w*(t + d))
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+      d: [0.25, 0.7, 1.1]
+    tolerance: 1e-10
+    shown: ['id="p4-wave"']
+    source: {cite: reading2, at: 'p. 6'}
+    origin: page-own
+
+  - id: p4-wave-crest
+    where: 'Problem 4(a), check: the wave has the value E0 at x = 0, t = 0'
+    inputs: {E0: 1.7, k: 0.9, w: 2.7, x: 0, t: 0}
+    formula: E0*cos(k*x - w*t)
+    expected: 1.7
+    tolerance: 1e-12
+    shown: ['At $x = 0$ and $t = 0$ the field is $E_0$']
+    source: {cite: mit, at: 'Problem 6.4(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-condition
+    where: 'Problem 4(b): the total field is zero at x = 0, t = 0 with the phase pi for the second wave'
+    inputs: {E0: 1.7, k: 0.9, w: 2.7, x: 0, t: 0}
+    formula: E0*cos(k*x - w*t) + E0*cos(k*x + w*t + pi)
+    expected: 0
+    tolerance: 1e-12
+    shown: ['\vec E_2 = E_0\cos(kx + \omega t + \pi)\,\hat y']
+    source: {cite: mit, at: 'Problem 6.4, p. 2'}
+    origin: page-own
+
+  - id: p4-e
+    kind: identity
+    answer: p4-e
+    where: 'Problem 4(b), answer box: total E, against the sum of the two travelling waves'
+    formula: 2*E0*sin(k*x)*sin(w*t)
+    equals: E0*cos(k*x - w*t) + E0*cos(k*x + w*t + pi)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-10
+    shown: ['id="p4-e"']
+    source: {cite: mit, at: 'Problem 6.4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The time average as a numerical integral of the square of the summed waves over one period 2 pi/w.
+  - id: p4-e2
+    kind: identity
+    answer: p4-e2
+    where: 'Problem 4(b), answer box: average of E^2, as a numerical average over one period of the summed waves'
+    formula: 2*E0**2*sin(k*x)**2
+    equals: w/(2*pi)*integrate('(E0*cos(k*x - w*q) - E0*cos(k*x + w*q))**2', 'q', 0, 2*pi/w)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p4-e2"']
+    source: {cite: mit, at: 'Problem 6.4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-e2-space-average
+    where: 'Problem 4(b), check: the average of 2 sin^2(kx) over a wavelength is 1 (in units of E0^2)'
+    formula: integrate('2*sin(q)**2', 'q', 0, 2*pi)/(2*pi)
+    expected: 1
+    tolerance: 1e-9
+    shown: ['Averaged over $x$ as well, $\langle E^2\rangle$ is $E_0^2$']
+    source: {cite: mit, at: 'Problem 6.4(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # B from Faraday's law, independent of the rule B = k-hat x E / c: dB_z/dt = -dE_y/dx, integrated in time from
+  # the instant w t = pi/2 at which the standing B is zero. E is the sum of the two travelling waves, k = w/c.
+  - id: p4-b
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(c), answer box: total B, against the time integral of Faraday''s law with a numerical curl of E'
+    formula: 2*E0*cos(k*x)*cos(w*t)/c
+    equals: integrate("-deriv('E0*cos(k*p - w*q) - E0*cos(k*p + w*q)', 'p', x)", 'q', pi/(2*w), t)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      c: [2.0, 3.0, 4.5]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-5
+    shown: ['id="p4-b"']
+    source: {cite: mit, at: 'Problem 6.4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-sum
+    kind: identity
+    where: 'Problem 4(c), solution: total B as the sum of the fields of the two travelling waves'
+    formula: 2*E0*cos(k*x)*cos(w*t)/c
+    equals: E0/c*cos(k*x - w*t) + E0/c*cos(k*x + w*t)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      c: [2.0, 3.0, 4.5]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-10
+    shown: ['label="Total magnetic field"']
+    source: {cite: mit, at: 'Problem 6.4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b2
+    kind: identity
+    answer: p4-b2
+    where: 'Problem 4(c), answer box: average of B^2, as a numerical average over one period of the summed fields'
+    formula: 2*E0**2*cos(k*x)**2/c**2
+    equals: w/(2*pi)*integrate('(E0/c*cos(k*x - w*q) + E0/c*cos(k*x + w*q))**2', 'q', 0, 2*pi/w)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      c: [2.0, 3.0, 4.5]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p4-b2"']
+    source: {cite: mit, at: 'Problem 6.4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-averages-sum
+    where: 'Problem 4(c), caption: 2 sin^2 + 2 cos^2 = 2 at any point'
+    inputs: {u: 0.83}
+    formula: 2*sin(u)**2 + 2*cos(u)**2
+    expected: 2
+    tolerance: 1e-12
+    shown: ['their sum is 2 at every point']
+    source: {cite: mit, at: 'Problem 6.4(c), p. 2 (our own check)'}
+    origin: page-own
+
+  # U from the summed travelling waves: (eps0/2) E^2 + B^2/(2 mu0), with c = 1/sqrt(eps0 mu0), so
+  # B = sqrt(eps0 mu0) (E0 cos(k x - w t) + E0 cos(k x + w t)).
+  - id: p4-u
+    kind: identity
+    answer: p4-u
+    where: 'Problem 4(d), answer box: energy density, against the electric plus magnetic energy of the summed waves'
+    formula: 2*eps0*E0**2*(sin(k*x)**2*sin(w*t)**2 + cos(k*x)**2*cos(w*t)**2)
+    equals: 0.5*eps0*(E0*cos(k*x - w*t) - E0*cos(k*x + w*t))**2 + 0.5/mu0*(sqrt(eps0*mu0)*(E0*cos(k*x - w*t) + E0*cos(k*x + w*t)))**2
+    samples:
+      eps0: [0.7, 0.4, 1.1]
+      mu0: [0.5, 1.3, 2.0]
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-10
+    shown: ['id="p4-u"']
+    source: {cite: reading2, at: 'p. 8 (the two energy densities)'}
+    origin: page-own
+
+  - id: p4-u-other-form
+    kind: identity
+    where: 'Problem 4(d), check: U = eps0 E0^2 (1 + cos(2kx) cos(2wt))'
+    formula: 2*eps0*E0**2*(sin(k*x)**2*sin(w*t)**2 + cos(k*x)**2*cos(w*t)**2)
+    equals: eps0*E0**2*(1 + cos(2*k*x)*cos(2*w*t))
+    samples:
+      eps0: [0.7, 0.4, 1.1]
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-10
+    shown: ['U = \varepsilon_0E_0^2\left[1 + \cos(2kx)\cos(2\omega t)\right]']
+    source: {cite: mit, at: 'Problem 6.4(d), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p4-uavg
+    kind: identity
+    answer: p4-uavg
+    where: 'Problem 4(d), answer box: average of U, as a numerical average over one period of the energy of the summed waves'
+    formula: eps0*E0**2
+    equals: w/(2*pi)*integrate('0.5*eps0*(E0*cos(k*x - w*q) - E0*cos(k*x + w*q))**2 + 0.5/mu0*(sqrt(eps0*mu0)*(E0*cos(k*x - w*q) + E0*cos(k*x + w*q)))**2', 'q', 0, 2*pi/w)
+    samples:
+      eps0: [0.7, 0.4, 1.1]
+      mu0: [0.5, 1.3, 2.0]
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p4-uavg"']
+    source: {cite: mit, at: 'Problem 6.4(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # S_x = E_y B_z / mu0 from the summed travelling waves.
+  - id: p4-s
+    kind: identity
+    answer: p4-s
+    where: 'Problem 4(e), answer box: Poynting vector, against E_y B_z/mu0 of the summed waves'
+    formula: E0**2*sin(2*k*x)*sin(2*w*t)/(mu0*c)
+    equals: (E0*cos(k*x - w*t) - E0*cos(k*x + w*t))*(E0/c*cos(k*x - w*t) + E0/c*cos(k*x + w*t))/mu0
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      c: [2.0, 3.0, 4.5]
+      mu0: [0.5, 1.3, 2.0]
+      w: [1.2, 3.3, 8.1]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-10
+    shown: ['id="p4-s"']
+    source: {cite: reading2, at: 'p. 8 (the Poynting vector)'}
+    origin: page-own
+
+  - id: p4-savg
+    where: 'Problem 4(e): the average of S over one period is zero (numerical average of E_y B_z/mu0)'
+    inputs: {E0: 2.0, k: 1.1, c: 3.0, mu0: 1.3, w: 3.3, x: 0.4}
+    formula: w/(2*pi)*integrate('(E0*cos(k*x - w*q) - E0*cos(k*x + w*q))*(E0/c*cos(k*x - w*q) + E0/c*cos(k*x + w*q))/mu0', 'q', 0, 2*pi/w)
+    expected: 0
+    tolerance: 1e-9
+    shown: ['label="Average Poynting vector"']
+    source: {cite: mit, at: 'Problem 6.4(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Energy conservation: dU/dt = -dS_x/dx, with numerical derivatives; eps0 = 1/(mu0 c^2) and w = k c.
+  - id: p4-energy-conservation
+    kind: identity
+    where: 'Problem 4(e), check: dU/dt + dS_x/dx = 0 with the page formulas for U and S'
+    formula: deriv('2/(mu0*c**2)*E0**2*(sin(k*x)**2*sin(k*c*q)**2 + cos(k*x)**2*cos(k*c*q)**2)', 'q', t)
+    equals: -deriv('E0**2*sin(2*k*q)*sin(2*k*c*t)/(mu0*c)', 'q', x)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      k: [0.6, 1.1, 1.8]
+      c: [2.0, 3.0, 4.5]
+      mu0: [0.5, 1.3, 2.0]
+      x: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-5
+    shown: ['the two add up to zero because $k/(\mu_0c) = \varepsilon_0\omega$']
+    source: {cite: mit, at: 'Problem 6.4(e), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p4-lesson-factor
+    where: 'Problem 4(e), check: replacing E0/2 by E0 multiplies the lesson''s Poynting vector by 4'
+    inputs: {E0: 1.7}
+    formula: E0**2/(E0/2)**2
+    expected: 4
+    tolerance: 1e-12
+    shown: ['multiplies it by 4']
+    source: {cite: reading2, at: 'p. 8'}
+    origin: page-own
