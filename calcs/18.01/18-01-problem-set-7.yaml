@@ -1,0 +1,525 @@
+# Calculations on content/year-1/18.01/18-01-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for Part II of this set, so every answer is checked here by an independent route:
+# a numerical integration of the original integrand, or a second way of cutting up the solid (flat rings for the
+# torus, disks along the y-axis for the hump of the cosine).
+
+page: content/year-1/18.01/18-01-problem-set-7.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the five problems written out (4 + 4 + 4 + 4 + 3)'
+    inputs: {}
+    formula: 4 + 4 + 4 + 4 + 3
+    expected: '19'
+    shown: ['with hints and solutions of our own (19 points)']
+    source: {cite: mit, at: 'Part II, p. 1 and p. 2'}
+    origin: mit
+
+  - id: intro-points-mit
+    where: 'Introduction: MIT''s Part II total, with the 3 points of Problem 0'
+    inputs: {}
+    formula: 19 + 3
+    expected: '22'
+    shown: ['MIT''s Part II is worth 22 points', 'Problem 0 (3 points)']
+    source: {cite: mit, at: 'Part II, p. 1'}
+    origin: mit
+
+  - id: part-one-points
+    kind: fact
+    where: 'Last section: the points of MIT''s Part I'
+    shown: ['(20 points at MIT, not scored here)']
+    source: {cite: mit, at: 'Part I, p. 1'}
+    origin: mit
+
+  # ---- Problem 1
+
+  - id: p1-frequency
+    kind: fact
+    where: 'Problem 1: the angle 120πt of the voltage, MIT''s formula'
+    shown: ['V(t) = C\,\sin(120\pi t)']
+    source: {cite: mit, at: 'Part II, Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-period
+    where: 'Problem 1: the period 2π/(120π) is 1/60 second (checked as 60 periods in one second)'
+    inputs: {}
+    formula: 60 * 2*pi / (120*pi)
+    expected: '1'
+    shown: ['$2\pi/(120\pi) = 1/60$ second']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-angle-at-end
+    where: 'Problem 1: the angle 240πt at t = 1/60, in units of π'
+    inputs: {}
+    formula: 240 / 60
+    expected: '4'
+    shown: ['because $240\pi/60 = 4\pi$']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-half-angle
+    kind: identity
+    where: 'Problem 1, formula "The squared voltage without a square": (C²/2)(1 − cos 240πt) against (C sin 120πt)²'
+    formula: C**2/2 * (1 - cos(240*pi*t))
+    equals: (C*sin(120*pi*t))**2
+    samples:
+      C: [50, 120, 170, 400]
+      t: [0.001, 0.004, 0.009, 0.0125]
+    tolerance: 1e-9
+    shown: ['V^2 = C^2\sin^2(120\pi t) = \frac{C^2}{2}']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-antiderivative
+    kind: identity
+    where: 'Problem 1: the antiderivative 30C²(t − sin(240πt)/(240π)) of 60V², against a numerical integral from 0 to s'
+    formula: 30*C**2 * (s - sin(240*pi*s)/(240*pi))
+    equals: 60 * integrate('(C*sin(120*pi*t))**2', 't', 0, s)
+    samples:
+      C: [50, 120, 170, 400]
+      s: [0.001, 0.004, 0.009, 0.0166]
+    tolerance: 1e-8
+    shown: ['30\,C^2\left[t - \frac{\sin(240\pi t)}{240\pi}\right]_0^{1/60}']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-average-of-square
+    kind: identity
+    where: 'Problem 1, formula "Average of the squared voltage": C²/2 against 60 times the numerical integral of V² over one period'
+    formula: C**2 / 2
+    equals: 60 * integrate('(C*sin(120*pi*t))**2', 't', 0, 1/60)
+    samples: {C: [50, 120, 170, 400]}
+    tolerance: 1e-8
+    shown: ['= 30\,C^2 \cdot \frac{1}{60} = \frac{C^2}{2}']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  # The answer against the definition: the square root of the average of V² over one period, integrated numerically.
+  - id: p1-rms
+    kind: identity
+    answer: p1-rms
+    where: 'Problem 1, answer box: C/√2 against the square root of 60 times the numerical integral of V² over one period'
+    formula: C/sqrt(2)
+    equals: sqrt(60 * integrate('(C*sin(120*pi*t))**2', 't', 0, 1/60))
+    samples: {C: [50, 120, 170, 400]}
+    tolerance: 1e-8
+    shown: ['V_{\text{rms}} = \sqrt{\frac{C^2}{2}} = \frac{C}{\sqrt2}']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-factor
+    where: 'Problem 1: 1/√2'
+    inputs: {}
+    formula: 1 / sqrt(2)
+    expected: '0.7071'
+    shown: ['\approx 0.7071\,C']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-example
+    where: 'Problem 1, check: the meter reading for a peak voltage of 170 volts (our own example)'
+    inputs: {peak: 170}
+    formula: peak / sqrt(2)
+    expected: '120.2'
+    shown: ['$170/\sqrt2 = 120.2$ volts']
+    source: {cite: mit, at: 'Part II, Problem 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # The answer against the shell integral itself, integrated numerically (the integrand has a square-root end point,
+  # so the tolerance is looser), and below against a second way of cutting the solid.
+  - id: p2-volume
+    kind: identity
+    answer: p2-volume
+    where: 'Problem 2, answer box: 2π²a²b against the numerical shell integral of 2πx · 2√(a² − (x − b)²) from b − a to b + a'
+    formula: 2*pi**2*a**2*b
+    equals: integrate('2*pi*x * 2*sqrt(abs(a**2 - (x - b)**2))', 'x', b - a, b + a)
+    samples:
+      a: [0.5, 1.0, 1.5, 2.0]
+      b: [3.0, 3.0, 4.5, 6.0]
+    tolerance: 1e-5
+    shown: ['V = 4\pi b \cdot \frac{\pi a^2}{2} = 2\pi^2 a^2 b']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-odd-term
+    where: 'Problem 2: the odd term u√(a² − u²) integrates to zero from −a to a (a = 1.5; 1 is added so that the expected value is not zero)'
+    inputs: {a: 1.5}
+    formula: 1 + integrate('u*sqrt(abs(a**2 - u**2))', 'u', -a, a)
+    expected: '1.000000'
+    shown: ['Over an interval that is symmetric about zero it integrates to zero.']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-half-disk
+    kind: identity
+    where: 'Problem 2, formula "The area of half a disk": πa²/2 against the numerical integral of √(a² − u²) from −a to a'
+    formula: pi*a**2/2
+    equals: integrate('sqrt(abs(a**2 - u**2))', 'u', -a, a)
+    samples: {a: [0.5, 1.0, 1.5, 2.0]}
+    tolerance: 1e-5
+    shown: ['\right]_{-\pi/2}^{\pi/2} = \frac{\pi a^2}{2}']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-cos-squared
+    kind: identity
+    where: 'Problem 2: the antiderivative θ/2 + sin(2θ)/4 of cos²θ, against a numerical integral from −π/2 to s'
+    formula: s/2 + sin(2*s)/4 + pi/4
+    equals: integrate('cos(q)**2', 'q', -pi/2, s)
+    samples: {s: [-1.0, -0.3, 0.4, 1.2, 1.5707963]}
+    tolerance: 1e-8
+    shown: ['a^2\left[\frac{\theta}{2} + \frac{\sin 2\theta}{4}\right]']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-pappus
+    kind: identity
+    where: 'Problem 2, check: MIT''s remark, the area of the disk times the distance travelled by its centre'
+    formula: 2*pi**2*a**2*b
+    equals: (pi*a**2) * (2*pi*b)
+    samples:
+      a: [0.5, 1.0, 1.5, 2.0]
+      b: [3.0, 3.0, 4.5, 6.0]
+    tolerance: 1e-12
+    shown: ['$(\pi a^2)(2\pi b) = 2\pi^2a^2b$']
+    source: {cite: mit, at: 'Part II, Problem 2, p. 1'}
+    origin: mit
+
+  # Independent route: flat rings (washers) at height y, outer radius b + √(a² − y²), inner radius b − √(a² − y²).
+  - id: p2-rings
+    kind: identity
+    where: 'Problem 2, check: the torus cut into flat rings, π(outer² − inner²) integrated numerically from y = −a to a'
+    formula: 2*pi**2*a**2*b
+    equals: integrate('pi*((b + sqrt(abs(a**2 - y**2)))**2 - (b - sqrt(abs(a**2 - y**2)))**2)', 'y', -a, a)
+    samples:
+      a: [0.5, 1.0, 1.5, 2.0]
+      b: [3.0, 3.0, 4.5, 6.0]
+    tolerance: 1e-5
+    shown: ['gives $4\pi b \cdot \pi a^2/2$ again']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-ring-area
+    kind: identity
+    where: 'Problem 2, check: the area of one ring, π(outer² − inner²) = 4πb√(a² − y²)'
+    formula: 4*pi*b*sqrt(a**2 - y**2)
+    equals: pi*((b + sqrt(a**2 - y**2))**2 - (b - sqrt(a**2 - y**2))**2)
+    samples:
+      a: [0.5, 1.0, 1.5, 2.0]
+      b: [3.0, 3.0, 4.5, 6.0]
+      y: [0.1, -0.7, 1.2, 0.0]
+    tolerance: 1e-10
+    shown: ['$4\pi b\sqrt{a^2 - y^2}$']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-example
+    where: 'Problem 2, check: the volume for a = 1 and b = 3 (our own numbers)'
+    inputs: {a: 1, b: 3}
+    formula: 2*pi**2*a**2*b
+    expected: '59.22'
+    shown: ['the volume is $6\pi^2 = 59.22$']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # The reduction formula as a statement about definite integrals from 0 to s, both integrals done numerically.
+  - id: p3-a-reduction
+    kind: identity
+    where: 'Problem 3(a): the reduction formula, as definite integrals from 0 to s, for n = 0, 1, 2, 3 and 5'
+    formula: integrate('tan(x)**(n + 2)', 'x', 0, s)
+    equals: tan(s)**(n + 1)/(n + 1) - integrate('tan(x)**n', 'x', 0, s)
+    samples:
+      n: [0, 1, 2, 3, 5]
+      s: [1.2, 0.9, 0.7853981634, 1.3, 0.5]
+    tolerance: 1e-7
+    shown: ['\int \tan^{n+2}x\,dx = \frac{1}{n+1}\tan^{n+1}x - \int \tan^n x\,dx']
+    source: {cite: mit, at: 'Part II, Problem 3(a), p. 1'}
+    origin: mit
+
+  - id: p3-a-substitution
+    kind: identity
+    where: 'Problem 3(a), formula "The integral with the squared secant": tanⁿ⁺¹/(n + 1) against the numerical integral of tanⁿ sec² from 0 to s'
+    formula: tan(s)**(n + 1)/(n + 1)
+    equals: integrate('tan(x)**n / cos(x)**2', 'x', 0, s)
+    samples:
+      n: [0, 1, 2, 3, 5]
+      s: [1.2, 0.9, 0.7853981634, 1.3, 0.5]
+    tolerance: 1e-7
+    shown: ['= \frac{u^{n+1}}{n+1} + c = \frac{\tan^{n+1}x}{n+1} + c']
+    source: {cite: mit, at: 'Part II, Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-tan-squared
+    kind: identity
+    where: 'Problem 3, the case n = 0: tan s − s against the numerical integral of tan² from 0 to s'
+    formula: tan(s) - s
+    equals: integrate('tan(x)**2', 'x', 0, s)
+    samples: {s: [0.2, 0.5, 0.7853981634, 1.0, 1.3]}
+    tolerance: 1e-8
+    shown: ['\int \tan^2 x\,dx = \tan x - \int 1\,dx = \tan x - x + c']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # The answer against a numerical integral of tan⁴ from 0 to x (the box asks for the antiderivative that is 0 at 0).
+  - id: p3-b
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box: tan³x/3 − tan x + x against the numerical integral of tan⁴ from 0 to x'
+    formula: tan(x)**3/3 - tan(x) + x
+    equals: integrate('tan(s)**4', 's', 0, x)
+    samples: {x: [0.2, 0.5, 0.7853981634, 1.0, 1.3]}
+    tolerance: 1e-7
+    shown: ['\int \tan^4 x\,dx = \frac13\tan^3 x - \tan x + x + c']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-derivative
+    kind: identity
+    where: 'Problem 3(b), check: the derivative of tan³x/3 − tan x + x, taken numerically, is tan⁴x'
+    formula: deriv('tan(x)**3/3 - tan(x) + x', 'x', s)
+    equals: tan(s)**4
+    samples: {s: [0.2, 0.5, 0.7853981634, 1.0, 1.3]}
+    tolerance: 1e-5
+    shown: ['= \tan^2 x\,(\sec^2 x - 1) = \tan^4 x$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-number
+    where: 'Problem 3(b), check: the integral of tan⁴ from 0 to π/4, by numerical integration (our own number)'
+    inputs: {}
+    formula: integrate('tan(x)**4', 'x', 0, pi/4)
+    expected: '0.1187'
+    shown: ['$\tfrac13 - 1 + \tfrac{\pi}{4} = 0.1187$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-b-number-closed
+    where: 'Problem 3(b), check: 1/3 − 1 + π/4'
+    inputs: {}
+    formula: 1/3 - 1 + pi/4
+    expected: '0.1187'
+    shown: ['from $x = 0$ to $\pi/4$, where $\tan x$ rises from $0$ to $1$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-b-bound
+    where: 'Problem 3(b), check: π/4, the length of the interval'
+    inputs: {}
+    formula: pi/4
+    expected: '0.785'
+    shown: ['well below $\pi/4 = 0.785$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-a-rewrite
+    kind: identity
+    where: 'Problem 4(a): cos x/(1 − sin²x) = 1/cos x, MIT''s rewriting of the secant'
+    formula: cos(x) / (1 - sin(x)**2)
+    equals: 1/cos(x)
+    samples: {x: [-1.3, -0.4, 0.2, 0.9, 1.3]}
+    tolerance: 1e-10
+    shown: ['\sec x = \frac{\cos x}{1 - \sin^2 x}']
+    source: {cite: mit, at: 'Part II, Problem 4(a), p. 2'}
+    origin: mit
+
+  - id: p4-a-partial-fractions
+    kind: identity
+    where: 'Problem 4(a): 1/((1 − u)(1 + u)) = (1/2)/(1 − u) + (1/2)/(1 + u)'
+    formula: 1/((1 - u)*(1 + u))
+    equals: 0.5/(1 - u) + 0.5/(1 + u)
+    samples: {u: [-0.9, -0.3, 0.1, 0.6, 0.95]}
+    tolerance: 1e-10
+    shown: ['\frac{1}{(1 - u)(1 + u)} = \frac{A}{1 - u} + \frac{B}{1 + u}']
+    source: {cite: mit, at: 'Part II, Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-coefficient-a
+    where: 'Problem 4(a): cover-up for A, 1/(1 + u) at u = 1'
+    inputs: {u: 1}
+    formula: 1/(1 + u)
+    expected: '0.5'
+    shown: ['$A = 1/(1 + 1) = \tfrac12$']
+    source: {cite: mit, at: 'Part II, Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-coefficient-b
+    where: 'Problem 4(a): cover-up for B, 1/(1 − u) at u = −1'
+    inputs: {u: -1}
+    formula: 1/(1 - u)
+    expected: '0.5'
+    shown: ['$B = 1/(1 - (-1)) = \tfrac12$']
+    source: {cite: mit, at: 'Part II, Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-rational-integral
+    kind: identity
+    where: 'Problem 4(a), formula "Integrating the two fractions": −½ ln(1 − s) + ½ ln(1 + s) against the numerical integral of 1/(1 − u²) from 0 to s'
+    formula: -0.5*log(1 - s) + 0.5*log(1 + s)
+    equals: integrate('1/(1 - u**2)', 'u', 0, s)
+    samples: {s: [-0.9, -0.3, 0.1, 0.6, 0.95]}
+    tolerance: 1e-7
+    shown: ['-\frac12\ln|1 - u| + \frac12\ln|1 + u| + c']
+    source: {cite: mit, at: 'Part II, Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # The answer against a numerical integral of 1/cos from 0 to x (the box asks for the antiderivative that is 0 at 0).
+  - id: p4-a
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box: ½ ln((1 + sin x)/(1 − sin x)) against the numerical integral of 1/cos from 0 to x'
+    formula: (1/2)*log((1 + sin(x))/(1 - sin(x)))
+    equals: integrate('1/cos(s)', 's', 0, x)
+    samples: {x: [0.2, 0.5, 0.9, 1.3, -1.1]}
+    tolerance: 1e-7
+    shown: ['\int \sec x\,dx = \frac12\ln\left|\frac{1 + \sin x}{1 - \sin x}\right| + c']
+    source: {cite: mit, at: 'Part II, Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-derivative
+    kind: identity
+    where: 'Problem 4(a), check: the derivative of ½ ln(1 + sin x) − ½ ln(1 − sin x), taken numerically, is 1/cos x'
+    formula: deriv('0.5*log(1 + sin(x)) - 0.5*log(1 - sin(x))', 'x', s)
+    equals: 1/cos(s)
+    samples: {s: [-1.1, 0.2, 0.5, 0.9, 1.3]}
+    tolerance: 1e-5
+    shown: ['= \frac{\cos x}{\cos^2 x} = \sec x" cite="mit" at="Part II, Problem 4(a) (our own solution)" />']
+    source: {cite: mit, at: 'Part II, Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-same
+    kind: identity
+    where: 'Problem 4(b): ½ ln((1 + sin x)/(1 − sin x)) = ln|sec x + tan x|'
+    formula: 0.5*log((1 + sin(x))/(1 - sin(x)))
+    equals: log(abs(1/cos(x) + tan(x)))
+    samples: {x: [-1.3, -0.4, 0.2, 0.9, 1.3, 2.5, 4.0]}
+    tolerance: 1e-9
+    shown: ['= \ln\left|\frac{1}{\cos x} + \frac{\sin x}{\cos x}\right| = \ln|\sec x + \tan x|']
+    source: {cite: mit, at: 'Part II, Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-square
+    kind: identity
+    where: 'Problem 4(b), formula "The fraction as a square": (1 + sin x)/(1 − sin x) = ((1 + sin x)/cos x)²'
+    formula: (1 + sin(x))/(1 - sin(x))
+    equals: ((1 + sin(x))/cos(x))**2
+    samples: {x: [-1.3, -0.4, 0.2, 0.9, 1.3, 2.5, 4.0]}
+    tolerance: 1e-9
+    shown: ['= \frac{(1 + \sin x)^2}{1 - \sin^2 x} = \left(\frac{1 + \sin x}{\cos x}\right)^2']
+    source: {cite: mit, at: 'Part II, Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-number-first
+    where: 'Problem 4(b), check: the first form at x = π/6 (our own number)'
+    inputs: {}
+    formula: 0.5*log((1 + sin(pi/6))/(1 - sin(pi/6)))
+    expected: '0.5493'
+    shown: ['$\tfrac12\ln(1.5/0.5) = \tfrac12\ln 3 = 0.5493$']
+    source: {cite: mit, at: 'Part II, Problem 4(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p4-b-number-familiar
+    where: 'Problem 4(b), check: the familiar form at x = π/6, ln(sec + tan) = ln √3'
+    inputs: {}
+    formula: log(1/cos(pi/6) + tan(pi/6))
+    expected: '0.5493'
+    shown: ['$\ln(3/\sqrt3) = \ln\sqrt3 = 0.5493$ as well']
+    source: {cite: mit, at: 'Part II, Problem 4(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p4-b-sec-value
+    where: 'Problem 4(b), check: sec(π/6) = 2/√3 (checked as their ratio)'
+    inputs: {}
+    formula: (1/cos(pi/6)) / (2/sqrt(3))
+    expected: '1.000000'
+    shown: ['$\sec x = 2/\sqrt3$']
+    source: {cite: mit, at: 'Part II, Problem 4(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p4-b-tan-value
+    where: 'Problem 4(b), check: tan(π/6) = 1/√3 (checked as their ratio)'
+    inputs: {}
+    formula: tan(pi/6) * sqrt(3)
+    expected: '1.000000'
+    shown: ['$\tan x = 1/\sqrt3$']
+    source: {cite: mit, at: 'Part II, Problem 4(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # The answer by numerical integration of the shell integrand; below, an independent route by disks along the y-axis.
+  - id: p5-volume
+    answer: p5-volume
+    where: 'Problem 5, answer box: the shell integral of 2πx cos x from 0 to π/2, by numerical integration'
+    inputs: {}
+    formula: integrate('2*pi*x*cos(x)', 'x', 0, pi/2)
+    expected: '3.586'
+    shown: ['= \pi^2 - 2\pi = 3.586']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-closed-form
+    where: 'Problem 5: π² − 2π'
+    inputs: {}
+    formula: pi**2 - 2*pi
+    expected: '3.586'
+    shown: ['= 2\pi\left(\frac{\pi}{2} - 1\right)']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  # Independent route (not on the page): disks at height y have radius x = arccos y, so V = ∫₀¹ π (arccos y)² dy.
+  - id: p5-disks
+    where: 'Problem 5: the same volume by disks along the y-axis, π(arccos y)² integrated numerically from 0 to 1'
+    inputs: {}
+    formula: integrate('pi*acos(y)**2', 'y', 0, 1)
+    expected: '3.586'
+    shown: ['And $3.586$ lies between the two.']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-by-parts
+    kind: identity
+    where: 'Problem 5, formula "The product of x and the cosine": x sin x + cos x − 1 against the numerical integral of x cos x from 0 to s'
+    formula: s*sin(s) + cos(s) - 1
+    equals: integrate('x*cos(x)', 'x', 0, s)
+    samples: {s: [0.3, 0.8, 1.2, 1.5707963, 2.5]}
+    tolerance: 1e-8
+    shown: ['\int x\cos x\,dx = x\sin x - \int \sin x\,dx = x\sin x + \cos x + c']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-cylinder
+    where: 'Problem 5, check: the cylinder of radius π/2 and height 1 around the solid'
+    inputs: {}
+    formula: pi * (pi/2)**2
+    expected: '7.752'
+    shown: ['$\pi(\pi/2)^2 = 7.752$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-cone
+    where: 'Problem 5, check: the cone with the same base and height, a third of the cylinder'
+    inputs: {}
+    formula: pi * (pi/2)**2 / 3
+    expected: '2.584'
+    shown: ['a third of the volume of the cylinder, $2.584$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
+
+  # The graph of the cosine lies above the straight line from (0, 1) to (π/2, 0): checked at sample points.
+  - id: p5-above-chord
+    where: 'Problem 5, check: the gap between cos x and the chord 1 − 2x/π at x = 1.5, near the end of the interval where the two come close (positive, so the cosine lies above)'
+    inputs: {x: 1.5}
+    formula: cos(x) - (1 - 2*x/pi)
+    expected: '0.0257'
+    shown: ['because the graph of the cosine lies above the straight line from $(0, 1)$ to $(\pi/2, 0)$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
