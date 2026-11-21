@@ -40,4 +40,4 @@ Run several sets in parallel (one writer per worktree, up to about four at once)
 
 | Course | Sets on OCW | Written | Reviewed | Notes |
 |---|---|---|---|---|
-| 8.286 | 10 (+ 2 supernova data files for Set 8) | 1, 2 | 1, 2 | Set 1 blind-reviewed 2026-11-21 (0 errors, 0 warnings). No "rights reserved" or "courtesy" notices in Sets 1–10; Set 2 has one figure "Image by MIT OpenCourseWare" (OCW's own, not redrawn). Covers (site lectures, from the calendar and topics): 3: 5–7, 4: 8–9, 5: 10–12, 6: 13–16, 7: 16–18, 8: 18–20, 9: 20–22, 10: 22–23 (writers confirm). Set 9 Problem 5 and Set 10 Problem 1 are the same monopole problem |
+| 8.286 | 10 (+ 2 supernova data files for Set 8) | 1, 2, 5 | 1, 2, 5 | Set 1 blind-reviewed 2026-11-21 (0 errors, 0 warnings). No "rights reserved" or "courtesy" notices in Sets 1–10; Set 2 has one figure "Image by MIT OpenCourseWare" (OCW's own, not redrawn). Covers (site lectures, from the calendar and topics): 3: 5–7, 4: 8–9, 5: 10–12, 6: 13–16, 7: 16–18, 8: 18–20, 9: 20–22, 10: 22–23 (writers confirm). Set 9 Problem 5 and Set 10 Problem 1 are the same monopole problem |
