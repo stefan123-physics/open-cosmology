@@ -1,0 +1,615 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a numerical solve of the momentum balance, a finite step of momentum conservation, or a numerical integral.
+# The rocket numbers of Problem 3 can also be compared with MIT's course notes, Examples 12.4 and 12.5.
+
+page: content/year-1/8.01/8-01-problem-set-6.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-given-current
+    kind: fact
+    where: 'Problem 1, statement: speed of the water'
+    shown: ['The water flows downstream at a constant 1.0 m/s']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-given-rowing
+    kind: fact
+    where: 'Problem 1, statement: rowing speed seen from the drifting boat'
+    shown: ['the student rows at 0.5 m/s']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-given-width
+    kind: fact
+    where: 'Problem 1, statement: width of the river'
+    shown: ['straight and parallel, 800 m apart']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-speed
+    answer: p1-a-speed
+    where: 'Problem 1(a), answer box: speed seen from the bank'
+    inputs: {vx: 0.5 m/s, vy: 1.0 m/s}
+    formula: sqrt(vx**2 + vy**2)
+    expected: 1.12 m/s
+    shown: ['$\sqrt{0.5^2 + 1.0^2} = 1.12$ m/s']
+    source: {cite: mit, at: 'Problem 1(a) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-angle
+    answer: p1-a-angle
+    where: 'Problem 1(a), answer box: angle from the straight-across direction, in degrees'
+    formula: atan(1.0 / 0.5) * 180 / pi
+    expected: '63.4'
+    shown: ['so $\theta = 63.4°$']
+    source: {cite: mit, at: 'Problem 1(a) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-sum-of-parts
+    where: 'Problem 1(a), check: the sum of the two parts of the velocity'
+    inputs: {vx: 0.5 m/s, vy: 1.0 m/s}
+    formula: vx + vy
+    expected: 1.5 m/s
+    shown: ['smaller than their sum, 1.5 m/s']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-time
+    answer: p1-c
+    where: 'Problem 1(b) and (c): the crossing time'
+    inputs: {w: 800 m, vx: 0.5 m/s}
+    formula: w / vx
+    expected: 1600 s
+    shown: ['The crossing takes $800/0.5 = 1600$ s', '$800/0.5 = 1600$ s, a little under 27 minutes']
+    source: {cite: mit, at: 'Problem 1(c) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-time-minutes
+    where: 'Problem 1(c): the crossing time in minutes'
+    formula: 1600 / 60
+    expected: '26.7'
+    shown: ['a little under 27 minutes']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-drift
+    answer: p1-b
+    where: 'Problem 1(b), answer box: distance downstream'
+    inputs: {w: 800 m, vx: 0.5 m/s, vy: 1.0 m/s}
+    formula: vy * w / vx
+    expected: 1600 m
+    shown: ['$1.0 \times 1600 = 1600$ m downstream']
+    source: {cite: mit, at: 'Problem 1(b) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-drift-by-angle
+    where: 'Problem 1(b), check: drift from the angle of part (a)'
+    formula: 800 * tan(atan(1.0 / 0.5))
+    expected: '1600'
+    shown: ['$800 \times \tan\theta = 800 \times 2 = 1600$ m']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-path-length
+    where: 'Problem 1(c), check: length of the path seen from the bank'
+    inputs: {w: 800 m, d: 1600 m}
+    formula: sqrt(w**2 + d**2)
+    expected: 1789 m
+    shown: ['$\sqrt{800^2 + 1600^2} = 1789$ m']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-time-by-path
+    where: 'Problem 1(c), check: path length over speed'
+    inputs: {L: 1789 m, v: 1.118 m/s}
+    formula: L / v
+    expected: 1600 s
+    shown: ['$1789/1.118 = 1600$ s again']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # (a) The answer against a numerical solve of the momentum balance of astronaut 1 and the ball.
+  - id: p2-a-by-solve
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Catch: speed of astronaut 1 after the throw": against a numerical solve of (m1 + m) v1 = m1 x + m (x − u)'
+    formula: v1 + m*u/(m1 + m)
+    equals: solve('(m1 + m) * v1 - m1 * x - m * (x - u)', 'x', -1000, 1000)
+    samples:
+      v1: [1, 3, 1.0, 2.2]
+      u: [5, 20, 8.0, 12]
+      m: [5, 20, 4, 0.5]
+      m1: [40, 60, 60, 75]
+    tolerance: 1e-7
+    shown: ['v_{f,1} = v_1 + \frac{m\,u}{m_1 + m}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of v_f1 = v_f2, with the throw and the catch followed one
+  # after the other: v_f1 = v1 + m x/(m1 + m), then the catch (m2 v2 + m (v_f1 − x))/(m2 + m).
+  - id: p2-b-by-solve
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Catch: throwing speed for equal final speeds": against a numerical solve of v_f1 = v_f2 through the throw and the catch'
+    formula: m2*(m1 + m)*(v2 - v1)/(m*(m1 + m2 + m))
+    equals: solve('v1 + m * x / (m1 + m) - (m2 * v2 + m * (v1 + m * x / (m1 + m) - x)) / (m2 + m)', 'x', 0, 100000)
+    samples:
+      v1: [1, 3, 1.0, 2.2]
+      v2: [4, 8, 2.0, 2.5]
+      m: [5, 20, 4, 0.5]
+      m1: [40, 60, 60, 75]
+      m2: [70, 100, 76, 50]
+    tolerance: 1e-7
+    shown: ['= \frac{m_2\,(m_1 + m)\,(v_2 - v_1)}{m\,(m_1 + m_2 + m)}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-gain
+    kind: identity
+    where: 'Problem 2(b), formula "Catch: gain of astronaut 1": common speed minus v1'
+    formula: ((m1 + m)*v1 + m2*v2)/(m1 + m2 + m) - v1
+    equals: m2*(v2 - v1)/(m1 + m2 + m)
+    samples:
+      v1: [1, 3, 1.0, 2.2]
+      v2: [4, 8, 2.0, 2.5]
+      m: [5, 20, 4, 0.5]
+      m1: [40, 60, 60, 75]
+      m2: [70, 100, 76, 50]
+    tolerance: 1e-12
+    shown: ['v_f - v_1 = \frac{m_2\,(v_2 - v_1)}{m_1 + m_2 + m}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-a-example
+    where: 'Problem 2(a), check: v_f1 for m1 = 60 kg, m = 4 kg, v1 = 1.0 m/s, u = 8.0 m/s'
+    inputs: {m1: 60 kg, m: 4 kg, v1: 1.0 m/s, u: 8.0 m/s}
+    formula: v1 + m * u / (m1 + m)
+    expected: 1.5 m/s
+    shown: ['$v_{f,1} = 1.0 + 32/64 = 1.5$ m/s']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-a-example-ball
+    where: 'Problem 2(a), check: velocity of the ball'
+    inputs: {vf: 1.5 m/s, u: 8.0 m/s}
+    formula: vf - u
+    expected: -6.5 m/s
+    shown: ['$1.5 - 8.0 = -6.5$ m/s']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-a-example-before
+    where: 'Problem 2(a), check: momentum before the throw'
+    inputs: {M: 64 kg, v1: 1.0 m/s}
+    formula: M * v1
+    expected: 64 kg*m/s
+    shown: ['$64 \times 1.0 = 64$ kg·m/s']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-a-example-after
+    where: 'Problem 2(a), check: momentum after the throw'
+    inputs: {m1: 60 kg, vf: 1.5 m/s, m: 4 kg, vb: 6.5 m/s}
+    formula: m1 * vf - m * vb
+    expected: 64 kg*m/s
+    shown: ['$60 \times 1.5 - 4 \times 6.5 = 64$ kg·m/s']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-b-example-common
+    where: 'Problem 2(b), check: common speed for m2 = 76 kg, v2 = 2.0 m/s'
+    inputs: {M: 64 kg, v1: 1.0 m/s, m2: 76 kg, v2: 2.0 m/s}
+    formula: (M * v1 + m2 * v2) / (M + m2)
+    expected: 1.543 m/s
+    shown: ['$v_f = (64 \times 1.0 + 76 \times 2.0)/140 = 1.543$ m/s']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-b-example-u
+    where: 'Problem 2(b), check: the throwing speed'
+    inputs: {m2: 76 kg, M: 64 kg, dv: 1.0 m/s, m: 4 kg, Mtot: 140 kg}
+    formula: m2 * M * dv / (m * Mtot)
+    expected: 8.69 m/s
+    shown: ['$u = 76 \times 64 \times 1.0/(4 \times 140) = 8.69$ m/s']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-b-example-ball
+    where: 'Problem 2(b), check: velocity of the ball on its way'
+    inputs: {vf: 1.543 m/s, u: 8.686 m/s}
+    formula: vf - u
+    expected: -7.143 m/s
+    shown: ['$1.543 - 8.686 = -7.143$ m/s']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-b-example-catch
+    where: 'Problem 2(b), check: speed of astronaut 2 with the ball after the catch'
+    inputs: {m2: 76 kg, v2: 2.0 m/s, m: 4 kg, vb: 7.143 m/s}
+    formula: (m2 * v2 - m * vb) / (m2 + m)
+    expected: 1.543 m/s
+    shown: ['$(76 \times 2.0 - 4 \times 7.143)/80 = 1.543$ m/s']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-given-mass
+    kind: fact
+    where: 'Problem 3, statement: mass of the rocket with its fuel'
+    shown: ['$m_{r,i} = 2.81 \times 10^7$ kg']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-fuel
+    kind: fact
+    where: 'Problem 3, statement: mass of the fuel'
+    shown: ['$2.46 \times 10^7$ kg is fuel']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-dry-mass
+    where: 'Problem 3, statement: dry mass (MIT gives it too)'
+    inputs: {mi: 2.81e7 kg, mf: 2.46e7 kg}
+    formula: mi - mf
+    expected: 0.35e7 kg
+    shown: ['$m_{r,d} = 0.35 \times 10^7$ kg']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-u
+    kind: fact
+    where: 'Problem 3, statement: exhaust speed'
+    shown: ['$u = 3000$ m/s relative to the rocket']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-burn-time
+    kind: fact
+    where: 'Problem 3, statement: burn times'
+    shown: ['burning all of it takes 510 s', 'of fuel in 150 s', 'all of that fuel in 360 s']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-stage-one-fuel
+    kind: fact
+    where: 'Problem 3(b), statement: fuel of stage one'
+    shown: ['Stage one burns $2.03 \times 10^7$ kg of fuel']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-given-dropped
+    kind: fact
+    where: 'Problem 3(c), statement: dropped parts, new dry mass and remaining fuel'
+    shown: ['with a mass of $1.4 \times 10^6$ kg together', 'the dry mass $2.1 \times 10^6$ kg', 'the remaining $4.3 \times 10^6$ kg of fuel']
+    source: {cite: mit, at: 'Problem 3(c), p. 3'}
+    origin: mit
+
+  - id: p3-ratio
+    where: 'Problem 3(a): mass ratio of the single burn'
+    formula: 2.81 / 0.35
+    expected: '8.03'
+    shown: ['The mass ratio is $2.81/0.35 = 8.03$']
+    source: {cite: mit, at: 'Problem 3(a) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-one-stage
+    answer: p3-a
+    where: 'Problem 3(a), answer box: final speed with one stage'
+    inputs: {u: 3000 m/s}
+    formula: u * log(2.81e7 / 0.35e7)
+    expected: 6249 m/s
+    shown: ['\ln\frac{2.81}{0.35} = 6249\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 3(a) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-ln-ratio
+    where: 'Problem 3(a), check: ln 8.03'
+    formula: log(8.03)
+    expected: '2.08'
+    shown: ['$\ln 8.03 = 2.08$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-notes-one-stage
+    kind: fact
+    where: 'Problem 3(a), check: the value of MIT''s course notes'
+    shown: ['as Example 12.4 and give 6250 m/s']
+    source: {cite: reading2, at: 'Example 12.4, Eq. (12.3.92), p. 12-23'}
+    origin: mit
+
+  - id: p3-after-stage-one
+    where: 'Problem 3(b): mass after stage one, in units of 10^7 kg (MIT gives it too)'
+    formula: 2.81 - 2.03
+    expected: '0.78'
+    shown: ['have a mass of $0.78 \times 10^7$ kg', '$2.81 - 2.03 = 0.78$']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-ratio-one
+    where: 'Problem 3(b): mass ratio of stage one'
+    formula: 2.81 / 0.78
+    expected: '3.603'
+    shown: ['a ratio of $2.81/0.78 = 3.603$']
+    source: {cite: mit, at: 'Problem 3(b) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-stage-one
+    answer: p3-b
+    where: 'Problem 3(b), answer box: gain in stage one'
+    inputs: {u: 3000 m/s}
+    formula: u * log(2.81e7 / 0.78e7)
+    expected: 3845 m/s
+    shown: ['\ln\frac{2.81}{0.78} = 3845\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 3(b) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-start-stage-two
+    where: 'Problem 3(c): mass at the start of stage two, in units of 10^6 kg'
+    formula: 2.1 + 4.3
+    expected: '6.4'
+    shown: ['$(2.1 + 4.3) \times 10^6 = 6.4 \times 10^6$ kg']
+    source: {cite: mit, at: 'Problem 3(c) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-start-stage-two-other-route
+    where: 'Problem 3(c): mass after stage one less the dropped parts, in units of 10^6 kg'
+    formula: 7.8 - 1.4
+    expected: '6.4'
+    shown: ['$7.8 - 1.4 = 6.4$']
+    source: {cite: mit, at: 'Problem 3(c) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-ratio-two
+    where: 'Problem 3(c): mass ratio of stage two'
+    formula: 6.4 / 2.1
+    expected: '3.048'
+    shown: ['The mass ratio is $6.4/2.1 = 3.048$']
+    source: {cite: mit, at: 'Problem 3(c) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-stage-two
+    answer: p3-c
+    where: 'Problem 3(c), answer box: gain in stage two'
+    inputs: {u: 3000 m/s}
+    formula: u * log(6.4e6 / 2.1e6)
+    expected: 3343 m/s
+    shown: ['\ln\frac{6.4}{2.1} = 3343\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 3(c) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-dry-masses
+    where: 'Problem 3(c), check: dropped parts plus new dry mass, in units of 10^6 kg'
+    formula: 1.4 + 2.1
+    expected: '3.5'
+    shown: ['$1.4 + 2.1 = 3.5$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-two-stage
+    answer: p3-d
+    where: 'Problem 3(d), answer box: final speed with two stages'
+    inputs: {u: 3000 m/s}
+    formula: u * log(2.81e7 / 0.78e7) + u * log(6.4e6 / 2.1e6)
+    expected: 7188 m/s
+    shown: ['3845 + 3343 = 7188\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 3(d) (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-product-of-ratios
+    where: 'Problem 3(d), check: product of the two rounded mass ratios'
+    formula: 3.603 * 3.048
+    expected: '10.98'
+    shown: ['$v_f = 3000 \times \ln(3.603 \times 3.048) = 3000 \times \ln 10.98 = 7188$ m/s']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-two-stage-by-product
+    where: 'Problem 3(d), check: 3000 ln 10.98'
+    inputs: {u: 3000 m/s}
+    formula: u * log(10.98)
+    expected: 7188 m/s
+    shown: ['$v_f = 3000 \times \ln(3.603 \times 3.048) = 3000 \times \ln 10.98 = 7188$ m/s']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-notes-two-stage
+    kind: fact
+    where: 'Problem 3(d), check: the values of MIT''s course notes'
+    shown: ['give 3840 m/s, 3340 m/s and 7190 m/s']
+    source: {cite: reading2, at: 'Example 12.5, Eqs. (12.3.93) to (12.3.95), pp. 12-23 and 12-24'}
+    origin: mit
+
+  - id: p3-staging-gain
+    where: 'Problem 3(e): two stages minus one stage'
+    inputs: {v2: 7188 m/s, v1: 6249 m/s}
+    formula: v2 - v1
+    expected: 939 m/s
+    shown: ['$7188 - 6249 = 939$ m/s', 'the whole gain of 939 m/s']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3-old-dry-mass
+    kind: fact
+    where: 'Problem 3(e): the dry mass of the whole rocket, 0.35 × 10^7 kg, written in units of 10^6 kg'
+    shown: ['the whole dry rocket of $3.5 \times 10^6$ kg']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-no-drop-stage-two
+    where: 'Problem 3(e), check: stage two with the tank kept on board'
+    inputs: {u: 3000 m/s}
+    formula: u * log(7.8 / 3.5)
+    expected: 2404 m/s
+    shown: ['$3000 \times \ln(7.8/3.5) = 2404$ m/s']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3-no-drop-total
+    where: 'Problem 3(e), check: two stages with nothing dropped'
+    inputs: {a: 3845 m/s, b: 2404 m/s}
+    formula: a + b
+    expected: 6249 m/s
+    shown: ['$3845 + 2404 = 6249$ m/s']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (a) The answer against one finite step of the two physical laws. In a short time h the mass grows from
+  # m to m (1 + k v h) (growth law) and the momentum from m v to m v + m g h (momentum principle), so the
+  # new speed is (v + g h)/(1 + k v h); its change divided by h tends to the answer. The mass drops out.
+  - id: p4-a-by-finite-step
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Raindrop: acceleration": against a finite step of the growth law and the momentum principle with h = 1e-7 s'
+    formula: g - k*v**2
+    equals: ((v + g*1e-7)/(1 + k*v*1e-7) - v)/1e-7
+    samples:
+      g: [9, 10, 9.8, 9.8]
+      k: [0.01, 0.1, 0.2, 0.05]
+      v: [1, 8, 7.0, 0]
+    tolerance: 1e-5
+    shown: ['\frac{dv_r}{dt} = g - k\,v_r^2']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # A second check on a whole motion: v(t) = sqrt(g/k) tanh(sqrt(g k) t) with m(t) = m0 cosh(sqrt(g k) t).
+  # p4-growth-law shows that this m(t) obeys dm/dt = k m v, p4-momentum-law that d(m v)/dt = m g, and this
+  # entry that its acceleration, by numerical differentiation, is g − k v².
+  - id: p4-a-trial-motion
+    kind: identity
+    where: 'Problem 4(a), formula "Raindrop: acceleration": on a motion that obeys the growth law and the momentum principle'
+    formula: g - k*(sqrt(g/k)*tanh(sqrt(g*k)*t))**2
+    equals: deriv('sqrt(g/k) * tanh(sqrt(g*k) * x)', 'x', t)
+    samples:
+      g: [9, 10, 9.8, 9.8]
+      k: [0.01, 0.1, 0.2, 0.05]
+      t: [0.5, 1, 0.3, 2]
+    tolerance: 1e-6
+    shown: ['\frac{dv_r}{dt} = g - k\,v_r^2']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-growth-law
+    kind: identity
+    where: 'Problem 4, formula "Raindrop: growth of the mass": the trial motion obeys dm/dt = k m v'
+    formula: deriv('m0 * cosh(sqrt(g*k) * x)', 'x', t)
+    equals: k * m0 * cosh(sqrt(g*k)*t) * sqrt(g/k) * tanh(sqrt(g*k)*t)
+    samples:
+      g: [9, 10, 9.8, 9.8]
+      k: [0.01, 0.1, 0.2, 0.05]
+      t: [0.5, 1, 0.3, 2]
+      m0: [1, 2, 0.5, 3]
+    tolerance: 1e-6
+    shown: ['\frac{dm_r}{dt} = k\,m_r\,v_r']
+    source: {cite: mit, at: 'Problem 4, p. 4'}
+    origin: mit
+
+  - id: p4-momentum-law
+    kind: identity
+    where: 'Problem 4(a), formula "Raindrop: momentum principle": the trial motion obeys d(m v)/dt = m g'
+    formula: deriv('m0 * cosh(sqrt(g*k) * x) * sqrt(g/k) * tanh(sqrt(g*k) * x)', 'x', t)
+    equals: m0 * cosh(sqrt(g*k)*t) * g
+    samples:
+      g: [9, 10, 9.8, 9.8]
+      k: [0.01, 0.1, 0.2, 0.05]
+      t: [0.5, 1, 0.3, 2]
+      m0: [1, 2, 0.5, 3]
+    tolerance: 1e-6
+    shown: ['m_r\,g = m_r\,\frac{dv_r}{dt} + v_r\,\frac{dm_r}{dt}']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical root of g − k x² = 0.
+  - id: p4-b-by-solve
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Raindrop: terminal speed": against a numerical root of g − k x² = 0'
+    formula: sqrt(g/k)
+    equals: solve('g - k * x**2', 'x', 0, 100000)
+    samples:
+      g: [9, 10, 9.8, 9.8]
+      k: [0.01, 0.1, 0.2, 0.05]
+    tolerance: 1e-7
+    shown: ['v_T = \sqrt{\frac{g}{k}}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-example
+    where: 'Problem 4(b), check: terminal speed for k = 0.2 per metre'
+    inputs: {g: 9.8 m/s**2, k: 0.2 1/m}
+    formula: sqrt(g / k)
+    expected: 7.0 m/s
+    shown: ['$v_T = \sqrt{9.8/0.2} = 7.0$ m/s']
+    source: {cite: mit, at: 'Problem 4(b) (our own number)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # (a) The answer against one finite step of momentum conservation: the speed after a short time h is
+  # (m0 + b t) v/(m0 + b (t + h)); its change divided by h tends to the answer.
+  - id: p5-a-by-finite-step
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box and formula "Rain: change of speed in a short interval": against a finite step of momentum conservation with h = 1e-6 s'
+    formula: -b*v/(m0 + b*t)
+    equals: ((m0 + b*t)*v/(m0 + b*(t + 1e-6)) - v)/1e-6
+    samples:
+      b: [0.5, 2, 0.5, 1.3]
+      v: [1, 10, 3.0, 6]
+      m0: [50, 200, 100, 80]
+      t: [10, 60, 200, 0]
+    tolerance: 1e-5
+    shown: ['\frac{dv}{dt} = -\frac{b\,v}{m_0 + b\,t}']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against the numerical integral of part (a): ln(v/v0) = −∫ b dt/(m0 + b t).
+  - id: p5-b-by-integration
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Rain: speed of the vehicle": against the numerical integral of the rate of part (a)'
+    formula: m0*v0/(m0 + b*t)
+    equals: v0 * exp(-integrate('b / (m0 + b * x)', 'x', 0, t))
+    samples:
+      b: [0.5, 2, 0.5, 1.3]
+      v0: [1, 10, 3.0, 6]
+      m0: [50, 200, 100, 80]
+      t: [10, 60, 200, 5]
+    tolerance: 1e-7
+    shown: ['v(t) = \frac{m_0\,v_0}{m_0 + b\,t}']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-example-water
+    where: 'Problem 5(b), check: water collected in 200 s at 0.5 kg/s'
+    inputs: {b: 0.5 kg/s, t: 200 s}
+    formula: b * t
+    expected: 100 kg
+    shown: ['After 200 s the vehicle holds 100 kg of water']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p5-b-example-mass
+    where: 'Problem 5(b), check: mass after 200 s'
+    inputs: {m0: 100 kg, b: 0.5 kg/s, t: 200 s}
+    formula: m0 + b * t
+    expected: 200 kg
+    shown: ['its mass has doubled to 200 kg']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p5-b-example-speed
+    where: 'Problem 5(b), check: speed after 200 s'
+    inputs: {m0: 100 kg, v0: 3.0 m/s, b: 0.5 kg/s, t: 200 s}
+    formula: m0 * v0 / (m0 + b * t)
+    expected: 1.5 m/s
+    shown: ['its speed has halved to 1.5 m/s']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
