@@ -1,0 +1,393 @@
+# Calculations on content/year-1/18.02/18-02-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# OpenCourseWare has no solutions for Part B of this set, so every answer is checked here by an independent route:
+# the area under the cycloid by numerical integration of both line integrals of Problem 1(a), the curl and the
+# divergence by numerical partial derivatives, the largest value by a numerical polar integral and by the maximum
+# over circles of radius b, and the flux by numerical integration of the line integral and of the divergence.
+
+page: content/year-1/18.02/18-02-problem-set-9.mdx
+calcs:
+  # ---- Introduction and quoted facts
+
+  - id: intro-points
+    where: 'Introduction: the points of the three problems of Part B (4 + 6 + 6)'
+    inputs: {}
+    formula: 4 + 6 + 6
+    expected: '16'
+    shown: ['three longer problems (16 points)']
+    source: {cite: mit, at: 'Part B, p. 1'}
+    origin: mit
+
+  - id: intro-part-a-points
+    kind: fact
+    where: 'Last section: the points of Part A of MIT'
+    shown: ['10 points at MIT']
+    source: {cite: mit, at: 'Part A, p. 1'}
+    origin: mit
+
+  # ---- Problem 1
+
+  - id: p1-a-check-xdy
+    where: 'Problem 1(a), check: the integral of x dy around the unit circle, cos² t over a full turn, is π'
+    inputs: {}
+    formula: integrate('cos(t)**2', 't', 0, 2*pi) - pi
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['both integrals are $\tfrac12 \cdot 2\pi = \pi$']
+    source: {cite: mit, at: 'Part B, Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-check-ydx
+    where: 'Problem 1(a), check: the integral of −y dx around the unit circle, sin² t over a full turn, is π'
+    inputs: {}
+    formula: integrate('sin(t)**2', 't', 0, 2*pi) - pi
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['both integrals are $\tfrac12 \cdot 2\pi = \pi$']
+    source: {cite: mit, at: 'Part B, Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box: 3πa² against the numerical integral of −y dx along the arch, a²(1 − cos t)² from 0 to 2π'
+    formula: 3*pi*a**2
+    equals: integrate('a**2*(1 - cos(t))**2', 't', 0, 2*pi)
+    samples: {a: [0.5, 1.0, 1.7, 3.0]}
+    tolerance: 1e-8
+    shown: ['\text{area} = a^2(2\pi - 0 + \pi) = 3\pi a^2']
+    source: {cite: mit, at: 'Part B, Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-xdy
+    kind: identity
+    where: 'Problem 1(b), second check: 3πa² against the numerical integral of x dy along the arch traversed backwards'
+    formula: 3*pi*a**2
+    equals: -integrate('a*(t - sin(t))*a*sin(t)', 't', 0, 2*pi)
+    samples: {a: [0.5, 1.0, 1.7, 3.0]}
+    tolerance: 1e-8
+    shown: ['= -a^2(-2\pi - \pi) = 3\pi a^2']
+    source: {cite: mit, at: 'Part B, Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-ordinary
+    kind: identity
+    where: 'Problem 1(b), independent route: the ordinary area under the curve, the integral of y dx = y (dx/dt) dt, with dx/dt taken numerically'
+    formula: 3*pi*a**2
+    equals: integrate('a*(1 - cos(t))*deriv("a*(u - sin(u))", "u", t)', 't', 0, 2*pi)
+    samples: {a: [1.0, 2.0]}
+    tolerance: 1e-6
+    shown: ['\text{area} = a^2(2\pi - 0 + \pi) = 3\pi a^2']
+    source: {cite: mit, at: 'Part B, Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-tsint
+    where: 'Problem 1(b), check: the integral of t sin t over a full turn is −2π'
+    inputs: {}
+    formula: integrate('t*sin(t)', 't', 0, 2*pi) + 2*pi
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['$\int_0^{2\pi} t\sin t\,dt = -2\pi$']
+    source: {cite: mit, at: 'Part B, Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-wheel
+    where: 'Problem 1(b), check: the area under the arch over the area πa² of the wheel (a = 1)'
+    inputs: {}
+    formula: integrate('(1 - cos(t))**2', 't', 0, 2*pi)/pi
+    expected: '3'
+    tolerance: 1e-9
+    shown: ['It is three times the area $\pi a^2$ of the rolling wheel']
+    source: {cite: mit, at: 'Part B, Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-rectangle
+    where: 'Problem 1(b), check: the area under the arch over the area 2πa · 2a of the rectangle around it (a = 1)'
+    inputs: {}
+    formula: integrate('(1 - cos(t))**2', 't', 0, 2*pi)/(2*pi*2)
+    expected: '0.75'
+    tolerance: 1e-9
+    shown: ['of area $4\pi a^2$, and fills three quarters of it']
+    source: {cite: mit, at: 'Part B, Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-a-curl
+    kind: identity
+    answer: p2-a-curl
+    where: 'Problem 2(a), answer box: 4 − x² − y² against numerical partial derivatives N_x − M_y of the two given functions'
+    formula: 4 - x**2 - y**2
+    equals: deriv('3*u + 2*y**2*u + exp(y)', 'u', x) - deriv('x**2*v + v**3 - v', 'v', y)
+    samples: {x: [0.2, 1.2, -0.7, 2.5, 0.0], y: [0.2, 0.9, 1.4, -1.1, 2.0]}
+    tolerance: 1e-6
+    shown: ['N_x - M_y = 4 - x^2 - y^2']
+    source: {cite: mit, at: 'Part B, Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-a-nx
+    kind: identity
+    where: 'Problem 2(a): N_x = 3 + 2y² against a numerical derivative'
+    formula: 3 + 2*y**2
+    equals: deriv('3*u + 2*y**2*u + exp(y)', 'u', x)
+    samples: {x: [0.2, 1.2, -0.7], y: [0.2, 0.9, 1.4]}
+    tolerance: 1e-6
+    shown: ['N_x = 3 + 2y^2, \qquad M_y = x^2 + 3y^2 - 1']
+    source: {cite: mit, at: 'Part B, Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-a-my
+    kind: identity
+    where: 'Problem 2(a): M_y = x² + 3y² − 1 against a numerical derivative'
+    formula: x**2 + 3*y**2 - 1
+    equals: deriv('x**2*v + v**3 - v', 'v', y)
+    samples: {x: [0.2, 1.2, -0.7], y: [0.2, 0.9, 1.4]}
+    tolerance: 1e-6
+    shown: ['N_x = 3 + 2y^2, \qquad M_y = x^2 + 3y^2 - 1']
+    source: {cite: mit, at: 'Part B, Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b
+    answer: p2-b
+    where: 'Problem 2(b), answer box: 8π, as the numerical polar integral of (4 − r²) r over the disk of radius 2'
+    inputs: {}
+    formula: 2*pi*integrate('(4 - r**2)*r', 'r', 0, 2)
+    expected: '25.13'
+    shown: ['= 2\pi \cdot 4 = 8\pi = 25.13']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-exact
+    where: 'Problem 2(b): 8π as a decimal'
+    inputs: {}
+    formula: 8*pi
+    expected: '25.13'
+    shown: ['= 2\pi \cdot 4 = 8\pi = 25.13']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-line-integral
+    where: 'Problem 2(b), independent route: the line integral itself around the circle x = 2 cos t, y = 2 sin t, integrated numerically without Green theorem'
+    inputs: {}
+    formula: integrate('((2*cos(t))**2*(2*sin(t)) + (2*sin(t))**3 - 2*sin(t))*(-2*sin(t)) + (3*(2*cos(t)) + 2*(2*sin(t))**2*(2*cos(t)) + exp(2*sin(t)))*(2*cos(t))', 't', 0, 2*pi)
+    expected: '25.13'
+    shown: ['= 2\pi \cdot 4 = 8\pi = 25.13']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-inner
+    where: 'Problem 2(b): the inner integral of 4r − r³ from 0 to 2'
+    inputs: {}
+    formula: integrate('4*r - r**3', 'r', 0, 2)
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['= 8 - 4 = 4$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-circles
+    kind: identity
+    where: 'Problem 2(b), check: I(b) = 2π(2b² − b⁴/4) against the numerical polar integral up to radius b'
+    formula: 2*pi*(2*b**2 - b**4/4)
+    equals: 2*pi*integrate('(4 - r**2)*r', 'r', 0, b)
+    samples: {b: [0.5, 1.0, 2.0, 2.8, 3.1]}
+    tolerance: 1e-8
+    shown: ['I(b) = 2\pi\left(2b^2 - \tfrac14 b^4\right)']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-circles-derivative
+    kind: identity
+    where: 'Problem 2(b), check: the derivative of I(b) is 2π(4b − b³)'
+    formula: 2*pi*(4*b - b**3)
+    equals: deriv('2*pi*(2*u**2 - u**4/4)', 'u', b)
+    samples: {b: [0.5, 1.0, 2.0, 2.8]}
+    tolerance: 1e-6
+    shown: ['Its derivative, $2\pi(4b - b^3)$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-best-radius
+    where: 'Problem 2(b), check: the zero of 4b − b³ for b > 0'
+    inputs: {}
+    formula: solve('4*b - b**3', 'b', 0.5, 3.5)
+    expected: '2'
+    tolerance: 1e-6
+    shown: ['is zero for $b > 0$ only at $b = 2$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-unit-circle
+    where: 'Problem 2(b), check: the value for the unit circle, 7π/2'
+    inputs: {}
+    formula: 2*pi*integrate('(4 - r**2)*r', 'r', 0, 1)
+    expected: '11.00'
+    shown: ['$I(1) = \tfrac72\pi = 11.00$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-unit-circle-exact
+    where: 'Problem 2(b), check: 7π/2 as a decimal'
+    inputs: {}
+    formula: 7*pi/2
+    expected: '11.00'
+    shown: ['$I(1) = \tfrac72\pi = 11.00$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-radius-3
+    where: 'Problem 2(b), check: the value for the circle of radius 3, −9π/2'
+    inputs: {}
+    formula: 2*pi*integrate('(4 - r**2)*r', 'r', 0, 3)
+    expected: '-14.14'
+    shown: ['$I(3) = -\tfrac92\pi = -14.14$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-radius-3-exact
+    where: 'Problem 2(b), check: −9π/2 as a decimal'
+    inputs: {}
+    formula: -9*pi/2
+    expected: '-14.14'
+    shown: ['$I(3) = -\tfrac92\pi = -14.14$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-zero
+    where: 'Problem 2(b), check: the radius where I(b) passes through zero, 2√2'
+    inputs: {}
+    formula: solve('2*b**2 - b**4/4', 'b', 1, 3.5)
+    expected: '2.83'
+    shown: ['$b = 2\sqrt2 = 2.83$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2-b-zero-exact
+    where: 'Problem 2(b), check: 2√2 as a decimal'
+    inputs: {}
+    formula: 2*sqrt(2)
+    expected: '2.83'
+    shown: ['$b = 2\sqrt2 = 2.83$']
+    source: {cite: mit, at: 'Part B, Problem 2(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-a
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: sin t against the dot product of F = (xy, y²) with the outward normal (x, y) at the point (cos t, sin t)'
+    formula: sin(t)
+    equals: (cos(t)*sin(t))*cos(t) + (sin(t)**2)*sin(t)
+    samples: {t: [0.3, 1.2, 2.5, 3.6, 5.0]}
+    tolerance: 1e-12
+    shown: ['= y\,(x^2 + y^2) = y = \sin t']
+    source: {cite: mit, at: 'Part B, Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-top
+    where: 'Problem 3(a), check: the normal component at the top of the circle, sin(π/2)'
+    inputs: {}
+    formula: sin(pi/2)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['so $\vec F \cdot \hat n = 1$, which is $\sin\tfrac{\pi}{2}$']
+    source: {cite: mit, at: 'Part B, Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-integrand
+    kind: identity
+    where: 'Problem 3(b): the flux integrand −y² dx + xy dy on the circle, with dx/dt and dy/dt taken numerically, against sin t'
+    formula: sin(t)
+    equals: -sin(t)**2*deriv('cos(u)', 'u', t) + cos(t)*sin(t)*deriv('sin(u)', 'u', t)
+    samples: {t: [0.3, 1.2, 2.5, 3.6, 5.0]}
+    tolerance: 1e-8
+    shown: ['= (\sin^3 t + \cos^2 t\,\sin t)\,dt = \sin t\,dt']
+    source: {cite: mit, at: 'Part B, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-upper
+    answer: p3-b-upper
+    where: 'Problem 3(b), answer box: the flux across the upper half of the circle, the line integral of −Q dx + P dy for t from 0 to π'
+    inputs: {}
+    formula: integrate('-sin(t)**2*(-sin(t)) + cos(t)*sin(t)*cos(t)', 't', 0, pi)
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['\int_0^{\pi} \sin t\,dt = 2']
+    source: {cite: mit, at: 'Part B, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b
+    answer: p3-b
+    where: 'Problem 3(b), answer box: the flux across the whole circle, the line integral of −Q dx + P dy for t from 0 to 2π'
+    inputs: {}
+    formula: integrate('-sin(t)**2*(-sin(t)) + cos(t)*sin(t)*cos(t)', 't', 0, 2*pi)
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['\int_0^{2\pi} \sin t\,dt = 0']
+    source: {cite: mit, at: 'Part B, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-lower
+    where: 'Problem 3(b): the flux across the lower half of the circle, t from π to 2π'
+    inputs: {}
+    formula: integrate('-sin(t)**2*(-sin(t)) + cos(t)*sin(t)*cos(t)', 't', pi, 2*pi)
+    expected: '-2'
+    tolerance: 1e-9
+    shown: ['the upper half gives $2$ and the lower half $-2$']
+    source: {cite: mit, at: 'Part B, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(c), answer box: 3y against numerical partial derivatives P_x + Q_y of P = xy, Q = y²'
+    formula: 3*y
+    equals: deriv('u*y', 'u', x) + deriv('v**2', 'v', y)
+    samples: {x: [0.5, 2.0, -1.3, 0.0], y: [0.5, 2.0, 0.8, -1.7]}
+    tolerance: 1e-6
+    shown: ['\operatorname{div}\vec F = y + 2y = 3y']
+    source: {cite: mit, at: 'Part B, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-inner
+    where: 'Problem 3(c): the inner integral of 3r² from 0 to 1'
+    inputs: {}
+    formula: integrate('3*r**2', 'r', 0, 1)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['The inner integral is $\int_0^1 3r^2\,dr = 1$']
+    source: {cite: mit, at: 'Part B, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-disk
+    where: 'Problem 3(c): the double integral of 3y over the unit disk in polar coordinates'
+    inputs: {}
+    formula: integrate('3*r**2', 'r', 0, 1)*integrate('sin(q)', 'q', 0, 2*pi)
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['= \int_0^{2\pi} \sin\theta\,d\theta = 0']
+    source: {cite: mit, at: 'Part B, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-half-disk
+    where: 'Problem 3(c), check: the double integral of 3y over the upper half disk'
+    inputs: {}
+    formula: integrate('3*r**2', 'r', 0, 1)*integrate('sin(q)', 'q', 0, pi)
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['Its double integral is $\int_0^{\pi} \sin\theta\,d\theta = 2$']
+    source: {cite: mit, at: 'Part B, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # ---- More practice
+
+  - id: practice-4e-1c
+    where: 'Last section, our remark on exercise 4E-1c: the flux of −y î + x ĵ across the segment from (0, 0) to (1, 0); there F = x ĵ and the normal to the right of travel is −ĵ'
+    inputs: {}
+    formula: integrate('-x', 'x', 0, 1)
+    expected: '-0.5'
+    tolerance: 1e-9
+    shown: ['comes out as $-\tfrac12$']
+    source: {cite: notesProblems, at: 'Exercise 4E-1c, p. 3 (our own remark)'}
+    origin: page-own

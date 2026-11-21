@@ -6,6 +6,7 @@ Run from the repository root. Only additive changes are carried over: new entrie
 new meanings, pages/courses added to a meaning, new forms/tex. Prints what it did.
 """
 import json, subprocess, sys
+sys.stdout.reconfigure(encoding="utf-8")  # the log names symbols such as √; a Windows console is cp1252
 
 base_ref, branch = sys.argv[1], sys.argv[2]
 def load_ref(ref):
