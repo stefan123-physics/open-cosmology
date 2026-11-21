@@ -1,0 +1,870 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for Part II; every answer is still checked here by an independent route:
+# solutions of systems by putting them back into their differential equations (numerical derivatives),
+# eigenvalues by putting them into the characteristic polynomial or through trace and determinant,
+# crossing values by solving the wall equations numerically, and matrix entries by solving the eigenvector equations.
+# The phase portraits and eigenlines of Problems 34(b) and 35(d), the determinant of Problem 36(c)(ii) and the
+# second routes in the checks are our own.
+
+page: content/year-2/18.03/18-03-problem-set-9.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the three problems of Part II (18 + 8, 4 + 4 + 18, 9 + 9 + 9)'
+    inputs: {}
+    formula: (18 + 8) + (4 + 4 + 18) + (9 + 9 + 9)
+    expected: '79'
+    shown: ['three problems (79 points)']
+    source: {cite: solutions, at: 'Part II solutions, pp. 1–3'}
+    origin: mit
+
+  - id: intro-part-i-points
+    where: 'Introduction and last section: the points of MIT''s Part I (4 + 10 + 6)'
+    inputs: {}
+    formula: 4 + 10 + 6
+    expected: '20'
+    shown: ['(20 points at MIT, not scored here)']
+    source: {cite: solutions, at: 'Part I points, p. 1'}
+    origin: mit
+
+  # ---- Problem 34(a)
+
+  - id: p34-re
+    answer: p34-re
+    where: 'Problem 34(a)(i), answer box: the real part of the eigenvalues is half the trace 0.5 + 0.5'
+    inputs: {}
+    formula: (0.5 + 0.5)/2
+    expected: '0.5'
+    tolerance: '0.0001'
+    shown: ['So $p = 0.5$ and $q = 1.5$.']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-im
+    answer: p34-im
+    where: 'Problem 34(a)(i), answer box: the imaginary part is the root of det A − (tr A/2)², with det A = 0.5·0.5 + 2.25'
+    inputs: {}
+    formula: sqrt((0.5*0.5 + 2.25*1) - ((0.5 + 0.5)/2)**2)
+    expected: '1.5'
+    tolerance: '0.0001'
+    shown: ['So $p = 0.5$ and $q = 1.5$.']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-det
+    where: 'Problem 34(a)(i): the determinant of the matrix'
+    inputs: {}
+    formula: 0.5*0.5 - 1*(-2.25)
+    expected: '2.5'
+    tolerance: '0.0001'
+    shown: ['determinant $0.25 + 2.25 = 2.5$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-charpoly
+    where: 'Problem 34(a)(i), check: the real part of p_A at λ = (1 + 3i)/2, which is p² − q² − p + 2.5, vanishes (and the imaginary part 2pq − q too)'
+    inputs: {}
+    formula: (0.5**2 - 1.5**2 - 0.5 + 2.5)**2 + (2*0.5*1.5 - 1.5)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['p_A(\lambda) = \lambda^2 - \lambda + 2.5']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-x
+    kind: identity
+    answer: p34-x
+    where: 'Problem 34(a)(ii), answer box: x(t), against the second equation solved for x, x = (0.5y − ẏ)/2.25, with a numerical derivative of y'
+    formula: exp(t/2)*cos(3*t/2)
+    equals: (0.5*(-(3/2)*exp(t/2)*sin(3*t/2)) - deriv('-(3/2)*exp(x/2)*sin(3*x/2)', 'x', t))/2.25
+    samples: {t: [-2, -0.7, 0.4, 1.9]}
+    tolerance: 1e-6
+    shown: ['expr="exp(t/2)*cos(3*t/2)"']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-y
+    kind: identity
+    answer: p34-y
+    where: 'Problem 34(a)(ii), answer box: y(t), against the first equation solved for y, y = ẋ − 0.5x, with a numerical derivative of x'
+    formula: -(3/2)*exp(t/2)*sin(3*t/2)
+    equals: deriv('exp(x/2)*cos(3*x/2)', 'x', t) - 0.5*exp(t/2)*cos(3*t/2)
+    samples: {t: [-2, -0.7, 0.4, 1.9]}
+    tolerance: 1e-6
+    shown: ['expr="-(3/2)*exp(t/2)*sin(3*t/2)"']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-u2
+    kind: identity
+    where: 'Problem 34(a)(i): the second real solution, x = e^(t/2) sin(3t/2), y = (3/2)e^(t/2) cos(3t/2), satisfies the second equation (ẏ against −2.25x + 0.5y)'
+    formula: deriv('(3/2)*exp(x/2)*cos(3*x/2)', 'x', t)
+    equals: -2.25*exp(t/2)*sin(3*t/2) + 0.5*(3/2)*exp(t/2)*cos(3*t/2)
+    samples: {t: [-2, -0.7, 0.4, 1.9]}
+    tolerance: 1e-6
+    shown: ['\vec u_2 = e^{t/2}\begin{pmatrix} \sin(3t/2) \\ \frac{3}{2}\cos(3t/2) \end{pmatrix}']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-xdot0
+    where: 'Problem 34(a)(ii): ẋ(0), by a numerical derivative of x(t)'
+    inputs: {}
+    formula: deriv('exp(x/2)*cos(3*x/2)', 'x', 0)
+    expected: '0.5'
+    tolerance: '1e-6'
+    shown: ['So $\dot x(0) = 0.5 > 0$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-ydot0
+    where: 'Problem 34(a)(ii): ẏ(0), by a numerical derivative of y(t)'
+    inputs: {}
+    formula: deriv('-(3/2)*exp(x/2)*sin(3*x/2)', 'x', 0)
+    expected: '-2.25'
+    tolerance: '1e-6'
+    shown: ['And $\dot y(0) = -2.25 < 0$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-next
+    answer: p34-next
+    where: 'Problem 34(a)(ii), answer box: the first zero of y(t) after t = 0, found numerically'
+    inputs: {}
+    formula: solve('-(3/2)*exp(x/2)*sin(3*x/2)', 'x', 1, 3)
+    expected: '2.094'
+    shown: ['$t = \dfrac{2\pi}{3} = 2.094$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-pos
+    answer: p34-pos
+    where: 'Problem 34(a)(iii), answer box: x at t = 2π/3'
+    inputs: {}
+    formula: exp((2*pi/3)/2)*cos(3*(2*pi/3)/2)
+    expected: '-2.850'
+    shown: ['$x = e^{\pi/3}\cos\pi = -2.850$', '$(-2.850, 0)$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-pos-m2
+    where: 'Problem 34(a)(iii): x at t = −2π/3'
+    inputs: {}
+    formula: exp((-2*pi/3)/2)*cos(3*(-2*pi/3)/2)
+    expected: '-0.351'
+    shown: ['$(-0.351, 0)$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-pos-m1
+    where: 'Problem 34(a)(iii): y at t = −π/3'
+    inputs: {}
+    formula: -(3/2)*exp((-pi/3)/2)*sin(3*(-pi/3)/2)
+    expected: '0.889'
+    shown: ['$(0, 0.889)$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-pos-p1
+    where: 'Problem 34(a)(iii): y at t = π/3'
+    inputs: {}
+    formula: -(3/2)*exp((pi/3)/2)*sin(3*(pi/3)/2)
+    expected: '-2.532'
+    shown: ['$(0, -2.532)$']
+    source: {cite: solutions, at: 'Problem 34(a), p. 1'}
+    origin: mit
+
+  - id: p34-growth
+    where: 'Problem 34(a)(iii), check: the growth over one full turn, the ratio of x at t = 2π/3 and at t = −2π/3, which is e^(2π/3)'
+    inputs: {}
+    formula: (exp((2*pi/3)/2)*cos(pi))/(exp((-2*pi/3)/2)*cos(-pi))
+    expected: '8.12'
+    shown: ['by the factor $e^{2\pi/3} = 8.12$']
+    source: {cite: mit, at: 'Part II, Problem 34(a) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 34(b)
+
+  - id: p34-b-w
+    kind: identity
+    answer: p34-b-w
+    where: 'Problem 34(b), answer box: w₂, from the first equation ẋ = x + by applied to the extra solution x = t e^t, y = w₂ e^t (numerical derivative)'
+    formula: 1/b
+    equals: (deriv('x*exp(x)', 'x', t) - t*exp(t))/(b*exp(t))
+    samples:
+      b: [0.5, 1, 4, -2]
+      t: [-1, 0.3, 1, 2]
+    tolerance: 1e-6
+    shown: ['expr="1/b"']
+    source: {cite: solutions, at: 'Problem 34(b), p. 1'}
+    origin: mit
+
+  - id: p34-b-ratio
+    kind: identity
+    where: 'Problem 34(b), our own phase portrait: the ratio x/y of the general solution, e^t(c₁ + c₂t) over e^t c₂/b, equals b(c₁/c₂ + t)'
+    formula: (exp(t)*(c1 + c2*t))/(exp(t)*c2/b)
+    equals: b*(c1/c2 + t)
+    samples:
+      b: [0.5, 1, 4, -2]
+      t: [-1, 0.3, 1, 2]
+      c1: [1, -2, 0, 3]
+      c2: [1, 1, -1, 2]
+    tolerance: 1e-9
+    shown: ['\dfrac{x}{y} = b\left(\dfrac{c_1}{c_2} + t\right)']
+    source: {cite: mit, at: 'Part II, Problem 34(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 35
+
+  - id: p35-tr
+    kind: identity
+    answer: p35-tr
+    where: 'Problem 35(a), answer box: the trace, the sum of the diagonal entries a and −1'
+    formula: a - 1
+    equals: a + (-1)
+    samples: {a: [-5, 0, 2.5, 4]}
+    tolerance: 1e-12
+    shown: ['expr="a - 1"']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-det
+    kind: identity
+    answer: p35-det
+    where: 'Problem 35(a), answer box: the determinant a·(−1) − (−3)·1'
+    formula: 3 - a
+    equals: a*(-1) - (-3)*1
+    samples: {a: [-5, 0, 2.5, 4]}
+    tolerance: 1e-12
+    shown: ['expr="3 - a"']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-line
+    kind: identity
+    answer: p35-line
+    where: 'Problem 35(a), answer box: the determinant in terms of the trace T, with a = T + 1 put into a·(−1) − (−3)·1'
+    formula: 2 - T
+    equals: (T + 1)*(-1) - (-3)*1
+    samples: {T: [-6, -1, 1.5, 3]}
+    tolerance: 1e-12
+    shown: ['expr="2 - T"']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-line-ends
+    where: 'Problem 35(a): the determinant at the two ends of the range, a = −5 and a = 4 (8 and −1; as one number 8·10 − 1)'
+    inputs: {}
+    formula: (3 - (-5))*10 + (3 - 4)
+    expected: '79'
+    shown: ['from $(-6, 8)$ to $(3, -1)$']
+    source: {cite: mit, at: 'Part II, Problem 35(a) (our own remark)'}
+    origin: page-own
+
+  - id: p35-b-det
+    answer: p35-b-det
+    where: 'Problem 35(b), answer box: the a with det A = 0, solved numerically'
+    inputs: {}
+    formula: solve('x*(-1) - (-3)*1', 'x', -5, 4)
+    expected: '3'
+    tolerance: '0.0001'
+    shown: ['$\det A = 3 - a = 0$ at $a = 3$']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-b-tr
+    answer: p35-b-tr
+    where: 'Problem 35(b), answer box: the a with tr A = 0, solved numerically'
+    inputs: {}
+    formula: solve('x + (-1)', 'x', -5, 4)
+    expected: '1'
+    tolerance: '0.0001'
+    shown: ['$\operatorname{tr}A = a - 1 = 0$ at $a = 1$']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-b-low
+    answer: p35-b-low
+    where: 'Problem 35(b), answer box: the smaller a with det A = (tr A/2)², solved numerically'
+    inputs: {}
+    formula: solve('(3 - x) - ((x - 1)/2)**2', 'x', -6, -3)
+    expected: '-4.464'
+    shown: ['so $a = -4.464$ and $a = 2.464$']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-b-high
+    answer: p35-b-high
+    where: 'Problem 35(b), answer box: the larger a with det A = (tr A/2)², solved numerically'
+    inputs: {}
+    formula: solve('(3 - x) - ((x - 1)/2)**2', 'x', 1, 3)
+    expected: '2.464'
+    shown: ['so $a = -4.464$ and $a = 2.464$']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-b-roots
+    where: 'Problem 35(b): the closed form −1 + 2√3 of the larger crossing'
+    inputs: {}
+    formula: -1 + 2*sqrt(3)
+    expected: '2.464'
+    shown: ['a = -1 \pm 2\sqrt 3']
+    source: {cite: solutions, at: 'Problem 35(a), p. 1'}
+    origin: mit
+
+  - id: p35-b-check-tr
+    where: 'Problem 35(b), check: the trace at a = −1 + 2√3'
+    inputs: {}
+    formula: (-1 + 2*sqrt(3)) - 1
+    expected: '1.464'
+    shown: ['the trace is $-2 + 2\sqrt 3 = 1.464$']
+    source: {cite: mit, at: 'Part II, Problem 35(b) (our own check)'}
+    origin: page-own
+
+  - id: p35-b-check-det
+    where: 'Problem 35(b), check: the determinant at a = −1 + 2√3, and the square of half the trace'
+    inputs: {}
+    formula: 3 - (-1 + 2*sqrt(3))
+    expected: '0.536'
+    shown: ['the determinant is $4 - 2\sqrt 3 = 0.536$', '$\left(\dfrac{1.464}{2}\right)^2 = 0.536$']
+    source: {cite: mit, at: 'Part II, Problem 35(b) (our own check)'}
+    origin: page-own
+
+  - id: p35-b-check-sq
+    where: 'Problem 35(b), check: (1.464/2)² at a = −1 + 2√3'
+    inputs: {}
+    formula: (((-1 + 2*sqrt(3)) - 1)/2)**2
+    expected: '0.536'
+    shown: ['$\left(\dfrac{1.464}{2}\right)^2 = 0.536$']
+    source: {cite: mit, at: 'Part II, Problem 35(b) (our own check)'}
+    origin: page-own
+
+  - id: p35-b-check-low-tr
+    where: 'Problem 35(b), check: the trace at a = −1 − 2√3'
+    inputs: {}
+    formula: (-1 - 2*sqrt(3)) - 1
+    expected: '-5.464'
+    shown: ['the trace is $-5.464$']
+    source: {cite: mit, at: 'Part II, Problem 35(b) (our own check)'}
+    origin: page-own
+
+  - id: p35-b-check-low-det
+    where: 'Problem 35(b), check: the determinant at a = −1 − 2√3'
+    inputs: {}
+    formula: 3 - (-1 - 2*sqrt(3))
+    expected: '7.464'
+    shown: ['the determinant $7.464$']
+    source: {cite: mit, at: 'Part II, Problem 35(b) (our own check)'}
+    origin: page-own
+
+  - id: p35-b-check-low-sq
+    where: 'Problem 35(b), check: (5.464/2)² at a = −1 − 2√3'
+    inputs: {}
+    formula: (((-1 - 2*sqrt(3)) - 1)/2)**2
+    expected: '7.464'
+    shown: ['$\left(\dfrac{5.464}{2}\right)^2 = 7.464$']
+    source: {cite: mit, at: 'Part II, Problem 35(b) (our own check)'}
+    origin: page-own
+
+  - id: p35-c-slip
+    where: 'Problem 35(c): 1 + 2√3, the value that two lines of MIT''s list print, is larger than 3'
+    inputs: {}
+    formula: 1 + 2*sqrt(3)
+    expected: '4.464'
+    shown: ['$1 + 2\sqrt 3 = 4.464$ is larger than $3$']
+    source: {cite: solutions, at: 'Problem 35(c), p. 2'}
+    origin: page-own
+
+  - id: p35-c-check-m5
+    where: 'Problem 35(c), check: a = −5, the square of half the trace −6'
+    inputs: {}
+    formula: ((-5 - 1)/2)**2
+    expected: '9'
+    shown: ['determinant $8 < 9$']
+    source: {cite: mit, at: 'Part II, Problem 35(c) (our own check)'}
+    origin: page-own
+
+  - id: p35-c-check-0
+    where: 'Problem 35(c), check: a = 0 and a = 2, the square of half the trace (−1 or 1)'
+    inputs: {}
+    formula: ((0 - 1)/2)**2
+    expected: '0.25'
+    shown: ['$3 > 0.25$', '$1 > 0.25$']
+    source: {cite: mit, at: 'Part II, Problem 35(c) (our own check)'}
+    origin: page-own
+
+  - id: p35-c-check-25
+    where: 'Problem 35(c), check: a = 2.5, the square of half the trace 1.5'
+    inputs: {}
+    formula: ((2.5 - 1)/2)**2
+    expected: '0.5625'
+    shown: ['$0.5 < 0.5625$']
+    source: {cite: mit, at: 'Part II, Problem 35(c) (our own check)'}
+    origin: page-own
+
+  - id: p35-d-m5
+    where: 'Problem 35(d), a = −5: the characteristic polynomial λ² + 6λ + 8 vanishes at −2 and at −4 (sum of squares)'
+    inputs: {}
+    formula: ((-2)**2 - (-5 - 1)*(-2) + (3 + 5))**2 + ((-4)**2 - (-5 - 1)*(-4) + (3 + 5))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\lambda^2 + 6\lambda + 8 = (\lambda + 2)(\lambda + 4)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-m5-vec
+    where: 'Problem 35(d), a = −5: A(−1, 1) = −2(−1, 1) and A(−3, 1) = −4(−3, 1), first rows (sum of squares; the second rows hold by the choice (1 + λ, 1))'
+    inputs: {}
+    formula: ((-5)*(-1) - 3*1 - (-2)*(-1))**2 + ((-5)*(-3) - 3*1 - (-4)*(-3))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\lambda = -2$ with eigenvector $(-1, 1)$, and $\lambda = -4$ with eigenvector $(-3, 1)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-def-low
+    where: 'Problem 35(d), a = −1 − 2√3: the repeated eigenvalue, half the trace'
+    inputs: {}
+    formula: ((-1 - 2*sqrt(3)) - 1)/2
+    expected: '-2.732'
+    shown: ['$\dfrac{\operatorname{tr}A}{2} = -1 - \sqrt 3 = -2.732$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-def-slope
+    where: 'Problem 35(d): the slope 1/√3 of the eigenline at the defective values'
+    inputs: {}
+    formula: 1/sqrt(3)
+    expected: '0.577'
+    shown: ['(slope $-0.577$)', '(slope $0.577$)']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-def-vec
+    where: 'Problem 35(d), a = −1 + 2√3: A(√3, 1) = (−1 + √3)(√3, 1), first row'
+    inputs: {}
+    formula: (-1 + 2*sqrt(3))*sqrt(3) - 3 - (-1 + sqrt(3))*sqrt(3)
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['with the eigenvector $(\sqrt 3, 1)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-def-high
+    where: 'Problem 35(d), a = −1 + 2√3: the repeated eigenvalue, half the trace'
+    inputs: {}
+    formula: ((-1 + 2*sqrt(3)) - 1)/2
+    expected: '0.732'
+    shown: ['$-1 + \sqrt 3 = 0.732$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-spiral-0
+    where: 'Problem 35(d), a = 0: the imaginary part √11/2 of the eigenvalues, from det A − (tr A/2)² = 3 − 1/4'
+    inputs: {}
+    formula: sqrt(3 - ((0 - 1)/2)**2)
+    expected: '1.658'
+    shown: ['$\dfrac{\sqrt{11}}{2} = 1.658$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-spiral-0-sol
+    kind: identity
+    where: 'Problem 35(d), a = 0, the graphed trajectory: x = e^(−t/2)(cos ωt/2 − ω sin ωt), y = e^(−t/2) cos ωt with ω = √11/2 satisfies ẏ = x − y'
+    formula: deriv('exp(-x/2)*cos(sqrt(11)/2*x)', 'x', t)
+    equals: exp(-t/2)*(0.5*cos(sqrt(11)/2*t) - sqrt(11)/2*sin(sqrt(11)/2*t)) - exp(-t/2)*cos(sqrt(11)/2*t)
+    samples: {t: [0, 0.8, 2, 5]}
+    tolerance: 1e-6
+    shown: ['4*exp(-s/2)*(0.5*cos(1.6583*s) - 1.6583*sin(1.6583*s))']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-spiral-0-sol-x
+    kind: identity
+    where: 'Problem 35(d), a = 0, the graphed trajectory: the same solution satisfies ẋ = −3y'
+    formula: deriv('exp(-x/2)*(0.5*cos(sqrt(11)/2*x) - sqrt(11)/2*sin(sqrt(11)/2*x))', 'x', t)
+    equals: -3*exp(-t/2)*cos(sqrt(11)/2*t)
+    samples: {t: [0, 0.8, 2, 5]}
+    tolerance: 1e-6
+    shown: ['4*exp(-s/2)*cos(1.6583*s)']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-center-x
+    kind: identity
+    where: 'Problem 35(d), a = 1, formula "A solution for a = 1": ẋ = x − 3y'
+    formula: deriv('cos(sqrt(2)*x) - sqrt(2)*sin(sqrt(2)*x)', 'x', t)
+    equals: (cos(sqrt(2)*t) - sqrt(2)*sin(sqrt(2)*t)) - 3*cos(sqrt(2)*t)
+    samples: {t: [0, 0.8, 2, 5]}
+    tolerance: 1e-6
+    shown: ['x = \cos\left(\sqrt 2\,t\right) - \sqrt 2\,\sin\left(\sqrt 2\,t\right)']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-center-y
+    kind: identity
+    where: 'Problem 35(d), a = 1, formula "A solution for a = 1": ẏ = x − y'
+    formula: deriv('cos(sqrt(2)*x)', 'x', t)
+    equals: (cos(sqrt(2)*t) - sqrt(2)*sin(sqrt(2)*t)) - cos(sqrt(2)*t)
+    samples: {t: [0, 0.8, 2, 5]}
+    tolerance: 1e-6
+    shown: ['y = \cos\left(\sqrt 2\,t\right)']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-center-period
+    where: 'Problem 35(d), a = 1: the period 2π/√2'
+    inputs: {}
+    formula: 2*pi/sqrt(2)
+    expected: '4.443'
+    shown: ['$\dfrac{2\pi}{\sqrt 2} = 4.443$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-center-root2
+    where: 'Problem 35(d), a = 1: √2 and 2√2 as used in the graph'
+    inputs: {}
+    formula: sqrt(2)
+    expected: '1.4142'
+    shown: ['cos(1.4142*s) - 1.4142*sin(1.4142*s)']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-center-2root2
+    where: 'Problem 35(d), a = 1: 2√2 as used in the graph'
+    inputs: {}
+    formula: 2*sqrt(2)
+    expected: '2.8284'
+    shown: ['2.8284']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-spiral-2
+    where: 'Problem 35(d), a = 2: the imaginary part √3/2 of the eigenvalues, from det A − (tr A/2)² = 1 − 1/4'
+    inputs: {}
+    formula: sqrt(1 - ((2 - 1)/2)**2)
+    expected: '0.866'
+    shown: ['$\dfrac{\sqrt 3}{2} = 0.866$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-25
+    where: 'Problem 35(d), a = 2.5: the characteristic polynomial λ² − 1.5λ + 0.5 vanishes at 0.5 and at 1 (sum of squares)'
+    inputs: {}
+    formula: (0.5**2 - (2.5 - 1)*0.5 + (3 - 2.5))**2 + (1**2 - (2.5 - 1)*1 + (3 - 2.5))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\lambda^2 - 1.5\lambda + 0.5 = (\lambda - 0.5)(\lambda - 1)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-25-vec
+    where: 'Problem 35(d), a = 2.5: A(1.5, 1) = 0.5(1.5, 1) and A(2, 1) = 1(2, 1), first rows (sum of squares)'
+    inputs: {}
+    formula: (2.5*1.5 - 3*1 - 0.5*1.5)**2 + (2.5*2 - 3*1 - 1*2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['For $\lambda = 0.5$ the eigenvector is $(1.5, 1)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-3-vec
+    where: 'Problem 35(d), a = 3: A(1, 1) = 0 and A(3, 1) = 2(3, 1), both rows (sum of squares)'
+    inputs: {}
+    formula: (3*1 - 3*1)**2 + (1*1 - 1*1)**2 + (3*3 - 3*1 - 2*3)**2 + (1*3 - 1*1 - 2*1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\lambda = 0$ with eigenvector $(1, 1)$, and $\lambda = 2$ with eigenvector $(3, 1)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-375
+    where: 'Problem 35(d), a = 3.75: the characteristic polynomial λ² − 2.75λ − 0.75 vanishes at 3 and at −0.25 (sum of squares)'
+    inputs: {}
+    formula: (3**2 - (3.75 - 1)*3 + (3 - 3.75))**2 + ((-0.25)**2 - (3.75 - 1)*(-0.25) + (3 - 3.75))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\lambda^2 - 2.75\lambda - 0.75 = (\lambda - 3)(\lambda + 0.25)$']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-375-vec
+    where: 'Problem 35(d), a = 3.75: A(4, 1) = 3(4, 1) and A(0.75, 1) = −0.25(0.75, 1), both rows (sum of squares)'
+    inputs: {}
+    formula: (3.75*4 - 3*1 - 3*4)**2 + (1*4 - 1*1 - 3*1)**2 + (3.75*0.75 - 3*1 + 0.25*0.75)**2 + (1*0.75 - 1*1 + 0.25*1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['A\begin{pmatrix} 4 \\ 1 \end{pmatrix} = \begin{pmatrix} 15 - 3 \\ 4 - 1 \end{pmatrix} = 3\begin{pmatrix} 4 \\ 1 \end{pmatrix}']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own solution)'}
+    origin: page-own
+
+  - id: p35-d-375-first
+    where: 'Problem 35(d), check: the first entry of A(4, 1) for a = 3.75'
+    inputs: {}
+    formula: 3.75*4
+    expected: '15'
+    shown: ['15 - 3']
+    source: {cite: mit, at: 'Part II, Problem 35(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 36(a)
+
+  - id: p36-a-11
+    kind: identity
+    answer: p36-a-11
+    where: 'Problem 36(a), answer box: the top left entry X₁₁ of e^(A(z)t), from the second row of the system for the first column, Ẋ₂₁ = bX₁₁ + aX₂₁, with X₂₁ = e^(at) sin bt (numerical derivative)'
+    formula: exp(a*t)*cos(b*t)
+    equals: (deriv('exp(a*x)*sin(b*x)', 'x', t) - a*exp(a*t)*sin(b*t))/b
+    samples:
+      a: [-1, 0, 0.5, 1]
+      b: [0.5, 1, 2, 1.3]
+      t: [0.2, 1, 2, 0.7]
+    tolerance: 1e-6
+    shown: ['expr="exp(a*t)*cos(b*t)"']
+    source: {cite: solutions, at: 'Problem 36(a), p. 3'}
+    origin: mit
+
+  - id: p36-a-12
+    kind: identity
+    answer: p36-a-12
+    where: 'Problem 36(a), answer box: the top right entry X₁₂ of e^(A(z)t), from the second row of the system for the second column, Ẋ₂₂ = bX₁₂ + aX₂₂, with X₂₂ = e^(at) cos bt (numerical derivative)'
+    formula: -exp(a*t)*sin(b*t)
+    equals: (deriv('exp(a*x)*cos(b*x)', 'x', t) - a*exp(a*t)*cos(b*t))/b
+    samples:
+      a: [-1, 0, 0.5, 1]
+      b: [0.5, 1, 2, 1.3]
+      t: [0.2, 1, 2, 0.7]
+    tolerance: 1e-6
+    shown: ['expr="-exp(a*t)*sin(b*t)"']
+    source: {cite: solutions, at: 'Problem 36(a), p. 3'}
+    origin: mit
+
+  - id: p36-a-first-row
+    kind: identity
+    where: 'Problem 36(a): the first row of the system for the first column of e^(A(z)t), Ẋ₁₁ = aX₁₁ − bX₂₁'
+    formula: deriv('exp(a*x)*cos(b*x)', 'x', t)
+    equals: a*exp(a*t)*cos(b*t) - b*exp(a*t)*sin(b*t)
+    samples:
+      a: [-1, 0, 0.5, 1]
+      b: [0.5, 1, 2, 1.3]
+      t: [0.2, 1, 2, 0.7]
+    tolerance: 1e-6
+    shown: ['e^{A(z)t} = \Phi(t)\,\Phi(0)^{-1} = e^{at}\begin{pmatrix} \cos bt & -\sin bt \\ \sin bt & \cos bt \end{pmatrix}']
+    source: {cite: solutions, at: 'Problem 36(a), p. 3'}
+    origin: mit
+
+  # ---- Problem 36(b)
+
+  - id: p36-b-x1
+    kind: identity
+    answer: p36-b-x1
+    where: 'Problem 36(b), answer box: x₁, against the equation solved for x, x = −(ẍ + 2ẋ)/2, with ẋ₁ = −2e^(−t) sin t and a numerical derivative of it'
+    formula: exp(-t)*(cos(t) + sin(t))
+    equals: -(deriv('-2*exp(-x)*sin(x)', 'x', t) + 2*(-2*exp(-t)*sin(t)))/2
+    samples: {t: [0.2, 1, 2, 3]}
+    tolerance: 1e-6
+    shown: ['expr="exp(-t)*(cos(t) + sin(t))"']
+    source: {cite: solutions, at: 'Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-x2
+    kind: identity
+    answer: p36-b-x2
+    where: 'Problem 36(b), answer box: x₂, against the equation solved for x, x = −(ẍ + 2ẋ)/2, with ẋ₂ = e^(−t)(cos t − sin t) and a numerical derivative of it'
+    formula: exp(-t)*sin(t)
+    equals: -(deriv('exp(-x)*(cos(x) - sin(x))', 'x', t) + 2*exp(-t)*(cos(t) - sin(t)))/2
+    samples: {t: [0.2, 1, 2, 3]}
+    tolerance: 1e-6
+    shown: ['expr="exp(-t)*sin(t)"']
+    source: {cite: solutions, at: 'Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-21
+    kind: identity
+    answer: p36-b-21
+    where: 'Problem 36(b), answer box: the bottom left entry of e^(At), against the numerical derivative of x₁'
+    formula: -2*exp(-t)*sin(t)
+    equals: deriv('exp(-x)*(cos(x) + sin(x))', 'x', t)
+    samples: {t: [0.2, 1, 2, 3]}
+    tolerance: 1e-6
+    shown: ['expr="-2*exp(-t)*sin(t)"']
+    source: {cite: solutions, at: 'Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-22
+    kind: identity
+    answer: p36-b-22
+    where: 'Problem 36(b), answer box: the bottom right entry of e^(At), against the numerical derivative of x₂'
+    formula: exp(-t)*(cos(t) - sin(t))
+    equals: deriv('exp(-x)*sin(x)', 'x', t)
+    samples: {t: [0.2, 1, 2, 3]}
+    tolerance: 1e-6
+    shown: ['expr="exp(-t)*(cos(t) - sin(t))"']
+    source: {cite: solutions, at: 'Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-x1-start
+    where: 'Problem 36(b): the starting slope of x₁ (must be 0)'
+    inputs: {}
+    formula: deriv('exp(-x)*(cos(x) + sin(x))', 'x', 0)
+    expected: '0'
+    tolerance: '1e-6'
+    shown: ['x_1(0) = 1, \quad \dot x_1(0) = 0']
+    source: {cite: mit, at: 'Part II, Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-x2-start
+    where: 'Problem 36(b): the starting slope of x₂ (must be 1)'
+    inputs: {}
+    formula: deriv('exp(-x)*sin(x)', 'x', 0)
+    expected: '1'
+    tolerance: '1e-6'
+    shown: ['x_2(0) = 0, \quad \dot x_2(0) = 1']
+    source: {cite: mit, at: 'Part II, Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-y1-start
+    where: 'Problem 36(b): the starting slope of the basic solution y₁ = e^(−t) cos t'
+    inputs: {}
+    formula: deriv('exp(-x)*cos(x)', 'x', 0)
+    expected: '-1'
+    tolerance: '1e-6'
+    shown: ['$\dot y_1(0) = -1$']
+    source: {cite: solutions, at: 'Problem 36(b), p. 3'}
+    origin: mit
+
+  - id: p36-b-mistake-slope
+    where: 'Problem 36(b), hint of a listed mistake: the starting slope of e^(−t)(cos t − sin t)'
+    inputs: {}
+    formula: deriv('exp(-x)*(cos(x) - sin(x))', 'x', 0)
+    expected: '-2'
+    tolerance: '1e-6'
+    shown: ['Your x₁ starts with the slope −2.']
+    source: {cite: mit, at: 'Part II, Problem 36(b) (our own hint)'}
+    origin: page-own
+
+  # ---- Problem 36(c)
+
+  - id: p36-c-u1x
+    kind: identity
+    answer: p36-c-u1x
+    where: 'Problem 36(c)(i), answer box: the first entry of u₁, from the second row of the system with the matrix of part (iii), ẏ = 2x + y, so x = (ẏ − y)/2 (numerical derivative of the second entry)'
+    formula: 2*exp(3*t) - exp(2*t)
+    equals: (deriv('2*exp(3*x) - 2*exp(2*x)', 'x', t) - (2*exp(3*t) - 2*exp(2*t)))/2
+    samples: {t: [-1, -0.3, 0.4, 1]}
+    tolerance: 1e-6
+    shown: ['expr="2*exp(3*t) - exp(2*t)"']
+    source: {cite: solutions, at: 'Problem 36(c)(i), p. 3'}
+    origin: mit
+
+  - id: p36-c-u1y
+    kind: identity
+    answer: p36-c-u1y
+    where: 'Problem 36(c)(i), answer box: the second entry of u₁, from the first row of the system, ẋ = 4x − y, so y = 4x − ẋ (numerical derivative of the first entry)'
+    formula: 2*exp(3*t) - 2*exp(2*t)
+    equals: 4*(2*exp(3*t) - exp(2*t)) - deriv('2*exp(3*x) - exp(2*x)', 'x', t)
+    samples: {t: [-1, -0.3, 0.4, 1]}
+    tolerance: 1e-6
+    shown: ['expr="2*exp(3*t) - 2*exp(2*t)"']
+    source: {cite: solutions, at: 'Problem 36(c)(i), p. 3'}
+    origin: mit
+
+  - id: p36-c-u2x
+    kind: identity
+    answer: p36-c-u2x
+    where: 'Problem 36(c)(i), answer box: the first entry of u₂, from x = (ẏ − y)/2 (numerical derivative of the second entry)'
+    formula: -exp(3*t) + exp(2*t)
+    equals: (deriv('-exp(3*x) + 2*exp(2*x)', 'x', t) - (-exp(3*t) + 2*exp(2*t)))/2
+    samples: {t: [-1, -0.3, 0.4, 1]}
+    tolerance: 1e-6
+    shown: ['expr="-exp(3*t) + exp(2*t)"']
+    source: {cite: solutions, at: 'Problem 36(c)(i), p. 3'}
+    origin: mit
+
+  - id: p36-c-u2y
+    kind: identity
+    answer: p36-c-u2y
+    where: 'Problem 36(c)(i), answer box: the second entry of u₂, from y = 4x − ẋ (numerical derivative of the first entry)'
+    formula: -exp(3*t) + 2*exp(2*t)
+    equals: 4*(-exp(3*t) + exp(2*t)) - deriv('-exp(3*x) + exp(2*x)', 'x', t)
+    samples: {t: [-1, -0.3, 0.4, 1]}
+    tolerance: 1e-6
+    shown: ['expr="-exp(3*t) + 2*exp(2*t)"']
+    source: {cite: solutions, at: 'Problem 36(c)(i), p. 3'}
+    origin: mit
+
+  - id: p36-c-det
+    kind: identity
+    answer: p36-c-det
+    where: 'Problem 36(c)(ii), answer box: the determinant of e^(At), multiplied out from its four entries'
+    formula: exp(5*t)
+    equals: (2*exp(3*t) - exp(2*t))*(-exp(3*t) + 2*exp(2*t)) - (-exp(3*t) + exp(2*t))*(2*exp(3*t) - 2*exp(2*t))
+    samples: {t: [-1, -0.3, 0.4, 1]}
+    tolerance: 1e-9
+    shown: ['expr="exp(5*t)"']
+    source: {cite: mit, at: 'Part II, Problem 36(c)(ii) (our own addition)'}
+    origin: page-own
+
+  - id: p36-c-p
+    answer: p36-c-p
+    where: 'Problem 36(c)(iii), answer box: p from p + q = 3 and p + 2q = 2 (q = 3 − p put into the second equation, solved numerically)'
+    inputs: {}
+    formula: solve('x + 2*(3 - x) - 2', 'x', -10, 10)
+    expected: '4'
+    tolerance: '0.0001'
+    shown: ['so $q = -1$ and $p = 4$']
+    source: {cite: solutions, at: 'Problem 36(c)(iii), p. 3'}
+    origin: mit
+
+  - id: p36-c-q
+    answer: p36-c-q
+    where: 'Problem 36(c)(iii), answer box: q from p + q = 3 and p + 2q = 2 (p = 3 − q put into the second equation, solved numerically)'
+    inputs: {}
+    formula: solve('(3 - x) + 2*x - 2', 'x', -10, 10)
+    expected: '-1'
+    tolerance: '0.0001'
+    shown: ['so $q = -1$ and $p = 4$']
+    source: {cite: solutions, at: 'Problem 36(c)(iii), p. 3'}
+    origin: mit
+
+  - id: p36-c-r
+    answer: p36-c-r
+    where: 'Problem 36(c)(iii), answer box: r from r + s = 3 and r + 2s = 4 (solved numerically)'
+    inputs: {}
+    formula: solve('x + 2*(3 - x) - 4', 'x', -10, 10)
+    expected: '2'
+    tolerance: '0.0001'
+    shown: ['so $s = 1$ and $r = 2$']
+    source: {cite: solutions, at: 'Problem 36(c)(iii), p. 3'}
+    origin: mit
+
+  - id: p36-c-s
+    answer: p36-c-s
+    where: 'Problem 36(c)(iii), answer box: s from r + s = 3 and r + 2s = 4 (solved numerically)'
+    inputs: {}
+    formula: solve('(3 - x) + 2*x - 4', 'x', -10, 10)
+    expected: '1'
+    tolerance: '0.0001'
+    shown: ['so $s = 1$ and $r = 2$']
+    source: {cite: solutions, at: 'Problem 36(c)(iii), p. 3'}
+    origin: mit
+
+  - id: p36-c-derivative
+    where: 'Problem 36(c)(iii), check: the derivative of the top left entry of e^(At) at t = 0 is the top left entry of A'
+    inputs: {}
+    formula: deriv('2*exp(3*x) - exp(2*x)', 'x', 0)
+    expected: '4'
+    tolerance: '1e-6'
+    shown: ['\begin{pmatrix} 6 - 2 & -3 + 2 \\ 6 - 4 & -3 + 4 \end{pmatrix}']
+    source: {cite: mit, at: 'Part II, Problem 36(c)(iii) (our own check)'}
+    origin: page-own
+
+  - id: p36-c-trace-det
+    where: 'Problem 36(c)(iii), check: the determinant 4·1 − (−1)·2 of A equals the product 3·2 of the eigenvalues'
+    inputs: {}
+    formula: 4*1 - (-1)*2
+    expected: '6'
+    shown: ['the determinant is $4 + 2 = 6 = 3\cdot 2$']
+    source: {cite: mit, at: 'Part II, Problem 36(c)(iii) (our own check)'}
+    origin: page-own

@@ -1,0 +1,899 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# the two (or three) waves are added as arrows (real and imaginary parts) or as cosines in time, and the maxima,
+# minima and averages are then found numerically (solve, deriv, integrate), not from the page's closed forms.
+# In the nested expressions q and p are the variables of the integral, derivative or solve.
+# In Problem 1 the speed of light c is a sample value (it overrides the constant of calcs/constants.yaml), not 3e8.
+# Lengths are plain numbers in the unit named in each entry (mm in Problem 2, nm in Problem 4).
+
+page: content/year-2/8.03/8-03-problem-set-10.mdx
+calcs:
+  # ---- Problem 1: source in front of a perfect conductor.
+  # Direct wave: arrow 1. Reflected wave: arrow of length 1 turned by the phase 4 pi nu L/c + pi.
+  # Squared length of the sum: (1 + cos)^2 + sin^2. Its derivative with respect to L is zero at maxima and minima.
+
+  - id: p1-a-first
+    kind: identity
+    answer: p1-a-first
+    where: 'Problem 1(a), answer box: smallest L with a maximum, as the first zero of the derivative of the summed arrows'
+    formula: c/(4*nu)
+    equals: >-
+      solve("deriv('(1 + cos(4*pi*nu*p/c + pi))**2 + sin(4*pi*nu*p/c + pi)**2', 'p', q)", 'q', 0.15*c/nu, 0.35*c/nu)
+    samples:
+      c: [2.0, 3.0, 4.5]
+      nu: [0.6, 1.1, 1.9]
+    tolerance: 1e-6
+    shown: ['id="p1-a-first"']
+    source: {cite: mit, at: 'Problem 10.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-step
+    kind: identity
+    answer: p1-a-step
+    where: 'Problem 1(a), answer box: step between maxima, as the difference of the second and the first maximum found numerically'
+    formula: c/(2*nu)
+    equals: >-
+      solve("deriv('(1 + cos(4*pi*nu*p/c + pi))**2 + sin(4*pi*nu*p/c + pi)**2', 'p', q)", 'q', 0.65*c/nu, 0.85*c/nu)
+      - solve("deriv('(1 + cos(4*pi*nu*p/c + pi))**2 + sin(4*pi*nu*p/c + pi)**2', 'p', q)", 'q', 0.15*c/nu, 0.35*c/nu)
+    samples:
+      c: [2.0, 3.0, 4.5]
+      nu: [0.6, 1.1, 1.9]
+    tolerance: 1e-6
+    shown: ['id="p1-a-step"']
+    source: {cite: mit, at: 'Problem 10.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-b
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box: smallest L > 0 with a minimum, as the zero of the derivative between the first two maxima'
+    formula: c/(2*nu)
+    equals: >-
+      solve("deriv('(1 + cos(4*pi*nu*p/c + pi))**2 + sin(4*pi*nu*p/c + pi)**2', 'p', q)", 'q', 0.4*c/nu, 0.6*c/nu)
+    samples:
+      c: [2.0, 3.0, 4.5]
+      nu: [0.6, 1.1, 1.9]
+    tolerance: 1e-6
+    shown: ['id="p1-b"']
+    source: {cite: mit, at: 'Problem 10.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-dark
+    where: 'Problem 1(b), check: at L = c/(2 nu) the summed arrows have zero length (sample c = 3, nu = 1.1)'
+    inputs: {c: 3.0, nu: 1.1}
+    formula: (1 + cos(4*pi*nu*(c/(2*nu))/c + pi))**2 + sin(4*pi*nu*(c/(2*nu))/c + pi)**2
+    expected: 0
+    tolerance: 1e-9
+    shown: ['Because the two amplitudes are equal the minimum is completely dark.']
+    source: {cite: mit, at: 'Problem 10.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-four
+    where: 'Problem 1(a), check: at L = c/(4 nu) the summed arrows have squared length 4 (sample c = 3, nu = 1.1)'
+    inputs: {c: 3.0, nu: 1.1}
+    formula: (1 + cos(4*pi*nu*(c/(4*nu))/c + pi))**2 + sin(4*pi*nu*(c/(4*nu))/c + pi)**2
+    expected: 4
+    tolerance: 1e-9
+    shown: ['four times the intensity of the source alone, the most that two equal waves can give']
+    source: {cite: mit, at: 'Problem 10.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-intensity-form
+    kind: identity
+    where: 'Problem 1(a), check: 4 sin^2(2 pi nu L/c) against the time average of the two summed waves (unit amplitudes; one wave alone averages to 1/2)'
+    formula: 4*sin(2*pi*nu*L/c)**2
+    equals: integrate('(cos(q) + cos(q - 4*pi*nu*L/c - pi))**2', 'q', 0, 2*pi)/pi
+    samples:
+      c: [2.0, 3.0, 4.5]
+      nu: [0.6, 1.1, 1.9]
+      L: [0.4, 1.7, 2.9]
+    tolerance: 1e-8
+    shown: ['4I_0\sin^2\frac{2\pi\nu L}{c}']
+    source: {cite: mit, at: 'Problem 10.1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-green-1
+    where: 'Problem 1(a), check: first maximum for a wavelength of 520 nm (nm)'
+    inputs: {lam: 520}
+    formula: lam/4
+    expected: 130
+    shown: ['$L = 130$ nm']
+    source: {cite: mit, at: 'Problem 10.1(a), p. 1 (our own number)'}
+    origin: page-own
+
+  - id: p1-green-2
+    where: 'Problem 1(a), check: second maximum for 520 nm (nm)'
+    inputs: {lam: 520}
+    formula: 3*lam/4
+    expected: 390
+    shown: ['$390$ nm']
+    source: {cite: mit, at: 'Problem 10.1(a), p. 1 (our own number)'}
+    origin: page-own
+
+  - id: p1-green-3
+    where: 'Problem 1(a), check: third maximum for 520 nm (nm)'
+    inputs: {lam: 520}
+    formula: 5*lam/4
+    expected: 650
+    shown: ['$650$ nm.']
+    source: {cite: mit, at: 'Problem 10.1(a), p. 1 (our own number)'}
+    origin: page-own
+
+  # The plate: start at the first maximum (4 pi nu L/c = pi) and add the phase 4 pi nu (n - 1) h/c of a plate of
+  # thickness h crossed twice. The first zero of the derivative in h is the thinnest plate that gives a minimum.
+  - id: p1-c
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box: thinnest plate, as the first minimum in h of the summed arrows, starting from a maximum'
+    formula: c/(4*nu*(n - 1))
+    equals: >-
+      solve("deriv('(1 + cos(pi + 4*pi*nu*(n - 1)*p/c + pi))**2 + sin(pi + 4*pi*nu*(n - 1)*p/c + pi)**2', 'p', q)", 'q', 0.15*c/(nu*(n - 1)), 0.35*c/(nu*(n - 1)))
+    samples:
+      c: [2.0, 3.0, 4.5]
+      nu: [0.6, 1.1, 1.9]
+      n: [1.33, 1.5, 1.8]
+    tolerance: 1e-6
+    shown: ['id="p1-c"']
+    source: {cite: mit, at: 'Problem 10.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-number
+    where: 'Problem 1(c), check: plate for 520 nm and n = 1.5 (nm)'
+    inputs: {lam: 520, n: 1.5}
+    formula: lam/(4*(n - 1))
+    expected: 260
+    shown: ['$h = 520/(4 \times 0.5) = 260$ nm']
+    source: {cite: mit, at: 'Problem 10.1(c), p. 1 (our own number)'}
+    origin: page-own
+
+  # ---- Problem 2: three narrow slits. Lengths in mm: lam = 0.0005, d = 1, L = 5000.
+  # The slits are added as arrows: real parts (cosines) and imaginary parts (sines) of 1, e^(iD), e^(2iD),
+  # with D = 2 pi d x/(lam L) the phase between neighbours at the position x on the screen.
+
+  - id: p2-given
+    kind: fact
+    where: 'Problem 2, statement: wavelength, slit distance and screen distance'
+    shown: ['$\lambda = 500$ nm', '$d = 1$ mm apart', '$L = 5$ m behind the slits']
+    source: {cite: mit, at: 'Problem 10.2, p. 2'}
+    origin: mit
+
+  - id: p2-a
+    answer: p2-a
+    where: 'Problem 2(a), answer box: first minimum of two slits (mm), as the first root of the summed field 2 cos(pi d x/(lam L))'
+    inputs: {lam: 0.0005, d: 1, L: 5000}
+    formula: solve('cos(pi*d*q/(lam*L))', 'q', 0.5, 2)
+    expected: 1.25
+    tolerance: 1e-6
+    shown: ['id="p2-a"']
+    source: {cite: mit, at: 'Problem 10.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-a-shown
+    where: 'Problem 2(a), solution: lam L/(2d) with units'
+    inputs: {lam: 500 nm, L: 5 m, d: 1 mm}
+    formula: lam*L/(2*d)
+    expected: 1.25 mm
+    shown: ['1.25 \times 10^{-3}\ \text{m} = 1.25\ \text{mm}']
+    source: {cite: mit, at: 'Problem 10.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-a-angle
+    where: 'Problem 2(a), check: the angle of the first minimum, x/L'
+    inputs: {x: 1.25 mm, L: 5 m}
+    formula: x/L
+    expected: 2.5e-4
+    shown: ['$x/L = 2.5 \times 10^{-4}$']
+    source: {cite: mit, at: 'Problem 10.2(a), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-spacing
+    where: 'Problem 2(b), solution: distance between bright fringes, lam L/d'
+    inputs: {lam: 500 nm, L: 5 m, d: 1 mm}
+    formula: lam*L/d
+    expected: 2.5 mm
+    shown: ['$\pm2.5$ mm and $\pm5$ mm']
+    source: {cite: mit, at: 'Problem 10.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-dark-lines
+    where: 'Problem 2(b), solution: second dark line of two slits, at one and a half fringe distances (mm)'
+    inputs: {s: 2.5}
+    formula: 1.5*s
+    expected: 3.75
+    shown: ['$\pm3.75$ mm']
+    source: {cite: mit, at: 'Problem 10.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-b
+    answer: p2-b
+    where: 'Problem 2(b), answer box: height of a two-slit fringe in units of one slit, as a ratio of time averages (two waves in step against one)'
+    formula: integrate('(cos(q) + cos(q))**2', 'q', 0, 2*pi)/integrate('cos(q)**2', 'q', 0, 2*pi)
+    expected: 4
+    tolerance: 1e-8
+    shown: ['id="p2-b"']
+    source: {cite: mit, at: 'Problem 10.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-average
+    where: 'Problem 2(b), check: the two-slit intensity 4 cos^2(D/2) averaged over the phase D, in units of I0'
+    formula: integrate('4*cos(q/2)**2', 'q', 0, 2*pi)/(2*pi)
+    expected: 2
+    tolerance: 1e-8
+    shown: ['$4I_0 \times \tfrac12 = 2I_0$']
+    source: {cite: mit, at: 'Problem 10.2(b), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-c
+    answer: p2-c
+    where: 'Problem 2(c), answer box: first minimum of three slits (mm), as the first root of the summed field 1 + 2 cos(D)'
+    inputs: {lam: 0.0005, d: 1, L: 5000}
+    formula: solve('1 + 2*cos(2*pi*d*q/(lam*L))', 'q', 0.3, 1.2)
+    expected: 0.833
+    tolerance: 0.0005
+    shown: ['id="p2-c"']
+    source: {cite: mit, at: 'Problem 10.2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-shown
+    where: 'Problem 2(c), solution: a third of the fringe distance (mm)'
+    inputs: {s: 2.5}
+    formula: s/3
+    expected: 0.833
+    shown: ['\frac{2.5\ \text{mm}}{3} = 0.833\ \text{mm}']
+    source: {cite: mit, at: 'Problem 10.2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-second-zero
+    where: 'Problem 2(d), solution: second zero of three slits (mm), as the second root of 1 + 2 cos(D)'
+    inputs: {lam: 0.0005, d: 1, L: 5000}
+    formula: solve('1 + 2*cos(2*pi*d*q/(lam*L))', 'q', 1.3, 2.2)
+    expected: 1.667
+    shown: ['$x = \pm0.833$ mm and $\pm1.667$ mm']
+    source: {cite: mit, at: 'Problem 10.2(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-form
+    kind: identity
+    where: 'Problem 2(d), solution: (1 + 2 cos D)^2 against the three summed arrows'
+    formula: (1 + 2*cos(D))**2
+    equals: (1 + cos(D) + cos(2*D))**2 + (sin(D) + sin(2*D))**2
+    samples:
+      D: [0.4, 1.3, 2.9, 4.4]
+    tolerance: 1e-9
+    shown: ['I_0\left(1 + 2\cos\delta\right)^2']
+    source: {cite: reading2, at: 'p. 4 (N-source intensity with N = 3)'}
+    origin: page-own
+
+  - id: p2-d-lesson-form
+    kind: identity
+    where: 'Problem 2(d), solution: the lesson''s N-source form with N = 3 against the three summed arrows'
+    formula: (sin(3*D/2)/sin(D/2))**2
+    equals: (1 + cos(D) + cos(2*D))**2 + (sin(D) + sin(2*D))**2
+    samples:
+      D: [0.4, 1.3, 2.9, 4.4]
+    tolerance: 1e-9
+    shown: ['I_0\left[\frac{\sin(3\delta/2)}{\sin(\delta/2)}\right]^2']
+    source: {cite: reading2, at: 'p. 4 (N-source intensity with N = 3)'}
+    origin: page-own
+
+  - id: p2-e-main
+    answer: p2-e-main
+    where: 'Problem 2(e), answer box: height of the fringe at x = 2.5 mm (same as the central one), from the three summed arrows'
+    inputs: {lam: 0.0005, d: 1, L: 5000, x: 2.5}
+    formula: (1 + cos(2*pi*d*x/(lam*L)) + cos(4*pi*d*x/(lam*L)))**2 + (sin(2*pi*d*x/(lam*L)) + sin(4*pi*d*x/(lam*L)))**2
+    expected: 9
+    tolerance: 1e-8
+    shown: ['id="p2-e-main"']
+    source: {cite: mit, at: 'Problem 10.2(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-side
+    answer: p2-e-side
+    where: 'Problem 2(e), answer box: height of the fringe at x = 1.25 mm, from the three summed arrows'
+    inputs: {lam: 0.0005, d: 1, L: 5000, x: 1.25}
+    formula: (1 + cos(2*pi*d*x/(lam*L)) + cos(4*pi*d*x/(lam*L)))**2 + (sin(2*pi*d*x/(lam*L)) + sin(4*pi*d*x/(lam*L)))**2
+    expected: 1
+    tolerance: 1e-8
+    shown: ['id="p2-e-side"']
+    source: {cite: mit, at: 'Problem 10.2(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-average
+    where: 'Problem 2(e), check: the three-slit intensity averaged over the phase, in units of I0'
+    formula: integrate('(1 + 2*cos(q))**2', 'q', 0, 2*pi)/(2*pi)
+    expected: 3
+    tolerance: 1e-8
+    shown: ['$1 + 4 \times \tfrac12 = 3$']
+    source: {cite: mit, at: 'Problem 10.2(e), p. 2 (our own check)'}
+    origin: page-own
+
+  # The half-covered slit: its arrow has the length sqrt(1/2).
+  - id: p2-f
+    answer: p2-f
+    where: 'Problem 2(f), answer box: height of the fringe at x = 2.5 mm with the first arrow shortened to sqrt(1/2)'
+    inputs: {lam: 0.0005, d: 1, L: 5000, x: 2.5}
+    formula: (sqrt(0.5) + cos(2*pi*d*x/(lam*L)) + cos(4*pi*d*x/(lam*L)))**2 + (sin(2*pi*d*x/(lam*L)) + sin(4*pi*d*x/(lam*L)))**2
+    expected: 7.33
+    tolerance: 0.005
+    shown: ['id="p2-f"']
+    source: {cite: mit, at: 'Problem 10.2(f), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-f-shown
+    where: 'Problem 2(f), solution: 9/2 + 2 sqrt 2'
+    formula: 9/2 + 2*sqrt(2)
+    expected: 7.33
+    shown: ['\left(\frac92 + 2\sqrt2\right) I_0 = 7.33\,I_0']
+    source: {cite: mit, at: 'Problem 10.2(f), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-f-wrong-sum
+    where: 'Problem 2(f), check: the wrong result of adding intensities'
+    formula: 1 + 1 + 0.5
+    expected: 2.5
+    shown: ['Adding intensities would give $2.5\,I_0$']
+    source: {cite: mit, at: 'Problem 10.2(f), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-f-wrong-half
+    where: 'Problem 2(f), check: the wrong result of halving the field'
+    formula: (1 + 1 + 0.5)**2
+    expected: 6.25
+    shown: ['$2.5^2 I_0 = 6.25\,I_0$']
+    source: {cite: mit, at: 'Problem 10.2(f), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-g-form
+    kind: identity
+    where: 'Problem 2(g), solution: the intensity 5/2 + (2 + sqrt 2) cos D + sqrt 2 cos 2D against the three summed arrows'
+    formula: 2.5 + (2 + sqrt(2))*cos(D) + sqrt(2)*cos(2*D)
+    equals: (sqrt(0.5) + cos(D) + cos(2*D))**2 + (sin(D) + sin(2*D))**2
+    samples:
+      D: [0.4, 1.3, 2.9, 4.4]
+    tolerance: 1e-9
+    shown: ['\frac{\langle I\rangle}{I_0} = \frac52 + \left(2 + \sqrt2\right)\cos\delta + \sqrt2\cos2\delta']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-g
+    answer: p2-g
+    where: 'Problem 2(g), answer box (our own check): nearest minimum (mm), as the zero of the numerical derivative of the summed arrows'
+    inputs: {lam: 0.0005, d: 1, L: 5000}
+    formula: >-
+      solve("deriv('(sqrt(0.5) + cos(2*pi*d*p/(lam*L)) + cos(4*pi*d*p/(lam*L)))**2 + (sin(2*pi*d*p/(lam*L)) + sin(4*pi*d*p/(lam*L)))**2', 'p', q)", 'q', 0.6, 1.1)
+    expected: 0.883
+    tolerance: 0.0005
+    shown: ['id="p2-g"']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-g-rhs
+    where: 'Problem 2(g), solution: right-hand side of the equation'
+    formula: -(1 + sqrt(2))/4
+    expected: -0.604
+    shown: ['The right-hand side is $-0.604$']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-g-forms-agree
+    where: 'Problem 2(g), solution: the two forms of the right-hand side are equal'
+    formula: (2 + sqrt(2))/(4*sqrt(2)) - (1 + sqrt(2))/4
+    expected: 0
+    tolerance: 1e-12
+    shown: ['-\frac{2 + \sqrt2}{4\sqrt2} = -\frac{1 + \sqrt2}{4}']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-g-delta
+    where: 'Problem 2(g), check: the phase at the minimum (rad)'
+    formula: acos(-(1 + sqrt(2))/4)
+    expected: 2.219
+    shown: ['so $\delta = 2.219$ rad']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-g-delta-degrees
+    where: 'Problem 2(g), check: the same phase in degrees'
+    formula: acos(-(1 + sqrt(2))/4)*180/pi
+    expected: 127
+    shown: ['about $127^\circ$']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-g-x-shown
+    where: 'Problem 2(g), check: position of the minimum from the phase (mm)'
+    inputs: {s: 2.5}
+    formula: s*acos(-(1 + sqrt(2))/4)/(2*pi)
+    expected: 0.883
+    shown: ['2.5\ \text{mm} \times \frac{2.219}{2\pi} = 0.883\ \text{mm}']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-g-min-value
+    where: 'Problem 2(g), check: the intensity at the minimum, from the three summed arrows at D = 2.2188'
+    inputs: {D: 2.21881}
+    formula: (sqrt(0.5) + cos(D) + cos(2*D))**2 + (sin(D) + sin(2*D))**2
+    expected: 0.055
+    shown: ['gives $0.055\,I_0$']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-g-equal-slits
+    where: 'Problem 2(g), check: for three equal slits the same condition gives cos D = -1/2, D = 2 pi/3'
+    formula: acos(-0.5)*3/(2*pi)
+    expected: 1
+    tolerance: 1e-9
+    shown: ['the same steps give $\cos\delta = -\tfrac12$']
+    source: {cite: mit, at: 'Problem 10.2(g), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-h
+    answer: p2-h
+    where: 'Problem 2(h), answer box (our own check): height of the fringe at x = 1.25 mm with the first arrow shortened'
+    inputs: {lam: 0.0005, d: 1, L: 5000, x: 1.25}
+    formula: (sqrt(0.5) + cos(2*pi*d*x/(lam*L)) + cos(4*pi*d*x/(lam*L)))**2 + (sin(2*pi*d*x/(lam*L)) + sin(4*pi*d*x/(lam*L)))**2
+    expected: 0.5
+    tolerance: 1e-8
+    shown: ['id="p2-h"']
+    source: {cite: mit, at: 'Problem 10.2(h), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-h-second-min
+    where: 'Problem 2(h), check: the second minimum (mm), as the zero of the numerical derivative between the small and the next large fringe'
+    inputs: {lam: 0.0005, d: 1, L: 5000}
+    formula: >-
+      solve("deriv('(sqrt(0.5) + cos(2*pi*d*p/(lam*L)) + cos(4*pi*d*p/(lam*L)))**2 + (sin(2*pi*d*p/(lam*L)) + sin(4*pi*d*p/(lam*L)))**2', 'p', q)", 'q', 1.4, 1.9)
+    expected: 1.617
+    shown: ['$2.5 - 0.883 = 1.617$ mm']
+    source: {cite: mit, at: 'Problem 10.2(h), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: two dipoles. The two waves are added as cosines in time, with q = omega t, and the square is
+  # averaged over a period. Two waves in step give the integral 4 pi, so dividing by 4 pi gives the fraction of 4 I0.
+  # The dipole at +x is closer by (separation) sin(th), which advances its wave.
+
+  - id: p3-a
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: pattern of two dipoles in phase, half a wavelength apart, against a numerical time average'
+    formula: cos(pi*sin(th)/2)**2
+    equals: integrate('(cos(q + pi/2*sin(th)) + cos(q - pi/2*sin(th)))**2', 'q', 0, 2*pi)/(4*pi)
+    samples:
+      th: [0.3, 0.9, 1.2, 2.5, 4.0]
+    tolerance: 1e-8
+    shown: ['id="p3-a"']
+    source: {cite: mit, at: 'Problem 10.3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-60
+    answer: p3-a-60
+    where: 'Problem 3(a), answer box: the same time average at th = pi/3'
+    formula: integrate('(cos(q + pi/2*sin(pi/3)) + cos(q - pi/2*sin(pi/3)))**2', 'q', 0, 2*pi)/(4*pi)
+    expected: 0.0436
+    tolerance: 0.00005
+    shown: ['id="p3-a-60"']
+    source: {cite: mit, at: 'Problem 10.3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-argument
+    where: 'Problem 3(a), solution: half the phase difference at pi/3 (rad), and the cosine squared'
+    formula: pi/2*sqrt(3)/2
+    expected: 1.360
+    shown: ['\cos^2(1.360) = 0.0436']
+    source: {cite: mit, at: 'Problem 10.3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-path
+    where: 'Problem 3(a), check: path difference at pi/3 in wavelengths'
+    formula: sin(pi/3)/2
+    expected: 0.433
+    shown: ['$0.433\,\lambda$']
+    source: {cite: mit, at: 'Problem 10.3(a), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-b
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box: pattern of two dipoles in antiphase, against a numerical time average'
+    formula: sin(pi*sin(th)/2)**2
+    equals: integrate('(cos(q + pi/2*sin(th)) + cos(q - pi/2*sin(th) + pi))**2', 'q', 0, 2*pi)/(4*pi)
+    samples:
+      th: [0.3, 0.9, 1.2, 2.5, 4.0]
+    tolerance: 1e-8
+    shown: ['id="p3-b"']
+    source: {cite: mit, at: 'Problem 10.3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-60
+    answer: p3-b-60
+    where: 'Problem 3(b), answer box: the same time average at th = pi/3'
+    formula: integrate('(cos(q + pi/2*sin(pi/3)) + cos(q - pi/2*sin(pi/3) + pi))**2', 'q', 0, 2*pi)/(4*pi)
+    expected: 0.956
+    tolerance: 0.0005
+    shown: ['id="p3-b-60"']
+    source: {cite: mit, at: 'Problem 10.3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-shown
+    where: 'Problem 3(b), solution: sin^2(1.360)'
+    formula: sin(1.360)**2
+    expected: 0.956
+    shown: ['\sin^2(1.360) = 0.956']
+    source: {cite: mit, at: 'Problem 10.3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-sum
+    where: 'Problem 3(b), check: the two rounded values add up to 1 to three digits'
+    formula: 0.0436 + 0.956
+    expected: 1
+    tolerance: 0.001
+    shown: ['$0.0436 + 0.956 = 1$ to the digits given']
+    source: {cite: mit, at: 'Problem 10.3(b), p. 3 (our own check)'}
+    origin: page-own
+
+  # Part (c): dipoles at +lambda/8 and -lambda/8; the one at +x oscillates pi/2 behind (phase -pi/2).
+  - id: p3-c
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(c), answer box: pattern of the quarter-wave pair with the dipole at +x behind, against a numerical time average'
+    formula: cos(pi*(sin(th) - 1)/4)**2
+    equals: integrate('(cos(q - pi/2 + pi/4*sin(th)) + cos(q - pi/4*sin(th)))**2', 'q', 0, 2*pi)/(4*pi)
+    samples:
+      th: [0.3, 0.9, 1.2, 2.5, 4.7]
+    tolerance: 1e-8
+    shown: ['id="p3-c"']
+    source: {cite: mit, at: 'Problem 10.3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-0
+    answer: p3-c-0
+    where: 'Problem 3(c), answer box: the same time average at th = 0'
+    formula: integrate('(cos(q - pi/2 + pi/4*sin(0)) + cos(q - pi/4*sin(0)))**2', 'q', 0, 2*pi)/(4*pi)
+    expected: 0.5
+    tolerance: 1e-8
+    shown: ['id="p3-c-0"']
+    source: {cite: mit, at: 'Problem 10.3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-plus-x
+    where: 'Problem 3(c), solution: the same time average towards +x (th = pi/2): the largest value'
+    formula: integrate('(cos(q - pi/2 + pi/4*sin(pi/2)) + cos(q - pi/4*sin(pi/2)))**2', 'q', 0, 2*pi)/(4*pi)
+    expected: 1
+    tolerance: 1e-8
+    shown: ['\theta = \frac{\pi}{2}:\ \ \cos^2 0 = 1; \qquad \theta = \frac{3\pi}{2}']
+    source: {cite: mit, at: 'Problem 10.3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-minus-x
+    where: 'Problem 3(c), solution: the same time average towards -x (th = 3 pi/2): zero'
+    formula: integrate('(cos(q - pi/2 + pi/4*sin(3*pi/2)) + cos(q - pi/4*sin(3*pi/2)))**2', 'q', 0, 2*pi)/(4*pi)
+    expected: 0
+    tolerance: 1e-8
+    shown: ['\theta = \frac{3\pi}{2}:\ \ \cos^2\frac{\pi}{2} = 0']
+    source: {cite: mit, at: 'Problem 10.3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: oil film. Lengths in nm (micrometres where the entry says so).
+
+  - id: p4-given
+    kind: fact
+    where: 'Problem 4, statement: refractive indices and MIT''s Table 1'
+    shown: ['A drop of oil ($n = 1.45$)', '(water, $n = 1.33$)', 'blue 480 nm, green 530 nm, red 650 nm']
+    source: {cite: mit, at: 'Problem 10.4, p. 3, and Table 1, p. 4'}
+    origin: mit
+
+  # Independent count: the bright thicknesses are (2N - 1) lam/(4n); ten orders apart they differ by 10 lam/(2n).
+  - id: p4-a
+    answer: p4-a
+    where: 'Problem 4(a), answer box: difference between the 20th and the 10th bright thickness for red (micrometres)'
+    inputs: {lam: 0.650, n: 1.45}
+    formula: (2*20 - 1)*lam/(4*n) - (2*10 - 1)*lam/(4*n)
+    expected: 2.24
+    tolerance: 0.005
+    shown: ['id="p4-a"']
+    source: {cite: mit, at: 'Problem 10.4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-shown
+    where: 'Problem 4(a), solution: 10 lam/(2n) in nm'
+    inputs: {lam: 650, n: 1.45}
+    formula: 10*lam/(2*n)
+    expected: 2241
+    shown: ['\frac{10 \times 650\ \text{nm}}{2 \times 1.45} = 2241\ \text{nm} = 2.24\ \text{μm}']
+    source: {cite: mit, at: 'Problem 10.4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-in-oil
+    where: 'Problem 4(a), check: wavelength of red light in the oil (nm)'
+    inputs: {lam: 650, n: 1.45}
+    formula: lam/n
+    expected: 448
+    shown: ['$650/1.45 = 448$ nm']
+    source: {cite: mit, at: 'Problem 10.4(a), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-a-half
+    where: 'Problem 4(a), check: half a wavelength of red light in the oil (nm)'
+    inputs: {lam: 650, n: 1.45}
+    formula: lam/(2*n)
+    expected: 224
+    shown: ['$10 \times 224$ nm']
+    source: {cite: mit, at: 'Problem 10.4(a), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-a-without-n
+    where: 'Problem 4(a), check: the wrong result without the refractive index (micrometres)'
+    inputs: {lam: 0.650}
+    formula: 10*lam/2
+    expected: 3.25
+    shown: ['the result would be 3.25 μm']
+    source: {cite: mit, at: 'Problem 10.4(a), p. 3 (our own check)'}
+    origin: page-own
+
+  # The order, by direct comparison instead of the solved inequality. For m = 1 … 5 the term
+  # (|x| + x)/(2|x|) is 1 when x = (2m + 1) 480 - (2m - 1) 650 is positive (blue of the next order still needs the
+  # thicker film) and 0 when it is negative. The answer is one more than the number of orders with x > 0.
+  - id: p4-b
+    answer: p4-b
+    where: 'Problem 4(b), answer box: lowest order in which red needs a thicker film than blue of the next order, by direct comparison of orders 1 to 5'
+    inputs: {r: 650, u: 480}
+    formula: >-
+      1 + (abs(3*u - 1*r) + (3*u - 1*r))/(2*abs(3*u - 1*r)) + (abs(5*u - 3*r) + (5*u - 3*r))/(2*abs(5*u - 3*r))
+      + (abs(7*u - 5*r) + (7*u - 5*r))/(2*abs(7*u - 5*r)) + (abs(9*u - 7*r) + (9*u - 7*r))/(2*abs(9*u - 7*r))
+      + (abs(11*u - 9*r) + (11*u - 9*r))/(2*abs(11*u - 9*r))
+    expected: 4
+    tolerance: 1e-9
+    shown: ['id="p4-b"']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-bound
+    where: 'Problem 4(b), solution: the bound on m'
+    inputs: {r: 650, u: 480}
+    formula: (r + u)/(2*(r - u))
+    expected: 3.32
+    shown: ['\frac{1130}{340} = 3.32']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-red-3
+    where: 'Problem 4(b), check: red in order 3 (nm)'
+    formula: 5*650/(4*1.45)
+    expected: 560
+    shown: ['$5 \times 650/(4 \times 1.45) = 560$ nm']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-blue-4
+    where: 'Problem 4(b), check: blue in order 4 (nm)'
+    formula: 7*480/(4*1.45)
+    expected: 579
+    shown: ['$7 \times 480/(4 \times 1.45) = 579$ nm']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-red-4
+    where: 'Problem 4(b), check: red in order 4 (nm); 5.8 is 4 x 1.45'
+    formula: 7*650/(4*1.45)
+    expected: 784
+    shown: ['$7 \times 650/5.8 = 784$ nm']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-blue-5
+    where: 'Problem 4(b), check: blue in order 5 (nm)'
+    formula: 9*480/(4*1.45)
+    expected: 745
+    shown: ['$9 \times 480/5.8 = 745$ nm']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-limit
+    where: 'Problem 4(b), check: the thickness from which the colours mix, blue in order 5, in micrometres'
+    formula: 9*480/(4*1.45)/1000
+    expected: 0.75
+    tolerance: 0.01
+    shown: ['below roughly 0.75 μm']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-count-from-zero
+    where: 'Problem 4(b), check: without the flip (maxima at 2nd = m lam) the bound is 480/(650 - 480), so the first order is 3'
+    formula: 480/(650 - 480)
+    expected: 2.82
+    tolerance: 0.005
+    shown: ['the answer would also come out as 3']
+    source: {cite: mit, at: 'Problem 10.4(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4-c-cos
+    where: 'Problem 4(c), check: cosine of the angle in the oil for 30 degrees in air (Snell: sin = 0.5/1.45)'
+    formula: sqrt(1 - (sin(pi/6)/1.45)**2)
+    expected: 0.939
+    shown: ['so $\cos\theta = 0.939$']
+    source: {cite: mit, at: 'Problem 10.4(c), p. 3 (our own number)'}
+    origin: page-own
+
+  - id: p4-c-wavelength
+    where: 'Problem 4(c), check: the bright wavelength at that angle (nm)'
+    formula: 530*sqrt(1 - (sin(pi/6)/1.45)**2)
+    expected: 497
+    shown: ['drops from 530 nm to 497 nm']
+    source: {cite: mit, at: 'Problem 10.4(c), p. 3 (our own number)'}
+    origin: page-own
+
+  # ---- Problem 5: two wide slits. Lengths in wavelengths; s stands for sin(psi).
+
+  - id: p5-reading
+    kind: fact
+    where: 'Problem 5(a), solution: values read from the graph (MIT''s Figure 5): first zero at 0.1, missing fringe at 0.4'
+    shown: ['The first zero next to the central peak is at $\sin\psi = 0.1$', 'So the first zero of the envelope is at 0.4']
+    source: {cite: mit, at: 'Problem 10.5, Figure 5, p. 5'}
+    origin: mit
+
+  - id: p5-centres
+    where: 'Problem 5(a), solution: centre distance in wavelengths, as the root of cos(pi d s) = 0 at s = 0.1'
+    formula: solve('cos(pi*q*0.1)', 'q', 4, 6)
+    expected: 5
+    tolerance: 1e-9
+    shown: ['d = 5\lambda']
+    source: {cite: mit, at: 'Problem 10.5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a
+    answer: p5-a
+    where: 'Problem 5(a), answer box: slit width in wavelengths, as the root of sin(pi a s) = 0 at s = 0.4'
+    formula: solve('sin(pi*q*0.4)', 'q', 2, 3)
+    expected: 2.5
+    tolerance: 1e-9
+    shown: ['id="p5-a"']
+    source: {cite: mit, at: 'Problem 10.5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b
+    answer: p5-b
+    where: 'Problem 5(a), answer box: the strip between the slits in wavelengths, centre distance minus slit width'
+    formula: solve('cos(pi*q*0.1)', 'q', 4, 6) - solve('sin(pi*q*0.4)', 'q', 2, 3)
+    expected: 2.5
+    tolerance: 1e-9
+    shown: ['id="p5-b"']
+    source: {cite: mit, at: 'Problem 10.5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-envelope-02
+    where: 'Problem 5(a), check: envelope at s = 0.2, where beta = pi/2'
+    formula: (sin(2.5*pi*0.2)/(2.5*pi*0.2))**2
+    expected: 0.405
+    shown: ['$(2/\pi)^2 = 0.405$']
+    source: {cite: mit, at: 'Problem 10.5(a), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-height-02
+    where: 'Problem 5(a), check: the pattern at s = 0.2 on the scale of the graph'
+    formula: 4*(sin(2.5*pi*0.2)/(2.5*pi*0.2))**2*cos(5*pi*0.2)**2
+    expected: 1.62
+    shown: ['which is 1.62']
+    source: {cite: mit, at: 'Problem 10.5(a), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-height-06
+    where: 'Problem 5(a), check: the pattern at s = 0.6 on the scale of the graph'
+    formula: 4*(sin(2.5*pi*0.6)/(2.5*pi*0.6))**2*cos(5*pi*0.6)**2
+    expected: 0.18
+    shown: ['$4/(3\pi/2)^2 = 0.18$']
+    source: {cite: mit, at: 'Problem 10.5(a), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-peak-position
+    where: 'Problem 5, caption of the graph: position of the side fringe, as the zero of the numerical derivative of the pattern'
+    formula: >-
+      solve("deriv('4*(sin(2.5*pi*p)/(2.5*pi*p))**2*cos(5*pi*p)**2', 'p', q)", 'q', 0.15, 0.25)
+    expected: 0.18
+    shown: ['near sin ψ = ±0.18']
+    source: {cite: mit, at: 'Problem 10.5, Figure 5, p. 5 (redrawn from the formula)'}
+    origin: page-own
+
+  - id: p5-peak-height
+    where: 'Problem 5, caption of the graph: height of the side fringe at its peak (s = 0.1826)'
+    formula: 4*(sin(2.5*pi*0.1826)/(2.5*pi*0.1826))**2*cos(5*pi*0.1826)**2
+    expected: 1.8
+    shown: ['a fringe of height about 1.8']
+    source: {cite: mit, at: 'Problem 10.5, Figure 5, p. 5 (redrawn from the formula)'}
+    origin: page-own
+
+  - id: p5-new-centres
+    where: 'Problem 5(b), solution: new centre distance a + 2b in wavelengths'
+    formula: 2.5 + 2*2.5
+    expected: 7.5
+    shown: ['2.5\lambda + 5\lambda = 7.5\lambda']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-zero
+    answer: p5-b-zero
+    where: 'Problem 5(b), answer box (our own check): first zero of the new pattern, as the first root of cos(pi 7.5 s)'
+    formula: solve('cos(pi*7.5*q)', 'q', 0.03, 0.1)
+    expected: 0.0667
+    tolerance: 0.00005
+    shown: ['id="p5-b-zero"']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-b-zero-shown
+    where: 'Problem 5(b), solution: 1/15'
+    formula: 1/15
+    expected: 0.0667
+    shown: ['\frac{1}{15} = 0.0667']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  # Fringes m with |m| lam/(a + 2b) < lam/a, that is |m| < (a + 2b)/a = 3: m = -2 … 2.
+  - id: p5-b-count
+    answer: p5-b-count
+    where: 'Problem 5(b), answer box (our own check): fringes strictly inside the first zeros of the envelope, 2 ((a + 2b)/a - 1) + 1'
+    inputs: {a: 2.5, b: 2.5}
+    formula: 2*((a + 2*b)/a - 1) + 1
+    expected: 5
+    tolerance: 1e-9
+    shown: ['id="p5-b-count"']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-ratio
+    where: 'Problem 5(b), check: (a + 2b)/a'
+    inputs: {a: 2.5, b: 2.5}
+    formula: (a + 2*b)/a
+    expected: 3
+    tolerance: 1e-9
+    shown: ['$(a + 2b)/a = 3$']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-fringe-1
+    where: 'Problem 5(b), solution: first new fringe, 1/7.5'
+    formula: 1/7.5
+    expected: 0.133
+    shown: ['$\pm0.133$']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-fringe-2
+    where: 'Problem 5(b), solution: second new fringe, 2/7.5'
+    formula: 2/7.5
+    expected: 0.267
+    shown: ['$\pm0.267$']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-fringe-4
+    where: 'Problem 5(b), solution: fourth new fringe, 4/7.5'
+    formula: 4/7.5
+    expected: 0.533
+    shown: ['$\pm0.533$']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-fringe-5
+    where: 'Problem 5(b), solution: fifth new fringe, 5/7.5'
+    formula: 5/7.5
+    expected: 0.667
+    shown: ['$\pm0.667$']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-new-height-1
+    where: 'Problem 5(b), check: height of the first new fringe on the scale of the graph (s = 2/15)'
+    formula: 4*(sin(2.5*pi*2/15)/(2.5*pi*2/15))**2*cos(7.5*pi*2/15)**2
+    expected: 2.74
+    shown: ['it is 2.74 on the scale of the graph']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-new-height-2
+    where: 'Problem 5(b), check: height of the second new fringe (s = 4/15)'
+    formula: 4*(sin(2.5*pi*4/15)/(2.5*pi*4/15))**2*cos(7.5*pi*4/15)**2
+    expected: 0.68
+    shown: ['it is 0.68']
+    source: {cite: mit, at: 'Problem 10.5(b), p. 4 (our own check)'}
+    origin: page-own
