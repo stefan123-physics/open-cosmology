@@ -1,0 +1,648 @@
+---
+title: "Problem Set 5: steepest directions, a linear estimate and a closest point by Lagrange multipliers"
+slug: 18-02-problem-set-5
+course: "18.02"
+kind: problems
+set: 5
+lecture: 13
+order: 90
+covers: [12, 13]
+solutions: own
+summary: Three problems on the gradient and on Lagrange multipliers. You find the largest and smallest directional derivative of a function of two variables and the directions in which they occur, repeat the search numerically, follow the direction of fastest decrease to estimate the nearest point of a level surface with a linear approximation, and then find that point to four decimal places with a Lagrange multiplier.
+prerequisites: [gradient, lagrange-multipliers]
+source:
+  title: "MIT 18.02 Problem Set 5"
+  url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/ps5/
+  readings:
+    - title: "18.02 lecture summaries, Week 5 (Prof. Auroux)"
+      url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/lec_week5/
+      location: "Lecture 12, pp. 1–2, and Lecture 13, pp. 2–3"
+license: CC BY-NC-SA 4.0
+references:
+  notesProblems:
+    title: "18.02 Supplementary Notes and Problems, Problems section 2: Partial differentiation (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/partial_diff/
+    location: "Exercise groups 2D, 2E and 2I"
+  notesSolutions:
+    title: "18.02 Supplementary Notes and Problems, Solutions to section 2: Partial differentiation (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/part_diff_sol/
+    location: "Solutions to groups 2D, 2E and 2I"
+status: draft
+---
+
+This set practises two lessons: [the gradient and directional derivatives](/courses/18-02/gradient) and [Lagrange multipliers](/courses/18-02/lagrange-multipliers). It follows MIT's Problem Set 5, in our own words.
+
+MIT's set has two parts. Part B holds MIT's three longer problems (19 points), for which OpenCourseWare has no solutions. All three are written out below, with hints and solutions of our own. Part A is a list of short exercises, most of them from MIT's own Supplementary Notes, which also hold their solutions. Those are not rewritten here: the last section of this page lists them and links to MIT's exercises and solutions.
+
+MIT's sheet numbers the lectures by its Fall 2007 calendar, which counts the day of the first exam. Its "Lecture 13" (gradient, directional derivative, tangent plane) is Lecture 12 on this site and in MIT's lecture summaries, and its "Lecture 14" (Lagrange multipliers) is Lecture 13 here. Problems 1 and 2 belong to the gradient lesson and Problem 3 to the lesson on Lagrange multipliers.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A number box wants a decimal number, not a fraction or a square root, and its question says how exact your value must be: keep all the digits your calculator shows while you work. Angles are asked in degrees. A formula box takes plain typing, for example `2/(1 - lam)`, and accepts every correct way of writing the answer. Type `lam` for the multiplier $\lambda$. The points, and their split over the parts of a problem, are MIT's. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Parts that ask you to explain something have a box for only a piece of them: compare the rest of your work with the solution and mark it yourself. Your score is kept in this browser only.
+
+Two parts need a tool that calculates: part (d) of Problem 1 and part (b) of Problem 3. MIT used an applet of its own and MATLAB. Any tool will do here: a spreadsheet, a graphing calculator, a few lines of Python, or an online solver for polynomials.
+
+## Problem 1
+
+<Exercise id="p1" title="The largest and smallest directional derivative" points={8} mit="Part B, Problem 1">
+
+The function of this problem is the one MIT also used in Problem 3 of its Problem Set 3:
+
+<Formula label="The function of Problem 1" tex="f(x, y) = x^3 - x y^2 - 4x^2 + 3x + x^2 y" cite="mit" at="Part B, Problem 1, p. 1" />
+
+The point is $P = (1/2, 1)$. A direction in the plane is given by a unit vector $\hat u$, and the directional derivative of $f$ at $P$ in that direction is written $\left(\frac{df}{ds}\right)_{\hat u}$, as in the lesson.
+
+<Part label="a" points={2}>
+
+Find the largest and the smallest value that the directional derivative of $f$ at $P$ takes as $\hat u$ runs through all directions. Give both as decimals, to four decimal places.
+
+<Hint>
+
+The lesson writes the directional derivative as a dot product of two vectors, and then with the angle between them. Only one of the two vectors changes when $\hat u$ turns.
+
+</Hint>
+
+<Hint>
+
+Find the two partial derivatives of $f$ and put in $x = 1/2$, $y = 1$. The largest value is the length of the gradient.
+
+</Hint>
+
+<Answer id="p1-a-max" label="Largest value of the directional derivative:" value="0.7906" tolerance="0.0005" calc="p1-a-max" />
+
+<Answer id="p1-a-min" label="Smallest value of the directional derivative:" value="-0.7906" tolerance="0.0005" calc="p1-a-min" />
+
+<Solution>
+
+**The idea.** The directional derivative is the component of the gradient along $\hat u$:
+
+<Formula label="Directional derivative and the gradient" tex="\left(\frac{df}{ds}\right)_{\hat u} = \nabla f \cdot \hat u = |\nabla f|\cos\theta" cite="reading1" at="Lecture 12, p. 2" />
+
+where $\theta$ is the angle between $\nabla f$ and $\hat u$. The cosine runs from $-1$ to $1$, so the values run from $-|\nabla f|$ to $|\nabla f|$.
+
+<Step title="The partial derivatives">
+
+<Formula label="Partial derivatives of f" tex="f_x = 3x^2 - y^2 - 8x + 3 + 2xy, \qquad f_y = -2xy + x^2" cite="mit" at="Part B, Problem 1(a) (our own solution)" />
+
+</Step>
+
+<Step title="The gradient at P">
+
+At $x = 1/2$, $y = 1$: $f_x = \tfrac34 - 1 - 4 + 3 + 1 = -\tfrac14$ and $f_y = -1 + \tfrac14 = -\tfrac34$.
+
+<Formula label="Gradient of f at P" tex="\nabla f = \left\langle -\tfrac14, -\tfrac34 \right\rangle, \qquad |\nabla f| = \sqrt{\tfrac{1}{16} + \tfrac{9}{16}} = \frac{\sqrt{10}}{4} = 0.7906" cite="mit" at="Part B, Problem 1(a) (our own solution)" />
+
+</Step>
+
+<Step title="Largest and smallest">
+
+The largest value of the directional derivative is $\sqrt{10}/4 = 0.7906$ and the smallest is $-\sqrt{10}/4 = -0.7906$.
+
+</Step>
+
+<Step title="Check the result">
+
+Try two simple directions. Along $-\hat j$ the directional derivative is $-f_y = 0.75$, and along $-\hat i$ it is $-f_x = 0.25$. Both lie between $-0.7906$ and $0.7906$, and $0.75$ is close to the largest value, which fits: the gradient $\langle -\tfrac14, -\tfrac34\rangle$ points mostly along $-\hat j$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={1}>
+
+Say in which direction $\hat u$ the largest value occurs, and in which direction the smallest.
+
+Give each direction as a unit vector. For the boxes, write $\hat u = \langle \cos\theta, \sin\theta\rangle$, as MIT does in part (d): $\theta$ is the angle from the positive $x$-axis to $\hat u$, counterclockwise. Give $\theta$ in degrees between 0 and 360, to one decimal place. (In this part and the next, $\theta$ is this angle of $\hat u$, not the angle between $\hat u$ and the gradient.)
+
+<Hint>
+
+For which angle between $\nabla f$ and $\hat u$ is the cosine equal to $1$? And to $-1$?
+
+</Hint>
+
+<Hint>
+
+Both components of the gradient are negative. In which quarter of the plane does it point? A calculator's inverse tangent only returns angles between $-90°$ and $90°$.
+
+</Hint>
+
+<Answer id="p1-b-max" label="$\theta$ of the direction with the largest value:" value="251.6" unit="degrees" tolerance="0.05" calc="p1-b-max" />
+
+<Answer id="p1-b-min" label="$\theta$ of the direction with the smallest value:" value="71.6" unit="degrees" tolerance="0.05" calc="p1-b-min" />
+
+<Solution>
+
+**The idea.** By the lesson, the directional derivative is largest when $\hat u$ points along the gradient and smallest when it points the opposite way.
+
+<Step title="The two unit vectors">
+
+Divide the gradient by its length $\sqrt{10}/4$:
+
+<Formula label="Directions of the largest and smallest value" tex="\text{largest:}\quad \hat u = \frac{\nabla f}{|\nabla f|} = \frac{\langle -1, -3\rangle}{\sqrt{10}}, \qquad \text{smallest:}\quad \hat u = -\frac{\nabla f}{|\nabla f|} = \frac{\langle 1, 3\rangle}{\sqrt{10}}" cite="mit" at="Part B, Problem 1(b) (our own solution)" />
+
+In decimals, the second one is $\langle 0.3162, 0.9487\rangle$.
+
+</Step>
+
+<Step title="The angles">
+
+The direction of the smallest value, $\langle 1, 3\rangle/\sqrt{10}$, points into the first quarter of the plane, with $\tan\theta = 3$, so $\theta = 71.57°$, which rounds to $71.6°$. The direction of the largest value points the opposite way, into the third quarter: $\theta = 71.57° + 180° = 251.57°$, which rounds to $251.6°$.
+
+</Step>
+
+<Step title="Check the result">
+
+$\cos 251.57° = -0.316$ and $\sin 251.57° = -0.949$, the components of $\langle -1, -3\rangle/\sqrt{10}$ to three decimal places. And the dot product of $\nabla f$ with $\langle -1, -3\rangle/\sqrt{10}$ is $\big(\tfrac14 + \tfrac94\big)/\sqrt{10} = 2.5/\sqrt{10} = 0.7906$, the largest value of part (a).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={1}>
+
+Find the direction or directions $\hat u$ in which the directional derivative of $f$ at $P$ is zero. Give them as unit vectors, and for the boxes as angles $\theta$ in degrees, to one decimal place.
+
+<Hint>
+
+A dot product is zero when the two vectors are perpendicular.
+
+</Hint>
+
+<Hint>
+
+In the plane, $\langle b, -a\rangle$ is perpendicular to $\langle a, b\rangle$. How many unit vectors are perpendicular to a given vector?
+
+</Hint>
+
+<Answer id="p1-c-low" label="The $\theta$ between 0 and 180 degrees:" value="161.6" unit="degrees" tolerance="0.05" calc="p1-c-low" />
+
+<Answer id="p1-c-high" label="The $\theta$ between 180 and 360 degrees:" value="341.6" unit="degrees" tolerance="0.05" calc="p1-c-high" />
+
+<Solution>
+
+**The idea.** $\nabla f \cdot \hat u = 0$ exactly when $\hat u$ is perpendicular to the gradient. In the plane there are two such unit vectors, opposite to each other.
+
+<Step title="The two unit vectors">
+
+The gradient points along $\langle 1, 3\rangle$ (or against it). The vector $\langle 3, -1\rangle$ is perpendicular to it, since $3 - 3 = 0$:
+
+<Formula label="Directions with zero directional derivative" tex="\hat u = \pm\frac{\langle 3, -1\rangle}{\sqrt{10}}" cite="mit" at="Part B, Problem 1(c) (our own solution)" />
+
+</Step>
+
+<Step title="The angles">
+
+These directions are a quarter turn away from the ones of part (b): $\theta = 71.57° + 90° = 161.57°$ for $\langle -3, 1\rangle/\sqrt{10}$, and $\theta = 251.57° + 90° = 341.57°$ for $\langle 3, -1\rangle/\sqrt{10}$. Rounded: $161.6°$ and $341.6°$.
+
+</Step>
+
+<Step title="Check the result">
+
+$\nabla f \cdot \langle 3, -1\rangle = -\tfrac34 + \tfrac34 = 0$. By the lesson these are the two directions along the level curve of $f$ through $P$: moving along a level curve does not change $f$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+Now find the same answers by experiment. MIT's students used an applet on the course's own website (the "directional derivatives" view of the applets at math.mit.edu/18.02/applets). It shows the contour plot of $f$ with the level curve through a movable point in blue, the gradient there in purple and a direction $\hat u = \langle \cos\theta, \sin\theta\rangle$ in yellow that can be turned, and it prints the value of the directional derivative. The students clicked as close to $(1/2, 1)$ as they could. MIT accepts a point such as $(0.51, 1.01)$, as long as the point used is written down.
+
+If you can run that applet, use it as MIT describes. Our version of the experiment, for any tool that calculates, is this. Take the point $(x_0, y_0) = (0.51, 1.01)$ and the small step $h = 0.001$, and for a direction angle $\theta$ compute
+
+<Formula label="A directional derivative by experiment" tex="Q(\theta) = \frac{f(x_0 + h\cos\theta,\ y_0 + h\sin\theta) - f(x_0, y_0)}{h}" cite="mit" at="Part B, Problem 1(d) (our own version of the experiment)" />
+
+This is the change of $f$ over a short walk of length $h$ in the direction $\hat u$, divided by the length of the walk: an estimate of the directional derivative at $(0.51, 1.01)$. (The name $Q$ and the choice of $h$ are ours.) Let $\theta$ run from 0° to 360°, first in large steps and then in steps of 1° near the interesting places. Find the largest and smallest values and the angles at which they occur, and the angles at which the value passes through zero.
+
+Then state, for the directions of parts (b) and (c), how the direction $\hat u$ lies with respect to the level curve through the point and to the gradient vector there.
+
+<Hint>
+
+In a spreadsheet: one column with $\theta$ in degrees, one with $\theta$ in radians, one with $Q(\theta)$. First compute $f(0.51, 1.01)$ once.
+
+</Hint>
+
+<Hint>
+
+The point has moved a little, so the numbers will differ a little from parts (a) to (c). To see whether your experiment is right, compute the gradient at $(0.51, 1.01)$ with the formulas of part (a).
+
+</Hint>
+
+<Answer id="p1-d-max" label="Largest directional derivative at $(0.51, 1.01)$:" value="0.823" tolerance="0.003" calc="p1-d-max" />
+
+<Answer id="p1-d-theta-max" label="$\theta$ at which it occurs:" value="249.4" unit="degrees" tolerance="1.5" calc="p1-d-theta-max" />
+
+<Answer id="p1-d-theta-zero" label="The $\theta$ between 0 and 180 degrees at which the value is zero:" value="159.4" unit="degrees" tolerance="1.5" calc="p1-d-theta-zero" />
+
+<Answer id="p1-d-geometry" label="How the direction lies:"
+  choices={["Largest value: along the level curve. Zero: along the gradient, at right angles to the level curve.", "Largest value: along the gradient, at right angles to the level curve. Zero: along the level curve, at right angles to the gradient.", "Largest value: opposite to the gradient. Zero: along the level curve.", "Largest value: along the gradient. Zero: halfway between the gradient and the level curve."]} answer={1} />
+
+<Solution>
+
+**The idea.** The experiment measures the directional derivative without any formula for it. It must agree with $\nabla f \cdot \hat u$, with the gradient taken at the point actually used.
+
+<Step title="The experiment">
+
+$f(0.51, 1.01) = 0.3647$. Some values of $Q(\theta)$ with $h = 0.001$:
+
+| $\theta$ | 0° | 69° | 90° | 159° | 160° | 180° | 249° | 250° | 270° | 339° | 340° |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| $Q(\theta)$ | $-0.2911$ | $-0.8237$ | $-0.7706$ | $-0.0066$ | $0.0077$ | $0.2881$ | $0.8218$ | $0.8218$ | $0.7696$ | $0.0046$ | $-0.0098$ |
+
+The largest value is about $0.822$, near $\theta = 249.5°$. The smallest is about $-0.824$, near $\theta = 69°$ to $70°$. The value passes through zero between 159° and 160°, and again between 339° and 340°.
+
+</Step>
+
+<Step title="Compare with the gradient">
+
+With the partial derivatives of part (a), at $(0.51, 1.01)$:
+
+<Formula label="Gradient at the point of the experiment" tex="\nabla f = \langle -0.2896, -0.7701\rangle, \qquad |\nabla f| = 0.8228" cite="mit" at="Part B, Problem 1(d) (our own solution)" />
+
+The gradient points at the angle $\theta = 249.4°$. So the exact answers at this point are: largest value $0.8228$ at $249.4°$, smallest value $-0.8228$ at $69.4°$, and zero at $159.4°$ and $339.4°$. The experiment agrees to within about $0.001$ in the values. That small difference is the price of a step $h$ that is small but not zero.
+
+</Step>
+
+<Step title="The geometry">
+
+For part (b): the directional derivative is largest when $\hat u$ lies along the gradient vector, and smallest when it points exactly the opposite way. In both cases $\hat u$ is at right angles to the level curve through the point.
+
+For part (c): the directional derivative is zero when $\hat u$ is tangent to the level curve, in either of its two directions. Then $\hat u$ is at right angles to the gradient.
+
+On MIT's applet this reads: largest when the yellow arrow lies on the purple one, zero when the yellow arrow lies along the blue curve.
+
+</Step>
+
+<Step title="Check the result">
+
+The angles of the experiment fit together as they should: from $69.4°$ to $159.4°$ to $249.4°$ to $339.4°$ is a quarter turn each time. Compared with the point $(1/2, 1)$ of parts (a) to (c), every angle is about 2° smaller ($249.4°$ against $251.6°$) and the largest value is a little larger ($0.8228$ against $0.7906$): moving the point by $0.01$ in each coordinate changes the gradient noticeably. That is why MIT asks you to record the point you used.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Downhill to a level surface, by linear approximation" points={5} mit="Part B, Problem 2">
+
+This problem is about the function of three variables
+
+<Formula label="The function of Problems 2 and 3" tex="g(x, y, z) = x^2 + yz" cite="mit" at="Part B, Problem 2, p. 1" />
+
+and the point $P_0 = (2, -1, 1)$. (The name $P_0$ is ours.)
+
+<Part label="a" points={2}>
+
+Find the direction from $P_0$ in which $g$ decreases fastest. Give it as a unit vector.
+
+<Hint>
+
+The lesson says in which direction a function increases fastest. Where is the directional derivative most negative?
+
+</Hint>
+
+<Hint>
+
+The gradient of $g$ has three components, $g_x$, $g_y$ and $g_z$. Take care with $g_y$ and $g_z$: the derivative of $yz$ with respect to $y$ is $z$.
+
+</Hint>
+
+<Answer id="p2-a" label="Direction of fastest decrease:"
+  choices={["(4, 1, −1)/√18", "(−4, 1, −1)/√18", "(−4, −1, 1)/√18", "(−2, −1, 1)/√6"]} answer={2} />
+
+<Solution>
+
+**The idea.** The directional derivative $\nabla g \cdot \hat u = |\nabla g|\cos\theta$ is most negative when $\hat u$ points opposite to the gradient.
+
+<Step title="The gradient">
+
+<Formula label="Gradient of g" tex="\nabla g = \langle g_x, g_y, g_z\rangle = \langle 2x, z, y\rangle, \qquad \nabla g(2, -1, 1) = \langle 4, 1, -1\rangle" cite="mit" at="Part B, Problem 2(a) (our own solution)" />
+
+Its length is $\sqrt{16 + 1 + 1} = \sqrt{18} = 3\sqrt 2 = 4.243$.
+
+</Step>
+
+<Step title="The direction">
+
+<Formula label="Direction of fastest decrease" tex="\hat u = -\frac{\nabla g}{|\nabla g|} = \frac{\langle -4, -1, 1\rangle}{\sqrt{18}}" cite="mit" at="Part B, Problem 2(a) (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The directional derivative in this direction is $\nabla g \cdot \hat u = -(16 + 1 + 1)/\sqrt{18} = -\sqrt{18} = -4.243$: minus the length of the gradient, the most negative value possible. The vector $\langle -4, 1, -1\rangle/\sqrt{18}$ would come from the gradient $\langle 2x, y, z\rangle$, with $g_y$ and $g_z$ exchanged.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+At $P_0$ the value of $g$ is not 2. Follow the straight line from $P_0$ in the direction of part (a), and use the linear approximation to estimate where on it $g = 2$. That point is an estimate of the point closest to $P_0$ on the surface $g = 2$.
+
+Do this without a calculator, and write the coordinates as fractions. Then use a calculator to find $g$ at your point: it should come out reasonably close to 2. For the boxes, turn your fractions into decimals, to four decimal places.
+
+<Hint>
+
+What is $g$ at $P_0$? By how much must it change?
+
+</Hint>
+
+<Hint>
+
+Along the line, after a distance $s$, the linear approximation says that $g$ has changed by about the directional derivative times $s$.
+
+</Hint>
+
+<Hint>
+
+The displacement is the distance $s$ times the unit vector of part (a). The two square roots multiply to a whole number.
+
+</Hint>
+
+<Answer id="p2-b-x" label="$x =$" value="1.7778" tolerance="0.0005" calc="p2-b-x" />
+
+<Answer id="p2-b-y" label="$y =$" value="-1.0556" tolerance="0.0005" calc="p2-b-y" />
+
+<Answer id="p2-b-z" label="$z =$" value="1.0556" tolerance="0.0005" calc="p2-b-z" />
+
+<Answer id="p2-b-g" label="$g$ at that point:" value="2.0463" tolerance="0.0005" calc="p2-b-g" />
+
+<Solution>
+
+**The idea.** Near $P_0$ the function $g$ is close to its linear approximation, whose level surfaces are planes perpendicular to $\nabla g$. The nearest point of such a plane is reached by going straight along the gradient, here against it, because $g$ must go down.
+
+<Step title="How far g must change">
+
+$g(2, -1, 1) = 4 + (-1)(1) = 3$. To reach $g = 2$ the change must be $\Delta g = -1$.
+
+</Step>
+
+<Step title="The distance along the line">
+
+A point of the line at distance $s$ from $P_0$ is $P_0 + s\,\hat u$. By part (a) the directional derivative along the line is $-\sqrt{18}$, so the linear approximation gives
+
+<Formula label="Linear approximation along the line" tex="\Delta g \approx \left(\frac{dg}{ds}\right)_{\hat u} s = -\sqrt{18}\,s = -1 \quad\Longrightarrow\quad s = \frac{1}{\sqrt{18}}" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+</Step>
+
+<Step title="The point">
+
+The displacement is $s\,\hat u = \frac{1}{\sqrt{18}} \cdot \frac{\langle -4, -1, 1\rangle}{\sqrt{18}} = \frac{1}{18}\langle -4, -1, 1\rangle$:
+
+<Formula label="The estimated point" tex="(x, y, z) \approx \left(2 - \tfrac{4}{18},\ -1 - \tfrac{1}{18},\ 1 + \tfrac{1}{18}\right) = \left(\tfrac{16}{9},\ -\tfrac{19}{18},\ \tfrac{19}{18}\right)" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+In decimals: $(1.7778, -1.0556, 1.0556)$.
+
+</Step>
+
+<Step title="The value of g there">
+
+<Formula label="The function at the estimated point" tex="g = \left(\tfrac{16}{9}\right)^2 - \left(\tfrac{19}{18}\right)^2 = \tfrac{1024}{324} - \tfrac{361}{324} = \tfrac{663}{324} = 2.0463" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+Reasonably close to 2, as MIT promises.
+
+</Step>
+
+<Step title="Check the result">
+
+The error can be found exactly. Write the points of the line as $P_0 - t\,\nabla g = (2 - 4t, -1 - t, 1 + t)$. Then $g = (2 - 4t)^2 - (1 + t)^2 = 3 - 18t + 15t^2$. The linear approximation keeps $3 - 18t$, which is 2 at $t = \tfrac{1}{18}$. The term it drops is $15t^2 = \tfrac{15}{324} = 0.0463$, exactly the amount by which $g$ misses 2.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="The closest point, exactly, with a Lagrange multiplier" points={6} mit="Part B, Problem 3">
+
+Problem 2(b) estimated the point of the surface $x^2 + yz = 2$ that is closest to $P_0 = (2, -1, 1)$. Now find that point without the linear approximation.
+
+<Part label="a" points={2}>
+
+Use the method of Lagrange multipliers to write down the system of equations that the closest point satisfies. (MIT's hint: it is easier to minimise the square of the distance.)
+
+Write the multiplier on the side of the constraint, $\nabla f = \lambda\,\nabla g$, as the lesson does.
+
+<Hint>
+
+What is the square of the distance from $(x, y, z)$ to $(2, -1, 1)$? That is the function $f$ to minimise. The constraint is $g = 2$ with the $g$ of Problem 2.
+
+</Hint>
+
+<Hint>
+
+The gradient of $g$ is in Problem 2(a). Three components give three equations, and the constraint is the fourth.
+
+</Hint>
+
+<Answer id="p3-a" label="The system:"
+  choices={["2(x − 2) = 2λx, 2(y + 1) = λy, 2(z − 1) = λz, x² + yz = 2", "2(x − 2) = 2λx, 2(y + 1) = λz, 2(z − 1) = λy, x² + yz = 2", "2x = 2λx, 2y = λz, 2z = λy, x² + yz = 2", "2(x − 2) = 2λx, 2(y + 1) = λz, 2(z − 1) = λy, (x − 2)² + (y + 1)² + (z − 1)² = 2"]} answer={1} />
+
+<Solution>
+
+**The idea.** The point that makes the distance smallest also makes its square smallest, and the square has no root in it. Minimise it among the points with $g = 2$.
+
+<Step title="The function and the constraint">
+
+<Formula label="The constrained problem" tex="\text{minimise } f(x, y, z) = (x - 2)^2 + (y + 1)^2 + (z - 1)^2 \quad\text{subject to}\quad g(x, y, z) = x^2 + yz = 2" cite="mit" at="Part B, Problem 3(a) (our own solution)" />
+
+</Step>
+
+<Step title="The Lagrange equations">
+
+The lesson's condition is
+
+<Formula label="Lagrange condition" tex="\nabla f = \lambda\,\nabla g" cite="reading1" at="Lecture 13, p. 2" />
+
+Here $\nabla f = \langle 2(x - 2), 2(y + 1), 2(z - 1)\rangle$ and $\nabla g = \langle 2x, z, y\rangle$. Component by component, and with the constraint:
+
+<Formula label="The system for the closest point" tex="2(x - 2) = 2\lambda x, \qquad 2(y + 1) = \lambda z, \qquad 2(z - 1) = \lambda y, \qquad x^2 + yz = 2" cite="mit" at="Part B, Problem 3(a) (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+There are four equations for the four unknowns $x$, $y$, $z$ and $\lambda$. If $\lambda$ were zero, the first three equations would give $(x, y, z) = (2, -1, 1)$, the point $P_0$ itself. But $g = 3$ there, so the fourth equation fails: the multiplier is not zero, and the closest point is not $P_0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Solve the equations, and give the closest point to four decimal places. Then compare with Problem 2(b): was each coordinate of the estimate within $1/100$ of the exact one?
+
+MIT suggests this route. Add the second and third equations, and show that either $z = -y$ or $\lambda = 2$. In the case $z = -y$, use the first three equations to write $x$, $y$ and $z$ in terms of $\lambda$, and put those into the constraint. After the denominators are cleared, an equation of degree 4 for $\lambda$ is left. Solve it with a calculator or a computer. (MIT names MATLAB's command `roots`; any solver for polynomials does the same.) It should have two real roots. Last, look at the case $\lambda = 2$. MIT's sheet says that it gives points further away from $P_0$: see what you find.
+
+The boxes follow this route. Write the equation of degree 4 with the coefficient $1$ in front of $\lambda^4$.
+
+<Hint>
+
+Add the left sides and the right sides of the second and third equations. Both sides contain $y + z$.
+
+</Hint>
+
+<Hint>
+
+With $z = -y$ the second equation holds only $y$ and $\lambda$. The first holds only $x$ and $\lambda$.
+
+</Hint>
+
+<Hint>
+
+After substituting, multiply the constraint by both squared denominators. The right side becomes the square of a product of two brackets: multiply the two brackets first, then square.
+
+</Hint>
+
+<Hint>
+
+Each real root gives one point. Compare their distances to $P_0$.
+
+</Hint>
+
+<Answer id="p3-b-x" label="In the case $z = -y$: $x =$" expr="2/(1-lam)"
+  vars={{ lam: [-0.6, 0.3] }}
+  names={{ lam: "\\lambda" }}
+  mistakes={[
+    { expr: "2/(1+lam)", hint: "Check a sign. The first equation gives x − 2 = λx, so x(1 − λ) = 2. Yours solves x − 2 = −λx." },
+    { expr: "2/(1-2*lam)", hint: "The first equation has a factor 2 on both sides, 2(x − 2) = 2λx, and it cancels. Yours solves x − 2 = 2λx." }
+  ]} />
+
+<Answer id="p3-b-y" label="In the case $z = -y$: $y =$" expr="-2/(2+lam)"
+  vars={{ lam: [-0.6, 0.3] }}
+  names={{ lam: "\\lambda" }}
+  mistakes={[
+    { expr: "2/(2+lam)", hint: "That is z. The question asks for y, and z = −y." },
+    { expr: "-2/(2-lam)", hint: "With z = −y the second equation reads 2(y + 1) = −λy, so y(2 + λ) = −2. Yours solves 2(y + 1) = λy." }
+  ]} />
+
+<Answer id="p3-b-coefficient" label="Coefficient of $\lambda$ (the first power) in the equation of degree 4:" value="-16" tolerance="0.01" calc="p3-b-coefficient" />
+
+<Answer id="p3-b-lambda" label="$\lambda$ at the closest point, to four decimal places:" value="-0.1283" tolerance="0.0002" calc="p3-b-lambda" />
+
+<Answer id="p3-b-px" label="Closest point: $x =$" value="1.7725" tolerance="0.0002" calc="p3-b-px" />
+
+<Answer id="p3-b-py" label="Closest point: $y =$" value="-1.0686" tolerance="0.0002" calc="p3-b-py" />
+
+<Answer id="p3-b-pz" label="Closest point: $z =$" value="1.0686" tolerance="0.0002" calc="p3-b-pz" />
+
+<Answer id="p3-b-within" label="Coordinates of the estimate of Problem 2(b) within 1/100 of the exact ones:"
+  choices={["all three", "only x", "only y and z", "none"]} answer={1} />
+
+<Answer id="p3-b-case2" label="The case λ = 2 gives"
+  choices={["two points of the surface, both further from P₀", "one point of the surface, closer to P₀", "no point at all: the equation left for y has no real solution", "the same point as the case z = −y"]} answer={2} />
+
+<Solution>
+
+**The idea.** The second and third equations are alike with $y$ and $z$ exchanged. Adding them splits the problem into two cases, and in the main case everything can be written with $\lambda$ alone.
+
+<Step title="Two cases">
+
+Adding $2(y + 1) = \lambda z$ and $2(z - 1) = \lambda y$ gives $2(y + z) = \lambda(y + z)$:
+
+<Formula label="The two cases" tex="(2 - \lambda)(y + z) = 0 \quad\Longrightarrow\quad z = -y \quad\text{or}\quad \lambda = 2" cite="mit" at="Part B, Problem 3(b), p. 2" />
+
+</Step>
+
+<Step title="The case z = −y: everything in terms of λ">
+
+The first equation is $x - 2 = \lambda x$, so $x(1 - \lambda) = 2$. With $z = -y$ the second equation is $2(y + 1) = -\lambda y$, so $y(2 + \lambda) = -2$. (Neither bracket can be zero: $\lambda = 1$ would turn the first equation into $-2 = 0$, and $\lambda = -2$ would turn the second into $2 = 0$.)
+
+<Formula label="The point in terms of the multiplier" tex="x = \frac{2}{1 - \lambda}, \qquad y = -\frac{2}{2 + \lambda}, \qquad z = \frac{2}{2 + \lambda}" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+The third equation, $2(z - 1) = \lambda y$, becomes $-2y - 2 = \lambda y$ with $z = -y$: the second equation again, so it adds nothing.
+
+</Step>
+
+<Step title="The equation for λ">
+
+Put these into the constraint $x^2 + yz = 2$, where $yz = -y^2$:
+
+<Formula label="The constraint in terms of the multiplier" tex="\frac{4}{(1 - \lambda)^2} - \frac{4}{(2 + \lambda)^2} = 2" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+Multiply by $(1 - \lambda)^2(2 + \lambda)^2$ and divide by 2. On the left, $2(2 + \lambda)^2 - 2(1 - \lambda)^2 = 2(3 + 6\lambda) = 6 + 12\lambda$. On the right, $(1 - \lambda)(2 + \lambda) = 2 - \lambda - \lambda^2$, and its square is $\lambda^4 + 2\lambda^3 - 3\lambda^2 - 4\lambda + 4$. Bringing everything to one side:
+
+<Formula label="The equation of degree 4" tex="\lambda^4 + 2\lambda^3 - 3\lambda^2 - 16\lambda - 2 = 0" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+</Step>
+
+<Step title="Its real roots and their points">
+
+A polynomial solver gives two real roots, $\lambda = -0.1283$ and $\lambda = 2.3448$, and two that are not real. With the formulas for $x$, $y$ and $z$:
+
+| $\lambda$ | $x$ | $y$ | $z$ | distance to $P_0$ |
+|---|---|---|---|---|
+| $-0.1283$ | $1.7725$ | $-1.0686$ | $1.0686$ | $0.2473$ |
+| $2.3448$ | $-1.4872$ | $-0.4603$ | $0.4603$ | $3.5698$ |
+
+</Step>
+
+<Step title="The case λ = 2">
+
+With $\lambda = 2$ the first equation is $x - 2 = 2x$, so $x = -2$. The second is $2(y + 1) = 2z$, so $z = y + 1$ (the third says the same). The constraint becomes $4 + y(y + 1) = 2$:
+
+<Formula label="The case with multiplier 2" tex="y^2 + y + 2 = 0, \qquad \text{discriminant } 1 - 8 = -7" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+The discriminant is negative, so no real $y$ satisfies it. This case gives no point at all. (MIT's sheet asks to check that this case yields solutions further away. There are none to compare: with $\lambda$ multiplying $\nabla g$, the convention that makes the two cases come out as $z = -y$ or $\lambda = 2$, the case $\lambda = 2$ is empty.)
+
+</Step>
+
+<Step title="The closest point">
+
+The Lagrange equations have exactly two real solutions, the two rows of the table. The first is the nearer one by far:
+
+<Formula label="The closest point" tex="(x, y, z) = (1.7725,\ -1.0686,\ 1.0686), \qquad \lambda = -0.1283, \qquad \text{distance } 0.2473" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+(Our remark, as the lesson warns that the method does not say which solution is a minimum: a closest point does exist, because points of the surface far from the origin are also far from $P_0$, and it must satisfy the Lagrange equations, because $\nabla g = \langle 2x, z, y\rangle$ is zero only at the origin, which is not on the surface. So the closest point is one of the two solutions, and comparing distances picks the first.)
+
+</Step>
+
+<Step title="Compare with Problem 2(b)">
+
+The estimate was $(1.7778, -1.0556, 1.0556)$. The differences from the exact point are $0.0053$ in $x$ and $0.0130$ in $y$ and in $z$. So $x$ was within $1/100$, and $y$ and $z$ were not, though they missed by only a little more. The estimate went straight along the gradient at $P_0$, but the surface is curved, and the line from $P_0$ to the true closest point is perpendicular to the surface at that point, not at $P_0$.
+
+</Step>
+
+<Step title="Check the result">
+
+The point is on the surface: $1.7725^2 - 1.0686^2 = 3.1418 - 1.1419 = 1.9999$, which is 2 up to the rounding of the coordinates. The two gradients are parallel there: $\nabla f = \langle -0.4550, -0.1372, 0.1372\rangle$ and $\nabla g = \langle 3.5450, 1.0686, -1.0686\rangle$, and the ratios $-0.4550/3.5450$ and $-0.1372/1.0686$ are both $-0.128$, the multiplier. The distance $0.2473$ is a little more than the $1/\sqrt{18} = 0.2357$ of the linear estimate, as it must be: the estimated point of Problem 2(b) has $g = 2.0463$, so it had not yet reached the surface.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## More practice: MIT's own solved exercises
+
+Part A of MIT's Problem Set 5 (8 points at MIT, not scored here) is a list of short exercises from the problems section of MIT's "18.02 Supplementary Notes and Problems", which is on MIT OpenCourseWare under the same licence as the rest of the course, with solutions to the exercises that are not marked with a star. They are not rewritten here: open [the exercises (section 2, Partial differentiation)](https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/partial_diff/), try them, then compare with [MIT's solutions](https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/part_diff_sol/).
+
+An exercise number such as 2D-3 means section 2, group D, exercise 3; the letters after it are its parts. MIT assigned these, lecture by lecture (with this site's lecture numbers):
+
+| For | Exercises in section 2 of the Notes |
+|---|---|
+| Lecture 12: [the gradient, directional derivatives and tangent planes](/courses/18-02/gradient) | 2D-1a, b, e, 2D-2b, 2D-3a, c, 2D-8, 2D-9; 2E-7 |
+| Lecture 13: [Lagrange multipliers](/courses/18-02/lagrange-multipliers) | 2I-1, 2I-3 |
+
+MIT's list also names sections of the course textbook to read (Edwards and Penney, *Multivariable Calculus*, 6th edition). The textbook is not openly licensed and is not used on this site, so they are not part of this page.
