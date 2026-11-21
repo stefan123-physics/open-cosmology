@@ -1,0 +1,809 @@
+# Calculations on content/year-2/8.033/8-033-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# a numerical solve of the invariant equation, the force transformation of Lecture 12, the field invariants
+# E² − B² and E·B, the boost to the centre-of-mass frame, or a direct energy-momentum balance.
+# The matrix product of Problem 2(a) was also multiplied out numerically (NumPy, random fields and speeds) by the
+# page author; the six formulas agreed to rounding error.
+
+page: content/year-2/8.033/8-033-problem-set-7.mdx
+calcs:
+  # ---- Values used throughout
+
+  - id: slide-rest-energies
+    kind: fact
+    where: '"How to answer": rest energies from the lecture''s table'
+    shown: ['electron 0.511 MeV, neutron 939.55 MeV, one atomic mass unit 931.5 MeV']
+    source: {cite: reading3, at: 'slide 11'}
+    origin: mit
+
+  - id: proton-rest-energy
+    kind: fact
+    where: '"How to answer": the proton''s rest energy, today''s value (PDG: 938.27208816 MeV), and the slide''s 938.26 MeV'
+    value: '938.272 MeV'
+    shown: ['today''s value of 938.272 MeV rounded (the slide has 938.26 MeV']
+    source: {cite: pdg}
+    origin: later-data
+
+  # ---- Problem 1
+
+  - id: p1-given
+    kind: fact
+    where: 'Problem 1(a), statement: MIT''s photon energy'
+    shown: ['a photon with an energy of 1 GeV']
+    source: {cite: mit, at: 'Problem 1(a), p. 1'}
+    origin: mit
+
+  - id: p1-pair-rest
+    where: 'Problem 1(a): rest energy of an electron and a positron'
+    inputs: {me: 0.511 MeV}
+    formula: 2 * me
+    expected: 1.022 MeV
+    shown: ['$2 \times 0.511 = 1.022$ MeV', '\left(1.022\ \text{MeV}\right)^2']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-neutron-q
+    where: 'Problem 1(b), check: energy released in neutron decay, with the slide''s rest energies'
+    inputs: {mn: 939.55 MeV, mp: 938.26 MeV, me: 0.511 MeV}
+    formula: mn - mp - me
+    expected: 0.78 MeV
+    shown: ['$939.55 - 938.26 - 0.511 = 0.78$ MeV']
+    source: {cite: reading3, at: 'slide 11 (the subtraction is our own)'}
+    origin: page-own
+
+  - id: p1-up
+    answer: p1-c-up
+    where: 'Problem 1(c), answer box: up quarks in 10 protons and 8 neutrons'
+    inputs: {}
+    formula: 2 * 10 + 1 * 8
+    expected: '28'
+    shown: ['id="p1-c-up"', '$2 \times 10 + 1 \times 8 = 28$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-down
+    answer: p1-c-down
+    where: 'Problem 1(c), answer box: down quarks in 10 protons and 8 neutrons'
+    inputs: {}
+    formula: 1 * 10 + 2 * 8
+    expected: '26'
+    shown: ['id="p1-c-down"', '$1 \times 10 + 2 \times 8 = 26$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-electrons
+    answer: p1-c-el
+    where: 'Problem 1(c), answer box: electrons of a neutral molecule with 2 + 8 protons'
+    inputs: {}
+    formula: 2 * 1 + 8
+    expected: '10'
+    shown: ['id="p1-c-el"', 'so it has 10 electrons']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: three quarks per nucleon.
+  - id: p1-quarks
+    where: 'Problem 1(c), check: all quarks, three for each of the 18 nucleons'
+    inputs: {}
+    formula: 3 * (10 + 8)
+    expected: '54'
+    shown: ['$28 + 26 = 54$ quarks']
+    source: {cite: mit, at: 'Problem 1(c) (our own check)'}
+    origin: page-own
+
+  - id: p1-all
+    where: 'Problem 1(c): all matter particles'
+    inputs: {}
+    formula: 28 + 26 + 10
+    expected: '64'
+    shown: ['64 matter particles']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # Independent route: the charge of the quarks must balance the 10 electrons.
+  - id: p1-charge
+    where: 'Problem 1(c), check: the charge of 28 up and 26 down quarks, in units of the proton charge'
+    inputs: {}
+    formula: 28 * 2 / 3 - 26 / 3
+    expected: '10'
+    tolerance: 1e-9
+    shown: ['\tfrac{56 - 26}{3} - 10 = 0']
+    source: {cite: mit, at: 'Problem 1(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # Independent route: a charge at rest in S' moves with u_x = v in S; the force across the motion transforms as
+  # F_y' = F_y / (gamma (1 - u_x v / c^2)) (Lecture 12, slide 13), and F_y = q (E_y - beta B_z), F_y' = q E_y'.
+  # The samples keep g = 1/sqrt(1 - b^2) (b = 3/5, 4/5, 7/25, 24/25, 5/13).
+  - id: p2-ey
+    kind: identity
+    answer: p2-ey
+    where: 'Problem 2(a), answer box E_y'': against the Lorentz force on a charge at rest in S'', transformed with the force rule'
+    formula: g*(Ey - b*Bz)
+    equals: (Ey - b*Bz) / (g * (1 - b*b))
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96, 0.3846153846153846]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716, 1.0833333333333333]
+      Ey: [1, 2.3, 1.7, 3, 2.9]
+      Bz: [2.5, 1, 3, 1.4, 2.2]
+    tolerance: 1e-9
+    shown: ['id="p2-ey"']
+    source: {cite: reading4, at: 'slide 18'}
+    origin: page-own
+
+  # Independent route: E.B is the same in both frames; solve it for B_y' with the other five primed components.
+  - id: p2-by
+    kind: identity
+    answer: p2-by
+    where: 'Problem 2(a), answer box B_y'': against the invariance of E.B, with the other five transformed components'
+    formula: g*(By + b*Ez)
+    equals: (Ey*By + Ez*Bz - g*(Ez + b*By) * g*(Bz - b*Ey)) / (g*(Ey - b*Bz))
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96, 0.3846153846153846]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716, 1.0833333333333333]
+      Ey: [3, 2.3, 1.7, 3, 2.9]
+      Ez: [1.1, 2.9, 2, 1.3, 2.6]
+      By: [1.5, 2.2, 1, 2.8, 3]
+      Bz: [2.5, 1, 3, 1.4, 2.2]
+    tolerance: 1e-9
+    shown: ['id="p2-by"']
+    source: {cite: reading4, at: 'slide 18'}
+    origin: page-own
+
+  # All six formulas together: E'^2 - B'^2 = E^2 - B^2.
+  - id: p2-invariant
+    kind: identity
+    where: 'Problem 2(a), formula "Lorentz transformation of the field": E squared minus B squared is unchanged'
+    formula: Ex**2 + (g*(Ey - b*Bz))**2 + (g*(Ez + b*By))**2 - Bx**2 - (g*(By + b*Ez))**2 - (g*(Bz - b*Ey))**2
+    equals: Ex**2 + Ey**2 + Ez**2 - Bx**2 - By**2 - Bz**2
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96, 0.3846153846153846]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716, 1.0833333333333333]
+      Ex: [0.7, 2, 1.2, 3, 0.4]
+      Ey: [3, 2.3, 1.7, 3, 2.9]
+      Ez: [1.1, 2.9, 2, 1.3, 2.6]
+      Bx: [2, 0.3, 1.9, 1, 2.4]
+      By: [1.5, 2.2, 1, 2.8, 3]
+      Bz: [2.5, 1, 3, 1.4, 2.2]
+    tolerance: 1e-8
+    shown: ['<Formula label="Lorentz transformation of the field"']
+    source: {cite: reading4, at: 'slide 18'}
+    origin: page-own
+
+  # Independent route: with only E_y in S, E'^2 - B'^2 = E_y^2 fixes the size of B_z'; the sign is that of -beta.
+  - id: p2-bz
+    kind: identity
+    answer: p2-bz
+    where: 'Problem 2(b), answer box B_z'' for a pure E_y: against the invariant E squared minus B squared'
+    formula: -g*b*Ey
+    equals: -sqrt((g*Ey)**2 - Ey**2)
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96, 0.3846153846153846]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716, 1.0833333333333333]
+      Ey: [1, 2.3, 1.7, 3, 2.9]
+    tolerance: 1e-8
+    shown: ['id="p2-bz"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-example
+    where: 'Problem 2(b), check: gamma times beta at beta = 0.6'
+    inputs: {}
+    formula: 0.6 / sqrt(1 - 0.6**2)
+    expected: '0.75'
+    tolerance: 1e-9
+    shown: ['$\gamma = 1.25$ and $B_z'' = -0.75\,E_y$']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  # The force check of part (c): q (gamma E_y - gamma beta^2 E_y) = q E_y / gamma.
+  - id: p2-force
+    kind: identity
+    where: 'Problem 2(c), check: the y component of the force in S'' is the force of S divided by gamma'
+    formula: g*Ey - g*b**2*Ey
+    equals: Ey / g
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96, 0.3846153846153846]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716, 1.0833333333333333]
+      Ey: [1, 2.3, 1.7, 3, 2.9]
+    tolerance: 1e-9
+    shown: ['= qE_y/\gamma$']
+    source: {cite: mit, at: 'Problem 2(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3 (our own numbers)
+
+  - id: p3-available
+    answer: p3-b
+    where: 'Problem 3(b), answer box: twice the total energy of one particle'
+    inputs: {mp: 0.938 GeV, K: 20 GeV}
+    formula: 2 * (mp + K)
+    expected: 41.88 GeV
+    shown: ['id="p3-b"', '= 41.88\ \text{GeV}"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own numbers and solution)'}
+    origin: page-own
+
+  # Independent route: the invariant mass of the two 4-momenta, with opposite momenta p = sqrt(E^2 - m^2).
+  - id: p3-available-invariant
+    where: 'Problem 3(a), check: the invariant of the two particles gives the same available energy'
+    inputs: {mp: 0.938 GeV, K: 20 GeV}
+    formula: sqrt((2 * (mp + K))**2 - (sqrt((mp + K)**2 - mp**2) - sqrt((mp + K)**2 - mp**2))**2)
+    expected: 41.88 GeV
+    shown: ['when $p_\text{tot} = 0$']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: page-own
+
+  - id: p3-rest
+    where: 'Problem 3(b), check: the two rest energies'
+    inputs: {mp: 0.938 GeV}
+    formula: 2 * mp
+    expected: 1.876 GeV
+    shown: ['The rest energies contribute 1.876 GeV']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  - id: p3-rest-share
+    where: 'Problem 3(b), check: the rest energies as a percentage of the available energy'
+    inputs: {mp: 0.938 GeV, K: 20 GeV}
+    formula: 100 * 2 * mp / (2 * (mp + K))
+    expected: '4.5'
+    shown: ['4.5% of the total']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  - id: p3-ratio
+    where: 'Problem 3(b), check: K over the rest energy'
+    inputs: {mp: 0.938 GeV, K: 20 GeV}
+    formula: K / mp
+    expected: '21.32'
+    shown: ['\left(1 + 21.32\right)$ GeV']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  - id: p3-needed
+    answer: p3-c
+    where: 'Problem 3(c), answer box: half the available energy minus the rest energy'
+    inputs: {mp: 0.938 GeV, eps: 10 GeV}
+    formula: eps / 2 - mp
+    expected: 4.062 GeV
+    shown: ['id="p3-c"', '= 4.062\ \text{GeV}"']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own numbers and solution)'}
+    origin: page-own
+
+  - id: p3-gamma
+    where: 'Problem 3(c), check: the Lorentz factor of each particle'
+    inputs: {mp: 0.938 GeV, eps: 10 GeV}
+    formula: (eps / 2) / mp
+    expected: '5.33'
+    shown: ['$\gamma = E/m_0c^2 = 5/0.938 = 5.33$']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4 (our own problem)
+
+  # Independent route: solve the invariant of the recoiling nucleus numerically for the photon energy w.
+  - id: p4-emit
+    kind: identity
+    answer: p4-emit
+    where: 'Problem 4(a), answer box: against a numerical solve of (E0 - w)^2 - w^2 = (E0 - Q)^2'
+    formula: Q*(1 - Q/(2*E0))
+    equals: solve('(E0 - w)**2 - w**2 - (E0 - Q)**2', 'w', 0, 100)
+    samples:
+      Q: [0.1, 0.4, 1, 0.7, 0.25]
+      E0: [5, 20, 8, 12.5, 16]
+    tolerance: 1e-8
+    shown: ['id="p4-emit"']
+    source: {cite: reading3, at: 'slide 23'}
+    origin: page-own
+
+  - id: p4-given
+    kind: fact
+    where: 'Problem 4(b), statement: the iron-57 line of the Harvard tower experiment'
+    shown: ['$Q_0 = 14.4$ keV']
+    source: {cite: reading3, at: 'slide 25'}
+    origin: mit
+
+  - id: p4-rest-energy
+    where: 'Problem 4(b): 57 atomic mass units of 931.5 MeV'
+    inputs: {u: 931.5 MeV}
+    formula: 57 * u
+    expected: 5.310e10 eV
+    shown: ['$E_0 = 57 \times 931.5\ \text{MeV} = 5.310\times 10^{10}$ eV']
+    source: {cite: reading3, at: 'slide 11 (the atomic mass unit; the product is our own)'}
+    origin: page-own
+
+  - id: p4-recoil
+    answer: p4-recoil
+    where: 'Problem 4(b), answer box: recoil energy Q^2 / (2 E0)'
+    inputs: {Q: 14.4 keV, u: 931.5 MeV}
+    formula: Q**2 / (2 * 57 * u)
+    expected: 1.953e-3 eV
+    shown: ['id="p4-recoil"', '= 1.953\times 10^{-3}\ \text{eV}"']
+    source: {cite: mit, at: 'Problem 4 (our own problem and solution)'}
+    origin: page-own
+
+  # Independent route: the non-relativistic kinetic energy of a nucleus that moves with the photon's momentum,
+  # with the speed found first: v/c = Q / E0, K = E0 (v/c)^2 / 2.
+  - id: p4-recoil-newton
+    where: 'Problem 4(b), check: the non-relativistic p^2 / 2 m0 gives the same'
+    inputs: {Q: 14.4 keV, u: 931.5 MeV}
+    formula: 0.5 * (57 * u) * (Q / (57 * u))**2
+    expected: 1.953e-3 eV
+    shown: ['The non-relativistic formula $p^2/2m_0$ with $p = Q_0/c$ gives the same expression']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-fraction
+    where: 'Problem 4(b), check: the fraction of the energy that the recoil takes'
+    inputs: {Q: 14.4 keV, u: 931.5 MeV}
+    formula: Q / (2 * 57 * u)
+    expected: '1.36e-7'
+    shown: ['$Q_0/2E_0 = 1.36\times 10^{-7}$']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-absorb
+    kind: identity
+    answer: p4-absorb
+    where: 'Problem 4(c), answer box: against a numerical solve of (E0 + w)^2 - w^2 = (E0 + Q)^2'
+    formula: Q*(1 + Q/(2*E0))
+    equals: solve('(E0 + w)**2 - w**2 - (E0 + Q)**2', 'w', 0, 100)
+    samples:
+      Q: [0.1, 0.4, 1, 0.7, 0.25]
+      E0: [5, 20, 8, 12.5, 16]
+    tolerance: 1e-8
+    shown: ['id="p4-absorb"']
+    source: {cite: mit, at: 'Problem 4 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p4-beta
+    where: 'Problem 4(d): the Doppler speed as a fraction of c'
+    inputs: {Q: 14.4 keV, u: 931.5 MeV}
+    formula: Q / (57 * u)
+    expected: '2.712e-7'
+    shown: ['= 2.712\times 10^{-7}']
+    source: {cite: mit, at: 'Problem 4 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p4-speed
+    answer: p4-speed
+    where: 'Problem 4(d), answer box: v = c Q / E0'
+    inputs: {Q: 14.4 keV, u: 931.5 MeV}
+    formula: c * Q / (57 * u)
+    expected: 81.3 m/s
+    shown: ['id="p4-speed"', 'v = \beta c = 81.3\ \text{m/s}"']
+    source: {cite: mit, at: 'Problem 4 (our own problem and solution)'}
+    origin: page-own
+
+  # Independent route, exact: the ratio R of the photon energy needed (absorption by a nucleus of rest energy E0)
+  # to the photon energy emitted (by a nucleus of rest energy E0 + Q), and the full Doppler factor
+  # R = sqrt((1 + beta)/(1 - beta)), so beta = (R^2 - 1)/(R^2 + 1). Energies in eV.
+  - id: p4-speed-exact
+    where: 'Problem 4(d), check: the exact speed, without the low-speed and small-recoil approximations'
+    inputs: {}
+    formula: 299792458 * (((1 + 14400/(2*5.30955e10)) / (1 - 14400/(2*(5.30955e10 + 14400))))**2 - 1) / (((1 + 14400/(2*5.30955e10)) / (1 - 14400/(2*(5.30955e10 + 14400))))**2 + 1)
+    expected: '81.3'
+    shown: ['changes the speed only in the seventh digit']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-c
+    where: 'Problem 4(d), statement: the speed of light, rounded'
+    formula: c
+    expected: 2.998e8 m/s
+    shown: ['$c = 2.998\times 10^8$ m/s']
+    source: {cite: mit, at: 'Problem 4 (our own problem; the value is the SI definition, calcs/constants.yaml)'}
+    origin: page-own
+
+  # ---- Problem 5 (our own problem)
+
+  # Independent route: solve the electron's invariant numerically for the scattered photon energy w.
+  - id: p5-compton
+    kind: identity
+    answer: p5-compton
+    where: 'Problem 5(a), answer box: against a numerical solve of the invariant of the recoiling electron'
+    formula: E/(1 + (E/mc2)*(1 - cos(th)))
+    equals: solve('(E + mc2 - w)**2 - (E**2 + w**2 - 2*E*w*cos(th)) - mc2**2', 'w', 0, 100)
+    samples:
+      E: [0.2, 2, 0.9, 1.4, 0.5]
+      mc2: [0.511, 0.4, 0.6, 0.45, 0.55]
+      th: [0.5, 2.5, 1.5708, 3.1, 1]
+    tolerance: 1e-8
+    shown: ['id="p5-compton"']
+    source: {cite: reading3, at: 'slide 27'}
+    origin: page-own
+
+  - id: p5-denominator
+    where: 'Problem 5(b): the denominator at 90 degrees'
+    inputs: {}
+    formula: 1 + 500 / 511
+    expected: '1.9785'
+    shown: ['{1.9785}']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-photon-90
+    answer: p5-photon
+    where: 'Problem 5(b), answer box: a 500 keV photon scattered through 90 degrees'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: Eg / (1 + Eg / me)
+    expected: 252.7 keV
+    shown: ['id="p5-photon"', '= 252.7\ \text{keV}, \qquad K_e']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-electron-90
+    answer: p5-electron
+    where: 'Problem 5(b), answer box: the electron''s kinetic energy'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: Eg - Eg / (1 + Eg / me)
+    expected: 247.3 keV
+    shown: ['id="p5-electron"', 'K_e = h\nu - h\nu'' = 247.3\ \text{keV}"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-momentum
+    where: 'Problem 5(b), check: c times the electron''s momentum, from two photon momenta at right angles'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: sqrt(Eg**2 + (Eg / (1 + Eg / me))**2)
+    expected: 560.2 keV
+    shown: ['$cp_e = \sqrt{500^2 + 252.7^2} = 560.2$ keV']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-total
+    where: 'Problem 5(b), check: the electron''s total energy'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: me + Eg - Eg / (1 + Eg / me)
+    expected: 758.3 keV
+    shown: ['$511 + 247.3 = 758.3$ keV']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  # Independent route for both boxes of part (b): energy and momentum of the electron give back its rest energy.
+  - id: p5-rest-check
+    where: 'Problem 5(b), check: the invariant of the recoiling electron is its rest energy'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: sqrt((me + Eg - Eg / (1 + Eg / me))**2 - (Eg**2 + (Eg / (1 + Eg / me))**2))
+    expected: 511 keV
+    tolerance: 0.001 keV
+    shown: ['$\sqrt{758.3^2 - 560.2^2} = 511$ keV']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-photon-min
+    where: 'Problem 5(c): the photon scattered straight back'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: Eg / (1 + 2 * Eg / me)
+    expected: 169.1 keV
+    shown: ['= 169.1\ \text{keV}']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-electron-max
+    answer: p5-max
+    where: 'Problem 5(c), answer box: the largest kinetic energy of the electron'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: Eg - Eg / (1 + 2 * Eg / me)
+    expected: 330.9 keV
+    shown: ['id="p5-max"', '= 330.9\ \text{keV}"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  # Independent route: the standard closed form of the largest energy transfer, E * 2x/(1 + 2x) with x = E/m.
+  - id: p5-electron-max-second-route
+    where: 'Problem 5(c), check: the closed form 2x/(1 + 2x) of the largest energy transfer'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: Eg * (2 * Eg / me) / (1 + 2 * Eg / me)
+    expected: 330.9 keV
+    shown: ['id="p5-max"']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-kept
+    where: 'Problem 5(c), check: the least percentage of its energy that the photon keeps'
+    inputs: {Eg: 500 keV, me: 511 keV}
+    formula: 100 / (1 + 2 * Eg / me)
+    expected: '33.8'
+    shown: ['the photon keeps at least 33.8% of its energy']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-back-limit
+    answer: p5-limit
+    where: 'Problem 5(d), answer box: half the electron''s rest energy'
+    inputs: {me: 511 keV}
+    formula: me / 2
+    expected: 255.5 keV
+    shown: ['id="p5-limit"', '= 255.5\ \text{keV}']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  # Independent route: the exact backscatter formula at a very high photon energy approaches the limit from below.
+  - id: p5-back-1gev
+    where: 'Problem 5(d), check: a photon of 1 GeV scattered straight back'
+    inputs: {Eg: 1 GeV, me: 511 keV}
+    formula: Eg / (1 + 2 * Eg / me)
+    expected: 255.4 keV
+    shown: ['255.4 keV for a photon of 1 GeV']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6-given
+    kind: fact
+    where: 'Problem 6, statement: MIT''s values'
+    shown: ['an energy of $10^{15}$ eV', 'Take the rest energy of every pion to be 140 MeV']
+    source: {cite: mit, at: 'Problem 6, p. 2'}
+    origin: mit
+
+  # Independent route: boost to the centre-of-mass frame, E* = E_tot sqrt(1 - beta_CM^2) with beta_CM = cp/E_tot.
+  - id: p6-ecm
+    kind: identity
+    answer: p6-ecm
+    where: 'Problem 6(a), answer box: against the total energy divided by the Lorentz factor of the centre of mass'
+    formula: sqrt(2*E0*(E + E0))
+    equals: (E + E0) * sqrt(1 - (E**2 - E0**2) / (E + E0)**2)
+    samples:
+      E: [5, 50, 12, 33, 7.5]
+      E0: [1, 2, 1.5, 1.2, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p6-ecm"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-estar
+    where: 'Problem 6(b): energy in the centre-of-mass frame'
+    inputs: {mp: 0.9383 GeV, E: 1e6 GeV}
+    formula: sqrt(2 * mp * (E + mp))
+    expected: 1369.89 GeV
+    shown: ['= 1369.89\ \text{GeV}"', 'only 1370 GeV']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-two-protons
+    where: 'Problem 6(b): the rest energy of the two protons'
+    inputs: {mp: 0.9383 GeV}
+    formula: 2 * mp
+    expected: 1.88 GeV
+    shown: ['\left(1369.89 - 1.88\right)\ \text{GeV}']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-ratio
+    where: 'Problem 6(b): the energy left for pions over the pion rest energy'
+    inputs: {mp: 0.9383 GeV, E: 1e6 GeV, mpi: 0.140 GeV}
+    formula: (sqrt(2 * mp * (E + mp)) - 2 * mp) / mpi
+    expected: '9771.5'
+    shown: ['= 9771.5" cite']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  # The whole number of pions is the ratio rounded down. The harness has no floor function: a ratio x rounds down
+  # to N exactly when x - 0.5 lies within 0.5 of N.
+  - id: p6-pions
+    answer: p6-pions
+    where: 'Problem 6(b), answer box: the ratio rounded down (ratio minus one half, within one half of the answer)'
+    inputs: {mp: 0.9383 GeV, E: 1e6 GeV, mpi: 0.140 GeV}
+    formula: (sqrt(2 * mp * (E + mp)) - 2 * mp) / mpi - 0.5
+    expected: '9771'
+    tolerance: 0.5
+    shown: ['id="p6-pions"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: check the threshold directly. With 9771 pions and two protons at rest in the centre-of-mass
+  # frame, the beam energy needed (invariant: (sum of rest energies)^2 = 2 mp (E + mp)) is below 10^6 GeV;
+  # with 9772 pions it is above.
+  - id: p6-threshold-9771
+    where: 'Problem 6(b), check: the beam energy needed for 9771 pions is just below 10^6 GeV'
+    inputs: {mp: 0.9383 GeV, mpi: 0.140 GeV}
+    formula: (2 * mp + 9771 * mpi)**2 / (2 * mp) - mp
+    expected: 9.999e5 GeV
+    tolerance: 99 GeV
+    shown: ['the largest whole number is $N = 9771$']
+    source: {cite: mit, at: 'Problem 6 (our own check)'}
+    origin: page-own
+
+  - id: p6-threshold-9772
+    where: 'Problem 6(b), check: the beam energy needed for 9772 pions is just above 10^6 GeV'
+    inputs: {mp: 0.9383 GeV, mpi: 0.140 GeV}
+    formula: (2 * mp + 9772 * mpi)**2 / (2 * mp) - mp
+    expected: 1.0001e6 GeV
+    tolerance: 99 GeV
+    shown: ['the largest whole number is $N = 9771$']
+    source: {cite: mit, at: 'Problem 6 (our own check)'}
+    origin: page-own
+
+  - id: p6-all-available
+    where: 'Problem 6(b), check: pions if all 10^6 GeV were available, in millions'
+    inputs: {E: 1e6 GeV, mpi: 0.140 GeV}
+    formula: E / mpi / 1e6
+    expected: '7.1'
+    shown: ['over seven million pions']
+    source: {cite: mit, at: 'Problem 6 (our own check)'}
+    origin: page-own
+
+  - id: p6-slide-proton
+    where: 'Problem 6(b), check: with the slide''s proton rest energy the ratio still rounds down to 9771'
+    inputs: {mp: 0.93826 GeV, E: 1e6 GeV, mpi: 0.140 GeV}
+    formula: (sqrt(2 * mp * (E + mp)) - 2 * mp) / mpi - 0.5
+    expected: '9771'
+    tolerance: 0.5
+    shown: ['938.26 MeV gives 9771 too']
+    source: {cite: reading3, at: 'slide 11 (the calculation is our own)'}
+    origin: page-own
+
+  - id: p6-neutral
+    where: 'Problem 6(b), check: with the neutral pion''s 135.0 MeV the ratio rounds down to 10133'
+    inputs: {mp: 0.9383 GeV, E: 1e6 GeV, mpi: 0.1350 GeV}
+    formula: (sqrt(2 * mp * (E + mp)) - 2 * mp) / mpi - 0.5
+    expected: '10133'
+    tolerance: 0.5
+    shown: ['the count would be 10133']
+    source: {cite: reading3, at: 'slide 11 (the calculation is our own)'}
+    origin: page-own
+
+  # ---- Problem 7
+
+  - id: p7-given
+    kind: fact
+    where: 'Problem 7, statement: MIT''s values'
+    shown: ['a rest energy of 300 GeV', 'Take the rest energy of a proton to be 1 GeV here']
+    source: {cite: mit, at: 'Problem 7, p. 2'}
+    origin: mit
+
+  - id: p7-fixed
+    answer: p7-fixed
+    where: 'Problem 7(i), answer box: threshold total energy with a target at rest'
+    inputs: {mp: 1 GeV, M: 300 GeV}
+    formula: (2 * mp + M)**2 / (2 * mp) - mp
+    expected: 45601 GeV
+    shown: ['id="p7-fixed"', '= 45601\ \text{GeV}"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p7-fixed-total
+    where: 'Problem 7(i): total energy in the laboratory at threshold'
+    inputs: {mp: 1 GeV, M: 300 GeV}
+    formula: (2 * mp + M)**2 / (2 * mp)
+    expected: 45602 GeV
+    shown: ['= 45602\ \text{GeV} - 1\ \text{GeV}']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: put the answer back into the invariant, (E + mp)^2 - (E^2 - mp^2) = 302^2.
+  - id: p7-fixed-back
+    where: 'Problem 7(i), check: the invariant with E = 45601 GeV, in GeV squared'
+    inputs: {}
+    formula: 45602**2 - 45601**2 + 1
+    expected: '91204'
+    shown: ['$E^{*2} = 45602^2 - 45601^2 + 1 = 91203 + 1 = 91204 = 302^2$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  - id: p7-fixed-square
+    where: 'Problem 7(i), check: 302 squared'
+    inputs: {}
+    formula: 302**2
+    expected: '91204'
+    shown: ['91204 = 302^2$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  - id: p7-collider
+    answer: p7-collider
+    where: 'Problem 7(ii), answer box: threshold total energy of each proton in colliding beams'
+    inputs: {mp: 1 GeV, M: 300 GeV}
+    formula: (2 * mp + M) / 2
+    expected: 151 GeV
+    shown: ['id="p7-collider"', 'E = 151\ \text{GeV}"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route linking the two answers: the Lorentz factor of one proton seen from the other,
+  # gamma' = gamma^2 (1 + beta^2) = 2 gamma^2 - 1.
+  - id: p7-link
+    where: 'Problem 7(ii), check: the collider threshold seen from one of the protons is the fixed-target threshold'
+    inputs: {}
+    formula: 151**2 * (1 + (1 - 1 / 151**2))
+    expected: '45601'
+    tolerance: 1e-6
+    shown: ['= 2\gamma^2 - 1 = 45601$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  - id: p7-ratio-total
+    where: 'Problem 7(iii): fixed-target kinetic energy over the total kinetic energy of the colliding beams'
+    inputs: {}
+    formula: (45601 - 1) / (2 * (151 - 1))
+    expected: '152'
+    tolerance: 1e-9
+    shown: ['152 times as much in all', '152 times the rest energy of the particle that is to be made']
+    source: {cite: mit, at: 'Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-ratio-each
+    where: 'Problem 7(iii): fixed-target kinetic energy over the kinetic energy of one colliding proton'
+    inputs: {}
+    formula: (45601 - 1) / (151 - 1)
+    expected: '304'
+    tolerance: 1e-9
+    shown: ['304 times as much per accelerated proton']
+    source: {cite: mit, at: 'Problem 7 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 11 (optional)
+
+  # MIT's eq. (11.1): the Lorentz factor that goes with beta_CM = gamma0 beta0 / (gamma0 + 1).
+  - id: p11-gamma-cm
+    kind: identity
+    where: 'Problem 11(a): 1/sqrt(1 - beta_CM^2) with beta_CM = gamma0 beta0/(gamma0 + 1) equals sqrt((gamma0 + 1)/2)'
+    formula: 1 / sqrt(1 - (g0 * sqrt(1 - 1/g0**2) / (g0 + 1))**2)
+    equals: sqrt((g0 + 1) / 2)
+    samples:
+      g0: [1.1, 2, 7, 30, 500]
+    tolerance: 1e-8
+    shown: ['<Formula label="Lorentz factor of the centre of mass, derived"']
+    source: {cite: mit, at: 'Optional Problem 11(a), eq. (11.1), p. 2'}
+    origin: page-own
+
+  - id: p11-beta0
+    where: 'Problem 11(b), check: beta0 for gamma0 = 7'
+    inputs: {}
+    formula: sqrt(1 - 1 / 7**2)
+    expected: '0.98974'
+    shown: ['$\beta_0 = 0.98974$']
+    source: {cite: mit, at: 'Optional Problem 11 (our own check)'}
+    origin: page-own
+
+  - id: p11-beta-cm
+    where: 'Problem 11(b), check: beta_CM for gamma0 = 7'
+    inputs: {}
+    formula: 7 * sqrt(1 - 1 / 7**2) / (7 + 1)
+    expected: '0.86603'
+    shown: ['$\beta_\text{CM} = 0.86603$']
+    source: {cite: mit, at: 'Optional Problem 11 (our own check)'}
+    origin: page-own
+
+  - id: p11-addition
+    where: 'Problem 11(b), check: the moving particle''s speed in the centre-of-mass frame, by velocity addition'
+    inputs: {}
+    formula: (0.98974 - 0.86603) / (1 - 0.98974 * 0.86603)
+    expected: '0.8660'
+    shown: ['= 0.8660$']
+    source: {cite: mit, at: 'Optional Problem 11 (our own check)'}
+    origin: page-own
+
+  - id: p11-theta
+    where: 'Problem 11(e): the angle of each particle for gamma0 = 7, in degrees'
+    inputs: {}
+    formula: atan(1 / sqrt((7 + 1) / 2)) * 180 / pi
+    expected: '26.57'
+    shown: ['$\theta = 26.57°$']
+    source: {cite: mit, at: 'Optional Problem 11(e) (our own number)'}
+    origin: page-own
+
+  - id: p11-angle
+    answer: p11-angle
+    where: 'Problem 11(e), answer box: the angle between the two particles for gamma0 = 7, in degrees'
+    inputs: {}
+    formula: 2 * atan(1 / sqrt((7 + 1) / 2)) * 180 / pi
+    expected: '53.13'
+    shown: ['id="p11-angle"', '$2\theta = 53.13°$']
+    source: {cite: mit, at: 'Optional Problem 11(e) (our own number)'}
+    origin: page-own
+
+  # Independent route, without the centre-of-mass frame: by symmetry each outgoing particle has half the total
+  # energy, (7 + 1)/2 = 4 rest energies, and half the momentum along x, sqrt(48)/2; p_y follows from its invariant.
+  - id: p11-angle-second-route
+    where: 'Problem 11(e), check: the same angle from energy-momentum conservation in S alone'
+    inputs: {}
+    formula: 2 * atan(sqrt(4**2 - 1 - (sqrt(48) / 2)**2) / (sqrt(48) / 2)) * 180 / pi
+    expected: '53.13'
+    shown: ['id="p11-angle"']
+    source: {cite: mit, at: 'Optional Problem 11(e) (our own check)'}
+    origin: page-own
