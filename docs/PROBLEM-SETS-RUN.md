@@ -33,9 +33,11 @@ Run several sets in parallel (one writer per worktree, up to about four at once)
 - The pre-commit hook checks the whole working tree: do not commit in the main checkout while an agent is editing files there.
 - On this Windows PC the Write and Edit tools often fail with ENOENT inside worktrees and some folders: agents write in the scratchpad and copy files in, or edit with a Python script. In the Bash tool, backslashes inside inline heredocs get halved: put Python with backslashes in a file.
 - Commit after each set; push when the owner asks.
+- Blind review input: `python scripts/strip-solutions.py <page.mdx> <out>` prints the page without hints, answer boxes and solutions; hand the reviewer only that file and MIT's PDF.
+- On Linux (cloud sessions, 2026-11-21): link with `ln -s ../../../node_modules node_modules` (and `.venv`) inside the worktree, remove the links with `rm node_modules .venv` (no trailing slash) before `git worktree remove`; Python is `.venv/bin/python`. `.gitignore` ignores the links and `.claude/worktrees/`.
 
 ## Progress
 
 | Course | Sets on OCW | Written | Reviewed | Notes |
 |---|---|---|---|---|
-| 8.286 | 10 | 1, 2 | 2 | Set 1 waits for its blind review |
+| 8.286 | 10 (+ 2 supernova data files for Set 8) | 1–6 | 1–6 | Set 1 blind-reviewed 2026-11-21 (0 errors, 0 warnings). No "rights reserved" or "courtesy" notices in Sets 1–10; Set 2 has one figure "Image by MIT OpenCourseWare" (OCW's own, not redrawn). Covers (site lectures, from the calendar and topics): 3: 5–7, 4: 8–9, 5: 10–12, 6: 13–16, 7: 16–18, 8: 18–20, 9: 20–22, 10: 22–23 (writers confirm). Set 9 Problem 5 and Set 10 Problem 1 are the same monopole problem |

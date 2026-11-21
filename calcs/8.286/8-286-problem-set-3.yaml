@@ -1,0 +1,349 @@
+# Calculations on content/year-4/8.286/8-286-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a direct sum over the mass (numerical integration), a numerical derivative, or a substitution in the given equation.
+
+page: content/year-4/8.286/8-286-problem-set-3.mdx
+calcs:
+  # ---- Problem 1: the cylindrical universe
+
+  # A against Newton's law added up along an endless line of mass. A piece of the line at height z = r tan(x)
+  # pulls a point at distance r with the radial acceleration G mu cos(x) dx / r, so g r / mu = ∫ G cos(x) dx
+  # over x from −π/2 to π/2. No Gauss's law is used.
+  - id: p1-a-line-of-mass
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Gauss''s law for the cylinder": against the direct sum of Newton''s law along an endless line of mass'
+    formula: 2*G
+    equals: integrate('G * cos(x)', 'x', -pi/2, pi/2)
+    samples:
+      G: [0.5, 3, 1, 6.674e-11]
+    tolerance: 1e-7
+    shown: ['A = 2G" cite="mit"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # The mass per length is added up ring by ring, and the pull comes from the line integral above.
+  - id: p1-b-acceleration
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "The motion of one shell of the cylinder": mass per length summed over rings, pull from the direct line integral'
+    formula: -2*pi*G*rhoi*ri**2/r
+    equals: -integrate('G * cos(x)', 'x', -pi/2, pi/2) * integrate('2*pi*x*rhoi', 'x', 0, ri) / r
+    samples:
+      G: [0.5, 3, 1, 2]
+      rhoi: [0.5, 3, 1.7, 1]
+      ri: [0.5, 2, 1.2, 1]
+      r: [0.5, 6, 3.1, 1]
+    tolerance: 1e-7
+    shown: ['= -\frac{2\pi G\,\rho_i\,r_i^2}{r}" cite="mit"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # The density from the same mass in the stretched piece: radius a ri, length L unchanged.
+  - id: p1-d-density
+    kind: identity
+    answer: p1-d-rho
+    where: 'Problem 1(d), first answer box and formula "Mass density of the cylindrical universe": the mass of a piece divided by its volume after stretching in two directions'
+    formula: rhoi/a**2
+    equals: integrate('2*pi*x*rhoi*L', 'x', 0, ri) / integrate('2*pi*x*L', 'x', 0, a*ri)
+    samples:
+      rhoi: [0.5, 3, 1.7, 1]
+      a: [0.5, 4, 2.2, 1]
+      ri: [0.5, 2, 1.2, 1]
+      L: [1, 10, 0.3, 2]
+    tolerance: 1e-7
+    shown: ['= \frac{\rho_i}{a^2(t)}" cite="mit"']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  # The equation for the scale factor as minus the slope of the potential V = 2πGρ_i ln a, with ρ_i = ρ a².
+  - id: p1-d-deceleration
+    kind: identity
+    answer: p1-d-addot
+    where: 'Problem 1(d), second answer box and formula "Deceleration of the cylindrical universe": minus the numerical derivative of the potential of part (e), with ρ_i = ρ a²'
+    formula: -2*pi*G*rho*a
+    equals: -deriv('2*pi*G*(rho*a**2)*log(x)', 'x', a)
+    samples:
+      G: [0.5, 3, 1, 2]
+      rho: [0.5, 3, 1.7, 1]
+      a: [0.5, 4, 2.2, 1]
+    tolerance: 1e-6
+    shown: ['= -2\pi G\,\rho(t)\,a" cite="mit"']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  # The potential as the work against the deceleration 2πGρ_i/a from a = 1 (where V = 0) to a.
+  - id: p1-e-potential
+    kind: identity
+    answer: p1-e-v
+    where: 'Problem 1(e), answer box and formula "Conserved quantity of the cylindrical universe": against the numerical integral of 2πGρ_i/a from 1 to a'
+    formula: 2*pi*G*rhoi*log(a)
+    equals: integrate('2*pi*G*rhoi/x', 'x', 1, a)
+    samples:
+      G: [0.5, 3, 1, 2]
+      rhoi: [0.5, 3, 1.7, 1]
+      a: [0.3, 5, 2.2, 1]
+    tolerance: 1e-7
+    shown: ['V(a) = 2\pi G\rho_i \ln a']
+    source: {cite: mit, at: 'Problem 1(e) (our own solution)'}
+    origin: page-own
+
+  # The largest scale factor: where V(a) = E, found numerically for sampled E.
+  - id: p1-e-largest-size
+    kind: identity
+    where: 'Problem 1(e), formula "Largest size of the cylindrical universe": V(a_max) equals E'
+    formula: 2*pi*G*rhoi*log(exp(E/(2*pi*G*rhoi)))
+    equals: E
+    samples:
+      G: [0.5, 3, 1, 2]
+      rhoi: [0.5, 3, 1.7, 1]
+      E: [0.2, 4, -1, 10]
+    tolerance: 1e-9
+    shown: ['a_{\max} = e^{E/(2\pi G\rho_i)}']
+    source: {cite: mit, at: 'Problem 1(e) (our own solution)'}
+    origin: page-own
+
+  # The example: H_i² = 8πGρ_i, in units where 4πGρ_i = 1 (so H_i² = 2).
+  - id: p1-e-example
+    where: 'Problem 1(e), check: a_max = exp[H_i²/(4πGρ_i)] for H_i² = 8πGρ_i'
+    inputs: {ratio: 2}
+    formula: exp(ratio)
+    expected: '7.39'
+    shown: ['$a_{\max} = e^2 = 7.39$']
+    source: {cite: mit, at: 'Problem 1(e) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-e-example-sphere
+    where: 'Problem 1(e), check: H_i² = 8πGρ_i divided by the sphere''s borderline value (8π/3)Gρ_i'
+    inputs: {}
+    formula: 8*pi / (8*pi/3)
+    expected: '3'
+    shown: ['three times the speed squared']
+    source: {cite: mit, at: 'Problem 1(e) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: a(t) = b t^(3/4)
+
+  - id: p2-hubble-rate
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Hubble expansion rate of Problem 2": the numerical derivative of b t^(3/4), divided by b t^(3/4)'
+    formula: 3/(4*t)
+    equals: deriv('b * x**(3/4)', 'x', t) / (b * t**(3/4))
+    samples:
+      t: [0.5, 10, 7.3, 13.8]
+      b: [0.5, 3, 37, 4.4]
+    tolerance: 1e-7
+    shown: ['= \frac{3}{4t}" cite="reading3"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # The density from the flat Friedmann equation, with H taken from the numerical derivative.
+  - id: p2-density
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Mass density of Problem 2": 3H²/(8πG) with H from the numerical derivative of b t^(3/4)'
+    formula: 27/(128*pi*G*t**2)
+    equals: 3 * (deriv('b * x**(3/4)', 'x', t) / (b * t**(3/4)))**2 / (8*pi*G)
+    samples:
+      G: [0.5, 3, 1, 6.674e-11]
+      t: [0.5, 10, 7.3, 13.8]
+      b: [0.5, 3, 37, 4.4]
+    tolerance: 1e-6
+    shown: ['= \frac{27}{128\pi\,G\,t^2}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-second-derivative
+    where: 'Problem 2(b), check: (d²a/dt²)/a times t² for a = b t^(3/4)'
+    inputs: {}
+    formula: (3/4) * (-1/4)
+    expected: '-0.1875'
+    tolerance: 1e-12
+    shown: ['= -3/(16t^2)$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution): −3/16 = −0.1875'}
+    origin: page-own
+
+  # What the pressureless equation would give: ρ = −3 (ä/a) / (4πG) = 9/(64πG t²), with ä/a from part (a)'s power law.
+  - id: p2-wrong-density
+    kind: identity
+    where: 'Problem 2(b), check: the density that the pressureless equation for the second derivative would give'
+    formula: 9/(64*pi*G*t**2)
+    equals: -3 * ((3/4) * (-1/4) / t**2) / (4*pi*G)
+    samples:
+      G: [0.5, 3, 1]
+      t: [0.5, 10, 7.3]
+    tolerance: 1e-12
+    shown: ['$\rho = 9/(64\pi G t^2)$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-wrong-density-ratio
+    where: 'Problem 2(b), check: the wrong density divided by the right one'
+    inputs: {}
+    formula: (9/64) / (27/128)
+    expected: '0.6667'
+    shown: ['only two thirds of the right value']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution): 2/3'}
+    origin: page-own
+
+  # ---- Problem 3: the energy of the sphere
+
+  # Part (a): E_eff with r = a ri, v = adot ri and M(ri) = (4π/3) ri³ ρ_i equals m ri² E.
+  - id: p3-a-effective-energy
+    kind: identity
+    where: 'Problem 3(a), formula "The effective energy written with the scale factor": ½mv² − GmM(r_i)/r against m r_i² E'
+    formula: 0.5*m*(adot*ri)**2 - G*m*(4*pi/3)*ri**3*rhoi/(a*ri)
+    equals: m*ri**2*(0.5*adot**2 - (4*pi/3)*G*rhoi/a)
+    samples:
+      m: [1, 2.5, 0.3]
+      ri: [0.5, 2, 1.2]
+      adot: [0.7, 3, 1.1]
+      a: [0.5, 4, 2.2]
+      G: [0.5, 3, 1]
+      rhoi: [0.5, 3, 1.7]
+    tolerance: 1e-12
+    shown: ['= m\,r_i^2\,E = E_\text{phys}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # c_K as the kinetic energy summed over shells, divided by M R² (½ adot²).
+  - id: p3-b-ck
+    answer: p3-b
+    where: 'Problem 3(b), answer box: c_K from the numerical sum over shells, for a sphere of initial radius 1.7 and density 2.3 (both cancel)'
+    inputs: {Ri: 1.7, rhoi: 2.3}
+    formula: integrate('x**2 * 4*pi*x**2*rhoi', 'x', 0, Ri) / ((4*pi/3)*rhoi*Ri**3 * Ri**2)
+    expected: '0.6'
+    tolerance: 1e-7
+    shown: ['c_K = \frac35 = 0.6']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # The same sum over the present radius: density ρ_i/a³, speed (adot/a) r, radius a R_i. The powers of a cancel.
+  - id: p3-b-present-radius
+    kind: identity
+    where: 'Problem 3(b), check: the kinetic energy summed over the present radius equals (3/5) M R_max,i² (½ adot²)'
+    formula: integrate('0.5 * (adot/a * x)**2 * 4*pi*x**2 * rhoi/a**3', 'x', 0, a*Ri)
+    equals: (3/5) * ((4*pi/3)*rhoi*Ri**3) * Ri**2 * 0.5*adot**2
+    samples:
+      adot: [0.7, 3, 1.1]
+      a: [0.5, 4, 2.2]
+      Ri: [0.5, 2, 1.7]
+      rhoi: [0.5, 3, 2.3]
+    tolerance: 1e-7
+    shown: ['$a^{-3}\cdot a^{-2}\cdot a^{5} = 1$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # c_U: the energy of assembly summed over shells equals −(3/5) G M²/R.
+  - id: p3-c-potential-energy
+    kind: identity
+    where: 'Problem 3(c), formula "Potential energy of a uniform sphere": the numerical sum of −G M(r) dM / r against −(3/5) G M²/R'
+    formula: -integrate('G * (4*pi/3)*x**3*rho * 4*pi*x**2*rho / x', 'x', 0, R)
+    equals: -(3/5) * G * ((4*pi/3)*rho*R**3)**2 / R
+    samples:
+      G: [0.5, 3, 1]
+      rho: [0.5, 3, 2.3]
+      R: [0.5, 2, 1.7]
+    tolerance: 1e-7
+    shown: ['= -\frac35\,\frac{G M^2}{R}']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-closed-form
+    kind: identity
+    where: 'Problem 3(c), formula "Potential energy of a uniform sphere": −(16π²/15) G ρ² R⁵ against −(3/5) G M²/R'
+    formula: -(16*pi**2/15) * G * rho**2 * R**5
+    equals: -(3/5) * G * ((4*pi/3)*rho*R**3)**2 / R
+    samples:
+      G: [0.5, 3, 1]
+      rho: [0.5, 3, 2.3]
+      R: [0.5, 2, 1.7]
+    tolerance: 1e-12
+    shown: ['= -\frac{16\pi^2}{15}\,G\rho^2 R^5']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # The form MIT asks for: (3/5) M R_i² (−(4π/3) G ρ_i / a) with R = a R_i equals −(3/5) G M²/R, so c_U = 3/5.
+  - id: p3-c-cu
+    kind: identity
+    where: 'Problem 3(c), formula "Potential energy of the sphere with the scale factor": c_U = 3/5'
+    formula: (3/5) * ((4*pi/3)*rhoi*Ri**3) * Ri**2 * (-(4*pi/3)*G*rhoi/a)
+    equals: -integrate('G * (4*pi/3)*x**3*(rhoi/a**3) * 4*pi*x**2*(rhoi/a**3) / x', 'x', 0, a*Ri)
+    samples:
+      G: [0.5, 3, 1]
+      rhoi: [0.5, 3, 2.3]
+      Ri: [0.5, 2, 1.7]
+      a: [0.5, 4, 2.2]
+    tolerance: 1e-7
+    shown: ['c_U = \frac35 = c_K']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: a repulsive term in the law of gravity
+
+  # The equation for u from the given equation for r, with r = u ri and the result divided by ri.
+  - id: p4-a-rescaled
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "The rescaled equation with the repulsive term": the given equation for r with r = u r_i, divided by r_i'
+    formula: -4*pi*G*rhoi/(3*u**2) + gamma*ri**(n-1)*u**n
+    equals: (-G*((4*pi/3)*ri**3*rhoi)/(u*ri)**2 + gamma*(u*ri)**n) / ri
+    samples:
+      G: [0.5, 3, 1, 2]
+      rhoi: [0.5, 3, 1.7, 1]
+      u: [0.5, 3, 2.2, 1]
+      ri: [0.5, 3, 1.2, 2]
+      n: [0, 3, 1, 2.5]
+      gamma: [0.5, 3, 1.3, 1]
+    tolerance: 1e-12
+    shown: ['\ddot u = -\frac{4\pi}{3}\,\frac{G\rho_i}{u^2} + \gamma\,r_i^{\,n-1}\,u^n']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # The power for which the factor r_i^(n−1) is the same for two different shells (here r_i = 2 against r_i = 1).
+  - id: p4-b-power
+    answer: p4-b
+    where: 'Problem 4(b), answer box: the power n for which r_i^(n−1) equals 1 for a shell with r_i = 2'
+    inputs: {}
+    formula: solve('2**(q - 1) - 1', 'q', -3, 5)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['n = 1" cite="mit"']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # The potential as minus the integral of the right-hand side of the equation for a, from 1 to a,
+  # plus its value at a = 1 (which fixes "no constant added").
+  - id: p4-d-potential
+    kind: identity
+    answer: p4-d
+    where: 'Problem 4(d), answer box and formula "Conserved quantity with the repulsive term": minus the numerical integral of the right-hand side of the equation for a'
+    formula: -4*pi*G*rhoi/(3*a) - gamma*a**2/2
+    equals: -integrate('-4*pi*G*rhoi/(3*x**2) + gamma*x', 'x', 1, a) - 4*pi*G*rhoi/3 - gamma/2
+    samples:
+      G: [0.5, 3, 1, 2]
+      rhoi: [0.5, 3, 1.7, 1]
+      a: [0.5, 4, 2.2, 1]
+      gamma: [0.5, 3, 1.3, 0]
+    tolerance: 1e-7
+    shown: ['V(a) = -\frac{4\pi}{3}\,\frac{G\rho_i}{a} - \frac12\,\gamma\,a^2']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  # The slope of the potential gives back the equation of motion: −dV/da = −(4π/3)Gρ_i/a² + γa.
+  - id: p4-d-slope
+    kind: identity
+    where: 'Problem 4(d), formula "Every term as a time derivative": minus the numerical derivative of V(a) is the right-hand side of the equation for a'
+    formula: -deriv('-4*pi*G*rhoi/(3*x) - gamma*x**2/2', 'x', a)
+    equals: -4*pi*G*rhoi/(3*a**2) + gamma*a
+    samples:
+      G: [0.5, 3, 1, 2]
+      rhoi: [0.5, 3, 1.7, 1]
+      a: [0.5, 4, 2.2, 1]
+      gamma: [0.5, 3, 1.3, 0]
+    tolerance: 1e-6
+    shown: ['\ddot a = -\frac{4\pi}{3}\,\frac{G\rho_i}{a^2} + \gamma\,a']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own

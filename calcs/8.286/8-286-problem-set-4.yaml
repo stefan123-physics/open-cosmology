@@ -1,0 +1,668 @@
+# Calculations on content/year-4/8.286/8-286-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# numerical derivatives of the parametric solution, the Friedmann equation, numerical integration of the light
+# ray over the scale factor (not over θ), and a numerical solve for the development angle.
+
+page: content/year-4/8.286/8-286-problem-set-4.mdx
+calcs:
+  # ---- quoted facts
+
+  - id: points-total
+    kind: fact
+    where: 'introduction: MIT''s total for Problems 1 to 4 (25 + 35 + 25 + 15)'
+    shown: ['count for the score (100 points)']
+    source: {cite: mit, at: 'p. 4 (total points)'}
+    origin: mit
+
+  - id: ryden-problem-number
+    kind: fact
+    where: 'Problem 3: the problem of Ryden''s textbook that MIT names as its source'
+    shown: ['(Problem 6.5)']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: weinberg-page
+    kind: fact
+    where: 'Problem 5: the page of Weinberg''s book that MIT names'
+    shown: ['(Chapter 2, page 24)']
+    source: {cite: mit, at: 'Problem 5, p. 4'}
+    origin: mit
+
+  # ---- Problem 1: closed universe
+
+  # H from numerical derivatives of a/√k and of t with respect to θ.
+  - id: p1-hubble-by-derivative
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Hubble rate of a closed universe": against (dã/dθ)/(ã dt/dθ) with numerical derivatives'
+    formula: c*sin(theta)/(alpha*(1 - cos(theta))**2)
+    equals: deriv('alpha * (1 - cos(x))', 'x', theta) / (alpha * (1 - cos(theta)) * deriv('alpha * (x - sin(x)) / c', 'x', theta))
+    samples:
+      c: [1, 3, 2, 299792.458, 1.5, 2.2]
+      alpha: [0.5, 2, 1.3, 4000, 1, 0.7]
+      theta: [0.3, 1, 2.5, 3.5, 5, 6]
+    tolerance: 1e-7
+    shown: ['= \frac{c\,\sin\theta}{\alpha\,(1 - \cos\theta)^2}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-theta-rate
+    kind: identity
+    where: 'Problem 1(a), formula "Rate of the development angle (closed)": against a numerical derivative of t(θ)'
+    formula: c / (alpha * (1 - cos(theta)))
+    equals: 1 / deriv('alpha * (x - sin(x)) / c', 'x', theta)
+    samples:
+      c: [1, 3, 2, 1.5]
+      alpha: [0.5, 2, 1.3, 1]
+      theta: [0.3, 1, 3.5, 6]
+    tolerance: 1e-7
+    shown: ['\frac{d\theta}{dt} = \frac{c}{\alpha\,(1 - \cos\theta)}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-hubble-early
+    kind: limit
+    where: 'Problem 1(a), check: H t approaches 2/3 for small θ'
+    inputs: {c: 2, alpha: 1.3}
+    formula: (c*sin(theta)/(alpha*(1 - cos(theta))**2)) * (alpha*(theta - sin(theta))/c)
+    limit: 2 / 3
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['so $H \approx 2/(3t)$: the flat, matter-dominated result of the lessons']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-hubble-small-angle
+    kind: limit
+    where: 'Problem 1(a), check: H ≈ 4c/(αθ³) for small θ'
+    inputs: {c: 2, alpha: 1.3}
+    formula: c*sin(theta)/(alpha*(1 - cos(theta))**2)
+    limit: 4 * c / (alpha * theta**3)
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['so $H \approx 4c/(\alpha\theta^3)$. The time is']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ρ from the Friedmann equation with a numerical H, not from the definition of α.
+  - id: p1-density-by-friedmann
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Density of a closed universe": against (3/8πG)(H² + c²/ã²) with H from numerical derivatives'
+    formula: 3*c**2/(4*pi*G*alpha**2*(1 - cos(theta))**3)
+    equals: 3 / (8 * pi * G) * ((deriv('alpha * (1 - cos(x))', 'x', theta) / (alpha * (1 - cos(theta)) * deriv('alpha * (x - sin(x)) / c', 'x', theta)))**2 + c**2 / (alpha * (1 - cos(theta)))**2)
+    samples:
+      c: [1, 3, 2, 299792.458, 1.5, 2.2]
+      G: [0.5, 2, 1, 6.674e-11, 1.4, 0.8]
+      alpha: [0.5, 2, 1.3, 4000, 1, 0.7]
+      theta: [0.3, 1, 2.5, 3.5, 5, 6]
+    tolerance: 1e-7
+    shown: ['= \frac{3\,c^2}{4\pi G\,\alpha^2\,(1 - \cos\theta)^3}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-friedmann-check
+    kind: identity
+    where: 'Problem 1(b), formula "Check of the density (closed)": the two sides of the last step'
+    formula: (c**2 / (alpha**2 * (1 - cos(theta))**2)) * (sin(theta)**2 / (1 - cos(theta))**2 + 1)
+    equals: 2 * c**2 / (alpha**2 * (1 - cos(theta))**3)
+    samples:
+      c: [1, 3, 2, 1.5]
+      alpha: [0.5, 2, 1.3, 1]
+      theta: [0.3, 1, 3.5, 6]
+    tolerance: 1e-10
+    shown: ['= \frac{2\,c^2}{\alpha^2\,(1 - \cos\theta)^3}" cite="mit" at="Problem 1(b) (our own solution)"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-density-early
+    kind: limit
+    where: 'Problem 1(b), check: ρ approaches 1/(6πG t²) for small θ'
+    inputs: {c: 2, alpha: 1.3, G: 0.7}
+    formula: 3*c**2/(4*pi*G*alpha**2*(1 - cos(theta))**3)
+    limit: 1 / (6 * pi * G * (alpha * (theta - sin(theta)) / c)**2)
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['this is $\rho \approx 1/(6\pi G t^2)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-density-small-angle
+    kind: limit
+    where: 'Problem 1(b), check: ρ ≈ 6c²/(πGα²θ⁶) for small θ'
+    inputs: {c: 2, alpha: 1.3, G: 0.7}
+    formula: 3*c**2/(4*pi*G*alpha**2*(1 - cos(theta))**3)
+    limit: 6 * c**2 / (pi * G * alpha**2 * theta**6)
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['$\rho \approx 6c^2/(\pi G\alpha^2\theta^6)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # Ω from the density by the definition of α and the critical density of the numerical H.
+  - id: p1-omega-from-density-and-hubble
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box and formula "Ω of a closed universe": ρ = 3αc²/(4πGã³) divided by 3H²/(8πG), with H from numerical derivatives'
+    formula: 2/(1 + cos(theta))
+    equals: (3 * alpha * c**2 / (4 * pi * G * (alpha * (1 - cos(theta)))**3)) / (3 * (deriv('alpha * (1 - cos(x))', 'x', theta) / (alpha * (1 - cos(theta)) * deriv('alpha * (x - sin(x)) / c', 'x', theta)))**2 / (8 * pi * G))
+    samples:
+      c: [1, 3, 2, 1.5, 2.2]
+      G: [0.5, 2, 1, 1.4, 0.8]
+      alpha: [0.5, 2, 1.3, 1, 0.7]
+      theta: [0.3, 1, 1.5707963267948966, 2.5, 2.8]
+    tolerance: 1e-7
+    shown: ['= \frac{2\,(1 - \cos\theta)}{\sin^2\theta} = \frac{2}{1 + \cos\theta}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-omega-lecture
+    kind: identity
+    where: 'Problem 1(c), formula "Ω and the development angle": Guth''s cos θ = (2 − Ω)/Ω turned around'
+    formula: 2 / (1 + (2 - W) / W)
+    equals: W
+    samples: {W: [1.01, 1.5, 2, 3, 40]}
+    tolerance: 1e-12
+    shown: ['tex="\Omega = \frac{2}{1 + \cos\theta}" cite="reading4"']
+    source: {cite: reading4, at: 'p. 19'}
+    origin: mit
+
+  # The horizon distance by integrating the light ray over the scale factor instead of over θ:
+  # (dã/d(ct))² = 2α/ã − 1 gives ∫ c dt/ã = ∫ dã/√(2αã − ã²), and ã = u² removes the singularity at 0.
+  - id: p1-horizon-by-integration
+    kind: identity
+    where: 'Problem 1(d), formula "Horizon distance of a closed universe" (a show-that, no answer box): against ã ∫ c dt/ã integrated over ã with the Friedmann equation, expanding phase'
+    formula: alpha * theta * (1 - cos(theta))
+    equals: alpha * (1 - cos(theta)) * integrate('2 / sqrt(2 * alpha - x**2)', 'x', 0, sqrt(alpha * (1 - cos(theta))))
+    samples:
+      alpha: [0.5, 2, 1.3, 1, 0.7]
+      theta: [0.3, 1, 1.5707963267948966, 2.5, 2.8]
+    tolerance: 1e-7
+    shown: ['tex="\ell_{p,\text{horizon}} = \alpha\,\theta\,(1 - \cos\theta)"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1'}
+    origin: mit
+
+  - id: p1-horizon-early
+    kind: limit
+    where: 'Problem 1(d), check: the horizon distance approaches 3ct for small θ'
+    inputs: {alpha: 1.3}
+    formula: alpha * theta * (1 - cos(theta))
+    limit: 3 * alpha * (theta - sin(theta))
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['so $\ell_{p,\text{horizon}} \approx 3ct$: the horizon distance of the flat matter-dominated universe in the lesson']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: open universe
+
+  - id: p2-hubble-by-derivative
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Hubble rate of an open universe": against (dã/dθ)/(ã dt/dθ) with numerical derivatives'
+    formula: c*sinh(theta)/(alpha*(cosh(theta) - 1)**2)
+    equals: deriv('alpha * (cosh(x) - 1)', 'x', theta) / (alpha * (cosh(theta) - 1) * deriv('alpha * (sinh(x) - x) / c', 'x', theta))
+    samples:
+      c: [1, 3, 2, 299792.458, 1.5]
+      alpha: [0.5, 2, 1.3, 4000, 1]
+      theta: [0.3, 1, 2.5, 3.5, 4]
+    tolerance: 1e-7
+    shown: ['= \frac{c\,\sinh\theta}{\alpha\,(\cosh\theta - 1)^2}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-theta-rate
+    kind: identity
+    where: 'Problem 2(a), formula "Rate of the development angle (open)": against a numerical derivative of t(θ)'
+    formula: c / (alpha * (cosh(theta) - 1))
+    equals: 1 / deriv('alpha * (sinh(x) - x) / c', 'x', theta)
+    samples:
+      c: [1, 3, 2, 1.5]
+      alpha: [0.5, 2, 1.3, 1]
+      theta: [0.3, 1, 2.5, 4]
+    tolerance: 1e-7
+    shown: ['\frac{d\theta}{dt} = \frac{c}{\alpha\,(\cosh\theta - 1)}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-hubble-early
+    kind: limit
+    where: 'Problem 2(a), check: H t approaches 2/3 for small θ'
+    inputs: {c: 2, alpha: 1.3}
+    formula: (c*sinh(theta)/(alpha*(cosh(theta) - 1)**2)) * (alpha*(sinh(theta) - theta)/c)
+    limit: 2 / 3
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['and again $H \approx 2/(3t)$']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # ρ from the Friedmann equation with k = −κ and a numerical H (the page uses its analytic H); the next entry checks the definition of α.
+  - id: p2-density-by-alpha
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Density of an open universe": against the Friedmann equation with k = −κ and H from numerical derivatives'
+    formula: 3*c**2/(4*pi*G*alpha**2*(cosh(theta) - 1)**3)
+    equals: 3 / (8 * pi * G) * ((deriv('alpha * (cosh(x) - 1)', 'x', theta) / (alpha * (cosh(theta) - 1) * deriv('alpha * (sinh(x) - x) / c', 'x', theta)))**2 - c**2 / (alpha * (cosh(theta) - 1))**2)
+    samples:
+      c: [1, 3, 2, 299792.458, 1.5]
+      G: [0.5, 2, 1, 6.674e-11, 1.4]
+      alpha: [0.5, 2, 1.3, 4000, 1]
+      theta: [0.3, 1, 2.5, 3.5, 4]
+    tolerance: 1e-6
+    shown: ['\rho = \frac{3\,c^2}{4\pi G\,\alpha^2\,(\cosh\theta - 1)^3}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  # The open-universe form of Guth's rescaled equation, (dã/d(ct))² = 2α/ã + 1, holds for the given solution.
+  - id: p2-rescaled-friedmann
+    kind: identity
+    where: 'Problem 2(b), check: the constant α of the open universe is the same combination as in the closed one, so (dã/d(ct))² = 2α/ã + 1'
+    formula: (deriv('alpha * (cosh(x) - 1)', 'x', theta) / deriv('alpha * (sinh(x) - x)', 'x', theta))**2
+    equals: 2 * alpha / (alpha * (cosh(theta) - 1)) + 1
+    samples:
+      alpha: [0.5, 2, 1.3, 1]
+      theta: [0.3, 1, 2.5, 4]
+    tolerance: 1e-7
+    shown: ['The result has the form $\rho = 3\alpha c^2/(4\pi G\tilde a^3)$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-omega-from-density-and-hubble
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box and formula "Ω of an open universe": ρ = 3αc²/(4πGã³) divided by 3H²/(8πG), with H from numerical derivatives'
+    formula: 2/(1 + cosh(theta))
+    equals: (3 * alpha * c**2 / (4 * pi * G * (alpha * (cosh(theta) - 1))**3)) / (3 * (deriv('alpha * (cosh(x) - 1)', 'x', theta) / (alpha * (cosh(theta) - 1) * deriv('alpha * (sinh(x) - x) / c', 'x', theta)))**2 / (8 * pi * G))
+    samples:
+      c: [1, 3, 2, 1.5, 2.2]
+      G: [0.5, 2, 1, 1.4, 0.8]
+      alpha: [0.5, 2, 1.3, 1, 0.7]
+      theta: [0.3, 1, 2.5, 3.5, 4]
+    tolerance: 1e-7
+    shown: ['= \frac{2\,(\cosh\theta - 1)}{\sinh^2\theta} = \frac{2}{1 + \cosh\theta}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # As for the closed case, with (dã/d(ct))² = 2α/ã + 1 and ã = u².
+  - id: p2-horizon-by-integration
+    kind: identity
+    answer: p2-d
+    where: 'Problem 2(d), answer box and formula "Horizon distance of an open universe": against ã ∫ c dt/ã integrated over ã with the Friedmann equation'
+    formula: alpha*theta*(cosh(theta) - 1)
+    equals: alpha * (cosh(theta) - 1) * integrate('2 / sqrt(2 * alpha + x**2)', 'x', 0, sqrt(alpha * (cosh(theta) - 1)))
+    samples:
+      alpha: [0.5, 2, 1.3, 1, 0.7]
+      theta: [0.3, 1, 2.5, 3.5, 4]
+    tolerance: 1e-7
+    shown: ['= \alpha\,\theta\,(\cosh\theta - 1)" cite="mit"']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-horizon-early
+    kind: limit
+    where: 'Problem 2(d), check: the horizon distance approaches αθ³/2 = 3ct for small θ'
+    inputs: {alpha: 1.3}
+    formula: alpha*theta*(cosh(theta) - 1)
+    limit: 3 * alpha * (sinh(theta) - theta)
+    vary: {theta: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['it is about $\alpha\theta^3/2 = 3ct$, the flat result once more']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  # The early-time a(t) against the exact scale factor, with θ(t) solved numerically from ct = α(sinh θ − θ).
+  - id: p2-early-scale-factor
+    kind: limit
+    answer: p2-e
+    where: 'Problem 2(e), answer box and formula "Early scale factor of an open universe": must approach the exact a = √κ α(cosh θ − 1) as t goes to zero, with θ(t) from a numerical solve'
+    inputs: {kappa: 1.7, alpha: 1.3, c: 2}
+    formula: sqrt(kappa)*(alpha/2)*(6*c*t/alpha)**(2/3)
+    limit: sqrt(kappa) * alpha * (cosh(solve('alpha * (sinh(x) - x) / c - t', 'x', 1e-6, 5)) - 1)
+    vary: {t: [0.01, 0.001, 0.0001, 0.00001]}
+    tolerance: 1e-3
+    shown: ['= \frac{\sqrt\kappa\,\alpha}{2}\left(\frac{6\,c\,t}{\alpha}\right)^{2/3}']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2-early-scale-factor-second-form
+    kind: identity
+    where: 'Problem 2(e), formula "Early scale factor of an open universe": the second way of writing it'
+    formula: sqrt(kappa) * (alpha / 2) * (6 * c * t / alpha)**(2/3)
+    equals: sqrt(kappa) * (9 * alpha / 2)**(1/3) * (c * t)**(2/3)
+    samples:
+      kappa: [0.5, 2, 1.7]
+      alpha: [1, 3, 1.3]
+      c: [1, 3, 2]
+      t: [0.01, 0.1, 0.03]
+    tolerance: 1e-12
+    shown: ['= \sqrt\kappa\,\left(\frac{9\,\alpha}{2}\right)^{1/3}(c\,t)^{2/3}']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2-series-sinh
+    kind: limit
+    where: 'Problem 2(e), formula "Series of the hyperbolic functions": sinh θ − θ − θ³/6 approaches θ⁵/120'
+    formula: sinh(theta) - theta - theta**3 / 6
+    limit: theta**5 / 120
+    vary: {theta: [1, 0.5, 0.2, 0.1]}
+    tolerance: 1e-3
+    shown: ['\sinh\theta = \theta + \frac{\theta^3}{6} + \frac{\theta^5}{120} + \dots']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2-series-cosh
+    kind: limit
+    where: 'Problem 2(e), formula "Series of the hyperbolic functions": cosh θ − 1 − θ²/2 approaches θ⁴/24'
+    formula: cosh(theta) - 1 - theta**2 / 2
+    limit: theta**4 / 24
+    vary: {theta: [1, 0.5, 0.2, 0.1]}
+    tolerance: 1e-3
+    shown: ['\cosh\theta = 1 + \frac{\theta^2}{2} + \frac{\theta^4}{24} + \dots']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2-next-term-time
+    where: 'Problem 2(e): the next term of sinh θ − θ relative to the first, as θ²/N: N = (1/6)/(1/120)'
+    inputs: {}
+    formula: (1 / 6) / (1 / 120)
+    expected: '20'
+    shown: ['$\theta^2/20$ (for $t$)']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2-next-term-scale-factor
+    where: 'Problem 2(e): the next term of cosh θ − 1 relative to the first, as θ²/N: N = (1/2)/(1/24)'
+    inputs: {}
+    formula: (1 / 2) / (1 / 24)
+    expected: '12'
+    shown: ['$\theta^2/12$ (for $a$)']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  # 1 − Ω at early times against the exact 1 − 2/(1 + cosh θ), with θ(t) solved numerically.
+  - id: p2-early-omega
+    kind: limit
+    answer: p2-f
+    where: 'Problem 2(f), answer box and formula "Early behaviour of 1 − Ω": must approach the exact 1 − 2/(1 + cosh θ) as t goes to zero, with θ(t) from a numerical solve'
+    inputs: {alpha: 1.3, c: 2}
+    formula: (1/4)*(6*c*t/alpha)**(2/3)
+    limit: 1 - 2 / (1 + cosh(solve('alpha * (sinh(x) - x) / c - t', 'x', 1e-6, 5)))
+    vary: {t: [0.01, 0.001, 0.0001, 0.00001]}
+    tolerance: 1e-3
+    shown: ['1 - \Omega \approx \frac{\theta^2}{4} = \frac{1}{4}\left(\frac{6\,c\,t}{\alpha}\right)^{2/3}']
+    source: {cite: mit, at: 'Problem 2(f) (our own solution)'}
+    origin: page-own
+
+  - id: p2-early-omega-second-form
+    kind: identity
+    where: 'Problem 2(f), formula "Early behaviour of 1 − Ω": the second way of writing it'
+    formula: (1 / 4) * (6 * c * t / alpha)**(2/3)
+    equals: (9 / 16)**(1/3) * (c * t / alpha)**(2/3)
+    samples:
+      alpha: [1, 3, 1.3]
+      c: [1, 3, 2]
+      t: [0.01, 0.1, 0.03]
+    tolerance: 1e-12
+    shown: ['= \left(\frac{9}{16}\right)^{1/3}\left(\frac{c\,t}{\alpha}\right)^{2/3}']
+    source: {cite: mit, at: 'Problem 2(f) (our own solution)'}
+    origin: page-own
+
+  - id: p2-omega-exact-difference
+    kind: identity
+    where: 'Problem 2(f), formula "Distance from critical density (open)"'
+    formula: 1 - 2 / (1 + cosh(theta))
+    equals: (cosh(theta) - 1) / (cosh(theta) + 1)
+    samples: {theta: [0.01, 0.3, 1, 2.5, 4]}
+    tolerance: 1e-10
+    shown: ['= \frac{\cosh\theta - 1}{\cosh\theta + 1}']
+    source: {cite: mit, at: 'Problem 2(f) (our own solution)'}
+    origin: page-own
+
+  - id: p2-omega-and-scale-factor
+    kind: identity
+    where: 'Problem 2(f), check: the early 1 − Ω equals the early a divided by 2√κ α'
+    formula: (1 / 4) * (6 * c * t / alpha)**(2/3)
+    equals: sqrt(kappa) * (alpha / 2) * (6 * c * t / alpha)**(2/3) / (2 * sqrt(kappa) * alpha)
+    samples:
+      kappa: [0.5, 2, 1.7]
+      alpha: [1, 3, 1.3]
+      c: [1, 3, 2]
+      t: [0.01, 0.1, 0.03]
+    tolerance: 1e-12
+    shown: ['$1 - \Omega \approx a/(2\sqrt\kappa\,\alpha)$']
+    source: {cite: mit, at: 'Problem 2(f) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: the contracting closed universe
+  # Independent route: solve cos θ₀ = (2 − Ω₀)/Ω₀ numerically on (π, 2π), take α/c = sin θ₀ / (H₀ (1 − cos θ₀)²)
+  # from Problem 1(a) (both sin θ₀ and H₀ are negative), then use the parametric solution directly.
+
+  - id: p3-time-to-crunch
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Time left before the Big Crunch": against (α/c)(2π − θ₀ + sin θ₀) with θ₀ from a numerical solve on (π, 2π)'
+    formula: Omega0/(2*abs(H0)*(Omega0 - 1)**(3/2))*(acos((2 - Omega0)/Omega0) - 2*sqrt(Omega0 - 1)/Omega0)
+    equals: (sin(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi)) / (H0 * (1 - cos(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi)))**2)) * (2 * pi - solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi) + sin(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi)))
+    samples:
+      H0: [-2, -0.5, -1.3, -1, -0.7, -1.1]
+      Omega0: [1.2, 4, 1.7, 2, 2.6, 30]
+    tolerance: 1e-7
+    shown: ['t_\text{crunch} - t_0 = \frac{\Omega_0}{2\,|H_0|\,(\Omega_0 - 1)^{3/2}}\left[\arccos\!\left(\frac{2 - \Omega_0}{\Omega_0}\right) - \frac{2\sqrt{\Omega_0 - 1}}{\Omega_0}\right]']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-alpha-from-h-and-omega
+    kind: identity
+    where: 'Problem 3(a), formula "α from H and Ω": Problem 1(a) solved for α against the lecture''s formula, with Ω = 2/(1 + cos θ) and |H| from Problem 1(a)'
+    formula: c * (2 / (1 + cos(theta))) / (2 * abs(c * sin(theta) / (alpha * (1 - cos(theta))**2)) * (2 / (1 + cos(theta)) - 1)**(3/2))
+    equals: alpha
+    samples:
+      c: [1, 3, 2, 1.5, 2.2]
+      alpha: [0.5, 2, 1.3, 1, 0.7]
+      theta: [0.3, 1, 2.5, 3.5, 5.5]
+    tolerance: 1e-9
+    shown: ['= \frac{c\,\Omega_0}{2\,|H_0|\,(\Omega_0 - 1)^{3/2}}']
+    source: {cite: reading2, at: 'slide 3'}
+    origin: mit
+
+  - id: p3-sine-of-angle
+    kind: identity
+    where: 'Problem 3(a), formula "The angle still to go, from Ω₀": sin φ from cos φ = (2 − Ω₀)/Ω₀'
+    formula: sqrt(1 - ((2 - W) / W)**2)
+    equals: 2 * sqrt(W - 1) / W
+    samples: {W: [1.01, 1.5, 2, 3, 40]}
+    tolerance: 1e-10
+    shown: ['\sin\varphi = \sqrt{1 - \cos^2\varphi} = \frac{2\sqrt{\Omega_0 - 1}}{\Omega_0}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-time-to-crunch-omega-2
+    where: 'Problem 3(a), check: Ω₀ = 2, time left in units of 1/|H₀|'
+    inputs: {W: 2}
+    formula: W / (2 * (W - 1)**(3/2)) * (acos((2 - W) / W) - 2 * sqrt(W - 1) / W)
+    expected: '0.571'
+    shown: ['so the time left is $0.571/|H_0|$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-time-to-crunch-flat-limit
+    kind: limit
+    where: 'Problem 3(a), check: |H₀| times the time left approaches 2/3 as Ω₀ goes to 1'
+    formula: W / (2 * (W - 1)**(3/2)) * (acos((2 - W) / W) - 2 * sqrt(W - 1) / W)
+    limit: 2 / 3
+    vary: {W: [1.1, 1.01, 1.001, 1.0001]}
+    tolerance: 1e-4
+    shown: ['the result approaches $2/(3|H_0|)$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # The time left equals the lesson's age formula (upper signs) for Ω₀ < 2: time reversal of the cycloid.
+  - id: p3-time-reversal
+    kind: identity
+    where: 'Problem 3(a), check: for Ω₀ < 2 the time left equals the age formula of an expanding closed universe with its upper signs'
+    formula: W / (2 * (W - 1)**(3/2)) * (acos((2 - W) / W) - 2 * sqrt(W - 1) / W)
+    equals: W / (2 * (W - 1)**(3/2)) * (asin(2 * sqrt(W - 1) / W) - 2 * sqrt(W - 1) / W)
+    samples: {W: [1.01, 1.2, 1.5, 1.9, 1.99]}
+    tolerance: 1e-9
+    shown: ['for $\Omega_0 < 2$ the result is the age formula of the lesson with its upper signs']
+    source: {cite: reading1, at: 'slides 6–7'}
+    origin: page-own
+
+  - id: p3-strongest-blueshift
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "The strongest blueshift": against a(θ₀)/a(π) − 1 with θ₀ from a numerical solve on (π, 2π)'
+    formula: -1/Omega0
+    equals: (1 - cos(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi))) / (1 - cos(pi)) - 1
+    samples: {Omega0: [1.2, 4, 1.7, 2, 2.6, 30]}
+    tolerance: 1e-8
+    shown: ['z_\text{min} = -\frac{1}{\Omega_0}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-blueshift-omega-2
+    where: 'Problem 3(b), check: Ω₀ = 2'
+    inputs: {W: 2}
+    formula: -1 / W
+    expected: '-0.5'
+    shown: ['$z_\text{min} = -0.5$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-lookback
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(c), answer box and formula "Lookback time to the strongest blueshift": against (α/c)(θ₀ − sin θ₀ − π) with θ₀ from a numerical solve on (π, 2π)'
+    formula: Omega0/(2*abs(H0)*(Omega0 - 1)**(3/2))*(acos((Omega0 - 2)/Omega0) + 2*sqrt(Omega0 - 1)/Omega0)
+    equals: (sin(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi)) / (H0 * (1 - cos(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi)))**2)) * (solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi) - sin(solve('cos(x) - (2 - Omega0) / Omega0', 'x', pi, 2 * pi)) - pi)
+    samples:
+      H0: [-2, -0.5, -1.3, -1, -0.7, -1.1]
+      Omega0: [1.2, 4, 1.7, 2, 2.6, 30]
+    tolerance: 1e-7
+    shown: ['t_0 - t_e = \frac{\Omega_0}{2\,|H_0|\,(\Omega_0 - 1)^{3/2}}\left[\arccos\!\left(\frac{\Omega_0 - 2}{\Omega_0}\right) + \frac{2\sqrt{\Omega_0 - 1}}{\Omega_0}\right]']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-lookback-omega-2
+    where: 'Problem 3(c), check: Ω₀ = 2, lookback time in units of 1/|H₀|'
+    inputs: {W: 2}
+    formula: W / (2 * (W - 1)**(3/2)) * (acos((W - 2) / W) + 2 * sqrt(W - 1) / W)
+    expected: '2.571'
+    shown: ['$(\pi/2 + 1)/|H_0| = 2.571/|H_0|$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-half-lifetime-omega-2
+    where: 'Problem 3(c), check: Ω₀ = 2, lookback time plus time left, in units of 1/|H₀| (equals π α |H₀|/c with α = c/|H₀|)'
+    inputs: {W: 2}
+    formula: W / (2 * (W - 1)**(3/2)) * (acos((W - 2) / W) + 2 * sqrt(W - 1) / W) + W / (2 * (W - 1)**(3/2)) * (acos((2 - W) / W) - 2 * sqrt(W - 1) / W)
+    expected: '3.142'
+    shown: ['this gives $3.142/|H_0|$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-half-lifetime
+    kind: identity
+    where: 'Problem 3(c), check: the lookback time and the time left add up to half the lifetime, π α/c = π Ω₀/(2|H₀|(Ω₀ − 1)^(3/2))'
+    formula: W / (2 * (W - 1)**(3/2)) * (acos((W - 2) / W) + 2 * sqrt(W - 1) / W) + W / (2 * (W - 1)**(3/2)) * (acos((2 - W) / W) - 2 * sqrt(W - 1) / W)
+    equals: pi * W / (2 * (W - 1)**(3/2))
+    samples: {W: [1.01, 1.5, 2, 3, 40]}
+    tolerance: 1e-10
+    shown: ['which is half the lifetime: $\pi\alpha/c$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-limit
+    kind: limit
+    where: 'Problem 4: the first line of the age formula must approach 2/3 as Ω goes to 1 from below'
+    formula: W / (2 * (1 - W)**(3/2)) * (2 * sqrt(1 - W) / W - asinh(2 * sqrt(1 - W) / W))
+    limit: 2 / 3
+    vary: {W: [0.9, 0.99, 0.999, 0.9999]}
+    tolerance: 1e-4
+    shown: ['As $\Omega \to 1$ this goes to $2/3$']
+    source: {cite: reading2, at: 'slide 6'}
+    origin: mit
+
+  - id: p4-leading-term
+    kind: limit
+    where: 'Problem 4, formula "The age near Ω = 1": the first line approaches 2/(3Ω²) faster than it approaches 2/3'
+    formula: W / (2 * (1 - W)**(3/2)) * (2 * sqrt(1 - W) / W - asinh(2 * sqrt(1 - W) / W))
+    limit: 2 / (3 * W**2)
+    vary: {W: [0.9, 0.99, 0.999, 0.9999]}
+    tolerance: 3e-4
+    shown: ['\frac{8\,(1 - \Omega)^{3/2}}{\Omega^3} = \frac{2}{3\,\Omega^2}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-series
+    kind: limit
+    where: 'Problem 4, formula "The bracket for small x": x − arcsinh x approaches x³/6 − 3x⁵/40'
+    formula: x - asinh(x)
+    limit: x**3 / 6 - 3 * x**5 / 40
+    vary: {x: [0.5, 0.2, 0.1, 0.05]}
+    tolerance: 1e-4
+    shown: ['x - \sinh^{-1}(x) = \frac{x^3}{6} - \frac{3\,x^5}{40} + \dots']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-coefficient-cubic
+    kind: identity
+    where: 'Problem 4: MIT''s coefficient 1²/3! as a fraction'
+    formula: 1**2 / (3 * 2 * 1)
+    equals: 1 / n
+    samples: {n: [6]}
+    tolerance: 1e-12
+    shown: ['$1^2/3! = 1/6$']
+    source: {cite: mit, at: 'Problem 4, p. 3'}
+    origin: mit
+
+  - id: p4-coefficient-fifth
+    where: 'Problem 4: MIT''s coefficient (3·1)²/5! as 3/N'
+    inputs: {}
+    formula: 3 / ((3 * 1)**2 / (5 * 4 * 3 * 2 * 1))
+    expected: '40'
+    shown: ['$(3\cdot 1)^2/5! = 3/40$']
+    source: {cite: mit, at: 'Problem 4, p. 3'}
+    origin: mit
+
+  - id: p4-next-order
+    kind: limit
+    where: 'Problem 4, check: the first line approaches 2/3 + (2/15)(1 − Ω), so the remainder shrinks faster than 1 − Ω'
+    formula: (W / (2 * (1 - W)**(3/2)) * (2 * sqrt(1 - W) / W - asinh(2 * sqrt(1 - W) / W)) - 2 / 3) / (1 - W)
+    limit: 2 / 15
+    vary: {W: [0.9, 0.99, 0.999]}
+    tolerance: 1e-2
+    shown: ['$|H|\,t \approx \tfrac23 + \tfrac{2}{15}(1 - \Omega)$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-number-099-approx
+    where: 'Problem 4, check: 2/3 + (2/15)(1 − Ω) for Ω = 0.99'
+    inputs: {W: 0.99}
+    formula: 2 / 3 + (2 / 15) * (1 - W)
+    expected: '0.6680'
+    shown: ['that is $0.6680$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-number-099-exact
+    where: 'Problem 4, check: the first line of the age formula for Ω = 0.99'
+    inputs: {W: 0.99}
+    formula: W / (2 * (1 - W)**(3/2)) * (2 * sqrt(1 - W) / W - asinh(2 * sqrt(1 - W) / W))
+    expected: '0.6680'
+    shown: ['gives $0.6680$ too']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-number-09-exact
+    where: 'Problem 4, check: the first line of the age formula for Ω = 0.9'
+    inputs: {W: 0.9}
+    formula: W / (2 * (1 - W)**(3/2)) * (2 * sqrt(1 - W) / W - asinh(2 * sqrt(1 - W) / W))
+    expected: '0.6806'
+    shown: ['the exact value is $0.6806$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own

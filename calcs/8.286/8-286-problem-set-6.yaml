@@ -1,0 +1,770 @@
+# Calculations on content/year-4/8.286/8-286-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# another closed form, a numerical derivative or integral, or a numerical root.
+
+page: content/year-4/8.286/8-286-problem-set-6.mdx
+calcs:
+  # ---- Problem 1
+
+  # dx/dτ as the numerical root X of the metric condition −c² (X/w)² + a² X² = −c² (dt/dτ = X/w).
+  - id: p1-b-velocity-by-rapidity
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "The two coordinate velocities": the numerical root of the metric condition −c²(X/w)² + a²X² + c² = 0'
+    formula: w/sqrt(1 - a**2*w**2/c**2)
+    equals: solve('-c**2*(x/w)**2 + a**2*x**2 + c**2', 'x', w, 3*w)
+    samples:
+      w: [0.05, 0.3, 0.17, 0.001]
+      a: [0.5, 2, 1.3, 1]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-8
+    shown: ['\frac{dx}{d\tau} = \frac{dx}{dt}\,\frac{dt}{d\tau}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # The result must satisfy the metric: −c² (dt/dτ)² + a² (dx/dτ)² = −c², with dt/dτ = (dx/dτ)/w.
+  - id: p1-b-metric-normalisation
+    kind: identity
+    where: 'Problem 1(b): the answer put back into the metric, −c²(dt/dτ)² + a²(dx/dτ)² = −c²'
+    formula: -c**2 * (1/sqrt(1 - a**2*w**2/c**2))**2 + a**2 * (w/sqrt(1 - a**2*w**2/c**2))**2
+    equals: -c**2
+    samples:
+      w: [0.05, 0.3, 0.17, 0.001]
+      a: [0.5, 2, 1.3, 1]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-10
+    shown: ['c^2\,d\tau^2 = c^2\,dt^2 - a^2(t)\,dx^2']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # p = m v/√(1 − v²/c²) with v = a w equals m a dx/dτ.
+  - id: p1-c-momentum
+    kind: identity
+    where: 'Problem 1(c), formula "Momentum from the coordinate velocity": p = m a dx/dτ'
+    formula: m * (a*w) / sqrt(1 - (a*w)**2/c**2)
+    equals: m * a * solve('-c**2*(x/w)**2 + a**2*x**2 + c**2', 'x', w, 3*w)
+    samples:
+      m: [1, 2.5, 0.3]
+      w: [0.05, 0.3, 0.17]
+      a: [0.5, 2, 1.3]
+      c: [1, 3, 2]
+    tolerance: 1e-8
+    shown: ['= m\,a(t)\,\frac{dx}{d\tau}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-root
+    where: 'Problem 1(c), the number: the root at v = 0.6 c'
+    inputs: {beta: 0.6}
+    formula: sqrt(1 - beta**2)
+    expected: '0.8'
+    shown: ['$\sqrt{1 - 0.36} = 0.8$']
+    source: {cite: mit, at: 'Problem 1(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-c-momentum-start
+    where: 'Problem 1(c), the number: p/(mc) at v = 0.6 c'
+    inputs: {beta: 0.6}
+    formula: beta / sqrt(1 - beta**2)
+    expected: '0.75'
+    shown: ['$p/(mc) = 0.6/0.8 = 0.75$']
+    source: {cite: mit, at: 'Problem 1(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-c-momentum-later
+    where: 'Problem 1(c), the number: p/(mc) after a has doubled'
+    inputs: {beta: 0.6}
+    formula: beta / sqrt(1 - beta**2) / 2
+    expected: '0.375'
+    shown: ['$p/(mc) = 0.375$']
+    source: {cite: mit, at: 'Problem 1(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-c-root-later
+    where: 'Problem 1(c), the number: √(1 + (p/mc)²) after a has doubled'
+    inputs: {q: 0.375}
+    formula: sqrt(1 + q**2)
+    expected: '1.068'
+    shown: ['0.375/1.068']
+    source: {cite: mit, at: 'Problem 1(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-c-speed
+    answer: p1-c
+    where: 'Problem 1(c), answer box: v/c after the universe has doubled in size, starting from 0.6'
+    inputs: {beta: 0.6}
+    formula: (beta / sqrt(1 - beta**2) / 2) / sqrt(1 + (beta / sqrt(1 - beta**2) / 2)**2)
+    expected: '0.351'
+    shown: ['= 0.375/1.068 = 0.351$', 'from 0.6 to 0.351 here, not to 0.3']
+    source: {cite: mit, at: 'Problem 1(c) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # Δt_e: the proper time of a clock at rest, √(1 + 2φ_e/c²) Δt_e, must give back ΔT_e.
+  - id: p2-a-coordinate-time
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Coordinate time between emissions": written with c² + 2φ_e'
+    formula: Te/sqrt(1 + 2*pe/c**2)
+    equals: Te * c / sqrt(c**2 + 2*pe)
+    samples:
+      Te: [1, 5, 2.2, 3]
+      pe: [-0.3, 0.3, 0.11, 0]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-12
+    shown: ['tex="\Delta t_e = \frac{\Delta T_e}{\sqrt{1 + 2\phi_e/c^2}}"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # The proper time integrated numerically over the coordinate interval gives back ΔT_e.
+  - id: p2-a-proper-time-by-integration
+    kind: identity
+    where: 'Problem 2(a): ∫ √(1 + 2φ_e/c²) dt over the coordinate interval Δt_e is ΔT_e'
+    formula: integrate('sqrt(1 + 2*pe/c**2)', 'x', 0, Te/sqrt(1 + 2*pe/c**2))
+    equals: Te
+    samples:
+      Te: [1, 5, 2.2, 3]
+      pe: [-0.3, 0.3, 0.11, 0]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-9
+    shown: ['d\tau = \sqrt{1 + \frac{2\phi(\vec x)}{c^2}}\;dt']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-arrival-time
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Coordinate time between arrivals": equal to the coordinate time between emissions'
+    formula: Te/sqrt(1 + 2*pe/c**2)
+    equals: Te * c / sqrt(c**2 + 2*pe)
+    samples:
+      Te: [1, 5, 2.2, 3]
+      pe: [-0.3, 0.3, 0.11, 0]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-12
+    shown: ['\Delta t_r = \Delta t_e = \frac{\Delta T_e}{\sqrt{1 + 2\phi_e/c^2}}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  # ΔT_r: the observer's clock rate integrated numerically over the coordinate interval Δt_r = Δt_e.
+  - id: p2-c-proper-time-at-observer
+    kind: identity
+    answer: p2-c-time
+    where: 'Problem 2(c), first answer box and formula "Proper time between arrivals": ∫ √(1 + 2φ_r/c²) dt over the coordinate interval Δt_e (numerical integration)'
+    formula: Te*sqrt(1 + 2*pr/c**2)/sqrt(1 + 2*pe/c**2)
+    equals: integrate('sqrt(1 + 2*pr/c**2)', 'x', 0, Te/sqrt(1 + 2*pe/c**2))
+    samples:
+      Te: [1, 5, 2.2, 3]
+      pe: [-0.3, 0.3, 0.11, 0]
+      pr: [0.3, -0.3, 0.25, 0.2]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-9
+    shown: ['= \sqrt{\frac{1 + 2\phi_r/c^2}{1 + 2\phi_e/c^2}}\;\Delta T_e']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # 1 + z = ΔT_r/ΔT_e, built from the two clock rates.
+  - id: p2-c-exact-redshift
+    kind: identity
+    answer: p2-c-exact
+    where: 'Problem 2(c), second answer box and formula "Gravitational redshift, exact for this metric": against ΔT_r/ΔT_e − 1 built from the two clock rates'
+    formula: sqrt((c**2 + 2*pr)/(c**2 + 2*pe)) - 1
+    equals: (sqrt(1 + 2*pr/c**2) * (Te/sqrt(1 + 2*pe/c**2))) / Te - 1
+    samples:
+      Te: [1, 5, 2.2, 3]
+      pe: [-0.3, 0.3, 0.11, 0]
+      pr: [0.3, -0.3, 0.25, 0.2]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-10
+    shown: ['1 + z = \sqrt{\frac{c^2 + 2\phi_r}{c^2 + 2\phi_e}}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # The weak-field result is the first-order term of the exact one: scale both potentials by x and differentiate at x = 0.
+  - id: p2-c-weak-redshift
+    kind: identity
+    answer: p2-c-weak
+    where: 'Problem 2(c), third answer box and formula "Gravitational redshift in a weak field": the first-order term of the exact result (numerical derivative with respect to the strength of the field)'
+    formula: (pr - pe)/c**2
+    equals: deriv('sqrt((c**2 + 2*x*pr)/(c**2 + 2*x*pe)) - 1', 'x', 0)
+    samples:
+      pe: [-0.3, 0.3, 0.11, 0]
+      pr: [0.3, -0.3, 0.25, 0.2]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-7
+    shown: ['z \approx \frac{\phi_r - \phi_e}{c^2}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-check-exact
+    where: 'Problem 2(c), check: exact z for φ_e/c² = −0.01 and φ_r = 0'
+    inputs: {e: -0.01}
+    formula: 1/sqrt(1 + 2*e) - 1
+    expected: '0.0102'
+    shown: ['$z = 1/\sqrt{0.98} - 1 = 0.0102$']
+    source: {cite: mit, at: 'Problem 2(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-c-check-weak
+    where: 'Problem 2(c), check: weak-field z for φ_e/c² = −0.01 and φ_r = 0'
+    inputs: {e: -0.01}
+    formula: 0 - e
+    expected: '0.01'
+    shown: ['the approximation gives $0.01$']
+    source: {cite: mit, at: 'Problem 2(c) (our own numbers)'}
+    origin: page-own
+
+  # d²xⁱ/dτ² = ½ ∂_i g_tt (dt/dτ)², with g_tt = −(c² + 2φ) and φ = dphi·x near the point (numerical derivative).
+  - id: p2-d-acceleration
+    kind: identity
+    answer: p2-d
+    where: 'Problem 2(d), answer box and formula "Free fall in the static field": ½ ∂_i g_tt (dt/dτ)² with g_tt differentiated numerically for a potential of slope dphi'
+    formula: -dphi*tdot**2
+    equals: 0.5 * deriv('-(c**2 + 2*dphi*x)', 'x', 0.3) * tdot**2
+    samples:
+      dphi: [-2, 2, 0.7, 0.01]
+      tdot: [1, 3, 1.4, 1]
+      c: [1, 3, 2, 1]
+    tolerance: 1e-7
+    shown: ['= -\,\partial_i\phi\left(\frac{dt}{d\tau}\right)^2']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-speed-of-light
+    where: 'Problem 2(e), formula "Redshift of light that climbs a height h": c as printed'
+    inputs: {}
+    formula: c
+    expected: 2.998e8 m/s
+    shown: ['2.998 \times 10^{8}\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-room
+    answer: p2-e
+    where: 'Problem 2(e), answer box: z = g h/c² for h = 4 m (MIT''s height) and g = 9.8 m/s²'
+    inputs: {g: 9.8 m/s**2, h: 4 m}
+    formula: g * h / c**2
+    expected: '4.36e-16'
+    shown: ['= 4.36 \times 10^{-16}']
+    source: {cite: mit, at: 'Problem 2(e), p. 3 (the 4 metres are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p2-e-one-figure
+    where: 'Problem 2(e), check: the result to one significant figure'
+    inputs: {g: 9.8 m/s**2, h: 4 m}
+    formula: g * h / c**2
+    expected: '4e-16'
+    shown: ['$z \approx 4 \times 10^{-16}$']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # dτ/dt on the orbit: the metric evaluated along the orbit, −c² (dτ/dt)² = g_tt + r² ω².
+  - id: p3-a-proper-time
+    kind: identity
+    where: 'Problem 3(a), formula "Proper time on the orbit": −c²(dτ/dt)² equals g_tt + g_φφ ω²'
+    formula: -c**2 * (sqrt(1 - 2*G*M/(r*c**2) - r**2*om**2/c**2))**2
+    equals: -(1 - 2*G*M/(r*c**2))*c**2 + r**2*om**2
+    samples:
+      G: [1, 2, 0.5]
+      M: [1, 2, 3]
+      r: [10, 30, 8]
+      om: [0.01, 0.005, 0.02]
+      c: [1, 3, 2]
+    tolerance: 1e-10
+    shown: ['\frac{d\tau}{dt} = \sqrt{1 - \frac{2GM}{rc^2} - \frac{r^2\omega^2}{c^2}}']
+    source: {cite: mit, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  # The two derivatives of the metric, numerically, in the balance of part (b): the balance holds when r ω² = GM/r².
+  - id: p3-c-balance
+    kind: identity
+    where: 'Problem 3(c): ½ ∂_r g_φφ ω² + ½ ∂_r g_tt (numerical derivatives of r² and −c² + 2GM/r) vanishes for ω² = GM/r³'
+    formula: 0.5 * deriv('x**2', 'x', r) * (G*M/r**3) + 0.5 * deriv('-c**2 + 2*G*M/x', 'x', r) + 1
+    equals: 1
+    samples:
+      G: [1, 2, 0.5]
+      M: [1, 2, 3]
+      r: [10, 30, 8]
+      c: [1, 3, 2]
+    tolerance: 1e-8
+    shown: ['r\,\omega^2 = \frac{GM}{r^2}']
+    source: {cite: mit, at: 'Problem 3(c), p. 4'}
+    origin: mit
+
+  # r_min is the root of the quantity under the root of part (a), with r²ω² = GM/r.
+  - id: p3-d-smallest-orbit
+    kind: identity
+    answer: p3-d
+    where: 'Problem 3(d), answer box and formula "Smallest circular orbit": the numerical root of 1 − 2GM/(rc²) − GM/(rc²)'
+    formula: 3*G*M/c**2
+    equals: solve('1 - 2*G*M/(x*c**2) - G*M/(x*c**2)', 'x', 0.5*G*M/c**2, 20*G*M/c**2)
+    samples:
+      G: [0.5, 2, 1, 1.3]
+      M: [1, 5, 2, 3.3]
+      c: [1, 3, 2, 1.7]
+    tolerance: 1e-8
+    shown: ['r > r_\text{min} = \frac{3GM}{c^2} = \frac32\,R_S']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-ratio-to-horizon
+    where: 'Problem 3(d), check: r_min in units of the horizon radius 2GM/c²'
+    inputs: {}
+    formula: 3 / 2
+    expected: '1.5'
+    shown: ['$r_\text{min}$ is 1.5 times the horizon radius']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-solar-mass
+    where: 'Problem 3(d), check: r_min for one solar mass'
+    inputs: {}
+    formula: 3 * G * M_sun / c**2
+    expected: 4.43 km
+    shown: ['$r_\text{min} = 4.43$ km']
+    source: {cite: mit, at: 'Problem 3(d) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-d-clock-rate
+    where: 'Problem 3(d), check: dτ/dt = √(1 − 3GM/(rc²)) at r = 6GM/c²'
+    inputs: {}
+    formula: sqrt(1 - 3/6)
+    expected: '0.707'
+    shown: ['$\sqrt{1/2} = 0.707$']
+    source: {cite: mit, at: 'Problem 3(d) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (P4.5) against the product rule: d(a³ρ)/da = −(p/c²) d(a³)/da for ρ = K a^(−n) requires p/c² = (n/3 − 1)ρ.
+  - id: p4-a-energy-balance
+    kind: identity
+    where: 'Problem 4(a), Eq. (P4.4) written with d/da: for ρ = K/aⁿ and p = (n/3 − 1)ρc², d(a³ρc²)/da = −p d(a³)/da (numerical derivatives)'
+    formula: deriv('x**3 * K * x**(-n) * c**2', 'x', a)
+    equals: -((n/3 - 1) * K * a**(-n) * c**2) * deriv('x**3', 'x', a)
+    samples:
+      K: [1, 2.5, 0.4, 3]
+      n: [3, 4, 6, 4.5]
+      a: [0.7, 1.9, 1.2, 2.4]
+      c: [1, 3, 2, 1.5]
+    tolerance: 1e-7
+    shown: ['\frac{d}{dt}\left(a^3\rho c^2\right) = -p\,\frac{d}{dt}\left(a^3\right)']
+    source: {cite: mit, at: 'Problem 4(a), Eq. (P4.4), p. 5'}
+    origin: mit
+
+  # (P4.7) for a power law: with ρ = K/aⁿ, k = 0 and p = (n/3 − 1)ρc², a ∝ t^(2/n) and ρ = 3H²/(8πG);
+  # then ä (numerical second derivative) must equal −(4π/3) G (ρ + 3p/c²) a.
+  - id: p4-b-acceleration
+    kind: identity
+    where: 'Problem 4(b), Eq. (P4.7): for a = t^(2/n) the numerical second derivative equals −(4π/3)G(ρ + 3p/c²)a with ρ = 3H²/(8πG) and p = (n/3 − 1)ρc²'
+    formula: deriv('x**(2/n)', 'x', t, 2)
+    equals: -(4*pi/3) * G * (3*(2/(n*t))**2/(8*pi*G)) * (1 + 3*(n/3 - 1)) * t**(2/n)
+    samples:
+      n: [3, 4, 6, 4.5, 5]
+      t: [1, 2.5, 0.8, 3, 1.7]
+      G: [1, 2, 0.5, 1.3, 1]
+    tolerance: 1e-5
+    shown: ['\ddot a = -\frac{4\pi}{3}\,G\left(\rho + \frac{3p}{c^2}\right)a']
+    source: {cite: mit, at: 'Problem 4(b), Eq. (P4.7), p. 5'}
+    origin: mit
+
+  # p from the density equation with ρ ∝ a⁻⁴: p = −c² (ρ + (a/3) dρ/da), dρ/da numerically.
+  - id: p4-c-radiation-pressure
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box and formula "Pressure of black-body radiation": p = −c²(ρ + (a/3) dρ/da) with ρ ∝ a⁻⁴ differentiated numerically'
+    formula: rho*c**2/3
+    equals: -c**2 * (rho + (a/3) * deriv('rho * (a/x)**4', 'x', a))
+    samples:
+      rho: [0.5, 3, 1.2, 2]
+      c: [1, 3, 2, 1.5]
+      a: [0.7, 1.9, 1.2, 2.4]
+    tolerance: 1e-7
+    shown: ['p = \tfrac13\,\rho c^2']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-a-pressure
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box and formula "Pressure of the first made-up kind of matter": p = −c²(ρ + (a/3) dρ/da) with ρ ∝ a⁻⁶ differentiated numerically'
+    formula: rho*c**2
+    equals: -c**2 * (rho + (a/3) * deriv('rho * (a/x)**6', 'x', a))
+    samples:
+      rho: [0.5, 3, 1.2, 2]
+      c: [1, 3, 2, 1.5]
+      a: [0.7, 1.9, 1.2, 2.4]
+    tolerance: 1e-7
+    shown: ['p = \rho c^2']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  # a ∝ t^(1/3) must satisfy ȧ ∝ 1/a², so a(t)/a(t1) = √(ȧ(t1)/ȧ(t)); ȧ by numerical differentiation.
+  - id: p5-b-scale-factor
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Scale factor for the first made-up matter": the flat Friedmann equation ȧ ∝ 1/a² checked with numerical derivatives'
+    formula: (t/t1)**(1/3)
+    equals: sqrt(deriv('(x/t1)**(1/3)', 'x', t1) / deriv('(x/t1)**(1/3)', 'x', t))
+    samples:
+      t: [1, 10, 4.2, 7]
+      t1: [0.5, 5, 1.3, 2]
+    tolerance: 1e-7
+    shown: ['a(t) \propto t^{1/3}']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-hubble-check
+    kind: identity
+    where: 'Problem 5(b), check: ȧ/a = 1/(3t) for a ∝ t^(1/3)'
+    formula: deriv('x**(1/3)', 'x', t) / t**(1/3)
+    equals: 1/(3*t)
+    samples:
+      t: [1, 10, 4.2, 0.6]
+    tolerance: 1e-7
+    shown: ['$\dot a/a = 1/(3t)$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-power
+    answer: p5-c
+    where: 'Problem 5(c), answer box: n = 3(1 + w) for p = ½ρc²'
+    inputs: {w: 0.5}
+    formula: 3 * (1 + w)
+    expected: '4.5'
+    shown: ['So $n = 9/2 = 4.5$.', 'The value 4.5 for $w = 1/2$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  # ρ ∝ a^(−9/2) solves ρ̇ = −3(ȧ/a)(ρ + p/c²) with p = ½ρc²: dρ/da = −(9/2) ρ/a.
+  - id: p5-c-density-equation
+    kind: identity
+    where: 'Problem 5(c): ρ ∝ a^(−9/2) satisfies dρ/da = −3(1 + ½)ρ/a (numerical derivative)'
+    formula: deriv('K * x**(-4.5)', 'x', a)
+    equals: -3 * (1 + 0.5) * K * a**(-4.5) / a
+    samples:
+      K: [1, 2.5, 0.4]
+      a: [0.7, 1.9, 1.2]
+    tolerance: 1e-7
+    shown: ['\rho \propto a^{-9/2}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-check-radiation
+    where: 'Problem 5(c), check: n = 3(1 + w) for radiation, w = 1/3'
+    inputs: {w: 0.3333333333333333}
+    formula: 3 * (1 + w)
+    expected: '4'
+    shown: ['4 for radiation ($w = 1/3$)']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-check-stiff
+    where: 'Problem 5(c), check: n = 3(1 + w) for the matter of part (a), w = 1'
+    inputs: {w: 1}
+    formula: 3 * (1 + w)
+    expected: '6'
+    shown: ['6 for the matter of part (a) ($w = 1$)']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  # a ∝ t^(2/5) must satisfy ȧ ∝ a^(−3/2), so a(t)/a(t1) = (ȧ(t1)/ȧ(t))^(2/3).
+  - id: p6-a-scale-factor
+    kind: identity
+    answer: p6-a
+    where: 'Problem 6(a), answer box and formula "Scale factor for the mysterious stuff": the flat Friedmann equation ȧ ∝ a^(−3/2) checked with numerical derivatives'
+    formula: (t/t1)**(2/5)
+    equals: (deriv('(x/t1)**(2/5)', 'x', t1) / deriv('(x/t1)**(2/5)', 'x', t))**(2/3)
+    samples:
+      t: [1, 10, 4.2, 7]
+      t1: [0.5, 5, 1.3, 2]
+    tolerance: 1e-7
+    shown: ['a(t) \propto t^{2/5}']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-hubble
+    kind: identity
+    answer: p6-b
+    where: 'Problem 6(b), answer box and formula "Hubble expansion rate for the mysterious stuff": the numerical derivative of t^(2/5), divided by t^(2/5)'
+    formula: 2/(5*t)
+    equals: deriv('x**(2/5)', 'x', t) / t**(2/5)
+    samples:
+      t: [0.5, 10, 4.2, 1]
+    tolerance: 1e-7
+    shown: ['= \frac{2}{5t}']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  # The horizon integral with the substitution t' = s^(5/3) (so that the integrand is smooth at 0):
+  # ∫ c dt'/t'^(2/5) from 0 to t = ∫ (5/3) c ds from 0 to t^(3/5).
+  - id: p6-c-horizon
+    kind: identity
+    answer: p6-c
+    where: 'Problem 6(c), answer box and formula "Horizon distance for the mysterious stuff": a(t) ∫ c dt′/a(t′), integrated numerically after the substitution t′ = s^(5/3)'
+    formula: 5*c*t/3
+    equals: t**(2/5) * integrate('c * (5/3) * s**(2/3) / (s**(5/3))**(2/5)', 's', 0, t**(3/5))
+    samples:
+      c: [1, 3, 2, 299792.458]
+      t: [0.5, 10, 4.2, 1]
+    tolerance: 1e-7
+    shown: ['= \frac53\,c\,t']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-d-density
+    kind: identity
+    answer: p6-d
+    where: 'Problem 6(d), answer box and formula "Mass density for the mysterious stuff": 3H²/(8πG) with H from the numerical derivative of t^(2/5)'
+    formula: 3/(50*pi*G*t**2)
+    equals: 3 * (deriv('x**(2/5)', 'x', t) / t**(2/5))**2 / (8*pi*G)
+    samples:
+      G: [0.5, 2, 1, 1.3]
+      t: [0.5, 10, 4.2, 1]
+    tolerance: 1e-7
+    shown: ['= \frac{3}{50\pi\,G\,t^2}']
+    source: {cite: mit, at: 'Problem 6(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 7
+
+  - id: p7-g-three
+    where: 'Problem 7(a), formula "Total g with three species of neutrinos"'
+    inputs: {}
+    formula: 2 + 7/8 * 3 * 2 + 7/8 * 2 * 2
+    expected: '10.75'
+    shown: ['g = 2 + \tfrac{21}{4} + \tfrac72 = 10\tfrac34']
+    source: {cite: reading5, at: 'pp. 9–11 (board)'}
+    origin: mit
+
+  - id: p7-g-four
+    where: 'Problem 7(b), formula "Total g with four species of neutrinos"'
+    inputs: {}
+    formula: 10.75 + 7/8 * 1 * 2 * 1
+    expected: '12.5'
+    shown: ['= 10\tfrac34 + \tfrac74 = 12\tfrac12']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-kT-1s-lecture
+    where: 'Problem 7(a): kT = 0.860 MeV/√t as the lecture prints it (the formula gives 0.859; the lecture rounds up, as the lesson notes)'
+    inputs: {g: 10.75, t: 1 s}
+    formula: (45 * hbar**3 * c**5 / (16 * pi**3 * g * G))**(1/4) / sqrt(t)
+    expected: 0.860 MeV
+    tolerance: 0.002 MeV
+    shown: ['$kT = 0.860\ \text{MeV}/\sqrt{t}$']
+    source: {cite: reading5, at: 'p. 17 (board)'}
+    origin: mit
+
+  - id: p7-a-time
+    answer: p7-a
+    where: 'Problem 7(a), answer box: the time at which kT = 1 MeV for g = 10¾, from the constants'
+    inputs: {g: 10.75, E: 1 MeV}
+    formula: sqrt(45 * hbar**3 * c**5 / (16 * pi**3 * g * G)) / E**2
+    expected: 0.74 s
+    shown: ['$t = (0.860)^2\ \text{s} = 0.74\ \text{s}$']
+    source: {cite: reading5, at: 'p. 17 (board); kT = 1 MeV is MIT''s (Problem 7, p. 7)'}
+    origin: page-own
+
+  - id: p7-a-time-from-lecture-constant
+    where: 'Problem 7(a): the same time from the lecture''s rounded 0.860 MeV'
+    inputs: {x: 0.860}
+    formula: x**2
+    expected: '0.74'
+    shown: ['$t = (0.860)^2\ \text{s} = 0.74\ \text{s}$']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-a-time-unrounded
+    where: 'Problem 7(a), check: the time worked out from the constants without rounding'
+    inputs: {g: 10.75, E: 1 MeV}
+    formula: sqrt(45 * hbar**3 * c**5 / (16 * pi**3 * g * G)) / E**2
+    expected: 0.738 s
+    shown: ['the time is 0.738 s', 'With the unrounded $t = 0.738$ s']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-time
+    answer: p7-b
+    where: 'Problem 7(b), answer box: the time at which kT = 1 MeV for g = 12½, from the constants'
+    inputs: {g: 12.5, E: 1 MeV}
+    formula: sqrt(45 * hbar**3 * c**5 / (16 * pi**3 * g * G)) / E**2
+    expected: 0.685 s
+    shown: ['this is $t'' = 0.685$ s']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-ratio
+    where: 'Problem 7(b), formula "Time to reach 1 MeV with four species": √(g/g′)'
+    inputs: {}
+    formula: sqrt(10.75 / 12.5)
+    expected: '0.927'
+    shown: ['= 0.927\,t']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-time-rounded
+    where: 'Problem 7(b): the time found from the rounded 0.74 s'
+    inputs: {t: 0.74 s}
+    formula: t * sqrt(10.75 / 12.5)
+    expected: 0.686 s
+    shown: ['you find 0.686 s']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-percent-shorter
+    where: 'Problem 7(b), check: the time is shorter by about 7%'
+    inputs: {}
+    formula: (1 - sqrt(10.75 / 12.5)) * 100
+    expected: '7'
+    shown: ['by about 7%']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-mev-in-joule
+    where: 'Problem 7(c): 1 MeV in joules'
+    inputs: {E: 1 MeV}
+    formula: E
+    expected: 1.602e-13 J
+    shown: ['1.602 \times 10^{-13}$ J']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-energy-density-per-g
+    where: 'Problem 7(c): energy density of black-body radiation at kT = 1 MeV, per unit of g'
+    inputs: {E: 1 MeV}
+    formula: pi**2 / 30 * E**4 / (hbar * c)**3
+    expected: 6.86e24 J/m**3
+    shown: ['$u = g \times 6.86 \times 10^{24}\ \text{J/m}^3$']
+    source: {cite: reading4, at: 'p. 24 (board)'}
+    origin: page-own
+
+  - id: p7-c-mass-density-per-g
+    where: 'Problem 7(c): mass density of black-body radiation at kT = 1 MeV, per unit of g'
+    inputs: {E: 1 MeV}
+    formula: pi**2 / 30 * E**4 / (hbar * c)**3 / c**2
+    expected: 7.63e7 kg/m**3
+    shown: ['$\rho = g \times 7.63 \times 10^{7}\ \text{kg/m}^3$']
+    source: {cite: reading4, at: 'p. 24 (board), divided by c²'}
+    origin: page-own
+
+  - id: p7-c-density-three
+    answer: p7-c-three
+    where: 'Problem 7(c), first answer box: mass density at kT = 1 MeV for g = 10¾, in units of 10⁸ kg/m³'
+    inputs: {g: 10.75, E: 1 MeV}
+    formula: g * pi**2 / 30 * E**4 / (hbar * c)**3 / c**2 / (1e8 * kg / metre**3)
+    expected: '8.21'
+    shown: ['$\rho = 8.21 \times 10^{8}\ \text{kg/m}^3$']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-density-four
+    answer: p7-c-four
+    where: 'Problem 7(c), second answer box: mass density at kT = 1 MeV for g = 12½, in units of 10⁸ kg/m³'
+    inputs: {g: 12.5, E: 1 MeV}
+    formula: g * pi**2 / 30 * E**4 / (hbar * c)**3 / c**2 / (1e8 * kg / metre**3)
+    expected: '9.54'
+    shown: ['$\rho = 9.54 \times 10^{8}\ \text{kg/m}^3$']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-ratio
+    where: 'Problem 7(c), check: the ratio of the two densities'
+    inputs: {}
+    formula: 12.5 / 10.75
+    expected: '1.163'
+    shown: ['$12.5/10.75 = 1.163$']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-other-route-three
+    where: 'Problem 7(c), check: ρ = 3/(32πGt²) at t = 0.738 s'
+    inputs: {t: 0.738 s}
+    formula: 3 / (32 * pi * G * t**2)
+    expected: 8.21e8 kg/m**3
+    shown: ['this gives $8.21 \times 10^{8}$ and $9.53 \times 10^{8}\ \text{kg/m}^3$']
+    source: {cite: reading4, at: 'p. 15 (board)'}
+    origin: page-own
+
+  - id: p7-c-other-route-four
+    where: 'Problem 7(c), check: ρ = 3/(32πGt²) at t = 0.685 s'
+    inputs: {t: 0.685 s}
+    formula: 3 / (32 * pi * G * t**2)
+    expected: 9.53e8 kg/m**3
+    shown: ['this gives $8.21 \times 10^{8}$ and $9.53 \times 10^{8}\ \text{kg/m}^3$']
+    source: {cite: reading4, at: 'p. 15 (board)'}
+    origin: page-own
+
+  - id: p7-c-water
+    where: 'Problem 7(c), check: the density for g = 10¾ in units of the density of water'
+    inputs: {g: 10.75, E: 1 MeV, water: 1000 kg/m**3}
+    formula: g * pi**2 / 30 * E**4 / (hbar * c)**3 / c**2 / water
+    expected: '8e5'
+    tolerance: 0.5e5
+    shown: ['about 800,000 times as dense as water']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  # ---- numbers in statements and hints
+
+  - id: total-points
+    where: 'introduction: the points of the seven problems, as MIT gives them'
+    inputs: {}
+    formula: 25 + 25 + 30 + 25 + 25 + 15 + 15
+    expected: '160'
+    shown: ['All seven problems count for the score (160 points).']
+    source: {cite: mit, at: 'p. 7: total points for Problem Set 6'}
+    origin: mit
+
+  - id: p7-temperature-range
+    kind: fact
+    where: 'Problem 7, statement: the range of kT in which photons, electron-positron pairs and neutrinos dominate, as MIT states it'
+    shown: ['While $kT$ was between 1 MeV and 100 MeV']
+    source: {cite: mit, at: 'Problem 7, p. 7'}
+    origin: mit
+
+  - id: p4-c-hint-quarter
+    where: 'Problem 4(c), hint of the listed mistake p = ρc²/4: the density would fall as the power 15/4 of 1/a'
+    inputs: {w: 0.25}
+    formula: 3 * (1 + w) - 15/4
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['the density would fall as the power 15/4 of 1/a']
+    source: {cite: mit, at: 'Problem 4(c) (our own hint)'}
+    origin: page-own
+
+  - id: p5-a-hint-eighth
+    where: 'Problem 5(a), hint of the listed mistake p = 5ρc²/3: the density would fall as the inverse eighth power of a'
+    inputs: {}
+    formula: 3 * (1 + 5/3)
+    expected: '8'
+    shown: ['the density would fall as the inverse eighth power of a']
+    source: {cite: mit, at: 'Problem 5(a) (our own hint)'}
+    origin: page-own
+
+  - id: p2-e-potential-at-earth
+    where: 'Problem 2(e), check: the Sun''s potential at the Earth''s orbit, |φ|/c² = GM/(rc²) (the Earth''s own adds 7e-10)'
+    inputs: {r: 1 au}
+    formula: G * M_sun / (r * c**2)
+    expected: '1e-8'
+    tolerance: 0.1e-8
+    shown: ['about $10^{-8}$ at the Earth (mostly from the Sun)']
+    source: {cite: mit, at: 'Problem 2(e) (our own check)'}
+    origin: page-own
+
+  - id: p2-e-potential-at-sun
+    where: 'Problem 2(e), check: |φ|/c² = GM/(Rc²) at the surface of the Sun (R = 6.957e8 m, the IAU nominal solar radius)'
+    inputs: {R: 6.957e8 metre}
+    formula: G * M_sun / (R * c**2)
+    expected: '2e-6'
+    shown: ['about $2 \times 10^{-6}$ at the surface of the Sun']
+    source: {cite: mit, at: 'Problem 2(e) (our own check)'}
+    origin: page-own

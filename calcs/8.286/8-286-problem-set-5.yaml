@@ -1,0 +1,462 @@
+# Calculations on content/year-4/8.286/8-286-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# numerical integration of the metric, the embedding of the closed space in four dimensions, or Klein's
+# distance function for the open space.
+
+page: content/year-4/8.286/8-286-problem-set-5.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-circumference-by-integration
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Circumference of the circle": against numerical integration of ds = R r0 dφ around the circle'
+    formula: 2*pi*R*r0
+    equals: integrate('R*r0 + 0*x', 'x', 0, 2*pi)
+    samples:
+      R: [0.5, 3, 1.7, 1]
+      r0: [0.1, 0.9, 0.5, 2.5]
+    tolerance: 1e-9
+    shown: ['S = \int_0^{2\pi} R\,r_0\,d\phi = 2\pi R\,r_0']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-radius-closed-by-integration
+    kind: identity
+    answer: p1-b-closed
+    where: 'Problem 1(b), answer box and formula "Radius of the circle, closed universe": against numerical integration of R dr/√(1 − r²)'
+    formula: R*asin(r0)
+    equals: integrate('R/sqrt(1 - x**2)', 'x', 0, r0)
+    samples:
+      R: [0.5, 3, 1.7, 1]
+      r0: [0.1, 0.9, 0.5, 0.99]
+    tolerance: 1e-7
+    shown: ['\rho = R\int_0^{r_0} \frac{dr}{\sqrt{1 - r^2}} = R\,\sin^{-1} r_0']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-radius-open-by-integration
+    kind: identity
+    answer: p1-b-open
+    where: 'Problem 1(b), answer box and formula "Radius of the circle, open universe": against numerical integration of R dr/√(1 + r²)'
+    formula: R*asinh(r0)
+    equals: integrate('R/sqrt(1 + x**2)', 'x', 0, r0)
+    samples:
+      R: [0.5, 3, 1.7, 1]
+      r0: [0.1, 0.9, 3, 25]
+    tolerance: 1e-7
+    shown: ['\rho = R\int_0^{r_0} \frac{dr}{\sqrt{1 + r^2}} = R\,\sinh^{-1} r_0']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # The relation S(ρ) without using the closed forms of part (b): find numerically the r0 whose radial
+  # integral equals ρ, then take 2πR r0.
+  - id: p1-s-of-rho-closed
+    kind: identity
+    answer: p1-c-closed
+    where: 'Problem 1(c), answer box and formula "Circumference and radius, closed universe": against 2πR r0, with r0 solved numerically from the radial integral'
+    formula: 2*pi*R*sin(rho/R)
+    equals: 2*pi*R*solve("integrate('R/sqrt(1 - y**2)', 'y', 0, x) - rho", 'x', 0, 0.99)
+    samples:
+      R: [1, 2, 0.7, 3]
+      rho: [0.5, 0.3, 0.9, 2.5]
+    tolerance: 1e-7
+    shown: ['S = 2\pi R\,\sin\frac{\rho}{R}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-s-of-rho-open
+    kind: identity
+    answer: p1-c-open
+    where: 'Problem 1(c), answer box and formula "Circumference and radius, open universe": against 2πR r0, with r0 solved numerically from the radial integral'
+    formula: 2*pi*R*sinh(rho/R)
+    equals: 2*pi*R*solve("integrate('R/sqrt(1 + y**2)', 'y', 0, x) - rho", 'x', 0, 50)
+    samples:
+      R: [1, 2, 0.7, 3]
+      rho: [0.5, 0.3, 2.1, 9]
+    tolerance: 1e-7
+    shown: ['S = 2\pi R\,\sinh\frac{\rho}{R}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-check-rho-closed
+    where: 'Problem 1(b), check: r0 = 0.5 in the closed universe, ρ in units of R'
+    inputs: {r0: 0.5}
+    formula: asin(r0)
+    expected: '0.5236'
+    shown: ['$\rho = 0.5236\,R$', '$0.5/0.5236 = 0.955$']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-check-rho-open
+    where: 'Problem 1(b), check: r0 = 0.5 in the open universe, ρ in units of R'
+    inputs: {r0: 0.5}
+    formula: asinh(r0)
+    expected: '0.4812'
+    shown: ['$\rho = 0.4812\,R$', '$0.5/0.4812 = 1.039$']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-check-ratio-closed
+    where: 'Problem 1(c), check: S/(2πρ) for r0 = 0.5, closed universe'
+    inputs: {r0: 0.5}
+    formula: r0 / asin(r0)
+    expected: '0.955'
+    shown: ['$0.5/0.5236 = 0.955$']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-check-ratio-open
+    where: 'Problem 1(c), check: S/(2πρ) for r0 = 0.5, open universe'
+    inputs: {r0: 0.5}
+    formula: r0 / asinh(r0)
+    expected: '1.039'
+    shown: ['$0.5/0.4812 = 1.039$']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-volume-by-integration
+    kind: identity
+    answer: p2-v
+    where: 'Problem 2, answer box and formula "Volume of a closed universe": against numerical integration of the shells'
+    formula: 2*pi**2*R**3
+    equals: integrate('4*pi*R**3*sin(x)**2', 'x', 0, pi)
+    samples:
+      R: [0.5, 3, 1.7, 1]
+    tolerance: 1e-9
+    shown: ['= 2\pi^2 R^3']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-number
+    where: 'Problem 2, check: 2π²'
+    formula: 2 * pi**2
+    expected: '19.74'
+    shown: ['$2\pi^2 = 19.74$', '$19.74\,R^3$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ball
+    where: 'Problem 2 and Problem 4(c), check: 4π/3, the volume of a Euclidean ball of radius 1'
+    formula: 4 * pi / 3
+    expected: '4.19'
+    shown: ['$\tfrac43\pi R^3 = 4.19\,R^3$', '$4.19\,a^3(t_0)$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-small-ball
+    kind: limit
+    where: 'Problem 2, check: the volume out to a small ψ must approach that of a Euclidean ball of radius Rψ (checked as a ratio)'
+    inputs: {R: 1.7}
+    formula: integrate('4*pi*R**3*sin(x)**2', 'x', 0, s) / ((4/3)*pi*(R*s)**3)
+    limit: '1'
+    vary: {s: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['the volume out to $\psi$ is $\tfrac43\pi (R\psi)^3$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # The area of the sphere through us by integrating rings of the angular metric, times the two redshift factors.
+  - id: p3-flux-by-integration
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Energy flux from the galaxy": P/(1 + z)² over the area of the sphere, the area from numerical integration of rings 2π (a0 sin ψ)² sin θ dθ'
+    formula: P*aG**2/(4*pi*a0**4*sin(psi)**2)
+    equals: P / (a0/aG)**2 / integrate('2*pi*(a0*sin(psi))**2*sin(x)', 'x', 0, pi)
+    samples:
+      P: [1, 5, 3.3, 1e36]
+      a0: [1, 3, 2.2, 1.4]
+      aG: [0.1, 0.9, 0.5, 0.147]
+      psi: [0.2, 2.8, 1.1, 1.5708]
+    tolerance: 1e-9
+    shown: ['J = \frac{P}{4\pi\,a^2(t_0)\sin^2\psi_G\,(1+z)^2} = \frac{P\,a^2(t_G)}{4\pi\,a^4(t_0)\,\sin^2\psi_G}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # The closed space at the time of emission is a 3-sphere of radius aG in four Euclidean dimensions. Two points at
+  # the same ψ whose polar angles differ by Δθ are a straight chord 2 aG sin ψ sin(Δθ/2) apart. For a small galaxy
+  # the chord is its diameter w, so the exact angle is 2 asin(w / (2 aG sin ψ)), which the answer must approach.
+  - id: p3-angle-from-embedding
+    kind: limit
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Apparent angular size of the galaxy": against the exact angle for a chord of length w on the embedded 3-sphere, as w becomes small'
+    inputs: {aG: 0.5, psi: 1.1}
+    formula: w/(aG*sin(psi))
+    limit: 2 * asin(w / (2 * aG * sin(psi)))
+    vary: {w: [0.1, 0.03, 0.01, 0.003, 0.001]}
+    tolerance: 1e-6
+    shown: ['\Delta\theta = \frac{w}{a(t_G)\,\sin\psi_G}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-brightness-from-parts
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(c), answer box and formula "Surface brightness of the galaxy": the flux of (a) divided by π/4 times the square of the angle of (b), with a(t_G) = a(t_0)/(1 + z); ψ_G and a(t_0) are sampled and must cancel'
+    formula: P/(pi**2*w**2*(1 + z)**4)
+    equals: (P * (a0/(1 + z))**2 / (4*pi*a0**4*sin(psi)**2)) / ((pi/4) * (w / ((a0/(1 + z)) * sin(psi)))**2)
+    samples:
+      P: [1, 5, 3.3, 1e36]
+      w: [0.5, 2, 1.3, 0.01]
+      z: [0.1, 9, 1, 8.55]
+      a0: [1, 3, 2.2, 1.4]
+      psi: [0.2, 2.8, 1.1, 1.5708]
+    tolerance: 1e-9
+    shown: ['= \frac{P}{\pi^2 w^2\,(1+z)^4}']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-dimming-z1
+    where: 'Problem 3(c), check: (1 + z)⁴ for z = 1'
+    inputs: {z: 1}
+    formula: (1 + z)**4
+    expected: '16'
+    shown: ['$2^4 = 16$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-dimming-high-z
+    where: 'Problem 3(c), check: (1 + z)⁴ for z = 8.55, the redshift of Problem Set 2'
+    inputs: {z: 8.55}
+    formula: (1 + z)**4
+    expected: '8320'
+    shown: ['$9.55^4 \approx 8320$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers; z = 8.55 is the redshift of MIT''s Problem Set 2)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # The crest argument of part (b), tried on a(t) = b t^(2/3): the arrival delay x of a crest sent a short time d
+  # later is solved from the equation of part (a), and x/d must equal a(t0)/a(tG).
+  - id: p4-crest-stretch
+    kind: identity
+    where: 'Problem 4(b), step "Two crests": Δt0/ΔtG = a(t0)/a(tG), tried numerically on a(t) = b t^(2/3) with the equation of part (a)'
+    formula: (t0/tG)**(2/3)
+    equals: solve("integrate('c/(b*y**(2/3))', 'y', tG + d, t0 + x) - integrate('c/(b*y**(2/3))', 'y', tG, t0)", 'x', 0, 1) / d
+    samples:
+      t0: [5, 10, 7.3]
+      tG: [1, 2, 0.5]
+      c: [1, 3, 2]
+      b: [1, 0.2, 37]
+      d: [0.0001, 0.0001, 0.0001]
+    tolerance: 1e-3
+    shown: ['So $\Delta t_0/\Delta t_G = a(t_0)/a(t_G)$.']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-redshift
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Redshift of galaxy G": against the growth of the universe since emission divided by its size at emission'
+    formula: a0/aG - 1
+    equals: (a0 - aG) / aG
+    samples:
+      a0: [1, 3, 2.2, 1.4]
+      aG: [0.1, 0.9, 0.5, 0.147]
+    tolerance: 1e-12
+    shown: ['z_G = \frac{a(t_0)}{a(t_G)} - 1']
+    source: {cite: reading1, at: 'p. 6'}
+    origin: page-own
+
+  - id: p4-volume-by-integration
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box and formula "Present volume out to galaxy G": against numerical integration of the shells'
+    formula: pi*a0**3*(sinh(2*psi) - 2*psi)
+    equals: integrate('4*pi*a0**3*sinh(x)**2', 'x', 0, psi)
+    samples:
+      a0: [1, 3, 2.2, 1.4]
+      psi: [0.2, 3, 1, 0.05]
+    tolerance: 1e-7
+    shown: ['= \pi\,a^3(t_0)\left(\sinh 2\psi_G - 2\psi_G\right)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-volume-small
+    kind: limit
+    where: 'Problem 4(c), check: for small ψ_G the volume must approach a Euclidean ball of radius a(t0) ψ_G (checked as a ratio)'
+    inputs: {a0: 2.2}
+    formula: pi*a0**3*(sinh(2*s) - 2*s) / ((4/3)*pi*(a0*s)**3)
+    limit: '1'
+    vary: {s: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['V \approx \tfrac43\pi\,(a(t_0)\,\psi_G)^3']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-volume-number
+    where: 'Problem 4(c), check: the volume for ψ_G = 1 in units of a³(t0)'
+    inputs: {psi: 1}
+    formula: pi * (sinh(2*psi) - 2*psi)
+    expected: '5.11'
+    shown: ['$5.11\,a^3(t_0)$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # The same length in the r coordinate of the first form of the metric: a0 ∫ dr/√(1 + r²) from 0 to sinh ψ.
+  - id: p4-proper-distance-r-form
+    kind: identity
+    answer: p4-d
+    where: 'Problem 4(d), answer box and formula "Proper distance of galaxy G": against numerical integration in the coordinate r, up to r_G = sinh ψ_G'
+    formula: a0*psi
+    equals: integrate('a0/sqrt(1 + x**2)', 'x', 0, sinh(psi))
+    samples:
+      a0: [1, 3, 2.2, 1.4]
+      psi: [0.2, 3, 1, 0.05]
+    tolerance: 1e-7
+    shown: ['\ell_\text{prop} = \int_0^{\psi_G} a(t_0)\,d\psi = a(t_0)\,\psi_G']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  # A plane through the origin of the open space is Klein's model with u = tanh ψ (Problem 5). Two points at the same
+  # u whose angles differ by Δθ are a distance aG acosh((1 − u² cos Δθ)/(1 − u²)) apart; divided by Δθ, this must
+  # approach the angular size distance as Δθ becomes small.
+  - id: p4-angular-distance-from-klein
+    kind: limit
+    answer: p4-e
+    where: 'Problem 4(e), answer box and formula "Angular size distance of galaxy G": against w/Δθ with w from Klein''s distance function, as Δθ becomes small'
+    inputs: {aG: 0.5, psi: 1.3}
+    formula: aG*sinh(psi)
+    limit: aG * acosh((1 - tanh(psi)**2 * cos(q)) / (1 - tanh(psi)**2)) / q
+    vary: {q: [0.1, 0.03, 0.01, 0.003, 0.001]}
+    tolerance: 1e-5
+    shown: ['\ell_\text{ang} = \frac{w}{\Delta\theta} = a(t_G)\,\sinh\psi_G']
+    source: {cite: mit, at: 'Problem 4(e) (our own solution)'}
+    origin: page-own
+
+  - id: p4-luminosity-distance-from-flux
+    kind: identity
+    answer: p4-f
+    where: 'Problem 4(f), answer box and formula "Luminosity distance of galaxy G": √(P/4πJ), with J from P/(1 + z)² over the area of the sphere, the area from numerical integration of rings; P is sampled and must cancel'
+    formula: a0**2*sinh(psi)/aG
+    equals: sqrt(P / (4*pi * (P / (a0/aG)**2 / integrate('2*pi*(a0*sinh(psi))**2*sin(x)', 'x', 0, pi))))
+    samples:
+      P: [1, 5, 3.3, 1e36]
+      a0: [1, 3, 2.2, 1.4]
+      aG: [0.1, 0.9, 0.5, 0.147]
+      psi: [0.2, 3, 1, 0.05]
+    tolerance: 1e-9
+    shown: ['= \frac{a^2(t_0)}{a(t_G)}\,\sinh\psi_G']
+    source: {cite: mit, at: 'Problem 4(f) (our own solution)'}
+    origin: page-own
+
+  - id: p4-lum-ang-relation
+    kind: identity
+    where: 'Problem 4(f), formula "Luminosity distance and angular size distance"'
+    formula: a0**2*sinh(psi)/aG
+    equals: (a0/aG)**2 * aG*sinh(psi)
+    samples:
+      a0: [1, 3, 2.2, 1.4]
+      aG: [0.1, 0.9, 0.5, 0.147]
+      psi: [0.2, 3, 1, 0.05]
+    tolerance: 1e-12
+    shown: ['\ell_\text{lum} = (1 + z_G)^2\,\ell_\text{ang}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-number-ang
+    where: 'Problem 4(f), check: ℓ_ang for ψ_G = 1, z_G = 1, in units of a(t0)'
+    inputs: {psi: 1, z: 1}
+    formula: sinh(psi) / (1 + z)
+    expected: '0.588'
+    shown: ['$\ell_\text{ang} = 0.588$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-number-lum
+    where: 'Problem 4(f), check: ℓ_lum for ψ_G = 1, z_G = 1, in units of a(t0)'
+    inputs: {psi: 1, z: 1}
+    formula: sinh(psi) * (1 + z)
+    expected: '2.35'
+    shown: ['$\ell_\text{lum} = 2.35$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-polar-form
+    kind: identity
+    where: 'Problem 5(a), formula "Klein''s distance function in polar coordinates": against the form in x and y'
+    formula: (1 - u1*u2*cos(th1 - th2)) / (sqrt(1 - u1**2) * sqrt(1 - u2**2))
+    equals: (1 - (u1*cos(th1))*(u2*cos(th2)) - (u1*sin(th1))*(u2*sin(th2))) / (sqrt(1 - (u1*cos(th1))**2 - (u1*sin(th1))**2) * sqrt(1 - (u2*cos(th2))**2 - (u2*sin(th2))**2))
+    samples:
+      u1: [0.1, 0.9, 0.5, 0.3]
+      u2: [0.7, 0.2, 0.5, 0.95]
+      th1: [0, 1, 2.5, 4]
+      th2: [3, 1.2, 6, 0.4]
+    tolerance: 1e-12
+    shown: ['\cosh\frac{d(1,2)}{a} = \frac{1 - u_1u_2\cos(\theta_1 - \theta_2)}{\sqrt{1 - u_1^2}\,\sqrt{1 - u_2^2}}']
+    source: {cite: mit, at: 'Problem 5(a), p. 8'}
+    origin: mit
+
+  # The metric of part (b) against the exact distance function, for a step (du, dθ) = s (p, q) that shrinks.
+  - id: p5-metric-from-distance
+    kind: limit
+    where: 'Problem 5(b), formula "The metric of Klein''s model": ds/a from the metric against the exact distance function, as the step shrinks'
+    inputs: {u: 0.6, p: 0.7, q: -1.3}
+    formula: sqrt((s*p)**2 / (1 - u**2)**2 + u**2 * (s*q)**2 / (1 - u**2))
+    limit: acosh((1 - u*(u + s*p)*cos(s*q)) / (sqrt(1 - u**2) * sqrt(1 - (u + s*p)**2)))
+    vary: {s: [0.1, 0.03, 0.01, 0.003, 0.001]}
+    tolerance: 2e-3
+    shown: ['tex="ds^2 = a^2\left[\frac{du^2}{\left(1 - u^2\right)^2} + \frac{u^2\,d\theta^2}{1 - u^2}\right]']
+    source: {cite: mit, at: 'Problem 5(b), p. 8'}
+    origin: mit
+
+  - id: p5-step-metric
+    where: 'Problem 5(b), check: ds/a from the metric for u = 0.5, du = 0.01, dθ = 0'
+    inputs: {u: 0.5, du: 0.01}
+    formula: du / (1 - u**2)
+    expected: '0.01333'
+    shown: ['$ds/a = 0.01/0.75 = 0.01333$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-step-exact
+    where: 'Problem 5(b), check: ds/a from the exact distance function for u = 0.5, du = 0.01, dθ = 0'
+    inputs: {u: 0.5, du: 0.01}
+    formula: acosh((1 - u*(u + du)) / (sqrt(1 - u**2) * sqrt(1 - (u + du)**2)))
+    expected: '0.01342'
+    shown: ['$ds/a = 0.01342$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  # r from u without the metric: Klein's distance from the centre is a acosh(1/√(1 − u²)), and the proper radius
+  # of the open Robertson–Walker space is a asinh(r). Setting them equal gives r.
+  - id: p5-r-from-distance
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(c), answer box and formula "Matching the angular terms": against r = sinh(d/a), with the distance d from the centre taken from Klein''s distance function'
+    formula: u/sqrt(1 - u**2)
+    equals: sinh(acosh(1 / sqrt(1 - u**2)))
+    samples:
+      u: [0.05, 0.9, 0.5, 0.995]
+    tolerance: 1e-9
+    shown: ['r = \frac{u}{\sqrt{1 - u^2}}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-radial-terms
+    kind: identity
+    where: 'Problem 5(c), formula "The radial terms agree": (dr/du)²/(1 + r²) against 1/(1 − u²)², with dr/du by numerical differentiation'
+    formula: 1 / (1 - u**2)**2
+    equals: deriv('x/sqrt(1 - x**2)', 'x', u)**2 / (1 + (u/sqrt(1 - u**2))**2)
+    samples:
+      u: [0.05, 0.9, 0.5, 0.3]
+    tolerance: 1e-6
+    shown: ['\frac{dr^2}{1 + r^2} = \frac{du^2}{\left(1 - u^2\right)^3}\left(1 - u^2\right) = \frac{du^2}{\left(1 - u^2\right)^2}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-tanh
+    where: 'Problem 5(c), check: u = tanh ψ for ψ = 3'
+    inputs: {psi: 3}
+    formula: tanh(psi)
+    expected: '0.995'
+    shown: ['$u = 0.995$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
