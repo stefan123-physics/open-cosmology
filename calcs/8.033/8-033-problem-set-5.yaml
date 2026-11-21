@@ -1,0 +1,1275 @@
+# Calculations on content/year-2/8.033/8-033-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# the invariant mass of the two neutrons, momentum and energy conservation in Sam's frame, the spacing of the neutrons
+# counted in two frames, the ratio of Lorentz factors for dt/dt', numerical derivatives of the velocity addition
+# formulas, a numerical solve and a numerical integral for the constant force, a numerical integral of the rocket
+# equations, and the stationary point of the travel time for Snell's law.
+
+page: content/year-2/8.033/8-033-problem-set-5.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the six counted problems, against MIT''s 60'
+    formula: 15 + 3 + 3 + 9 + 6 + 21
+    expected: '57'
+    shown: ['so the six problems here count for 57 points and not for MIT''s 60']
+    source: {cite: mit, at: 'p. 1 and p. 2 (points per problem; 3 more for name and stapling)'}
+    origin: mit
+
+  # ---- Problem 1: the neutron shoot-out
+
+  - id: p1-given
+    kind: fact
+    where: 'Problem 1, statement: the gun speed and Jim''s five reports'
+    shown: ['every neutron leaves its gun at the speed $0.60c$ relative to the gun', 'Jim: "My separation from Sue is 10 km."', 'scattered through an angle of $30^\circ$."', 'Jim: "I am firing neutrons at the rate of 10,000 per second."']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-gamma
+    where: 'Problem 1(a), formula: the Lorentz factor for 0.60c'
+    inputs: {b: 0.60}
+    formula: 1 / sqrt(1 - b**2)
+    expected: '1.25'
+    shown: ['<Formula label="Lorentz factor between Jim and Sam"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-sep
+    answer: p1-sep
+    where: 'Problem 1(a), answer box: the contracted separation'
+    inputs: {Lp: 10 km, b: 0.60}
+    formula: Lp * sqrt(1 - b**2)
+    expected: 8.0 km
+    shown: ['id="p1-sep"', '= 8.0\ \text{km}"']
+    source: {cite: reading4, at: 'slide 13'}
+    origin: page-own
+
+  - id: p1-speed
+    answer: p1-speed
+    where: 'Problem 1(b), answer box: 0.60c added to 0.60c'
+    inputs: {b: 0.60}
+    formula: (b + b) / (1 + b * b)
+    expected: '0.882'
+    shown: ['id="p1-speed"', '= \frac{15}{17}\,c = 0.882c"']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  # Independent route: the speed that the rapidities give, tanh(2 artanh 0.6).
+  - id: p1-speed-rapidity
+    where: 'Problem 1(b), check: the same speed from adding rapidities, tanh(2 artanh 0.60)'
+    inputs: {b: 0.60}
+    formula: tanh(2 * 0.5 * log((1 + b) / (1 - b)))
+    expected: '0.882'
+    shown: ['Sam reports: "Jim''s neutrons move at $0.882c$.']
+    source: {cite: reading4, at: 'slide 16 (our own check)'}
+    origin: page-own
+
+  - id: p1-gamma-u
+    where: 'Problem 1(b), check: the Lorentz factor of Jim''s neutron in S'
+    formula: 1 / sqrt(1 - (15/17)**2)
+    expected: '2.125'
+    shown: ['$1/\sqrt{1 - (15/17)^2} = 17/8 = 2.125$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-ke-sam
+    answer: p1-ke
+    where: 'Problem 1(c), answer box: kinetic energy of the moving neutron in S, in units of m0 c^2'
+    formula: 1 / sqrt(1 - (15/17)**2) - 1
+    expected: '1.125'
+    shown: ['id="p1-ke"', 'K = (\gamma_u - 1)\,m_0c^2 = 1.125\,m_0c^2']
+    source: {cite: reading1, at: 'slide 4'}
+    origin: page-own
+
+  - id: p1-p-sam
+    where: 'Problem 1(c), formula: momentum of the moving neutron in S, in units of m0 c'
+    formula: (15/17) / sqrt(1 - (15/17)**2)
+    expected: '1.875'
+    shown: ['2.125 \times \tfrac{15}{17}\,m_0c = 1.875\,m_0c']
+    source: {cite: reading1, at: 'slide 3'}
+    origin: page-own
+
+  - id: p1-ke-jim
+    where: 'Problem 1(c): total kinetic energy in Jim''s frame, in units of m0 c^2'
+    inputs: {b: 0.60}
+    formula: 2 * (1 / sqrt(1 - b**2) - 1)
+    expected: '0.50'
+    shown: ['together $0.50\,m_0c^2$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent check of (b) and (c): the invariant mass of the pair is the same in both frames.
+  - id: p1-invariant
+    where: 'Problem 1(c), check: the invariant mass of the two neutrons from Sam''s energy and momentum equals Jim''s 2.5'
+    formula: sqrt(3.125**2 - 1.875**2)
+    expected: '2.5'
+    tolerance: 1e-9
+    shown: ['$\sqrt{3.125^2 - 1.875^2} = 2.5$']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: page-own
+
+  - id: p1-energy-sam
+    where: 'Problem 1(c), check: total energy in S in units of m0 c^2'
+    formula: 1 / sqrt(1 - (15/17)**2) + 1
+    expected: '3.125'
+    shown: ['$E = (2.125 + 1)\,m_0c^2 = 3.125\,m_0c^2$']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: page-own
+
+  - id: p1-components-jim
+    where: 'Problem 1(d): components of the scattered velocity in Jim''s frame, 0.60 cos 30° (0.520) and the denominators 1.312 and 0.688'
+    inputs: {b: 0.60}
+    formula: 1 + b * b * cos(30 * pi / 180)
+    expected: '1.312'
+    shown: ['With $v = 0.60c$ and $1 + u''_xv/c^2 = 1.312$']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-cos
+    where: 'Problem 1(d): 0.60 cos 30°'
+    formula: 0.60 * cos(30 * pi / 180)
+    expected: '0.520'
+    shown: ['= (0.520c,\ 0.300c)$. With']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-denominator-sue
+    where: 'Problem 1(d): the denominator for Sue''s neutron'
+    inputs: {b: 0.60}
+    formula: 1 - b * b * cos(30 * pi / 180)
+    expected: '0.688'
+    shown: ['Now $1 + u''_xv/c^2 = 0.688$']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-jim-ux
+    where: 'Problem 1(d): x velocity of Jim''s neutron in S after the collision, over c'
+    inputs: {b: 0.60}
+    formula: (b * cos(30 * pi / 180) + b) / (1 + b * b * cos(30 * pi / 180))
+    expected: '0.854'
+    shown: ['u_x = \frac{0.520c + 0.60c}{1.312} = 0.854c']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-jim-uy
+    where: 'Problem 1(d): y velocity of Jim''s neutron in S after the collision, over c'
+    inputs: {b: 0.60}
+    formula: b * sin(30 * pi / 180) * sqrt(1 - b**2) / (1 + b * b * cos(30 * pi / 180))
+    expected: '0.183'
+    shown: ['u_y = \frac{0.300c}{1.25 \times 1.312} = 0.183c']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-jim-tan
+    where: 'Problem 1(d): tangent of the angle of Jim''s neutron in S'
+    inputs: {b: 0.60}
+    formula: sin(30 * pi / 180) * sqrt(1 - b**2) / (cos(30 * pi / 180) + 1)
+    expected: '0.214'
+    shown: ['\tan\theta = \frac{u_y}{u_x} = 0.214"']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-angle-jim
+    answer: p1-angle-jim
+    where: 'Problem 1(d), answer box: the angle of Jim''s neutron in S, from the transformed velocity components'
+    inputs: {b: 0.60}
+    formula: atan((b * sin(30 * pi / 180) * sqrt(1 - b**2)) / (b * cos(30 * pi / 180) + b)) * 180 / pi
+    expected: '12.1'
+    shown: ['id="p1-angle-jim"', 'so $\theta = 12.1^\circ$']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  # Independent route: the half-angle form.
+  - id: p1-angle-jim-half
+    where: 'Problem 1(d), shorter form: tan 15° / 1.25'
+    formula: tan(15 * pi / 180) / 1.25
+    expected: '0.214'
+    shown: ['$\tan 15^\circ/1.25 = 0.214$']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-sue-ux
+    where: 'Problem 1(d): x velocity of Sue''s neutron in S after the collision, over c'
+    inputs: {b: 0.60}
+    formula: (-b * cos(30 * pi / 180) + b) / (1 - b * b * cos(30 * pi / 180))
+    expected: '0.117'
+    shown: ['u_x = \frac{-0.520c + 0.60c}{0.688} = 0.117c']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-sue-uy
+    where: 'Problem 1(d): y velocity of Sue''s neutron in S after the collision, over c'
+    inputs: {b: 0.60}
+    formula: -b * sin(30 * pi / 180) * sqrt(1 - b**2) / (1 - b * b * cos(30 * pi / 180))
+    expected: '-0.349'
+    shown: ['u_y = \frac{-0.300c}{1.25 \times 0.688} = -0.349c']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-sue-tan
+    where: 'Problem 1(d): tangent of the angle of Sue''s neutron in S'
+    inputs: {b: 0.60}
+    formula: sin(30 * pi / 180) * sqrt(1 - b**2) / (1 - cos(30 * pi / 180))
+    expected: '2.99'
+    shown: ['\tan\theta = \frac{|u_y|}{u_x} = 2.99"']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-angle-sue
+    answer: p1-angle-sue
+    where: 'Problem 1(d), answer box: the angle of Sue''s neutron in S, from the transformed velocity components'
+    inputs: {b: 0.60}
+    formula: atan((b * sin(30 * pi / 180) * sqrt(1 - b**2)) / (b - b * cos(30 * pi / 180))) * 180 / pi
+    expected: '71.5'
+    shown: ['id="p1-angle-sue"', 'so its path makes $71.5^\circ$ with the $x$ axis']
+    source: {cite: reading4, at: 'slide 16'}
+    origin: page-own
+
+  - id: p1-angle-sue-half
+    where: 'Problem 1(d), shorter form: 1 / (1.25 tan 15°)'
+    formula: 1 / (1.25 * tan(15 * pi / 180))
+    expected: '2.99'
+    shown: ['$1/(1.25\tan 15^\circ) = 2.99$']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-speed-jim-after
+    where: 'Problem 1(d), check: speed of Jim''s neutron in S after the collision, over c'
+    inputs: {ux: 0.853515, uy: 0.182959}
+    formula: sqrt(ux**2 + uy**2)
+    expected: '0.873'
+    shown: ['The speeds in S are $0.873c$ and $0.368c$']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-speed-sue-after
+    where: 'Problem 1(d), check: speed of Sue''s neutron in S after the collision, over c'
+    inputs: {ux: 0.116799, uy: 0.348720}
+    formula: sqrt(ux**2 + uy**2)
+    expected: '0.368'
+    shown: ['with Lorentz factors 2.050 and 1.075']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-gamma-jim-after
+    where: 'Problem 1(d), check: Lorentz factor of Jim''s neutron in S after the collision'
+    inputs: {ux: 0.853515, uy: 0.182959}
+    formula: 1 / sqrt(1 - ux**2 - uy**2)
+    expected: '2.050'
+    shown: ['$2.050 \times 0.183 - 1.075 \times 0.349 = 0$ to the rounding']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-gamma-sue-after
+    where: 'Problem 1(d), check: Lorentz factor of Sue''s neutron in S after the collision'
+    inputs: {ux: 0.116799, uy: 0.348720}
+    formula: 1 / sqrt(1 - ux**2 - uy**2)
+    expected: '1.075'
+    shown: ['$(2.050 + 1.075)\,m_0c^2 = 3.125\,m_0c^2$, the total of part (c)']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  # Independent check of both angles: with the exact transformed velocities, the y momentum in S is zero and the
+  # x momentum and the energy equal their values before the collision (1.875 and 3.125).
+  - id: p1-momentum-y
+    kind: identity
+    where: 'Problem 1(d), check: momentum across the motion stays zero in S, and momentum along it and energy are conserved, for any scattering angle'
+    formula: (b*sin(th)*sqrt(1 - b**2)/(1 + b*b*cos(th)))/sqrt(1 - ((b*cos(th) + b)/(1 + b*b*cos(th)))**2 - (b*sin(th)*sqrt(1 - b**2)/(1 + b*b*cos(th)))**2)
+    equals: (b*sin(th)*sqrt(1 - b**2)/(1 - b*b*cos(th)))/sqrt(1 - ((b - b*cos(th))/(1 - b*b*cos(th)))**2 - (b*sin(th)*sqrt(1 - b**2)/(1 - b*b*cos(th)))**2)
+    samples:
+      b: [0.6, 0.6, 0.6, 0.3, 0.9]
+      th: [0.5235988, 1.0, 2.0, 0.7, 0.4]
+    tolerance: 1e-9
+    shown: ['Sam''s momentum across the motion must stay zero.']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: page-own
+
+  - id: p1-energy-after
+    kind: identity
+    where: 'Problem 1(d), check: the two energies in S after the collision add to the total before it, for any scattering angle'
+    formula: 1/sqrt(1 - ((b*cos(th) + b)/(1 + b*b*cos(th)))**2 - (b*sin(th)*sqrt(1 - b**2)/(1 + b*b*cos(th)))**2) + 1/sqrt(1 - ((b - b*cos(th))/(1 - b*b*cos(th)))**2 - (b*sin(th)*sqrt(1 - b**2)/(1 - b*b*cos(th)))**2)
+    equals: 1/sqrt(1 - (2*b/(1 + b*b))**2) + 1
+    samples:
+      b: [0.6, 0.6, 0.6, 0.3, 0.9]
+      th: [0.5235988, 1.0, 2.0, 0.7, 0.4]
+    tolerance: 1e-9
+    shown: ['The two energies add to']
+    source: {cite: reading1, at: 'slide 6'}
+    origin: page-own
+
+  - id: p1-angle-sum
+    where: 'Problem 1(d), check: the angle between the two paths in S'
+    inputs: {g: 1.25}
+    formula: (atan(tan(15 * pi / 180) / g) + atan(1 / (g * tan(15 * pi / 180)))) * 180 / pi
+    expected: '83.6'
+    shown: ['$12.1^\circ + 71.5^\circ = 83.6^\circ$']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-newton-angles
+    where: 'Problem 1(d), check: for slow neutrons the angles are 15° and 75°'
+    formula: atan(1 / tan(15 * pi / 180)) * 180 / pi
+    expected: '75'
+    tolerance: 1e-9
+    shown: ['the two angles would be $15^\circ$ and $75^\circ$']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-rate
+    answer: p1-rate
+    where: 'Problem 1(e), answer box: the firing rate slowed by time dilation'
+    inputs: {rate: 10000 1/s, b: 0.60}
+    formula: rate * sqrt(1 - b**2)
+    expected: 8000 1/s
+    tolerance: 1 1/s
+    shown: ['id="p1-rate"', '= 8000\ \text{s}^{-1}"']
+    source: {cite: reading4, at: 'slide 4'}
+    origin: page-own
+
+  - id: p1-dt
+    where: 'Problem 1(e): the time between two firings in S'
+    inputs: {dtp: 1e-4 s}
+    formula: 1.25 * dtp
+    expected: 1.25e-4 s
+    shown: ['\Delta t = \gamma\,\Delta t'' = 1.25\times 10^{-4}\ \text{s}']
+    source: {cite: reading4, at: 'slide 4'}
+    origin: page-own
+
+  - id: p1-spacing-jim
+    where: 'Problem 1(e), check: spacing of the neutrons in Jim''s frame'
+    inputs: {dtp: 1e-4 s, cc: 2.998e8 m/s}
+    formula: 0.60 * cc * dtp
+    expected: 17.99 km
+    shown: ['$0.60c \times 10^{-4}\ \text{s} = 17.99$ km apart']
+    source: {cite: mit, at: 'Problem 1(e) (our own check)'}
+    origin: page-own
+
+  - id: p1-spacing-rest
+    where: 'Problem 1(e), check: spacing in the rest frame of the row of neutrons'
+    inputs: {dtp: 1e-4 s, cc: 2.998e8 m/s}
+    formula: 1.25 * 0.60 * cc * dtp
+    expected: 22.49 km
+    shown: ['$1.25 \times 17.99 = 22.49$ km']
+    source: {cite: mit, at: 'Problem 1(e) (our own check)'}
+    origin: page-own
+
+  # Two independent counts of the spacing in S: contraction of the rest spacing, and Sam's own bookkeeping.
+  - id: p1-spacing-sam
+    where: 'Problem 1(e), check: spacing in S from the contracted rest spacing'
+    inputs: {dtp: 1e-4 s, cc: 2.998e8 m/s}
+    formula: 1.25 * 0.60 * cc * dtp / 2.125
+    expected: 10.58 km
+    shown: ['it is $22.49/2.125 = 10.58$ km']
+    source: {cite: mit, at: 'Problem 1(e) (our own check)'}
+    origin: page-own
+
+  - id: p1-spacing-sam-direct
+    where: 'Problem 1(e), check: spacing in S from the speed difference and the dilated firing interval'
+    inputs: {dt: 1.25e-4 s, cc: 2.998e8 m/s}
+    formula: (15/17 - 0.60) * cc * dt
+    expected: 10.58 km
+    shown: ['$(0.882 - 0.60)\,c \times 1.25\times 10^{-4}\ \text{s} = 10.58$ km']
+    source: {cite: mit, at: 'Problem 1(e) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: a ton of sunlight
+
+  - id: p2-given
+    kind: fact
+    where: 'Problem 2, statement: MIT''s power of the Sun and the two lengths we add'
+    shown: ['The Sun radiates energy at the rate of $4.0\times 10^{26}$ W.', 'Take Earth''s distance from the Sun to be $1.5\times 10^{11}$ m', 'Earth''s radius $6.4\times 10^{6}$ m (our own value']
+    source: {cite: mit, at: 'Problem 2, p. 1 (the power; the radius and distance are our rounded values, as in Problem Set 1)'}
+    origin: mit
+
+  - id: p2-fraction
+    where: 'Problem 2: the fraction of the sunlight that hits the Earth'
+    inputs: {RE: 6.4e6 m, dist: 1.5e11 m}
+    formula: RE**2 / (4 * dist**2)
+    expected: '4.55e-10'
+    shown: ['<Formula label="Fraction of sunlight that hits the Earth"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-power
+    where: 'Problem 2: the power that falls on the Earth'
+    inputs: {RE: 6.4e6 m, dist: 1.5e11 m, Lsun: 4.0e26 W}
+    formula: Lsun * RE**2 / (4 * dist**2)
+    expected: 1.82e17 W
+    shown: ['$4.55\times 10^{-10} \times 4.0\times 10^{26}\ \text{W} = 1.82\times 10^{17}$ W']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-energy
+    where: 'Problem 2: the energy caught in one day'
+    inputs: {RE: 6.4e6 m, dist: 1.5e11 m, Lsun: 4.0e26 W, day: 86400 s}
+    formula: Lsun * RE**2 / (4 * dist**2) * day
+    expected: 1.57e22 J
+    shown: ['In one day (86,400 s) this is $1.57\times 10^{22}$ J.']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-tonnes
+    answer: p2-tonnes
+    where: 'Problem 2, answer box: the mass of a day of sunlight on Earth, in tonnes'
+    inputs: {RE: 6.4e6 m, dist: 1.5e11 m, Lsun: 4.0e26 W, day: 86400 s, tonne: 1000 kg}
+    formula: Lsun * RE**2 / (4 * dist**2) * day / c**2 / tonne
+    expected: '175'
+    shown: ['id="p2-tonnes"', '= 1.75\times 10^{5}\ \text{kg} = 175\ \text{tonnes}"']
+    source: {cite: reading2, at: 'slide 16'}
+    origin: page-own
+
+  - id: p2-sun-per-second
+    where: 'Problem 2, check: the Sun''s mass loss per second'
+    inputs: {Lsun: 4.0e26 W}
+    formula: Lsun / c**2
+    expected: 4.45e9 kg/s
+    shown: ['The Sun as a whole loses $L/c^2 = 4.45\times 10^{9}$ kg each second']
+    source: {cite: reading2, at: 'slide 16 (our own check)'}
+    origin: page-own
+
+  - id: p2-sun-per-day
+    where: 'Problem 2, check: the Sun''s mass loss per day'
+    inputs: {Lsun: 4.0e26 W, day: 86400 s}
+    formula: Lsun / c**2 * day
+    expected: 3.85e14 kg
+    shown: ['which is $3.85\times 10^{14}$ kg per day']
+    source: {cite: reading2, at: 'slide 16 (our own check)'}
+    origin: page-own
+
+  # Second route to the answer: Earth's share of the Sun's daily mass loss.
+  - id: p2-second-route
+    where: 'Problem 2, check: the share 4.55e-10 of the Sun''s daily loss'
+    inputs: {loss: 3.845e14 kg}
+    formula: 4.551e-10 * loss
+    expected: 1.75e5 kg
+    shown: ['of that is again $1.75\times 10^{5}$ kg']
+    source: {cite: mit, at: 'Problem 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-per-second
+    where: 'Problem 2, check: about 2 kg every second'
+    inputs: {mass: 1.75e5 kg, day: 86400 s}
+    formula: mass / day
+    expected: 2 kg/s
+    tolerance: 0.1 kg/s
+    shown: ['it is 175 tonnes a day, about 2 kg every second']
+    source: {cite: mit, at: 'Problem 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: the quasar
+
+  - id: p3-given
+    kind: fact
+    where: 'Problem 3, statement: MIT''s power of the quasar and solar mass; the length of the year is ours'
+    shown: ['A typical quasar radiates energy at the rate of $10^{41}$ W.', 'with one solar mass equal to $2\times 10^{30}$ kg and one year equal to $3.156\times 10^{7}$ s.']
+    source: {cite: mit, at: 'Problem 3, p. 1'}
+    origin: mit
+
+  - id: p3-per-second
+    where: 'Problem 3: the mass loss per second'
+    inputs: {Pq: 1e41 W}
+    formula: Pq / c**2
+    expected: 1.11e24 kg/s
+    shown: ['<Formula label="Mass loss of the quasar per second"']
+    source: {cite: reading2, at: 'slide 16'}
+    origin: page-own
+
+  - id: p3-per-year
+    where: 'Problem 3: the mass loss per year'
+    inputs: {Pq: 1e41 W, year: 3.156e7 s}
+    formula: Pq / c**2 * year
+    expected: 3.51e31 kg
+    shown: ['$1.11\times 10^{24} \times 3.156\times 10^{7} = 3.51\times 10^{31}$ kg']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rate
+    answer: p3-rate
+    where: 'Problem 3, answer box: solar masses per year'
+    inputs: {Pq: 1e41 W, year: 3.156e7 s, smu: 2e30 kg}
+    formula: Pq / c**2 * year / smu
+    expected: '17.6'
+    shown: ['id="p3-rate"', '\frac{3.51\times 10^{31}\ \text{kg}}{2\times 10^{30}\ \text{kg}} = 17.6"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  # Second route: scale the Sun's loss by the ratio of the powers.
+  - id: p3-ratio
+    where: 'Problem 3, check: the quasar''s power over the Sun''s'
+    formula: 1e41 / 4e26
+    expected: '2.5e14'
+    shown: ['$10^{41}/(4\times 10^{26}) = 2.5\times 10^{14}$ times the Sun''s']
+    source: {cite: mit, at: 'Problem 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-second-route
+    where: 'Problem 3, check: 2.5e14 times the Sun''s 4.45e9 kg/s'
+    formula: 2.5e14 * 4.45e9
+    expected: '1.11e24'
+    shown: ['and $2.5\times 10^{14}$ times that is $1.11\times 10^{24}$ kg/s again']
+    source: {cite: mit, at: 'Problem 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-earth
+    kind: fact
+    where: 'Problem 3, check: the mass of the Earth, rounded (5.97e24 kg), so 1.11e24 kg is about a fifth of it'
+    shown: ['about a fifth of the mass of the Earth ($6\times 10^{24}$ kg)']
+    source: {cite: mit, at: 'Problem 3 (our own comparison; Earth''s mass is a standard value)'}
+    origin: page-own
+
+  # ---- Problem 4: transformation of acceleration
+
+  # Independent route for dt/dt': it equals the ratio of the particle's Lorentz factors in S and in S'
+  # (dt/dtau over dt'/dtau), with the speed in S from the velocity addition formula.
+  - id: p4-dt
+    kind: identity
+    answer: p4-dt
+    where: 'Problem 4(a), answer box: against the ratio of the particle''s Lorentz factors in the two frames'
+    formula: (1 + v*ux/c**2)/sqrt(1 - v**2/c**2)
+    equals: sqrt(1 - ux**2/c**2)/sqrt(1 - ((ux + v)/(1 + v*ux/c**2))**2/c**2)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.6]
+      ux: [-0.7, -0.2, 0.1, 0.4, 0.7]
+      c: [1, 1.2, 1.5, 1.1, 1.3]
+    tolerance: 1e-9
+    shown: ['id="p4-dt"']
+    source: {cite: reading4, at: 'slide 15'}
+    origin: page-own
+
+  # Independent check of (4.1): let u'_x = w + ap*s in S' (constant a'), so the S' time is s; the S time is
+  # T(s) = gamma (s + v x'(s)/c^2) and u_x(s) follows from velocity addition; a_x = (du_x/ds)/(dT/ds), both numerical.
+  - id: p4-ax
+    kind: identity
+    where: 'Problem 4(a), formula (4.1): against numerical derivatives of the velocity addition formula and of the Lorentz-transformed time'
+    formula: ap / ((1/sqrt(1 - v**2))**3 * (1 + v*w)**3)
+    equals: deriv('(w + ap*s + v)/(1 + v*(w + ap*s))', 's', 0) / deriv('(s + v*(w*s + ap*s**2/2))/sqrt(1 - v**2)', 's', 0)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.6]
+      w: [-0.7, -0.2, 0.1, 0.4, 0.7]
+      ap: [0.5, 1.0, 0.3, 0.8, 0.2]
+    tolerance: 1e-6
+    shown: ['<Formula label="The x component of the acceleration"']
+    source: {cite: mit, at: 'Problem 4, eq. (4.1), p. 1 (c = 1 in this check)'}
+    origin: page-own
+
+  # The same for the general a_y, with u'_y = wy + apy*s and u'_x = w + ap*s.
+  - id: p4-ay
+    kind: identity
+    where: 'Problem 4(b), general formula for a_y: against numerical derivatives'
+    formula: apy / ((1/(1 - v**2)) * (1 + v*w)**2) - v*wy*ap / ((1/(1 - v**2)) * (1 + v*w)**3)
+    equals: deriv('(wy + apy*s)*sqrt(1 - v**2)/(1 + v*(w + ap*s))', 's', 0) / deriv('(s + v*(w*s + ap*s**2/2))/sqrt(1 - v**2)', 's', 0)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.6]
+      w: [-0.6, -0.2, 0.1, 0.4, 0.5]
+      wy: [0.3, 0.0, 0.5, 0.2, -0.4]
+      ap: [0.5, 1.0, 0.0, 0.8, 0.2]
+      apy: [0.2, 0.7, 0.4, 0.0, 0.9]
+    tolerance: 1e-6
+    shown: ['<Formula label="The y component of the acceleration, general case"']
+    source: {cite: mit, at: 'Problem 4, eq. (4.2), p. 1 (c = 1 in this check)'}
+    origin: page-own
+
+  # ---- Problem 5: constant force
+
+  # Independent route: solve gamma u = g t numerically for u.
+  - id: p5-u
+    kind: identity
+    answer: p5-u
+    where: 'Problem 5(a), answer box: against a numerical solve of u / sqrt(1 - u^2/c^2) = g t'
+    formula: g*t/sqrt(1 + (g*t/c)**2)
+    equals: solve('s/sqrt(1 - s**2/c**2) - g*t', 's', 0, 0.9999999*c)
+    samples:
+      g: [4, 5, 6, 4.5, 5.5]
+      t: [1, 1.5, 2, 1.2, 1.8]
+      c: [20, 25, 30, 22, 28]
+    tolerance: 1e-7
+    shown: ['id="p5-u"']
+    source: {cite: mit, at: 'Problem 5, hint, p. 1'}
+    origin: page-own
+
+  # Independent route: integrate the velocity numerically.
+  - id: p5-x
+    kind: identity
+    answer: p5-x
+    where: 'Problem 5(b), answer box: against the numerical integral of u(t)'
+    formula: (c**2/g)*(sqrt(1 + (g*t/c)**2) - 1)
+    equals: integrate('g*s/sqrt(1 + (g*s/c)**2)', 's', 0, t)
+    samples:
+      g: [4, 5, 6, 4.5, 5.5]
+      t: [1, 1.5, 2, 1.2, 1.8]
+      c: [4, 4.5, 5, 4.2, 4.8]
+    tolerance: 1e-7
+    shown: ['id="p5-x"']
+    source: {cite: mit, at: 'Problem 5, hint, p. 1'}
+    origin: page-own
+
+  # The check of part (a): du/dt = g / gamma^3, by a numerical derivative.
+  - id: p5-acceleration
+    kind: identity
+    where: 'Problem 5(a), check: du/dt = g / gamma_u^3, the lesson''s force law along the motion'
+    formula: deriv('g*s/sqrt(1 + (g*s/c)**2)', 's', t)
+    equals: g / (1 + (g*t/c)**2)**1.5
+    samples:
+      g: [4, 5, 6, 4.5, 5.5]
+      t: [1, 1.5, 2, 1.2, 1.8]
+      c: [4, 4.5, 5, 4.2, 4.8]
+    tolerance: 1e-6
+    shown: ['differentiating gives $du/dt = g/\gamma_u^3$']
+    source: {cite: reading1, at: 'slide 10'}
+    origin: page-own
+
+  - id: p5-hyperbola
+    kind: identity
+    where: 'Problem 5(b), check: the path is the hyperbola (x + c^2/g)^2 - (ct)^2 = (c^2/g)^2'
+    formula: ((c**2/g)*(sqrt(1 + (g*t/c)**2) - 1) + c**2/g)**2 - (c*t)**2
+    equals: (c**2/g)**2
+    samples:
+      g: [4, 5, 6, 4.5, 5.5]
+      t: [1, 1.5, 2, 1.2, 1.8]
+      c: [4, 4.5, 5, 4.2, 4.8]
+    tolerance: 1e-9
+    shown: ['$(x + c^2/g)^2 - (ct)^2 = (c^2/g)^2$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-given
+    kind: fact
+    where: 'Problem 5(c), statement: our own numbers'
+    shown: ['A spacecraft is pushed in this way with $g = 9.8\ \text{m/s}^2$', 'after 2 years of the time $t$ of the frame S']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-gtc
+    where: 'Problem 5(c): the pure number g t / c after two years'
+    inputs: {gg: 9.8 m/s**2, tt: 6.312e7 s, cc: 2.998e8 m/s}
+    formula: gg * tt / cc
+    expected: '2.063'
+    shown: ['$gt/c = 9.8 \times 2 \times 3.156\times 10^{7}/(2.998\times 10^{8}) = 2.063$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-root
+    where: 'Problem 5(c): the Lorentz factor after two years'
+    formula: sqrt(1 + 2.063**2)
+    expected: '2.293'
+    shown: ['\frac{2.063}{\sqrt{1 + 2.063^2}} = \frac{2.063}{2.293} = 0.900"']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-speed
+    answer: p5-speed
+    where: 'Problem 5(c), answer box: the speed after two years over c'
+    inputs: {gg: 9.8 m/s**2, tt: 6.312e7 s}
+    formula: (gg * tt / c) / sqrt(1 + (gg * tt / c)**2)
+    expected: '0.900'
+    shown: ['id="p5-speed"']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-newton
+    where: 'Problem 5(c), check: Newton''s speed g t over c'
+    inputs: {gg: 9.8 m/s**2, tt: 6.312e7 s}
+    formula: gg * tt / c
+    expected: '2.06'
+    shown: ['Newton would give $u = gt = 2.06c$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-c-over-g
+    where: 'Problem 5(c), check: the time c / g in years of 3.156e7 s'
+    inputs: {gg: 9.8 m/s**2, year: 3.156e7 s}
+    formula: c / gg / year
+    expected: '0.97'
+    shown: ['The natural time of the problem is $c/g = 0.97$ years']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-length
+    where: 'Problem 5(c), check: c^2 / g in light-years (c times 3.156e7 s)'
+    inputs: {gg: 9.8 m/s**2, year: 3.156e7 s}
+    formula: c**2 / gg / (c * year)
+    expected: '0.969'
+    shown: ['since $c^2/g$ is 0.969 light-years']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-distance
+    where: 'Problem 5(c), check: the distance covered in two years, in light-years'
+    inputs: {gg: 9.8 m/s**2, tt: 6.312e7 s, year: 3.156e7 s}
+    formula: c**2 / gg * (sqrt(1 + (gg * tt / c)**2) - 1) / (c * year)
+    expected: '1.25'
+    shown: ['$x = 0.969 \times (2.293 - 1) = 1.25$ light-years']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-distance-newton
+    where: 'Problem 5(c), check: Newton''s distance in two years, in light-years'
+    inputs: {gg: 9.8 m/s**2, tt: 6.312e7 s, year: 3.156e7 s}
+    formula: 0.5 * gg * tt**2 / (c * year)
+    expected: '2.06'
+    shown: ['would give 2.06 light-years']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: the rocket
+
+  - id: p6-given
+    kind: fact
+    where: 'Problem 6(b) and (c), statements: our own numbers for the example rocket'
+    shown: ['a rocket of 10,000 kg burns fuel until 2000 kg are left, with $V_\text{ex} = 3.0$ km/s', 'where $g = 1.62\ \text{m/s}^2$, and burns its 8000 kg of fuel in 120 s']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers; 1.62 m/s² is the Moon''s surface gravity)'}
+    origin: page-own
+
+  - id: p6-classical
+    answer: p6-u
+    where: 'Problem 6(b), answer box: the classical rocket equation for a mass ratio of 5'
+    inputs: {V: 3.0 km/s}
+    formula: V * log(10000 / 2000)
+    expected: 4.83 km/s
+    shown: ['id="p6-u"', '= 3.0 \times 1.609\ \text{km/s} = 4.83\ \text{km/s}"']
+    source: {cite: mit, at: 'Problem 6(b), eq. (6.4), p. 2'}
+    origin: page-own
+
+  # Independent route for (6.4): integrate du = -V dM/M numerically from 10000 to 2000.
+  - id: p6-classical-integral
+    where: 'Problem 6(b), check: numerical integral of the rocket equation, in km/s'
+    formula: -3.0 * integrate('1/s', 's', 10000, 2000)
+    expected: '4.83'
+    shown: ['<Formula label="Integrating the rocket equation"']
+    source: {cite: mit, at: 'Problem 6(b), eq. (6.3), p. 2'}
+    origin: page-own
+
+  - id: p6-ln5
+    where: 'Problem 6(b): ln 5'
+    formula: log(5)
+    expected: '1.609'
+    shown: ['<Formula label="Speed of the example rocket"']
+    source: {cite: mit, at: 'Problem 6(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-e
+    where: 'Problem 6(b), check: the mass ratio above which the rocket outruns its exhaust is e'
+    formula: exp(1)
+    expected: '2.72'
+    shown: ['when the mass ratio is above $e = 2.72$']
+    source: {cite: mit, at: 'Problem 6(b) (our own check)'}
+    origin: page-own
+
+  - id: p6-gt
+    where: 'Problem 6(c): the speed lost to gravity'
+    inputs: {gm: 1.62 m/s**2, burn: 120 s}
+    formula: gm * burn
+    expected: 194 m/s
+    shown: ['$gT = 1.62 \times 120 = 194$ m/s']
+    source: {cite: mit, at: 'Problem 6(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-moon
+    answer: p6-moon
+    where: 'Problem 6(c), answer box: the speed at the end of the burn on the Moon'
+    inputs: {V: 3.0 km/s, gm: 1.62 m/s**2, burn: 120 s}
+    formula: V * log(5) - gm * burn
+    expected: 4.63 km/s
+    shown: ['id="p6-moon"', 'u(T) = 4828\ \text{m/s} - 194\ \text{m/s} = 4634\ \text{m/s} = 4.63\ \text{km/s}"']
+    source: {cite: mit, at: 'Problem 6(c), eq. (6.6), p. 2'}
+    origin: page-own
+
+  # Independent route for (6.6): integrate (6.5) numerically over the burn, in m/s.
+  - id: p6-moon-integral
+    where: 'Problem 6(c), check: numerical integral of eq. (6.5) over the 120 s, in m/s'
+    formula: integrate('3000*(8000/120)/(10000 - (8000/120)*s) - 1.62', 's', 0, 120)
+    expected: '4634'
+    shown: ['<Formula label="Integrating over the burn"']
+    source: {cite: mit, at: 'Problem 6(c), eq. (6.5), p. 2'}
+    origin: page-own
+
+  - id: p6-mdot
+    where: 'Problem 6(c), check: the burn rate'
+    formula: -8000 / 120
+    expected: '-66.7'
+    shown: ['$\dot M = -8000/120 = -66.7$ kg/s']
+    source: {cite: mit, at: 'Problem 6(c) (our own check)'}
+    origin: page-own
+
+  - id: p6-thrust
+    where: 'Problem 6(c), check: the thrust'
+    inputs: {V: 3000 m/s, rate: 66.7 kg/s}
+    formula: V * rate
+    expected: 2.0e5 N
+    shown: ['the thrust is $3000 \times 66.7 = 2.0\times 10^{5}$ N']
+    source: {cite: mit, at: 'Problem 6(c) (our own check)'}
+    origin: page-own
+
+  - id: p6-weight
+    where: 'Problem 6(c), check: the weight on the Moon at the start'
+    inputs: {mass: 10000 kg, gm: 1.62 m/s**2}
+    formula: mass * gm
+    expected: 1.62e4 N
+    shown: ['$10\,000 \times 1.62 = 1.62\times 10^{4}$ N, twelve times less']
+    source: {cite: mit, at: 'Problem 6(c) (our own check)'}
+    origin: page-own
+
+  - id: p6-twelve
+    where: 'Problem 6(c), check: thrust over weight'
+    formula: 2.0e5 / 1.62e4
+    expected: '12'
+    tolerance: 0.5
+    shown: ['The rocket leaves the ground only if the thrust beats the weight at the start.']
+    source: {cite: mit, at: 'Problem 6(c) (our own check)'}
+    origin: page-own
+
+  # Independent check of (6.10): integrate du/(1 - u^2/c^2) numerically up to the formula's speed and compare with
+  # V ln(Mi/Mf). Here c = 1, V is the exhaust speed over c and q the mass ratio.
+  - id: p6-relativistic
+    kind: identity
+    where: 'Problem 6(d), eq. (6.10): the numerical integral of du / (1 - u^2) up to the formula''s speed equals V ln(Mi/Mf)'
+    formula: integrate('1/(1 - s**2)', 's', 0, (q**(2*V) - 1)/(q**(2*V) + 1))
+    equals: V * log(q)
+    samples:
+      V: [0.01, 0.1, 0.3, 0.5, 0.05]
+      q: [5, 3, 5, 2, 20]
+    tolerance: 1e-7
+    shown: ['<Formula label="Integrating the relativistic rocket equation"']
+    source: {cite: mit, at: 'Problem 6(d), eq. (6.9), p. 2'}
+    origin: page-own
+
+  - id: p6-tanh
+    kind: identity
+    where: 'Problem 6(d), check: eq. (6.10) written as a hyperbolic tangent'
+    formula: (q**(2*V) - 1)/(q**(2*V) + 1)
+    equals: tanh(V * log(q))
+    samples:
+      V: [0.01, 0.1, 0.3, 1.0, 0.05]
+      q: [5, 3, 5, 2, 20]
+    tolerance: 1e-9
+    shown: ['$u/c = \tanh[(V/c)\ln(M_i/M_f)]$']
+    source: {cite: mit, at: 'Problem 6(d) (our own check)'}
+    origin: page-own
+
+  # Photon rocket: for V = c the formula inverts to the lesson's Mi/Mf = sqrt((1 + beta)/(1 - beta)).
+  - id: p6-photon
+    kind: identity
+    where: 'Problem 6(d), check: with V = c the result is the lesson''s photon rocket'
+    formula: (q**2 - 1)/(q**2 + 1)
+    equals: solve('sqrt((1 + s)/(1 - s)) - q', 's', 0, 0.999999)
+    samples:
+      q: [1.5, 2, 3, 5]
+    tolerance: 1e-7
+    shown: ['the lesson''s $M_i/M_f = \sqrt{(1 + \beta)/(1 - \beta)}$']
+    source: {cite: reading1, at: 'slide 28 (the formula is the lesson''s own)'}
+    origin: page-own
+
+  - id: p6-limit
+    kind: limit
+    where: 'Problem 6(e): for a slow exhaust eq. (6.10) approaches the classical V ln(Mi/Mf)'
+    formula: (5**(2*V) - 1)/(5**(2*V) + 1)
+    limit: V * log(5)
+    vary: {V: [0.3, 0.1, 0.03, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['<Formula label="Low exhaust speed"']
+    source: {cite: mit, at: 'Problem 6(e), p. 2'}
+    origin: page-own
+
+  - id: p6-ratio
+    answer: p6-ratio
+    where: 'Problem 6(e), answer box: the mass ratio for u = 0.50c with V = 0.010c'
+    inputs: {b: 0.50, V: 0.010}
+    formula: ((1 + b) / (1 - b))**(1 / (2 * V))
+    expected: '7.18e23'
+    shown: ['id="p6-ratio"', '\frac{M_i}{M_f} = 3^{50} = 7.18\times 10^{23}"']
+    source: {cite: mit, at: 'Problem 6(e), p. 2 (our own numbers)'}
+    origin: page-own
+
+  # Independent route: put the mass ratio back into (6.10).
+  - id: p6-ratio-back
+    where: 'Problem 6(e), check: a mass ratio of 3^50 in eq. (6.10) with V = 0.010c gives back u = 0.50c'
+    inputs: {q: 7.17898e23, V: 0.010}
+    formula: (q**(2*V) - 1) / (q**(2*V) + 1)
+    expected: '0.50'
+    shown: ['what mass ratio $M_i/M_f$ does a rocket with $V_\text{ex} = 0.010c$ need to reach $u = 0.50c$?']
+    source: {cite: mit, at: 'Problem 6(d), eq. (6.10), p. 2'}
+    origin: page-own
+
+  - id: p6-earth-tenth
+    kind: fact
+    where: 'Problem 6(e): 7e23 kg is about a tenth of the mass of the Earth (5.97e24 kg) and 0.010c is 3000 km/s'
+    shown: ['needs $7\times 10^{23}$ kg at the start, about a tenth of the mass of the Earth', 'an exhaust at $0.010c$, 3000 km/s, is already far beyond any chemical engine']
+    source: {cite: mit, at: 'Problem 6(e) (our own comparison)'}
+    origin: page-own
+
+  - id: p6-half-c
+    where: 'Problem 6(e): with V = 0.50c the mass ratio for u = 0.50c'
+    inputs: {b: 0.50, V: 0.50}
+    formula: ((1 + b) / (1 - b))**(1 / (2 * V))
+    expected: '3'
+    tolerance: 1e-9
+    shown: ['a mass ratio of only $3^1 = 3$']
+    source: {cite: mit, at: 'Problem 6(e) (our own numbers)'}
+    origin: page-own
+
+  - id: p6-compare-001
+    where: 'Problem 6(e), check: eq. (6.10) for a mass ratio of 5 and V = 0.010c'
+    inputs: {V: 0.010}
+    formula: (5**(2*V) - 1) / (5**(2*V) + 1)
+    expected: '0.016093'
+    shown: ['(6.10) gives $u/c = 0.016093$']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  - id: p6-compare-001-classical
+    where: 'Problem 6(e), check: the classical formula for the same case'
+    formula: 0.010 * log(5)
+    expected: '0.016094'
+    shown: ['and the classical formula $0.016094$']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  - id: p6-compare-03
+    where: 'Problem 6(e), check: eq. (6.10) for a mass ratio of 5 and V = 0.30c'
+    inputs: {V: 0.30}
+    formula: (5**(2*V) - 1) / (5**(2*V) + 1)
+    expected: '0.449'
+    shown: ['For $V = 0.30c$ they give $0.449$ and $0.483$']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  - id: p6-compare-03-classical
+    where: 'Problem 6(e), check: the classical formula for V = 0.30c'
+    formula: 0.30 * log(5)
+    expected: '0.483'
+    shown: ['the same to four figures.']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  - id: p6-compare-1
+    where: 'Problem 6(e), check: eq. (6.10) for a mass ratio of 5 and V = c'
+    formula: (5**2 - 1) / (5**2 + 1)
+    expected: '0.923'
+    shown: ['and for $V = c$ they give $0.923$ and an impossible $1.61$']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  - id: p6-compare-1-classical
+    where: 'Problem 6(e), check: the classical formula for V = c'
+    formula: log(5)
+    expected: '1.61'
+    shown: ['How good is the classical formula?']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  - id: p6-chemical
+    where: 'Problem 6(e), check: a chemical exhaust speed over c'
+    inputs: {V: 4.5 km/s}
+    formula: V / c
+    expected: '1.5e-5'
+    shown: ['A chemical exhaust of 4.5 km/s is $1.5\times 10^{-5}c$.']
+    source: {cite: mit, at: 'Problem 6(e) (our own number, close to the 4.9 km/s of the lesson''s worked example)'}
+    origin: page-own
+
+  - id: p6-chemical-exponent
+    where: 'Problem 6(e), check: the power of ten of the mass ratio needed for 0.10c with a 4.5 km/s exhaust'
+    inputs: {V: 4.5 km/s}
+    formula: 0.5 * log(1.1 / 0.9) / (V / c) / log(10)
+    expected: '2900'
+    tolerance: 10
+    shown: ['the mass ratio would have to be about $10^{2900}$']
+    source: {cite: mit, at: 'Problem 6(e) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 7 (optional): power per kilogram
+
+  - id: p7-given
+    kind: fact
+    where: 'Optional Problem 7, statement: MIT''s values'
+    shown: ['A typical person has a mass of about 60 kg and gives off about 60 W of power while at rest.', 'The Sun has a luminosity (power output) of $4\times 10^{26}$ W and a mass of $2\times 10^{30}$ kg.']
+    source: {cite: mit, at: 'Optional Problem 7, p. 3'}
+    origin: mit
+
+  - id: p7-sun
+    where: 'Optional Problem 7: the Sun''s power per kilogram'
+    inputs: {Lsun: 4e26 W, Msun: 2e30 kg}
+    formula: Lsun / Msun
+    expected: 2e-4 W/kg
+    tolerance: 1e-9 W/kg
+    shown: ['<Formula label="Power per unit of mass"']
+    source: {cite: mit, at: 'Optional Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-ratio
+    answer: p7-ratio
+    where: 'Optional Problem 7, answer box: the person''s power per kilogram over the Sun''s'
+    inputs: {Lsun: 4e26 W, Msun: 2e30 kg, Pp: 60 W, Mp: 60 kg}
+    formula: (Pp / Mp) / (Lsun / Msun)
+    expected: '5000'
+    tolerance: 1e-6
+    shown: ['id="p7-ratio"', 'The person produces 5000 times more power per kilogram than the Sun.']
+    source: {cite: mit, at: 'Optional Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-life-seconds
+    where: 'Optional Problem 7: 80 years in seconds'
+    inputs: {year: 3.156e7 s}
+    formula: 80 * year
+    expected: 2.5e9 s
+    shown: ['Over a life of 80 years ($2.5\times 10^{9}$ s)']
+    source: {cite: mit, at: 'Optional Problem 7 (our own estimate)'}
+    origin: page-own
+
+  - id: p7-person-energy
+    where: 'Optional Problem 7: energy given off per kilogram of body over 80 years at 1 W/kg'
+    inputs: {year: 3.156e7 s, rate: 1 W/kg}
+    formula: rate * 80 * year
+    expected: 2.5e9 J/kg
+    shown: ['a person gives off about $2.5\times 10^{9}$ J for each kilogram of body']
+    source: {cite: mit, at: 'Optional Problem 7 (our own estimate)'}
+    origin: page-own
+
+  - id: p7-sun-lifetime
+    kind: fact
+    where: 'Optional Problem 7: the lifetime of the lesson''s worked example (momentum-energy-sun, "Burning the Sun": 2.2e17 s, about 7 billion years)'
+    shown: ['for the $2.2\times 10^{17}$ s of the lesson''s lifetime estimate']
+    source: {cite: reading2, at: 'slide 16 (the estimate is the lesson''s own worked example)'}
+    origin: page-own
+
+  - id: p7-sun-energy
+    where: 'Optional Problem 7: the Sun''s energy per kilogram over that lifetime'
+    inputs: {rate: 2e-4 W/kg, life: 2.2e17 s}
+    formula: rate * life
+    expected: 4.4e13 J/kg
+    shown: ['$4.4\times 10^{13}$ J for each of its kilograms']
+    source: {cite: mit, at: 'Optional Problem 7 (our own estimate)'}
+    origin: page-own
+
+  - id: p7-endurance
+    where: 'Optional Problem 7: the Sun''s lifetime energy per kilogram over the person''s'
+    formula: 4.4e13 / 2.5e9
+    expected: '18000'
+    tolerance: 500
+    shown: ['about 18,000 times more']
+    source: {cite: mit, at: 'Optional Problem 7 (our own estimate)'}
+    origin: page-own
+
+  # Second route to the Sun's energy per kilogram: the fusion bookkeeping of the lesson.
+  - id: p7-fusion
+    where: 'Optional Problem 7, check: 10% of the 70% hydrogen turning 0.7% of its rest mass into energy'
+    formula: 0.1 * 0.7 * 0.007 * c**2
+    expected: 4.4e13 J/kg
+    shown: ['$0.1 \times 0.7 \times 0.007 \times c^2 = 4.4\times 10^{13}$ J/kg']
+    source: {cite: reading2, at: 'slide 16 (0.7%); slide 8 (70% hydrogen); the 10% is the lesson''s own assumption'}
+    origin: page-own
+
+  # ---- Problem 8 (optional): the Sun powered by contraction
+
+  - id: p8-given
+    kind: fact
+    where: 'Optional Problem 8, statement: MIT''s values; G and the year are ours'
+    shown: ['$R_\odot = 7\times 10^{8}$ m', 'and $G = 6.674\times 10^{-11}\ \text{N m}^2/\text{kg}^2$']
+    source: {cite: mit, at: 'Optional Problem 8, p. 3'}
+    origin: mit
+
+  - id: p8-energy
+    where: 'Optional Problem 8: the energy released when the radius halves'
+    inputs: {Msun: 2e30 kg, Rsun: 7e8 m}
+    formula: G * Msun**2 / Rsun
+    expected: 3.81e41 J
+    shown: ['<Formula label="Energy released by halving the radius"']
+    source: {cite: mit, at: 'Optional Problem 8, p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent route: integrate the power of the contraction, G M^2 / R^2 per metre of shrinking, from R/2 to R.
+  - id: p8-energy-integral
+    where: 'Optional Problem 8, check: the released energy as the integral of G M^2 / R^2 dR from 3.5e8 m to 7e8 m, in units of 1e41 J'
+    formula: 6.674e-11 * 4e60 * integrate('1/s**2', 's', 3.5e8, 7e8) / 1e41
+    expected: '3.81'
+    shown: ['The difference is set free:']
+    source: {cite: mit, at: 'Optional Problem 8 (our own check)'}
+    origin: page-own
+
+  - id: p8-seconds
+    where: 'Optional Problem 8: the time in seconds'
+    inputs: {Msun: 2e30 kg, Rsun: 7e8 m, Lsun: 4e26 W}
+    formula: G * Msun**2 / Rsun / Lsun
+    expected: 9.53e14 s
+    shown: ['<Formula label="Time the contraction could power the Sun"']
+    source: {cite: mit, at: 'Optional Problem 8, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p8-time
+    answer: p8-time
+    where: 'Optional Problem 8, answer box: the time in millions of years'
+    inputs: {Msun: 2e30 kg, Rsun: 7e8 m, Lsun: 4e26 W, year: 3.156e7 s}
+    formula: G * Msun**2 / Rsun / Lsun / year / 1e6
+    expected: '30.2'
+    shown: ['id="p8-time"', '= 9.53\times 10^{14}\ \text{s} = 30.2\ \text{million years}"']
+    source: {cite: mit, at: 'Optional Problem 8, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p8-compare
+    where: 'Optional Problem 8, check: the lesson''s 7 billion years over 30.2 million years'
+    formula: 7e9 / 30.2e6
+    expected: '232'
+    tolerance: 1
+    shown: ['the lesson''s estimate for fusion is 7 billion years, more than 200 times longer']
+    source: {cite: reading2, at: 'slide 16 (the estimate is the lesson''s own worked example)'}
+    origin: page-own
+
+  # ---- Problem 9 (optional): Snell's law
+
+  - id: p9-given
+    kind: fact
+    where: 'Optional Problem 9, statement: MIT''s range for the index of refraction, and our own example'
+    shown: ['typically between 1.4 and 1.6', 'for $n = 1.5$ and $\theta_i = 45^\circ$, what is $\theta_t$ in degrees?']
+    source: {cite: mit, at: 'Optional Problem 9, p. 3'}
+    origin: mit
+
+  - id: p9-sine
+    where: 'Optional Problem 9: the sine of the refraction angle'
+    formula: sin(45 * pi / 180) / 1.5
+    expected: '0.4714'
+    shown: ['<Formula label="Refraction angle of the example"']
+    source: {cite: mit, at: 'Optional Problem 9, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p9-angle
+    answer: p9-angle
+    where: 'Optional Problem 9, answer box: the refraction angle from Snell''s law'
+    formula: asin(sin(45 * pi / 180) / 1.5) * 180 / pi
+    expected: '28.1'
+    shown: ['id="p9-angle"', '\theta_t = 28.1^\circ"']
+    source: {cite: mit, at: 'Optional Problem 9, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p9-x0
+    where: 'Optional Problem 9, check: the end point for y0 = 1'
+    formula: 1 + tan(asin(sin(45 * pi / 180) / 1.5))
+    expected: '1.535'
+    shown: ['ends at $x_0 = 1.535$']
+    source: {cite: mit, at: 'Optional Problem 9 (our own numbers)'}
+    origin: page-own
+
+  # Independent route, without Snell's law: the crossing point that makes the travel time stationary, found by
+  # solving dT/dx = 0 numerically for the end point x0 = 1.53452 and y0 = 1. It must be x = 1 (tan 45°).
+  - id: p9-fermat
+    where: 'Optional Problem 9, check: the crossing point of least time, from dT/dx = 0 solved numerically'
+    formula: solve('s/sqrt(s**2 + 1) - 1.5*(1.53452 - s)/sqrt((1.53452 - s)**2 + 1)', 's', 0, 1.53452)
+    expected: '1.000'
+    shown: ['the ray crosses the surface at $x = 1$']
+    source: {cite: mit, at: 'Optional Problem 9, p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p9-fermat-angle
+    where: 'Optional Problem 9, check: the refraction angle that belongs to that crossing point, atan((x0 - x)/y0)'
+    formula: atan(1.53452 - solve('s/sqrt(s**2 + 1) - 1.5*(1.53452 - s)/sqrt((1.53452 - s)**2 + 1)', 's', 0, 1.53452)) * 180 / pi
+    expected: '28.1'
+    shown: ['continues at 28.1° from the vertical to the point (1.535, −1)']
+    source: {cite: mit, at: 'Optional Problem 9, p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p9-slope
+    where: 'Optional Problem 9, picture: the tangent of the refraction angle used in the plotted path'
+    formula: tan(asin(sin(45 * pi / 180) / 1.5))
+    expected: '0.53452'
+    shown: ['{ expr: "x <= 1 ? 1 - x : -(x - 1)/0.53452" }']
+    source: {cite: mit, at: 'Optional Problem 9 (our own numbers)'}
+    origin: page-own
+
+  - id: p9-time
+    where: 'Optional Problem 9, check: the travel time of the bent path in units of y0/c'
+    formula: 1 / cos(45 * pi / 180) + 1.5 / cos(asin(sin(45 * pi / 180) / 1.5))
+    expected: '3.115'
+    shown: ['Its travel time is $3.115\,y_0/c$']
+    source: {cite: mit, at: 'Optional Problem 9 (our own check)'}
+    origin: page-own
+
+  # The straight line from (0, 1) to (1.53452, -1) is halved by the surface: half its length in air, half in glass.
+  - id: p9-time-straight
+    where: 'Optional Problem 9, check: the travel time of the straight line in units of y0/c'
+    formula: (1 + 1.5) / 2 * sqrt(1.53452**2 + 2**2)
+    expected: '3.151'
+    shown: ['against $3.151\,y_0/c$ for the straight line']
+    source: {cite: mit, at: 'Optional Problem 9 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 10 (optional): Lagrange's equations
+
+  - id: p10-history
+    kind: fact
+    where: 'Optional Problem 10, statement: the years of Hamilton''s two papers'
+    shown: ['Hamilton''s principle (1834 to 1835)']
+    source: {cite: mit, at: 'Optional Problem 10, p. 3'}
+    origin: mit
+
+  # Independent route: -dV/dz / M with the derivative of the potential taken numerically.
+  - id: p10-spring
+    kind: identity
+    answer: p10-spring
+    where: 'Optional Problem 10(a), answer box: against minus the numerical derivative of the potential energy, over M'
+    formula: -k*z/M - g
+    equals: -deriv('0.5*k*s**2 + M*g*s', 's', z) / M
+    samples:
+      k: [1, 2.5, 5, 3, 4]
+      z: [0.2, 0.5, 1, 0.8, 0.3]
+      M: [1.5, 2, 3, 1.8, 2.5]
+      g: [9, 9.8, 10, 9.5, 9.2]
+    tolerance: 1e-7
+    shown: ['id="p10-spring"']
+    source: {cite: mit, at: 'Optional Problem 10(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p10-spring-rest
+    kind: identity
+    where: 'Optional Problem 10(a), check: the acceleration vanishes at z = -M g / k'
+    formula: -k*(-M*g/k)/M - g + 1
+    equals: '1'
+    samples:
+      k: [1, 2.5, 5]
+      M: [1, 2, 3]
+      g: [9, 9.8, 10]
+    tolerance: 1e-9
+    shown: ['The mass can rest ($\ddot z = 0$) at $z = -Mg/k$']
+    source: {cite: mit, at: 'Optional Problem 10(a) (our own check)'}
+    origin: page-own
+
+  # Independent route: -dV/dphi / (M l^2) with the derivative of the potential taken numerically.
+  - id: p10-pendulum
+    kind: identity
+    answer: p10-pendulum
+    where: 'Optional Problem 10(b), answer box: against minus the numerical derivative of M g l (1 - cos phi), over M l^2'
+    formula: -(g/l)*sin(phi)
+    equals: -deriv('M*g*l*(1 - cos(s))', 's', phi) / (M*l**2)
+    samples:
+      g: [9, 9.8, 10, 9.5, 9.2]
+      l: [1.5, 2, 3, 2.5, 1.8]
+      phi: [0.5, 0.8, 1.4, 1.1, 0.6]
+      M: [1, 2, 3, 1.5, 2.5]
+    tolerance: 1e-7
+    shown: ['id="p10-pendulum"']
+    source: {cite: mit, at: 'Optional Problem 10(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The small-angle solution obeys its equation: second derivative of phi0 cos(sqrt(g/l) t) is -(g/l) phi.
+  - id: p10-small-angle
+    kind: identity
+    where: 'Optional Problem 10(b): the small-angle solution satisfies the linearised equation'
+    formula: deriv('phi0*cos(sqrt(g/l)*s)', 's', t, 2)
+    equals: -(g/l)*phi0*cos(sqrt(g/l)*t)
+    samples:
+      g: [9, 9.8, 10]
+      l: [0.5, 1, 2]
+      phi0: [0.1, 0.2, 0.05]
+      t: [0.3, 1.1, 0.7]
+    tolerance: 1e-5
+    shown: ['<Formula label="Small swings of the pendulum"']
+    source: {cite: mit, at: 'Optional Problem 10(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p10-period
+    where: 'Optional Problem 10(b), check: the period of a 1 m pendulum'
+    inputs: {len: 1 m, gg: 9.8 m/s**2}
+    formula: 2 * pi * sqrt(len / gg)
+    expected: 2.01 s
+    shown: ['$2\pi\sqrt{1/9.8} = 2.01$ s']
+    source: {cite: mit, at: 'Optional Problem 10(b) (our own check)'}
+    origin: page-own
