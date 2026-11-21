@@ -1,0 +1,369 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-1.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# numerical integration of the given acceleration, or a numerical root of the equation of motion.
+
+page: content/year-1/8.01/8-01-problem-set-1.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-velocity-by-integration
+    kind: identity
+    answer: p1-a-v
+    where: 'Problem 1(a), answer box and formula "Velocity of the braking car": against numerical integration of the acceleration from t1 to t'
+    formula: v0 - c*(t - t1)**2/2
+    equals: v0 + integrate('-c*(x - t1)', 'x', t1, t)
+    samples:
+      v0: [10, 20, 12, 15.5]
+      c: [1, 3, 6, 2.2]
+      t: [2, 3, 2.5, 2.9]
+      t1: [0.5, 1.5, 1, 0.8]
+    tolerance: 1e-7
+    shown: ['= v_0 - \tfrac12\,c\,(t - t_1)^2']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-position-by-integration
+    kind: identity
+    answer: p1-a-x
+    where: 'Problem 1(a), answer box and formula "Position of the braking car": v0 t1 plus the numerical integral of the velocity from t1 to t'
+    formula: v0*t - c*(t - t1)**3/6
+    equals: v0*t1 + integrate('v0 + integrate("-c*(u - t1)", "u", t1, x)', 'x', t1, t)
+    samples:
+      v0: [10, 20, 12, 15.5]
+      c: [1, 3, 6, 2.2]
+      t: [2, 3, 2.5, 2.9]
+      t1: [0.5, 1.5, 1, 0.8]
+    tolerance: 1e-7
+    shown: ['= v_0\,t - \tfrac16\,c\,(t - t_1)^3']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-braking-time
+    where: 'Problem 1(b), step "When the car stops": the length of the braking stage'
+    inputs: {v0: 12 m/s, c: 6 m/s**3}
+    formula: sqrt(2 * v0 / c)
+    expected: 2 s
+    shown: ['$\sqrt{2 \times 12/6} = 2$ s']
+    source: {cite: mit, at: 'Problem 1 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-stop-time
+    where: 'Problem 1(b), step "When the car stops": t2'
+    inputs: {v0: 12 m/s, c: 6 m/s**3, t1: 1 s}
+    formula: t1 + sqrt(2 * v0 / c)
+    expected: 3 s
+    shown: ['so $t_2 = 3$ s']
+    source: {cite: mit, at: 'Problem 1 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-stop-position
+    where: 'Problem 1(b), step "Where the car stops"'
+    inputs: {v0: 12 m/s, c: 6 m/s**3, t1: 1 s, t2: 3 s}
+    formula: v0 * t2 - c * (t2 - t1)**3 / 6
+    expected: 28 m
+    shown: ['= 36 - 8 = 28$ m']
+    source: {cite: mit, at: 'Problem 1 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-bicycle-distance
+    where: 'Problem 1(b), step "The bicycle": the distance the rider covers'
+    inputs: {v0: 12 m/s, c: 6 m/s**3, t1: 1 s, t2: 3 s, gap: 17 m}
+    formula: v0 * t2 - c * (t2 - t1)**3 / 6 + gap
+    expected: 45 m
+    shown: ['\frac{45\ \text{m}}{3\ \text{s}}']
+    source: {cite: mit, at: 'Problem 1 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-bicycle-speed
+    answer: p1-b
+    where: 'Problem 1(b), answer box: the speed of the bicycle'
+    inputs: {v0: 12 m/s, c: 6 m/s**3, t1: 1 s, gap: 17 m}
+    formula: (v0 * (t1 + sqrt(2 * v0 / c)) - c * sqrt(2 * v0 / c)**3 / 6 + gap) / (t1 + sqrt(2 * v0 / c))
+    expected: 15 m/s
+    shown: ['= 15\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 1 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-check-braking-distance
+    where: 'Problem 1(b), check: the distance the car covers during the two seconds of braking'
+    inputs: {v0: 12 m/s, c: 6 m/s**3, t1: 1 s, t2: 3 s}
+    formula: v0 * t2 - c * (t2 - t1)**3 / 6 - v0 * t1
+    expected: 16 m
+    shown: ['only 16 m more in the two seconds of braking']
+    source: {cite: mit, at: 'Problem 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # Independent route: h divided by the distance covered per unit of acceleration,
+  # found by integrating the three stages of the velocity numerically.
+  - id: p2-acceleration-by-integration
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Acceleration of the lift": against numerical integration of the velocity over the three stages'
+    formula: h/(5*T**2)
+    equals: h / (integrate('x', 'x', 0, T) + integrate('T', 'x', T, 5*T) + integrate('6*T - x', 'x', 5*T, 6*T))
+    samples:
+      h: [10, 30, 20, 17.5]
+      T: [1, 3, 2, 1.7]
+    tolerance: 1e-7
+    shown: ['a = \frac{h}{5\,T^2}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-example-acceleration
+    where: 'Problem 2(b), check: h = 20 m and T = 2 s'
+    inputs: {h: 20 m, T: 2 s}
+    formula: h / (5 * T**2)
+    expected: 1 m/s**2
+    shown: ['the acceleration is $20/(5 \times 4) = 1$ m/s²']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-top-velocity
+    where: 'Problem 2(b), check: the top velocity aT'
+    inputs: {h: 20 m, T: 2 s}
+    formula: h / (5 * T**2) * T
+    expected: 2 m/s
+    shown: ['the top velocity is 2 m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-duration
+    where: 'Problem 2(b), check: the whole trip, 6T'
+    inputs: {T: 2 s}
+    formula: 6 * T
+    expected: 12 s
+    shown: ['the trip takes 12 s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # Independent route: the time of greatest height as the numerical root of the rocket's velocity,
+  # then the rocket's height and the stone's fall by numerical integration up to that time.
+  - id: p3-height-by-integration
+    kind: identity
+    answer: p3-h
+    where: 'Problem 3, answer box and formula "Height of the cliff": rocket height plus stone fall, integrated numerically up to the root of the velocity'
+    formula: 2*A**2*(A + 3*g)/(3*B**2)
+    equals: integrate('A*x - B*x**2/2', 'x', 0, solve('A - B*q/2', 'q', 0.1, 1000)) + integrate('g*x', 'x', 0, solve('A - B*q/2', 'q', 0.1, 1000))
+    samples:
+      A: [5, 30, 12, 21.5]
+      B: [1, 6, 3, 4.4]
+      g: [9, 10, 9.81, 9.8]
+    tolerance: 1e-6
+    shown: ['= \frac{2A^2\,(A + 3g)}{3B^2}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rocket-top
+    kind: identity
+    where: 'Problem 3, formula "Greatest height of the rocket": against a double numerical integration of the acceleration up to t = 2A/B'
+    formula: 2*A**3/(3*B**2)
+    equals: integrate('integrate("A - B*u", "u", 0, x)', 'x', 0, 2*A/B)
+    samples:
+      A: [5, 30, 12, 21.5]
+      B: [1, 6, 3, 4.4]
+    tolerance: 1e-6
+    shown: ['\frac{4A^3}{3B^2} = \frac{2A^3}{3B^2}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-example-time
+    where: 'Problem 3, check: A = 30 m/s², B = 6 m/s³'
+    inputs: {A: 30 m/s**2, B: 6 m/s**3}
+    formula: 2 * A / B
+    expected: 10 s
+    shown: ['the rocket is highest at $t_m = 10$ s']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-rocket-height
+    where: 'Problem 3, check: the rocket''s greatest height'
+    inputs: {A: 30 m/s**2, B: 6 m/s**3}
+    formula: 2 * A**3 / (3 * B**2)
+    expected: 500 m
+    shown: ['at 500 m']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-stone-fall
+    where: 'Problem 3, check: the fall of the stone in 10 s'
+    inputs: {tm: 10 s, gg: 9.81 m/s**2}
+    formula: gg * tm**2 / 2
+    expected: 490.5 m
+    shown: ['the stone falls 490.5 m']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-cliff
+    where: 'Problem 3, check: the height of the cliff'
+    inputs: {A: 30 m/s**2, B: 6 m/s**3, gg: 9.81 m/s**2}
+    formula: 2 * A**2 * (A + 3 * gg) / (3 * B**2)
+    expected: 990.5 m
+    shown: ['so $h = 990.5$ m']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # Independent route: the time of flight as the numerical root of the ball's height,
+  # the landing point from that time, and B from the runner's position d + B t³/6
+  # (itself a double numerical integral of the acceleration B t with B = 1).
+  - id: p4-B-by-root-and-integration
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4, answer box and formula "The constant B": against the numerical root of the ball''s height and a double numerical integral of the runner''s acceleration'
+    formula: 3*g**2*(v0**2*sin(2*th) - g*d)/(4*v0**3*sin(th)**3)
+    equals: (v0*cos(th)*solve('v0*sin(th) - g*q/2', 'q', 0.01, 100) - d) / integrate('integrate("u", "u", 0, x)', 'x', 0, solve('v0*sin(th) - g*q/2', 'q', 0.01, 100))
+    samples:
+      v0: [20, 30, 12, 25.5]
+      th: [0.5, 1.0, 1.0472, 0.8]
+      g: [9, 10, 9.81, 9.8]
+      d: [1, 10, 8, 5.5]
+    tolerance: 1e-6
+    shown: ['= \frac{3 g^2\left(v_0^2\sin 2\theta - g\,d\right)}{4 v_0^3\sin^3\theta}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-example-flight-time
+    where: 'Problem 4, check: v0 = 12 m/s, θ = 60°'
+    inputs: {v0: 12 m/s, deg: 60, gg: 9.81 m/s**2}
+    formula: 2 * v0 * sin(deg * pi / 180) / gg
+    expected: 2.12 s
+    shown: ['the ball flies for $t_f = 2.12$ s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-range
+    where: 'Problem 4, check: where the ball lands'
+    inputs: {v0: 12 m/s, deg: 60, gg: 9.81 m/s**2}
+    formula: v0**2 * sin(2 * deg * pi / 180) / gg
+    expected: 12.7 m
+    shown: ['lands at $R = 12.7$ m']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-run
+    where: 'Problem 4, check: the distance the runner covers, R − d'
+    inputs: {v0: 12 m/s, deg: 60, gg: 9.81 m/s**2, d: 8 m}
+    formula: v0**2 * sin(2 * deg * pi / 180) / gg - d
+    expected: 4.71 m
+    shown: ['The runner must cover 4.71 m']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-B
+    where: 'Problem 4, check: the constant B'
+    inputs: {v0: 12 m/s, deg: 60, gg: 9.81 m/s**2, d: 8 m}
+    formula: 3 * gg**2 * (v0**2 * sin(2 * deg * pi / 180) - gg * d) / (4 * v0**3 * sin(deg * pi / 180)**3)
+    expected: 2.97 m/s**3
+    shown: ['which needs $B = 2.97$ m/s³']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-final-speed
+    where: 'Problem 4, check: the runner''s speed at the catch, B t_f²/2'
+    inputs: {v0: 12 m/s, deg: 60, gg: 9.81 m/s**2, d: 8 m}
+    formula: 3 * gg**2 * (v0**2 * sin(2 * deg * pi / 180) - gg * d) / (4 * v0**3 * sin(deg * pi / 180)**3) * (2 * v0 * sin(deg * pi / 180) / gg)**2 / 2
+    expected: 6.67 m/s
+    shown: ['= 6.67$ m/s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-eight-h-over-g
+    where: 'Problem 5(a), step "Put in the numbers"'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2}
+    formula: 8 * h / gg
+    expected: 4.077 s**2
+    shown: ['$8h/g = 40/9.81 = 4.077$ s²']
+    source: {cite: mit, at: 'Problem 5 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p5-root
+    where: 'Problem 5(a), step "Put in the numbers": the square root; also the whole flight time 2 v0/g in part (b)'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2, t1: 4.0 s}
+    formula: sqrt(t1**2 + 8 * h / gg)
+    expected: 4.4808 s
+    shown: ['\tfrac12\,(4.0 + 4.4808)', '$2 v_0/g = 4.481$ s']
+    source: {cite: mit, at: 'Problem 5 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p5-collision-time
+    answer: p5-a
+    where: 'Problem 5(a), answer box: the time of the collision after the first throw'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2, t1: 4.0 s}
+    formula: (t1 + sqrt(t1**2 + 8 * h / gg)) / 2
+    expected: 4.240 s
+    shown: ['= 4.240$ s']
+    source: {cite: mit, at: 'Problem 5 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  - id: p5-throw-speed
+    answer: p5-b
+    where: 'Problem 5(b), answer box: the speed of the throw'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2, t1: 4.0 s}
+    formula: gg * sqrt(t1**2 + 8 * h / gg) / 2
+    expected: 21.98 m/s
+    shown: ['= 21.98\ \text{m/s}']
+    source: {cite: mit, at: 'Problem 5 (the numbers are MIT''s; the solution is our own)'}
+    origin: page-own
+
+  # Independent check of both answers: with the unrounded speed and time, both cans are at 5.0 m.
+  - id: p5-first-can-height
+    where: 'Problem 5(b), check: the height of the first can at the collision, from the unrounded speed and time'
+    inputs: {v0: 21.978271 m/s, tc: 4.2403946 s, gg: 9.81 m/s**2}
+    formula: v0 * tc - gg * tc**2 / 2
+    expected: 5.00 m
+    shown: ['$24.62 - 19.62 = 5.00$ m']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-second-can-height
+    where: 'Problem 5: the height of the second can at the collision, from the unrounded speed and time (not printed; it confirms the collision)'
+    inputs: {v0: 21.978271 m/s, tc: 4.2403946 s, t1: 4.0 s, gg: 9.81 m/s**2}
+    formula: v0 * (tc - t1) - gg * (tc - t1)**2 / 2
+    expected: 5.00 m
+    shown: ['$24.62 - 19.62 = 5.00$ m']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-time-to-top
+    where: 'Problem 5(b), check: the time to the top, v0/g; also the factor 2.2404 in the formula "Speed of the throw"'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2, t1: 4.0 s}
+    formula: sqrt(t1**2 + 8 * h / gg) / 2
+    expected: 2.2404 s
+    shown: ['9.81 \times 2.2404', '$v_0/g = 2.240$ s']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-top-height
+    where: 'Problem 5(b), check: the greatest height of a can'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2, t1: 4.0 s}
+    formula: (gg * sqrt(t1**2 + 8 * h / gg) / 2)**2 / (2 * gg)
+    expected: 24.62 m
+    shown: ['$v_0^2/(2g) = 24.62$ m']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-fall-from-top
+    where: 'Problem 5(b), check: the fall of the first can in half the waiting time'
+    inputs: {gg: 9.81 m/s**2, half: 2.000 s}
+    formula: gg * half**2 / 2
+    expected: 19.62 m
+    shown: ['= 19.62$ m']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-after-second-throw
+    where: 'Problem 5(a), check: the time between the second throw and the collision'
+    inputs: {h: 5.0 m, gg: 9.81 m/s**2, t1: 4.0 s}
+    formula: (t1 + sqrt(t1**2 + 8 * h / gg)) / 2 - t1
+    expected: 0.240 s
+    shown: ['only 0.240 s after the second throw']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
