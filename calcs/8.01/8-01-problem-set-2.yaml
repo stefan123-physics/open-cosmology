@@ -1,0 +1,408 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# other axes, the other component equation, a numerical solve of the force balance, or an energy balance.
+# g = 9.8 m/s² throughout.
+
+page: content/year-1/8.01/8-01-problem-set-2.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-given-m2
+    kind: fact
+    where: 'Problem 1, statement: mass of the lower block'
+    shown: ['A block of mass $m_2 = 4.8$ kg']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-given-m1
+    kind: fact
+    where: 'Problem 1, statement: mass of the upper block'
+    shown: ['of mass $m_1 = 2.2$ kg, lies']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-given-mu
+    kind: fact
+    where: 'Problem 1, statement: coefficient of static friction between the blocks'
+    shown: ['static friction is $\mu_s = 0.5$']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  # The answer against a numerical solve: the push x at which the friction the lower block needs,
+  # m2 x/(m1 + m2), reaches the largest static friction mu m1 g.
+  - id: p1-fmax-by-solve
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Largest push on the upper block": against a numerical solve of needed friction = largest friction'
+    formula: mu*m1*g*(m1 + m2)/m2
+    equals: solve('m2 * x / (m1 + m2) - mu * m1 * g', 'x', 0, 100000)
+    samples:
+      mu: [0.2, 0.9, 0.5, 0.33]
+      m1: [1, 3, 2.2, 10]
+      m2: [4, 8, 4.8, 0.5]
+      g: [9, 10, 9.8, 9.81]
+    tolerance: 1e-7
+    shown: ['= \mu_s\,m_1 g\,\frac{m_1 + m_2}{m_2}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-friction-max
+    where: 'Problem 1(b), step "The largest friction force and acceleration": μ_s m_1 g'
+    inputs: {mu: 0.5, m1: 2.2 kg, g: 9.8 m/s**2}
+    formula: mu * m1 * g
+    expected: 10.78 N
+    shown: ['$\mu_s m_1 g = 0.5 \times 2.2 \times 9.8 = 10.78$ N']
+    source: {cite: mit, at: 'Problem 1 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-amax
+    where: 'Problem 1(b), step "The largest friction force and acceleration": a_max'
+    inputs: {f: 10.78 N, m2: 4.8 kg}
+    formula: f / m2
+    expected: 2.25 m/s**2
+    shown: ['$a_\text{max} = 10.78 / 4.8 = 2.25\ \text{m/s}^2$']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-total-mass
+    where: 'Problem 1(b), step "The largest push": mass of the pair'
+    inputs: {m1: 2.2 kg, m2: 4.8 kg}
+    formula: m1 + m2
+    expected: 7.0 kg
+    shown: ['$2.2 + 4.8 = 7.0$ kg']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-fmax
+    answer: p1-b
+    where: 'Problem 1(b), answer box: F_max for MIT''s numbers'
+    inputs: {mu: 0.5, m1: 2.2 kg, m2: 4.8 kg, g: 9.8 m/s**2}
+    formula: mu * m1 * g * (m1 + m2) / m2
+    expected: 15.7 N
+    shown: ['$F_\text{max} = 7.0 \times 10.78 / 4.8 = 15.7$ N']
+    source: {cite: mit, at: 'Problem 1 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p1-check-net-force
+    where: 'Problem 1(b), check: push minus friction on the upper block'
+    inputs: {F: 15.72 N, f: 10.78 N}
+    formula: F - f
+    expected: 4.94 N
+    shown: ['$15.72 - 10.78 = 4.94$ N']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-check-ma
+    where: 'Problem 1(b), check: mass times acceleration of the upper block'
+    inputs: {m1: 2.2 kg, a: 2.246 m/s**2}
+    formula: m1 * a
+    expected: 4.94 N
+    shown: ['$2.2 \times 2.246 = 4.94$ N']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # (a) The angle against the horizontal equation T sin θ = M a with the tension of part (b).
+  - id: p2-a-angle
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Angle of the rope on level ground": against the horizontal equation with the tension of part (b)'
+    formula: atan(a/g)
+    equals: asin(M * a / (M * sqrt(g**2 + a**2)))
+    samples:
+      a: [1, 5, 3, 9.8, 0.01]
+      g: [9, 10, 9.8, 9.8, 9.81]
+      M: [1, 5, 2.5, 12, 0.3]
+    tolerance: 1e-10
+    shown: ['\theta = \arctan\frac{a}{g}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The tension against the vertical equation T cos θ = M g with the angle of part (a).
+  - id: p2-b-tension
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Tension on level ground": against the vertical equation with the angle of part (a)'
+    formula: M*sqrt(g**2 + a**2)
+    equals: M * g / cos(atan(a/g))
+    samples:
+      a: [1, 5, 3, 9.8, 0.01]
+      g: [9, 10, 9.8, 9.8, 9.81]
+      M: [1, 5, 2.5, 12, 0.3]
+    tolerance: 1e-10
+    shown: ['T = M\sqrt{g^2 + a^2}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-a-example
+    where: 'Problem 2(a), check: θ for a = 3.0 m/s², in degrees'
+    formula: atan(3.0 / 9.8) * 180 / pi
+    expected: '17.0'
+    shown: ['$\theta = \arctan(3.0/9.8) = 17.0°$', 'less than the 17.0° on level ground']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-b-example
+    where: 'Problem 2(b), check: T for M = 5.0 kg and a = 3.0 m/s²'
+    inputs: {M: 5.0 kg, g: 9.8 m/s**2, a: 3.0 m/s**2}
+    formula: M * sqrt(g**2 + a**2)
+    expected: 51.2 N
+    shown: ['$5.0 \times \sqrt{9.8^2 + 3.0^2} = 51.2$ N', 'less than the 51.2 N on level ground']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-b-weight
+    where: 'Problem 2(b), check: weight of the 5.0 kg bucket'
+    inputs: {M: 5.0 kg, g: 9.8 m/s**2}
+    formula: M * g
+    expected: 49.0 N
+    shown: ['the weight of 49.0 N']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  # (c) The angle against a second route with horizontal and vertical axes: there the acceleration has the
+  # parts a cos α (forwards) and a sin α (downwards), the rope makes the angle φ with the true vertical,
+  # tan φ = a cos α / (g − a sin α), and the door leans by α, so θ = φ − α.
+  - id: p2-c-angle
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box and formula "Angle of the rope on the slope": against the solution in horizontal and vertical axes, θ = φ − α'
+    formula: atan((a - g*sin(alpha))/(g*cos(alpha)))
+    equals: atan(a * cos(alpha) / (g - a * sin(alpha))) - alpha
+    samples:
+      a: [5, 8, 3, 1, 9.8]
+      g: [9, 10, 9.8, 9.8, 9.8]
+      alpha: [0.1, 0.4, 0.1745, 0.3, 0.0]
+    tolerance: 1e-10
+    shown: ['\theta = \arctan\frac{a - g\sin\alpha}{g\cos\alpha}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # (d) The tension against the horizontal equation in level axes: T sin φ = M a cos α.
+  - id: p2-d-tension
+    kind: identity
+    answer: p2-d
+    where: 'Problem 2(d), answer box and formula "Tension on the slope": against the horizontal equation in level axes, T sin φ = M a cos α'
+    formula: M*sqrt(g**2 + a**2 - 2*a*g*sin(alpha))
+    equals: M * a * cos(alpha) / sin(atan(a * cos(alpha) / (g - a * sin(alpha))))
+    samples:
+      M: [1, 5, 2.5, 12, 0.3]
+      a: [5, 8, 3, 1, 9.8]
+      g: [9, 10, 9.8, 9.8, 9.8]
+      alpha: [0.1, 0.4, 0.1745, 0.3, 0.0]
+    tolerance: 1e-10
+    shown: ['= M\sqrt{g^2 + a^2 - 2 a g\sin\alpha}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-two-forms
+    kind: identity
+    where: 'Problem 2(d), formula "Tension on the slope": the two forms under the root'
+    formula: (a - g*sin(alpha))**2 + g**2 * cos(alpha)**2
+    equals: g**2 + a**2 - 2*a*g*sin(alpha)
+    samples:
+      a: [5, 8, 3, 1]
+      g: [9, 10, 9.8, 9.8]
+      alpha: [0.1, 0.4, 0.1745, 1.2]
+    tolerance: 1e-12
+    shown: ['T = M\sqrt{(a - g\sin\alpha)^2 + g^2\cos^2\alpha}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-example-numerator
+    where: 'Problem 2(c), check: a − g sin α for a = 3.0 m/s², α = 10°'
+    formula: 3.0 - 9.8 * sin(10 * pi / 180)
+    expected: '1.298'
+    shown: ['$\arctan(1.298/9.651) = 7.7°$']
+    source: {cite: mit, at: 'Problem 2(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-c-example-denominator
+    where: 'Problem 2(c), check: g cos α for α = 10°'
+    formula: 9.8 * cos(10 * pi / 180)
+    expected: '9.651'
+    shown: ['$\arctan(1.298/9.651) = 7.7°$']
+    source: {cite: mit, at: 'Problem 2(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-c-example
+    where: 'Problem 2(c), check: θ for a = 3.0 m/s², α = 10°, in degrees'
+    formula: atan((3.0 - 9.8 * sin(10 * pi / 180)) / (9.8 * cos(10 * pi / 180))) * 180 / pi
+    expected: '7.7'
+    shown: ['$\arctan(1.298/9.651) = 7.7°$']
+    source: {cite: mit, at: 'Problem 2(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-d-example
+    where: 'Problem 2(d), check: T for M = 5.0 kg, a = 3.0 m/s², α = 10°, in newtons'
+    formula: 5.0 * sqrt(9.8**2 + 3.0**2 - 2 * 3.0 * 9.8 * sin(10 * pi / 180))
+    expected: '48.7'
+    shown: ['the tension is 48.7 N']
+    source: {cite: mit, at: 'Problem 2(d) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # (a) The answer against the vector sum of weight and normal force in horizontal and vertical axes.
+  - id: p3-a-total-force
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Total force on the box": against the length of the vector sum of weight and normal force'
+    formula: m*g*sin(theta)
+    equals: sqrt((m*g*cos(theta)*sin(theta))**2 + (m*g - m*g*cos(theta)*cos(theta))**2)
+    samples:
+      m: [1, 5, 2, 0.4]
+      g: [9, 10, 9.8, 9.8]
+      theta: [0.2, 0.7, 0.5236, 1.4]
+    tolerance: 1e-10
+    shown: ['F_\text{total} = m a = m g\sin\theta']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a solve in horizontal and vertical axes. The box accelerates along the slope, so
+  # its downward acceleration is tan θ times its horizontal one: m g − N cos θ = (N sin θ) tan θ gives N,
+  # and the wall balances N sin θ.
+  - id: p3-b-wall-force
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Force of the wall on the wedge": against a numerical solve for the normal force in horizontal and vertical axes'
+    formula: m*g*sin(theta)*cos(theta)
+    equals: sin(theta) * solve('m * g - x * cos(theta) - x * sin(theta) * tan(theta)', 'x', 0, 100000)
+    samples:
+      m: [1, 5, 2, 0.4]
+      g: [9, 10, 9.8, 9.8]
+      theta: [0.2, 0.7, 0.5236, 1.4]
+    tolerance: 1e-7
+    shown: ['F_{ww} = N\sin\theta = m g\sin\theta\cos\theta']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-example
+    where: 'Problem 3(a), check: total force for m = 2.0 kg, θ = 30°'
+    inputs: {m: 2.0 kg, g: 9.8 m/s**2}
+    formula: m * g * sin(30 * pi / 180)
+    expected: 9.8 N
+    shown: ['$2.0 \times 9.8 \times 0.5 = 9.8$ N']
+    source: {cite: mit, at: 'Problem 3(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-b-cos30
+    where: 'Problem 3(b), check: cos 30°'
+    formula: cos(30 * pi / 180)
+    expected: '0.866'
+    shown: ['$2.0 \times 9.8 \times 0.5 \times 0.866 = 8.49$ N']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-b-example
+    where: 'Problem 3(b), check: wall force for m = 2.0 kg, θ = 30°'
+    inputs: {m: 2.0 kg, g: 9.8 m/s**2}
+    formula: m * g * sin(30 * pi / 180) * cos(30 * pi / 180)
+    expected: 8.49 N
+    shown: ['$2.0 \times 9.8 \times 0.5 \times 0.866 = 8.49$ N']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-b-max-at-45
+    where: 'Problem 3(b), check: at θ = 45° the wall force is half the weight (in units of m g)'
+    formula: sin(45 * pi / 180) * cos(45 * pi / 180)
+    expected: '0.5'
+    shown: ['it is largest at $\theta = 45°$, where it is half the weight of the box']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # The answer against an energy balance: at constant speed v the power F v of the pull equals the heat made
+  # by friction, μ m2 g × 2v between the blocks (they pass each other at 2v) plus μ (m1 + m2) g × v on the table.
+  - id: p4-force-by-power
+    kind: identity
+    answer: p4-f
+    where: 'Problem 4, answer box and formula "Force that drags block 2 at constant speed": against the power lost to friction at the two sliding surfaces'
+    formula: mu*g*(m1 + 3*m2)
+    equals: (mu * m2 * g * 2 * v + mu * (m1 + m2) * g * v) / v
+    samples:
+      mu: [0.1, 0.8, 0.25, 0.5]
+      m1: [1, 5, 3, 0.2]
+      m2: [1, 5, 1, 7]
+      g: [9, 10, 9.8, 9.8]
+      v: [1, 0.3, 2.5, 10]
+    tolerance: 1e-10
+    shown: ['= \mu g\,(m_1 + 3 m_2)']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-example-tension
+    where: 'Problem 4, check: tension for μ = 0.25, m_1 = 3.0 kg, m_2 = 1.0 kg'
+    inputs: {mu: 0.25, m1: 3.0 kg, m2: 1.0 kg, g: 9.8 m/s**2}
+    formula: mu * m2 * g + mu * (m1 + m2) * g
+    expected: 12.25 N
+    shown: ['$0.25 \times 9.8 \times 5.0 = 12.25$ N']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-force
+    where: 'Problem 4, check: force for μ = 0.25, m_1 = 3.0 kg, m_2 = 1.0 kg'
+    inputs: {mu: 0.25, m1: 3.0 kg, m2: 1.0 kg, g: 9.8 m/s**2}
+    formula: mu * g * (m1 + 3 * m2)
+    expected: 14.7 N
+    shown: ['$0.25 \times 9.8 \times 6.0 = 14.7$ N']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # (a) The answer against two numerical solves of Hooke's law: k x = m g/2 (B) and k x = m g (A).
+  - id: p5-a-stretch
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box and formula "Stretch of the spring between two blocks": against the ratio of the two stretches solved from Hooke''s law'
+    formula: d/2
+    equals: d * solve('k * x - m * g / 2', 'x', 0, 1000) / solve('k * x - m * g', 'x', 0, 1000)
+    samples:
+      d: [0.05, 0.5, 0.2, 1]
+      k: [100, 40, 250, 15]
+      m: [1, 2, 0.5, 3]
+      g: [9.8, 9.8, 9.81, 10]
+    tolerance: 1e-7
+    shown: ['x = \frac{d}{2}']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the force balance at the height x.
+  - id: p5-b-height
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Height of the platform at rest": against a numerical solve of the force balance 2 k1 (h − x) + 2 k2 (h − x) = M g'
+    formula: h - M*g/(2*(k1 + k2))
+    equals: solve('2 * k1 * (h - x) + 2 * k2 * (h - x) - M * g', 'x', -1000, 1000)
+    samples:
+      h: [2, 3, 0.5, 1]
+      M: [1, 5, 12, 40]
+      g: [9, 10, 9.8, 9.8]
+      k1: [200, 400, 300, 1000]
+      k2: [50, 150, 100, 0]
+    tolerance: 1e-7
+    shown: ['h_f = h - y = h - \frac{M g}{2\,(k_1 + k_2)}']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-example-drop
+    where: 'Problem 5(b), check: how far the platform sinks for M = 12 kg, k_1 = 300 N/m, k_2 = 100 N/m'
+    inputs: {M: 12 kg, g: 9.8 m/s**2, k1: 300 N/m, k2: 100 N/m}
+    formula: M * g / (2 * (k1 + k2))
+    expected: 0.147 m
+    shown: ['$12 \times 9.8/800 = 0.147$ m']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p5-b-example-height
+    where: 'Problem 5(b), check: the new height for h = 0.50 m'
+    inputs: {h: 0.50 m, M: 12 kg, g: 9.8 m/s**2, k1: 300 N/m, k2: 100 N/m}
+    formula: h - M * g / (2 * (k1 + k2))
+    expected: 0.353 m
+    shown: ['to $h_f = 0.353$ m']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
