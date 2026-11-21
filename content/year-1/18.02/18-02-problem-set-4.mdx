@@ -1,0 +1,903 @@
+---
+title: "Problem Set 4: iPod sales by least squares, the largest triangle in a circle and polar derivatives"
+slug: 18-02-problem-set-4
+course: "18.02"
+kind: problems
+set: 4
+lecture: 11
+order: 90
+covers: [9, 10, 11]
+solutions: own
+summary: Three problems on maxima, minima and the chain rule. You write the least-squares equations as one matrix equation and fit a straight line and an exponential to five years of iPod sales, find the triangle of largest area inscribed in the unit circle and confirm it with the second derivative test, and use the chain rule to turn the partial derivatives of a function from rectangular into polar coordinates and back.
+prerequisites: [critical-points-and-least-squares, second-derivative-test, differentials-and-chain-rule]
+source:
+  title: "MIT 18.02 Problem Set 4"
+  url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/ps4/
+  readings:
+    - title: "18.02 lecture summaries, Week 4 (Prof. Auroux)"
+      url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/lec_week4/
+      location: "Lectures 9 and 10, pp. 1–3"
+    - title: "18.02 lecture summaries, Week 5 (Prof. Auroux)"
+      url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/lec_week5/
+      location: "Lecture 11, p. 1"
+license: CC BY-NC-SA 4.0
+references:
+  notesLS:
+    title: "18.02 Supplementary Notes, LS: Least Squares Interpolation (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/least_sq_intrpol/
+    location: "Section 1, equations (2) to (4), pp. 1–2"
+  notesSD:
+    title: "18.02 Supplementary Notes, SD: Second Derivative Test (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/2nd_derivative/
+    location: "The whole note"
+  notesProblems:
+    title: "18.02 Supplementary Notes and Problems, Problems section 2: Partial differentiation (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/partial_diff/
+    location: "Exercise groups 2C, 2E, 2F, 2G and 2H"
+  notesSolutions:
+    title: "18.02 Supplementary Notes and Problems, Solutions to section 2: Partial differentiation (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/part_diff_sol/
+    location: "Solutions to groups 2C, 2E, 2F, 2G and 2H"
+status: reviewed
+---
+
+This set practises three lessons: [tangent planes, critical points and least squares](/courses/18-02/critical-points-and-least-squares), [the second derivative test](/courses/18-02/second-derivative-test) and [differentials and the chain rule](/courses/18-02/differentials-and-chain-rule). Problems 1 and 3 also use the matrix products and inverse matrices of the lesson on [matrices](/courses/18-02/matrices). The page follows MIT's Problem Set 4, in our own words.
+
+MIT's set has two parts. Part B holds MIT's three longer problems (25 points), for which OpenCourseWare has no solutions. All three are written out below, with hints and solutions of our own. Part A is a list of short exercises, most of them from MIT's own Supplementary Notes, which also hold their solutions. Those are not rewritten here: the last section of this page lists them and links to MIT's exercises and solutions.
+
+MIT's sheet numbers the lectures by the calendar of its term, which also counts the day of the first exam. So its numbers are one higher than this site's: the sheet's Lectures 10, 11 and 12 are Lectures 9, 10 and 11 here (and in MIT's own lecture summaries). Problem 1 belongs to Lecture 9 (least squares), Problem 2 to Lecture 10 (the second derivative test) and Problem 3 to Lecture 11 (the chain rule).
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A formula box takes plain typing, for example `r*cos(theta)`, and accepts every correct way of writing the answer. Type `theta` for $\theta$, and `t1` and `t2` for the angles $\theta_1$ and $\theta_2$ of Problem 2. A number box wants a decimal number, not a fraction or a square root, and its question says how exact your value must be: keep all the digits your calculator shows while you work, and round only at the end. Angles are in radians. The points, and their split over the parts of a problem, are MIT's. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Parts that ask you to show or draw something have no answer box: compare your work with the solution and mark it yourself. Your score is kept in this browser only.
+
+Problem 1 needs a tool that can add and multiply lists of five numbers. MIT's students used MATLAB. Use anything you like: a calculator, a spreadsheet, Python or another free program. Every sum in it has only five terms, so it can also be done by hand.
+
+## Problem 1
+
+<Exercise id="p1" title="Least squares and five years of iPod sales" points={11} mit="Part B, Problem 1">
+
+The lesson finds the line $y = ax + b$ that best fits $n$ data points $(x_i, y_i)$: the numbers $a$ and $b$ make the total square deviation as small as possible, and they solve two linear equations. This problem writes those equations with matrices, and then uses them on real data.
+
+MIT asks its students to do parts (b) to (f) with MATLAB, or with other software or a calculator, on one condition that holds here too: carry out the calculation with your own formulas of part (a), and do not press a ready-made button for a best-fitting line (except to check your result).
+
+<Part label="a" points={2}>
+
+Put the data in three row vectors with $n$ entries each: $\mathbf{x} = [x_1\ x_2\ \dots\ x_n]$, $\mathbf{y} = [y_1\ y_2\ \dots\ y_n]$, and $\mathbf{u} = [1\ 1\ \dots\ 1]$, a row of $n$ ones. The lesson's two least-squares equations (equations (4) of MIT's Notes LS) are
+
+<Formula label="The least-squares equations" tex="\Big(\sum x_i^2\Big)a + \Big(\sum x_i\Big)b = \sum x_iy_i, \qquad \Big(\sum x_i\Big)a + n\,b = \sum y_i" cite="notesLS" at="equations (4), p. 2" />
+
+Write them as one matrix equation
+
+<Formula label="The matrix form asked for" tex="A\,\mathbf{z} = \mathbf{r}, \qquad \mathbf{z} = \begin{bmatrix} a \\ b \end{bmatrix}" cite="mit" at="Part B, Problem 1(a), p. 1" />
+
+where $A$ is a 2 × 2 matrix and $\mathbf{r}$ a column with two entries. Write the entries of $A$ and $\mathbf{r}$ the way MATLAB wants them, without summation signs. In MATLAB, `*` is the matrix product and an apostrophe makes the transpose, so `u'` is the column of $n$ ones, and `x*u'` is the sum $\sum x_i$. Inside square brackets, a space separates the entries of a row and a semicolon starts a new row.
+
+<Hint>
+
+A row with $n$ entries times a column with $n$ entries is one number: the sum of the products of their entries. Which row and which column give $\sum x_i^2$?
+
+</Hint>
+
+<Hint>
+
+The number $n$ is a sum too: it is $1 + 1 + \dots + 1$, with $n$ terms.
+
+</Hint>
+
+<Answer id="p1-a" label="The matrix equation has"
+  choices={["A = [x*u' x*x'; u*u' x*u'] and r = [x*y'; u*y']", "A = [x*x' x*u'; x*u' u*u'] and r = [u*y'; x*y']", "A = [x*x' x*u'; x*u' u*u'] and r = [x*y'; u*y']", "A = [x'*x x'*u; x'*u u'*u] and r = [x'*y; u'*y]"]} answer={2} />
+
+<Solution>
+
+**The idea.** Every sum in the two equations is a sum of products of entries of two of the three rows. Such a sum is the first row times the transpose of the second.
+
+<Step title="The sums as products">
+
+<Formula label="Each sum as a row times a column" tex="\sum x_i^2 = \mathbf{x}\,\mathbf{x}^T, \qquad \sum x_i = \mathbf{x}\,\mathbf{u}^T, \qquad n = \mathbf{u}\,\mathbf{u}^T, \qquad \sum x_iy_i = \mathbf{x}\,\mathbf{y}^T, \qquad \sum y_i = \mathbf{u}\,\mathbf{y}^T" cite="mit" at="Part B, Problem 1(a) (our own solution)" />
+
+Here $\mathbf{x}^T$ is the transpose of $\mathbf{x}$: the same numbers written as a column.
+
+</Step>
+
+<Step title="The matrix equation">
+
+The first equation is the first row of $A$ times the column $\mathbf{z}$, and the second equation is the second row:
+
+<Formula label="The least-squares equations in matrix form" tex="\begin{bmatrix} \mathbf{x}\,\mathbf{x}^T & \mathbf{x}\,\mathbf{u}^T \\ \mathbf{x}\,\mathbf{u}^T & \mathbf{u}\,\mathbf{u}^T \end{bmatrix}\begin{bmatrix} a \\ b \end{bmatrix} = \begin{bmatrix} \mathbf{x}\,\mathbf{y}^T \\ \mathbf{u}\,\mathbf{y}^T \end{bmatrix}" cite="mit" at="Part B, Problem 1(a) (our own solution)" />
+
+In MATLAB: `A = [x*x' x*u'; x*u' u*u']` and `r = [x*y'; u*y']`. The solution is then $\mathbf{z} = A^{-1}\mathbf{r}$, the lesson's way of solving a square system, typed as `z = inv(A)*r`.
+
+</Step>
+
+<Step title="Check the result">
+
+The order of the factors matters. A row times a column, `x*x'`, is one number. A column times a row, `x'*x`, is a matrix with $n$ rows and $n$ columns, which is not what the equations need. The order of the unknowns matters too: the first column of $A$ multiplies $a$, so it must hold the coefficients of $a$, which are $\sum x_i^2$ and $\sum x_i$. Part (c) tests the formulas on numbers.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={0}>
+
+MIT's sheet gives the number of iPods sold in the whole world in each year from 2001 to 2005, in millions (it names Wikipedia and Apple's quarterly reports as its sources):
+
+| Year | 2001 | 2002 | 2003 | 2004 | 2005 |
+|---|---|---|---|---|---|
+| $x_i$ | 1 | 2 | 3 | 4 | 5 |
+| Sales $y_i$ (millions) | 0.125 | 0.470 | 1.451 | 8.263 | 31.960 |
+
+To keep the numbers small, $x$ is the year minus 2000, so $x_i$ runs from 1 to 5.
+
+Make a scatter plot of the five data points: one mark for each point $(x_i, y_i)$, not joined by lines. This part earns no points at MIT, and the plot comes back in part (e).
+
+<Solution>
+
+**The idea.** Look at the data before fitting anything to them.
+
+<Step title="What the plot shows">
+
+The first three marks lie almost on the $x$-axis, at heights $0.125$, $0.470$ and $1.451$. The fourth is at $8.263$ and the fifth far above it at $31.960$. The points do not lie near a straight line: they bend upwards more and more steeply. The plot in the solution of part (e) shows them.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Use the data of part (b) and your formulas of part (a) to find the best-fitting line $y = ax + b$. Then compute, for each of the five years, the error: the actual value $y_i$ minus the value $ax_i + b$ that the line predicts. Report $a$, $b$ and the worst case, the error of largest size.
+
+Give $a$ and $b$ to three decimal places, and the size of the largest error in millions of iPods, to two decimal places.
+
+MIT recommends a check for those who use MATLAB: `polyfit(x,y,1)` returns the coefficients $[a, b]$ of the best line. Any ready-made line fit of your own tool does the same. Use it only as a check.
+
+<Hint>
+
+You need four sums: $\sum x_i$, $\sum x_i^2$, $\sum y_i$ and $\sum x_iy_i$. The number of points is $n = 5$.
+
+</Hint>
+
+<Hint>
+
+Two equations in two unknowns: solve them with the inverse of the 2 × 2 matrix, or take a multiple of the second equation away from the first so that $b$ drops out.
+
+</Hint>
+
+<Answer id="p1-c-a" label="$a =$" value="7.146" tolerance="0.005" calc="p1-c-a" />
+
+<Answer id="p1-c-b" label="$b =$" value="-12.985" tolerance="0.01" calc="p1-c-b" />
+
+<Answer id="p1-c-worst" label="Size of the largest error:" value="9.21" unit="million" tolerance="0.02" calc="p1-c-worst" />
+
+<Solution>
+
+**The idea.** Compute the four sums, fill in the matrix equation of part (a), and solve it.
+
+<Step title="The sums">
+
+$\sum x_i = 1 + 2 + 3 + 4 + 5 = 15$ and $\sum x_i^2 = 1 + 4 + 9 + 16 + 25 = 55$. From the table, $\sum y_i = 42.269$, and
+
+<Formula label="The sum of the products" tex="\sum x_iy_i = 1(0.125) + 2(0.470) + 3(1.451) + 4(8.263) + 5(31.960) = 198.27" cite="mit" at="Part B, Problem 1(c) (our own solution)" />
+
+</Step>
+
+<Step title="Solve the system">
+
+<Formula label="The system for the iPod data" tex="\begin{bmatrix} 55 & 15 \\ 15 & 5 \end{bmatrix}\begin{bmatrix} a \\ b \end{bmatrix} = \begin{bmatrix} 198.27 \\ 42.269 \end{bmatrix}" cite="mit" at="Part B, Problem 1(c) (our own solution)" />
+
+The determinant of the matrix is $55 \cdot 5 - 15 \cdot 15 = 50$. Three times the second equation, taken away from the first, leaves $10a = 198.27 - 126.807 = 71.463$. Then the second equation gives $b$:
+
+<Formula label="The best-fitting line" tex="a = 7.1463, \qquad b = \frac{42.269 - 15a}{5} = -12.9851, \qquad y = 7.1463\,x - 12.9851" cite="mit" at="Part B, Problem 1(c) (our own solution)" />
+
+</Step>
+
+<Step title="The errors">
+
+| Year | 2001 | 2002 | 2003 | 2004 | 2005 |
+|---|---|---|---|---|---|
+| Actual $y_i$ | 0.125 | 0.470 | 1.451 | 8.263 | 31.960 |
+| Line $ax_i + b$ | −5.8388 | 1.3075 | 8.4538 | 15.6001 | 22.7464 |
+| Error | 5.9638 | −0.8375 | −7.0028 | −7.3371 | 9.2136 |
+
+The worst case is 2005: the line is $9.21$ million too low. The error of 2004 is nearly as large, $7.34$ million the other way.
+
+</Step>
+
+<Step title="Check the result">
+
+The second least-squares equation, divided by $n$, says that the line passes through the point of the averages, $(3, 8.4538)$: indeed $7.1463 \times 3 - 12.9851 = 8.4538$. The same equation says that the five errors add up to zero, and they do: $5.9638 - 0.8375 - 7.0028 - 7.3371 + 9.2136 = 0.0000$. The fit is poor all the same. The errors are as large as the sales themselves, and the line predicts that minus $5.8$ million iPods were sold in 2001.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+In the first years after a new product comes on the market, its sales tend to grow exponentially and not along a line. The lesson's method for an exponential law is to take logarithms: find the best fit of the form
+
+<Formula label="A line for the logarithm" tex="\ln y = a_1x + b_1" cite="mit" at="Part B, Problem 1(d), p. 2" />
+
+to the same data. (In MATLAB and in most programs the natural logarithm is typed `log`.) Report $a_1$ and $b_1$, to three decimal places. Taking the exponential of both sides gives
+
+<Formula label="The exponential law" tex="y = e^{b_1}\,e^{a_1x}" cite="mit" at="Part B, Problem 1(d), p. 2" />
+
+Compute the errors, the actual $y_i$ minus the value of this formula, and report the size of the largest one in millions of iPods, to two decimal places. Use all the digits of $a_1$ and $b_1$: the exponential is sensitive to rounding.
+
+<Hint>
+
+The data points are now $(x_i, \ln y_i)$. The matrix $A$ of part (c) stays the same, because the $x_i$ are the same. Only the right-hand side changes.
+
+</Hint>
+
+<Hint>
+
+The errors asked for are differences of $y$ values, in millions of iPods, not differences of logarithms.
+
+</Hint>
+
+<Answer id="p1-d-a1" label="$a_1 =$" value="1.395" tolerance="0.002" calc="p1-d-a1" />
+
+<Answer id="p1-d-b1" label="$b_1 =$" value="-3.564" tolerance="0.003" calc="p1-d-b1" />
+
+<Answer id="p1-d-worst" label="Size of the largest error:" value="1.58" unit="million" tolerance="0.02" calc="p1-d-worst" />
+
+<Solution>
+
+**The idea.** Replace each $y_i$ by $\ln y_i$ and repeat part (c).
+
+<Step title="The logarithms and their sums">
+
+| $x_i$ | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| $\ln y_i$ | −2.0794 | −0.7550 | 0.3723 | 2.1118 | 3.4645 |
+
+Their sum is $\sum \ln y_i = 3.1141$, and $\sum x_i\ln y_i = 23.2968$.
+
+</Step>
+
+<Step title="Solve the system">
+
+The matrix is the one of part (c). Three times the second equation, taken away from the first, leaves $10a_1 = 23.2968 - 3 \times 3.1141 = 13.9547$ (with all digits kept), so
+
+<Formula label="The best fit for the logarithm" tex="a_1 = 1.3955, \qquad b_1 = \frac{3.1141 - 15a_1}{5} = -3.5636" cite="mit" at="Part B, Problem 1(d) (our own solution)" />
+
+</Step>
+
+<Step title="The errors">
+
+| Year | 2001 | 2002 | 2003 | 2004 | 2005 |
+|---|---|---|---|---|---|
+| Actual $y_i$ | 0.125 | 0.470 | 1.451 | 8.263 | 31.960 |
+| Exponential law | 0.114 | 0.462 | 1.864 | 7.525 | 30.379 |
+| Error | 0.011 | 0.008 | −0.413 | 0.738 | 1.581 |
+
+The worst case is again 2005, but now the law is only $1.58$ million too low, against $9.21$ million for the line.
+
+</Step>
+
+<Step title="Check the result">
+
+The law reads $y = 0.02834 \times 4.037^{\,x}$, because $e^{b_1} = 0.02834$ and $e^{a_1} = 4.037$: the fitted sales grow by a factor of about $4$ every year. The data agree: the sales of each year divided by those of the year before are $3.76$, $3.09$, $5.69$ and $3.87$. One remark of our own: this fit makes the square deviations of $\ln y$ as small as possible, not those of $y$ itself, so it is the best line for the logarithms and not exactly the best exponential for the sales.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={3}>
+
+Show on one plot: the five data points as separate marks, the best-fitting line of part (c) as a dashed line, and the exponential law of part (d) as a solid curve. (MIT's students joined the five values of the law by straight segments. A smooth curve is fine.)
+
+This part has no answer box: compare your plot with the one in the solution and mark it yourself.
+
+<Hint>
+
+For the line, two points are enough, for example at $x = 1$ and $x = 5$. For the curve, use the five values of the law that you found in part (d), or let your tool draw $e^{b_1}e^{a_1x}$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Draw both fits over the data and compare them by eye.
+
+<Step title="The plot">
+
+<Plot variable="x" domain={[0.5, 5.5]} range={[-10, 36]} xLabel="x (year − 2000)" yLabel="y (millions)"
+  curves={[
+    { expr: "exp(1.39547*x - 3.56359)", label: "exponential" },
+    { expr: "7.1463*x - 12.9851", label: "line", dash: true }
+  ]}
+  points={[{ x: 1, y: 0.125, offCurve: true }, { x: 2, y: 0.470, offCurve: true }, { x: 3, y: 1.451, offCurve: true }, { x: 4, y: 8.263, offCurve: true }, { x: 5, y: 31.960, offCurve: true }]}
+  caption="The five yearly sales of iPods (dots), the least-squares line of part (c) (dashed) and the exponential law of part (d) (solid). Both curves are computed from their formulas." />
+
+</Step>
+
+<Step title="What it shows">
+
+The dashed line misses the bend of the data: it runs below the first and the last point and above the three in between, and it is below zero until $x = 1.82$. The solid curve passes close to all five points. It is a little too high at $x = 3$ and a little too low at $x = 4$ and $x = 5$, as the errors of part (d) say.
+
+</Step>
+
+<Step title="Check your plot">
+
+Three things to look for in your own plot. The line crosses the $x$-axis between 2001 and 2002, at $x = 12.9851/7.1463 = 1.82$. Line and curve cross twice, near $x = 1.9$ and $x = 4.7$: between those two the line is the higher one. And at $x = 5$ the curve ($30.38$) is far above the line ($22.75$) and just below the data point ($31.96$).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="f" points={1}>
+
+According to the exponential law of part (d), how many iPods were sold in 2006, and how many would be sold in 2015? Compare the second number with the world population, which MIT's sheet (written in 2007) puts at about 6.6 billion.
+
+Give the number for 2006 in millions, to the nearest million, and the number for 2015 in billions (thousands of millions), within 2%.
+
+<Hint>
+
+The year 2006 is $x = 6$. The law gives millions of iPods, and a billion is a thousand millions.
+
+</Hint>
+
+<Answer id="p1-f-2006" label="Sales in 2006 by the law:" value="122.6" unit="million" tolerance="1" calc="p1-f-2006" />
+
+<Answer id="p1-f-2015" label="Sales in 2015 by the law:" value="34900" unit="billion" tolerance="2%" calc="p1-f-2015" />
+
+<Solution>
+
+**The idea.** Put $x = 6$ and $x = 15$ into the exponential law. This uses the fit outside the years it was made from.
+
+<Step title="The two predictions">
+
+<Formula label="The exponential law in 2006 and in 2015" tex="e^{b_1}e^{6a_1} = 122.6 \text{ million}, \qquad e^{b_1}e^{15a_1} = 3.49 \times 10^{7} \text{ million} = 3.49 \times 10^{13}" cite="mit" at="Part B, Problem 1(f) (our own solution)" />
+
+For 2015 that is about $34\,900$ billion iPods, or 35 million million.
+
+</Step>
+
+<Step title="Compare with the world">
+
+Divided by 6.6 billion people, the number for 2015 is about $5300$ iPods for every person on Earth, in one year. That cannot happen: no market keeps growing by a factor of 4 a year. MIT's sheet adds that the growth had already slowed in 2006, when 46.4 million iPods were sold, far fewer than the 122.6 million of the law.
+
+</Step>
+
+<Step title="Check the result">
+
+From 2005 to 2006 the law multiplies its value by $e^{a_1} = 4.037$: $30.379 \times 4.037 = 122.6$. The best-fitting line of part (c) gives $7.1463 \times 6 - 12.9851 = 29.9$ million for 2006, too low this time: less than the 31.96 million of 2005. The lesson to take away is that a fit describes the data it was made from, and says little about years far outside them.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="The largest triangle inscribed in the unit circle" points={8} mit="Part B, Problem 2">
+
+A triangle is inscribed in the unit circle of the plane: its three vertices lie on the circle of radius $1$ about the origin. One vertex is the point $(1, 0)$. The other two are the points of the circle at the polar angles $\theta_1$ and $\theta_2$, and going round the circle counterclockwise from $(1, 0)$ you meet the vertex at $\theta_1$ first and the vertex at $\theta_2$ second.
+
+<Part label="a" points={2}>
+
+Express the area $A$ of the triangle in terms of $\theta_1$ and $\theta_2$. What is the set of possible values of $\theta_1$ and $\theta_2$?
+
+In the box, type `t1` for $\theta_1$ and `t2` for $\theta_2$.
+
+<Hint>
+
+The vertices are $(1, 0)$, $(\cos\theta_1, \sin\theta_1)$ and $(\cos\theta_2, \sin\theta_2)$. Take the two vectors from the first vertex to the other two.
+
+</Hint>
+
+<Hint>
+
+The lesson on determinants gives the area of the parallelogram with two given sides in the plane as a 2 × 2 determinant, up to its sign. A triangle is half a parallelogram.
+
+</Hint>
+
+<Answer id="p2-a" label="$A =$" expr="(sin(t1) + sin(t2 - t1) - sin(t2))/2"
+  vars={{ t1: [0.3, 0.9], t2: [1.2, 2.0] }}
+  names={{ t1: "\\theta_1", t2: "\\theta_2" }}
+  mistakes={[
+    { expr: "sin(t1) + sin(t2 - t1) - sin(t2)", hint: "That is the area of the parallelogram with the two sides from (1, 0). The triangle is half of it." },
+    { expr: "(sin(t1) + sin(t2 - t1) + sin(t2))/2", hint: "Check a flat triangle: when θ₁ goes to 0, two vertices fall together and the area must go to 0. Yours goes to sin θ₂." },
+    { expr: "sin(t2 - t1)/2", hint: "That is the area of the triangle with the origin and the two moving vertices as corners. The third vertex of this triangle is (1, 0), not the origin." },
+    { expr: "(sin(t2) - sin(t1) - sin(t2 - t1))/2", hint: "That is minus the area: try θ₁ = π/2 and θ₂ = π, a triangle with area 1. The order of the two vectors in the determinant decides the sign." }
+  ]} />
+
+<Answer id="p2-a-region" label="The possible values are"
+  choices={["0 < θ₁ < 2π and 0 < θ₂ < 2π, without any other condition", "0 < θ₂ < θ₁ < 2π", "0 < θ₁ < π < θ₂ < 2π", "0 < θ₁ < θ₂ < 2π"]} answer={3} />
+
+<Solution>
+
+**The idea.** Half the determinant of two sides of a triangle is its area, with a plus sign when the second side lies counterclockwise from the first.
+
+<Step title="Two sides as vectors">
+
+Call the vertices $P_0 = (1, 0)$, $P_1 = (\cos\theta_1, \sin\theta_1)$ and $P_2 = (\cos\theta_2, \sin\theta_2)$ (the names are ours). Then
+
+<Formula label="Two sides of the inscribed triangle" tex="\vec{P_0P_1} = \langle \cos\theta_1 - 1,\ \sin\theta_1\rangle, \qquad \vec{P_0P_2} = \langle \cos\theta_2 - 1,\ \sin\theta_2\rangle" cite="mit" at="Part B, Problem 2(a) (our own solution)" />
+
+</Step>
+
+<Step title="The determinant">
+
+The vertices $P_0$, $P_1$, $P_2$ follow each other counterclockwise, so the determinant of the two sides, in this order, is positive and equal to the area of their parallelogram:
+
+<Formula label="Area of the inscribed triangle" tex="A = \tfrac12\big((\cos\theta_1 - 1)\sin\theta_2 - \sin\theta_1(\cos\theta_2 - 1)\big) = \tfrac12\big(\sin\theta_1 + \sin(\theta_2 - \theta_1) - \sin\theta_2\big)" cite="mit" at="Part B, Problem 2(a) (our own solution)" />
+
+The last step uses $\sin\theta_2\cos\theta_1 - \cos\theta_2\sin\theta_1 = \sin(\theta_2 - \theta_1)$.
+
+</Step>
+
+<Step title="The possible values">
+
+Measure both angles from the vertex $(1, 0)$, counterclockwise, between $0$ and $2\pi$. The vertex at $\theta_1$ comes first and the three vertices are different points, so
+
+<Formula label="The region of the two angles" tex="0 < \theta_1 < \theta_2 < 2\pi" cite="mit" at="Part B, Problem 2(a) (our own solution)" />
+
+In a plane with $\theta_1$ along one axis and $\theta_2$ along the other, this region is the inside of a triangle with corners $(0, 0)$, $(0, 2\pi)$ and $(2\pi, 2\pi)$. On its three sides, $\theta_1 = 0$, $\theta_2 = 2\pi$ and $\theta_1 = \theta_2$, two vertices of the inscribed triangle fall together and it flattens to a line segment.
+
+</Step>
+
+<Step title="Check the result">
+
+Take $\theta_1 = \pi/2$ and $\theta_2 = \pi$: the vertices are $(1, 0)$, $(0, 1)$ and $(-1, 0)$, a triangle with base $2$ and height $1$, so area $1$. The formula gives $\tfrac12(1 + 1 - 0) = 1$. A second check: the three terms are the areas, with signs, of the three triangles that join the origin to each side. The side from $P_0$ to $P_1$ gives $\tfrac12\sin\theta_1$, the side from $P_1$ to $P_2$ gives $\tfrac12\sin(\theta_2 - \theta_1)$, and the side from $P_2$ back to $P_0$ gives $\tfrac12\sin(2\pi - \theta_2) = -\tfrac12\sin\theta_2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Find the critical points of the function $A(\theta_1, \theta_2)$ in this region. Give the two angles of a critical point in radians, to three decimal places.
+
+<Hint>
+
+Set both partial derivatives of $A$ equal to zero. Each equation says that two cosines are equal.
+
+</Hint>
+
+<Hint>
+
+Between $0$ and $2\pi$, two different angles have the same cosine only when they add up to $2\pi$. Use that for $\theta_1$ and $\theta_2$, and then the double-angle formula $\cos 2\theta = 2\cos^2\theta - 1$.
+
+</Hint>
+
+<Answer id="p2-b-t1" label="$\theta_1 =$" value="2.094" unit="radians" tolerance="0.002" calc="p2-b-t1" />
+
+<Answer id="p2-b-t2" label="$\theta_2 =$" value="4.189" unit="radians" tolerance="0.002" calc="p2-b-t2" />
+
+<Solution>
+
+**The idea.** A critical point is a point where both partial derivatives are zero.
+
+<Step title="The partial derivatives">
+
+<Formula label="The first derivatives of the area" tex="\frac{\partial A}{\partial\theta_1} = \tfrac12\big(\cos\theta_1 - \cos(\theta_2 - \theta_1)\big), \qquad \frac{\partial A}{\partial\theta_2} = \tfrac12\big(\cos(\theta_2 - \theta_1) - \cos\theta_2\big)" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+Both are zero exactly when the three cosines are equal:
+
+<Formula label="The condition for a critical point" tex="\cos\theta_1 = \cos(\theta_2 - \theta_1) = \cos\theta_2" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+</Step>
+
+<Step title="The two angles add up to a full turn">
+
+On the way from $0$ to $2\pi$ the cosine falls from $1$ to $-1$ and climbs back, so two different angles in that range have the same cosine only when they lie mirrored about $\pi$. Since $\theta_1 < \theta_2$, the equation $\cos\theta_1 = \cos\theta_2$ gives $\theta_2 = 2\pi - \theta_1$, with $\theta_1 < \pi$.
+
+</Step>
+
+<Step title="The middle cosine">
+
+Then $\theta_2 - \theta_1 = 2\pi - 2\theta_1$, and $\cos(2\pi - 2\theta_1) = \cos 2\theta_1 = 2\cos^2\theta_1 - 1$. The condition becomes
+
+<Formula label="An equation for the first cosine" tex="2\cos^2\theta_1 - \cos\theta_1 - 1 = (2\cos\theta_1 + 1)(\cos\theta_1 - 1) = 0" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+$\cos\theta_1 = 1$ would mean $\theta_1 = 0$, which is not in the region. So $\cos\theta_1 = -\tfrac12$, and with $\theta_1 < \pi$:
+
+<Formula label="The critical point of the area" tex="\theta_1 = \frac{2\pi}{3} = 2.094, \qquad \theta_2 = \frac{4\pi}{3} = 4.189" cite="mit" at="Part B, Problem 2(b) (our own solution)" />
+
+It is the only critical point in the region.
+
+</Step>
+
+<Step title="Check the result">
+
+At this point $\theta_2 - \theta_1 = 2\pi/3$ as well, and the three cosines are $\cos(2\pi/3) = -\tfrac12$, $-\tfrac12$ and $\cos(4\pi/3) = -\tfrac12$. The solution $\cos\theta_1 = 1$ that was thrown out is not meaningless: at the three corners of the region, $(0, 0)$, $(0, 2\pi)$ and $(2\pi, 2\pi)$, all three cosines are $1$ and both derivatives are zero. But those points are on the boundary, where the triangle has shrunk to a single point.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+Find the maximum and the minimum of $A$, from the values of $A$ at the critical points and its behaviour on the boundary of the region. Justify your answer, and describe the shapes of the triangles in the two cases.
+
+Give the maximum as a decimal, to three decimal places.
+
+<Hint>
+
+The lesson's warning: the largest and smallest values of a function are found at a critical point or on the boundary of the region. What is $A$ when $\theta_1 = 0$, when $\theta_2 = 2\pi$ and when $\theta_1 = \theta_2$?
+
+</Hint>
+
+<Hint>
+
+At the critical point the three vertices divide the circle into three equal arcs.
+
+</Hint>
+
+<Answer id="p2-c-max" label="Maximum of $A$:" value="1.299" tolerance="0.001" calc="p2-c-max" />
+
+<Answer id="p2-c-min" label="The minimum:"
+  choices={["A has the minimum 3√3/4 at the critical point, an equilateral triangle", "A comes as close to 0 as you like near the boundary, where the triangle flattens to a line segment, but 0 is not reached by any real triangle", "A has the minimum 1 at the right-angled triangle with θ₁ = π/2 and θ₂ = π", "A has the minimum −3√3/4 at a second critical point"]} answer={1} />
+
+<Solution>
+
+**The idea.** Compare the value of $A$ at the one critical point with its values on the boundary.
+
+<Step title="The value at the critical point">
+
+At $\theta_1 = 2\pi/3$, $\theta_2 = 4\pi/3$: $\sin\theta_1 = \tfrac{\sqrt 3}{2}$, $\sin(\theta_2 - \theta_1) = \tfrac{\sqrt 3}{2}$ and $\sin\theta_2 = -\tfrac{\sqrt 3}{2}$, so
+
+<Formula label="The area at the critical point" tex="A = \tfrac12\left(\tfrac{\sqrt 3}{2} + \tfrac{\sqrt 3}{2} + \tfrac{\sqrt 3}{2}\right) = \frac{3\sqrt 3}{4} = 1.299" cite="mit" at="Part B, Problem 2(c) (our own solution)" />
+
+</Step>
+
+<Step title="The boundary">
+
+On the side $\theta_1 = 0$: $A = \tfrac12(0 + \sin\theta_2 - \sin\theta_2) = 0$. On the side $\theta_1 = \theta_2$: $A = \tfrac12(\sin\theta_1 + 0 - \sin\theta_1) = 0$. On the side $\theta_2 = 2\pi$: $A = \tfrac12(\sin\theta_1 + \sin(2\pi - \theta_1) - 0) = 0$. So $A = 0$ on the whole boundary, as it must be for a triangle that has flattened to a line segment.
+
+</Step>
+
+<Step title="The maximum">
+
+Inside the region $A$ is the area of a real triangle, so $A > 0$. Add the boundary to the region: $A$ is a continuous function on this closed and bounded triangle of the $(\theta_1, \theta_2)$ plane, so it has a largest value there. That value is not on the boundary, where $A = 0$, so it is reached inside, at a critical point. There is only one. So the maximum is $3\sqrt 3/4 = 1.299$, at $\theta_1 = 2\pi/3$, $\theta_2 = 4\pi/3$. The three vertices are a third of a turn apart: the triangle is equilateral.
+
+</Step>
+
+<Step title="The minimum">
+
+The smallest value is $0$, and it is found on the boundary only: two (or all three) vertices fall together and the triangle is a line segment (or a point). Such a figure is not a real triangle. Among real triangles, with $0 < \theta_1 < \theta_2 < 2\pi$, there is no smallest area: $A$ can be made as small as you like by moving two vertices close together, but it is never $0$.
+
+</Step>
+
+<Step title="Check the result">
+
+An equilateral triangle in the unit circle has sides of length $\sqrt 3 = 1.732$ (the distance from $(1, 0)$ to $(-\tfrac12, \tfrac{\sqrt 3}{2})$), and the area of an equilateral triangle with side $s$ is $\tfrac{\sqrt 3}{4}s^2 = \tfrac{\sqrt 3}{4} \cdot 3 = 1.299$. The right-angled triangle of part (a) has area $1$, which is less. For comparison, the circle itself has area $\pi = 3.142$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+Use the second derivative test to confirm the nature of the critical point of part (b).
+
+The lesson calls the three second derivatives at the critical point $A$, $B$ and $C$. Here the letter $A$ is already the area, so write them out as $\partial^2A/\partial\theta_1^2$, $\partial^2A/\partial\theta_1\partial\theta_2$ and $\partial^2A/\partial\theta_2^2$. The quantity the test looks at (the lesson's $AC - B^2$) is then
+
+<Formula label="The quantity of the second derivative test" tex="D = \frac{\partial^2A}{\partial\theta_1^2}\,\frac{\partial^2A}{\partial\theta_2^2} - \left(\frac{\partial^2A}{\partial\theta_1\,\partial\theta_2}\right)^2" cite="reading1" at="Lecture 10, p. 2" />
+
+(The name $D$ is ours.) Give both numbers at the critical point, as decimals to three decimal places.
+
+<Hint>
+
+Differentiate the two first derivatives of part (b) once more, and put in $\theta_1 = 2\pi/3$, $\theta_2 = 4\pi/3$.
+
+</Hint>
+
+<Hint>
+
+The lesson's rule: if $D > 0$ the point is a local minimum or a local maximum, and the sign of $\partial^2A/\partial\theta_1^2$ tells which. If $D < 0$ it is a saddle.
+
+</Hint>
+
+<Answer id="p2-d-a11" label="$\partial^2A/\partial\theta_1^2 =$" value="-0.866" tolerance="0.001" calc="p2-d-a11" />
+
+<Answer id="p2-d-test" label="$D =$" value="0.5625" tolerance="0.001" calc="p2-d-test" />
+
+<Answer id="p2-d-type" label="So the critical point is"
+  choices={["a local minimum", "a local maximum", "a saddle point", "degenerate: the test cannot tell"]} answer={1} />
+
+<Solution>
+
+**The idea.** Compute the three second derivatives at the critical point and apply the lesson's test.
+
+<Step title="The second derivatives">
+
+<Formula label="The second derivatives of the area" tex="\frac{\partial^2A}{\partial\theta_1^2} = -\tfrac12\big(\sin\theta_1 + \sin(\theta_2 - \theta_1)\big), \qquad \frac{\partial^2A}{\partial\theta_1\,\partial\theta_2} = \tfrac12\sin(\theta_2 - \theta_1), \qquad \frac{\partial^2A}{\partial\theta_2^2} = \tfrac12\big(\sin\theta_2 - \sin(\theta_2 - \theta_1)\big)" cite="mit" at="Part B, Problem 2(d) (our own solution)" />
+
+</Step>
+
+<Step title="At the critical point">
+
+With $\sin\theta_1 = \sin(\theta_2 - \theta_1) = \tfrac{\sqrt 3}{2}$ and $\sin\theta_2 = -\tfrac{\sqrt 3}{2}$:
+
+<Formula label="The second derivatives at the critical point" tex="\frac{\partial^2A}{\partial\theta_1^2} = -\frac{\sqrt 3}{2} = -0.866, \qquad \frac{\partial^2A}{\partial\theta_1\,\partial\theta_2} = \frac{\sqrt 3}{4} = 0.433, \qquad \frac{\partial^2A}{\partial\theta_2^2} = -\frac{\sqrt 3}{2} = -0.866" cite="mit" at="Part B, Problem 2(d) (our own solution)" />
+
+</Step>
+
+<Step title="The test">
+
+<Formula label="The test at the critical point" tex="D = \left(-\frac{\sqrt 3}{2}\right)\left(-\frac{\sqrt 3}{2}\right) - \left(\frac{\sqrt 3}{4}\right)^2 = \frac34 - \frac{3}{16} = \frac{9}{16} = 0.5625" cite="mit" at="Part B, Problem 2(d) (our own solution)" />
+
+$D > 0$, so the point is a local minimum or a local maximum, and $\partial^2A/\partial\theta_1^2 < 0$, so it is a local maximum. That agrees with part (c), which showed more: it is the maximum over the whole region.
+
+</Step>
+
+<Step title="Check the result">
+
+Move one vertex a little and look at the area directly. With $\theta_2 = 4\pi/3$ kept and $\theta_1 = 2\pi/3 + 0.1$, the formula of part (a) gives $A = 1.2947$, which is $0.0043$ less than $1.2990$. The second derivative predicts a change of $\tfrac12 \times (-0.866) \times 0.1^2 = -0.0043$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Partial derivatives in polar coordinates" points={6} mit="Part B, Problem 3">
+
+Let $w = f(x, y)$ be a function of the rectangular coordinates, and change to polar coordinates:
+
+<Formula label="Polar coordinates" tex="x = r\cos\theta, \qquad y = r\sin\theta" cite="mit" at="Part B, Problem 3(a), p. 3" />
+
+Then $w$ is also a function of $r$ and $\theta$. Write $w_x$, $w_y$, $w_r$ and $w_\theta$ for its partial derivatives. (MIT points to exercise 2E-5 of its Notes, which starts from the same formulas.)
+
+<Part label="a" points={1}>
+
+Use the chain rule to derive the change of variables formula in matrix form,
+
+<Formula label="From rectangular to polar derivatives" tex="\begin{bmatrix} w_r \\ w_\theta \end{bmatrix} = A\begin{bmatrix} w_x \\ w_y \end{bmatrix}" cite="mit" at="Part B, Problem 3(a), p. 3" />
+
+and write the four entries of the 2 × 2 matrix $A$ as functions of $r$ and $\theta$. The box asks for the bottom left entry.
+
+<Hint>
+
+The lesson's chain rule with new variables: $w_r = w_x\,x_r + w_y\,y_r$, where $x_r$ is the partial derivative of $x = r\cos\theta$ with respect to $r$. Write the same for $w_\theta$.
+
+</Hint>
+
+<Answer id="p3-a" label="Bottom left entry of $A$ $=$" expr="-r*sin(theta)"
+  vars={{ r: [1, 3], theta: [0.2, 1.2] }}
+  names={{ theta: "\\theta" }}
+  mistakes={[
+    { expr: "r*sin(theta)", hint: "The size is right, the sign is not: the derivative of cos θ is −sin θ." },
+    { expr: "-sin(theta)", hint: "In the derivative of x = r cos θ with respect to θ, the factor r stays." },
+    { expr: "r*cos(theta)", hint: "That is the derivative of y with respect to θ. It multiplies w_y, so it is the bottom right entry." },
+    { expr: "sin(theta)", hint: "That is the derivative of y with respect to r, the top right entry. The bottom row holds the derivatives with respect to θ." }
+  ]} />
+
+<Solution>
+
+**The idea.** The chain rule gives each new derivative as a combination of $w_x$ and $w_y$. The coefficients are the entries of $A$.
+
+<Step title="The chain rule">
+
+<Formula label="Chain rule in two new variables" tex="w_r = w_x\,x_r + w_y\,y_r, \qquad w_\theta = w_x\,x_\theta + w_y\,y_\theta" cite="reading2" at="Lecture 11, p. 1" />
+
+From $x = r\cos\theta$ and $y = r\sin\theta$: $x_r = \cos\theta$, $y_r = \sin\theta$, $x_\theta = -r\sin\theta$ and $y_\theta = r\cos\theta$.
+
+</Step>
+
+<Step title="The matrix">
+
+<Formula label="The matrix from rectangular to polar derivatives" tex="A = \begin{bmatrix} x_r & y_r \\ x_\theta & y_\theta \end{bmatrix} = \begin{bmatrix} \cos\theta & \sin\theta \\ -r\sin\theta & r\cos\theta \end{bmatrix}" cite="mit" at="Part B, Problem 3(a) (our own solution)" />
+
+Its first row is the lesson's formula $w_r = \cos\theta\,w_x + \sin\theta\,w_y$.
+
+</Step>
+
+<Step title="Check the result">
+
+Our own example: $w = x$. Then $w_x = 1$ and $w_y = 0$, and the formula gives $w_r = \cos\theta$ and $w_\theta = -r\sin\theta$. Directly: $w = r\cos\theta$ has exactly these derivatives. The units fit as well: with $x$, $y$ and $r$ in metres, $w_\theta$ is a change of $w$ per radian, and it is $r$ metres per radian times a change of $w$ per metre.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Now go the other way. Use the formulas
+
+<Formula label="Polar coordinates from rectangular ones" tex="r = \sqrt{x^2 + y^2}, \qquad \theta = \tan^{-1}\frac{y}{x}" cite="mit" at="Part B, Problem 3(b), p. 3" />
+
+to derive, in the same way, the converse formula
+
+<Formula label="From polar to rectangular derivatives" tex="\begin{bmatrix} w_x \\ w_y \end{bmatrix} = B\begin{bmatrix} w_r \\ w_\theta \end{bmatrix}" cite="mit" at="Part B, Problem 3(b), p. 3" />
+
+and write the entries of the matrix $B$ as functions of $x$ and $y$. The box asks for the top right entry.
+
+<Hint>
+
+Now $r$ and $\theta$ are the old variables and $x$ and $y$ the new ones: $w_x = w_r\,r_x + w_\theta\,\theta_x$.
+
+</Hint>
+
+<Hint>
+
+The derivative of $\tan^{-1}u$ with respect to $u$ is $1/(1 + u^2)$. Use the one-variable chain rule with $u = y/x$, and tidy up the result.
+
+</Hint>
+
+<Answer id="p3-b" label="Top right entry of $B$ $=$" expr="-y/(x^2 + y^2)"
+  vars={{ x: [1, 3], y: [1, 3] }}
+  mistakes={[
+    { expr: "y/(x^2 + y^2)", hint: "The size is right, the sign is not: when x grows with y fixed (and positive), the angle θ gets smaller." },
+    { expr: "x/(x^2 + y^2)", hint: "That is the derivative of θ with respect to y. It multiplies w_θ in the formula for w_y: the bottom right entry." },
+    { expr: "-y/x^2", hint: "That is only the derivative of y/x with respect to x. The derivative of the inverse tangent brings a factor 1/(1 + (y/x)²) as well." },
+    { expr: "-y/sqrt(x^2 + y^2)", hint: "That is −sin θ. The derivative of θ with respect to x is −sin θ divided by r." },
+    { expr: "x/sqrt(x^2 + y^2)", hint: "That is the derivative of r with respect to x, the top left entry. The right column holds the derivatives of θ." }
+  ]} />
+
+<Solution>
+
+**The idea.** The same chain rule with the roles exchanged: now $x$ and $y$ are the variables we differentiate with respect to.
+
+<Step title="The chain rule">
+
+<Formula label="Chain rule back to rectangular coordinates" tex="w_x = w_r\,r_x + w_\theta\,\theta_x, \qquad w_y = w_r\,r_y + w_\theta\,\theta_y" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+</Step>
+
+<Step title="The four derivatives">
+
+From $r = (x^2 + y^2)^{1/2}$: $r_x = \tfrac12(x^2 + y^2)^{-1/2} \cdot 2x = x/\sqrt{x^2 + y^2}$, and in the same way $r_y = y/\sqrt{x^2 + y^2}$. From $\theta = \tan^{-1}(y/x)$:
+
+<Formula label="The derivatives of the polar angle" tex="\theta_x = \frac{1}{1 + (y/x)^2}\cdot\left(-\frac{y}{x^2}\right) = \frac{-y}{x^2 + y^2}, \qquad \theta_y = \frac{1}{1 + (y/x)^2}\cdot\frac{1}{x} = \frac{x}{x^2 + y^2}" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+</Step>
+
+<Step title="The matrix">
+
+<Formula label="The matrix from polar to rectangular derivatives" tex="B = \begin{bmatrix} r_x & \theta_x \\ r_y & \theta_y \end{bmatrix} = \begin{bmatrix} \dfrac{x}{\sqrt{x^2 + y^2}} & \dfrac{-y}{x^2 + y^2} \\[2ex] \dfrac{y}{\sqrt{x^2 + y^2}} & \dfrac{x}{x^2 + y^2} \end{bmatrix}" cite="mit" at="Part B, Problem 3(b) (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Our own example: $w = \theta$, so $w_r = 0$ and $w_\theta = 1$. The formula gives $w_x = -y/(x^2 + y^2)$. At the point $(1, 1)$ that is $-0.5$. Directly: $\tan^{-1}(1/1.01) - \tan^{-1}(1) = -0.00498$ for a step of $0.01$ in $x$, a rate of $-0.498$. A remark of our own: $\theta = \tan^{-1}(y/x)$ gives the polar angle only in the half plane $x > 0$. On the $y$-axis the formula has no meaning, and for $x < 0$ it is off by $\pi$. The entries of $B$ hold all the same at every point except the origin: for $y > 0$, for example, $\theta = \pi/2 - \tan^{-1}(x/y)$, and differentiating that gives the same $\theta_x$ and $\theta_y$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+Check that $B = A^{-1}$ by computing the product $AB$ and changing variables, so that both matrices are written with the same pair of coordinates. This part has no answer box: compare your work with the solution and mark it yourself.
+
+<Hint>
+
+Write $B$ with $r$ and $\theta$: put $x = r\cos\theta$, $y = r\sin\theta$ and $x^2 + y^2 = r^2$ into its entries.
+
+</Hint>
+
+<Hint>
+
+By the lesson on matrices, $B$ is the inverse of $A$ when the product is the identity matrix $I$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Write both matrices in polar coordinates and multiply.
+
+<Step title="B in polar coordinates">
+
+With $x = r\cos\theta$, $y = r\sin\theta$ and $\sqrt{x^2 + y^2} = r$:
+
+<Formula label="The matrix B in polar coordinates" tex="B = \begin{bmatrix} \cos\theta & -\dfrac{\sin\theta}{r} \\[2ex] \sin\theta & \dfrac{\cos\theta}{r} \end{bmatrix}" cite="mit" at="Part B, Problem 3(c) (our own solution)" />
+
+</Step>
+
+<Step title="The product">
+
+Each entry is a row of $A$ times a column of $B$:
+
+<Formula label="The product AB" tex="AB = \begin{bmatrix} \cos\theta & \sin\theta \\ -r\sin\theta & r\cos\theta \end{bmatrix}\begin{bmatrix} \cos\theta & -\dfrac{\sin\theta}{r} \\[2ex] \sin\theta & \dfrac{\cos\theta}{r} \end{bmatrix} = \begin{bmatrix} \cos^2\theta + \sin^2\theta & \dfrac{-\cos\theta\sin\theta + \sin\theta\cos\theta}{r} \\[2ex] -r\sin\theta\cos\theta + r\cos\theta\sin\theta & \sin^2\theta + \cos^2\theta \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}" cite="mit" at="Part B, Problem 3(c) (our own solution)" />
+
+So $AB = I$, and $B = A^{-1}$.
+
+</Step>
+
+<Step title="Why it had to be so">
+
+Applying $A$ turns the pair $w_x$, $w_y$ into $w_r$, $w_\theta$, and applying $B$ turns that pair back. Doing one after the other must give back what you started with, for every function $w$, and that is what $BA = I$ and $AB = I$ say.
+
+</Step>
+
+<Step title="Check the result">
+
+The lesson's cofactor method for the inverse gives the same. The determinant of $A$ is $r\cos^2\theta + r\sin^2\theta = r$. For a 2 × 2 matrix the method comes down to exchanging the two diagonal entries, changing the sign of the other two and dividing by the determinant, and that turns $A$ into the matrix $B$ above. With numbers, at $r = 2$, $\theta = \pi/6$: the bottom left entry of $AB$ is $-2 \times 0.5 \times 0.8660 + 2 \times 0.8660 \times 0.5 = 0$ and the bottom right entry is $0.25 + 0.75 = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={1}>
+
+At the point with polar coordinates $r = 5$, $\theta = \pi/2$, the derivatives of a function are $w_r = 2$ and $w_\theta = 10$. Compute $w_x$ and $w_y$ at that point.
+
+<Hint>
+
+Which point is it in rectangular coordinates? Then use the matrix $B$ of part (b).
+
+</Hint>
+
+<Answer id="p3-d-wx" label="$w_x =$" value="-2" tolerance="0.01" calc="p3-d-wx" />
+
+<Answer id="p3-d-wy" label="$w_y =$" value="2" tolerance="0.01" calc="p3-d-wy" />
+
+<Solution>
+
+**The idea.** Find the point, fill in the matrix $B$, and multiply.
+
+<Step title="The point and the matrix">
+
+$x = 5\cos(\pi/2) = 0$ and $y = 5\sin(\pi/2) = 5$: the point is $(0, 5)$, on the positive $y$-axis, with $x^2 + y^2 = 25$. The entries of $B$ there are $0$ and $-5/25 = -0.2$ in the first row, and $5/5 = 1$ and $0$ in the second.
+
+</Step>
+
+<Step title="Multiply">
+
+<Formula label="The rectangular derivatives at the point" tex="\begin{bmatrix} w_x \\ w_y \end{bmatrix} = \begin{bmatrix} 0 & -0.2 \\ 1 & 0 \end{bmatrix}\begin{bmatrix} 2 \\ 10 \end{bmatrix} = \begin{bmatrix} -2 \\ 2 \end{bmatrix}" cite="mit" at="Part B, Problem 3(d) (our own solution)" />
+
+So $w_x = -2$ and $w_y = 2$.
+
+</Step>
+
+<Step title="Check the result">
+
+Put the answer into the formula of part (a). At $\theta = \pi/2$ the matrix $A$ has first row $0, 1$ and second row $-5, 0$, so $w_r = w_y = 2$ and $w_\theta = -5w_x = 10$, as given. The picture agrees. At the point $(0, 5)$, moving outwards along $r$ is moving up, so $w_r = w_y$. Turning counterclockwise moves the point to the left, in the direction of $-x$, by $5$ units of length for each radian, so $w_\theta = -5\,w_x$. (This point is on the $y$-axis, where the formula $\tan^{-1}(y/x)$ of part (b) has no meaning. The entries of $B$ still hold there, as the check of part (b) explains.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## More practice: MIT's own solved exercises
+
+Part A of MIT's Problem Set 4 (15 points at MIT, not scored here) is a list of short exercises. Most come from the problems section of MIT's "18.02 Supplementary Notes and Problems", which is on MIT OpenCourseWare under the same licence as the rest of the course, with solutions to the exercises and parts that are not marked with a star. They are not rewritten here: open [the exercises (section 2, Partial differentiation)](https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/partial_diff/), try them, then compare with [MIT's solutions](https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/part_diff_sol/).
+
+An exercise number such as 2H-3 means section 2, group H, exercise 3; the letters after it are its parts. MIT assigned these, day by day:
+
+| For | Exercises in section 2 of the Notes |
+|---|---|
+| Lecture 9 (MIT's sheet: Lecture 10): [maxima, minima and least squares](/courses/18-02/critical-points-and-least-squares) | 2F-1a, b, 2F-2; 2G-1a, b, 2G-4 |
+| Lecture 10 (MIT's sheet: Lecture 11): [the second derivative test, boundaries and infinity](/courses/18-02/second-derivative-test) | 2H-1a, c, 2H-3, 2H-4, 2H-6 |
+| Lecture 11 (MIT's sheet: Lecture 12): [differentials and the chain rule](/courses/18-02/differentials-and-chain-rule) | 2C-1a, b, c, d, 2C-2, 2C-3, 2C-5a, b; 2E-1a, b, c, 2E-2b, c, 2E-5, 2E-8a, b |
+
+Parts a and b of exercise 2G-1 are marked with a star in the Notes, so MIT's solutions work only its part c, which goes the same way. Part b of exercise 2E-8 is starred as well, so MIT's solutions work only its part a. Some of the exercises in groups 2C and 2E use the gradient $\nabla w = \langle w_x, w_y\rangle$, the vector of the partial derivatives, which is the subject of the [next lesson](/courses/18-02/gradient). MIT's sheet tells its students to look that definition up before starting them.
+
+The theory behind Problems 1 and 2 is in two short chapters of the same Notes: [LS, Least Squares Interpolation](https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/least_sq_intrpol/) and [SD, Second Derivative Test](https://ocw.mit.edu/courses/18-02-multivariable-calculus-fall-2007/resources/2nd_derivative/).
+
+MIT's list also has one exercise from the course textbook (Edwards and Penney, *Multivariable Calculus*, 6th edition), and sections of that book to read. The textbook is not openly licensed and is not used on this site, so they are not part of this page. MIT's sheet ends with a page of directions for starting MATLAB on MIT's own computers in 2007, which is left out as well.

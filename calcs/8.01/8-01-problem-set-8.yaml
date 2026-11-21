@@ -1,0 +1,554 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a numerical solve of the full energy or momentum balance, a numerical work integral, or a numerical derivative.
+# Problem 1 can also be compared with MIT's course notes, Example 14.3.
+
+page: content/year-1/8.01/8-01-problem-set-8.mdx
+calcs:
+  # ---- Problem 1
+
+  # (a) The answer against a numerical solve of the radial second law at the top with N = 2mg.
+  - id: p1-a-by-solve
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Loop: speed at the top": against a numerical solve of m x²/R − m g − 2 m g = 0'
+    formula: sqrt(3*g*R)
+    equals: solve('m * x**2 / R - m * g - 2 * m * g', 'x', 0, 1000)
+    samples:
+      g: [9, 10, 9.8, 9.81]
+      R: [0.2, 2, 0.25, 1.3]
+      m: [0.1, 2, 0.20, 0.7]
+    tolerance: 1e-7
+    shown: ['v_\text{top} = \sqrt{3gR}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve for the compression x at which the normal force at the top,
+  # N = m v²/R − m g with m v² = k x² − 4 m g R (energy), equals 2 m g. Part (a) is not used.
+  - id: p1-b-by-solve
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Loop: compression of the spring": against a numerical solve of N(x) = 2mg, with N from energy and the second law'
+    formula: sqrt(7*m*g*R/k)
+    equals: solve('(k * x**2 - 4 * m * g * R) / R - m * g - 2 * m * g', 'x', 0, 100)
+    samples:
+      g: [9, 10, 9.8, 9.81]
+      R: [0.2, 2, 0.25, 1.3]
+      m: [0.1, 2, 0.20, 0.7]
+      k: [100, 500, 350, 220]
+    tolerance: 1e-7
+    shown: ['x = \sqrt{\frac{7\,m g R}{k}}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-example-vtop
+    where: 'Problem 1(a), check: speed at the top for R = 0.25 m'
+    inputs: {g: 9.8 m/s**2, R: 0.25 m}
+    formula: sqrt(3 * g * R)
+    expected: 2.71 m/s
+    shown: ['$v_\text{top} = \sqrt{3 \times 9.8 \times 0.25} = 2.71$ m/s']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-example-x
+    where: 'Problem 1(b), check: compression for m = 0.20 kg, k = 350 N/m, R = 0.25 m'
+    inputs: {m: 0.20 kg, g: 9.8 m/s**2, R: 0.25 m, k: 350 N/m}
+    formula: sqrt(7 * m * g * R / k)
+    expected: 0.099 m
+    shown: ['$x = \sqrt{7 \times 0.20 \times 9.8 \times 0.25/350} = 0.099$ m, about 10 cm']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # (a) The answer against the work of gravity integrated along the half circle: the tangential pull is
+  # m g sin θ, the path element l dθ, so v_top² = v0² − ∫ 2 g l sin θ dθ from 0 to π.
+  - id: p2-a-by-work-integral
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "String: tension at the top": against the work of gravity integrated numerically along the half circle'
+    formula: m*v0**2/l - 5*m*g
+    equals: m * (v0**2 - integrate('2 * g * l * sin(x)', 'x', 0, pi)) / l - m * g
+    samples:
+      m: [0.1, 2, 0.15, 0.9]
+      g: [9, 10, 9.8, 9.81]
+      l: [0.5, 1.5, 0.80, 1.1]
+      v0: [10, 15, 7.0, 12.5]
+    tolerance: 1e-7
+    shown: ['= \frac{m\,v_0^2}{l} - 5mg']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against the speed at the top times a numerically solved time of fall through 2l.
+  - id: p2-b-by-solve
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "String: landing distance": speed at the top times the time of fall solved numerically from 2l = g t²/2'
+    formula: 2*sqrt(l*(v0**2 - 4*g*l)/g)
+    equals: sqrt(v0**2 - integrate('2 * g * l * sin(x)', 'x', 0, pi)) * solve('2 * l - 0.5 * g * x**2', 'x', 0, 100)
+    samples:
+      g: [9, 10, 9.8, 9.81]
+      l: [0.5, 1.5, 0.80, 1.1]
+      v0: [10, 15, 7.0, 12.5]
+    tolerance: 1e-7
+    shown: ['d = 2\sqrt{\frac{l\,(v_0^2 - 4gl)}{g}}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-smallest-distance
+    kind: identity
+    where: 'Problem 2(b), check: the landing distance at the smallest allowed speed, v0² = 5gl, is 2l'
+    formula: 2*sqrt(l*(5*g*l - 4*g*l)/g)
+    equals: 2*l
+    samples:
+      g: [9, 10, 9.8]
+      l: [0.5, 1.5, 0.80]
+    tolerance: 1e-12
+    shown: ['$2\sqrt{l \times gl/g} = 2l$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-example-min-speed
+    where: 'Problem 2(a), check: the smallest speed that keeps the string taut, for l = 0.80 m'
+    inputs: {g: 9.8 m/s**2, l: 0.80 m}
+    formula: sqrt(5 * g * l)
+    expected: 6.26 m/s
+    shown: ['$\sqrt{5 \times 9.8 \times 0.80} = 6.26$ m/s, so 7.0 m/s is enough']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-climb-term
+    where: 'Problem 2(a), check: the term 4gl'
+    inputs: {g: 9.8 m/s**2, l: 0.80 m}
+    formula: 4 * g * l
+    expected: 31.36 m**2/s**2
+    shown: ['$v_\text{top}^2 = 49 - 31.36 = 17.64$ m²/s²']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-vtop-squared
+    where: 'Problem 2(a), check: speed squared at the top for v0 = 7.0 m/s'
+    inputs: {v0: 7.0 m/s, g: 9.8 m/s**2, l: 0.80 m}
+    formula: v0**2 - 4 * g * l
+    expected: 17.64 m**2/s**2
+    shown: ['$v_\text{top}^2 = 49 - 31.36 = 17.64$ m²/s²']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-vtop
+    where: 'Problem 2(a), check: speed at the top'
+    inputs: {v0: 7.0 m/s, g: 9.8 m/s**2, l: 0.80 m}
+    formula: sqrt(v0**2 - 4 * g * l)
+    expected: 4.2 m/s
+    shown: ['$v_\text{top} = 4.2$ m/s']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-tension
+    where: 'Problem 2(a), check: tension at the top for m = 0.15 kg'
+    inputs: {m: 0.15 kg, v0: 7.0 m/s, g: 9.8 m/s**2, l: 0.80 m}
+    formula: m * v0**2 / l - 5 * m * g
+    expected: 1.84 N
+    shown: ['$T = 0.15 \times 17.64/0.80 - 0.15 \times 9.8 = 1.84$ N']
+    source: {cite: mit, at: 'Problem 2(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-time
+    where: 'Problem 2(b), check: time of the fall'
+    inputs: {g: 9.8 m/s**2, l: 0.80 m}
+    formula: 2 * sqrt(l / g)
+    expected: 0.571 s
+    shown: ['$t = 2\sqrt{0.80/9.8} = 0.571$ s']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-distance
+    where: 'Problem 2(b), check: landing distance'
+    inputs: {v0: 7.0 m/s, g: 9.8 m/s**2, l: 0.80 m}
+    formula: 2 * sqrt(l * (v0**2 - 4 * g * l) / g)
+    expected: 2.40 m
+    shown: ['$d = 4.2 \times 0.571 = 2.40$ m']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-distance-over-length
+    where: 'Problem 2(b), check: the distance in units of the string length'
+    inputs: {d: 2.40 m, l: 0.80 m}
+    formula: d / l
+    expected: '3'
+    shown: ['three times the length of the string']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # (a) The answer against a numerical solve of the full energy balance of the heavier object, with the
+  # spring energy written out at the top and at the bottom.
+  - id: p3-a-by-solve
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Ring: energy of the heavier object": against a numerical solve of the energy balance with both spring energies written out'
+    formula: 2*sqrt(g*R)
+    equals: solve('0.5 * 3 * m * x**2 + 0.5 * k * ((2 * R)**2 + R**2) - 3 * m * g * 2 * R - 0.5 * k * ((2 * R)**2 + R**2)', 'x', 0, 1000)
+    samples:
+      g: [9, 10, 9.8, 9.81]
+      R: [0.2, 2, 0.50, 1.3]
+      m: [0.1, 2, 1.0, 0.7]
+      k: [1, 20, 4.9, 12]
+    tolerance: 1e-7
+    shown: ['v = \sqrt{4gR} = 2\sqrt{gR}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the momentum balance 3m v = 4m x.
+  - id: p3-b-by-solve
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Ring: momentum through the collision": against a numerical solve of 3m v = 4m x'
+    formula: 3*sqrt(g*R)/2
+    equals: solve('3 * m * sqrt(4 * g * R) - 4 * m * x', 'x', 0, 1000)
+    samples:
+      g: [9, 10, 9.8, 9.81]
+      R: [0.2, 2, 0.50, 1.3]
+      m: [0.1, 2, 1.0, 0.7]
+    tolerance: 1e-7
+    shown: ['V = \tfrac34\,v = \tfrac32\sqrt{gR}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # (c) The answer against a numerical solve for the mass x at which the combined object arrives at A with
+  # no kinetic energy: kinetic energy after the collision plus spring energy at the bottom equals the
+  # height energy plus the spring energy at A.
+  - id: p3-c-by-solve
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(c), answer box and formula "Ring: the mass that just reaches A": against a numerical solve of the energy balance from the bottom to A for the mass'
+    formula: 4*k*R/g
+    equals: solve('0.5 * 4 * x * (0.75 * sqrt(4 * g * R))**2 + 0.5 * k * ((2 * R)**2 + R**2) - 4 * x * g * R - 0.5 * k * (3 * R)**2', 'x', 0.000001, 100000)
+    samples:
+      g: [9, 10, 9.8, 9.81]
+      R: [0.2, 2, 0.50, 1.3]
+      k: [1, 20, 4.9, 12]
+    tolerance: 1e-7
+    shown: ['m = \frac{4kR}{g}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-spring-length-on-ring
+    kind: identity
+    where: 'Problem 3(c), check: the square of the spring length at the angle φ, from the coordinates (R sin φ, −R cos φ) and P = (−2R, 0)'
+    formula: (R*sin(phi) + 2*R)**2 + (R*cos(phi))**2
+    equals: R**2*(5 + 4*sin(phi))
+    samples:
+      R: [0.2, 2, 0.50, 1.3]
+      phi: [0, 1.5707963, 0.6, 2.2]
+    tolerance: 1e-9
+    shown: ['the square of the spring length is $R^2(5 + 4\sin\varphi)$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-spring-energy-change
+    kind: identity
+    where: 'Problem 3(c), formula "Ring: change of the spring energy"'
+    formula: 0.5*k*(3*R)**2 - 0.5*k*(5*R**2)
+    equals: 2*k*R**2
+    samples:
+      R: [0.2, 2, 0.50]
+      k: [1, 20, 4.9]
+    tolerance: 1e-12
+    shown: ['\tfrac12 k\,(3R)^2 - \tfrac12 k\,(5R^2) = 2kR^2']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-energy-lost
+    where: 'Problem 3(b), check: the share of the kinetic energy lost in the collision, (6 − 9/2)/6'
+    formula: (6 - 9 / 2) / 6
+    expected: '0.25'
+    shown: ['One quarter of it is lost in the collision']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-example-v
+    where: 'Problem 3(a), check: speed before the collision for R = 0.50 m'
+    inputs: {g: 9.8 m/s**2, R: 0.50 m}
+    formula: sqrt(4 * g * R)
+    expected: 4.43 m/s
+    shown: ['$v = \sqrt{4 \times 9.8 \times 0.50} = 4.43$ m/s']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-V
+    where: 'Problem 3(b), check: speed after the collision'
+    inputs: {g: 9.8 m/s**2, R: 0.50 m}
+    formula: 0.75 * sqrt(4 * g * R)
+    expected: 3.32 m/s
+    shown: ['$V = 0.75 \times 4.43 = 3.32$ m/s']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-mass
+    where: 'Problem 3(c), check: the mass for k = 4.9 N/m, R = 0.50 m'
+    inputs: {k: 4.9 N/m, R: 0.50 m, g: 9.8 m/s**2}
+    formula: 4 * k * R / g
+    expected: 1.0 kg
+    shown: ['$m = 4 \times 4.9 \times 0.50/9.8 = 1.0$ kg']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-kinetic
+    where: 'Problem 3(c), check: kinetic energy after the collision'
+    inputs: {m: 1.0 kg, g: 9.8 m/s**2, R: 0.50 m}
+    formula: 9 / 2 * m * g * R
+    expected: 22.05 J
+    shown: ['$\tfrac92 \times 1.0 \times 9.8 \times 0.50 = 22.05$ J']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-climb
+    where: 'Problem 3(c), check: energy of the climb to A'
+    inputs: {m: 1.0 kg, g: 9.8 m/s**2, R: 0.50 m}
+    formula: 4 * m * g * R
+    expected: 19.6 J
+    shown: ['$4 \times 1.0 \times 9.8 \times 0.50 = 19.6$ J']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-spring
+    where: 'Problem 3(c), check: energy taken up by the spring'
+    inputs: {k: 4.9 N/m, R: 0.50 m}
+    formula: 2 * k * R**2
+    expected: 2.45 J
+    shown: ['$2 \times 4.9 \times 0.50^2 = 2.45$ J']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-sum
+    where: 'Problem 3(c), check: climb plus spring'
+    inputs: {a: 19.6 J, b: 2.45 J}
+    formula: a + b
+    expected: 22.05 J
+    shown: ['together 22.05 J']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (a) The answer against the work of gravity integrated numerically from the surface out to a million
+  # Earth radii (the rest of the way to infinity changes the speed by less than one part in a million).
+  - id: p4-a-by-work-integral
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Projectile: energy at the launch": against the work of gravity integrated numerically out to 10⁶ R_E'
+    formula: sqrt(2*G*ME/RE)
+    equals: sqrt(2 * integrate('G * ME / (RE * exp(x))**2 * RE * exp(x)', 'x', 0, log(1000000)))
+    samples:
+      G: [1, 10, 6.5, 3.2]
+      ME: [1, 10, 5.5, 2.1]
+      RE: [1, 10, 6.4, 3.3]
+    tolerance: 2e-6
+    shown: ['v_\text{esc} = \sqrt{\frac{2G\,M_E}{R_E}}']
+    source: {cite: reading1, at: 'Example 14.2, Eq. (14.6), p. 14-25'}
+    origin: mit
+
+  # (b) The answer against the launch energy minus the work of gravity integrated from R_E to 2 R_E.
+  - id: p4-b-by-work-integral
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Projectile: speed at twice the Earth''s radius": launch speed squared minus twice the work integral of gravity from R_E to 2R_E'
+    formula: sqrt(G*ME/RE)
+    equals: sqrt(2 * G * ME / RE - 2 * integrate('G * ME / x**2', 'x', RE, 2 * RE))
+    samples:
+      G: [1, 10, 6.5, 3.2]
+      ME: [1, 10, 5.5, 2.1]
+      RE: [1, 10, 6.4, 3.3]
+    tolerance: 1e-7
+    shown: ['v_p = \sqrt{\frac{G\,M_E}{R_E}}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # (c) The answer against a numerical solve of the radial second law on the circle of radius 2 R_E.
+  - id: p4-c-by-solve
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box and formula "Satellite: circular orbit of radius twice the Earth''s": against a numerical solve of G M_E/(2R_E)² = x²/(2R_E)'
+    formula: sqrt(G*ME/(2*RE))
+    equals: solve('G * ME / (2 * RE)**2 - x**2 / (2 * RE)', 'x', 0, 1000)
+    samples:
+      G: [1, 10, 6.5, 3.2]
+      ME: [1, 10, 5.5, 2.1]
+      RE: [1, 10, 6.4, 3.3]
+    tolerance: 1e-7
+    shown: ['v_\text{sat} = \sqrt{\frac{G\,M_E}{2R_E}}']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # (d) The answer against a numerical solve of |total momentum|² before = (2m x)² after, with the two
+  # momenta at right angles and the speeds taken from the work integral and the orbit condition.
+  - id: p4-d-by-solve
+    kind: identity
+    answer: p4-d
+    where: 'Problem 4(d), answer box and formula "Collision: speed just after": against a numerical solve of (2m x)² = (m v_p)² + (m v_sat)²'
+    formula: sqrt(3*G*ME/(8*RE))
+    equals: solve('(2 * m * x)**2 - m**2 * (2 * G * ME / RE - 2 * integrate("G * ME / y**2", "y", RE, 2 * RE)) - m**2 * G * ME / (2 * RE)', 'x', 0, 1000)
+    samples:
+      G: [1, 10, 6.5, 3.2]
+      ME: [1, 10, 5.5, 2.1]
+      RE: [1, 10, 6.4, 3.3]
+      m: [0.1, 2, 1.0, 0.7]
+    tolerance: 1e-7
+    shown: ['= \sqrt{\frac{3G\,M_E}{8R_E}}']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-earth-gm
+    kind: fact
+    where: 'Problem 4(a), check: GM of the Earth'
+    value: 3.986e14
+    shown: ['$GM_E = 3.986\times10^{14}$ m³/s²']
+    source: {ref: nasa-earth}
+    origin: later-data
+
+  - id: p4-earth-radius
+    kind: fact
+    where: 'Problem 4(a), check: radius of the Earth'
+    value: 6.371e6
+    shown: ['$R_E = 6.371\times10^6$ m']
+    source: {ref: nasa-earth}
+    origin: later-data
+
+  - id: p4-earth-escape
+    where: 'Problem 4(a), check: escape speed from the Earth''s surface'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 6.371e6 m}
+    formula: sqrt(2 * GM / R)
+    expected: 11.2 km/s
+    shown: ['this gives 11.2 km/s']
+    source: {cite: mit, at: 'Problem 4(a) (our own numbers, NASA values)'}
+    origin: page-own
+
+  - id: p4-earth-projectile
+    where: 'Problem 4(b), check: speed of the projectile at 2R_E'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 6.371e6 m}
+    formula: sqrt(GM / R)
+    expected: 7.91 km/s
+    shown: ['For the Earth: 7.91 km/s']
+    source: {cite: mit, at: 'Problem 4(b) (our own numbers, NASA values)'}
+    origin: page-own
+
+  - id: p4-earth-satellite
+    where: 'Problem 4(c), check: speed of the satellite at 2R_E'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 6.371e6 m}
+    formula: sqrt(GM / (2 * R))
+    expected: 5.59 km/s
+    shown: ['For the Earth: 5.59 km/s']
+    source: {cite: mit, at: 'Problem 4(c) (our own numbers, NASA values)'}
+    origin: page-own
+
+  - id: p4-earth-after
+    where: 'Problem 4(d), check: speed just after the collision'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 6.371e6 m}
+    formula: sqrt(3 * GM / (8 * R))
+    expected: 4.84 km/s
+    shown: ['For the Earth: $V = 4.84$ km/s']
+    source: {cite: mit, at: 'Problem 4(d) (our own numbers, NASA values)'}
+    origin: page-own
+
+  - id: p4-energy-lost
+    where: 'Problem 4(d), check: share of the kinetic energy lost, (3/4 − 3/8)/(3/4)'
+    formula: (3 / 4 - 3 / 8) / (3 / 4)
+    expected: '0.5'
+    shown: ['half of it is lost']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # (b) The answer against minus a numerical derivative of U(x).
+  - id: p5-b-by-derivative
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Problem 5: the force": against minus the numerical derivative of U'
+    formula: -2*U0*x/a**2*exp(-x**2/a**2)
+    equals: -deriv('-U0 * exp(-y**2 / a**2)', 'y', x)
+    samples:
+      x: [0.3, 2, -0.7, 1.1]
+      a: [0.5, 2, 1.0, 1.4]
+      U0: [1, 5, 2.0, 3.3]
+    tolerance: 1e-6
+    shown: ['F_x = -\frac{2U_0\,x}{a^2}\,e^{-x^2/a^2}']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  # (c) The answer against the work-energy theorem: the kinetic energy at the origin equals minus the work
+  # of the force from 0 to a, integrated numerically.
+  - id: p5-c-by-work-integral
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(c), answer box and formula "Problem 5: speed at the origin": against the work of the force integrated numerically from 0 to a'
+    formula: sqrt(2*U0*(1 - exp(-1))/m)
+    equals: sqrt(2 / m * integrate('2 * U0 * y / a**2 * exp(-y**2 / a**2)', 'y', 0, a))
+    samples:
+      a: [0.5, 2, 1.0, 1.4]
+      m: [0.1, 2, 1.0, 0.7]
+      U0: [1, 5, 2.0, 3.3]
+    tolerance: 1e-7
+    shown: ['v_0 = \sqrt{\frac{2U_0}{m}\left(1 - \frac1e\right)}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-well-at-a
+    where: 'Problem 5(a) and (c): U at x = ±a in units of U0'
+    formula: exp(-1)
+    expected: '0.368'
+    shown: ['$-U_0/e = -0.368\,U_0$', 'its energy line lies at $-0.368\,U_0$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-turning-point
+    where: 'Problem 5(a): turning points for E = −U0/2, in units of a'
+    formula: sqrt(log(2))
+    expected: '0.833'
+    shown: ['x = ±0.833 a', '$x = \pm a\sqrt{\ln 2} = \pm 0.833\,a$']
+    source: {cite: mit, at: 'Problem 5(a) (our own example)'}
+    origin: page-own
+
+  - id: p5-turning-point-plot
+    where: 'Problem 5(a), graph: the x value of the two marked points'
+    formula: sqrt(log(2))
+    expected: '0.8326'
+    shown: ['{ x: 0.8326, y: -0.5, label: "turning point" }, { x: -0.8326, y: -0.5 }']
+    source: {cite: mit, at: 'Problem 5(a) (our own example)'}
+    origin: page-own
+
+  - id: p5-one-minus-inverse-e
+    where: 'Problem 5(c), check: 1 − 1/e'
+    formula: 1 - exp(-1)
+    expected: '0.632'
+    shown: ['$1 - 1/e = 0.632$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-speed-factor
+    where: 'Problem 5(c), check: v0 in units of √(U0/m)'
+    formula: sqrt(2 * (1 - exp(-1)))
+    expected: '1.124'
+    shown: ['$v_0 = 1.124\sqrt{U_0/m}$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-escape-factor
+    where: 'Problem 5(c), check: the escape speed from the bottom of the well in units of √(U0/m)'
+    formula: sqrt(2)
+    expected: '1.414'
+    shown: ['$\sqrt{2U_0/m} = 1.414\sqrt{U_0/m}$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-speed-share
+    where: 'Problem 5(c), check: v0 as a percentage of the escape speed'
+    formula: 100 * sqrt(1 - exp(-1))
+    expected: '80'
+    tolerance: 1
+    shown: ['about 80% of that speed']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own

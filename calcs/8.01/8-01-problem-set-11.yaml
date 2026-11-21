@@ -1,0 +1,449 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-11.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a numerical solve of the full angular momentum or energy balance (with the moment of inertia of the rod
+# integrated numerically, and the bug's angular momentum written out in components), or the equivalent
+# collision along a line.
+
+page: content/year-1/8.01/8-01-problem-set-11.mdx
+calcs:
+  # ---- Problem 1
+
+  # (a) The answer against a numerical solve of L_z = 0 about the pivot. Pivot at the origin, centre of the
+  # ring at (0, R), bug at (R sin φ, R − R cos φ) with φ = π; its velocity is v (cos φ, sin φ) relative to
+  # the ring plus ω × r, and L_z = m2 (x v_y − y v_x). The ring: I = m1 R² + m1 R².
+  - id: p1-a-by-solve
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Bug: angular velocity of the ring halfway around": against a numerical solve of the total angular momentum about the pivot, with the bug''s part written in components'
+    formula: -m2*v/((m1 + 2*m2)*R)
+    equals: solve('(m1 * R**2 + m1 * R**2) * x + m2 * ((R * sin(pi)) * (v * sin(pi) + x * R * sin(pi)) - (R - R * cos(pi)) * (v * cos(pi) - x * (R - R * cos(pi))))', 'x', -1000, 1000)
+    samples:
+      m1: [0.5, 3, 0.050, 1.7]
+      m2: [0.1, 1, 0.010, 0.4]
+      v: [0.5, 3, 0.020, 1.1]
+      R: [0.2, 2, 0.10, 0.9]
+    tolerance: 1e-7
+    shown: ['\omega_z = -\frac{m_2\,v}{(m_1 + 2m_2)\,R}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # The formula for any angle against the same solve in components, at φ = 2 (an angle that is not special).
+  - id: p1-any-angle-by-solve
+    kind: identity
+    where: 'Problem 1(b), check, formula "Bug: angular velocity of the ring at any point of the walk": against a numerical solve of the total angular momentum in components, at φ = 2 rad'
+    formula: -m2*v*(1 - cos(2))/(2*R*(m1 + m2*(1 - cos(2))))
+    equals: solve('(m1 * R**2 + m1 * R**2) * x + m2 * ((R * sin(2)) * (v * sin(2) + x * R * sin(2)) - (R - R * cos(2)) * (v * cos(2) - x * (R - R * cos(2))))', 'x', -1000, 1000)
+    samples:
+      m1: [0.5, 3, 0.050, 1.7]
+      m2: [0.1, 1, 0.010, 0.4]
+      v: [0.5, 3, 0.020, 1.1]
+      R: [0.2, 2, 0.10, 0.9]
+    tolerance: 1e-7
+    shown: ['\omega_z = -\frac{m_2\,v\,(1 - \cos\varphi)}{2R\,\big[m_1 + m_2\,(1 - \cos\varphi)\big]}']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  # The formula for any angle at φ = π is the answer of part (a).
+  - id: p1-any-angle-halfway
+    kind: identity
+    where: 'Problem 1(b), check: the formula for any angle at φ = π is the result of part (a)'
+    formula: -m2*v*(1 - cos(pi))/(2*R*(m1 + m2*(1 - cos(pi))))
+    equals: -m2*v/((m1 + 2*m2)*R)
+    samples:
+      m1: [0.5, 3, 0.050]
+      m2: [0.1, 1, 0.010]
+      v: [0.5, 3, 0.020]
+      R: [0.2, 2, 0.10]
+    tolerance: 1e-12
+    shown: ['For $\varphi = \pi$ this is the result of part (a)']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1-example-omega
+    where: 'Problem 1(a), check: angular velocity for m1 = 0.050 kg, m2 = 0.010 kg, v = 0.020 m/s, R = 0.10 m'
+    inputs: {m1: 0.050 kg, m2: 0.010 kg, v: 0.020 m/s, R: 0.10 m}
+    formula: -m2 * v / ((m1 + 2 * m2) * R)
+    expected: -0.029 1/s
+    shown: ['$\omega_z = -0.010 \times 0.020/(0.070 \times 0.10) = -0.029$ rad/s']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # (a) The answer against a numerical solve of L_before = I ω, with the rod's moment of inertia about its
+  # end integrated numerically, ∫ (m/d) s² ds from 0 to d.
+  - id: p2-a-by-solve
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Rod and two objects: angular speed after the collision": against a numerical solve of the angular momentum balance, the rod''s moment of inertia integrated numerically'
+    formula: 3*v/(8*d)
+    equals: solve('m * v * 2 * d / 3 - m * v * d / 3 - (integrate("(m / d) * s**2", "s", 0, d) + m * (2 * d / 3)**2 + m * (d / 3)**2) * x', 'x', -1000, 1000)
+    samples:
+      v: [0.5, 5, 2.0, 3.3]
+      d: [0.3, 2, 0.60, 1.4]
+      m: [0.1, 2, 0.30, 1.2]
+    tolerance: 1e-7
+    shown: ['\omega_f = \frac{3v}{8d}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-example-omega
+    where: 'Problem 2(a), check: angular speed for v = 2.0 m/s, d = 0.60 m'
+    inputs: {v: 2.0 m/s, d: 0.60 m}
+    formula: 3 * v / (8 * d)
+    expected: 1.25 1/s
+    shown: ['$\omega_f = 3 \times 2.0/(8 \times 0.60) = 1.25$ rad/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # The momentum after the collision, in units of m v: ω d (1/2 + 2/3 + 1/3) with ω = 3v/(8d).
+  - id: p2-momentum-after
+    where: 'Problem 2(a), check: momentum of the system after the collision, as a fraction of mv (9/16)'
+    inputs: {v: 2.0 m/s, d: 0.60 m}
+    formula: (3 * v / (8 * d)) * d * (1/2 + 2/3 + 1/3) / v
+    expected: '0.5625'
+    shown: ['\tfrac32 m\omega_f d = \tfrac{9}{16}mv']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The ratio from the energies themselves, with the rod's kinetic energy integrated along its length:
+  # ∫ ½ (m/d) (ω s)² ds, plus the two objects with their speeds ω·2d/3 and ω·d/3.
+  - id: p2-energy-ratio
+    answer: p2-b
+    where: 'Problem 2(b), answer box: (K_f − K_i)/K_i, with the rod''s kinetic energy integrated along its length'
+    inputs: {m: 0.30, v: 2.0, d: 0.60}
+    formula: (integrate('0.5 * (m / d) * (3 * v / (8 * d) * s)**2', 's', 0, d) + 0.5 * m * (3 * v / (8 * d) * 2 * d / 3)**2 + 0.5 * m * (3 * v / (8 * d) * d / 3)**2 - m * v**2) / (m * v**2)
+    expected: '-0.9375'
+    shown: ['-\frac{15}{16} = -0.9375']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-example-ki
+    where: 'Problem 2(b), check: kinetic energy before, m = 0.30 kg, v = 2.0 m/s'
+    inputs: {m: 0.30 kg, v: 2.0 m/s}
+    formula: m * v**2
+    expected: 1.2 J
+    shown: ['$K_i = 0.30 \times 2.0^2 = 1.2$ J']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-kf
+    where: 'Problem 2(b), check: kinetic energy after'
+    inputs: {m: 0.30 kg, v: 2.0 m/s, d: 0.60 m}
+    formula: 0.5 * (8/9) * m * d**2 * (3 * v / (8 * d))**2
+    expected: 0.075 J
+    shown: ['$K_f = 1.2/16 = 0.075$ J']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # (a) The answer against a numerical solve of the energy balance for ω, with v_f = (2/3) d ω − v_i from
+  # the angular momentum. The root ω = 0 (no collision) lies outside the bracket.
+  - id: p3-a-by-solve
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Elastic rod: angular speed after the collision": against a numerical solve of the energy balance, with v_f taken from the angular momentum balance'
+    formula: 12*vi/(7*d)
+    equals: solve('0.5 * m * vi**2 - 0.5 * m * (2 * d * x / 3 - vi)**2 - 0.5 * (m * d**2 / 12 + m * (d / 2)**2) * x**2', 'x', 0.05, 1000)
+    samples:
+      vi: [0.5, 5, 3.5, 2.2]
+      d: [0.3, 2, 1.2, 0.8]
+      m: [0.1, 2, 0.30, 1.2]
+    tolerance: 1e-7
+    shown: ['\omega_f = \frac{12\,v_i}{7\,d}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the energy balance for v_f, with ω = 3 (v_i + v_f)/(2d)
+  # from the angular momentum. The root v_f = −v_i (no collision) lies outside the bracket.
+  - id: p3-b-by-solve
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Elastic rod: speed of the object after the collision": against a numerical solve of the energy balance, with ω_f taken from the angular momentum balance'
+    formula: vi/7
+    equals: solve('0.5 * m * vi**2 - 0.5 * m * x**2 - 0.5 * (m * d**2 / 3) * (3 * (vi + x) / (2 * d))**2', 'x', 0, 1000)
+    samples:
+      vi: [0.5, 5, 3.5, 2.2]
+      d: [0.3, 2, 1.2, 0.8]
+      m: [0.1, 2, 0.30, 1.2]
+    tolerance: 1e-7
+    shown: ['= \tfrac17\,v_i']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # The same speed from the collision along a line with a free body of mass 4m/3.
+  - id: p3-b-effective-mass
+    kind: identity
+    where: 'Problem 3(b), check: rebound speed from a free body of mass 4m/3 at rest'
+    formula: (4*m/3 - m)/(4*m/3 + m)*vi
+    equals: vi/7
+    samples:
+      vi: [0.5, 5, 3.5]
+      m: [0.1, 2, 0.30]
+    tolerance: 1e-12
+    shown: ['$(\tfrac43 m - m)/(\tfrac43 m + m)\,v_i = v_i/7$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # The angular speed if the object sticks: m v_i d/2 over (1/3 + 1/4) m d².
+  - id: p3-sticking
+    kind: identity
+    where: 'Problem 3(a), check: angular speed if the object sticks, half of the elastic result'
+    formula: m*vi*(d/2)/(m*d**2/3 + m*d**2/4)
+    equals: 0.5*12*vi/(7*d)
+    samples:
+      vi: [0.5, 5, 3.5]
+      d: [0.3, 2, 1.2]
+      m: [0.1, 2, 0.30]
+    tolerance: 1e-12
+    shown: ['which is $6v_i/(7d)$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-example-omega
+    where: 'Problem 3(a), check: angular speed for v_i = 3.5 m/s, d = 1.2 m'
+    inputs: {vi: 3.5 m/s, d: 1.2 m}
+    formula: 12 * vi / (7 * d)
+    expected: 5.0 1/s
+    shown: ['$\omega_f = 12 \times 3.5/(7 \times 1.2) = 5.0$ rad/s']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-vf
+    where: 'Problem 3(b), check: rebound speed for v_i = 3.5 m/s'
+    inputs: {vi: 3.5 m/s}
+    formula: vi / 7
+    expected: 0.50 m/s
+    shown: ['$v_f = 3.5/7 = 0.50$ m/s']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  # The rod's share of the kinetic energy: (1/2)(1/3) m d² ω² over (1/2) m v_i², with ω = 12 v_i/(7d).
+  - id: p3-rod-share
+    where: 'Problem 3(b), check: the rod gets 48/49 of the kinetic energy'
+    inputs: {vi: 3.5 m/s, d: 1.2 m}
+    formula: (1/3) * d**2 * (12 * vi / (7 * d))**2 / vi**2 * 49
+    expected: '48'
+    shown: ['which is $\tfrac{48}{49}$ of $\tfrac12 mv_i^2$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (a) The answer against a numerical solve of the energy balance for v_f, with ω = m (v0 + v_f)/(2 mR R)
+  # from the angular momentum. The root v_f = −v0 (no collision) lies outside the bracket.
+  - id: p4-a-by-solve
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Hoop: speed of the object after the collision": against a numerical solve of the energy balance, with ω_f taken from the angular momentum balance'
+    formula: (2*mR - m)*v0/(2*mR + m)
+    equals: solve('0.5 * m * v0**2 - 0.5 * m * x**2 - 0.5 * (mR * R**2 + mR * R**2) * (m * (v0 + x) * R / (mR * R**2 + mR * R**2))**2', 'x', 0, 1000)
+    samples:
+      m: [0.1, 1, 0.10, 0.6]
+      mR: [1, 3, 0.20, 2.2]
+      v0: [0.5, 5, 3.0, 1.9]
+      R: [0.2, 2, 0.25, 1.1]
+    tolerance: 1e-7
+    shown: ['v_f = \frac{2m_R - m}{2m_R + m}\,v_0']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the energy balance for ω, with v_f = 2 mR R ω/m − v0 from
+  # the angular momentum. The root ω = 0 (no collision) lies outside the bracket.
+  - id: p4-b-by-solve
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Hoop: angular speed after the collision": against a numerical solve of the energy balance, with v_f taken from the angular momentum balance'
+    formula: 2*m*v0/((2*mR + m)*R)
+    equals: solve('0.5 * m * v0**2 - 0.5 * m * (2 * mR * R * x / m - v0)**2 - 0.5 * (2 * mR * R**2) * x**2', 'x', 0.005, 1000)
+    samples:
+      m: [0.1, 1, 0.10, 0.6]
+      mR: [1, 3, 0.20, 2.2]
+      v0: [0.5, 5, 3.0, 1.9]
+      R: [0.2, 2, 0.25, 1.1]
+    tolerance: 1e-7
+    shown: ['= \frac{2m\,v_0}{(2m_R + m)\,R}']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4-example-vf
+    where: 'Problem 4(a), check: rebound speed for m = 0.10 kg, m_R = 0.20 kg, v0 = 3.0 m/s'
+    inputs: {m: 0.10 kg, mR: 0.20 kg, v0: 3.0 m/s}
+    formula: (2 * mR - m) * v0 / (2 * mR + m)
+    expected: 1.8 m/s
+    shown: ['$v_f = (0.40 - 0.10)/(0.40 + 0.10) \times 3.0 = 1.8$ m/s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-omega
+    where: 'Problem 4(b), check: angular speed for R = 0.25 m'
+    inputs: {m: 0.10 kg, mR: 0.20 kg, v0: 3.0 m/s, R: 0.25 m}
+    formula: 2 * m * v0 / ((2 * mR + m) * R)
+    expected: 4.8 1/s
+    shown: ['$\omega_f = 2 \times 0.10 \times 3.0/(0.50 \times 0.25) = 4.8$ rad/s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-struck-point
+    where: 'Problem 4(b), check: R ω_f'
+    inputs: {m: 0.10 kg, mR: 0.20 kg, v0: 3.0 m/s}
+    formula: 2 * m * v0 / (2 * mR + m)
+    expected: 1.2 m/s
+    shown: ['$R\,\omega_f = 1.2$ m/s is indeed $v_0 - v_f = 3.0 - 1.8$ m/s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-k-before
+    where: 'Problem 4(b), check: kinetic energy before'
+    inputs: {m: 0.10 kg, v0: 3.0 m/s}
+    formula: 0.5 * m * v0**2
+    expected: 0.45 J
+    shown: ['before $\tfrac12 \times 0.10 \times 3.0^2 = 0.45$ J']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-k-object
+    where: 'Problem 4(b), check: kinetic energy of the object after'
+    inputs: {m: 0.10 kg, vf: 1.8 m/s}
+    formula: 0.5 * m * vf**2
+    expected: 0.162 J
+    shown: ['after $\tfrac12 \times 0.10 \times 1.8^2 = 0.162$ J for the object']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-k-hoop
+    where: 'Problem 4(b), check: kinetic energy of the hoop after'
+    inputs: {mR: 0.20 kg, R: 0.25 m, w: 4.8 1/s}
+    formula: 0.5 * 2 * mR * R**2 * w**2
+    expected: 0.288 J
+    shown: ['$\tfrac12 \times 2 \times 0.20 \times 0.25^2 \times 4.8^2 = 0.288$ J for the hoop, together 0.45 J']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # (a) The answer against a numerical solve of the radial second law.
+  - id: p5-a-by-solve
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box and formula "Spaceship 1: circular orbit": against a numerical solve of G mp/R² = x²/R'
+    formula: sqrt(G*mp/R)
+    equals: solve('G * mp / R**2 - x**2 / R', 'x', 0, 1000)
+    samples:
+      G: [1, 10, 6.7, 3.1]
+      mp: [1, 10, 5.9, 2.4]
+      R: [1, 10, 7.0, 4.2]
+    tolerance: 1e-7
+    shown: ['v_1 = \sqrt{\frac{G\,m_p}{R}}']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the energy balance between the closest and the furthest
+  # point, with v2 = x R/(3R) from the angular momentum.
+  - id: p5-b-by-solve
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Spaceship 2: speed at the closest point": against a numerical solve of the energy balance, with v2 taken from the angular momentum'
+    formula: sqrt(3*G*mp/(2*R))
+    equals: solve('0.5 * x**2 - G * mp / R - 0.5 * (x * R / (3 * R))**2 + G * mp / (3 * R)', 'x', 0, 1000)
+    samples:
+      G: [1, 10, 6.7, 3.1]
+      mp: [1, 10, 5.9, 2.4]
+      R: [1, 10, 7.0, 4.2]
+    tolerance: 1e-7
+    shown: ['v_p = \sqrt{\frac{3\,G\,m_p}{2R}}']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # (c) The answer against the difference of the two numerical solves of (a) and (b).
+  - id: p5-c-by-solve
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(c), answer box and formula "Docking: the change of the speed": against the difference of the numerically solved speeds of parts (a) and (b)'
+    formula: (1 - sqrt(3/2))*sqrt(G*mp/R)
+    equals: solve('G * mp / R**2 - x**2 / R', 'x', 0, 1000) - solve('0.5 * x**2 - G * mp / R - 0.5 * (x * R / (3 * R))**2 + G * mp / (3 * R)', 'x', 0, 1000)
+    samples:
+      G: [1, 10, 6.7, 3.1]
+      mp: [1, 10, 5.9, 2.4]
+      R: [1, 10, 7.0, 4.2]
+    tolerance: 1e-7
+    shown: ['\left(1 - \sqrt{\tfrac32}\right)\sqrt{\frac{G\,m_p}{R}}']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-earth-gm
+    kind: fact
+    where: 'Problem 5(a), check: GM of the Earth'
+    value: 3.986e14
+    shown: ['$Gm_p = 3.986\times10^{14}$ m³/s²']
+    source: {ref: nasa-earth}
+    origin: later-data
+
+  - id: p5-example-v1
+    where: 'Problem 5(a), check: circular speed at R = 7.0e6 m around the Earth'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 7.0e6 m}
+    formula: sqrt(GM / R)
+    expected: 7.55 km/s
+    shown: ['$v_1 = 7.55$ km/s']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-vp
+    where: 'Problem 5(b), check: speed at the closest point'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 7.0e6 m}
+    formula: sqrt(3 * GM / (2 * R))
+    expected: 9.24 km/s
+    shown: ['$v_p = 9.24$ km/s']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-dv
+    where: 'Problem 5(c), check: change of the speed'
+    inputs: {GM: 3.986e14 m**3/s**2, R: 7.0e6 m}
+    formula: (1 - sqrt(3/2)) * sqrt(GM / R)
+    expected: -1.70 km/s
+    shown: ['$\Delta v = 7.55 - 9.24 = -1.70$ km/s']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-ratio-vp
+    where: 'Problem 5(b), check: v_p over v_1'
+    formula: sqrt(3/2)
+    expected: '1.225'
+    shown: ['$\sqrt{3/2} = 1.225$ times $v_1$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ratio-escape
+    where: 'Problem 5(b), check: escape speed over v_1'
+    formula: sqrt(2)
+    expected: '1.414'
+    shown: ['$\sqrt{2Gm_p/R} = 1.414\,v_1$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ratio-v2
+    where: 'Problem 5(b), check: v_2 over v_1'
+    formula: sqrt(1/6)
+    expected: '0.408'
+    shown: ['\sqrt{Gm_p/(6R)} = 0.408\,v_1$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ratio-circular-3r
+    where: 'Problem 5(b), check: circular speed at 3R over v_1'
+    formula: sqrt(1/3)
+    expected: '0.577'
+    shown: ['$\sqrt{Gm_p/(3R)} = 0.577\,v_1$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ratio-dv
+    where: 'Problem 5(c), check: the number in front of the change of the speed'
+    formula: 1 - sqrt(3/2)
+    expected: '-0.225'
+    shown: ['$1 - 1.225 = -0.225$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
