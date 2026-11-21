@@ -1,0 +1,472 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# other axes (along the hoop, the string or the road instead of horizontal and vertical), the whole system
+# instead of one body, or a numerical solve of the force balance.
+# The two choice boxes of Problem 5 (p5-a, p5-b) have no number; the scalings behind them are checked below.
+# g = 9.8 m/s² in the worked numbers.
+
+page: content/year-1/8.01/8-01-problem-set-3.mdx
+calcs:
+  # ---- Problem 1
+
+  # (a) Second route: the second law along the tangent of the hoop, where the normal force has no part.
+  # Gravity's part along the tangent, g sin θ, must equal the part of the inward acceleration (R sin θ) ω²
+  # along the tangent, which is (R sin θ) ω² cos θ. Solved numerically for x = ω².
+  - id: p1-a-omega
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Angular speed that holds the bead at the angle θ": against a numerical solve of the tangential equation'
+    formula: sqrt(g/(R*cos(theta)))
+    equals: sqrt(solve('g * sin(theta) - x * R * sin(theta) * cos(theta)', 'x', 0, 100000))
+    samples:
+      theta: [0.3, 1.3, 0.8, 1.0472, 0.05]
+      R: [0.1, 1, 0.2, 0.2, 0.5]
+      g: [9, 10, 9.8, 9.8, 9.81]
+    tolerance: 1e-7
+    shown: ['\omega = \sqrt{\frac{g}{R\cos\theta}}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-example
+    where: 'Problem 1(a), check: ω that holds the bead at 60° on a hoop of radius 0.20 m'
+    inputs: {g: 9.8 m/s**2, R: 0.20 m}
+    formula: sqrt(g / (R * cos(60 * pi / 180)))
+    expected: 9.9 1/s
+    shown: ['$\omega = \sqrt{9.8/(0.20 \times 0.5)} = 9.9$ rad/s']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-a-cos60
+    where: 'Problem 1(a), check: cos 60° in the example'
+    formula: cos(60 * pi / 180)
+    expected: '0.5'
+    shown: ['(0.20 \times 0.5)']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  # (b) ω₀ is the limit of the result of part (a) for a very small angle.
+  - id: p1-b-omega0
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Angular speed below which the bead stays at the bottom": the result of part (a) at a very small angle'
+    formula: sqrt(g/R)
+    equals: sqrt(g / (R * cos(0.00001)))
+    samples:
+      R: [0.1, 1, 0.2, 0.5]
+      g: [9, 10, 9.8, 9.81]
+    tolerance: 1e-9
+    shown: ['\omega_0 = \sqrt{\frac{g}{R}}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-example-omega0
+    where: 'Problem 1(b), check: ω₀ for a hoop of radius 0.20 m'
+    inputs: {g: 9.8 m/s**2, R: 0.20 m}
+    formula: sqrt(g / R)
+    expected: 7.0 1/s
+    shown: ['$\omega_0 = \sqrt{9.8/0.20} = 7.0$ rad/s']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-b-example-cos
+    where: 'Problem 1(b), check: cos θ at ω = 10 rad/s'
+    formula: 9.8 / (0.20 * 10**2)
+    expected: '0.49'
+    shown: ['$9.8/(0.20 \times 10^2) = 0.49$', 'At $\omega = 10$ rad/s']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-b-example-angle
+    where: 'Problem 1(b), check: θ at ω = 10 rad/s, in degrees'
+    formula: acos(9.8 / (0.20 * 10**2)) * 180 / pi
+    expected: '60.7'
+    shown: ['$\theta = 60.7°$']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # Second route for both speeds: axes along the road and at right angles to it. At right angles to the road
+  # N = m (g cos β + (v²/R) sin β). Along the road, up the slope: ±μ N − m g sin β = −m (v²/R) cos β, with +
+  # for the slow car (friction up the slope) and − for the fast car. Solved numerically for x = v².
+  - id: p2-a-vmin
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Smallest safe speed on a banked turn": against a numerical solve with axes along the road'
+    formula: sqrt(R*g*(sin(beta) - mu*cos(beta))/(cos(beta) + mu*sin(beta)))
+    equals: sqrt(solve('mu * (g * cos(beta) + x * sin(beta) / R) - g * sin(beta) + x * cos(beta) / R', 'x', 0, 100000))
+    samples:
+      beta: [0.5, 0.7, 0.6, 0.43633, 1.0]
+      mu: [0.1, 0.4, 0.25, 0.30, 0.2]
+      R: [20, 100, 60, 60, 35]
+      g: [9, 10, 9.8, 9.8, 9.81]
+    tolerance: 1e-7
+    shown: ['v_\text{min} = \sqrt{R\,g\,\frac{\sin\beta - \mu_s\cos\beta}{\cos\beta + \mu_s\sin\beta}}']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-vmax
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Largest safe speed on a banked turn": against a numerical solve with axes along the road'
+    formula: sqrt(R*g*(sin(beta) + mu*cos(beta))/(cos(beta) - mu*sin(beta)))
+    equals: sqrt(solve('-mu * (g * cos(beta) + x * sin(beta) / R) - g * sin(beta) + x * cos(beta) / R', 'x', 0, 1000000))
+    samples:
+      beta: [0.5, 0.7, 0.6, 0.43633, 1.0]
+      mu: [0.1, 0.4, 0.25, 0.30, 0.2]
+      R: [20, 100, 60, 60, 35]
+      g: [9, 10, 9.8, 9.8, 9.81]
+    tolerance: 1e-7
+    shown: ['v_\text{max} = \sqrt{R\,g\,\frac{\sin\beta + \mu_s\cos\beta}{\cos\beta - \mu_s\sin\beta}}']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # The check with the friction angle φ = atan μ: the two fractions are tan(β − φ) and tan(β + φ).
+  - id: p2-friction-angle-min
+    kind: identity
+    where: 'Problem 2(b), check: the fraction of the smallest speed equals tan(β − φ) with tan φ = μ_s'
+    formula: (sin(beta) - mu*cos(beta))/(cos(beta) + mu*sin(beta))
+    equals: tan(beta - atan(mu))
+    samples:
+      beta: [0.5, 0.7, 0.6, 0.43633]
+      mu: [0.1, 0.4, 0.25, 0.30]
+    tolerance: 1e-10
+    shown: ['$\sqrt{Rg\tan(\beta - \varphi)}$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-friction-angle-max
+    kind: identity
+    where: 'Problem 2(b), check: the fraction of the largest speed equals tan(β + φ) with tan φ = μ_s'
+    formula: (sin(beta) + mu*cos(beta))/(cos(beta) - mu*sin(beta))
+    equals: tan(beta + atan(mu))
+    samples:
+      beta: [0.5, 0.7, 0.6, 0.43633]
+      mu: [0.1, 0.4, 0.25, 0.30]
+    tolerance: 1e-10
+    shown: ['$\sqrt{Rg\tan(\beta + \varphi)}$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-example-rg
+    where: 'Problem 2, checks: R g for R = 60 m'
+    inputs: {R: 60 m, g: 9.8 m/s**2}
+    formula: R * g
+    expected: 588 m**2/s**2
+    shown: ['\sqrt{588 \times 0.1459}', '\sqrt{588 \times \tan 25°}', '\sqrt{588 \times 0.8909}', '\sqrt{588 \times \tan 8.3°}', '\sqrt{588 \times \tan 41.7°}']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-fraction-min
+    where: 'Problem 2(a), check: the fraction for β = 25°, μ_s = 0.30'
+    formula: (sin(25 * pi / 180) - 0.30 * cos(25 * pi / 180)) / (cos(25 * pi / 180) + 0.30 * sin(25 * pi / 180))
+    expected: '0.1459'
+    shown: ['588 \times 0.1459']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-vmin
+    where: 'Problem 2(a), check: v_min for R = 60 m, β = 25°, μ_s = 0.30, in m/s'
+    formula: sqrt(60 * 9.8 * (sin(25 * pi / 180) - 0.30 * cos(25 * pi / 180)) / (cos(25 * pi / 180) + 0.30 * sin(25 * pi / 180)))
+    expected: '9.3'
+    shown: ['$v_\text{min} = \sqrt{588 \times 0.1459} = 9.3$ m/s', '$\sqrt{588 \times \tan 8.3°} = 9.3$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-frictionless
+    where: 'Problem 2(a), check: the frictionless speed for R = 60 m, β = 25°, in m/s'
+    formula: sqrt(60 * 9.8 * tan(25 * pi / 180))
+    expected: '16.6'
+    shown: ['$\sqrt{588 \times \tan 25°} = 16.6$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-fraction-max
+    where: 'Problem 2(b), check: the fraction for β = 25°, μ_s = 0.30'
+    formula: (sin(25 * pi / 180) + 0.30 * cos(25 * pi / 180)) / (cos(25 * pi / 180) - 0.30 * sin(25 * pi / 180))
+    expected: '0.8909'
+    shown: ['588 \times 0.8909']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-vmax
+    where: 'Problem 2(b), check: v_max for R = 60 m, β = 25°, μ_s = 0.30, in m/s'
+    formula: sqrt(60 * 9.8 * (sin(25 * pi / 180) + 0.30 * cos(25 * pi / 180)) / (cos(25 * pi / 180) - 0.30 * sin(25 * pi / 180)))
+    expected: '22.9'
+    shown: ['$v_\text{max} = \sqrt{588 \times 0.8909} = 22.9$ m/s', '$\sqrt{588 \times \tan 41.7°} = 22.9$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-phi
+    where: 'Problem 2(b), check: the friction angle for μ_s = 0.30, in degrees'
+    formula: atan(0.30) * 180 / pi
+    expected: '16.7'
+    shown: ['here $\varphi = 16.7°$', '$\beta = 25°$, $\mu_s = 0.30$ and', '$\beta = 25°$, $\mu_s = 0.30$)']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-angle-minus
+    where: 'Problem 2(b), check: β − φ, in degrees'
+    formula: 25 - atan(0.30) * 180 / pi
+    expected: '8.3'
+    shown: ['\tan 8.3°']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-angle-plus
+    where: 'Problem 2(b), check: β + φ, in degrees'
+    formula: 25 + atan(0.30) * 180 / pi
+    expected: '41.7'
+    shown: ['\tan 41.7°']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # (a) Second route: the second law at right angles to the string, where the tension has no part:
+  # g sin β = (l sin β) ω² cos β. Solved numerically for x = ω².
+  - id: p3-a-omega
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Angular speed of the ball on a string": against a numerical solve of the equation at right angles to the string'
+    formula: sqrt(g/(l*cos(beta)))
+    equals: sqrt(solve('g * sin(beta) - x * l * sin(beta) * cos(beta)', 'x', 0, 100000))
+    samples:
+      beta: [0.3, 1.3, 0.8, 0.61087, 0.05]
+      l: [0.5, 2, 1.5, 1.5, 1]
+      g: [9, 10, 9.8, 9.8, 9.81]
+    tolerance: 1e-7
+    shown: ['\omega = \sqrt{\frac{g}{l\cos\beta}}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # (b) Second route: speed times a fall time found by a numerical solve of h = g t²/2. The value of g is
+  # sampled although the answer does not contain it: the distance must come out the same for every g.
+  - id: p3-b-distance
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Horizontal distance of the flight": speed times a numerically solved fall time, for several values of g'
+    formula: sin(beta)*sqrt(2*h*l/cos(beta))
+    equals: l * sin(beta) * sqrt(g / (l * cos(beta))) * solve('h - 0.5 * g * x**2', 'x', 0, 100)
+    samples:
+      beta: [0.3, 1.3, 0.8, 0.61087, 0.05]
+      l: [0.5, 2, 1.5, 1.5, 1]
+      h: [0.5, 3, 2.0, 2.0, 1]
+      g: [9, 10, 9.8, 1.62, 24.8]
+    tolerance: 1e-7
+    shown: ['= \sin\beta\,\sqrt{\frac{2\,h\,l}{\cos\beta}}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-example-omega
+    where: 'Problem 3(a), check: ω for l = 1.5 m, β = 35°'
+    inputs: {g: 9.8 m/s**2, l: 1.5 m}
+    formula: sqrt(g / (l * cos(35 * pi / 180)))
+    expected: 2.82 1/s
+    shown: ['$\omega = \sqrt{9.8/(1.5 \times \cos 35°)} = 2.82$ rad/s', '$\beta = 35°$ give', '$\beta = 35°$) and']
+    source: {cite: mit, at: 'Problem 3(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-radius
+    where: 'Problem 3(b), check: radius of the circle'
+    inputs: {l: 1.5 m}
+    formula: l * sin(35 * pi / 180)
+    expected: 0.860 m
+    shown: ['$1.5 \times \sin 35° = 0.860$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-speed
+    where: 'Problem 3(b), check: speed of the ball'
+    inputs: {r: 0.860 m, omega: 2.82 1/s}
+    formula: r * omega
+    expected: 2.43 m/s
+    shown: ['$0.860 \times 2.82 = 2.43$ m/s']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-fall-time
+    where: 'Problem 3(b), check: time of the fall from h = 2.0 m'
+    inputs: {h: 2.0 m, g: 9.8 m/s**2}
+    formula: sqrt(2 * h / g)
+    expected: 0.639 s
+    shown: ['$\sqrt{2 \times 2.0/9.8} = 0.639$ s']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-distance-steps
+    where: 'Problem 3(b), check: distance as speed times time'
+    inputs: {v: 2.43 m/s, t: 0.639 s}
+    formula: v * t
+    expected: 1.55 m
+    shown: ['$d = 2.43 \times 0.639 = 1.55$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-distance-formula
+    where: 'Problem 3(b), check: distance from the formula'
+    inputs: {h: 2.0 m, l: 1.5 m}
+    formula: sin(35 * pi / 180) * sqrt(2 * h * l / cos(35 * pi / 180))
+    expected: 1.55 m
+    shown: ['$\sin 35° \times \sqrt{2 \times 2.0 \times 1.5/\cos 35°} = 1.55$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (a) Second route: the two boxes as one system. The only outside radial force is T_A, which equals the
+  # total mass times ω² times the distance of the centre of mass from the axis; T_B is then what is left
+  # of T_A after box 1 has taken its own m1 d ω².
+  - id: p4-a-tb
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Tension in the outer string": from the centre of mass of the two boxes, minus what box 1 needs'
+    formula: 2*m2*d*omega**2
+    equals: (m1 + m2) * omega**2 * (m1 * d + m2 * 2 * d) / (m1 + m2) - m1 * d * omega**2
+    samples:
+      m1: [0.5, 3, 1, 2.2]
+      m2: [0.5, 3, 2, 0.7]
+      d: [0.2, 1, 0.5, 0.35]
+      omega: [1, 6, 3, 4.4]
+    tolerance: 1e-10
+    shown: ['T_B = 2\,m_2\,d\,\omega^2']
+    source: {cite: reading1, at: 'Example 9.3, p. 9-11'}
+    origin: mit
+
+  # (b) Second route: T_A as the total mass times the acceleration of the centre of mass.
+  - id: p4-b-ta
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Tension in the inner string": total mass times the acceleration of the centre of mass'
+    formula: (m1 + 2*m2)*d*omega**2
+    equals: (m1 + m2) * omega**2 * (m1 * d + m2 * 2 * d) / (m1 + m2)
+    samples:
+      m1: [0.5, 3, 1, 2.2]
+      m2: [0.5, 3, 2, 0.7]
+      d: [0.2, 1, 0.5, 0.35]
+      omega: [1, 6, 3, 4.4]
+    tolerance: 1e-10
+    shown: ['= (m_1 + 2m_2)\,d\,\omega^2']
+    source: {cite: reading1, at: 'Example 9.3, pp. 9-11 and 9-12'}
+    origin: mit
+
+  # ---- Problem 5 (choice boxes p5-a and p5-b: the scalings v ∝ r^(-1/2) and T ∝ r^(3/2))
+
+  - id: p5-speed-ratio
+    where: 'Problem 5(a), check: speed on an orbit 4 times as large, as a fraction'
+    formula: 1 / sqrt(4)
+    expected: '0.5'
+    shown: ['$1/\sqrt{4} = 1/2$']
+    source: {cite: mit, at: 'Problem 5(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p5-period-ratio-steps
+    where: 'Problem 5(b), check: period on an orbit 4 times as large: 4 times the path at half the speed'
+    formula: 4 * 2
+    expected: '8'
+    shown: ['$4 \times 2 = 8$ times as long']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p5-period-ratio-kepler
+    where: 'Problem 5(b), check: the same ratio from T ∝ r^(3/2)'
+    formula: 4**1.5
+    expected: '8'
+    shown: ['$4^{3/2} = 8$']
+    source: {cite: mit, at: 'Problem 5(b) (our own numbers)'}
+    origin: page-own
+
+  # The period formula against 2π r / v with the speed of part (a).
+  - id: p5-period-formula
+    kind: identity
+    where: 'Problem 5(b), formula "Period of a circular orbit": against 2π r / v'
+    formula: 2*pi*sqrt(r**3/(G*mE))
+    equals: 2 * pi * r / sqrt(G * mE / r)
+    samples:
+      r: [6.7e6, 4.2e7, 3.8e8]
+      G: [6.67e-11, 6.67e-11, 6.67e-11]
+      mE: [5.97e24, 5.97e24, 5.97e24]
+    tolerance: 1e-10
+    shown: ['2\pi\,\sqrt{\frac{r^3}{G\,m_E}}']
+    source: {cite: reading1, at: 'Eq. (9.2.4), p. 9-5'}
+    origin: mit
+
+  # ---- Problem 6
+
+  # (a) Second route: the two components of the acceleration, d α along the circle and d (α t)² to the
+  # centre, combined as a vector.
+  - id: p6-a-friction
+    kind: identity
+    answer: p6-a
+    where: 'Problem 6(a), answer box and formula "Static friction on the coin": the length of the vector with the tangential and the radial part'
+    formula: m*d*alpha*sqrt(1 + alpha**2*t**4)
+    equals: m * sqrt((d * alpha)**2 + (d * (alpha * t)**2)**2)
+    samples:
+      m: [0.01, 0.1, 0.005, 0.05]
+      d: [0.1, 0.5, 0.15, 0.3]
+      alpha: [0.5, 3, 2.0, 1.2]
+      t: [0.5, 2, 2.55, 0]
+    tolerance: 1e-10
+    shown: ['= m\,d\,\alpha\,\sqrt{1 + \alpha^2 t^4}']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  # (b) Second route: a numerical solve of d² (α² + ω⁴) = (μ g)² for x = ω.
+  - id: p6-b-omega
+    kind: identity
+    answer: p6-b
+    where: 'Problem 6(b), answer box and formula "Angular speed at which the coin slips": against a numerical solve of needed friction = largest friction'
+    formula: ((mu*g/d)**2 - alpha**2)**(1/4)
+    equals: solve('d**2 * (alpha**2 + x**4) - (mu * g)**2', 'x', 0, 1000)
+    samples:
+      mu: [0.3, 0.8, 0.40, 0.5]
+      g: [9, 10, 9.8, 9.81]
+      d: [0.1, 0.5, 0.15, 0.3]
+      alpha: [0.5, 3, 2.0, 1.2]
+    tolerance: 1e-7
+    shown: ['\omega = \left[\left(\frac{\mu_s\,g}{d}\right)^2 - \alpha^2\right]^{1/4}']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-example-ratio
+    where: 'Problem 6(b), check: μ_s g/d for d = 0.15 m, μ_s = 0.40'
+    inputs: {mu: 0.40, g: 9.8 m/s**2, d: 0.15 m}
+    formula: mu * g / d
+    expected: 26.1 1/s**2
+    shown: ['$\mu_s g/d = 26.1\ \text{s}^{-2}$']
+    source: {cite: mit, at: 'Problem 6(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p6-example-omega
+    where: 'Problem 6(b), check: ω at which the coin slips, in rad/s'
+    formula: ((0.40 * 9.8 / 0.15)**2 - 2.0**2)**0.25
+    expected: '5.10'
+    shown: ['$\omega = (26.13^2 - 2.0^2)^{1/4} = 5.10$ rad/s']
+    source: {cite: mit, at: 'Problem 6(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p6-example-steady
+    where: 'Problem 6(b), check: the steady-turntable value, in rad/s'
+    formula: sqrt(0.40 * 9.8 / 0.15)
+    expected: '5.11'
+    shown: ['$\sqrt{26.13} = 5.11$ rad/s']
+    source: {cite: mit, at: 'Problem 6(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p6-example-ratio-4sf
+    where: 'Problem 6(b), check: μ_s g/d to four figures, as used inside the roots'
+    formula: 0.40 * 9.8 / 0.15
+    expected: '26.13'
+    shown: ['26.13^2', '\sqrt{26.13}']
+    source: {cite: mit, at: 'Problem 6(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p6-example-time
+    where: 'Problem 6(b), check: time at which the disk reaches that angular speed'
+    inputs: {omega: 5.10 1/s, alpha: 2.0 1/s**2}
+    formula: omega / alpha
+    expected: 2.55 s
+    shown: ['after $5.10/2.0 = 2.55$ s']
+    source: {cite: mit, at: 'Problem 6(b) (our own numbers)'}
+    origin: page-own
