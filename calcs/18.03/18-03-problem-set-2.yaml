@@ -1,0 +1,569 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for Part II; every answer is still checked here by an independent route:
+# the amounts from the differential equation (a numerical integral and a numerical derivative), the peak time
+# from the root of the slope, and the complex numbers from real arithmetic (moduli, angles, real parts).
+
+page: content/year-2/18.03/18-03-problem-set-2.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the four problems of Part II (20 + 18 + 16 + 18)'
+    inputs: {}
+    formula: 20 + 18 + 16 + 18
+    expected: '72'
+    shown: ['four problems (72 points)']
+    source: {cite: solutions, at: 'Part II solutions, pp. 1–2'}
+    origin: mit
+
+  - id: intro-part-i-points
+    kind: fact
+    where: 'Last section: the points of MIT''s Part I (4 + 6 + 8 + 6)'
+    shown: ['(24 points at MIT, not scored here)']
+    source: {cite: solutions, at: 'Part I points, p. 1'}
+    origin: mit
+
+  # ---- Problem 4
+
+  - id: p4-b-sigma
+    kind: identity
+    answer: p4-b-sigma
+    where: 'Problem 4(b), answer box and formula "Decay constants from half-lives": against σ = −ln(1/2)/t_S, from x(t_S) = 1/2'
+    formula: log(2)/tS
+    equals: -log(1/2)/tS
+    samples: {tS: [1, 2.5, 4, 10]}
+    tolerance: 1e-12
+    shown: ['\sigma = \frac{\ln 2}{t_S}']
+    source: {cite: solutions, at: 'Problem 4(b), p. 1'}
+    origin: mit
+
+  - id: p4-b-total
+    kind: identity
+    where: 'Problem 4(b), check: the sum of the three right-hand sides is zero (at several amounts)'
+    formula: (-sigma*x) + (-mu*y + 0.5*sigma*x) + (0.5*sigma*x + mu*y)
+    equals: 0*x
+    samples: {sigma: [0.1, 0.3, 0.7], mu: [0.2, 0.9, 0.5], x: [1, 0.4, 0.2], y: [0, 0.3, 0.1]}
+    tolerance: 1e-12
+    shown: ['Every term cancels, so $\dot x + \dot y + \dot z = 0$']
+    source: {cite: solutions, at: 'Problem 4(b), p. 1'}
+    origin: mit
+
+  - id: p4-b-wrong-sum
+    kind: identity
+    where: 'Problem 4(b), check: with the wrong equation ẏ = −μy + σx the sum is ½σx'
+    formula: (-sigma*x) + (-mu*y + sigma*x) + (0.5*sigma*x + mu*y)
+    equals: 0.5*sigma*x
+    samples: {sigma: [0.1, 0.3, 0.7], mu: [0.2, 0.9, 0.5], x: [1, 0.4, 0.2], y: [0, 0.3, 0.1]}
+    tolerance: 1e-12
+    shown: ['\frac{1}{2}\sigma x \neq 0']
+    source: {cite: solutions, at: 'Problem 4(b), p. 1'}
+    origin: page-own
+
+  - id: p4-c-y
+    kind: identity
+    answer: p4-c-y
+    where: 'Problem 4(c), answer box and formula "Solution for Mi": against the convolution integral of the decay of x and the decay of y, the integral of (σ/2)e^(−σs) e^(−μ(t−s)) over s'
+    formula: sigma/(2*(mu-sigma))*(exp(-sigma*t) - exp(-mu*t))
+    equals: integrate('0.5*sigma*exp(-sigma*s)*exp(-mu*(t-s))', 's', 0, t)
+    samples:
+      sigma: [0.1, 0.3, 0.5, 0.2]
+      mu: [0.6, 1.2, 0.9, 1.5]
+      t: [0.2, 1, 3, 2.5]
+    tolerance: 1e-7
+    shown: ['y = \frac{\sigma}{2(\mu - \sigma)}\left(e^{-\sigma t} - e^{-\mu t}\right)']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: mit
+
+  - id: p4-c-y-ode
+    kind: identity
+    where: 'Problem 4(c): the numerical derivative of y plus μy equals ½σ e^(−σt), the equation for y'
+    formula: deriv('sigma/(2*(mu-sigma))*(exp(-sigma*x)-exp(-mu*x))', 'x', t) + mu*(sigma/(2*(mu-sigma))*(exp(-sigma*t)-exp(-mu*t)))
+    equals: 0.5*sigma*exp(-sigma*t)
+    samples:
+      sigma: [0.1, 0.3, 0.5, 0.2]
+      mu: [0.6, 1.2, 0.9, 1.5]
+      t: [0.2, 1, 3, 2.5]
+    tolerance: 1e-7
+    shown: ['standard linear form, $\dot y + \mu y = \frac{1}{2}\sigma e^{-\sigma t}$']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: mit
+
+  - id: p4-c-y-zero
+    kind: identity
+    where: 'Problem 4(c): y(0) = 0 for the formula'
+    formula: sigma/(2*(mu-sigma))*(exp(-sigma*0)-exp(-mu*0))
+    equals: 0*sigma
+    samples: {sigma: [0.1, 0.3, 0.5], mu: [0.6, 1.2, 0.9]}
+    tolerance: 1e-12
+    shown: ['gives $0$']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: mit
+
+  - id: p4-c-y-slope
+    kind: identity
+    where: 'Problem 4(c), check: the slope of y at t = 0 is σ/2'
+    formula: deriv('sigma/(2*(mu-sigma))*(exp(-sigma*x)-exp(-mu*x))', 'x', 0)
+    equals: 0.5*sigma
+    samples: {sigma: [0.1, 0.3, 0.5], mu: [0.6, 1.2, 0.9]}
+    tolerance: 1e-7
+    shown: ['(-\sigma + \mu) = \frac{1}{2}\sigma']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: page-own
+
+  - id: p4-c-num
+    answer: p4-c-num
+    where: 'Problem 4(c), answer box: y(10) for σ = 0.1, μ = 0.2, by integrating (σ/2)e^(−σs) e^(−μ(10−s)) over s from 0 to 10'
+    inputs: {}
+    formula: integrate('0.5*0.1*exp(-0.1*s)*exp(-0.2*(10-s))', 's', 0, 10)
+    expected: '0.1163'
+    shown: ['\frac{1}{2}(e^{-1} - e^{-2}) = 0.1163']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: page-own
+
+  - id: p4-c-num-formula
+    where: 'Problem 4(c): y(10) = ½(e^(−1) − e^(−2)) from the formula'
+    inputs: {}
+    formula: 0.5*(exp(-1) - exp(-2))
+    expected: '0.1163'
+    shown: ['so $y(10) = ']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: page-own
+
+  - id: p4-c-z-10
+    where: 'Problem 4(c): z(10) from the formula for z, σ = 0.1, μ = 0.2'
+    inputs: {}
+    formula: 1 + (0.05 - 0.2)/(0.2 - 0.1)*exp(-1) + 0.05/(0.2 - 0.1)*exp(-2)
+    expected: '0.5158'
+    shown: ['z(10) = 0.5158']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: page-own
+
+  - id: p4-c-prefactor
+    where: 'Problem 4(c): the prefactor σ/(2(μ − σ)) for σ = 0.1, μ = 0.2'
+    inputs: {}
+    formula: 0.1/(2*(0.2 - 0.1))
+    expected: '0.5'
+    shown: ['\dfrac{0.1}{2 \times 0.1} = \frac{1}{2}']
+    source: {cite: solutions, at: 'Problem 4(c), p. 1'}
+    origin: page-own
+
+  - id: p4-d-formula
+    kind: identity
+    answer: p4-d-formula
+    where: 'Problem 4(d), answer box and formula "Time of the peak of Midium": against the root of the slope, σ e^(−σt) = μ e^(−μt)'
+    formula: (log(mu) - log(sigma))/(mu - sigma)
+    equals: solve('sigma*exp(-sigma*x) - mu*exp(-mu*x)', 'x', 0, 200)
+    samples:
+      sigma: [0.1, 0.3, 0.5, 0.2]
+      mu: [0.6, 1.2, 0.9, 1.5]
+    tolerance: 1e-6
+    shown: ['t_{\max} = \frac{\ln\mu - \ln\sigma}{\mu - \sigma}']
+    source: {cite: solutions, at: 'Problem 4(d), p. 1'}
+    origin: mit
+
+  - id: p4-d-num
+    answer: p4-d-num
+    where: 'Problem 4(d), answer box: t_max for σ = 0.1, μ = 0.2, as the root of 0.1 e^(−0.1t) = 0.2 e^(−0.2t)'
+    inputs: {}
+    formula: solve('0.1*exp(-0.1*x) - 0.2*exp(-0.2*x)', 'x', 0, 100)
+    expected: '6.93'
+    shown: ['\ln 2/0.1 = 6.93']
+    source: {cite: solutions, at: 'Problem 4(d), p. 1'}
+    origin: page-own
+
+  - id: p4-d-num-ratio
+    where: 'Problem 4(d): ln 2 / 0.1'
+    inputs: {}
+    formula: log(2)/0.1
+    expected: '6.93'
+    shown: ['\ln 2/0.1 = 6.93']
+    source: {cite: solutions, at: 'Problem 4(d), p. 1'}
+    origin: page-own
+
+  - id: p4-d-limit
+    kind: identity
+    where: 'Problem 4(d), check: as μ tends to σ the time tends to 1/σ (μ = 1.00001σ)'
+    formula: (log(1.00001*sigma) - log(sigma))/(0.00001*sigma)
+    equals: 1/sigma
+    samples: {sigma: [0.1, 0.5, 2]}
+    tolerance: 1e-4
+    shown: ['it tends to $1/\sigma$']
+    source: {cite: solutions, at: 'Problem 4(d), p. 1'}
+    origin: page-own
+
+  - id: p4-d-bounds-low
+    where: 'Problem 4(d): 1/μ for μ = 0.2'
+    inputs: {}
+    formula: 1/0.2
+    expected: '5'
+    shown: ['$1/\mu = 5$']
+    source: {cite: solutions, at: 'Problem 4(d), p. 1'}
+    origin: page-own
+
+  - id: p4-d-bounds-high
+    where: 'Problem 4(d): 1/σ for σ = 0.1'
+    inputs: {}
+    formula: 1/0.1
+    expected: '10'
+    shown: ['$1/\sigma = 10$']
+    source: {cite: solutions, at: 'Problem 4(d), p. 1'}
+    origin: page-own
+
+  - id: p4-f-q
+    kind: identity
+    answer: p4-f-q
+    where: 'Problem 4(f), answer box and formula "The right side": against t·x′ + 2x with x = e^t, the derivative taken numerically'
+    formula: (t + 2)*exp(t)
+    equals: t*deriv('exp(x)', 'x', t) + 2*exp(t)
+    samples: {t: [0.5, 1, 1.7, 2, -1.3]}
+    tolerance: 1e-7
+    shown: ['q(t) = t\,e^t + 2e^t = (t + 2)\,e^t']
+    source: {cite: solutions, at: 'Problem 4(f), p. 1'}
+    origin: mit
+
+  - id: p4-f-homogeneous
+    kind: identity
+    where: 'Problem 4(f): C/t² solves t·x′ + 2x = 0'
+    formula: t*deriv('C/x**2', 'x', t) + 2*C/t**2
+    equals: 0*C
+    samples: {C: [1, -2, 0.5, 3], t: [0.5, 1, 2.2, -1.5]}
+    tolerance: 1e-7
+    shown: ['it solves the homogeneous equation']
+    source: {cite: solutions, at: 'Problem 4(f), p. 1'}
+    origin: mit
+
+  # ---- Problem 5
+
+  - id: p5-a-1
+    answer: p5-a-1
+    where: 'Problem 5(a), answer box: the modulus of 1 − i'
+    inputs: {}
+    formula: sqrt(1**2 + (-1)**2)
+    expected: '1.414'
+    shown: ['|z| = \sqrt{1 + 1} = \sqrt 2']
+    source: {cite: solutions, at: 'Problem 5(a), p. 2'}
+    origin: mit
+
+  - id: p5-a-2
+    answer: p5-a-2
+    where: 'Problem 5(a), answer box: the real part of the number with modulus 2 and argument π/6'
+    inputs: {}
+    formula: 2*cos(pi/6)
+    expected: '1.732'
+    shown: ['$a = 2\cos(\pi/6) = \sqrt 3$']
+    source: {cite: solutions, at: 'Problem 5(a), p. 2'}
+    origin: mit
+
+  - id: p5-a-3
+    answer: p5-a-3
+    where: 'Problem 5(a), answer box: the argument of −(1 + i)/√2, as 5π/4 less 2π'
+    inputs: {}
+    formula: 5*pi/4 - 2*pi
+    expected: '-2.356'
+    shown: ['$-3\pi/4$']
+    source: {cite: solutions, at: 'Problem 5(a), p. 2'}
+    origin: mit
+
+  - id: p5-a-3-check
+    where: 'Problem 5(a): the angle of the point (−1, −1) is −3π/4 (tangent is 1, in the third quadrant): arctan 1 − π'
+    inputs: {}
+    formula: atan(1) - pi
+    expected: '-2.356'
+    shown: ['$-3\pi/4$']
+    source: {cite: solutions, at: 'Problem 5(a), p. 2'}
+    origin: page-own
+
+  - id: p5-a-4
+    answer: p5-a-4
+    where: 'Problem 5(a), answer box: the imaginary part of e^(iπ/3)'
+    inputs: {}
+    formula: sin(pi/3)
+    expected: '0.866'
+    shown: ['\dfrac{\sqrt 3}{2} = 0.866']
+    source: {cite: solutions, at: 'Problem 5(a), p. 2'}
+    origin: mit
+
+  - id: p5-a-5
+    answer: p5-a-5
+    where: 'Problem 5(a), answer box: the argument of ((1 + i)/√2)^(−13), as −13π/4 + 4π'
+    inputs: {}
+    formula: -13*pi/4 + 4*pi
+    expected: '2.356'
+    shown: ['$3\pi/4 = 2.356$']
+    source: {cite: solutions, at: 'Problem 5(a), p. 2'}
+    origin: mit
+
+  - id: p5-b-mod
+    answer: p5-b-mod
+    where: 'Problem 5(b), answer box: the modulus of a root of z⁴ + 4 = 0 is the fourth root of 4'
+    inputs: {}
+    formula: 4**(1/4)
+    expected: '1.414'
+    shown: ['Each has modulus $\sqrt 2$']
+    source: {cite: solutions, at: 'Problem 5(b), p. 2'}
+    origin: mit
+
+  - id: p5-b-root-check
+    where: 'Problem 5(b), check: Re (1 + i)⁴ = 1 − 6 + 1 = −4, by the binomial expansion of the real part'
+    inputs: {}
+    formula: 1 - 6*1*1 + 1
+    expected: '-4'
+    shown: ['$(1 + i)^4 = -4$']
+    source: {cite: solutions, at: 'Problem 5(b), p. 2'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6-b-re
+    answer: p6-b-re
+    where: 'Problem 6(b), answer box: the real part a = ln 2, from e^a = 2'
+    inputs: {}
+    formula: log(2)
+    expected: '0.6931'
+    shown: ['so $e^a = 2$ and $a = \ln 2$']
+    source: {cite: solutions, at: 'Problem 6(b), p. 2'}
+    origin: mit
+
+  - id: p6-b-check
+    where: 'Problem 6(b), check: e^(ln 2) × (−1) = −2'
+    inputs: {}
+    formula: exp(log(2))*cos(pi)
+    expected: '-2'
+    shown: ['= 2 \times (-1) = -2']
+    source: {cite: solutions, at: 'Problem 6(b), p. 2'}
+    origin: page-own
+
+  - id: p6-c-coeff
+    answer: p6-c-coeff
+    where: 'Problem 6(c), answer box: the coefficient of cos² t sin² t, found from cos 4t at t = π/4: (cos π − cos⁴ − sin⁴)/(cos² sin²)'
+    inputs: {}
+    formula: (cos(pi) - cos(pi/4)**4 - sin(pi/4)**4)/(cos(pi/4)**2*sin(pi/4)**2)
+    expected: '-6'
+    shown: ['- 6\cos^2 t\sin^2 t + \sin^4 t, \qquad']
+    source: {cite: solutions, at: 'Problem 6(c), p. 2'}
+    origin: mit
+
+  - id: p6-c-imag
+    answer: p6-c-imag
+    where: 'Problem 6(c), answer box: the coefficient of cos³ t sin t in sin 4t, from sin 4t at a small t (t = 10⁻⁵)'
+    inputs: {}
+    formula: sin(4e-5)/(cos(1e-5)**3*sin(1e-5))
+    expected: '4'
+    shown: ['4\cos^3 t\sin t']
+    source: {cite: solutions, at: 'Problem 6(c), p. 2'}
+    origin: page-own
+
+  - id: p6-c-cos4t
+    kind: identity
+    where: 'Problem 6(c): cos 4t = cos⁴ t − 6 cos² t sin² t + sin⁴ t, at five values of t'
+    formula: cos(t)**4 - 6*cos(t)**2*sin(t)**2 + sin(t)**4
+    equals: cos(4*t)
+    samples: {t: [0.1, 0.5, 1.3, 2.2, -0.7]}
+    tolerance: 1e-12
+    shown: ['\cos 4t = \cos^4 t - 6\cos^2 t\sin^2 t + \sin^4 t']
+    source: {cite: solutions, at: 'Problem 6(c), p. 2'}
+    origin: mit
+
+  - id: p6-c-sin4t
+    kind: identity
+    where: 'Problem 6(c): sin 4t = 4 cos³ t sin t − 4 cos t sin³ t, at five values of t'
+    formula: 4*cos(t)**3*sin(t) - 4*cos(t)*sin(t)**3
+    equals: sin(4*t)
+    samples: {t: [0.1, 0.5, 1.3, 2.2, -0.7]}
+    tolerance: 1e-12
+    shown: ['\sin 4t = 4\cos^3 t\sin t - 4\cos t\sin^3 t']
+    source: {cite: solutions, at: 'Problem 6(c), p. 2'}
+    origin: page-own
+
+  - id: p6-c-pi4
+    where: 'Problem 6(c), check: the formula for cos 4t at t = π/4 is 1/4 − 6/4 + 1/4'
+    inputs: {}
+    formula: 1/4 - 6/4 + 1/4
+    expected: '-1'
+    shown: ['\frac{1}{4} - \frac{6}{4} + \frac{1}{4} = -1']
+    source: {cite: solutions, at: 'Problem 6(c), p. 2'}
+    origin: page-own
+
+  - id: p6-d-1
+    answer: p6-d-1
+    where: 'Problem 6(d), answer box: b = 2π, because cos bt has period 1 when b = 2π/1'
+    inputs: {}
+    formula: 2*pi/1
+    expected: '6.283'
+    shown: ['we need $a = 0$ and $b = 2\pi$']
+    source: {cite: solutions, at: 'Problem 6(d), p. 2'}
+    origin: mit
+
+  - id: p6-d-3-re
+    answer: p6-d-3-re
+    where: 'Problem 6(d), answer box: a = −1, because the modulus e^(at) must equal e^(−t)'
+    inputs: {}
+    formula: log(exp(-1))
+    expected: '-1'
+    shown: ['$a = -1$']
+    source: {cite: solutions, at: 'Problem 6(d), p. 2'}
+    origin: mit
+
+  - id: p6-d-3-im
+    answer: p6-d-3-im
+    where: 'Problem 6(d), answer box: b = 2π'
+    inputs: {}
+    formula: 2*pi
+    expected: '6.283'
+    shown: ['we need $a = -1$ and $b = 2\pi$']
+    source: {cite: solutions, at: 'Problem 6(d), p. 2'}
+    origin: mit
+
+  - id: p6-d-3-real-part
+    kind: identity
+    where: 'Problem 6(d): Re e^(wt) for w = −1 + 2πi is e^(−t) cos 2πt, computed from the modulus and the argument'
+    formula: exp(-1*t)*cos(2*pi*t)
+    equals: exp(-t)*cos(2*pi*t)
+    samples: {t: [0, 0.3, 1.1, 2.4]}
+    tolerance: 1e-12
+    shown: ['e^{wt} = e^{-t}\bigl(\cos 2\pi t + i\sin 2\pi t\bigr)']
+    source: {cite: solutions, at: 'Problem 6(d), p. 2'}
+    origin: mit
+
+  # ---- Problem 7
+
+  - id: p7-a-a
+    answer: p7-a-a
+    where: 'Problem 7(a), answer box: a = √3/(3 + 1), the real part of 1/(√3 + i)'
+    inputs: {}
+    formula: sqrt(3)/(sqrt(3)**2 + 1**2)
+    expected: '0.4330'
+    shown: ['a = \sqrt 3/4 = 0.4330']
+    source: {cite: solutions, at: 'Problem 7(a), p. 2'}
+    origin: mit
+
+  - id: p7-a-b
+    answer: p7-a-b
+    where: 'Problem 7(a), answer box: b = 1/(3 + 1)'
+    inputs: {}
+    formula: 1/(sqrt(3)**2 + 1**2)
+    expected: '0.25'
+    shown: ['= 0.4330$ and $b = 1/4$']
+    source: {cite: solutions, at: 'Problem 7(a), p. 2'}
+    origin: mit
+
+  - id: p7-a-amp
+    answer: p7-a-amp
+    where: 'Problem 7(a), answer box: A = 1/|√3 + i| = 1/2'
+    inputs: {}
+    formula: 1/sqrt(sqrt(3)**2 + 1**2)
+    expected: '0.5'
+    shown: ['A = \sqrt{3/16 + 1/16} = \frac{1}{2}']
+    source: {cite: solutions, at: 'Problem 7(a), p. 2'}
+    origin: mit
+
+  - id: p7-a-phi
+    answer: p7-a-phi
+    where: 'Problem 7(a), answer box: φ = arctan(1/√3) = π/6'
+    inputs: {}
+    formula: atan(1/sqrt(3))
+    expected: '0.5236'
+    shown: ['\phi = \pi/6 = 0.5236']
+    source: {cite: solutions, at: 'Problem 7(a), p. 2'}
+    origin: mit
+
+  - id: p7-a-agree
+    kind: identity
+    where: 'Problem 7(a), check: ½ cos(3t − π/6) = (√3/4) cos 3t + ¼ sin 3t, at five values of t'
+    formula: 0.5*cos(3*t - pi/6)
+    equals: sqrt(3)/4*cos(3*t) + 0.25*sin(3*t)
+    samples: {t: [0, 0.4, 1.1, 2.5, -0.8]}
+    tolerance: 1e-12
+    shown: ['\cos(3t - \pi/6) = \frac{1}{2}\cos 3t']
+    source: {cite: solutions, at: 'Problem 7(a), p. 2'}
+    origin: mit
+
+  - id: p7-a-t0
+    where: 'Problem 7(a), check: at t = 0 both forms give √3/4'
+    inputs: {}
+    formula: sqrt(3)/4
+    expected: '0.4330'
+    shown: ['$\sqrt 3/4 = 0.4330$']
+    source: {cite: solutions, at: 'Problem 7(a), p. 2'}
+    origin: page-own
+
+  - id: p7-b-re
+    answer: p7-b-re
+    where: 'Problem 7(b), answer box: Re w = 3/(3² + 2²), from 1/(3 + 2i)'
+    inputs: {}
+    formula: 3/(3**2 + 2**2)
+    expected: '0.2308'
+    shown: ['$3/13 = 0.2308$']
+    source: {cite: solutions, at: 'Problem 7(b), p. 2'}
+    origin: mit
+
+  - id: p7-b-im
+    answer: p7-b-im
+    where: 'Problem 7(b), answer box: Im w = −2/(3² + 2²)'
+    inputs: {}
+    formula: -2/(3**2 + 2**2)
+    expected: '-0.1538'
+    shown: ['$-2/13 = -0.1538$']
+    source: {cite: solutions, at: 'Problem 7(b), p. 2'}
+    origin: mit
+
+  - id: p7-b-product
+    where: 'Problem 7(b), check: (3 − 2i)(3 + 2i) = 9 + 4 = 13'
+    inputs: {}
+    formula: 3**2 + 2**2
+    expected: '13'
+    shown: ['\dfrac{9 + 4}{13} = 1']
+    source: {cite: solutions, at: 'Problem 7(b), p. 2'}
+    origin: page-own
+
+  - id: p7-c-xp
+    kind: identity
+    answer: p7-c-xp
+    where: 'Problem 7(c), answer box and formula "A particular solution": against the steady response, the integral over s of e^(−3(t−s)) cos 2s from far in the past'
+    formula: (3*cos(2*t) + 2*sin(2*t))/13
+    equals: integrate('exp(-3*(t-s))*cos(2*s)', 's', t - 40, t)
+    samples: {t: [0, 0.3, 1.1, 2.2, -0.9]}
+    tolerance: 1e-7
+    shown: ['x_p = \frac{1}{13}\bigl(3\cos 2t + 2\sin 2t\bigr)']
+    source: {cite: solutions, at: 'Problem 7(c), p. 2'}
+    origin: mit
+
+  - id: p7-c-xp-ode
+    kind: identity
+    where: 'Problem 7(c): the numerical derivative of x_p plus 3x_p equals cos 2t'
+    formula: deriv('(3*cos(2*x) + 2*sin(2*x))/13', 'x', t) + 3*(3*cos(2*t) + 2*sin(2*t))/13
+    equals: cos(2*t)
+    samples: {t: [0, 0.3, 1.1, 2.2, -0.9]}
+    tolerance: 1e-7
+    shown: ['\dot x_p + 3x_p = \frac{4}{13}']
+    source: {cite: solutions, at: 'Problem 7(c), p. 2'}
+    origin: page-own
+
+  - id: p7-c-xp-0
+    where: 'Problem 7(c), check: x_p(0) = 3/13'
+    inputs: {}
+    formula: 3/13
+    expected: '0.2308'
+    shown: ['$x_p = 3/13$']
+    source: {cite: solutions, at: 'Problem 7(c), p. 2'}
+    origin: page-own
+
+  - id: p7-c-sum
+    where: 'Problem 7(c), check: x_p′(0) + 3x_p(0) = 4/13 + 9/13 = 1'
+    inputs: {}
+    formula: 4/13 + 9/13
+    expected: '1'
+    shown: ['\frac{4}{13} + \frac{9}{13} = 1']
+    source: {cite: solutions, at: 'Problem 7(c), p. 2'}
+    origin: page-own
+
+  - id: p7-c-amp
+    answer: p7-c-amp
+    where: 'Problem 7(c), answer box: the amplitude √(3² + 2²)/13 = 1/√13'
+    inputs: {}
+    formula: sqrt(3**2 + 2**2)/13
+    expected: '0.2774'
+    shown: ['1/\sqrt{13} = 0.2774']
+    source: {cite: solutions, at: 'Problem 7(c), p. 2'}
+    origin: page-own
