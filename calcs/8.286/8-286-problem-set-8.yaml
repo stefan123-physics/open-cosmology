@@ -1,0 +1,1025 @@
+# Calculations on content/year-4/8.286/8-286-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route
+# (a closed form, a limit, or the physical rule written another way), and every number by numerical integration.
+# Names in the formulas: Om, Or, Ov, Oms, Ok are the density fractions today; s, x, y, u are integration variables.
+
+page: content/year-4/8.286/8-286-problem-set-8.mdx
+calcs:
+  # ---- quoted facts
+
+  - id: p3-paper-redshift
+    kind: fact
+    where: 'Problem 3, statement: the redshift MIT''s set quotes from Friedman, Kaiser and Gallicchio'
+    shown: ['the authors found $z = 3.65$']
+    source: {cite: mit, at: 'Problem 3, p. 2'}
+    origin: mit
+
+  - id: p3-paper-parameters
+    kind: fact
+    where: 'Problem 3, statement: the parameters MIT''s set gives'
+    shown: ['$\Omega_{\text{vac},0} = 0.685$, $\Omega_{m,0} = 0.315$, $\Omega_{\text{rad},0} = 0$ and $H_0 = 67.3$ km/s/Mpc']
+    source: {cite: mit, at: 'Problem 3, p. 2'}
+    origin: mit
+
+  - id: p3-event-horizon-abstract
+    kind: fact
+    where: 'Problem 3(c): the event-horizon redshift in the paper''s abstract'
+    shown: ['event horizon at a present redshift of 1.87']
+    source: {cite: friedman2013, at: 'Abstract (arXiv:1305.3943)'}
+    origin: mit
+
+  - id: p5-guth-h0
+    kind: fact
+    where: 'Problem 5, statement: the Hubble constant that Guth found to match the paper''s curve'
+    shown: ['matched best with $H_0 = 66$ km/s/Mpc']
+    source: {cite: mit, at: 'Problem 5, p. 5'}
+    origin: mit
+
+  - id: p5-usual-h0
+    kind: fact
+    where: 'Problem 5, statement: the usual values MIT''s set mentions'
+    shown: ['the values of 70 to 72 that were usual at the time']
+    source: {cite: mit, at: 'Problem 5, p. 5'}
+    origin: mit
+
+  - id: p5-gold-count
+    kind: fact
+    where: 'Problem 5(b) and the first graph: the number of rows marked gold in MIT''s table of the Riess 2004 data (counted by script)'
+    shown: ['Our own calculation with the 157 gold supernovae of MIT''s table', 'of the 157 gold supernovae, every sixth one']
+    source: {cite: goldata, at: 'the rows marked gold'}
+    origin: mit
+
+  - id: p5-gold-above-one
+    kind: fact
+    where: 'First graph, caption: the number of gold supernovae with z above 1 in MIT''s table (counted by script)'
+    shown: ['all nine above z = 1']
+    source: {cite: goldata, at: 'the rows marked gold'}
+    origin: mit
+
+  - id: p5-gold-uncertainties
+    kind: fact
+    where: 'First graph, caption: the smallest and largest uncertainty of the gold rows of MIT''s table (93 of the 157 lie between 0.2 and 0.3)'
+    shown: ['the listed uncertainties run from 0.17 to 0.81 magnitudes']
+    source: {cite: goldata, at: 'the rows marked gold'}
+    origin: mit
+
+  # ---- the chi-squared fit of Problem 5(b): computed by a script from the 157 gold rows of MIT's table, which the harness cannot read.
+
+  # ---- Method: mu_model from the formulas of Problem 1 with H0 = 66 km/s/Mpc; shift = weighted mean residual; chi2 after the shift.
+
+  # ---- Unrounded: model 1: 0.2983, 324.70; model 2: 0.1767, 211.03; model 3: 0.0517, 177.13.
+
+  - id: p5-fit-model1
+    kind: fact
+    where: 'Problem 5(b), table of the fit: model 1'
+    shown: ['| 1: flat, matter only | 0.30 | 325 |']
+    source: {cite: goldata, at: 'the rows marked gold (our own calculation)'}
+    origin: page-own
+
+  - id: p5-fit-model2
+    kind: fact
+    where: 'Problem 5(b), table of the fit: model 2'
+    shown: ['| 2: open, matter only | 0.18 | 211 |']
+    source: {cite: goldata, at: 'the rows marked gold (our own calculation)'}
+    origin: page-own
+
+  - id: p5-fit-model3
+    kind: fact
+    where: 'Problem 5(b), table of the fit: model 3'
+    shown: ['| 3: flat, with vacuum energy | 0.05 | 177 |']
+    source: {cite: goldata, at: 'the rows marked gold (our own calculation)'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  # ---- The open-universe flux against a known closed form: for matter only, H0 d_L/c = 2[Ωz + (Ω−2)(√(1+Ωz) − 1)]/Ω² (Mattig).
+
+  # ---- psi is a free name in the answer box, so the samples carry psi = √(1−Ω_m) ∫ dz/((1+z)√(1+Ω_m z)), precomputed to 14 digits;
+
+  # ---- the next entry checks that integral against the closed form by numerical integration.
+
+  - id: p1-open-flux-against-closed-form
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Flux in an open universe": against J = P/(4π d_L²) with the closed-form luminosity distance of an open matter-only universe'
+    formula: P*H0**2*Ok/(4*pi*(1 + z)**2*c**2*sinh(psi)**2)
+    equals: P/(4*pi*((c/H0)*2*(Om*z + (Om - 2)*(sqrt(1 + Om*z) - 1))/Om**2)**2)
+    samples:
+      P: [1, 5, 3.3, 1e36]
+      H0: [0.5, 2, 1.3, 67]
+      c: [1, 3, 2, 299792.458]
+      z: [1.0, 0.5, 2.5, 0.2]
+      Om: [0.3, 0.1, 0.6, 0.9]
+      Ok: [0.7, 0.9, 0.4, 0.1]
+      psi: [0.54605000014448, 0.38027896366408, 0.64369844860760, 0.05534033226813]
+    tolerance: 1e-9
+    shown: ['tex="J = \frac{P\,H_0^2\,\Omega_{k,0}}{4\pi\,(1+z_S)^2\,c^2\,\sinh^2\psi_D}"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-open-psi-closed-form
+    kind: identity
+    where: 'Problem 1(a), check: the integral for ψ_D in an open matter-only universe against the closed form sinh ψ_D = √(1−Ω) H0 d_L/(c(1+z))'
+    formula: sqrt(1 - Om)*integrate('1/sqrt(Om*(1 + s)**3 + (1 - Om)*(1 + s)**2)', 's', 0, z)
+    equals: asinh(2*sqrt(1 - Om)*(Om*z + (Om - 2)*(sqrt(1 + Om*z) - 1))/(Om**2*(1 + z)))
+    samples:
+      Om: [0.3, 0.1, 0.6, 0.9]
+      z: [1.0, 0.5, 2.5, 0.2]
+    tolerance: 1e-9
+    shown: ['$H_0\,d_L/c = 2\left[\Omega z + (\Omega - 2)(\sqrt{1 + \Omega z} - 1)\right]/\Omega^2$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-open-psi-sample
+    where: 'Problem 1(a), check: ψ_D for Ω_m,0 = 0.3, no vacuum energy, z_S = 1 (the first psi sample above is this number)'
+    formula: sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1)
+    expected: '0.5461'
+    shown: ['Integrating numerically, $\psi_D = 0.5461$']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-open-sinh-sample
+    where: 'Problem 1(a), check: sinh ψ_D'
+    formula: sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1))
+    expected: '0.5736'
+    shown: ['$\sinh\psi_D = 0.5736$, so']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-open-dl-sample
+    where: 'Problem 1(a), check: H0 d_L/c from our formula'
+    formula: 2*sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1))/sqrt(0.7)
+    expected: '1.3712'
+    shown: ['= 2 \times 0.5736/\sqrt{0.7} = 1.3712$ as well']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-open-dl-closed-form
+    where: 'Problem 1(a), check: the closed form for Ω = 0.3, z = 1'
+    inputs: {Om: 0.3, z: 1}
+    formula: 2*(Om*z + (Om - 2)*(sqrt(1 + Om*z) - 1))/Om**2
+    expected: '1.3712'
+    shown: ['For $z_S = 1$ it gives 1.3712.']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-open-nearby-source
+    kind: limit
+    where: 'Problem 1(a), check: for small z_S, with ψ_D ≈ √Ω_k z_S, the flux becomes the inverse-square law at the distance c z_S/H0'
+    inputs: {P: 3.3, H0: 1.3, c: 2, Ok: 0.4}
+    formula: P*H0**2*Ok/(4*pi*(1 + z)**2*c**2*sinh(sqrt(Ok)*z)**2)
+    limit: P/(4*pi*(c*z/H0)**2)
+    vary: {z: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 1e-3
+    shown: ['$J \approx P/[4\pi\,(c\,z_S/H_0)^2]$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ---- The flat-universe flux as the limit Ω_k → 0 of the open-universe flux with ψ_D = √Ω_k I.
+
+  - id: p1-flat-flux-as-limit
+    kind: limit
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Flux in a flat universe": the limit of the open result as the curvature fraction goes to zero'
+    inputs: {P: 3.3, H0: 1.3, c: 2, z: 1.25, I: 0.9}
+    formula: P*H0**2/(4*pi*(1 + z)**2*c**2*I**2)
+    limit: P*H0**2*Ok/(4*pi*(1 + z)**2*c**2*sinh(sqrt(Ok)*I)**2)
+    vary: {Ok: [0.1, 0.01, 0.001, 0.00001]}
+    tolerance: 1e-5
+    shown: ['tex="J = \frac{P\,H_0^2}{4\pi\,(1+z_S)^2\,c^2\,I^2(z_S)}"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-flat-flux-as-closed-limit
+    kind: limit
+    where: 'Problem 1(b), check: the closed universe gives the same limit'
+    inputs: {P: 3.3, H0: 1.3, c: 2, z: 1.25, I: 0.9}
+    formula: P*H0**2/(4*pi*(1 + z)**2*c**2*I**2)
+    limit: P*H0**2*Ok/(4*pi*(1 + z)**2*c**2*sin(sqrt(Ok)*I)**2)
+    vary: {Ok: [0.1, 0.01, 0.001, 0.00001]}
+    tolerance: 1e-5
+    shown: ['since $\sin\psi_D \approx \psi_D$ too']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-small-curvature-integral
+    where: 'Problem 1(b), check: I_k for Ω_m,0 = 0.3, Ω_vac,0 = 0.6, z_S = 1'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1)
+    expected: '0.7495'
+    shown: ['Then $I_k = 0.7495$']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-small-curvature-psi
+    where: 'Problem 1(b), check: ψ_D = √0.1 I_k'
+    formula: sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1)
+    expected: '0.2370'
+    shown: ['$\psi_D = 0.2370$ and $\sinh\psi_D/\psi_D']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-small-curvature-ratio
+    where: 'Problem 1(b), check: sinh ψ_D/ψ_D'
+    formula: sinh(sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1))/(sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1))
+    expected: '1.0094'
+    shown: ['$\sinh\psi_D/\psi_D = 1.0094$']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-small-curvature-radius
+    where: 'Problem 1(b), check: the open sphere is larger in radius, in percent'
+    formula: 100*(sinh(sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1))/(sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1)) - 1)
+    expected: '0.94'
+    shown: ['the open sphere is 0.94% larger in radius']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-small-curvature-flux
+    where: 'Problem 1(b), check: the flux is smaller, in percent'
+    formula: 100*(1 - ((sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1))/sinh(sqrt(0.1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.6 + 0.1*(1 + s)**2)', 's', 0, 1)))**2)
+    expected: '1.9'
+    shown: ['and the flux is 1.9% smaller']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-matter-only-integral
+    kind: identity
+    where: 'Problem 1(b), check: the integral I for a flat matter-only universe in closed form'
+    formula: integrate('(1 + s)**(-1.5)', 's', 0, z)
+    equals: 2*(1 - 1/sqrt(1 + z))
+    samples:
+      z: [0.1, 0.5, 1.0, 2.5, 8.55]
+    tolerance: 1e-9
+    shown: ['$I = 2\left[1 - 1/\sqrt{1+z_S}\right]$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-matter-only-flux
+    kind: identity
+    where: 'Problem 1(b), check: with that integral the flat flux is the result of Problem Set 2, Problem 6'
+    formula: P*H0**2/(4*pi*(1 + z)**2*c**2*integrate('(1 + s)**(-1.5)', 's', 0, z)**2)
+    equals: P*H0**2/(16*pi*c**2*(1 + z)**2*(1 - 1/sqrt(1 + z))**2)
+    samples:
+      P: [1, 5, 3.3]
+      H0: [0.5, 2, 67]
+      c: [1, 3, 299792.458]
+      z: [0.1, 1.25, 8.55]
+    tolerance: 1e-9
+    shown: ['$P\,H_0^2/\{16\pi\,c^2(1+z_S)^2[1 - 1/\sqrt{1+z_S}]^2\}$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # ---- The density against the rule each ingredient obeys in terms of the volume V = x³: 1/V, 1/V^(4/3), constant, 1/√V.
+
+  - id: p2-density-by-volume
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Total mass density with mysterious stuff": each ingredient written with the volume x³'
+    formula: 3*H0**2/(8*pi*G)*(Om/x**3 + Or/x**4 + Ov + Oms/x**(3/2))
+    equals: 3*H0**2/(8*pi*G)*(Om/(x**3) + Or/(x**3)**(4/3) + Ov + Oms/sqrt(x**3))
+    samples:
+      H0: [0.5, 2, 1.3, 67]
+      G: [1, 3, 2, 6.674e-11]
+      Om: [0.1, 0.4, 0.3, 0.315]
+      Or: [0.01, 0.1, 0.05, 9.2e-5]
+      Ov: [0.1, 0.4, 0.3, 0.5]
+      Oms: [0.1, 0.4, 0.2, 0.15]
+      x: [0.1, 0.9, 0.5, 0.001]
+    tolerance: 1e-12
+    shown: ['tex="\rho(t) = \frac{3H_0^2}{8\pi G}\left[']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-density-today
+    kind: identity
+    where: 'Problem 2(a), check: at x = 1 the density is the sum of the four fractions times the critical density'
+    formula: 3*H0**2/(8*pi*G)*(Om/x**3 + Or/x**4 + Ov + Oms/x**(3/2))
+    equals: (Om + Or + Ov + Oms)*3*H0**2/(8*pi*G)
+    samples:
+      H0: [0.5, 2, 67]
+      G: [1, 3, 6.674e-11]
+      Om: [0.1, 0.4, 0.315]
+      Or: [0.01, 0.1, 9.2e-5]
+      Ov: [0.1, 0.4, 0.5]
+      Oms: [0.1, 0.4, 0.15]
+      x: [1, 1, 1]
+    tolerance: 1e-12
+    shown: ['At $x = 1$ the bracket is the sum of the four Ω''s']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # ---- The integrand against dt = dx/(x H), with H from the Friedmann equation written with the densities of part (a).
+
+  - id: p2-integrand-from-hubble-rate
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Age of a universe with mysterious stuff": f(x) = H0/(x H(x))'
+    formula: x/sqrt(Om*x + Or + Ov*x**4 + Oms*x**(5/2) + (1 - Om - Or - Ov - Oms)*x**2)
+    equals: 1/(x*sqrt(Om/x**3 + Or/x**4 + Ov + Oms/x**(3/2) + (1 - Om - Or - Ov - Oms)/x**2))
+    samples:
+      Om: [0.1, 0.3, 0.2, 0.315]
+      Or: [0.01, 0.05, 0.03, 9.2e-5]
+      Ov: [0.1, 0.3, 0.2, 0.5]
+      Oms: [0.1, 0.3, 0.25, 0.15]
+      x: [0.1, 0.9, 0.5, 0.01]
+    tolerance: 1e-12
+    shown: ['tex="t_0 = \frac{1}{H_0}\int_0^1 \frac{x\,dx}{\sqrt{\Omega_{m,0}\,x + \Omega_{\text{rad},0} + \Omega_{\text{vac},0}\,x^4 + \Omega_{\text{ms},0}\,x^{5/2}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-age-matter-only
+    where: 'Problem 2(b), check: matter only, the integral of x/√x from 0 to 1'
+    inputs: {Om: 1, Or: 0, Ov: 0, Oms: 0}
+    formula: integrate('x/sqrt(Om*x + Or + Ov*x**4 + Oms*x**(5/2) + (1 - Om - Or - Ov - Oms)*x**2)', 'x', 0, 1)
+    expected: '0.66667'
+    shown: ['the integral is $2/3$']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-age-mysterious-only
+    where: 'Problem 2(b), check: mysterious stuff only, the integral of x/x^(5/4) from 0 to 1'
+    inputs: {Om: 0, Or: 0, Ov: 0, Oms: 1}
+    formula: integrate('x/sqrt(Om*x + Or + Ov*x**4 + Oms*x**(5/2) + (1 - Om - Or - Ov - Oms)*x**2)', 'x', 0, 1)
+    expected: '1.33333'
+    shown: ['and the integral is $4/3$']
+    source: {cite: mit, at: 'Problem 2(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-mysterious-power-law
+    kind: identity
+    where: 'Problem 2(b), check: a ∝ t^(4/3) has H = ȧ/a = 4/(3t), and then H ∝ a^(−3/4) as the Friedmann equation with ρ ∝ a^(−3/2) requires'
+    formula: deriv('x**(4/3)', 'x', t)/t**(4/3)
+    equals: 4/(3*t)
+    samples:
+      t: [0.5, 1, 2.5, 13.8]
+    tolerance: 1e-7
+    shown: ['and then $H = 4/(3t)$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-mysterious-pressure
+    where: 'Problem 2(b), check: ρ ∝ a^(−3/2) in ρ̇ = −3H(ρ + p/c²) gives p/(ρc²) = (3/2)/3 − 1'
+    formula: (3/2)/3 - 1
+    expected: '-0.5'
+    shown: ['gives the pressure $p = -\tfrac12\rho c^2$']
+    source: {cite: reading4, at: 'pp. 20–21 (board), applied to the mysterious stuff'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-substitution
+    kind: identity
+    where: 'Problem 3(b), formula "A well-behaved form of the integral": x = u² in the total integral'
+    formula: integrate('1/sqrt(Om*x + Ov*x**4)', 'x', 0, 1)
+    equals: integrate('2/sqrt(Om + Ov*u**6)', 'u', 0, 1)
+    samples:
+      Om: [0.315, 0.3, 1.0, 0.1]
+      Ov: [0.685, 0.7, 0.0, 0.9]
+    tolerance: 1e-7
+    shown: ['= \int_0^1\frac{2\,du}{\sqrt{\Omega_{m,0} + \Omega_{\text{vac},0}\,u^6}}"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-integrand-maximum
+    where: 'Problem 3(b): the largest value of the new integrand, at u = 0'
+    formula: 2/sqrt(0.315)
+    expected: '3.56'
+    shown: ['$2/\sqrt{0.315} = 3.56$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-total-integral
+    where: 'Problem 3(b): the total integral, without radiation'
+    formula: integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', 0, 1)
+    expected: '3.2402'
+    shown: ['numerical integration gives 3.2402']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-half-integral
+    where: 'Problem 3(b): half of the total'
+    formula: 0.5*integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', 0, 1)
+    expected: '1.6201'
+    shown: ['Half of that is 1.6201.']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-lower-limit-u
+    where: 'Problem 3(b): the lower limit in u'
+    formula: solve("integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', y, 1) - 0.5*integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', 0, 1)", 'y', 0.05, 0.95)
+    expected: '0.4553'
+    shown: ['gives $u = 0.4553$ for it']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-lower-limit-x
+    where: 'Problem 3(b): the scale factor when the signal reaches the quasar'
+    formula: solve("integrate('1/sqrt(0.315*y + 0.685*y**4)', 'y', x, 1) - 0.5*integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', 0, 1)", 'x', 0.05, 0.95)
+    expected: '0.2073'
+    shown: ['so $x_1 = 0.4553^2 = 0.2073$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-redshift-no-radiation
+    answer: p3-b
+    where: 'Problem 3(b), answer box: the redshift at which I(z) is half the total, flat universe with Ω_m,0 = 0.315 and no radiation'
+    formula: solve("integrate('1/sqrt(0.315*(1 + s)**3 + 0.685)', 's', 0, z) - 0.5*integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', 0, 1)", 'z', 1, 10)
+    expected: '3.82'
+    shown: ['$z = 1/0.2073 - 1 = 3.82$.']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-matter-only-x
+    where: 'Problem 3(b), check: matter only, 2(1 − √x₁) = 1'
+    formula: solve('2*(1 - sqrt(x)) - 1', 'x', 0.01, 1)
+    expected: '0.25'
+    shown: ['gives $x_1 = 1/4$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-matter-only-redshift
+    where: 'Problem 3(b), check: matter only, by numerical integration'
+    formula: solve("integrate('(1 + s)**(-1.5)', 's', 0, z) - 0.5*integrate('2/sqrt(1 + 0*u)', 'u', 0, 1)", 'z', 1, 10)
+    expected: '3.000'
+    shown: ['so $z = 3$ exactly']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-gap-in-tolerances
+    where: 'Problem 3(b), check: the gap between 3.82 and 3.65 in units of the 1% tolerance of the box'
+    formula: (3.82 - 3.65)/(0.01*3.82)
+    expected: '4.5'
+    shown: ['it is more than four times the tolerance of the answer box']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  # ---- with radiation: Ω_rad,0 = 9.2e-5, taken from the vacuum energy so that the universe stays flat
+
+  - id: p3-radiation-fraction
+    where: 'Problem 3(c), statement: the lesson''s radiation fraction, 4.15e-5/h0² with h0 = 0.67'
+    formula: 4.15e-5/0.67**2
+    expected: '9.2e-5'
+    shown: ['$\Omega_{\text{rad},0} \approx 9.2 \times 10^{-5}$']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition; the value is from the lesson matter-radiation-equality)'}
+    origin: page-own
+
+  - id: p3-radiation-takes-over
+    where: 'Problem 3(c), hint: the x below which radiation is the largest term, Ω_rad,0/Ω_m,0'
+    formula: 9.2e-5/0.315
+    expected: '3e-4'
+    shown: ['when $x$ is below about $3 \times 10^{-4}$']
+    source: {cite: mit, at: 'Problem 3(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-substitution-radiation
+    kind: identity
+    where: 'Problem 3(c), formula "Total integral with radiation": x = u²'
+    formula: integrate('1/sqrt(Om*x + Or + Ov*x**4)', 'x', 0, 1)
+    equals: integrate('2*u/sqrt(Om*u**2 + Or + Ov*u**8)', 'u', 0, 1)
+    samples:
+      Om: [0.315, 0.3, 0.9]
+      Or: [9.2e-5, 0.01, 0.1]
+      Ov: [0.684908, 0.69, 0.0]
+    tolerance: 1e-7
+    shown: ['= \int_0^1\frac{2u\,du}{\sqrt{\Omega_{m,0}\,u^2 + \Omega_{\text{rad},0} + \Omega_{\text{vac},0}\,u^8}}"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-total-integral-radiation
+    where: 'Problem 3(c): the total integral with radiation'
+    formula: integrate('2*u/sqrt(0.315*u**2 + 9.2e-5 + (0.685 - 9.2e-5)*u**8)', 'u', 0, 1)
+    expected: '3.1800'
+    shown: ['Numerically it is 3.1800']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-total-drop
+    where: 'Problem 3(c): the drop of the total integral, in percent'
+    formula: 100*(1 - integrate('2*u/sqrt(0.315*u**2 + 9.2e-5 + (0.685 - 9.2e-5)*u**8)', 'u', 0, 1)/integrate('2/sqrt(0.315 + 0.685*u**6)', 'u', 0, 1))
+    expected: '1.9'
+    shown: ['a drop of 1.9%']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-half-integral-radiation
+    where: 'Problem 3(c): half of the total'
+    formula: 0.5*integrate('2*u/sqrt(0.315*u**2 + 9.2e-5 + (0.685 - 9.2e-5)*u**8)', 'u', 0, 1)
+    expected: '1.5900'
+    shown: ['Half of it is 1.5900.']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-lower-limit-radiation
+    where: 'Problem 3(c): the scale factor when the signal reaches the quasar'
+    formula: solve("integrate('1/sqrt(0.315*y + 9.2e-5 + (0.685 - 9.2e-5)*y**4)', 'y', x, 1) - 0.5*integrate('2*u/sqrt(0.315*u**2 + 9.2e-5 + (0.685 - 9.2e-5)*u**8)', 'u', 0, 1)", 'x', 0.05, 0.95)
+    expected: '0.2150'
+    shown: ['reaches 1.5900 at $x_1 = 0.2150$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-redshift-with-radiation
+    answer: p3-c
+    where: 'Problem 3(c), answer box: the redshift with radiation included'
+    formula: solve("integrate('1/sqrt(0.315*(1 + s)**3 + 9.2e-5*(1 + s)**4 + 0.685 - 9.2e-5)', 's', 0, z) - 0.5*integrate('2*u/sqrt(0.315*u**2 + 9.2e-5 + (0.685 - 9.2e-5)*u**8)', 'u', 0, 1)", 'z', 1, 10)
+    expected: '3.65'
+    shown: ['so $z = 3.65$.']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-future-integral
+    where: 'Problem 3(c), check: the comoving distance light can still cover, the integral from x = 1 to infinity (with x = 1/y it runs over y from 0 to 1)'
+    formula: integrate('1/sqrt(0.315*y**3 + 0.685)', 'y', 0, 1)
+    expected: '1.1497'
+    shown: ['that integral is 1.1497']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-event-horizon-redshift
+    where: 'Problem 3(c), check: the redshift whose comoving distance equals that integral, against the abstract''s 1.87'
+    formula: solve("integrate('1/sqrt(0.315*(1 + s)**3 + 0.685)', 's', 0, z) - integrate('1/sqrt(0.315*y**3 + 0.685)', 'y', 0, 1)", 'z', 0.5, 5)
+    expected: '1.87'
+    shown: ['and $I(z)$ reaches it at $z = 1.87$']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-shift-percent
+    where: 'Problem 3(c): the shift of the answer, (3.82 − 3.65)/3.82 in percent'
+    formula: 100*(3.82 - 3.65)/3.82
+    expected: '4.5'
+    tolerance: 0.06
+    shown: ['shifts this answer by 4.5%']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: flat universe, Ω_m,0 = 0.3, Ω_vac,0 = 0.7; c is the exact SI value from calcs/constants.yaml
+
+  - id: p4-integral-z1
+    answer: p4-a
+    where: 'Problem 4(a), answer box: I(1)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1)
+    expected: '0.77143'
+    shown: ['= 0.77143" cite']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integrand-at-one
+    where: 'Problem 4(a), hint and check: the integrand at z = 1'
+    formula: 1/sqrt(0.3*2**3 + 0.7)
+    expected: '0.568'
+    shown: ['$1/\sqrt{3.1} = 0.568$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-matter-only-z1
+    where: 'Problem 4(a), check: I(1) for matter only'
+    formula: 2*(1 - 1/sqrt(2))
+    expected: '0.586'
+    shown: ['$I(1) = 2(1 - 1/\sqrt2) = 0.586$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.1
+    where: 'Problem 4(b), table: I(0.1)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.1)
+    expected: '0.09771'
+    shown: ['| 0.1 | 0.09771 | 766.50 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.1
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.1, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.1)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.1)**2)
+    expected: '766.50'
+    shown: ['| 0.1 | 0.09771 | 766.50 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.2
+    where: 'Problem 4(b), table: I(0.2)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.2)
+    expected: '0.19070'
+    shown: ['| 0.2 | 0.19070 | 169.08 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.2
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.2, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.2)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.2)**2)
+    expected: '169.08'
+    shown: ['| 0.2 | 0.19070 | 169.08 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.3
+    where: 'Problem 4(b), table: I(0.3)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.3)
+    expected: '0.27889'
+    shown: ['| 0.3 | 0.27889 | 67.361 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.3
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.3, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.3)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.3)**2)
+    expected: '67.361'
+    shown: ['| 0.3 | 0.27889 | 67.361 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.4
+    where: 'Problem 4(b), table: I(0.4)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.4)
+    expected: '0.36228'
+    shown: ['| 0.4 | 0.36228 | 34.420 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.4
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.4, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.4)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.4)**2)
+    expected: '34.420'
+    shown: ['| 0.4 | 0.36228 | 34.420 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.5
+    where: 'Problem 4(b), table: I(0.5)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.5)
+    expected: '0.44098'
+    shown: ['| 0.5 | 0.44098 | 20.236 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.5
+    answer: p4-b-05
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.5, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.5)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.5)**2)
+    expected: '20.236'
+    shown: ['| 0.5 | 0.44098 | 20.236 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.6
+    where: 'Problem 4(b), table: I(0.6)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.6)
+    expected: '0.51518'
+    shown: ['| 0.6 | 0.51518 | 13.032 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.6
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.6, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.6)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.6)**2)
+    expected: '13.032'
+    shown: ['| 0.6 | 0.51518 | 13.032 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.7
+    where: 'Problem 4(b), table: I(0.7)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.7)
+    expected: '0.58507'
+    shown: ['| 0.7 | 0.58507 | 8.9503 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.7
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.7, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.7)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.7)**2)
+    expected: '8.9503'
+    shown: ['| 0.7 | 0.58507 | 8.9503 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.8
+    where: 'Problem 4(b), table: I(0.8)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.8)
+    expected: '0.65091'
+    shown: ['| 0.8 | 0.65091 | 6.4501 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.8
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.8, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.8)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.8)**2)
+    expected: '6.4501'
+    shown: ['| 0.8 | 0.65091 | 6.4501 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-0.9
+    where: 'Problem 4(b), table: I(0.9)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.9)
+    expected: '0.71294'
+    shown: ['| 0.9 | 0.71294 | 4.8254 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-0.9
+    where: 'Problem 4(b), table: J/(P H0²) at z = 0.9, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 0.9)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 0.9)**2)
+    expected: '4.8254'
+    shown: ['| 0.9 | 0.71294 | 4.8254 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-1.0
+    where: 'Problem 4(b), table: I(1.0)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.0)
+    expected: '0.77143'
+    shown: ['| 1.0 | 0.77143 | 3.7196 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-1.0
+    answer: p4-b-10
+    where: 'Problem 4(b), table: J/(P H0²) at z = 1.0, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 1.0)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.0)**2)
+    expected: '3.7196'
+    shown: ['| 1.0 | 0.77143 | 3.7196 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-1.1
+    where: 'Problem 4(b), table: I(1.1)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.1)
+    expected: '0.82661'
+    shown: ['| 1.1 | 0.82661 | 2.9384 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-1.1
+    where: 'Problem 4(b), table: J/(P H0²) at z = 1.1, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 1.1)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.1)**2)
+    expected: '2.9384'
+    shown: ['| 1.1 | 0.82661 | 2.9384 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-1.2
+    where: 'Problem 4(b), table: I(1.2)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.2)
+    expected: '0.87874'
+    shown: ['| 1.2 | 0.87874 | 2.3691 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-1.2
+    where: 'Problem 4(b), table: J/(P H0²) at z = 1.2, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 1.2)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.2)**2)
+    expected: '2.3691'
+    shown: ['| 1.2 | 0.87874 | 2.3691 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-1.3
+    where: 'Problem 4(b), table: I(1.3)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.3)
+    expected: '0.92803'
+    shown: ['| 1.3 | 0.92803 | 1.9434 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-1.3
+    where: 'Problem 4(b), table: J/(P H0²) at z = 1.3, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 1.3)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.3)**2)
+    expected: '1.9434'
+    shown: ['| 1.3 | 0.92803 | 1.9434 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-1.4
+    where: 'Problem 4(b), table: I(1.4)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.4)
+    expected: '0.97470'
+    shown: ['| 1.4 | 0.97470 | 1.6180 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-1.4
+    where: 'Problem 4(b), table: J/(P H0²) at z = 1.4, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 1.4)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.4)**2)
+    expected: '1.6180'
+    shown: ['| 1.4 | 0.97470 | 1.6180 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-integral-1.5
+    where: 'Problem 4(b), table: I(1.5)'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.5)
+    expected: '1.01894'
+    shown: ['| 1.5 | 1.01894 | 1.3645 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-table-1.5
+    answer: p4-b-15
+    where: 'Problem 4(b), table: J/(P H0²) at z = 1.5, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*(1 + 1.5)**2*c**2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1.5)**2)
+    expected: '1.3645'
+    shown: ['| 1.5 | 1.01894 | 1.3645 |']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-hubble-law-flux
+    where: 'Problem 4(b), check: the inverse-square law at the distance cz/H0 for z = 0.1, in 1e-19 s²/m²'
+    formula: 1e19*(meter**2/second**2)/(4*pi*c**2*0.1**2)
+    expected: '885'
+    shown: ['$1/(4\pi c^2 z^2) = 885 \times 10^{-19}$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-below-hubble-law
+    where: 'Problem 4(b), check: the table value at z = 0.1 below that, in percent'
+    formula: 100*(1 - 766.50/885.4)
+    expected: '13'
+    shown: ['which is 13% less']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-redshift-factors
+    where: 'Problem 4(b), check: what the two redshift factors take away at z = 0.1, in percent'
+    formula: 100*(1 - 1/1.1**2)
+    expected: '17'
+    shown: ['$1/1.1^2$, take away 17%']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-range
+    where: 'Problem 4(b), check: the ratio of the first and the last table entries'
+    formula: 766.50/1.3645
+    expected: '562'
+    shown: ['the flux falls by a factor of 562']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-model1-integral
+    where: 'Problem 5(a): I(1) for model 1'
+    formula: 2*(1 - 1/sqrt(2))
+    expected: '0.5858'
+    shown: ['$I(1) = 2(1 - 1/\sqrt2) = 0.5858$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-model1-distance
+    where: 'Problem 5(a): H0 d_L/c for model 1 at z = 1'
+    formula: 2*(1 + 1 - sqrt(1 + 1))
+    expected: '1.1716'
+    shown: ['so $H_0 d_L/c = 2 \times 0.5858 = 1.1716$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-model2-integral
+    where: 'Problem 5(a): I_k(1) for model 2'
+    formula: integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1)
+    expected: '0.6527'
+    shown: ['Numerically $I_k(1) = 0.6527$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-model2-psi
+    where: 'Problem 5(a): ψ_D for model 2'
+    formula: sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1)
+    expected: '0.5461'
+    shown: ['$\psi_D = \sqrt{0.7} \times 0.6527 = 0.5461$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-model2-distance
+    where: 'Problem 5(a): H0 d_L/c for model 2 at z = 1'
+    formula: 2*sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1))/sqrt(0.7)
+    expected: '1.3712'
+    shown: ['$H_0 d_L/c = 2\sinh(0.5461)/\sqrt{0.7} = 1.3712$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-model3-distance
+    where: 'Problem 5(a): H0 d_L/c for model 3 at z = 1'
+    formula: 2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1)
+    expected: '1.5429'
+    shown: ['so $H_0 d_L/c = 1.5429$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-hubble-length
+    where: 'Problem 5(a): c/H0 for H0 = 66 km/s/Mpc'
+    inputs: {H0: 66 km/s/Mpc}
+    formula: c/H0
+    expected: '4542.3 Mpc'
+    shown: ['$c/H_0 = 4542.3$ Mpc']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-model1-distance-mpc
+    where: 'Problem 5(a): d_L of model 1 at z = 1'
+    inputs: {H0: 66 km/s/Mpc}
+    formula: 2*(1 + 1 - sqrt(1 + 1))*c/H0
+    expected: '5321.6 Mpc'
+    shown: ['$d_L = 1.17157 \times 4542.3 = 5321.6$ Mpc']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-mu-model1
+    answer: p5-a-mu1
+    where: 'Problem 5(a), answer box: the distance modulus of model 1 at z = 1'
+    inputs: {H0: 66 km/s/Mpc}
+    formula: 5*log10(2*(1 + 1 - sqrt(1 + 1))*c/H0/Mpc) + 25
+    expected: '43.63'
+    shown: ['$\mu_1 = 5\log_{10}(5321.6) + 25 = 43.63$.']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-difference-open
+    answer: p5-a-21
+    where: 'Problem 5(a), answer box: μ₂ − μ₁ at z = 1'
+    formula: 5*log10((2*sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1))/sqrt(0.7))/(2*(1 + 1 - sqrt(1 + 1))))
+    expected: '0.342'
+    shown: ['$\mu_2 - \mu_1 = 5\log_{10}(1.3712/1.1716) = 0.342$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-difference-vacuum
+    answer: p5-a-31
+    where: 'Problem 5(a), answer box: μ₃ − μ₁ at z = 1'
+    formula: 5*log10((2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1))/(2*(1 + 1 - sqrt(1 + 1))))
+    expected: '0.598'
+    shown: ['$\mu_3 - \mu_1 = 5\log_{10}(1.5429/1.1716) = 0.598$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-flux-factor
+    where: 'Problem 5(a), check: the flux ratio of models 1 and 3 at z = 1'
+    formula: ((2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1))/(2*(1 + 1 - sqrt(1 + 1))))**2
+    expected: '1.73'
+    shown: ['$(1.5429/1.1716)^2 = 1.73$ in flux']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-flux-percent
+    where: 'Problem 5(a), check: the light in model 3 as a percentage of model 1'
+    formula: 100*((2*(1 + 1 - sqrt(1 + 1)))/(2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1)))**2
+    expected: '58'
+    shown: ['delivers only 58% of the light']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-difference-2-3
+    where: 'Problem 5(a), check: μ₃ − μ₂ at z = 1'
+    formula: 5*log10((2*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1))/(2*sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, 1))/sqrt(0.7)))
+    expected: '0.26'
+    shown: ['a difference of 0.26 magnitudes between models 2 and 3']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-difference-2-3-z1
+    where: 'Problem 5(c): μ₃ − μ₂ at z = 1, with the closed form for model 2'
+    formula: 5*log10(((1 + 1)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 1))/(2*(0.3*1 - 1.7*(sqrt(1 + 0.3*1) - 1))/0.09))
+    expected: '0.26'
+    shown: ['their difference is 0.26 magnitudes at $z = 1$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-difference-2-3-z2
+    where: 'Problem 5(c): μ₃ − μ₂ at z = 2'
+    formula: 5*log10(((1 + 2)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 2))/(2*(0.3*2 - 1.7*(sqrt(1 + 0.3*2) - 1))/0.09))
+    expected: '0.19'
+    shown: ['and 0.19 at $z = 2$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-closed-form-model2
+    kind: identity
+    where: 'Problem 5(b) and both graphs: the closed form used for model 2 equals the open formula of Problem 1(a)'
+    formula: (1 + z)*sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7*(1 + s)**2)', 's', 0, z))/sqrt(0.7)
+    equals: 2*(0.3*z - 1.7*(sqrt(1 + 0.3*z) - 1))/0.09
+    samples:
+      z: [0.01, 0.5, 1.0, 2.0]
+    tolerance: 1e-8
+    shown: ['For models 1 and 2 the integral can be avoided']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-closed-form-model1
+    kind: identity
+    where: 'Both graphs: the closed form used for model 1 equals (1 + z) I(z) for matter only'
+    formula: (1 + z)*integrate('(1 + s)**(-1.5)', 's', 0, z)
+    equals: 2*(1 + z - sqrt(1 + z))
+    samples:
+      z: [0.01, 0.5, 1.0, 2.0]
+    tolerance: 1e-9
+    shown: ['models 1 and 2 from the closed form for a universe with matter only']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-midpoint-rule
+    where: 'Both graphs: the 40-step midpoint sum used for model 3 against the integral, at z = 2 (H0 d_L/c; the sum is written out for its first and last steps only in the graph, so here the integral is compared with the value 3.6284 that the sum gives)'
+    formula: ((1 + 2)*integrate('1/sqrt(0.3*(1 + s)**3 + 0.7)', 's', 0, 2))
+    expected: '3.628'
+    shown: ['model 3 by numerical integration']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
