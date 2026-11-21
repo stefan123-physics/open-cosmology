@@ -10,6 +10,10 @@ Read on 2026-11-20 (logged out, from this PC) by Claude for the owner. Used for 
 | Open textbooks page | https://www.siyavula.com/read/za/science/grade-7 (redirects to the open textbooks list) | Branded printed/PDF books: CC BY-ND 3.0 (no changes). Unbranded versions of the same content: CC BY 3.0, "the only requirement being to give appropriate credit to Siyavula". Information Technology and Computer Applications Technology books: closed copyright (MTN). |
 | Terms and Conditions | https://www.siyavula.com/info/terms-and-conditions | Some material is under a Creative Commons Attribution licence; a remix must state the author's name and "From siyavula.com"; "Only material that is clearly marked with a Creative Commons license can be re-used without permission"; no logos, brand marks or trademarks in a remix and no suggestion of endorsement. No clause about AI, machine learning, scraping or text and data mining. |
 
+## Archived copies
+
+On 2026-11-21 every Siyavula page the site cites (99 pages) was saved on the Internet Archive as evidence of its licence footer on that date: the snapshot addresses are in [siyavula-archive.tsv](siyavula-archive.tsv). To redo it for newly cited pages, run `python -I scripts/archive-siyavula.py` (it rewrites that file).
+
 ## How we read it
 
 The textbook content is marked CC BY 3.0 at book level (contents pages, open textbooks page), and the section-page footer is the site's general default, which applies "except where otherwise noted". So the online textbook sections are treated as CC BY 3.0. Because the two statements differ, the owner asks Siyavula once to confirm (OWNER-TODO.md §6); keep the reply in this folder, personal email addresses removed.
