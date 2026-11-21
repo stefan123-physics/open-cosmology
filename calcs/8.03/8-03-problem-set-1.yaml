@@ -1,0 +1,613 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-1.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for its homework, so every formula answer is checked here by an independent route:
+# a numerical derivative or integral, a numerical solve, the real part of the complex form, or the chain rule.
+# Number answers are recomputed from the same physics by a different route where one exists.
+
+page: content/year-2/8.03/8-03-problem-set-1.mdx
+calcs:
+- id: p1-a-by-solve
+  answer: p1-a
+  kind: identity
+  where: 'Problem 1(a), answer box: the hanging position against a numerical solve of the force balance'
+  formula: m*g/k
+  equals: solve('k*x - m*g', 'x', 0, 1000)
+  samples:
+    m: [0.1, 2, 0.5]
+    g: [9, 10, 9.8]
+    k: [10, 100, 20]
+  tolerance: 1.0e-09
+  shown: [expr="m*g/k"]
+  source: {cite: mit, at: Problem 1.1(a) (our own solution)}
+  origin: page-own
+- id: p1-hang-value
+  where: 'Problem 1(a), check: hanging position for m = 0.50 kg, k = 20 N/m'
+  inputs: {m: 0.50 kg, g: 9.8 m/s**2, k: 20 N/m}
+  formula: m * g / k
+  expected: 0.245 m
+  shown: [0.50 \times 9.8/20 = 0.245]
+  source: {cite: mit, at: Problem 1.1(a) (our own check)}
+  origin: page-own
+- id: p1-omega-value
+  where: 'Problem 1(b), check: angular frequency for m = 0.50 kg, k = 20 N/m'
+  inputs: {m: 0.50 kg, k: 20 N/m}
+  formula: sqrt(k / m)
+  expected: 6.32 1/s
+  shown: ['\omega = \sqrt{20/0.50} = 6.32']
+  source: {cite: mit, at: Problem 1.1(b) (our own check)}
+  origin: page-own
+- id: p1-omega-independent-of-g
+  kind: identity
+  where: 'Problem 1(b) and (c): the curvature of the potential k y²/2 − m g y does not depend on g, so omega does not either'
+  formula: sqrt(k/m)
+  equals: sqrt(deriv('0.5*k*u**2 - m*g*u', 'u', y0, 2)/m)
+  samples:
+    k: [20, 100, 7.5]
+    m: [0.5, 2, 1.3]
+    g: [9.8, 1.62, 24.8]
+    y0: [0, 0.3, -1]
+  tolerance: 1.0e-07
+  shown: ['\qquad \omega = \sqrt{\frac{k}{m}}']
+  source: {cite: mit, at: Problem 1.1(c) (our own solution)}
+  origin: page-own
+- id: p2-a-x-by-real-part
+  answer: p2-a-x
+  kind: identity
+  where: 'Problem 2(a), answer box: the displacement against the real part cos(wt − π/2) of the given exponential'
+  formula: A*sin(w*t)
+  equals: A*cos(w*t - pi/2)
+  samples:
+    w: &id001 [1, 4, 2.5, 3.1]
+    t: &id002 [0.2, 3, 1.4, 0.9]
+    A: [0.5, 2, 1.1, 0.7]
+  tolerance: 1.0e-09
+  shown: [expr="A*sin(w*t)"]
+  source: {cite: mit, at: Problem 1.2(a) (our own solution)}
+  origin: page-own
+- id: p2-a-v-by-derivative
+  answer: p2-a-v
+  kind: identity
+  where: 'Problem 2(a), answer box: the velocity against the numerical derivative of the displacement'
+  formula: A*w*cos(w*t)
+  equals: deriv('A*sin(w*u)', 'u', t)
+  samples:
+    w: *id001
+    t: *id002
+    A: [0.5, 2, 1.1, 0.7]
+  tolerance: 1.0e-07
+  shown: [expr="A*w*cos(w*t)"]
+  source: {cite: mit, at: Problem 1.2(a) (our own solution)}
+  origin: page-own
+- id: p2-a-a-by-derivative
+  answer: p2-a-a
+  kind: identity
+  where: 'Problem 2(a), answer box: the acceleration against the numerical second derivative of the displacement'
+  formula: -A*w**2*sin(w*t)
+  equals: deriv('A*sin(w*u)', 'u', t, 2)
+  samples:
+    w: *id001
+    t: *id002
+    A: [0.5, 2, 1.1, 0.7]
+  tolerance: 1.0e-06
+  shown: [expr="-A*w^2*sin(w*t)"]
+  source: {cite: mit, at: Problem 1.2(a) (our own solution)}
+  origin: page-own
+- id: p2-b-x-by-integral
+  answer: p2-b-x
+  kind: identity
+  where: 'Problem 2(b), answer box: the displacement against the integral of the real velocity B w tau sin(wt + π/6), with the constant term removed'
+  formula: B*tau*sin(w*t - pi/3)
+  equals: integrate('B*w*tau*sin(w*u + pi/6)', 'u', 0, t) - B*tau*cos(pi/6)
+  samples: &id003
+    w: *id001
+    t: *id002
+    B: [0.5, 2, 1.1, 0.7]
+    tau: [0.2, 1, 0.45, 0.8]
+  tolerance: 1.0e-08
+  shown: [expr="B*tau*sin(w*t - pi/3)"]
+  source: {cite: mit, at: Problem 1.2(b) (our own solution)}
+  origin: page-own
+- id: p2-b-v-by-real-part
+  answer: p2-b-v
+  kind: identity
+  where: 'Problem 2(b), answer box: the velocity against Re[i e^(−iθ)] = sin θ with θ = wt + π/6'
+  formula: B*w*tau*cos(w*t - pi/3)
+  equals: B*w*tau*sin(w*t + pi/6)
+  samples: *id003
+  tolerance: 1.0e-09
+  shown: [expr="B*w*tau*cos(w*t - pi/3)"]
+  source: {cite: mit, at: Problem 1.2(b) (our own solution)}
+  origin: page-own
+- id: p2-b-a-by-derivative
+  answer: p2-b-a
+  kind: identity
+  where: 'Problem 2(b), answer box: the acceleration against the numerical derivative of the real velocity'
+  formula: -B*w**2*tau*sin(w*t - pi/3)
+  equals: deriv('B*w*tau*cos(w*u - pi/3)', 'u', t)
+  samples: *id003
+  tolerance: 1.0e-07
+  shown: [expr="-B*w^2*tau*sin(w*t - pi/3)"]
+  source: {cite: mit, at: Problem 1.2(b) (our own solution)}
+  origin: page-own
+- id: p2-c-a-by-polar-form
+  answer: p2-c-a
+  kind: identity
+  where: 'Problem 2(c), answer box: the acceleration against the polar form of 1/(1 + i w tau)'
+  formula: C/(1 + w**2*tau**2)*(cos(w*t) - w*tau*sin(w*t))
+  equals: C*cos(w*t + atan(w*tau))/sqrt(1 + w**2*tau**2)
+  samples: &id004
+    w: *id001
+    t: *id002
+    C: [0.5, 2, 1.1, 0.7]
+    tau: [0.2, 1, 0.45, 0.8]
+  tolerance: 1.0e-09
+  shown: [expr="C/(1 + w^2*tau^2)*(cos(w*t) - w*tau*sin(w*t))"]
+  source: {cite: mit, at: Problem 1.2(c) (our own solution)}
+  origin: page-own
+- id: p2-c-v-by-integral
+  answer: p2-c-v
+  kind: identity
+  where: 'Problem 2(c), answer box: the velocity against the integral of the real acceleration, with the constant term removed'
+  formula: C/(1 + w**2*tau**2)*(sin(w*t)/w + tau*cos(w*t))
+  equals: integrate('C/(1 + w**2*tau**2)*(cos(w*u) - w*tau*sin(w*u))', 'u', 0, t) + C/(1 + w**2*tau**2)*tau
+  samples: *id004
+  tolerance: 1.0e-08
+  shown: [expr="C/(1 + w^2*tau^2)*(sin(w*t)/w + tau*cos(w*t))"]
+  source: {cite: mit, at: Problem 1.2(c) (our own solution)}
+  origin: page-own
+- id: p2-c-x-by-integral
+  answer: p2-c-x
+  kind: identity
+  where: 'Problem 2(c), answer box: the displacement against the integral of the real velocity, with the constant term removed'
+  formula: C/(1 + w**2*tau**2)*(tau*sin(w*t)/w - cos(w*t)/w**2)
+  equals: C/(1 + w**2*tau**2)*(integrate('sin(w*u)/w + tau*cos(w*u)', 'u', 0, t) - 1/w**2)
+  samples: *id004
+  tolerance: 1.0e-08
+  shown: [expr="C/(1 + w^2*tau^2)*(tau*sin(w*t)/w - cos(w*t)/w^2)"]
+  source: {cite: mit, at: Problem 1.2(c) (our own solution)}
+  origin: page-own
+- id: p2-d-q-by-initial-values
+  answer: p2-d-q
+  kind: identity
+  where: 'Problem 2(d), answer box: the velocity amplitude against sqrt(v(0)² + (v′(0)/w)²), with the derivatives of the displacement taken numerically'
+  formula: w*sqrt(alpha**2 + beta**2)
+  equals: sqrt(deriv('alpha*cos(w*u) - beta*sin(w*u)', 'u', 0)**2 + (deriv('alpha*cos(w*u) - beta*sin(w*u)', 'u', 0, 2)/w)**2)
+  samples: &id005
+    alpha: [0.5, 2, 0.3, 1.7]
+    beta: [0.5, 2, 0.4, 0.6]
+    w: [1, 4, 2, 3.3]
+  tolerance: 1.0e-06
+  shown: [expr="w*sqrt(alpha^2 + beta^2)"]
+  source: {cite: mit, at: Problem 1.2(d) (our own solution)}
+  origin: page-own
+- id: p2-d-phi-by-initial-value
+  answer: p2-d-phi
+  kind: identity
+  where: 'Problem 2(d), answer box: the velocity phase against acos(v(0)/Q_v) with v(0) taken numerically (the phase is in the second quadrant)'
+  formula: pi/2 + atan(beta/alpha)
+  equals: acos(deriv('alpha*cos(w*u) - beta*sin(w*u)', 'u', 0)/(w*sqrt(alpha**2 + beta**2)))
+  samples: *id005
+  tolerance: 1.0e-07
+  shown: [expr="pi/2 + atan(beta/alpha)"]
+  source: {cite: mit, at: Problem 1.2(d) (our own solution)}
+  origin: page-own
+- id: p2-d-numbers
+  where: 'Problem 2(d), check: amplitude of the velocity for alpha = 3, beta = 4, omega = 2'
+  inputs: {w: 2.0, alpha: 3.0, beta: 4.0}
+  formula: w * sqrt(alpha**2 + beta**2)
+  expected: '10'
+  shown: ['the amplitude of the displacement is 5, that of the velocity 10 and that of the acceleration 20']
+  source: {cite: mit, at: Problem 1.2(d) (our own check)}
+  origin: page-own
+- id: p2-e-q-by-path-length
+  answer: p2-e-q
+  kind: identity
+  where: 'Problem 2(e), answer box: the displacement amplitude against half the distance covered in half a period, ∫|v| dt / 2'
+  formula: gamma/w
+  equals: 0.5*integrate('gamma*abs(sin(w*u + pi/3))', 'u', 0, pi/w)
+  samples:
+    gamma: [0.5, 2, 1.3]
+    w: [1, 4, 2.2]
+  tolerance: 1.0e-07
+  shown: [expr="gamma/w"]
+  source: {cite: mit, at: Problem 1.2(e) (our own solution)}
+  origin: page-own
+- id: p2-e-phase
+  answer: p2-e-phi
+  where: 'Problem 2(e), answer box: the displacement phase from cos φ = −v′(0)/(w γ), with v′(0) taken numerically'
+  inputs: {gamma: 1.0, w: 2.0}
+  formula: acos(-deriv('-gamma*sin(w*u + pi/3)', 'u', 0)/(w*gamma))
+  expected: 1.0472 rad
+  shown: [value="1.0472" unit="rad" tolerance="0.5%" calc="p2-e-phase"]
+  source: {cite: mit, at: Problem 1.2(e) (our own solution)}
+  origin: page-own
+- id: p2-e-phase-velocity
+  where: 'Problem 2(e), solution: phase of the velocity, π/3 + π/2 = 5π/6'
+  inputs: {}
+  formula: 5*pi/6
+  expected: 2.618 rad
+  shown: [\phi_v = 5\pi/6 = 2.618]
+  source: {cite: mit, at: Problem 1.2(e) (our own check)}
+  origin: page-own
+- id: p2-e-phase-acceleration
+  where: 'Problem 2(e), solution: phase of the acceleration, π/3 + π = 4π/3'
+  inputs: {}
+  formula: 4*pi/3
+  expected: 4.189 rad
+  shown: [\phi_a = 4\pi/3 = 4.189]
+  source: {cite: mit, at: Problem 1.2(e) (our own check)}
+  origin: page-own
+- id: p2-f-q-by-initial-values
+  answer: p2-f-q
+  kind: identity
+  where: 'Problem 2(f), answer box: the displacement amplitude against sqrt(a(0)² + (a′(0)/w)²)/w², with a′(0) taken numerically'
+  formula: delta/w**2
+  equals: sqrt((delta*cos(pi/6))**2 + (deriv('delta*cos(w*u + pi/6)', 'u', 0)/w)**2)/w**2
+  samples:
+    delta: [0.5, 2, 1.3]
+    w: [1, 4, 2.2]
+  tolerance: 1.0e-07
+  shown: [expr="delta/w^2"]
+  source: {cite: mit, at: Problem 1.2(f) (our own solution)}
+  origin: page-own
+- id: p2-f-phase
+  answer: p2-f-phi
+  where: 'Problem 2(f), answer box: the displacement phase, the root of cos φ = −cos(π/6) in the third quadrant (sin φ is negative there, as x′(0) = v(0) > 0 requires)'
+  inputs: {}
+  formula: solve('cos(x) + cos(pi/6)', 'x', 3, 4)
+  expected: 3.6652 rad
+  shown: [value="3.6652" unit="rad" tolerance="0.5%" calc="p2-f-phase"]
+  source: {cite: mit, at: Problem 1.2(f) (our own solution)}
+  origin: page-own
+- id: p2-f-phase-acceleration
+  where: 'Problem 2(f), solution: phase of the acceleration, π/6'
+  inputs: {}
+  formula: pi/6
+  expected: 0.5236 rad
+  shown: [\phi_a = \pi/6 = 0.5236]
+  source: {cite: mit, at: Problem 1.2(f) (our own check)}
+  origin: page-own
+- id: p2-f-phase-velocity
+  where: 'Problem 2(f), solution: phase of the velocity, −π/3 + 2π = 5π/3'
+  inputs: {}
+  formula: 5*pi/3
+  expected: 5.2360 rad
+  shown: [5\pi/3 = 5.2360]
+  source: {cite: mit, at: Problem 1.2(f) (our own check)}
+  origin: page-own
+- id: p3-a-by-potential
+  answer: p3-a
+  kind: identity
+  where: 'Problem 3(a), answer box: the angular frequency against sqrt(V″/M) for the energy of both springs'
+  formula: sqrt(3*K/M)
+  equals: sqrt(deriv('0.5*K*u**2 + 0.5*(2*K)*u**2', 'u', 0, 2)/M)
+  samples: &id006
+    K: [1, 10, 100, 4.5]
+    M: [0.5, 3, 0.5, 2.2]
+    v: [0.5, 2, 0.6, 1.4]
+    t: [0.1, 2, 0.35, 0.8]
+  tolerance: 1.0e-07
+  shown: [expr="sqrt(3*K/M)"]
+  source: {cite: mit, at: Problem 1.3(a) (our own solution)}
+  origin: page-own
+- id: p3-b-by-solve
+  answer: p3-b
+  kind: identity
+  where: 'Problem 3(b), answer box: the amplitude against a numerical solve of the energy balance ½(3K)A² = ½Mv²'
+  formula: v*sqrt(M/(3*K))
+  equals: solve('0.5*(K + 2*K)*x**2 - 0.5*M*v**2', 'x', 0, 1000)
+  samples: *id006
+  tolerance: 1.0e-09
+  shown: [expr="v*sqrt(M/(3*K))"]
+  source: {cite: mit, at: Problem 1.3(b) (our own solution)}
+  origin: page-own
+- id: p3-c-by-integral
+  answer: p3-c
+  kind: identity
+  where: 'Problem 3(c), answer box: the position against the integral of the velocity v cos(wt) from t = 0'
+  formula: v*sqrt(M/(3*K))*sin(sqrt(3*K/M)*t)
+  equals: integrate('v*cos(sqrt(3*K/M)*u)', 'u', 0, t)
+  samples: *id006
+  tolerance: 1.0e-08
+  shown: [expr="v*sqrt(M/(3*K))*sin(sqrt(3*K/M)*t)"]
+  source: {cite: mit, at: Problem 1.3(c) (our own solution)}
+  origin: page-own
+- id: p3-d-phase
+  answer: p3-d
+  where: 'Problem 3(d), answer box: the phase from Re z(0) = A cos φ = 0 with φ in (−π, 0), so that the velocity −Aω sin φ is positive'
+  inputs: {}
+  formula: solve('cos(x)', 'x', -3, -0.5)
+  expected: -1.5708 rad
+  shown: [value="-1.5708" unit="rad" tolerance="0.5%" calc="p3-d-phase"]
+  source: {cite: mit, at: Problem 1.3(d) (our own solution)}
+  origin: page-own
+- id: p3-omega-value
+  where: 'Problem 3(a), check: angular frequency for K = 100 N/m, M = 0.50 kg'
+  inputs: {K: 100 N/m, M: 0.50 kg}
+  formula: sqrt(3*K/M)
+  expected: 24.5 1/s
+  shown: ['\omega = \sqrt{300/0.50} = 24.5']
+  source: {cite: mit, at: Problem 1.3(a) (our own check)}
+  origin: page-own
+- id: p3-amplitude-value
+  where: 'Problem 3(b), check: amplitude for v = 0.60 m/s'
+  inputs: {v: 0.60 m/s, w: 24.4949 1/s}
+  formula: v/w
+  expected: 0.0245 m
+  shown: [A = 0.60/24.5 = 0.0245]
+  source: {cite: mit, at: Problem 1.3(b) (our own check)}
+  origin: page-own
+- id: p4-a-force-free-0
+  kind: identity
+  where: 'Problem 4(a), solution: dV/dx vanishes at x = 0, checked with a numerical derivative of V'
+  formula: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', 0)
+  equals: '0'
+  samples: &id007
+    E0: [1, 5, 2.0, 3.3]
+    a: [0.5, 2, 0.1, 1.4]
+  tolerance: 1.0e-06
+  shown: ['The force vanishes at $x = 0$, $x = a$ and $x = -4a$.']
+  source: {cite: mit, at: Problem 1.4(a) (our own solution)}
+  origin: page-own
+- id: p4-a-force-free-a
+  kind: identity
+  where: 'Problem 4(a), solution: dV/dx vanishes at x = a, checked with a numerical derivative of V'
+  formula: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', a)
+  equals: '0'
+  samples: *id007
+  tolerance: 1.0e-06
+  shown: ['The force vanishes at $x = 0$, $x = a$ and $x = -4a$.']
+  source: {cite: mit, at: Problem 1.4(a) (our own solution)}
+  origin: page-own
+- id: p4-a-force-free-m4a
+  kind: identity
+  where: 'Problem 4(a), solution: dV/dx vanishes at x = -4a, checked with a numerical derivative of V'
+  formula: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', -4*a)
+  equals: '0'
+  samples: *id007
+  tolerance: 1.0e-06
+  shown: ['The force vanishes at $x = 0$, $x = a$ and $x = -4a$.']
+  source: {cite: mit, at: Problem 1.4(a) (our own solution)}
+  origin: page-own
+- id: p4-curvature-at-a
+  kind: identity
+  where: 'Problem 4(a), solution: V″(a) = 20 E0/a²'
+  formula: 20*E0/a**2
+  equals: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', a, 2)
+  samples: *id007
+  tolerance: 1.0e-05
+  shown: [it is $20E_0/a^2 > 0$]
+  source: {cite: mit, at: Problem 1.4(a) (our own solution)}
+  origin: page-own
+- id: p4-curvature-at-m4a
+  kind: identity
+  where: 'Problem 4(a), solution: V″(−4a) = 80 E0/a²'
+  formula: 80*E0/a**2
+  equals: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', -4*a, 2)
+  samples: *id007
+  tolerance: 1.0e-05
+  shown: [it is $80E_0/a^2 > 0$]
+  source: {cite: mit, at: Problem 1.4(a) (our own solution)}
+  origin: page-own
+- id: p4-curvature-at-0
+  kind: identity
+  where: 'Problem 4(a), solution: V″(0) = −16 E0/a²'
+  formula: -16*E0/a**2
+  equals: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', 0, 2)
+  samples: *id007
+  tolerance: 1.0e-05
+  shown: [it is $-16E_0/a^2 < 0$]
+  source: {cite: mit, at: Problem 1.4(a) (our own solution)}
+  origin: page-own
+- id: p4-b-a-by-curvature
+  answer: p4-b-a
+  kind: identity
+  where: 'Problem 4(b), answer box: the frequency about x = a against sqrt(V″(a)/m), with V″ taken numerically'
+  formula: sqrt(20*E0/(m*a**2))
+  equals: sqrt(deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', a, 2)/m)
+  samples: &id008
+    E0: [1, 5, 2.0, 3.3]
+    m: [0.5, 3, 0.5, 1.2]
+    a: [0.5, 2, 0.1, 1.4]
+  tolerance: 1.0e-06
+  shown: [expr="sqrt(20*E0/(m*a^2))"]
+  source: {cite: mit, at: Problem 1.4(b) (our own solution)}
+  origin: page-own
+- id: p4-b-b-by-curvature
+  answer: p4-b-b
+  kind: identity
+  where: 'Problem 4(b), answer box: the frequency about x = −4a against sqrt(V″(−4a)/m), with V″ taken numerically'
+  formula: sqrt(80*E0/(m*a**2))
+  equals: sqrt(deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', -4*a, 2)/m)
+  samples: *id008
+  tolerance: 1.0e-06
+  shown: [expr="sqrt(80*E0/(m*a^2))"]
+  source: {cite: mit, at: Problem 1.4(b) (our own solution)}
+  origin: page-own
+- id: p4-omega-value
+  where: 'Problem 4(b), check: omega_a for E0 = 2.0 J, m = 0.50 kg, a = 0.10 m'
+  inputs: {E0: 2.0 J, m: 0.50 kg, a: 0.10 m}
+  formula: sqrt(20*E0/(m*a**2))
+  expected: 89.4 1/s
+  shown: ['\omega_a = \sqrt{20 \times 2.0/(0.50 \times 0.010)} = 89.4']
+  source: {cite: mit, at: Problem 1.4(b) (our own check)}
+  origin: page-own
+- id: p4-c-xi-a
+  answer: p4-c-a
+  where: 'Problem 4(c), answer box: ξc/a at x = a, as V″/|V₃| with V₃ taken as a central difference of V″ (exact for a quartic potential)'
+  inputs: {E0: 1.0, a: 1.0, x0: 1.0}
+  formula: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0, 2)/abs((deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0 + 0.01, 2) - deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0 - 0.01, 2))/0.02)
+  expected: '0.4167'
+  tolerance: '0.0001'
+  shown: [value="0.4167" tolerance="1%" calc="p4-c-xi-a"]
+  source: {cite: mit, at: Problem 1.4(c) (our own solution)}
+  origin: page-own
+- id: p4-c-xi-b
+  answer: p4-c-b
+  where: 'Problem 4(c), answer box: ξc/a at x = −4a, as V″/|V₃| with V₃ taken as a central difference of V″'
+  inputs: {E0: 1.0, a: 1.0, x0: -4.0}
+  formula: deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0, 2)/abs((deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0 + 0.01, 2) - deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0 - 0.01, 2))/0.02)
+  expected: '1.111'
+  tolerance: '0.001'
+  shown: [value="1.111" tolerance="1%" calc="p4-c-xi-b"]
+  source: {cite: mit, at: Problem 1.4(c) (our own solution)}
+  origin: page-own
+- id: p4-third-derivative
+  kind: identity
+  where: 'Problem 4(c), solution: the third derivative of V, 24 E0 (x + a)/a⁴, as a central difference of V″'
+  formula: (E0/a**4)*(24*x0 + 24*a)
+  equals: (deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0 + 0.01, 2) - deriv('E0/a**4*(u**4 + 4*a*u**3 - 8*a**2*u**2)', 'u', x0 - 0.01, 2))/0.02
+  samples:
+    E0: [1, 5, 2.0]
+    a: [0.5, 2, 0.1]
+    x0: [1, -4, 0.3]
+  tolerance: 1.0e-05
+  shown: ['V_3(x) = \frac{E_0}{a^4}\left(24x + 24a\right)']
+  source: {cite: mit, at: Problem 1.4(c) (our own solution)}
+  origin: page-own
+- id: p5-a-by-potential
+  answer: p5-a
+  kind: identity
+  where: 'Problem 5(a), answer box: the angular acceleration against −V′(θ)/(m L²), with V′ taken numerically from V = m g L (1 − cos θ)'
+  formula: -g/L*sin(theta)
+  equals: -deriv('m*g*L*(1 - cos(u))', 'u', theta)/(m*L**2)
+  samples: &id009
+    m: [0.5, 3, 1.2, 0.9]
+    g: [9, 10, 9.8, 9.81]
+    L: [0.5, 2, 1.0, 1.3]
+    theta: [0.3, 2.5, 1.1, 0.8]
+  tolerance: 1.0e-07
+  shown: [expr="-g/L*sin(theta)"]
+  source: {cite: mit, at: Problem 1.5(a) (our own solution)}
+  origin: page-own
+- id: p5-b-by-curvature
+  answer: p5-b
+  kind: identity
+  where: 'Problem 5(b), answer box: ω against sqrt(V″(0)/(m L²)) for V = m g L (1 − cos θ)'
+  formula: sqrt(g/L)
+  equals: sqrt(deriv('m*g*L*(1 - cos(u))', 'u', 0, 2)/(m*L**2))
+  samples: *id009
+  tolerance: 1.0e-06
+  shown: [expr="sqrt(g/L)"]
+  source: {cite: mit, at: Problem 1.5(b) (our own solution)}
+  origin: page-own
+- id: p5-c-period-by-curvature
+  answer: p5-c-period
+  kind: identity
+  where: 'Problem 5(c), answer box: the period against 2π/ω with ω from the curvature of V'
+  formula: 2*pi*sqrt(L/g)
+  equals: 2*pi/sqrt(deriv('m*g*L*(1 - cos(u))', 'u', 0, 2)/(m*L**2))
+  samples: *id009
+  tolerance: 1.0e-06
+  shown: [expr="2*pi*sqrt(L/g)"]
+  source: {cite: mit, at: Problem 1.5(c) (our own solution)}
+  origin: page-own
+- id: p5-c-angle
+  answer: p5-c-angle
+  where: 'Problem 5(c), answer box: the largest angle with 1 − sin θ/θ ≤ 0.01, solved numerically'
+  inputs: {r: 1 rad}
+  formula: solve('1 - sin(x)/x - 0.01', 'x', 0.01, 1)*r
+  expected: 14.06 deg
+  tolerance: '0.01'
+  shown: [value="14.06" unit="degrees" tolerance="1%" calc="p5-c-angle"]
+  source: {cite: mit, at: Problem 1.5(c) (our own solution)}
+  origin: page-own
+- id: p5-c-angle-rad
+  where: 'Problem 5(c), solution: the same angle in radians'
+  inputs: {}
+  formula: solve('1 - sin(x)/x - 0.01', 'x', 0.01, 1)
+  expected: '0.2453'
+  tolerance: '0.0001'
+  shown: ['\theta_{\max} = 0.2453$ rad']
+  source: {cite: mit, at: Problem 1.5(c) (our own solution)}
+  origin: page-own
+- id: p5-c-first-order
+  where: 'Problem 5(c), solution: the first-order estimate sqrt(0.06)'
+  inputs: {}
+  formula: sqrt(0.06)
+  expected: '0.245'
+  tolerance: '0.001'
+  shown: ['\theta = \sqrt{0.06} = 0.245']
+  source: {cite: mit, at: Problem 1.5(c) (our own solution)}
+  origin: page-own
+- id: p5-omega-value
+  where: 'Problem 5(b), check: ω for L = 1.0 m'
+  inputs: {g: 9.8 m/s**2, L: 1.0 m}
+  formula: sqrt(g/L)
+  expected: 3.13 1/s
+  shown: [\omega = 3.13]
+  source: {cite: mit, at: Problem 1.5(b) (our own check)}
+  origin: page-own
+- id: p5-period-value
+  where: 'Problem 5(c), check: the period for L = 1.0 m'
+  inputs: {g: 9.8 m/s**2, L: 1.0 m}
+  formula: 2*pi*sqrt(L/g)
+  expected: 2.01 s
+  shown: ['2\pi\sqrt{1.0/9.8} = 2.01']
+  source: {cite: mit, at: Problem 1.5(c) (our own check)}
+  origin: page-own
+- id: p5-d-by-integral
+  answer: p5-d
+  kind: identity
+  where: 'Problem 5(d), answer box: the potential energy against the integral of the torque m g L sin θ from 0 to θ'
+  formula: m*g*L*(1 - cos(theta))
+  equals: integrate('m*g*L*sin(u)', 'u', 0, theta)
+  samples: *id009
+  tolerance: 1.0e-08
+  shown: [expr="m*g*L*(1 - cos(theta))"]
+  source: {cite: mit, at: Problem 1.5(d) (our own solution)}
+  origin: page-own
+- id: p5-d-first-correction-ratio
+  kind: identity
+  where: 'Problem 5(d), check: the relative size of the θ⁴ term of V to the θ² term is θ²/12'
+  formula: (theta**4/24)/(theta**2/2)
+  equals: theta**2/12
+  samples:
+    theta: [0.1, 0.5, 1.2]
+  tolerance: 1.0e-09
+  shown: [Its ratio to the leading term is $\theta^2/12$]
+  source: {cite: mit, at: Problem 1.5(d) (our own check)}
+  origin: page-own
+- id: p5-e-by-chain-rule
+  answer: p5-e
+  kind: identity
+  where: 'Problem 5(e), answer box: the exact equation in x against the chain rule: x = L sin θ, θ″ = −(g/L) sin θ, θ′ = v/(L cos θ)'
+  formula: -g*x/L*sqrt(1 - x**2/L**2) - x*v**2/(L**2 - x**2)
+  equals: -g*(x/L)*cos(asin(x/L)) - L*(x/L)*(v/(L*cos(asin(x/L))))**2
+  samples:
+    g: [9, 10, 9.8, 9.81]
+    L: [1, 2, 1.5, 1.2]
+    x: [0.1, 0.8, 0.45, -0.3]
+    v: [0.5, 2, 1.1, -0.7]
+  tolerance: 1.0e-09
+  shown: [expr="-g*x/L*sqrt(1 - x^2/L^2) - x*v^2/(L^2 - x^2)"]
+  source: {cite: mit, at: Problem 1.5(e) (our own solution)}
+  origin: page-own
+- id: p5-g-xmax
+  answer: p5-g
+  where: 'Problem 5(g), answer box: the largest x/L with sqrt(1 − (x/L)²) = 0.99'
+  inputs: {}
+  formula: sqrt(1 - 0.99**2)
+  expected: '0.1411'
+  tolerance: '0.0001'
+  shown: [value="0.1411" tolerance="1%" calc="p5-g-xmax"]
+  source: {cite: mit, at: Problem 1.5(g) (our own solution)}
+  origin: page-own
+- id: p5-g-angle
+  where: 'Problem 5(g), solution: the angle with sin θ = 0.1411, in degrees'
+  inputs: {r: 1 rad}
+  formula: asin(0.14107)*r
+  expected: 8.1 deg
+  tolerance: '0.1'
+  shown: [an angle of about $8.1°$]
+  source: {cite: mit, at: Problem 1.5(g) (our own check)}
+  origin: page-own
+- id: p5-g-ratio
+  where: 'Problem 5(g), solution: the ratio of the velocity term to the leading term, (x0/L)² at x0 = 0.141 L'
+  inputs: {}
+  formula: 0.141**2
+  expected: '0.0199'
+  tolerance: '0.0001'
+  shown: [that ratio is $0.0199$]
+  source: {cite: mit, at: Problem 1.5(g) (our own check)}
+  origin: page-own

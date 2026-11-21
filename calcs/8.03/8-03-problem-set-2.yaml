@@ -1,0 +1,891 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# a numerical solve of the defining condition, a numerical derivative (the equation of motion as a residual), or
+# a second form of the same result. In the derivative checks the time is rescaled (x = 1e4 t for the circuit) so that
+# the numerical derivative works on a scale of order one.
+
+page: content/year-2/8.03/8-03-problem-set-2.mdx
+calcs:
+  # ---- Problem 1: the RLC circuit
+
+  - id: p1-given-values
+    kind: fact
+    where: 'Problem 1, statement: the components'
+    shown: ['A capacitor of $2\ \mu\text{F}$, a coil of $2$ mH and a resistor of $20\ \Omega$']
+    source: {cite: mit, at: 'Problem 2.1, p. 1'}
+    origin: mit
+
+  - id: p1-given-initial
+    kind: fact
+    where: 'Problem 1, statement: the initial voltage and current'
+    shown: ['the capacitor voltage is $V_C = 5$ V and the current is $i = 0.5$ A']
+    source: {cite: mit, at: 'Problem 2.1, p. 1'}
+    origin: mit
+
+  - id: p1-gamma
+    answer: p1-gamma
+    where: 'Problem 1(a), answer box: damping rate R/L'
+    inputs: {R: 20 ohm, L: 2 mH}
+    formula: R / L
+    expected: 10000 1/s
+    shown: ['id="p1-gamma"']
+    source: {cite: mit, at: 'Problem 2.1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-omega0
+    answer: p1-omega0
+    where: 'Problem 1(a), answer box: natural frequency 1/sqrt(LC)'
+    inputs: {L: 2 mH, C: 2 uF}
+    formula: 1 / sqrt(L * C)
+    expected: 15811 1/s
+    tolerance: 1 1/s
+    shown: ['id="p1-omega0"']
+    source: {cite: mit, at: 'Problem 2.1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-omega0-sq
+    where: 'Problem 1(b), solution: omega_0 squared'
+    inputs: {L: 2 mH, C: 2 uF}
+    formula: 1 / (L * C)
+    expected: 2.5e8 1/s**2
+    shown: ['\sqrt{2.5\times 10^{8} - 2.5\times 10^{7}}']
+    source: {cite: mit, at: 'Problem 2.1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-gamma-sq-quarter
+    where: 'Problem 1(b), solution: gamma squared over four'
+    inputs: {R: 20 ohm, L: 2 mH}
+    formula: (R / L)**2 / 4
+    expected: 2.5e7 1/s**2
+    shown: ['\sqrt{2.5\times 10^{8} - 2.5\times 10^{7}}']
+    source: {cite: mit, at: 'Problem 2.1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-halfgamma
+    where: 'Problem 1(b), solution: gamma over two'
+    inputs: {R: 20 ohm, L: 2 mH}
+    formula: R / L / 2
+    expected: 5000 1/s
+    shown: ['Here $\gamma/2 = 5.0\times 10^3\ \text{s}^{-1}$']
+    source: {cite: mit, at: 'Problem 2.1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-omega
+    answer: p1-omega
+    where: 'Problem 1(b), answer box: the damped frequency'
+    inputs: {R: 20 ohm, L: 2 mH, C: 2 uF}
+    formula: sqrt(1 / (L * C) - (R / L)**2 / 4)
+    expected: 15000 1/s
+    shown: ['id="p1-omega"']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: p1-critical-resistance
+    where: 'Problem 1(b), check: the resistance at critical damping'
+    inputs: {L: 2 mH, C: 2 uF}
+    formula: 2 * sqrt(L / C)
+    expected: 63.2 ohm
+    shown: ['$R = 2\sqrt{L/C} = 2\sqrt{10^3} = 63.2\ \Omega$']
+    source: {cite: mit, at: 'Problem 2.1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-omega-ratio
+    where: 'Problem 1(b), check: omega is 5% below omega_0'
+    inputs: {L: 2 mH, C: 2 uF, R: 20 ohm}
+    formula: 1 - sqrt(1 / (L * C) - (R / L)**2 / 4) / (1 / sqrt(L * C))
+    expected: 0.05
+    tolerance: 0.005
+    shown: ['The frequency $\omega$ is only 5% below $\omega_0$']
+    source: {cite: mit, at: 'Problem 2.1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-initial-slope
+    where: 'Problem 1(c), solution: initial slope of the voltage'
+    inputs: {i0: 0.5 A, C: 2 uF}
+    formula: -i0 / C
+    expected: -2.5e5 V/s
+    shown: ['= -\frac{0.5}{2\times 10^{-6}} = -2.5\times 10^{5}\ \text{V/s}']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-constant-b
+    where: 'Problem 1(c), solution: the sine coefficient'
+    inputs: {slope: -2.5e5 V/s, half_gamma: 5000 1/s, a: 5 V, omega: 15000 1/s}
+    formula: (slope + half_gamma * a) / omega
+    expected: -15 V
+    shown: ['so $b = -15$ V']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-sum-b
+    where: 'Problem 1(c), solution: the right-hand side of the equation for b'
+    formula: -2.5e5 + 5000 * 5
+    expected: -2.25e5
+    shown: ['$15000\,b = -2.5\times 10^5 + 5000 \times 5 = -2.25\times 10^5$']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own solution)'}
+    origin: page-own
+
+  # The answer in another form: one cosine with a phase, 5 sqrt(10) cos(wt + atan 3).
+  - id: p1-vc-form
+    kind: identity
+    answer: p1-vc
+    where: 'Problem 1(c), answer box: against the single-cosine form with a phase'
+    formula: exp(-5000*t)*(5*cos(15000*t) - 15*sin(15000*t))
+    equals: 5*sqrt(10)*exp(-5000*t)*cos(15000*t + atan(3))
+    samples:
+      t: [0, 0.00005, 0.0001, 0.00023, 0.0004]
+    tolerance: 1e-9
+    shown: ['id="p1-vc"']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own solution)'}
+    origin: page-own
+
+  # The equation of motion as a residual, in the rescaled time x = 1e4 t: V'' + 1 V' + 2.5 V = 0.
+  - id: p1-vc-equation
+    kind: identity
+    where: 'Problem 1(c), the formula "The capacitor voltage" solves the damped oscillator equation (time in units of 100 microseconds)'
+    formula: deriv('exp(-0.5*x)*(5*cos(1.5*x) - 15*sin(1.5*x))', 'x', t0, 2)
+    equals: -deriv('exp(-0.5*x)*(5*cos(1.5*x) - 15*sin(1.5*x))', 'x', t0) - 2.5*exp(-0.5*t0)*(5*cos(1.5*t0) - 15*sin(1.5*t0))
+    samples:
+      t0: [0.3, 0.9, 1.7, 2.6, 4.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="The capacitor voltage"']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own solution)'}
+    origin: page-own
+
+  # The initial slope: dV/dx at 0 equals -2.5e5 V/s * 1e-4 s = -25 V per unit x.
+  - id: p1-vc-slope
+    where: 'Problem 1(c), check: the slope at t = 0, in volts per 100 microseconds'
+    formula: deriv('exp(-0.5*x)*(5*cos(1.5*x) - 15*sin(1.5*x))', 'x', 0) / 1
+    expected: -25
+    tolerance: 0.0001
+    shown: ['$-5000 \times 5 + 15000 \times (-15) = -2.5\times 10^5$ V/s']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own check)'}
+    origin: page-own
+
+  - id: p1-slope-check
+    where: 'Problem 1(c), check: slope from the formula'
+    formula: -5000*5 + 15000*(-15)
+    expected: -2.5e5
+    shown: ['$-5000 \times 5 + 15000 \times (-15) = -2.5\times 10^5$ V/s']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own check)'}
+    origin: page-own
+
+  - id: p1-period
+    where: 'Problem 1(c), check: period of the oscillation'
+    inputs: {omega: 15000 1/s}
+    formula: 2 * pi / omega
+    expected: 0.42 ms
+    tolerance: 0.005 ms
+    shown: ['period $2\pi/\omega = 0.42$ ms']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own check)'}
+    origin: page-own
+
+  - id: p1-efold-time
+    where: 'Problem 1(c), check: the envelope falls to 1/e after 2/gamma'
+    inputs: {R: 20 ohm, L: 2 mH}
+    formula: 2 / (R / L)
+    expected: 0.2 ms
+    shown: ['after $2/\gamma = 0.2$ ms']
+    source: {cite: mit, at: 'Problem 2.1(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: the crystal on four springs
+
+  - id: p2-w0sq
+    kind: identity
+    answer: p2-w0sq
+    where: 'Problem 2(a), answer box: omega_0 squared, against the second derivative of the stored energy of four springs'
+    formula: 4*k/M
+    equals: deriv('4*0.5*k*x**2', 'x', x0, 2) / M
+    samples:
+      k: [2, 3.3, 5, 2.4]
+      M: [0.5, 1.5, 1.0, 0.8]
+      x0: [0.1, 0.2, 0.3, 0.4]
+    tolerance: 1e-6
+    shown: ['id="p2-w0sq"']
+    source: {cite: mit, at: 'Problem 2.2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-amp
+    kind: identity
+    answer: p2-amp
+    where: 'Problem 2(b), answer box: against the solution of the steady-state condition for A'
+    formula: A0/abs(4*k/M - wd**2)
+    equals: abs(solve('(4*k/M - wd**2)*x - A0', 'x', -1000, 1000))
+    samples:
+      A0: [0.5, 1.3, 2.0, 1.0]
+      k: [2, 3.3, 5, 2.4]
+      M: [0.5, 1.5, 1.0, 0.8]
+      wd: [0.2, 0.7, 1.1, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p2-amp"']
+    source: {cite: mit, at: 'Problem 2.2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-knew
+    kind: identity
+    answer: p2-knew
+    where: 'Problem 2(c), answer box: against a numerical solve of the tenfold-smaller-amplitude condition'
+    formula: 10*k - 9*M*wd**2/4
+    equals: solve('A0/(4*x/M - wd**2) - 0.1*A0/(4*k/M - wd**2)', 'x', k, 20*k)
+    samples:
+      A0: [0.5, 1.3, 2.0, 1.0]
+      k: [2, 3.3, 5, 2.4]
+      M: [0.5, 1.5, 1.0, 0.8]
+      wd: [0.2, 0.7, 1.1, 1.4]
+    tolerance: 1e-7
+    shown: ['id="p2-knew"']
+    source: {cite: mit, at: 'Problem 2.2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-ratio
+    answer: p2-ratio
+    where: 'Problem 2(c), answer box: ratio of new to old length, for k/M much larger than omega_d squared'
+    formula: 1 / 10
+    expected: 0.1
+    shown: ['id="p2-ratio"']
+    source: {cite: mit, at: 'Problem 2.2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-ratio-limit
+    kind: limit
+    where: 'Problem 2(c), check: the exact length ratio tends to 1/10 when omega_d goes to 0'
+    inputs: {k: 3, M: 1}
+    formula: k / (10*k - 9*M*wd**2/4)
+    limit: 0.1
+    vary: {wd: [1, 0.1, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['$\ell''/\ell = k/k'' \approx 1/10$']
+    source: {cite: mit, at: 'Problem 2.2(c) (our own check)'}
+    origin: page-own
+
+  - id: p2-b
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(d), answer box: against a numerical solve of the amplitude condition with drag'
+    formula: sqrt(99)*(4*k - M*wd**2)/wd
+    equals: solve('A0/sqrt((4*k/M - wd**2)**2 + (x*wd/M)**2) - 0.1*A0/(4*k/M - wd**2)', 'x', 0, 100000)
+    samples:
+      A0: [0.5, 1.3, 2.0, 1.0]
+      k: [2, 3.3, 5, 2.4]
+      M: [0.5, 1.5, 1.0, 0.8]
+      wd: [0.2, 0.7, 1.1, 1.0]
+    tolerance: 1e-7
+    shown: ['id="p2-b"']
+    source: {cite: mit, at: 'Problem 2.2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-approx
+    kind: identity
+    answer: p2-b-approx
+    where: 'Problem 2(d), answer box: against the exact result for a very light crystal (k/M huge)'
+    formula: 4*sqrt(99)*k/wd
+    equals: sqrt(99)*(4*k - M*wd**2)/wd
+    samples:
+      k: [2, 3.3, 5, 2.4]
+      M: [1e-9, 2e-9, 1e-9, 5e-10]
+      wd: [0.2, 0.7, 1.1, 1.0]
+    tolerance: 1e-6
+    shown: ['id="p2-b-approx"']
+    source: {cite: mit, at: 'Problem 2.2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-number
+    where: 'Problem 2(d), solution: the numerical factor 4 sqrt(99)'
+    formula: 4 * sqrt(99)
+    expected: 39.8
+    shown: ['\approx \frac{39.8\,k}{\omega_d}']
+    source: {cite: mit, at: 'Problem 2.2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2-sqrt99
+    where: 'Problem 2(d), solution: square root of 99'
+    formula: sqrt(99)
+    expected: 9.95
+    shown: ['$\sqrt{99} \approx 10$ times as large']
+    source: {cite: mit, at: 'Problem 2.2(d) (our own check)'}
+    origin: page-own
+    tolerance: 0.05
+
+  - id: p2-sqrt101
+    where: 'Problem 2(d), a listed mistake: the drag term ten times the spring term lowers the amplitude by sqrt(101)'
+    formula: sqrt(101)
+    expected: 10.05
+    shown: ['which is about 10.05, not exactly 10']
+    source: {cite: mit, at: 'Problem 2.2(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: the traffic light
+
+  - id: p3-given
+    kind: fact
+    where: 'Problem 3, statement: the decay time and the rise'
+    shown: ['falls to $1/e$ of its value in 4 s', 'at an equilibrium position 0.1 m higher than before']
+    source: {cite: mit, at: 'Problem 2.3, p. 2'}
+    origin: mit
+
+  - id: p3-given-g
+    kind: fact
+    where: 'Problem 3, statement: the value of g used'
+    shown: ['Take $g = 9.8\ \text{m/s}^2$']
+    source: {cite: mit, at: 'Problem 2.3, p. 2 (the value of g is ours)'}
+    origin: page-own
+
+  - id: p3-w0sq
+    where: 'Problem 3(a), solution: omega_0 squared of the remaining half'
+    inputs: {g: 9.8 m/s**2, stretch: 0.1 m}
+    formula: g / stretch
+    expected: 98 1/s**2
+    shown: ['= \frac{g}{0.1\ \text{m}} = 98\ \text{s}^{-2}']
+    source: {cite: mit, at: 'Problem 2.3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-w0
+    where: 'Problem 3(a), solution: omega_0 of the remaining half'
+    inputs: {g: 9.8 m/s**2, stretch: 0.1 m}
+    formula: sqrt(g / stretch)
+    expected: 9.90 1/s
+    shown: ['\omega_0'' = 9.90\ \text{rad/s}']
+    source: {cite: mit, at: 'Problem 2.3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-f0
+    answer: p3-f0
+    where: 'Problem 3(a), answer box: natural frequency in hertz'
+    inputs: {g: 9.8 m/s**2, stretch: 0.1 m}
+    formula: sqrt(g / stretch) / (2 * pi)
+    expected: 1.576 1/s
+    tolerance: 0.001 1/s
+    shown: ['id="p3-f0"']
+    source: {cite: mit, at: 'Problem 2.3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-period-static
+    where: 'Problem 3(a), check: period from the static stretch, 2 pi sqrt(stretch/g)'
+    inputs: {g: 9.8 m/s**2, stretch: 0.1 m}
+    formula: 2 * pi * sqrt(stretch / g)
+    expected: 0.635 s
+    tolerance: 0.001 s
+    shown: ['$2\pi\sqrt{0.1/9.8} = 0.635$ s']
+    source: {cite: mit, at: 'Problem 2.3(a) (our own check)'}
+    origin: page-own
+
+  - id: p3-period-inverse
+    where: 'Problem 3(a), check: one over the frequency'
+    formula: 1 / 1.576
+    expected: 0.635
+    tolerance: 0.001
+    shown: ['which is $1/1.576$ s']
+    source: {cite: mit, at: 'Problem 2.3(a) (our own check)'}
+    origin: page-own
+
+  - id: p3-gamma0
+    where: 'Problem 3(b), solution: the damping rate before the break'
+    inputs: {tau: 4 s}
+    formula: 2 / tau
+    expected: 0.5 1/s
+    shown: ['$\gamma = b/M = 0.5\ \text{s}^{-1}$']
+    source: {cite: mit, at: 'Problem 2.3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-tau
+    answer: p3-tau
+    where: 'Problem 3(b), answer box: the decay time after the break'
+    inputs: {tau: 4 s}
+    formula: 2 / (2 * (2 / tau))
+    expected: 2.0 s
+    shown: ['id="p3-tau"']
+    source: {cite: mit, at: 'Problem 2.3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-gamma1
+    where: 'Problem 3(b), solution: the damping rate after the break'
+    inputs: {tau: 4 s}
+    formula: 2 * (2 / tau)
+    expected: 1.0 1/s
+    shown: ['\gamma'' = \frac{b}{M/2} = 1.0\ \text{s}^{-1}']
+    source: {cite: mit, at: 'Problem 2.3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-omega
+    answer: p3-omega
+    where: 'Problem 3(c), answer box: the damped frequency'
+    formula: sqrt(98 - 0.25)
+    expected: 9.887
+    shown: ['id="p3-omega"']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: p3-gamma-quarter
+    where: 'Problem 3(c), solution: gamma squared over four'
+    formula: 1.0**2 / 4
+    expected: 0.25
+    shown: ['so $\gamma''^2/4 = 0.25\ \text{s}^{-2}$']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a
+    answer: p3-a
+    where: 'Problem 3(c), answer box: the cosine coefficient, the displacement at the moment of the break'
+    inputs: {rise: 0.1 m}
+    formula: -rise
+    expected: -0.1 m
+    shown: ['id="p3-a"']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c
+    answer: p3-c
+    where: 'Problem 3(c), answer box: the sine coefficient'
+    inputs: {a: -0.1 m, gamma1: 1.0, omega: 9.886859966642595}
+    formula: gamma1 * a / (2 * omega)
+    expected: -0.005057 m
+    tolerance: 0.000001 m
+    shown: ['id="p3-c"']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-times-omega
+    where: 'Problem 3(c), check: the two terms of the slope cancel'
+    formula: 9.887 * 0.005057
+    expected: 0.05
+    tolerance: 0.0001
+    shown: ['$0.5 \times 0.1 - 9.887 \times 0.005057 = 0.05 - 0.05 = 0$']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3-period-damped
+    where: 'Problem 3(c), check: the period of the damped oscillation'
+    formula: 2 * pi / 9.887
+    expected: 0.64
+    tolerance: 0.005
+    shown: ['period of $2\pi/9.887 = 0.64$ s']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3-sine-ratio
+    where: 'Problem 3(c), check: the sine term compared with the cosine term'
+    formula: 0.005057 / 0.1
+    expected: 0.05
+    tolerance: 0.005
+    shown: ['The sine term is only 5% of the cosine term']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own check)'}
+    origin: page-own
+
+  # The slope at t = 0 and the equation of motion, with the formula of the page (y'' + 1 y' + 98 y = 0).
+  - id: p3-y-initial-slope
+    where: 'Problem 3(c), the formula "Displacement of the traffic light": zero slope at t = 0'
+    formula: deriv('exp(-0.5*x)*(-0.1*cos(9.886859966642595*x) - 0.005057217374241736*sin(9.886859966642595*x))', 'x', 0)
+    expected: 0
+    tolerance: 1e-9
+    shown: ['<Formula label="Displacement of the traffic light"']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3-y-equation
+    kind: identity
+    where: 'Problem 3(c), the formula "Displacement of the traffic light" solves the damped oscillator equation'
+    formula: deriv('exp(-0.5*x)*(-0.1*cos(9.886859966642595*x) - 0.005057217374241736*sin(9.886859966642595*x))', 'x', t0, 2)
+    equals: -1.0*deriv('exp(-0.5*x)*(-0.1*cos(9.886859966642595*x) - 0.005057217374241736*sin(9.886859966642595*x))', 'x', t0) - 98*exp(-0.5*t0)*(-0.1*cos(9.886859966642595*t0) - 0.005057217374241736*sin(9.886859966642595*t0))
+    samples:
+      t0: [0.2, 0.5, 1.1, 2.0, 3.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="Displacement of the traffic light"']
+    source: {cite: mit, at: 'Problem 2.3(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: the air track
+
+  - id: p4-w0sq
+    kind: identity
+    answer: p4-w0sq
+    where: 'Problem 4(a), answer box: omega_0 squared, against the second derivative of the stored energy of two springs'
+    formula: 2*k/m
+    equals: deriv('0.5*k*x**2 + 0.5*k*x**2', 'x', x0, 2) / m
+    samples:
+      k: [1, 2.5, 4, 3.1]
+      m: [0.5, 2, 1.0, 1.4]
+      x0: [0.1, 0.2, 0.3, 0.4]
+    tolerance: 1e-6
+    shown: ['id="p4-w0sq"']
+    source: {cite: mit, at: 'Problem 2.4(a) (our own solution)'}
+    origin: page-own
+
+  # The drive: the force of the right spring on the mass at x = 0, minus its derivative of the stored energy 1/2 k (D sin - x)^2.
+  - id: p4-f0
+    kind: identity
+    answer: p4-f0
+    where: 'Problem 4(a), answer box: the drive amplitude, against minus the derivative of the energy of the moved spring at x = 0, at the peak of the motor (sin = 1)'
+    formula: k*D/m
+    equals: -deriv('0.5*k*(x - D)**2', 'x', 0) / m
+    samples:
+      k: [1, 2.5, 4, 3.1]
+      m: [0.5, 2, 1.0, 1.4]
+      D: [0.5, 1.2, 2, 0.9]
+    tolerance: 1e-6
+    shown: ['id="p4-f0"']
+    source: {cite: mit, at: 'Problem 2.4(a) (our own solution)'}
+    origin: page-own
+
+  # Amplitude from the equation of motion at the moment w t = pi/2, with the phase from tan(delta).
+  - id: p4-amp
+    kind: identity
+    answer: p4-amp
+    where: 'Problem 4(c), answer box: against the solution of the equation of motion at the peak of the drive, with the phase from tan(delta)'
+    formula: k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2)
+    equals: solve('(2*k - m*w**2)*x*cos(atan(b*w/(2*k - m*w**2))) + b*w*x*sin(atan(b*w/(2*k - m*w**2))) - k*D', 'x', 0, 1000)
+    samples:
+      k: [2, 3, 1.5, 1, 4]
+      m: [1, 0.5, 1, 0.5, 2]
+      b: [0.2, 0.5, 0.1, 0.6, 0.3]
+      w: [0.7, 1.2, 0.9, 1.1, 0.5]
+      D: [1, 0.5, 2, 1.3, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p4-amp"']
+    source: {cite: mit, at: 'Problem 4(c), i.e. Problem 2.4(c) (our own solution)'}
+    origin: page-own
+
+  # The same amplitude and phase as a residual of the equation of motion, away from the special moment.
+  - id: p4-driven-equation
+    kind: identity
+    where: 'Problem 4(c), the formula "Amplitude and phase on the air track" gives x = A sin(wt - delta) as a solution of the equation of motion'
+    formula: m*deriv('k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2)*sin(w*x - atan(b*w/(2*k - m*w**2)))', 'x', t0, 2) + b*deriv('k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2)*sin(w*x - atan(b*w/(2*k - m*w**2)))', 'x', t0) + 2*k*k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2)*sin(w*t0 - atan(b*w/(2*k - m*w**2)))
+    equals: k*D*sin(w*t0)
+    samples:
+      k: [2, 3, 1.5, 1, 4]
+      m: [1, 0.5, 1, 0.5, 2]
+      b: [0.2, 0.5, 0.1, 0.6, 0.3]
+      w: [0.7, 1.2, 0.9, 1.1, 0.5]
+      D: [1, 0.5, 2, 1.3, 0.8]
+      t0: [0.3, 1.1, 2.4, 0.9, 3.2]
+    tolerance: 1e-6
+    shown: ['<Formula label="Amplitude and phase on the air track"']
+    source: {cite: mit, at: 'Problem 2.4(c) (our own check)'}
+    origin: page-own
+
+  - id: p4-tan
+    kind: identity
+    answer: p4-tan
+    where: 'Problem 4(c), answer box: against the phase that solves the equation of motion at t = 0'
+    formula: b*w/(2*k - m*w**2)
+    equals: tan(solve('(m*w**2 - 2*k)*sin(x) + b*w*cos(x)', 'x', 0, 1.5707))
+    samples:
+      k: [2, 3, 1.5, 1, 4]
+      m: [1, 0.5, 1, 0.5, 2]
+      b: [0.2, 0.5, 0.1, 0.6, 0.3]
+      w: [0.7, 1.2, 0.9, 1.1, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p4-tan"']
+    source: {cite: mit, at: 'Problem 4(c), i.e. Problem 2.4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-amp-low
+    kind: limit
+    where: 'Problem 4(c), check: A tends to Delta/2 for a slow drive'
+    inputs: {k: 1, m: 1, b: 0.3, D: 1}
+    formula: k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2)
+    limit: 0.5
+    vary: {w: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 1e-3
+    shown: ['$A \to \Delta/2$']
+    source: {cite: mit, at: 'Problem 2.4(c) (our own check)'}
+    origin: page-own
+
+  - id: p4-wmax
+    kind: identity
+    answer: p4-wmax
+    where: 'Problem 4(d), answer box: against the zero of the derivative of the amplitude'
+    formula: sqrt(2*k/m - b**2/(2*m**2))
+    equals: solve('deriv("k*D/m/sqrt((2*k/m - u**2)**2 + (b*u/m)**2)", "u", x)', 'x', 0.2, 3)
+    samples:
+      k: [1, 2.5, 4, 3.1]
+      m: [0.5, 2, 1.0, 1.4]
+      b: [0.1, 0.5, 0.3, 0.4]
+      D: [1, 0.5, 2, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p4-wmax"']
+    source: {cite: mit, at: 'Problem 2.4(d) (our own solution)'}
+    origin: page-own
+
+  # Initial conditions of the full solution: p from x(0) = 0.
+  - id: p4-p
+    kind: identity
+    answer: p4-p
+    where: 'Problem 4(e), answer box: p against minus the value of the driven part at t = 0'
+    formula: (k*D/m)*(b/m)*w/((2*k/m - w**2)**2 + (b*w/m)**2)
+    equals: -(k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2))*sin(0 - atan(b*w/(2*k - m*w**2)))
+    samples:
+      k: [2, 3, 1.5, 1, 4]
+      m: [1, 0.5, 1, 0.5, 2]
+      b: [0.2, 0.5, 0.1, 0.6, 0.3]
+      w: [0.7, 1.2, 0.9, 1.1, 0.5]
+      D: [1, 0.5, 2, 1.3, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p4-p"']
+    source: {cite: mit, at: 'Problem 2.4(e) (our own solution)'}
+    origin: page-own
+
+  # q from the slope condition: the numerical derivative of the complete solution must vanish at t = 0.
+  - id: p4-q
+    kind: identity
+    answer: p4-q
+    where: 'Problem 4(e), answer box: q against the numerical solve of dx/dt = 0 at t = 0 for the complete solution'
+    formula: (k*D/m)*w*(b**2/(2*m**2) - (2*k/m - w**2))/(((2*k/m - w**2)**2 + (b*w/m)**2)*sqrt(2*k/m - b**2/(4*m**2)))
+    equals: solve('deriv("exp(-b*u/(2*m))*((k*D/m)*(b/m)*w/((2*k/m - w**2)**2 + (b*w/m)**2)*cos(sqrt(2*k/m - b**2/(4*m**2))*u) + x*sin(sqrt(2*k/m - b**2/(4*m**2))*u)) + k*D/m/sqrt((2*k/m - w**2)**2 + (b*w/m)**2)*sin(w*u - atan(b*w/(2*k - m*w**2)))", "u", 0)', 'x', -10, 10)
+    samples:
+      k: [2, 3, 1.5, 1, 4]
+      m: [1, 0.5, 1, 0.5, 2]
+      b: [0.2, 0.5, 0.1, 0.6, 0.3]
+      w: [0.7, 1.2, 0.9, 1.1, 0.5]
+      D: [1, 0.5, 2, 1.3, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p4-q"']
+    source: {cite: mit, at: 'Problem 2.4(e) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: two masses on three springs
+
+  - id: p5-given-springs
+    kind: fact
+    where: 'Problem 5, statement: masses and spring constants'
+    shown: ['Mass $m_2 = 12$ kg hangs from spring A, with $K_A = 78$ N/m', 'Mass $m_1 = 4$ kg hangs below it from spring B, with $K_B = 60$ N/m', 'with $K_C = 24$ N/m']
+    source: {cite: mit, at: 'Problem 2.5, p. 3'}
+    origin: mit
+
+  - id: p5-m11
+    answer: p5-m11
+    where: 'Problem 5(b), answer box: first entry of M^-1 K'
+    inputs: {KB: 60 N/m, KC: 24 N/m, m1: 4 kg}
+    formula: (KB + KC) / m1
+    expected: 21 1/s**2
+    shown: ['id="p5-m11"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-m12
+    answer: p5-m12
+    where: 'Problem 5(b), answer box: second entry of the first row'
+    inputs: {KB: 60 N/m, m1: 4 kg}
+    formula: -KB / m1
+    expected: -15 1/s**2
+    shown: ['id="p5-m12"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-m21
+    answer: p5-m21
+    where: 'Problem 5(b), answer box: first entry of the second row'
+    inputs: {KB: 60 N/m, m2: 12 kg}
+    formula: -KB / m2
+    expected: -5 1/s**2
+    shown: ['id="p5-m21"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-m22
+    answer: p5-m22
+    where: 'Problem 5(b), answer box: second entry of the second row'
+    inputs: {KA: 78 N/m, KB: 60 N/m, m2: 12 kg}
+    formula: (KA + KB) / m2
+    expected: 11.5 1/s**2
+    shown: ['id="p5-m22"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-trace
+    where: 'Problem 5(c), solution: trace of the matrix'
+    formula: 21 + 11.5
+    expected: 32.5
+    shown: ['\lambda^2 - 32.5\,\lambda + 166.5 = 0']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-det
+    where: 'Problem 5(c), solution: determinant of the matrix'
+    formula: 21*11.5 - (-15)*(-5)
+    expected: 166.5
+    shown: ['\lambda^2 - 32.5\,\lambda + 166.5 = 0']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-discriminant
+    where: 'Problem 5(c), solution: the discriminant'
+    formula: 32.5**2 - 4*166.5
+    expected: 390.25
+    shown: ['$\lambda = (32.5 \pm \sqrt{390.25})/2$']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  # The eigenvalue from the determinant of K - lambda M directly (not through M^-1 K).
+  - id: p5-lambda-direct
+    kind: identity
+    where: 'Problem 5(c): the roots of det(K - lambda M) = 0 equal those of det(M^-1 K - lambda I) = 0 (slow root first, then fast)'
+    formula: solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15) + solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40)
+    equals: solve('(60 + 24 - 4*x)*(78 + 60 - 12*x) - 60**2', 'x', 0, 15) + solve('(60 + 24 - 4*y)*(78 + 60 - 12*y) - 60**2', 'y', 15, 40)
+    samples:
+      dummy: [1, 2]
+    tolerance: 1e-9
+    shown: ['\lambda^2 - 32.5\,\lambda + 166.5 = 0']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-w1sq
+    where: 'Problem 5(c), solution: the slow eigenvalue'
+    formula: solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15)
+    expected: 6.3726
+    tolerance: 0.001
+    shown: ['$\omega_1^2 = 6.3726\ \text{s}^{-2}$']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-w2sq
+    where: 'Problem 5(c), solution: the fast eigenvalue'
+    formula: solve('(21 - x)*(11.5 - x) - 75', 'x', 15, 40)
+    expected: 26.1274
+    tolerance: 0.005
+    shown: ['$\omega_2^2 = 26.1274\ \text{s}^{-2}$']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-w1
+    answer: p5-w1
+    where: 'Problem 5(c), answer box: the slow angular frequency'
+    formula: sqrt(solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15))
+    expected: 2.524
+    tolerance: 0.001
+    shown: ['id="p5-w1"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-w2
+    answer: p5-w2
+    where: 'Problem 5(c), answer box: the fast angular frequency'
+    formula: sqrt(solve('(21 - x)*(11.5 - x) - 75', 'x', 15, 40))
+    expected: 5.111
+    tolerance: 0.001
+    shown: ['id="p5-w2"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  - id: p5-r1
+    answer: p5-r1
+    where: 'Problem 5(c), answer box: amplitude ratio y1/y2 of the slow mode'
+    formula: 15 / (21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15))
+    expected: 1.025
+    tolerance: 0.001
+    shown: ['id="p5-r1"']
+    source: {cite: mit, at: 'Problem 2.5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-r2
+    answer: p5-r2
+    where: 'Problem 5(c), answer box: amplitude ratio y1/y2 of the fast mode'
+    formula: 15 / (21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 15, 40))
+    expected: -2.925
+    tolerance: 0.001
+    shown: ['id="p5-r2"']
+    source: {cite: mit, at: 'Problem 2.5(c) (our own solution)'}
+    origin: page-own
+
+  # The second row gives the same ratios.
+  - id: p5-r-second-row
+    kind: identity
+    where: 'Problem 5(c), check: the second row of the matrix gives the same two ratios'
+    formula: 15 / (21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15)) + 15 / (21 - solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40))
+    equals: (11.5 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15))/5 + (11.5 - solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40))/5
+    samples:
+      dummy: [1, 2]
+    tolerance: 1e-9
+    shown: ['$A_1/A_2 = (11.5 - \lambda)/5$']
+    source: {cite: mit, at: 'Problem 2.5(c) (our own check)'}
+    origin: page-own
+
+  - id: p5-r1-explicit
+    where: 'Problem 5(c), solution: the slow ratio from the eigenvalue'
+    formula: 15 / (21 - 6.3726)
+    expected: 1.025
+    tolerance: 0.001
+    shown: ['\frac{15}{21 - 6.3726} = 1.025']
+    source: {cite: mit, at: 'Problem 2.5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-r2-explicit
+    where: 'Problem 5(c), solution: the fast ratio from the eigenvalue'
+    formula: 15 / (21 - 26.1274)
+    expected: -2.925
+    tolerance: 0.001
+    shown: ['\frac{15}{21 - 26.1274} = -2.925']
+    source: {cite: mit, at: 'Problem 2.5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b1
+    answer: p5-b1
+    where: 'Problem 5(d), answer box: the coefficient of the slow mode in y2'
+    formula: 1 / (15/(21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15)) - 15/(21 - solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40)))
+    expected: 0.2531
+    tolerance: 0.0001
+    shown: ['id="p5-b1"']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a1
+    answer: p5-a1
+    where: 'Problem 5(d), answer box: the coefficient of the slow mode in y1'
+    formula: 15/(21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15)) / (15/(21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15)) - 15/(21 - solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40)))
+    expected: 0.2596
+    tolerance: 0.0001
+    shown: ['id="p5-a1"']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a2
+    answer: p5-a2
+    where: 'Problem 5(d), answer box: the coefficient of the fast mode in y1'
+    formula: 15/(21 - solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40)) * (-1) / (15/(21 - solve('(21 - x)*(11.5 - x) - 75', 'x', 0, 15)) - 15/(21 - solve('(21 - y)*(11.5 - y) - 75', 'y', 15, 40)))
+    expected: 0.7404
+    tolerance: 0.0001
+    shown: ['id="p5-a2"']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-r-difference
+    where: 'Problem 5(d), solution: the difference of the two ratios'
+    formula: 1.0255 + 2.9255
+    expected: 3.9510
+    shown: ['1/3.9510 = 0.2531$ cm']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own solution)'}
+    origin: page-own
+
+  # The motion of the page, as a residual of the equations of motion (rounded coefficients: tolerance 3e-3).
+  - id: p5-motion-equation
+    kind: identity
+    where: 'Problem 5(d), the formula "Motion of the two masses" satisfies the first equation of motion'
+    formula: 4*deriv('0.2596*cos(2.524*x) + 0.7404*cos(5.111*x)', 'x', t0, 2)
+    equals: -84*(0.2596*cos(2.524*t0) + 0.7404*cos(5.111*t0)) + 60*(0.2531*cos(2.524*t0) - 0.2531*cos(5.111*t0))
+    samples:
+      t0: [0.3, 0.8, 1.5, 2.2, 3.1]
+    tolerance: 3e-3
+    shown: ['<Formula label="Motion of the two masses"']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own check)'}
+    origin: page-own
+
+  - id: p5-motion-equation-2
+    kind: identity
+    where: 'Problem 5(d), the formula "Motion of the two masses" satisfies the second equation of motion'
+    formula: 12*deriv('0.2531*cos(2.524*x) - 0.2531*cos(5.111*x)', 'x', t0, 2)
+    equals: -138*(0.2531*cos(2.524*t0) - 0.2531*cos(5.111*t0)) + 60*(0.2596*cos(2.524*t0) + 0.7404*cos(5.111*t0))
+    samples:
+      t0: [0.3, 0.8, 1.5, 2.2, 3.1]
+    tolerance: 3e-3
+    shown: ['<Formula label="Motion of the two masses"']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own check)'}
+    origin: page-own
+
+  - id: p5-initial-y1
+    where: 'Problem 5(d), check: y1 at t = 0 in centimetres'
+    formula: 0.2596 + 0.7404
+    expected: 1
+    shown: ['$y_1 = 0.2596 + 0.7404 = 1$ cm']
+    source: {cite: mit, at: 'Problem 2.5(d) (our own check)'}
+    origin: page-own
