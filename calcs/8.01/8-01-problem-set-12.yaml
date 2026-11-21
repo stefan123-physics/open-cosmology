@@ -1,0 +1,371 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-12.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a numerical integral of the velocity, a second reference frame, a moment of inertia integrated directly,
+# torques about the contact point, or the equations of motion solved in time.
+# Problem 1 can also be compared with MIT's course notes, Example 20.1.
+
+page: content/year-1/8.01/8-01-problem-set-12.mdx
+calcs:
+  # ---- Problem 1
+
+  # (a) The answer against the numerical integral of the bead's velocity: the centre's V plus the
+  # horizontal part V cos(V t'/R) of the rim speed (law of addition of velocities).
+  - id: p1-a-by-velocity-integral
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Bead: the x component": against the numerical integral of the velocity V + V cos(V t''/R) from 0 to t'
+    formula: x0 + V*t + R*sin(V*t/R)
+    equals: x0 + integrate('V + V * cos(V * x / R)', 'x', 0, t)
+    samples:
+      x0: [1, 5, 1.0, 2.5]
+      V: [1, 5, 4.0, 2.2]
+      t: [0.1, 2, 0.471, 1.3]
+      R: [0.2, 1, 0.30, 0.6]
+    tolerance: 1e-7
+    shown: ['x(t) = x_0 + Vt + R\sin\!\left(\frac{Vt}{R}\right)']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against the numerical integral of the vertical velocity −V sin(V t'/R), from y = 2R.
+  - id: p1-b-by-velocity-integral
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Bead: the y component": against the numerical integral of the vertical velocity from the start at 2R'
+    formula: R + R*cos(V*t/R)
+    equals: 2 * R - integrate('V * sin(V * x / R)', 'x', 0, t)
+    samples:
+      V: [1, 5, 4.0, 2.2]
+      t: [0.1, 2, 0.471, 1.3]
+      R: [0.2, 1, 0.30, 0.6]
+    tolerance: 1e-7
+    shown: ['y(t) = R + R\cos\!\left(\frac{Vt}{R}\right) = R\left(1 + \cos\frac{Vt}{R}\right)']
+    source: {cite: reading1, at: 'Example 20.1, Eq. (20.2.39), p. 20-9'}
+    origin: page-own
+
+  - id: p1-example-period
+    where: 'Problem 1(a), check: time of one full turn for R = 0.30 m, V = 4.0 m/s'
+    inputs: {R: 0.30 m, V: 4.0 m/s}
+    formula: 2 * pi * R / V
+    expected: 0.471 s
+    shown: ['one full turn takes $2\pi R/V = 0.471$ s']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-example-circumference
+    where: 'Problem 1(a), check: distance moved in one full turn'
+    inputs: {R: 0.30 m}
+    formula: 2 * pi * R
+    expected: 1.88 m
+    shown: ['the bead moves on by $2\pi R = 1.88$ m']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-example-position
+    where: 'Problem 1(a), check: position of the bead after one full turn, from the answer formula'
+    inputs: {x0: 1.0 m, R: 0.30 m, V: 4.0 m/s}
+    formula: x0 + V * (2 * pi * R / V) + R * sin(2 * pi)
+    expected: 2.88 m
+    shown: ['to $x = 2.88$ m']
+    source: {cite: mit, at: 'Problem 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # (a) The answer against the route through the frame that turns with the ring: there the ball rolls on a
+  # surface at rest with the spin ω + Ω, and the frame adds (R − b) Ω at the ball's centre.
+  - id: p2-a-by-rotating-frame
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Ring: rolling without slipping on a moving surface": against the route through the frame that turns with the ring'
+    formula: R*Omega + b*omega
+    equals: b * (omega + Omega) + (R - b) * Omega
+    samples:
+      R: [1, 3, 0.50, 2.2]
+      b: [0.1, 0.5, 0.050, 0.3]
+      Omega: [1, 5, 2.0, 3.3]
+      omega: [2, 10, 12, 7.1]
+    tolerance: 1e-9
+    shown: ['v_\text{cm} - b\,\omega = R\,\Omega \quad\Longrightarrow\quad v_\text{cm} = R\,\Omega + b\,\omega']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the no-slip condition written with the angular speed x of
+  # the ball's centre: x (R − b) − b ω = R Ω.
+  - id: p2-b-by-solve
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Ring: angular speed of the ball''s centre": against a numerical solve of x (R − b) − b ω − R Ω = 0'
+    formula: (R*Omega + b*omega)/(R - b)
+    equals: solve('x * (R - b) - b * omega - R * Omega', 'x', 0, 1000)
+    samples:
+      R: [1, 3, 0.50, 2.2]
+      b: [0.1, 0.5, 0.050, 0.3]
+      Omega: [1, 5, 2.0, 3.3]
+      omega: [2, 10, 12, 7.1]
+    tolerance: 1e-7
+    shown: ['\Omega_b = \frac{v_\text{cm}}{R - b} = \frac{R\,\Omega + b\,\omega}{R - b}']
+    source: {cite: mit, at: 'Problem 2 (our addition, our own solution)'}
+    origin: page-own
+
+  - id: p2-example-speed
+    where: 'Problem 2(a), check: speed of the centre for R = 0.50 m, b = 0.050 m, Ω = 2.0 rad/s, ω = 12 rad/s'
+    inputs: {R: 0.50 m, b: 0.050 m, Om: 2.0 1/s, om: 12 1/s}
+    formula: R * Om + b * om
+    expected: 1.6 m/s
+    shown: ['$v_\text{cm} = 0.50 \times 2.0 + 0.050 \times 12 = 1.6$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-angular-speed
+    where: 'Problem 2(b), check: angular speed of the centre of the ball about the centre of the ring'
+    inputs: {R: 0.50 m, b: 0.050 m, Om: 2.0 1/s, om: 12 1/s}
+    formula: (R * Om + b * om) / (R - b)
+    expected: 3.56 1/s
+    shown: ['$\Omega_b = 1.6/0.45 = 3.56$ rad/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # (a) The answer against the angular momentum balance with the moment of inertia about the edge
+  # integrated directly over the square face (2 (m/s) ∫ x² dx from 0 to s), without the parallel axis theorem.
+  - id: p3-a-by-direct-inertia
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Cube: angular speed just after the collision": against m v0 s/2 divided by the moment of inertia about the edge integrated numerically'
+    formula: 3*v0/(4*s)
+    equals: (m * v0 * s / 2) / (2 * (m / s) * integrate('x**2', 'x', 0, s))
+    samples:
+      v0: [0.5, 3, 1.47, 2.1]
+      s: [0.1, 1, 0.20, 0.6]
+      m: [0.1, 2, 1.0, 0.7]
+    tolerance: 1e-7
+    shown: ['\frac{2\,m s^2}{3}\,\omega_a = \frac{m\,v_0\,s}{2} \quad\Longrightarrow\quad \omega_a = \frac{3\,v_0}{4\,s}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # The moment of inertia about the edge: parallel axis theorem against the direct integral.
+  - id: p3-inertia-edge
+    kind: identity
+    where: 'Problem 3(a), formula "Cube: moment of inertia about an edge": parallel axis theorem against the direct integral over the square face'
+    formula: m*s**2/6 + m*(s/sqrt(2))**2
+    equals: 2 * (m / s) * integrate('x**2', 'x', 0, s)
+    samples:
+      s: [0.1, 1, 0.20, 0.6]
+      m: [0.1, 2, 1.0, 0.7]
+    tolerance: 1e-7
+    shown: ['I_S = \frac{m s^2}{6} + \frac{m s^2}{2} = \frac{2\,m s^2}{3}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve of the energy balance after the collision, with the kinetic
+  # energy written as ½ I ω² and the two heights of the centre written out.
+  - id: p3-b-by-solve
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Cube: the largest speed that does not tip it over": against a numerical solve of ½ I ω_a² = m g (s/√2 − s/2)'
+    formula: sqrt(8*g*s*(sqrt(2) - 1)/3)
+    equals: solve('0.5 * (2 * m * s**2 / 3) * (3 * x / (4 * s))**2 - m * g * (s / sqrt(2) - s / 2)', 'x', 0, 100)
+    samples:
+      s: [0.1, 1, 0.20, 0.6]
+      g: [9, 10, 9.8, 9.81]
+      m: [0.1, 2, 1.0, 0.7]
+    tolerance: 1e-7
+    shown: ['v_0 = \sqrt{\frac{8\,g s\,(\sqrt2 - 1)}{3}}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-centre-speed-factor
+    where: 'Problem 3(a), check: speed of the centre just after the collision in units of v0'
+    formula: 3 / (4 * sqrt(2))
+    expected: '0.53'
+    shown: ['$\omega_a s/\sqrt2 = 3v_0/(4\sqrt2) = 0.53\,v_0$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-example-speed
+    where: 'Problem 3(b), check: largest speed for s = 0.20 m'
+    inputs: {g: 9.8 m/s**2, s: 0.20 m}
+    formula: sqrt(8 * g * s * (sqrt(2) - 1) / 3)
+    expected: 1.47 m/s
+    shown: ['$v_0 = \sqrt{8 \times 9.8 \times 0.20 \times 0.414/3} = 1.47$ m/s']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-omega
+    where: 'Problem 3(b), check: angular speed just after the collision at that speed'
+    inputs: {g: 9.8 m/s**2, s: 0.20 m}
+    formula: 3 * sqrt(8 * g * s * (sqrt(2) - 1) / 3) / (4 * s)
+    expected: 5.52 1/s
+    shown: ['$\omega_a = 3v_0/(4s) = 5.52$ rad/s']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-example-rise
+    where: 'Problem 3(b), check: rise of the centre of the cube'
+    inputs: {s: 0.20 m}
+    formula: s * (sqrt(2) - 1) / 2
+    expected: 0.041 m
+    shown: ['$0.207 \times 0.20 = 0.041$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (a) The answer against torques about the contact point (friction and the normal force have none there):
+  # (2/3) R F − m g R sin φ = (3/2) m R² (a/R) gives a, and the second law for the centre then gives f.
+  - id: p4-a-by-contact-point
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Yo-yo: the friction force": against the acceleration from torques about the contact point, put into the second law for the centre'
+    formula: m*g*sin(phi)/3 - 5*F/9
+    equals: m * ((2 * R * F / 3 - m * g * R * sin(phi)) / (1.5 * m * R)) - F + m * g * sin(phi)
+    samples:
+      m: [0.1, 2, 0.10, 0.7]
+      g: [9, 10, 9.8, 9.81]
+      phi: [0.1, 0.6, 0.349, 0.45]
+      F: [1, 10, 0.698, 4.2]
+      R: [0.02, 0.1, 0.03, 0.06]
+    tolerance: 1e-9
+    shown: ['f = \tfrac13\,mg\sin\phi - \tfrac59\,F']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against a numerical solve for the pull x at which the friction found through the
+  # contact-point route (not the formula of part (a)) reaches −μ m g cos φ.
+  - id: p4-b-by-solve
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Yo-yo: the largest pull": against a numerical solve of f(x) = −μ m g cos φ, with f from torques about the contact point'
+    formula: 3*m*g*(3*mu*cos(phi) + sin(phi))/5
+    equals: solve('m * ((2 * R * x / 3 - m * g * R * sin(phi)) / (1.5 * m * R)) - x + m * g * sin(phi) + mu * m * g * cos(phi)', 'x', 0, 1000)
+    samples:
+      m: [0.1, 2, 0.10, 0.7]
+      g: [9, 10, 9.8, 9.81]
+      phi: [0.1, 0.6, 0.349, 0.45]
+      mu: [0.2, 0.9, 0.30, 0.55]
+      R: [0.02, 0.1, 0.03, 0.06]
+    tolerance: 1e-7
+    shown: ['F = \tfrac35\,mg\,\left(3\mu_s\cos\phi + \sin\phi\right)']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # The lesson's "Maximum pull" factor for b = R/3 and I = ½ m R².
+  - id: p4-level-ground-factor
+    where: 'Problem 4(b), check: the factor of the lesson''s "Maximum pull" for an axle of radius R/3'
+    formula: (1 + 1/2) / (1/3 + 1/2)
+    expected: '1.8'
+    shown: ['\mu_s mg\,(R + \tfrac12 R)/(\tfrac13 R + \tfrac12 R) = \tfrac95\mu_s mg']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-example-pull
+    where: 'Problem 4(b), check: largest pull for m = 0.10 kg, φ = 20°, μ_s = 0.30'
+    inputs: {m: 0.10 kg, g: 9.8 m/s**2}
+    formula: 3 * m * g * (3 * 0.30 * cos(20 * pi / 180) + sin(20 * pi / 180)) / 5
+    expected: 0.698 N
+    shown: ['the largest pull is $0.698$ N']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-weight
+    where: 'Problem 4(b), check: weight of the yo-yo'
+    inputs: {m: 0.10 kg, g: 9.8 m/s**2}
+    formula: m * g
+    expected: 0.98 N
+    shown: ['the weight of the yo-yo, 0.98 N']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-friction
+    where: 'Problem 4(b), check: the limit of static friction μ_s N'
+    inputs: {m: 0.10 kg, g: 9.8 m/s**2}
+    formula: 0.30 * m * g * cos(20 * pi / 180)
+    expected: 0.276 N
+    shown: ['the friction is 0.276 N down the slope']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-example-acceleration
+    where: 'Problem 4(b), check: acceleration up the slope at the largest pull'
+    inputs: {m: 0.10 kg, g: 9.8 m/s**2, F: 0.698 N}
+    formula: 4 * F / (9 * m) - 2 * g * sin(20 * pi / 180) / 3
+    expected: 0.87 m/s**2
+    shown: ['rolls up the slope with $a = 0.87$ m/s²']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # (a) The answer against a numerical solve of "the angular momentum about a point on the line of the cue
+  # stays zero": the blow has no torque about that point, so (2/5) m R² x − m v0 h = 0.
+  - id: p5-a-by-solve
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box and formula "Billiard ball: spin after the blow": against a numerical solve of the angular momentum about a point on the line of the blow'
+    formula: 5*v0*h/(2*R**2)
+    equals: solve('0.4 * m * R**2 * x - m * v0 * h', 'x', 0, 100000)
+    samples:
+      v0: [0.5, 3, 1.4, 2.1]
+      h: [0.005, 0.025, 0.0224, 0.012]
+      R: [0.026, 0.03, 0.028, 0.029]
+      m: [0.1, 0.3, 0.17, 0.21]
+    tolerance: 1e-7
+    shown: ['\omega_0 = \frac{m\,v_0\,h}{I_\text{cm}} = \frac{5\,v_0\,h}{2R^2}']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # (b) The answer against the equations of motion in time: v = v0 + μ g t and ω = ω0 − (5 μ g / 2R) t,
+  # with the time at which v = R ω solved numerically.
+  - id: p5-b-by-time
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Billiard ball: speed when it rolls": against the two equations of motion, with the time at which rolling begins solved numerically'
+    formula: (5*v0 + 2*R*omega0)/7
+    equals: v0 + mu * g * solve('v0 + mu * g * x - R * (omega0 - 5 * mu * g * x / (2 * R))', 'x', 0, 1000)
+    samples:
+      v0: [0.5, 3, 1.4, 2.1]
+      omega0: [150, 400, 130, 260]
+      R: [0.026, 0.03, 0.028, 0.029]
+      mu: [0.1, 0.5, 0.20, 0.33]
+      g: [9, 10, 9.8, 9.81]
+    tolerance: 1e-7
+    shown: ['v_f = \frac{5\,v_0 + 2R\,\omega_0}{7}']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # (c) h/R from v_f = (9/7) v0: R ω0/v0 = (7 × 9/7 − 5)/2, and h/R = (2/5) R ω0/v0.
+  - id: p5-ratio
+    answer: p5-c
+    where: 'Problem 5(c), answer box and formula "Billiard ball: the height of the blow"'
+    formula: (2 / 5) * (7 * (9 / 7) - 5) / 2
+    expected: '0.8'
+    shown: ['\frac{h}{R} = \frac45']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-given-final-speed
+    kind: fact
+    where: 'Problem 5, statement: the final speed in units of v0'
+    shown: ['its speed is $\tfrac97 v_0$']
+    source: {cite: mit, at: 'Problem 5, p. 5'}
+    origin: mit
+
+  - id: p5-example-time
+    where: 'Problem 5(c), check: time of sliding for v0 = 1.4 m/s, μ_k = 0.20'
+    inputs: {v0: 1.4 m/s, g: 9.8 m/s**2}
+    formula: 2 * v0 / (7 * 0.20 * g)
+    expected: 0.204 s
+    shown: ['the ball slides for $0.204$ s']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-final-speed
+    where: 'Problem 5(c), check: final speed for v0 = 1.4 m/s'
+    inputs: {v0: 1.4 m/s}
+    formula: 9 * v0 / 7
+    expected: 1.8 m/s
+    shown: ['then rolls at $1.8$ m/s']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
