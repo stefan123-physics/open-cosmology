@@ -23,6 +23,18 @@ Before a course: open its OCW Assignments page and list its problem sets (number
 
 Run several sets in parallel (one writer per worktree, up to about four at once), but bring them onto the branch one at a time.
 
+## Briefs for the agents (2026-11-21)
+
+`docs/problem-sets-run/WRITER-BRIEF.md` and `docs/problem-sets-run/REVIEW-BRIEF.md` are the briefs the 8.286 run gave each writer and blind reviewer. Download MIT's PDFs to the scratchpad (outside the repo), convert them with `pdftotext -layout`, strip the page with `scripts/strip-solutions.py`, and point each agent at its brief plus the paths. Add to each writer's task the lessons learned below. Each reviewer writes its review to the scratchpad; the main session copies it in, fixes the findings, appends the Resolution and sets `status: reviewed`.
+
+Extra lessons from the 8.286 run, all flagged by reviewers:
+- Choose formula-box `vars` ranges where wrong-but-close forms (|sin θ| against sin θ) differ everywhere: the browser checks five random points.
+- A choice box must not be answerable from units alone; choice strings contain no backslash TeX.
+- Mark parts that are our own additions as such; never claim more than can be checked ("only", "everywhere").
+- If MIT points to a solution outside OCW (web.mit.edu quiz solutions), say so in the intro and do not use it.
+- Check every transcript page against the printed footer; do not reuse page numbers from lessons unchecked.
+- A set that links to another set (8.286 Set 10 → Set 9 #p5) needs that set merged first.
+
 ## Lessons learned (2026-11-20 and 21)
 
 - Reviews catch real errors in about half of all pages (wrong hint direction, a source slip repeated from MIT, a quiz with two right answers, terms used before their lesson). Never skip the blind review.
