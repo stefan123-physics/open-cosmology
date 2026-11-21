@@ -1,0 +1,741 @@
+# Calculations on content/year-4/8.286/8-286-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# the Friedmann equation by numerical differentiation (Problem 2), numerical integration (Problem 3),
+# and a direct evaluation of the entropy and density formulas (Problem 4).
+
+page: content/year-4/8.286/8-286-problem-set-10.mdx
+calcs:
+  # ---- Problem 2
+
+  # a(t) for k > 0 must satisfy (da/dt)^2 = chi^2 a^2 − k c^2 at every time.
+  - id: p2-closed-solves-friedmann
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box: the right side of the Friedmann equation, χ²a² − kc², against the square of the numerical derivative of a(t)'
+    formula: sqrt(k)*c/chi*cosh(chi*t)
+    equals: sqrt(deriv('sqrt(k)*c/chi*cosh(chi*x)', 'x', t)**2 + k*c**2) / chi
+    samples:
+      k: [0.5, 3, 1.7, 1, 2.2]
+      c: [1, 3, 2, 299792.458, 1.3]
+      chi: [0.5, 2, 1.1, 0.8, 1.6]
+      t: [0.3, 2, 1.2, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['a(t) = \frac{\sqrt{k}\,c}{\chi}\,\cosh\!\big(\chi\,(t - t_*)\big)']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-closed-minimum
+    kind: identity
+    where: 'Problem 2(a): at t = 0 the scale factor has its smallest value, √k c/χ, where χ²a² − kc² = 0'
+    formula: chi**2 * (sqrt(k)*c/chi*cosh(chi*0))**2
+    equals: k * c**2
+    samples:
+      k: [0.5, 3, 1.7]
+      c: [1, 3, 2]
+      chi: [0.5, 2, 1.1]
+    shown: ['So $a$ can never be smaller than that, and at that value $\dot a = 0$.']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # a(t) for k < 0 must satisfy (da/dt)^2 = chi^2 a^2 + kappa c^2.
+  - id: p2-open-solves-friedmann
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box: against the numerical derivative of a(t) in the Friedmann equation with k = −κ'
+    formula: sqrt(kappa)*c/chi*sinh(chi*t)
+    equals: sqrt(deriv('sqrt(kappa)*c/chi*sinh(chi*x)', 'x', t)**2 - kappa*c**2) / chi
+    samples:
+      kappa: [0.5, 3, 1.7, 1, 2.2]
+      c: [1, 3, 2, 299792.458, 1.3]
+      chi: [0.5, 2, 1.1, 0.8, 1.6]
+      t: [0.3, 2, 1.2, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['a(t) = \frac{\sqrt{\kappa}\,c}{\chi}\,\sinh\!\big(\chi\,(t - t_*)\big)']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-open-early
+    kind: limit
+    where: 'Problem 2(b), check: for small times a ≈ √κ c t'
+    formula: sqrt(kappa)*c/chi*sinh(chi*t) / (sqrt(kappa)*c*t)
+    limit: '1'
+    inputs: {kappa: 1.7, c: 2, chi: 1.1}
+    vary: {t: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 1e-6
+    shown: ['so $a \approx \sqrt{\kappa}\,c\,(t - t_*)$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # The constant A: a(t) e^(−chi t) at large times.
+  - id: p2-late-constant
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box: against a(t) e^(−χt) of the k > 0 solution at χt = 20'
+    formula: sqrt(k)*c/(2*chi)
+    equals: sqrt(k)*c/chi*cosh(20) * exp(-20)
+    samples:
+      k: [0.5, 3, 1.7, 1]
+      c: [1, 3, 2, 299792.458]
+      chi: [0.5, 2, 1.1, 0.8]
+    tolerance: 1e-9
+    shown: ['the constant is $A = \sqrt{k}\,c/(2\chi)$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-late-open
+    kind: limit
+    where: 'Problem 2(c): the k < 0 solution approaches the same exponential'
+    formula: sinh(u) / (exp(u) / 2)
+    limit: '1'
+    vary: {u: [2, 5, 10, 20]}
+    tolerance: 1e-9
+    shown: ['The plus sign is for $k > 0$ and the minus sign for $k < 0$.']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-cosh-3
+    where: 'Problem 2(c), check with numbers'
+    inputs: {}
+    formula: cosh(3)
+    expected: '10.068'
+    shown: ['$\cosh 3 = 10.068$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-half-exp-3
+    where: 'Problem 2(c), check with numbers'
+    inputs: {}
+    formula: exp(3) / 2
+    expected: '10.043'
+    shown: ['$\tfrac12e^3 = 10.043$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-cosh-difference
+    where: 'Problem 2(c), check with numbers: the two differ by 0.25%, which is e^(−6)'
+    inputs: {}
+    formula: (cosh(3) / (exp(3) / 2) - 1) * 100
+    expected: '0.25'
+    shown: ['They differ by 0.25%, which is $e^{-6}$.']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-exp-minus-6
+    where: 'Problem 2(c), check with numbers: e^(−6) in percent'
+    inputs: {}
+    formula: exp(-6) * 100
+    expected: '0.25'
+    shown: ['They differ by 0.25%, which is $e^{-6}$.']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-tanh-3
+    where: 'Problem 2(c), check with numbers: the Hubble rate in units of χ'
+    inputs: {}
+    formula: tanh(3)
+    expected: '0.9951'
+    shown: ['$\dot a/a = \chi\tanh 3 = 0.9951\,\chi$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-curvature-term
+    kind: limit
+    where: 'Problem 2(c): 1/cosh² falls as 4 e^(−2u)'
+    formula: (1 / cosh(u)**2) / (4 * exp(-2*u))
+    limit: '1'
+    vary: {u: [2, 5, 10, 20]}
+    tolerance: 1e-9
+    shown: ['which falls as $4e^{-2\chi(t - t_*)}$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-parameters
+    kind: fact
+    where: 'Problem 3(b): the Planck 2013 best fit as MIT lists it'
+    shown: ['H_0 = 67.3\ \text{km/s/Mpc}, \qquad \Omega_{m,0} = 0.315, \qquad \Omega_{\text{vac},0} = 0.685, \qquad \Omega_{\text{rad},0} = 9.2\times10^{-5}', '$T_{\gamma,0} = 2.725$ K']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-omega-sum
+    where: 'Problem 3(b), step "The curvature term"'
+    inputs: {Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: Om + Ov + Or
+    expected: '1.000092'
+    shown: ['add up to 1.000092']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-hubble-rate
+    where: 'Problem 3(b), step "The length c over the Hubble rate"'
+    inputs: {H0: 67.3 km/s/Mpc}
+    formula: H0
+    expected: 2.181e-18 1/s
+    shown: ['$= 2.181 \times 10^{-18}$ s⁻¹']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-hubble-length-m
+    where: 'Problem 3(b), step "The length c over the Hubble rate"'
+    inputs: {H0: 67.3 km/s/Mpc}
+    formula: c / H0
+    expected: 1.3745e26 m
+    shown: ['$c/H_0 = 1.3745 \times 10^{26}$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-hubble-length-mpc
+    where: 'Problem 3(b), step "The length c over the Hubble rate"'
+    inputs: {H0: 67.3 km/s/Mpc}
+    formula: c / H0
+    expected: 4455 Mpc
+    shown: ['which is 4455 Mpc']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-hubble-length-gly
+    where: 'Problem 3(b), step "The length c over the Hubble rate"'
+    inputs: {H0: 67.3 km/s/Mpc}
+    formula: c / H0
+    expected: 14.53e9 ly
+    shown: ['or 14.53 billion light-years']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-integrand-at-zero
+    where: 'Problem 3(b), step "The integral": the integrand at x = 0'
+    inputs: {Or: 9.2e-5}
+    formula: 1 / sqrt(Or)
+    expected: '104'
+    shown: ['$1/\sqrt{\Omega_{\text{rad},0}} = 104$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # The integral, with Ω_k,0 = 1 − (sum of the others) as the lesson defines it.
+  - id: p3-integral
+    where: 'Problem 3(b), formula "A smooth form for numerical work": the integral over x, with Ω_k,0 = −9.2e-5'
+    inputs: {Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1)
+    expected: '3.180'
+    shown: ['= 3.180" cite="mit"', 'gives 3.180.']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-integral-flat
+    where: 'Problem 3(b), step "The curvature term": the flat reading, Ω_k,0 = 0, gives the same to four figures'
+    inputs: {Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: integrate('1 / sqrt(Om*x + Or + Ov*x**4)', 'x', 0, 1)
+    expected: '3.180'
+    shown: ['they give the same result to four figures']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # The substitution x = u^2 gives the same integral.
+  - id: p3-substitution
+    kind: identity
+    where: 'Problem 3(b), formula "A smooth form for numerical work": the substitution x = u² leaves the integral unchanged'
+    formula: integrate('2*x / sqrt(Om*x**2 + Or + Ov*x**8 + Ok*x**4)', 'x', 0, 1)
+    equals: integrate('1 / sqrt(Om*x + Or + Ov*x**4 + Ok*x**2)', 'x', 0, 1)
+    samples:
+      Om: [0.315, 0.3, 1, 0.25]
+      Ov: [0.685, 0.7, 0, 0.5]
+      Or: [9.2e-5, 1e-3, 1e-2, 9.2e-5]
+      Ok: [-9.2e-5, 0, 0, 0.25]
+    tolerance: 1e-6
+    shown: ['\int_0^1\frac{2u\,du}{\sqrt{\Omega_{m,0}\,u^2 + \Omega_{\text{rad},0} + \Omega_{\text{vac},0}\,u^8 + \Omega_{k,0}\,u^4}}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-smooth-integrand-max
+    where: 'Problem 3(b), step "The integral": the largest value of the smooth integrand, reached near u = 0.286 (found by a scan; the value there is recomputed here)'
+    inputs: {Om: 0.315, Ov: 0.685, Or: 9.2e-5, u: 0.286}
+    formula: 2*u / sqrt(Om*u**2 + Or + Ov*u**8)
+    expected: '3.6'
+    shown: ['never exceeds about 3.6']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-horizon-gly
+    answer: p3-b-gly
+    where: 'Problem 3(b), answer box and formula "Horizon distance today": (c/H0) times the numerical integral, in billions of light-years'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1) / (1e9 * ly)
+    expected: '46.2'
+    shown: ['= 46.2\ \text{billion light-years}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-horizon-mpc
+    answer: p3-b-mpc
+    where: 'Problem 3(b), answer box and formula "Horizon distance today", in Mpc'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1) / Mpc
+    expected: '14170'
+    shown: ['= 14170\ \text{Mpc}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-horizon-flat-gly
+    where: 'Problem 3(b), step "The curvature term": the flat reading gives the same distance'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4)', 'x', 0, 1)
+    expected: 46.20e9 ly
+    shown: ['they give the same result to four figures']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-matter-only
+    where: 'Problem 3(b), check: a flat matter-only universe gives 2'
+    inputs: {}
+    formula: integrate('1 / sqrt(x)', 'x', 0, 1)
+    expected: '2'
+    tolerance: '0.0001'
+    shown: ['the integral is $\int_0^1 x^{-1/2}dx = 2$']
+    source: {cite: reading2, at: 'pp. 19–20'}
+    origin: mit
+
+  - id: p3-no-radiation
+    where: 'Problem 3(b), check: the integral without radiation'
+    inputs: {Om: 0.315, Ov: 0.685}
+    formula: integrate('1 / sqrt(Om*x + Ov*x**4)', 'x', 0, 1)
+    expected: '3.240'
+    shown: ['gives 3.240 for the integral']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-no-radiation-gly
+    where: 'Problem 3(b), check: the horizon distance without radiation'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Ov*x**4)', 'x', 0, 1)
+    expected: 47.1e9 ly
+    shown: ['or 47.1 billion light-years']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-no-radiation-percent
+    where: 'Problem 3(b), check: 2% more'
+    inputs: {Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: (integrate('1 / sqrt(Om*x + Ov*x**4)', 'x', 0, 1) / integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1) - 1) * 100
+    expected: '2'
+    shown: ['2% more']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-three-c-t0
+    where: 'Problem 3(b), check: MIT''s fallback 3 c t0'
+    inputs: {t0: 13.8e9 yr}
+    formula: 3 * c * t0
+    expected: 41.4e9 ly
+    shown: ['is 41.4 billion light-years']
+    source: {cite: mit, at: 'Problem 4, p. 5'}
+    origin: mit
+
+  - id: p3-three-c-t0-percent
+    where: 'Problem 3(b), check: about 10% less'
+    inputs: {a: 41.4, b: 46.2}
+    formula: (1 - a / b) * 100
+    expected: '10'
+    shown: ['about 10% less']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # kT_RH against a direct solution of rho_RH = rho_f for the temperature.
+  - id: p4-reheat-formula
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), formula box: the black-body mass density at this temperature, g (π²/30) (kT)⁴, must give back E_f⁴ (the common factor ħ³c⁵ left out)'
+    formula: Ef*(30/(pi**2*g))**(1/4)
+    equals: solve('g * pi**2 / 30 * x**4 - Ef**4', 'x', 0.001, 10)
+    samples:
+      Ef: [0.5, 3, 1, 2.2]
+      g: [50, 500, 300, 106.75]
+    tolerance: 1e-6
+    shown: ['kT_\text{RH} = \left(\frac{30}{\pi^2g_\text{RH}}\right)^{1/4}E_f']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-reheat-bracket
+    where: 'Problem 4(a), step "The number"'
+    inputs: {g: 300}
+    formula: 30 / (pi**2 * g)
+    expected: '0.01013'
+    shown: ['$30/(9.870 \times 300) = 0.01013$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-pi-squared
+    where: 'Problem 4(a), step "The number"'
+    inputs: {}
+    formula: pi**2
+    expected: '9.870'
+    shown: ['$30/(9.870 \times 300) = 0.01013$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-reheat-root
+    where: 'Problem 4(a), step "The number"'
+    inputs: {g: 300}
+    formula: (30 / (pi**2 * g))**(1/4)
+    expected: '0.3173'
+    shown: ['its fourth root is 0.3173']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-reheat-energy
+    answer: p4-a-num
+    where: 'Problem 4(a), number box: kT_RH for E_f = 1e16 GeV and g_RH = 300, in units of 1e15 GeV'
+    inputs: {Ef: 1e16 GeV, g: 300}
+    formula: Ef * (30 / (pi**2 * g))**(1/4) / (1e15 * GeV)
+    expected: '3.17'
+    shown: ['$kT_\text{RH} = 3.17 \times 10^{15}$ GeV']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # a(t0)/a(te) against the cube root of the ratio of entropy densities, written out with all constants.
+  - id: p4-expansion-formula
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), formula box: against (s_RH/s_0)^(1/3) with s_0 the sum of photons and of neutrinos at T_ν = (4/11)^(1/3) T_γ'
+    formula: (11*g/43)**(1/3)*TRH/T0
+    equals: ((g * TRH**3) / (2 * T0**3 + (21/4) * ((4/11)**(1/3) * T0)**3))**(1/3)
+    samples:
+      g: [50, 500, 300, 106.75]
+      TRH: [1, 5, 3.2, 2]
+      T0: [0.5, 2, 1.1, 1]
+    tolerance: 1e-9
+    shown: ['= \left(\frac{11\,g_\text{RH}}{43}\right)^{1/3}\frac{T_\text{RH}}{T_{\gamma,0}}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-g-today
+    where: 'Problem 4(b), formula "Entropy density today": 2 + (21/4)(4/11) = 43/11'
+    inputs: {}
+    formula: (2 + 21/4 * 4/11) * 11
+    expected: '43'
+    tolerance: '1e-9'
+    shown: ['\left[2 + \frac{21}{4}\cdot\frac{4}{11}\right]', '= \frac{43}{11}\cdot']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-kt-today
+    where: 'Problem 4(b), check with numbers'
+    inputs: {T: 2.725 K}
+    formula: k_B * T
+    expected: 2.348e-4 eV
+    shown: ['= 2.348 \times 10^{-4}$ eV']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-boltzmann-ev
+    where: 'section "How to answer": the Boltzmann constant in eV/K'
+    inputs: {}
+    formula: k_B
+    expected: 8.617e-5 eV/K
+    shown: ['$8.617 \times 10^{-5}$ eV/K']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
+
+  - id: p4-temperature-ratio
+    where: 'Problem 4(b), check with numbers'
+    inputs: {Ef: 1e16 GeV, g: 300, T: 2.725 K}
+    formula: Ef * (30 / (pi**2 * g))**(1/4) / (k_B * T)
+    expected: '1.351e28'
+    shown: ['the ratio of temperatures is $1.351 \times 10^{28}$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-entropy-factor
+    where: 'Problem 4(b), check with numbers; also "the same formula without the factor 4.25"'
+    inputs: {g: 300}
+    formula: (11 * g / 43)**(1/3)
+    expected: '4.25'
+    shown: ['$(11 \times 300/43)^{1/3} = 4.25$', 'without the factor 4.25']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-expansion
+    where: 'Problem 4(b), check with numbers; Problem 4(c), step "The number"'
+    inputs: {Ef: 1e16 GeV, g: 300, T: 2.725 K}
+    formula: (11 * g / 43)**(1/3) * Ef * (30 / (pi**2 * g))**(1/4) / (k_B * T)
+    expected: '5.74e28'
+    shown: ['So $a(t_0)/a(t_e) = 5.74 \times 10^{28}$ for']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # The scaling f against the full expression for Z_min, divided by its value at E16 = 1, g = 300, beta = 1.
+  # R (the horizon distance) and T0 are sampled too: they must cancel in the ratio.
+  - id: p4-scaling
+    kind: identity
+    answer: p4-c-f
+    where: 'Problem 4(c), formula box: Z_min = R H_i / (β c) × a(t_e)/a(t_0), built from parts (a) and (b), divided by its value at E16 = 1, g = 300, β = 1 (units with c = ħ = G = 1)'
+    formula: E16*(g/300)**(-1/12)/beta
+    equals: (R * sqrt(8*pi/3) * E16**2 / beta / ((11*g/43)**(1/3) * E16 * (30/(pi**2*g))**(1/4) / T0)) / (R * sqrt(8*pi/3) / ((11*300/43)**(1/3) * (30/(pi**2*300))**(1/4) / T0))
+    samples:
+      E16: [0.2, 5, 1, 2.3]
+      g: [30, 3000, 300, 106.75]
+      beta: [0.1, 0.9, 1, 0.5]
+      R: [1, 7, 3, 0.4]
+      T0: [1, 0.3, 2, 5]
+    tolerance: 1e-9
+    shown: ['Z_\text{min} = Z_1\,\frac{E_{16}}{\beta}\left(\frac{g_\text{RH}}{300}\right)^{-1/12}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ef-joule
+    where: 'Problem 4(c), step "The number"'
+    inputs: {Ef: 1e16 GeV}
+    formula: Ef
+    expected: 1.602e6 J
+    shown: ['$= 1.602 \times 10^{6}$ J']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-rho-f
+    where: 'Problem 4(c), step "The number"'
+    inputs: {Ef: 1e16 GeV}
+    formula: Ef**4 / (hbar**3 * c**5)
+    expected: 2.32e84 kg/m**3
+    shown: ['= 2.32 \times 10^{84}$ kg/m³']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-rho-f-lecture
+    where: 'Problem 4(c), step "The number": the value Guth quotes in Lecture 23'
+    inputs: {Ef: 1e16 GeV}
+    formula: Ef**4 / (hbar**3 * c**5)
+    expected: 2.3e81 g/cm**3
+    shown: ['(the $2.3 \times 10^{81}$ g/cm³ of the lecture)']
+    source: {cite: reading1, at: 'p. 17'}
+    origin: mit
+
+  - id: p4-hubble-rate
+    where: 'Problem 4(c), step "The number"'
+    inputs: {Ef: 1e16 GeV}
+    formula: sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3)
+    expected: 3.60e37 1/s
+    shown: ['$H_i = 3.60 \times 10^{37}$ s⁻¹']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-hubble-length
+    where: 'Problem 4(c), step "The number"'
+    inputs: {Ef: 1e16 GeV}
+    formula: c / sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3)
+    expected: 8.32e-30 m
+    shown: ['$c/H_i = 8.32 \times 10^{-30}$ m']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-horizon-metres
+    where: 'Problem 4(c), step "The number": the horizon distance of Problem 3 in metres'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1)
+    expected: 4.371e26 m
+    shown: ['$= 4.371 \times 10^{26}$ m']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-horizon-in-hubble-lengths
+    where: 'Problem 4(c), step "The number"'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5, Ef: 1e16 GeV}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1) * sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3) / c
+    expected: '5.25e55'
+    shown: ['$5.25 \times 10^{55}$ Hubble lengths']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-zmin
+    answer: p4-c-z1
+    where: 'Problem 4(c), number box and formula "Minimum expansion, sample values": Z_min for E16 = 1, g_RH = 300, β = 1, in units of 1e26, from the constants directly'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5, Ef: 1e16 GeV, g: 300, T: 2.725 K}
+    formula: c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1) * sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3) / c / ((11 * g / 43)**(1/3) * Ef * (30 / (pi**2 * g))**(1/4) / (k_B * T)) / 1e26
+    expected: '9.15'
+    shown: ['= 9.15\times10^{26}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # The closed formula for Z_min on the page, evaluated as written, must give the same number.
+  - id: p4-zmin-closed-formula
+    where: 'Problem 4(c), formula "Minimum expansion in terms of the parameters", evaluated for the sample values'
+    inputs: {R: 4.371e26 m, Ef: 1e16 GeV, g: 300, T: 2.725 K}
+    formula: (43/11)**(1/3) * (pi**2/30)**(1/4) * sqrt(8 * pi * G / (3 * hbar**3 * c**5)) * R * k_B * T / c * Ef / g**(1/12)
+    expected: '9.15e26'
+    shown: ['\left(\frac{43}{11}\right)^{1/3}\left(\frac{\pi^2}{30}\right)^{1/4}\sqrt{\frac{8\pi G}{3\hbar^3c^5}}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-patch-at-end
+    where: 'Problem 4(c), check: the smooth patch at the end of inflation'
+    inputs: {Z: 9.15e26, Ef: 1e16 GeV}
+    formula: Z * c / sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3)
+    expected: 0.76 cm
+    shown: ['$Z_1\,c/H_i = 0.76$ cm']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-g-100
+    where: 'Problem 4(c), check: the factor for g_RH = 100'
+    inputs: {g: 100}
+    formula: (g / 300)**(-1/12)
+    expected: '1.10'
+    shown: ['$g_\text{RH} = 100$ gives a factor 1.10']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-g-1000
+    where: 'Problem 4(c), check: the factor for g_RH = 1000'
+    inputs: {g: 1000}
+    formula: (g / 300)**(-1/12)
+    expected: '0.90'
+    shown: ['$g_\text{RH} = 1000$ a factor 0.90']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-zmin-fallback
+    where: 'Problem 4(c), check: Z_1 with MIT''s fallback 3 c t0 for the horizon distance'
+    inputs: {t0: 13.8e9 yr, Ef: 1e16 GeV, g: 300, T: 2.725 K}
+    formula: 3 * c * t0 * sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3) / c / ((11 * g / 43)**(1/3) * Ef * (30 / (pi**2 * g))**(1/4) / (k_B * T))
+    expected: '8.20e26'
+    shown: ['$Z_1$ would be $8.20 \times 10^{26}$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-nmin
+    answer: p4-d
+    where: 'Problem 4(d), number box: ln Z_min for E16 = 1, g_RH = 300, β = 1, from the constants directly'
+    inputs: {H0: 67.3 km/s/Mpc, Om: 0.315, Ov: 0.685, Or: 9.2e-5, Ef: 1e16 GeV, g: 300, T: 2.725 K}
+    formula: log(c / H0 * integrate('1 / sqrt(Om*x + Or + Ov*x**4 + (1 - Om - Ov - Or)*x**2)', 'x', 0, 1) * sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3) / c / ((11 * g / 43)**(1/3) * Ef * (30 / (pi**2 * g))**(1/4) / (k_B * T)))
+    expected: '62.1'
+    shown: ['N_\text{min} = \ln Z_\text{min} = 62.1 + \ln E_{16}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ln-mantissa
+    where: 'Problem 4(d), step "The number of e-foldings"'
+    inputs: {}
+    formula: log(9.15)
+    expected: '2.21'
+    shown: ['$\ln(9.15 \times 10^{26}) = 2.21 + 26 \times 2.303 = 62.1$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ln-ten
+    where: 'Problem 4(d): ln 10, to four and to two figures'
+    inputs: {}
+    formula: log(10)
+    expected: '2.303'
+    shown: ['26 \times 2.303', '$\ln 10 = 2.3$ more e-foldings']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ln-sum
+    where: 'Problem 4(d), step "The number of e-foldings"'
+    inputs: {}
+    formula: 2.21 + 26 * 2.303
+    expected: '62.1'
+    shown: ['= 2.21 + 26 \times 2.303 = 62.1$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-g-100-efolds
+    where: 'Problem 4(d), check: changing g_RH from 300 to 100'
+    inputs: {}
+    formula: log(3) / 12
+    expected: '0.09'
+    shown: ['Changing $g_\text{RH}$ from 300 to 100 adds 0.09.']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-hubble-time
+    where: 'Problem 4(d), check: one e-folding'
+    inputs: {Ef: 1e16 GeV}
+    formula: 1 / sqrt(8 * pi * G * Ef**4 / (hbar**3 * c**5) / 3)
+    expected: 2.78e-38 s
+    shown: ['$H_i^{-1} = 2.78 \times 10^{-38}$ s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-duration
+    where: 'Problem 4(d), check: 62 e-foldings'
+    inputs: {t: 2.78e-38 s}
+    formula: 62 * t
+    expected: 1.7e-36 s
+    shown: ['about $1.7 \times 10^{-36}$ s']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-lesson-efolds
+    kind: fact
+    where: 'Problem 4(d), check: the count in the lesson on exponential expansion (its worked example: 64.7, about 65)'
+    shown: ['counts about 65 e-foldings']
+    source: {cite: reading1, at: 'p. 19 (sample numbers); the count is the lesson''s own worked example'}
+    origin: page-own
+
+  - id: p4-reheat-energy-4-figures
+    where: 'Problem 4(b), check with numbers: kT_RH to four figures'
+    inputs: {Ef: 1e16 GeV, g: 300}
+    formula: Ef * (30 / (pi**2 * g))**(1/4)
+    expected: 3.173e15 GeV
+    shown: ['$kT_\text{RH} = 3.173 \times 10^{15}$ GeV']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # ---- the constants listed under "How to answer"
+
+  - id: const-c
+    where: 'section "How to answer"'
+    inputs: {}
+    formula: c
+    expected: 2.998e8 m/s
+    shown: ['$c = 2.998 \times 10^8$ m/s']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
+
+  - id: const-g
+    where: 'section "How to answer"'
+    inputs: {}
+    formula: G
+    expected: 6.674e-11 m**3/(kg*s**2)
+    shown: ['$G = 6.674 \times 10^{-11}$ m³ kg⁻¹ s⁻²']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
+
+  - id: const-hbar
+    where: 'section "How to answer"'
+    inputs: {}
+    formula: hbar
+    expected: 1.0546e-34 J*s
+    shown: ['$\hbar = 1.0546 \times 10^{-34}$ J s']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
+
+  - id: const-gev
+    where: 'section "How to answer"'
+    inputs: {E: 1 GeV}
+    formula: E
+    expected: 1.602e-10 J
+    shown: ['1 GeV $= 1.602 \times 10^{-10}$ J']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
+
+  - id: const-mpc
+    where: 'section "How to answer"; Problem 3(b) uses the same value in km'
+    inputs: {d: 1 Mpc}
+    formula: d
+    expected: 3.0857e22 m
+    shown: ['1 Mpc $= 3.0857 \times 10^{22}$ m', 'With 1 Mpc $= 3.0857 \times 10^{19}$ km']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
+
+  - id: const-ly
+    where: 'section "How to answer"'
+    inputs: {d: 1 ly}
+    formula: d
+    expected: 9.461e15 m
+    shown: ['1 light-year $= 9.461 \times 10^{15}$ m']
+    source: {cite: mit, at: 'our own list of constants'}
+    origin: page-own
