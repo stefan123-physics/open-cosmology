@@ -122,3 +122,7 @@ Reason: docs/siyavula-licences.tsv marks Siyavula Physical Sciences Gr 11, 11.3 
 ## Follow-up (2026-11-20): Siyavula 5.5 removed
 
 Siyavula Physical Sciences Grade 12, 5.5 Power may contain examples taken from OpenStax without credit, so it is no longer cited (Writing rule 10; the page was not opened again). The reading was removed from the frontmatter. The kilowatt-hour formula now cites mit at "Eq. (6.3.1), power as energy per unit time; 1000 W × 3600 s is our own step" (P = ΔU/Δt, checked in the earlier review). In calcs/hs-6/electric-power.yaml the eleven entries that cited reading1 (Sec. 5.5) now cite mit, Eq. (6.3.1), with the kilowatt-hour as our own step; kwh-joules changed from origin mit to page-own. No number, `shown` text or prose changed. calc:test, test:answers and content:check pass. Status stays reviewed.
+
+## Source note (2026-11-21)
+
+Siyavula Gr 12 5.5 Power (listed above among the sources read) contains OpenStax material; the page itself and calcs/hs-6/electric-power.yaml no longer cite it (checked with grep on 2026-11-21, after the follow-up of 2026-11-20), so nothing changes.

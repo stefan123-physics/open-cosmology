@@ -47,6 +47,25 @@ const warn = (file: string, message: string) => problems.push({ level: "warning"
 
 const FORBIDDEN_SOURCES = [/openstax/i, /libretexts/i];
 
+// Siyavula pages that may not be cited (owner decision 2026-11-21): every section page whose footer says
+// "All rights reserved" (rows ARR in docs/siyavula-licences.tsv), and the Grade 12 work, energy and power
+// sections 5.3 to 5.5, which contain OpenStax material (AGENTS.md Writing rules 10). Never fetch these either.
+const SIYAVULA_BLOCKED = new Map<string, string>([
+  ...fs
+    .readFileSync("docs/siyavula-licences.tsv", "utf8")
+    .split(/\r?\n/)
+    .filter((l) => l.startsWith("ARR\t"))
+    .map((l) => [l.split("\t")[1], "its footer says All rights reserved (docs/siyavula-licences.tsv)"] as [string, string]),
+  ...["03", "04", "05"].map(
+    (n) =>
+      [
+        `/read/za/physical-sciences/grade-12/work-energy-and-power/05-work-energy-and-power-${n}`,
+        "it contains OpenStax material (AGENTS.md Writing rules 10)",
+      ] as [string, string]
+  ),
+]);
+
+
 for (const page of site.pages) {
   const body = page.body;
   const all = fs.readFileSync(page.file, "utf8");
@@ -68,6 +87,10 @@ for (const page of site.pages) {
 
   // 3. Source policy.
   for (const re of FORBIDDEN_SOURCES) if (re.test(all)) err(page.file, `forbidden source referenced (${re.source})`);
+  for (const m of all.matchAll(/siyavula\.com(\/read\/[^\s"'`)#?]+)/g)) {
+    const why = SIYAVULA_BLOCKED.get(m[1].replace(/\/$/, ""));
+    if (why) err(page.file, `cites the Siyavula page ${m[1]}, which may not be used: ${why}`);
+  }
   if (/all rights reserved/i.test(all))
     err(page.file, 'mentions "All rights reserved" material — create an original diagram instead');
   const kind = site.courseById.get(page.course)?.kind ?? "mit";

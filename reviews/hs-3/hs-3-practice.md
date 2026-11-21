@@ -225,3 +225,17 @@ pass-with-notes: no errors; fix or accept warning A1.
 - A1: the sentence on forgetting to square H now says the result is not even in kg/m³ ("check the units"), with no factor quoted, so no calcs entry is needed.
 - A2: the example input is now `3.5e-27`, not the given density.
 - A3–A5: no change; the page stays `status: reviewed`.
+
+## Source change (2026-11-21)
+
+Siyavula Physical Sciences Grade 12, 5.3 Work-energy theorem and 5.5 Power contain OpenStax material, so under Writing rule 10 they are no longer cited and were not opened again. Their citations were replaced by MIT 8.01SC Classical Mechanics (Fall 2016), Course Notes, Chapter 13: Energy, Kinetic Energy, and Work (page numbers are the printed footers of the chapter PDF, checked with pdftotext on 2026-11-21), now the set's main `source` (`cite="mit"`). The 5.5 reading (reading 4) was removed and readings 5 to 15 became readings 4 to 14.
+
+Citations changed:
+- Frontmatter: main `source` 5.3 → MIT 8.01SC Chapter 13; reading 4 (5.5 Power) removed.
+- Formula "Work–energy theorem": mit "Work-energy theorem (ESCMD), definition box" → mit "Sec. 13.6, Eq. (13.6.1), p. 13-16 (written there W = ΔK = ½mv_f² − ½mv_i², with K for E_k)".
+- Formula "Power": reading4 "Power (ESCMJ), definition box, written there P = W/t" → mit "Sec. 13.7, Eq. (13.7.2), p. 13-18 (average power, the rate at which work is done, written there P_ave = W/Δt)".
+- Renumbered (same sources and locations): reading5 → reading4 (Gr 12 2.2 Momentum), 6 → 5 (2.5 Impulse), 7 → 6 (2.4 Conservation of momentum), 8 → 7 (MIT Ch. 15), 9 → 8 (MIT Ch. 12), 10 → 9 (MIT Ch. 19), 11 → 10 (MIT Ch. 14), 12 → 11 (Gr 10 22.3), 13 → 12 (MIT Ch. 16), 14 → 13 (8.286 Lecture 7), 15 → 14 (8.286 Lecture 6).
+- Introduction: "Siyavula's chapters on work, energy and power, mechanical energy, …" → "Siyavula's chapters on work, mechanical energy, …, and on MIT 8.01SC's course notes on kinetic energy, work and power, collisions, …".
+- calcs/hs-3/hs-3-practice.yaml: 3 entries mit "Work-energy theorem (ESCMD) …" → mit "Sec. 13.6, Eq. (13.6.1) …"; 6 entries reading4 → mit "Sec. 13.7, Eq. (13.7.2)" (problem) or "Sec. 13.7" (checks and numbers); every reading5 to reading15 renumbered as above.
+
+No problem, hint, solution, answer or number changed. `content:check` 0 errors; `pytest tests/calc -k "kinetic-energy or power or hs-3-practice"` passes.

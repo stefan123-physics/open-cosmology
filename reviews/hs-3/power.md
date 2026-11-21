@@ -99,3 +99,18 @@ All recomputed independently (Python, g = 9.81 m/s²); `pytest tests/calc -k "po
 8. No change needed.
 
 Checks: `pytest tests/calc -k "power and hs"` 101 passed; `content:check` reports no error or warning for this page (remaining errors belong to escape-speed and momentum-is-conserved).
+
+## Source change (2026-11-21)
+
+Siyavula Physical Sciences Grade 12, 5.5 Power contains examples that look like OpenStax's, so under Writing rule 10 it is no longer cited and was not opened again. Its citations were replaced by MIT 8.01SC Classical Mechanics (Fall 2016), Course Notes, Chapter 13: Energy, Kinetic Energy, and Work (page numbers are the printed footers of the chapter PDF, checked with pdftotext on 2026-11-21), Sec. 13.7, which is now the page's main `source` (`cite="mit"`; it was reading 1 before), and for the horsepower by NIST Guide to the SI (SP 811), Appendix B.9 (new reference `nist811`: horsepower (550 ft·lbf/s) = 7.456 999 E+02 W). The kilowatt-hour entries that cited Siyavula's Textbook Exercise 5.4 now cite OpenLearn 2.1 (`openlearn`), already a reference of the page.
+
+Citations changed:
+- Frontmatter: main `source` 5.5 → MIT 8.01SC Chapter 13; `readings` now empty (the chapter was reading 1); reference `nist811` added.
+- Formula "Power": mit "Power (ESCMJ), definition box, written there P = W/t" → mit "Sec. 13.7, Eq. (13.7.2), p. 13-18 (average power, the rate at which work is done, written there P_ave = W/Δt)".
+- Formula "Power of a constant force along the motion": mit "Power (ESCMJ), derivation from W = FΔx cos θ …" → mit "Sec. 13.7, Eqs. (13.7.1) to (13.7.3), pp. 13-17 and 13-18 (W = F_x Δx for a force along the motion, so P_ave = F_x v_ave,x and P = F_x v_x)".
+- Formula "The watt": reading1 → mit (same location, Sec. 13.7, p. 13-18).
+- Prose, four places: "(reading 1, Sec. 13.7 …" → "(MIT 8.01SC notes, Sec. 13.7 …".
+- Prose, horsepower: "about 750 W: Watt chose it to compare his engines with the horses they replaced (Siyavula, Power (ESCMJ))" → "about 750 W (NIST Guide to the SI, Appendix B.9)". The history clause about James Watt was dropped: neither MIT Chapter 13 nor NIST says it, and no other allowed source for it was found. The physics (about 750 W) is unchanged.
+- calcs/hs-3/power.yaml: `horsepower` and `stairs-hp` → nist811 (B.9, horsepower = 745.7 W, about 750 W); `stairs-work` → mit Sec. 13.7, Example 13.8, Eq. (13.7.6) (work of gravity); `lift-force` → mit Sec. 13.7, Eq. (13.7.3) with mg of Example 13.8, Eq. (13.7.8); 8 entries "P = Fv" → mit Sec. 13.7, Eq. (13.7.3); 5 entries "P = W/t" → mit Sec. 13.7, Eq. (13.7.2); 8 entries "Power (ESCMJ)" → mit Sec. 13.7, Eq. (13.7.2); 8 entries "Textbook Exercise 5.4" → openlearn 2.1 (the kilowatt-hour as 1 kW for one hour); 11 entries reading1 → mit (same locations); header comment updated.
+
+No other explanation, number, quiz or worked example changed. `content:check` 0 errors; `pytest tests/calc -k "kinetic-energy or power or hs-3-practice"` passes.

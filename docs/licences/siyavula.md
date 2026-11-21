@@ -18,4 +18,5 @@ The textbook content is marked CC BY 3.0 at book level (contents pages, open tex
 
 - Use the online textbook text of Siyavula's open textbooks only; never the branded PDFs (CC BY-ND), never the closed-copyright IT and CAT books, never embedded third-party videos, simulations or figures.
 - Rewrite in our own words (AGENTS.md Writing rules 1); no Siyavula logos or brand; no suggestion that Siyavula endorses the site.
+- Never cite (or fetch) a section page whose footer says "All rights reserved" (rows `ARR` in docs/siyavula-licences.tsv), nor Physical Sciences Grade 12 sections 5.3, 5.4 and 5.5 (work, energy and power), which contain OpenStax material (owner decision 2026-11-21). `npm run content:check` fails on any of them (`SIYAVULA_BLOCKED` in scripts/check-content.ts). Before using a new Siyavula page, check its text for "OpenStax"; if it is there, do not use the page and add it to that list.
 - Every lesson that uses Siyavula credits it automatically (components/Credit.tsx, High School credits): "From siyavula.com", Siyavula Education as author, a link to CC BY 3.0, and a note that the material was rewritten and adapted.

@@ -121,3 +121,17 @@ I recomputed every number independently (Python):
 - Only earlier terms (∝ not introduced in 0.6): the sentence now says "a power law of lesson 0.6, $y \propto x^{2}$, where $\propto$ means "is proportional to"". (Writing y = kx² was tried but would need a new symbol meaning for k on this page.)
 - `circular-motion` reached only through `centripetal-force`: no change (info only; it is still an earlier lesson).
 Checks: `pytest tests/calc -k kinetic-energy` all pass; `content:check` reports no error for this page.
+
+## Source change (2026-11-21)
+
+Siyavula Physical Sciences Grade 12, 5.3 Work-energy theorem contains OpenStax material (a worked example credited to OpenStax), so under Writing rule 10 it is no longer cited and was not opened again. Its citations were replaced by MIT 8.01SC Classical Mechanics (Fall 2016), Course Notes, Chapter 13: Energy, Kinetic Energy, and Work (page numbers are the printed footers of the chapter PDF, checked with pdftotext on 2026-11-21), which is now the page's main `source` (`cite="mit"`); it was reading 2 before. Siyavula Grade 10, 22.3 Kinetic energy stays reading1.
+
+Citations changed:
+- Frontmatter: main `source` 5.3 → MIT 8.01SC Chapter 13; the former reading 2 (the same chapter) removed from `readings`.
+- Formula "Work–energy theorem": mit "Work-energy theorem (ESCMD), definition box" → mit "Sec. 13.6, Eq. (13.6.1), p. 13-16 (written there W = ΔK = ½mv_f² − ½mv_i², with K for E_k)".
+- Formula "Braking distance": mit "Worked example 7: Work-energy theorem 2" → mit "Sec. 13.3.1, Eq. (13.3.7), p. 13-7 (F_x Δx = K_f − K_i), with Sec. 13.6, p. 13-16 (negative work slows the object); here F_x = −F, Δx = d and K_f = 0, rearranged for d (the rearrangement is ours, not in the source)".
+- Formulas "Velocity after a displacement Δx", "Work done by a constant net force", "Height reached by a ball thrown upwards": reading2 → mit (same locations).
+- Prose: "reading 2, Sec. 13.2", "reading 2, Sec. 13.6, Eq. (13.6.1)" and "reading 2, Sec. 13.2, Example 13.1" → "MIT 8.01SC notes, …"; "the MIT course notes use K (reading 2, Sec. 13.2, Eq. (13.2.1))" → "(Sec. 13.2, Eq. (13.2.1))".
+- calcs/hs-3/kinetic-energy.yaml: 8 entries mit "Work-energy theorem (ESCMD)" → mit "Sec. 13.6, Eq. (13.6.1)"; 10 entries mit "Worked example 7: Work-energy theorem 2" → mit "Sec. 13.3.1, Eq. (13.3.7) and Sec. 13.6, Eq. (13.6.1): negative work slows the object"; 12 entries reading2 → mit (same locations); header comment updated.
+
+No explanation, number, quiz or worked example changed. `content:check` 0 errors; `pytest tests/calc -k "kinetic-energy or power or hs-3-practice"` passes.
