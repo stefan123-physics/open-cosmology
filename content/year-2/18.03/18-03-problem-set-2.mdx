@@ -1,0 +1,924 @@
+---
+title: "Problem Set 2: a decay chain on Tatooine, complex numbers, complex exponentials and a sinusoidal input"
+slug: 18-03-problem-set-2
+course: "18.03"
+kind: problems
+set: 2
+lecture: 8
+order: 90
+covers: [3, 6, 7, 8]
+solutions: mit
+summary: Four problems on first-order equations and complex numbers. You follow a chain of radioactive decays through three elements, find the time at which the middle element peaks, work with complex numbers in rectangular, polar and exponential form, solve equations such as e^z = −2, and use complex exponentials to find the steady response of a first-order equation to a sinusoidal input.
+prerequisites: [linear-first-order-equations, complex-exponentials, sinusoidal-input-response, sinusoids-and-linear-models]
+source:
+  title: "MIT 18.03 Problem Set 2"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_ps2pdf/
+license: CC BY-NC-SA 4.0
+references:
+  solutions:
+    title: "MIT 18.03 Problem Set 2: Part II Solutions"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_ps2spdf/
+    location: "Part II solutions, pp. 1–2"
+  notesProblems:
+    title: "18.03 Notes and Exercises, Exercises section 2: Higher-order ODEs (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2ex/
+    location: "Exercise group 2E, Complex numbers"
+  notesSolutions:
+    title: "18.03 Notes and Exercises, Solutions to exercises, section 2 (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2sol/
+    location: "Solutions to group 2E"
+status: draft
+---
+
+This set practises four lessons: [solving first-order linear equations](/courses/18-03/linear-first-order-equations), [complex numbers and complex exponentials](/courses/18-03/complex-exponentials), [first-order linear equations with constant coefficients and sinusoidal input](/courses/18-03/sinusoidal-input-response), and [combining a sine and a cosine](/courses/18-03/sinusoids-and-linear-models). It follows MIT's Problem Set 2, in our own words.
+
+MIT's sheet has two parts. Part II holds MIT's own four problems (72 points), and MIT's solutions are on OpenCourseWare. All four are written out below, with hints and solutions in our own words, following the method of MIT's solutions and checked again independently. Part I (24 points at MIT) is a list of short exercises, most of them from MIT's "18.03 Notes and Exercises"; the last section of this page lists them and links to MIT's exercises and solutions. The Part I exercises from the course textbook (Edwards and Penney) are left out: the book is not openly licensed.
+
+MIT labels each problem with the day of the lecture it belongs to. MIT's Problem 4 belongs to Lecture 3 of this site, and its Problems 5 and 6 to the lesson on complex numbers (Lecture 6 here). Problem 7 belongs to MIT's lecture on first-order equations with a sinusoidal input (Lecture 7 here) and also uses the identity of Lecture 8 for combining a cosine and a sine.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A formula box takes plain typing, for example `2*cos(t)`, and accepts every correct way of writing the answer. Type `sigma` for $\sigma$, `mu` for $\mu$, `t` for $t$, `exp(-t)` for $e^{-t}$ and `log(2)` for the natural logarithm $\ln 2$. A number box wants a decimal number, not a fraction or a square root, and its question says how exact your value must be: keep all the digits your calculator shows while you work. Angles are given in radians. The points of each part are MIT's, taken from its solutions; how a part's points are shared between its answer boxes is ours. If you are stuck, open the hints one at a time. Each problem or part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Parts that ask you to sketch, to show or to explain something have no answer box, or a box for only a piece of them: compare your work with the solution and mark it yourself. Your score is kept in this browser only.
+
+## Problem 4
+
+<Exercise id="p4" title="A decay chain on Tatooine" points={20} mit="Part II, Problem 4">
+
+On the small world Tatooine (MIT's invented setting) a certain isotope of Startium, St, decays with a half-life $t_S$. It decays with equal chance into an isotope of Midium, Mi, or directly into the stable element Endium, En. Midium is radioactive too: it decays into Endium with a half-life $t_M$, and $t_M \neq t_S$. All the St was there at the start, and all the Mi and En come from this decay chain. Let $x(t)$, $y(t)$ and $z(t)$ be the amounts of St, Mi and En at time $t$, in units for which $x(0) = 1$. So $y(0) = 0$ and $z(0) = 0$.
+
+<Part label="a" points={2}>
+
+Sketch $x$, $y$ and $z$ against $t$. What does each tend to as $t \to \infty$?
+
+<Hint>
+
+$x$ only decays. Think about what each of $y$ and $z$ gets and loses.
+
+</Hint>
+
+<Hint>
+
+Nothing is created or destroyed in the chain: every atom that leaves St ends up as En in the end.
+
+</Hint>
+
+<Answer id="p4-a-limits" label="The limits of $(x, y, z)$ as $t \to \infty$ are"
+  choices={["(0, 0, 1)", "(0, 1, 0)", "(0, 0, 0)", "(1/2, 0, 1/2)"]} answer={0} />
+
+<Solution>
+
+**The idea.** Follow the atoms: St feeds Mi and En, Mi feeds En, and En never decays.
+
+<Step title="The shapes of the curves">
+
+$x$ starts at $1$ and only loses atoms, so it falls towards $0$. $y$ starts at $0$, gains atoms from St, and loses them by its own decay: it first rises, and when there is little St left it falls. $z$ only gains atoms and rises. Here is the picture for the values $\sigma = 0.1$ and $\mu = 0.2$ per unit of time (the decay constants of part (b)), computed from the solutions found in part (c):
+
+<Plot variable="t" domain={[0, 40]} range={[0, 1.05]} xLabel="t" yLabel="amount"
+  curves={[
+    { expr: "exp(-0.1*t)", label: "x" },
+    { expr: "0.5*(exp(-0.1*t) - exp(-0.2*t))", label: "y" },
+    { expr: "1 - exp(-0.1*t) - 0.5*(exp(-0.1*t) - exp(-0.2*t))", label: "z" }
+  ]}
+  caption="The amounts of St (x), Mi (y) and En (z) with decay constants 0.1 and 0.2, computed from the solutions of part (c). The curve x falls, y rises and then falls, z rises towards 1." />
+
+</Step>
+
+<Step title="The limits">
+
+As $t \to \infty$, $x \to 0$ and $y \to 0$: both radioactive elements die out. The total $x + y + z$ never changes (part (b)) and starts at $1$, so $z \to 1$.
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$ the three amounts are $(1, 0, 0)$, with total $1$. At large $t$ the limits are $(0, 0, 1)$ with total $1$ again, as they must be.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Write the differential equations for $x$, $y$ and $z$. Use $\sigma$ for the decay constant of St and $\mu$ for that of Mi, and first relate $\sigma$ to $t_S$ and $\mu$ to $t_M$. As a check, the equations must give $\dot x + \dot y + \dot z = 0$.
+
+<Hint>
+
+Decay is exponential: St obeys $\dot x = -\sigma x$. How much is left after one half-life?
+
+</Hint>
+
+<Hint>
+
+The half of the St atoms that decay into Mi arrive at Mi at the rate $\frac{1}{2}\sigma x$. The other half go to En, and so do all the Mi atoms that decay.
+
+</Hint>
+
+<Answer id="p4-b-sigma" label="$\sigma =$" expr="log(2)/tS"
+  vars={{ tS: [1, 10] }}
+  names={{ tS: "t_S" }}
+  mistakes={[
+    { expr: "1/tS", hint: "With σ = 1/t_S, the amount x = e^(−σt) has fallen to 1/e, about 37 percent, after a time t_S, not to one half." },
+    { expr: "tS/log(2)", hint: "That has the dimension of a time. σ is a rate, with dimension 1 over time." },
+    { expr: "log(2)*tS", hint: "That has the dimension of time squared if t_S is a time. A rate is a number divided by a time." }
+  ]} />
+
+<Answer id="p4-b-ydot" label="The equation for Midium is"
+  choices={["ẏ = −μy + σx", "ẏ = −μy + ½σx", "ẏ = μy + ½σx", "ẏ = −μy"]} answer={1} />
+
+<Answer id="p4-b-zdot" label="The equation for Endium is"
+  choices={["ż = ½σx + μy", "ż = σx + μy", "ż = ½σx − μy", "ż = μy"]} answer={0} />
+
+<Solution>
+
+**The idea.** Each element loses atoms at a rate proportional to its amount, and what it loses goes to the next element or elements. Write each rate of change as gains minus losses.
+
+<Step title="The decay constants">
+
+An amount that decays like St obeys $\dot x = -\sigma x$, with solution $x = x(0)e^{-\sigma t}$. Half is left after the half-life $t_S$ when $e^{-\sigma t_S} = \frac{1}{2}$, so $\sigma = \ln 2/t_S$. Mi decays in the same way, with $\mu$ and $t_M$:
+
+<Formula label="Decay constants from half-lives" tex="\sigma = \frac{\ln 2}{t_S}, \qquad \mu = \frac{\ln 2}{t_M}" cite="solutions" at="Problem 4(b), p. 1" />
+
+</Step>
+
+<Step title="The three equations">
+
+St only loses atoms, at the rate $\sigma x$. Mi gains half of the atoms that St loses, and loses atoms at the rate $\mu y$. En gains the other half of St's losses and all of Mi's losses:
+
+<Formula label="The decay chain" tex="\dot x = -\sigma x, \qquad \dot y = -\mu y + \frac{1}{2}\sigma x, \qquad \dot z = \frac{1}{2}\sigma x + \mu y" cite="solutions" at="Problem 4(b), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+Add the three equations. Every term cancels, so $\dot x + \dot y + \dot z = 0$: the total is constant, as the problem says it must be. A units check: each term of each equation has the dimension of an amount per time. The wrong choices fail the sum: with $\dot y = -\mu y + \sigma x$ the sum is $\dot x + \dot y + \dot z = \frac{1}{2}\sigma x \neq 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Solve the equations one after another: first $x$, then $y$, then $z$. Use $x(0) = 1$, $y(0) = 0$ and $z(0) = 0$, and take $\sigma \neq \mu$.
+
+<Hint>
+
+Start with $x$, which does not depend on the others. Put it into the equation for $y$.
+
+</Hint>
+
+<Hint>
+
+The equation for $y$ is first-order linear with constant coefficients: $\dot y + \mu y = \frac{1}{2}\sigma e^{-\sigma t}$. Multiply by the integrating factor $e^{\mu t}$ and integrate.
+
+</Hint>
+
+<Hint>
+
+For $z$ you need no new integration: the total $x + y + z$ is constant.
+
+</Hint>
+
+<Answer id="p4-c-y" label="$y(t) =$" expr="sigma/(2*(mu-sigma))*(exp(-sigma*t) - exp(-mu*t))"
+  vars={{ sigma: [0.1, 0.5], mu: [0.6, 1.5], t: [0.2, 3] }}
+  names={{ sigma: "\\sigma", mu: "\\mu", t: "t" }}
+  mistakes={[
+    { expr: "sigma/(mu-sigma)*(exp(-sigma*t) - exp(-mu*t))", hint: "Look at the slope of y at t = 0: the equation gives ẏ(0) = ½σ. Your formula has slope σ there." },
+    { expr: "sigma/(2*(mu-sigma))*(exp(-mu*t) - exp(-sigma*t))", hint: "In this range μ is larger than σ, so e^(−μt) falls faster and your y is negative. An amount cannot be negative." },
+    { expr: "sigma/(2*(mu+sigma))*(exp(-sigma*t) - exp(-mu*t))", hint: "Put the formula back into ẏ + μy at t = 0. The integration gives μ − σ in the denominator, not μ + σ." }
+  ]} />
+
+<Answer id="p4-c-num" label="With $\sigma = 0.1$ and $\mu = 0.2$ per unit of time: $y(10) =$" value="0.1163" tolerance="0.0005" calc="p4-c-num" />
+
+<Solution>
+
+**The idea.** The chain is solved from the top: $x$ is a plain decay, then $y$ is a linear equation driven by $x$, then $z$ follows from conservation of the total.
+
+<Step title="x">
+
+<Formula label="Solution for St" tex="x = e^{-\sigma t}" cite="solutions" at="Problem 4(c), p. 1" />
+
+</Step>
+
+<Step title="y with an integrating factor">
+
+Put $x$ into the equation for $y$ and write it in standard linear form, $\dot y + \mu y = \frac{1}{2}\sigma e^{-\sigma t}$. With the integrating factor $e^{\mu t}$ the left side becomes the derivative of $e^{\mu t}y$:
+
+<Formula label="The integrating factor at work" tex="\frac{d}{dt}\left(e^{\mu t}y\right) = \frac{1}{2}\sigma\,e^{(\mu - \sigma)t}" cite="solutions" at="Problem 4(c), p. 1" />
+
+Integrate. Since $\sigma \neq \mu$, the integral of $e^{(\mu-\sigma)t}$ is $e^{(\mu-\sigma)t}/(\mu-\sigma)$, so $e^{\mu t}y = \dfrac{\sigma}{2(\mu - \sigma)}e^{(\mu-\sigma)t} + c$. The condition $y(0) = 0$ gives $c = -\dfrac{\sigma}{2(\mu-\sigma)}$. Multiply by $e^{-\mu t}$:
+
+<Formula label="Solution for Mi" tex="y = \frac{\sigma}{2(\mu - \sigma)}\left(e^{-\sigma t} - e^{-\mu t}\right)" cite="solutions" at="Problem 4(c), p. 1" />
+
+</Step>
+
+<Step title="z from conservation">
+
+The total is constant and equal to $1$, so $z = 1 - x - y$:
+
+<Formula label="Solution for En" tex="z = 1 + \frac{\sigma/2 - \mu}{\mu - \sigma}\,e^{-\sigma t} + \frac{\sigma/2}{\mu - \sigma}\,e^{-\mu t}" cite="solutions" at="Problem 4(c), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$ the formula for $y$ gives $0$, and its slope there is $\dfrac{\sigma}{2(\mu-\sigma)}(-\sigma + \mu) = \frac{1}{2}\sigma$, as the equation says. For large $t$ it tends to $0$. With $\sigma = 0.1$ and $\mu = 0.2$ the prefactor is $\dfrac{0.1}{2 \times 0.1} = \frac{1}{2}$, so $y(10) = \frac{1}{2}(e^{-1} - e^{-2}) = 0.1163$. The graph of part (a) shows the same value at $t = 10$. In the same way $z(10) = 0.5158$ from the formula for $z$, and $x(10) + y(10) + z(10) = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+At what time does the quantity of Midium peak? The answer depends on $\sigma$ and $\mu$.
+
+<Hint>
+
+At a peak of $y$ the slope is zero. Use either the differential equation for $y$ or the formula you found.
+
+</Hint>
+
+<Hint>
+
+Setting $\dot y = 0$ in the formula gives $\sigma e^{-\sigma t} = \mu e^{-\mu t}$. Take logarithms of both sides, or divide to get one exponential.
+
+</Hint>
+
+<Answer id="p4-d-formula" label="$t_{\max} =$" expr="(log(mu) - log(sigma))/(mu - sigma)"
+  vars={{ sigma: [0.1, 0.5], mu: [0.6, 1.5] }}
+  names={{ sigma: "\\sigma", mu: "\\mu" }}
+  mistakes={[
+    { expr: "(log(sigma) - log(mu))/(mu - sigma)", hint: "Your time is negative in this range, and the peak happens after t = 0. Check which logarithm comes first: the equation to solve is e^((μ−σ)t) = μ/σ." },
+    { expr: "(log(mu) - log(sigma))/(mu + sigma)", hint: "The exponent of the exponential in the equation is (μ − σ)t, so the division is by μ − σ." },
+    { expr: "log(mu/sigma)", hint: "Check the units: the time must come out as 1 over a rate, so divide by a rate." }
+  ]} />
+
+<Answer id="p4-d-num" label="With $\sigma = 0.1$ and $\mu = 0.2$ per unit of time: $t_{\max} =$" value="6.93" tolerance="0.01" calc="p4-d-num" />
+
+<Solution>
+
+**The idea.** The peak of $y$ is where its slope is zero.
+
+<Step title="Set the slope to zero">
+
+From the equation, $\dot y = -\mu y + \frac{1}{2}\sigma x = 0$ means $\mu y = \frac{1}{2}\sigma e^{-\sigma t}$. Put in $y$ from part (c):
+
+<Formula label="Condition for the peak" tex="\mu\,\frac{\sigma}{2(\mu - \sigma)}\left(e^{-\sigma t} - e^{-\mu t}\right) = \frac{1}{2}\sigma e^{-\sigma t}" cite="solutions" at="Problem 4(d), p. 1" />
+
+Cancel $\sigma/2$ and multiply by $(\mu - \sigma)$: $\mu e^{-\sigma t} - \mu e^{-\mu t} = (\mu - \sigma)e^{-\sigma t}$, so $\sigma e^{-\sigma t} = \mu e^{-\mu t}$. Divide by $\sigma e^{-\mu t}$ to get $e^{(\mu - \sigma)t} = \mu/\sigma$.
+
+</Step>
+
+<Step title="Take the logarithm">
+
+<Formula label="Time of the peak of Midium" tex="t_{\max} = \frac{\ln\mu - \ln\sigma}{\mu - \sigma}" cite="solutions" at="Problem 4(d), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+The time is positive, as it must be, because $\ln\mu - \ln\sigma$ and $\mu - \sigma$ always have the same sign. As $\mu \to \sigma$ it tends to $1/\sigma$, which is the peak of $\frac{1}{2}\sigma t e^{-\sigma t}$, the limit of the solution for equal constants. With $\sigma = 0.1$ and $\mu = 0.2$ it gives $\ln 2/0.1 = 6.93$, between $1/\mu = 5$ and $1/\sigma = 10$, and the graph of part (a) peaks at about that time.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={2}>
+
+Suppose that $x(0) = 2$ instead of $1$, and $y(0) = z(0) = 0$ as before. What changes in $x$, $y$ and $z$?
+
+<Hint>
+
+Look at how $x(0)$ enters the equations. Are they linear in $x$, $y$, $z$?
+
+</Hint>
+
+<Answer id="p4-e" label="With $x(0) = 2$:"
+  choices={["x, y and z are all twice as large at every time", "only x is twice as large; y and z do not change", "x, y and z are all unchanged, but everything happens twice as fast", "the peak of y comes twice as late"]} answer={0} />
+
+<Solution>
+
+**The idea.** The equations are linear and the starting values are zero except for $x$, so the solution is proportional to $x(0)$.
+
+<Step title="Scale the solution">
+
+If $(x, y, z)$ solves the equations with $x(0) = 1$, then $(2x, 2y, 2z)$ solves them too, because each term is linear, and it has $x(0) = 2$, $y(0) = z(0) = 0$. By uniqueness of the solution of the initial-value problem it is the solution. Every amount is doubled at every time. The times do not change, in particular $t_{\max}$ stays the same: the decay constants did not change.
+
+</Step>
+
+<Step title="Check the result">
+
+The limits are $(0, 0, 2)$, as the conserved total $x + y + z = 2$ requires.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="f" points={4}>
+
+A question apart from the chain. Suppose that $x(t) = e^t$ is a solution of the equation $t\dot x + 2x = q(t)$. What is $q(t)$? What is the general solution?
+
+<Hint>
+
+Put $x = e^t$ into the left side. There is no integration to do.
+
+</Hint>
+
+<Hint>
+
+The general solution is one solution plus the general solution of the homogeneous equation $t\dot x + 2x = 0$. That one is separable.
+
+</Hint>
+
+<Answer id="p4-f-q" label="$q(t) =$" expr="(t + 2)*exp(t)"
+  vars={{ t: [0.5, 2] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "(t + 1)*exp(t)", hint: "Check the term 2x: with x = eᵗ it is 2eᵗ, not eᵗ." },
+    { expr: "(t + 2)*exp(2*t)", hint: "The derivative of eᵗ is eᵗ, and no exponential is doubled: x and ẋ are both eᵗ." }
+  ]} />
+
+<Answer id="p4-f-general" label="The general solution is"
+  choices={["eᵗ + C/t²", "eᵗ + Ce⁻²ᵗ", "eᵗ + Ct²", "eᵗ + C/t"]} answer={0} />
+
+<Solution>
+
+**The idea.** For a linear equation the general solution is one particular solution plus the general solution of the homogeneous equation.
+
+<Step title="q(t)">
+
+Put $x = e^t$, $\dot x = e^t$ into the left side:
+
+<Formula label="The right side" tex="q(t) = t\,e^t + 2e^t = (t + 2)\,e^t" cite="solutions" at="Problem 4(f), p. 1" />
+
+</Step>
+
+<Step title="The homogeneous equation">
+
+$t\dot x + 2x = 0$ is separable: $\dfrac{dx}{x} = -\dfrac{2\,dt}{t}$, so $\ln|x| = -2\ln|t| + c$ and $x = C/t^2$. Add the particular solution:
+
+<Formula label="General solution" tex="x = e^t + \frac{C}{t^2}" cite="solutions" at="Problem 4(f), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+Substituting $C/t^2$ gives $t(-2C/t^3) + 2C/t^2 = 0$, so it solves the homogeneous equation, and $e^t$ solves the full equation by the first step. The equation is singular at $t = 0$, so the formula holds on $t > 0$ and on $t < 0$ separately, with a separate $C$ on each side.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Complex numbers and roots of unity" points={18} mit="Part II, Problem 5">
+
+<Part label="a" points={10}>
+
+For each of the five complex numbers below find its rectangular form $a + bi$, its polar form (the modulus $|z|$ and the argument $\operatorname{Arg} z$) and mark it in the complex plane. Take the argument in the interval $(-\pi, \pi]$ unless you wish otherwise.
+
+1. $1 - i$.
+2. The number $z$ with $|z| = 2$ and $\operatorname{Arg} z = \pi/6$.
+3. A square root of $i$ with negative imaginary part.
+4. A sixth root of $1$ with argument $\theta$ such that $0 < \theta < \pi/2$.
+5. $\left(\dfrac{1 + i}{\sqrt 2}\right)^{-13}$.
+
+(MIT asks you to arrange the five numbers in a table with a picture of the complex plane for each; the exponential form of Problem 6(a) is added to the same table.)
+
+<Hint>
+
+For a number $a + bi$, the modulus is $\sqrt{a^2 + b^2}$, and the argument is the angle of the point $(a, b)$ measured from the positive real axis. For number 2 go the other way: $a = |z|\cos\theta$ and $b = |z|\sin\theta$.
+
+</Hint>
+
+<Hint>
+
+Numbers 3, 4 and 5 are easiest in polar form: a square root halves the argument, the sixth roots of $1$ have arguments $2\pi k/6$, and a power multiplies the argument by the exponent. An argument can be changed by a multiple of $2\pi$.
+
+</Hint>
+
+<Answer id="p5-a-1" label="Number 1: the modulus $|z| =$" value="1.414" tolerance="0.002" calc="p5-a-1" />
+
+<Answer id="p5-a-2" label="Number 2: the real part $a =$" value="1.732" tolerance="0.002" calc="p5-a-2" />
+
+<Answer id="p5-a-3" label="Number 3: the argument in $(-\pi, \pi]$, in radians:" value="-2.356" tolerance="0.002" calc="p5-a-3" />
+
+<Answer id="p5-a-4" label="Number 4: the imaginary part $b =$" value="0.866" tolerance="0.001" calc="p5-a-4" />
+
+<Answer id="p5-a-5" label="Number 5: the argument in $(-\pi, \pi]$, in radians:" value="2.356" tolerance="0.002" calc="p5-a-5" />
+
+<Solution>
+
+**The idea.** Convert between $a + bi$ and polar form with $a = |z|\cos\theta$, $b = |z|\sin\theta$, $|z| = \sqrt{a^2 + b^2}$, and use the rules of exponents for roots and powers.
+
+<Step title="Numbers 1 and 2">
+
+For $1 - i$: $|z| = \sqrt{1 + 1} = \sqrt 2$, and the point $(1, -1)$ is at an angle of $-\pi/4$. For number 2: $a = 2\cos(\pi/6) = \sqrt 3$ and $b = 2\sin(\pi/6) = 1$:
+
+<Formula label="Numbers 1 and 2" tex="1 - i = \sqrt 2\,\bigl(\cos(-\frac{\pi}{4}) + i\sin(-\frac{\pi}{4})\bigr), \qquad z = 2\bigl(\cos\frac{\pi}{6} + i\sin\frac{\pi}{6}\bigr) = \sqrt 3 + i" cite="solutions" at="Problem 5(a), p. 2" />
+
+</Step>
+
+<Step title="Numbers 3 and 4">
+
+The square roots of $i = e^{i\pi/2}$ are $\pm e^{i\pi/4} = \pm\dfrac{1 + i}{\sqrt 2}$. The one with negative imaginary part is $-\dfrac{1 + i}{\sqrt 2}$: modulus $1$, argument $5\pi/4$, which is $-3\pi/4$ in $(-\pi, \pi]$. The sixth roots of $1$ are $e^{2\pi ik/6}$, and $k = 1$ gives the argument $\pi/3$, the only one in $(0, \pi/2)$. It is $\dfrac{1 + \sqrt 3\, i}{2}$, with imaginary part $\dfrac{\sqrt 3}{2} = 0.866$.
+
+</Step>
+
+<Step title="Number 5">
+
+$\dfrac{1 + i}{\sqrt 2} = e^{i\pi/4}$, so the number is $e^{-13\pi i/4}$. Adding $4\pi$ to the argument does not change the number: $-13\pi/4 + 4\pi = 3\pi/4$. So it is $e^{3\pi i/4} = \dfrac{-1 + i}{\sqrt 2}$, with modulus $1$ and argument $3\pi/4 = 2.356$.
+
+</Step>
+
+<Step title="The table">
+
+<Formula label="The five numbers in four forms" tex="\begin{matrix} 1 - i & \sqrt 2,\ -\frac{\pi}{4} & \sqrt 2\,e^{-i\pi/4} \\ \sqrt 3 + i & 2,\ \frac{\pi}{6} & 2e^{i\pi/6} \\ -\frac{1 + i}{\sqrt 2} & 1,\ \frac{5\pi}4 & e^{5\pi i/4} \\ \frac{1 + \sqrt 3\,i}{2} & 1,\ \frac{\pi}{3} & e^{i\pi/3} \\ \frac{-1 + i}{\sqrt 2} & 1,\ \frac{3\pi}4 & e^{3\pi i/4} \end{matrix}" cite="solutions" at="Problem 5(a) and 6(a), p. 2" />
+
+The rectangular form gives the coordinates for the picture of each point. An angle is only fixed up to a multiple of $2\pi$.
+
+</Step>
+
+<Step title="Check the result">
+
+Check each modulus with $\sqrt{a^2 + b^2}$: $\sqrt{3 + 1} = 2$, and for $\frac{1 + \sqrt 3\, i}{2}$, $\sqrt{\frac{1}{4} + \frac{3}{4}} = 1$. The square of $-\frac{1 + i}{\sqrt 2}$ is $\frac{(1 + i)^2}{2} = \frac{2i}{2} = i$, and the sixth power of $e^{i\pi/3}$ is $e^{2\pi i} = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={8}>
+
+Find all the complex roots of the equations $z^4 + 4 = 0$ and $z^2 + 2z + 2 = 0$.
+
+<Hint>
+
+For the first, write $z^4 = -4$ and put the right side in polar form: $-4 = 4e^{i\pi}$ and every angle $\pi + 2\pi k$ is allowed. How many different roots can a fourth-degree equation have?
+
+</Hint>
+
+<Hint>
+
+For the second, the quadratic formula works for complex roots too. What is the square root of a negative discriminant?
+
+</Hint>
+
+<Answer id="p5-b-quartic" label="The roots of $z^4 + 4 = 0$ are"
+  choices={["the four numbers ±1 ± i", "±√2 and ±√2 i", "±1 ± i√2", "1 + i and −1 − i only"]} answer={0} />
+
+<Answer id="p5-b-mod" label="Each root of $z^4 + 4 = 0$ has the modulus $|z| =$" value="1.414" tolerance="0.002" calc="p5-b-mod" />
+
+<Answer id="p5-b-quadratic" label="The roots of $z^2 + 2z + 2 = 0$ are"
+  choices={["−1 ± i", "1 ± i", "−1 ± 2i", "−2 ± 2i"]} answer={0} />
+
+<Solution>
+
+**The idea.** A polynomial equation of degree four has four complex roots. For $z^4 = -4$ take the fourth root of the modulus and divide the argument by four, for every allowed angle.
+
+<Step title="The fourth-degree equation">
+
+$z^4 = -4 = 4e^{i(\pi + 2\pi k)}$. Taking the fourth root of the modulus, $4^{1/4} = \sqrt 2$, and dividing the angle by four gives $z = \sqrt 2\,e^{i(\pi + 2\pi k)/4}$ with $k = 0, 1, 2, 3$ (other $k$ repeat these four). That is $\sqrt 2\,e^{ik\pi/4}$ with the odd multiples $k = 1, 3, 5, 7$ of $\pi/4$:
+
+<Formula label="The four roots of z⁴ + 4 = 0" tex="z = \sqrt 2\,e^{i\pi k/4}\ (k = 1, 3, 5, 7), \qquad z = \pm 1 \pm i" cite="solutions" at="Problem 5(b), p. 2" />
+
+Each has modulus $\sqrt 2$, and for example $\sqrt 2\,e^{i\pi/4} = \sqrt 2\left(\frac{1}{\sqrt 2} + \frac{i}{\sqrt 2}\right) = 1 + i$.
+
+</Step>
+
+<Step title="The quadratic">
+
+By the quadratic formula, $z = \dfrac{-2 \pm \sqrt{4 - 8}}{2} = \dfrac{-2 \pm 2i}{2}$:
+
+<Formula label="The roots of z² + 2z + 2 = 0" tex="z = -1 \pm i" cite="solutions" at="Problem 5(b), p. 2" />
+
+</Step>
+
+<Step title="Check the result">
+
+$(1 + i)^2 = 2i$ and $(2i)^2 = -4$, so $(1 + i)^4 = -4$ and $z = 1 + i$ solves $z^4 + 4 = 0$. For the quadratic, $(-1 + i)^2 = -2i$, so $z^2 + 2z + 2 = -2i - 2 + 2i + 2 = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="Complex exponentials" points={16} mit="Part II, Problem 6">
+
+<Part label="a" points={2}>
+
+Add a fourth column to your table of Problem 5(a): the exponential form $z = Ae^{i\theta}$ with $A$ and $\theta$ real.
+
+<Hint>
+
+$A$ is the modulus and $\theta$ is an argument.
+
+</Hint>
+
+<Answer id="p6-a-1" label="Number 1, $1 - i$, in exponential form:"
+  choices={["√2 e^(−iπ/4)", "√2 e^(iπ/4)", "e^(−iπ/4)", "2 e^(−iπ/4)"]} answer={0} />
+
+<Answer id="p6-a-4" label="Number 4, the sixth root of 1 with $0 < \theta < \pi/2$:"
+  choices={["e^(iπ/3)", "e^(iπ/6)", "e^(2πi/3)", "2 e^(iπ/3)"]} answer={0} />
+
+<Solution>
+
+**The idea.** The polar form $|z|, \operatorname{Arg} z$ becomes $Ae^{i\theta}$ with $A = |z|$ and $\theta = \operatorname{Arg} z$, by Euler's formula.
+
+<Step title="The fourth column">
+
+The last column of the table in Problem 5(a) is the answer: for example $1 - i = \sqrt 2\,e^{-i\pi/4}$ and the sixth root is $e^{i\pi/3}$.
+
+</Step>
+
+<Step title="Check the result">
+
+$e^{i\pi/3} = \cos\frac{\pi}{3} + i\sin\frac{\pi}{3} = \frac{1}{2} + \frac{\sqrt 3}{2}i$, which has modulus $1$ and is the number of row 4. The sixth power is $e^{2\pi i} = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Find all complex numbers $z = a + bi$ such that $e^z = -2$.
+
+<Hint>
+
+Write $e^{a + bi} = e^a e^{bi}$. What are the modulus and an argument of $e^a e^{bi}$?
+
+</Hint>
+
+<Hint>
+
+The modulus of $-2$ is $2$, and its arguments are $\pi + 2\pi k$.
+
+</Hint>
+
+<Answer id="p6-b-re" label="The real part $a =$" value="0.6931" tolerance="0.001" calc="p6-b-re" />
+
+<Answer id="p6-b-im" label="The imaginary part $b$ can be"
+  choices={["any odd multiple of π", "any even multiple of π", "π/2 plus any multiple of π", "only π"]} answer={0} />
+
+<Solution>
+
+**The idea.** $e^{a + bi} = e^a e^{bi}$ has modulus $e^a$ and argument $b$, up to multiples of $2\pi$.
+
+<Step title="Match the modulus and the argument">
+
+The modulus of $e^a e^{bi}$ is $e^a$ (the modulus of $e^{bi}$ is $1$). The modulus of $-2$ is $2$, so $e^a = 2$ and $a = \ln 2$. The argument of $e^{a+bi}$ is $b$, and an argument of $-2$ is $\pi$, so $b = \pi + 2\pi k$: any odd multiple of $\pi$.
+
+<Formula label="All solutions of e^z = −2" tex="z = \ln 2 + i\,b, \qquad b = \pm\pi,\ \pm 3\pi,\ \pm 5\pi,\ \dots" cite="solutions" at="Problem 6(b), p. 2" />
+
+</Step>
+
+<Step title="Check the result">
+
+For $z = \ln 2 + i\pi$: $e^z = e^{\ln 2}e^{i\pi} = 2 \times (-1) = -2$. The exponential is periodic with period $2\pi i$, which is why there are infinitely many solutions, spaced $2\pi$ apart in $b$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Express $\cos 4t$ as a sum of powers of $\sin t$ and $\cos t$, using $(e^{it})^4 = e^{4it}$ and Euler's formula.
+
+<Hint>
+
+$\cos 4t$ is the real part of $e^{4it}$, and $e^{4it} = (\cos t + i\sin t)^4$.
+
+</Hint>
+
+<Hint>
+
+Expand the fourth power with the binomial theorem, whose coefficients are $1, 4, 6, 4, 1$: the terms are $\cos^4 t$, $4\cos^3 t\,(i\sin t)$, and so on. Keep the terms without an $i$.
+
+</Hint>
+
+<Answer id="p6-c-coeff" label="The coefficient of $\cos^2 t\,\sin^2 t$ in $\cos 4t$ is" value="-6" tolerance="0.01" calc="p6-c-coeff" />
+
+<Answer id="p6-c-imag" label="Our own extra: the imaginary parts give $\sin 4t$. The coefficient of $\cos^3 t\,\sin t$ in $\sin 4t$ is" value="4" tolerance="0.01" calc="p6-c-imag" />
+
+<Solution>
+
+**The idea.** Compute $e^{4it}$ in two ways, from Euler's formula applied to $4t$ and from the fourth power of Euler's formula for $t$, and compare real parts.
+
+<Step title="Expand">
+
+<Formula label="De Moivre for four times the angle" tex="\cos 4t + i\sin 4t = (\cos t + i\sin t)^4 = \cos^4 t + 4i\cos^3 t\sin t - 6\cos^2 t\sin^2 t - 4i\cos t\sin^3 t + \sin^4 t" cite="solutions" at="Problem 6(c), p. 2" />
+
+The powers of $i$ are $i^2 = -1$, $i^3 = -i$, $i^4 = 1$, which gives the signs.
+
+</Step>
+
+<Step title="Real and imaginary parts">
+
+The real part is $\cos 4t$ and the imaginary part is $\sin 4t$:
+
+<Formula label="cos 4t and sin 4t" tex="\cos 4t = \cos^4 t - 6\cos^2 t\sin^2 t + \sin^4 t, \qquad \sin 4t = 4\cos^3 t\sin t - 4\cos t\sin^3 t" cite="solutions" at="Problem 6(c), p. 2" />
+
+(MIT asks only for $\cos 4t$; the formula for $\sin 4t$ is our addition.)
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$ the formula for $\cos 4t$ gives $1$, as it should. At $t = \pi/4$ we have $\cos t = \sin t = 1/\sqrt 2$, and the formula gives $\frac{1}{4} - \frac{6}{4} + \frac{1}{4} = -1 = \cos\pi$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={8}>
+
+The Mathlet [Complex Exponential](http://math.mit.edu/mathlets/mathlets/complex-exponential/) (on MIT's Mathlets site) draws the line $(a + bi)t$ in one window and the curve $e^{(a+bi)t}$ in the other, so it helps here; you can also use any plotting tool or none. For each of the following functions $f(t)$, sketch the graph over a convenient range, find a number $w = a + bi$ such that $\operatorname{Re}\left(e^{wt}\right) = f(t)$, and sketch the trajectory of the complex-valued function $e^{wt}$, the set of its values in the complex plane.
+
+1. $f(t) = \cos 2\pi t$.
+2. $f(t) = e^{-t}$.
+3. $f(t) = e^{-t}\cos 2\pi t$.
+4. $f(t) = 1$, the constant function.
+
+(Where two values of $w$ work, as for $\cos 2\pi t$, which also equals the real part of $e^{-2\pi i t}$, take the one with positive imaginary part. That choice is ours, so that the answer is one number.)
+
+<Hint>
+
+$e^{wt} = e^{at}e^{ibt}$, so $\operatorname{Re}(e^{wt}) = e^{at}\cos bt$. Compare this with $f$.
+
+</Hint>
+
+<Hint>
+
+The trajectory is the set of points $e^{at}(\cos bt, \sin bt)$ in the plane: the modulus is $e^{at}$ and the argument is $bt$.
+
+</Hint>
+
+<Answer id="p6-d-1" label="Function 1: the imaginary part $b$ of $w$ (with $a = 0$) is" value="6.283" tolerance="0.002" calc="p6-d-1" />
+
+<Answer id="p6-d-3-re" label="Function 3: the real part $a$ of $w$ is" value="-1" tolerance="0.01" calc="p6-d-3-re" />
+
+<Answer id="p6-d-3-im" label="Function 3: the imaginary part $b$ of $w$ (positive) is" value="6.283" tolerance="0.002" calc="p6-d-3-im" />
+
+<Answer id="p6-d-2-shape" label="Function 2: the trajectory of $e^{wt}$ is"
+  choices={["the real axis between 0 and 1 (and beyond, for negative t), never reaching 0 as t grows", "the unit circle", "a spiral in towards 0", "a single point"]} answer={0} />
+
+<Answer id="p6-d-3-shape" label="Function 3: the trajectory of $e^{wt}$ is"
+  choices={["a spiral in towards 0, counterclockwise, through the point 1", "a spiral in towards 0, clockwise, through the point 1", "the unit circle", "a spiral out from 0, counterclockwise"]} answer={0} />
+
+<Solution>
+
+**The idea.** For $w = a + bi$ the real part of $e^{wt}$ is $e^{at}\cos bt$: the real part $a$ of $w$ gives the growth or decay and the imaginary part $b$ gives the angular frequency.
+
+<Step title="Functions 1, 2 and 4">
+
+For $\cos 2\pi t$ we need $a = 0$ and $b = 2\pi$: $w = 2\pi i$. Then $e^{wt} = \cos 2\pi t + i\sin 2\pi t$ has modulus $1$, and its trajectory is the unit circle, run counterclockwise once per unit of time. For $e^{-t}$: $w = -1$, and $e^{wt} = e^{-t}$ is real, so the trajectory is the real axis: for $t \ge 0$ the segment from $1$ towards $0$, without reaching it. For the constant $1$: $w = 0$, and $e^{0 \cdot t} = 1$ is a single point.
+
+</Step>
+
+<Step title="Function 3">
+
+For $e^{-t}\cos 2\pi t$ we need $a = -1$ and $b = 2\pi$:
+
+<Formula label="The number w for the damped cosine" tex="w = -1 + 2\pi i, \qquad e^{wt} = e^{-t}\bigl(\cos 2\pi t + i\sin 2\pi t\bigr)" cite="solutions" at="Problem 6(d), p. 2" />
+
+The modulus $e^{-t}$ shrinks, and the argument $2\pi t$ grows, so the trajectory is a spiral winding in towards $0$, counterclockwise, passing through $1$ at $t = 0$:
+
+<Plot variable="x" domain={[-1.2, 1.2]} range={[-1.2, 1.2]} xLabel="Re" yLabel="Im"
+  curves={[{ x: "exp(-s)*cos(2*pi*s)", y: "exp(-s)*sin(2*pi*s)", range: [0, 3], label: "e^(wt)" }]}
+  points={[{ x: 1, y: 0, label: "t = 0" }]}
+  caption="The trajectory of e^(wt) for w = −1 + 2πi, for t from 0 to 3, computed from (e^(−t) cos 2πt, e^(−t) sin 2πt): a spiral towards 0 that crosses the positive real axis once per unit of time." />
+
+</Step>
+
+<Step title="Check the result">
+
+The real part of the spiral's point is $e^{-t}\cos 2\pi t = f(t)$, by construction. If $w = -1 - 2\pi i$ were taken, the same graph of $f$ would arise, with the spiral run clockwise.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 7
+
+<Exercise id="p7" title="Sinusoidal input and output" points={18} mit="Part II, Problem 7">
+
+<Part label="a" points={8}>
+
+Express $\operatorname{Re}\left(\dfrac{e^{3it}}{\sqrt 3 + i}\right)$ in the form $a\cos 3t + b\sin 3t$. Then write it as $A\cos(3t - \phi)$. Then find the same result by a different route: write $\sqrt 3 + i$ in the form $Ae^{i\phi}$ (find its modulus and argument), substitute that into the fraction, and use the properties of the exponential to find $B$ and $\phi$ with $\dfrac{e^{3it}}{\sqrt 3 + i} = Be^{i(3t - \phi)}$. Finally take the real part of this.
+
+(MIT's printed sheet has the number $2 + 2i$ in the instructions for the second route, which is a misprint: the problem asks about $\sqrt 3 + i$, and MIT's solution uses $\sqrt 3 + i = 2e^{i\pi/6}$.)
+
+<Hint>
+
+For the first route, divide by multiplying numerator and denominator by the complex conjugate $\sqrt 3 - i$. Then multiply out $(\sqrt 3 - i)(\cos 3t + i\sin 3t)$ and take the real part.
+
+</Hint>
+
+<Hint>
+
+To write $a\cos 3t + b\sin 3t$ as $A\cos(3t - \phi)$, draw the right triangle with sides $a$ and $b$: the hypotenuse is $A$ and $\phi$ is the angle with $\tan\phi = b/a$.
+
+</Hint>
+
+<Answer id="p7-a-a" label="The coefficient $a$ of $\cos 3t$ is" value="0.4330" tolerance="0.001" calc="p7-a-a" />
+
+<Answer id="p7-a-b" label="The coefficient $b$ of $\sin 3t$ is" value="0.25" tolerance="0.001" calc="p7-a-b" />
+
+<Answer id="p7-a-amp" label="The amplitude $A$ is" value="0.5" tolerance="0.001" calc="p7-a-amp" />
+
+<Answer id="p7-a-phi" label="The phase lag $\phi$, in radians, is" value="0.5236" tolerance="0.001" calc="p7-a-phi" />
+
+<Solution>
+
+**The idea.** A complex number $c$ times $e^{i\omega t}$ has real part $A\cos(\omega t - \phi)$ where $A = |c|$ and $\phi = -\operatorname{Arg}\,c$. The cartesian route (conjugate, then multiply out) and the polar route (modulus and argument) must agree.
+
+<Step title="First route: the conjugate">
+
+Multiply top and bottom by $\sqrt 3 - i$. The denominator is $(\sqrt 3 + i)(\sqrt 3 - i) = 3 + 1 = 4$:
+
+<Formula label="Cartesian route" tex="\frac{e^{3it}}{\sqrt 3 + i} = \frac{(\sqrt 3 - i)(\cos 3t + i\sin 3t)}{4}, \qquad \operatorname{Re} = \frac{\sqrt 3}{4}\cos 3t + \frac{1}{4}\sin 3t" cite="solutions" at="Problem 7(a), p. 2" />
+
+The real part comes from $\sqrt 3\cos 3t$ and from $(-i)(i\sin 3t) = \sin 3t$, both divided by $4$. So $a = \sqrt 3/4 = 0.4330$ and $b = 1/4$.
+
+</Step>
+
+<Step title="The right triangle">
+
+The triangle with legs $a = \sqrt 3/4$ and $b = 1/4$ has hypotenuse $A = \sqrt{3/16 + 1/16} = \frac{1}{2}$ and $\tan\phi = b/a = 1/\sqrt 3$, so $\phi = \pi/6 = 0.5236$.
+
+</Step>
+
+<Step title="Second route: polar form">
+
+The number $\sqrt 3 + i$ has modulus $2$ and argument $\pi/6$ (the same triangle again), so $\sqrt 3 + i = 2e^{i\pi/6}$. Then
+
+<Formula label="Polar route" tex="\frac{e^{3it}}{\sqrt 3 + i} = \frac{e^{3it}}{2e^{i\pi/6}} = \frac{1}{2}\,e^{i(3t - \pi/6)}, \qquad B = \frac{1}{2},\ \phi = \frac{\pi}{6}" cite="solutions" at="Problem 7(a), p. 2" />
+
+and the real part is $B\cos(3t - \phi) = \frac{1}{2}\cos(3t - \pi/6)$.
+
+</Step>
+
+<Step title="Check the result">
+
+The two routes agree: $\frac{1}{2}\cos(3t - \pi/6) = \frac{1}{2}\cos 3t\cos\frac{\pi}{6} + \frac{1}{2}\sin 3t\sin\frac{\pi}{6} = \frac{\sqrt 3}{4}\cos 3t + \frac{1}{4}\sin 3t$. At $t = 0$ both give $\sqrt 3/4 = 0.4330$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Find a solution of the differential equation $\dot z + 3z = e^{2it}$ of the form $z = we^{2it}$, where $w$ is a complex number. What is the general solution?
+
+<Hint>
+
+Substitute $z = we^{2it}$. The derivative is $\dot z = 2i\,w\,e^{2it}$.
+
+</Hint>
+
+<Hint>
+
+After substituting, $e^{2it}$ cancels and you have an equation for $w$. For the general solution, add the general solution of $\dot z + 3z = 0$.
+
+</Hint>
+
+<Answer id="p7-b-re" label="The real part of $w$ is" value="0.2308" tolerance="0.0005" calc="p7-b-re" />
+
+<Answer id="p7-b-im" label="The imaginary part of $w$ is" value="-0.1538" tolerance="0.0005" calc="p7-b-im" />
+
+<Answer id="p7-b-general" label="The general solution is $z = w\,e^{2it} +$"
+  choices={["c e^(−3t), with c a complex constant", "c e^(3t), with c a complex constant", "c e^(−2it), with c a complex constant", "a constant c"]} answer={0} />
+
+<Solution>
+
+**The idea.** For an exponential input $e^{2it}$ the equation is solved by a multiple of the same exponential, because differentiating $e^{2it}$ only multiplies it by $2i$.
+
+<Step title="Substitute">
+
+With $z = we^{2it}$ we get $\dot z = 2iw\,e^{2it}$, so the equation says $2iw\,e^{2it} + 3w\,e^{2it} = e^{2it}$. Divide by $e^{2it}$: $(3 + 2i)\,w = 1$.
+
+<Formula label="The coefficient w" tex="w = \frac{1}{3 + 2i} = \frac{3 - 2i}{13}" cite="solutions" at="Problem 7(b), p. 2" />
+
+</Step>
+
+<Step title="The general solution">
+
+The homogeneous equation $\dot z + 3z = 0$ has the solutions $ce^{-3t}$. Add:
+
+<Formula label="General solution" tex="z = \frac{3 - 2i}{13}\,e^{2it} + c\,e^{-3t}" cite="solutions" at="Problem 7(b), p. 2" />
+
+</Step>
+
+<Step title="Check the result">
+
+$\dfrac{3 - 2i}{13}(3 + 2i) = \dfrac{9 + 4}{13} = 1$, so $(3 + 2i)w = 1$. The real part of $w$ is $3/13 = 0.2308$ and the imaginary part is $-2/13 = -0.1538$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Find a solution of $\dot x + 3x = \cos 2t$ by relating this equation to the one in part (b). What is the general solution?
+
+<Hint>
+
+$\cos 2t$ is the real part of $e^{2it}$. The equation has real coefficients, so the real part of a solution of the complex equation is a solution of the real one.
+
+</Hint>
+
+<Hint>
+
+Take the real part of $\dfrac{3 - 2i}{13}\bigl(\cos 2t + i\sin 2t\bigr)$.
+
+</Hint>
+
+<Answer id="p7-c-xp" label="A particular solution is $x_p =$" expr="(3*cos(2*t) + 2*sin(2*t))/13"
+  vars={{ t: [0.1, 1.4] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "(3*cos(2*t) - 2*sin(2*t))/13", hint: "Put the formula into ẋ + 3x at t = 0: you get 5/13, not 1. Check the sign of the sine term: the real part of (3 − 2i)(cos 2t + i sin 2t) has a plus sign in front of the sine." },
+    { expr: "(2*cos(2*t) + 3*sin(2*t))/13", hint: "Put the formula into ẋ + 3x at t = 0: you get 12/13, not 1. The numbers 3 and 2 belong the other way round." },
+    { expr: "cos(2*t)/3", hint: "That would solve 3x = cos 2t. The term ẋ is not zero: it is the derivative of the cosine and gives a sine." }
+  ]} />
+
+<Answer id="p7-c-amp" label="The amplitude of $x_p$, written as $A\cos(2t - \phi)$, is $A =$" value="0.2774" tolerance="0.001" calc="p7-c-amp" />
+
+<Solution>
+
+**The idea.** If $z$ solves $\dot z + 3z = e^{2it}$ and $x = \operatorname{Re}\,z$, then taking real parts of the equation gives $\dot x + 3x = \cos 2t$, because $3$ is real and the real part commutes with differentiation.
+
+<Step title="Take the real part">
+
+From part (b), $z_p = \dfrac{3 - 2i}{13}\,(\cos 2t + i\sin 2t)$. Its real part is $\dfrac{3\cos 2t + 2\sin 2t}{13}$: the product of $-2i$ and $i\sin 2t$ is $+2\sin 2t$.
+
+<Formula label="A particular solution" tex="x_p = \frac{1}{13}\bigl(3\cos 2t + 2\sin 2t\bigr)" cite="solutions" at="Problem 7(c), p. 2" />
+
+</Step>
+
+<Step title="The general solution">
+
+Add the solutions $ce^{-3t}$ of the homogeneous equation, now with a real constant $c$:
+
+<Formula label="General solution" tex="x = \frac{1}{13}\bigl(3\cos 2t + 2\sin 2t\bigr) + c\,e^{-3t}" cite="solutions" at="Problem 7(c), p. 2" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$, $x_p = 3/13$ and $\dot x_p = 4/13$ (the derivative is $\frac{1}{13}(-6\sin 2t + 4\cos 2t)$), so $\dot x_p + 3x_p = \frac{4}{13} + \frac{9}{13} = 1 = \cos 0$. The amplitude is the length of the vector $(3, 2)/13$: $\sqrt{13}/13 = 1/\sqrt{13} = 0.2774$. It is also $|w| = 1/|3 + 2i|$, as the polar route of part (a) says.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## More practice: MIT's own Part I exercises
+
+Part I of MIT's Problem Set 2 (24 points at MIT, not scored here) is a list of short exercises. Most come from MIT's "18.03 Notes and Exercises", which is on MIT OpenCourseWare under the same licence as the rest of the course, with solutions to the exercises that are not marked with a star. They are not rewritten here: open [the exercises, section 2](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2ex/) and [their solutions](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2sol/). An exercise number such as 2E-9 means section 2, group E, exercise 9. MIT assigned these, day by day:
+
+| For | Exercises in the Notes |
+|---|---|
+| MIT's Problem 5: complex numbers and roots of unity, the lesson on [complex numbers and complex exponentials](/courses/18-03/complex-exponentials) | 2E-1, 2E-2, 2E-7 |
+| MIT's Problem 6: complex exponentials, the same lesson | 2E-9, 2E-10 |
+| MIT's Problem 7: first-order harmonic response, the lessons on [sinusoidal input](/courses/18-03/sinusoidal-input-response) and [combining a cosine and a sine](/courses/18-03/sinusoids-and-linear-models) | 2E-15 (an integral by complex exponentials) |
+
+The sheet itself also has two short exercises of MIT's own in Part I: Problem 6(b), which asks you to write three sums of a cosine and a sine as a single cosine $A\cos(t - \phi)$ by drawing a right triangle, and Problem 7(b), which asks you to solve $\dot x + 2x = e^{3t}$ and the complex equation with $e^{3it}$ on the right. They are not rewritten; they are on [MIT's sheet](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_ps2pdf/), which prints the answers.
+
+MIT's Part I also has three exercises from the course textbook (Edwards and Penney), for the lesson on [solving first-order linear equations](/courses/18-03/linear-first-order-equations). The textbook is not openly licensed and is not used on this site, so they are not part of this page.
