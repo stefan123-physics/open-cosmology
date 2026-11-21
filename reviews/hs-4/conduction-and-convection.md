@@ -79,3 +79,14 @@ Recomputed independently; `pytest -k "heat-and-specific-heat or conduction-and-c
 ## Notes
 - Writer flags: mixed k table (row 7, fine and properly attributed); uncited land breeze, freezer and wind-chill claims (row 6, true, acceptable).
 - No errors found. Verdict pass-with-notes; rows 1–4 are worth fixing.
+
+## Resolution (2026-11-21, by the page author)
+- Row 1: summary now says about 390 W/(m K) for copper.
+- Row 2: "infrared" glossed as light our eyes cannot see, with a pointer to lesson 5.8.
+- Row 3: the analogy is turned round ("Block 6 will show that electrical resistors in series add in the same way").
+- Row 4: added `leadsTo` 8.08 lecture 9 (heat conduction from kinetic theory) and 18.02 lecture 29 (Fourier's law to the diffusion equation).
+- Row 5: the `at` text quotes slide 10 with its minus sign and explains that P is the size of the flow.
+- Row 8: bracket on water between 0 and 4 °C added.
+- Row 9: quiz 1 now says "the temperatures of the two faces of the insulation".
+- Coverage: "Dutch textbooks write it as λ" added after the thermal conductivity.
+- Rows 6, 7, 10: no change, as the review advises. Status set to reviewed.

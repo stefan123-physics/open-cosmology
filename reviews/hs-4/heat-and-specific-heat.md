@@ -85,3 +85,15 @@ Recomputed independently; `pytest -k "heat-and-specific-heat or conduction-and-c
 ## Notes
 - Writer flags: heater formula citation (row 1, acceptable, better via 8.21 slide 6); calorie omitted (row 7, fine); quiz-1 calcs tag (row 8, cosmetic).
 - No errors found. Verdict pass-with-notes; rows 1–3 are worth fixing.
+
+## Resolution (2026-11-21, by the page author)
+- Row 1: added MIT 8.21 Lecture 4 slides as `reading3`; Q = mcΔT and mcΔT = PΔt now cite slide 6 (Q = c_p m ΔT), with Siyavula's definition named in the `at` text.
+- Row 2: summary now says "about eleven times that of copper".
+- Row 3: the Siyavula citation now follows "milder weather than towns far inland"; summers, winters and day and night are given as the page's own explanation.
+- Row 4: unchanged (the body remark carries no citation).
+- Row 6: quiz 3 explanation now uses the spark and bath of lesson 4.2.
+- Row 8: a `quiz: 1` tag cannot be added, because the quiz checker matches the number against the choices and choice 0 is text ("about 11 times"); left untagged.
+- Row 9: units in the quiz 0 and quiz 2 explanations now in maths.
+- Coverage gap: added a paragraph on the heat capacity C of a calorimeter, Q = (C + mc)ΔT, and the worked example "A calorimeter that takes its share" (80 J/K cup, 37.3 °C, 38.8 °C without the cup), with calcs entries.
+- PhET: "cooler water" and "tick Energy Symbols" in Try it.
+- Status set to reviewed.
