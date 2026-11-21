@@ -9,7 +9,7 @@ export default function About() {
       <h1>About Open Cosmology</h1>
       <p>
         Open Cosmology is a free, non-commercial, complete university programme in physics that leads to cosmology: a four-year
-        bachelor&apos;s core and a fifth, graduate year. Every lecture of every course is covered, following MIT&apos;s
+        bachelor&apos;s core and a fifth, graduate year, with a High School course before it for complete beginners. Every lecture of every course is covered, following MIT&apos;s
         undergraduate physics curriculum (and, in Year V, two MIT graduate courses: 8.902 Astrophysics II and 8.962 General
         Relativity) and, inside each course, MIT&apos;s own lecture order. Cosmology is the destination and the largest part, and the earlier courses show where each
         idea is used in cosmology.
@@ -131,7 +131,7 @@ export default function About() {
       </ul>
       <p>
         If something is hard to use for you, please open an issue on{" "}
-        <a href="https://github.com/raimonvibe/open-cosmology/issues">GitHub</a> so it can be fixed.
+        <a href="https://github.com/stefan123-physics/open-cosmology/issues">GitHub</a> so it can be fixed.
       </p>
 
       <h2 id="privacy">Privacy</h2>
@@ -146,7 +146,7 @@ export default function About() {
         <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0</a>,
         as MIT&apos;s licence requires. You may share and adapt it for non-commercial purposes, with attribution, under the same
         licence. The software that builds the site is released under the{" "}
-        <a href="https://github.com/raimonvibe/open-cosmology/blob/main/LICENSE">MIT License</a>, so anyone may reuse it. There are no
+        <a href="https://github.com/stefan123-physics/open-cosmology/blob/main/LICENSE">MIT License</a>, so anyone may reuse it. There are no
         paid features on MIT-based content. MIT and the course instructors do not endorse this site.
       </p>
       <p>

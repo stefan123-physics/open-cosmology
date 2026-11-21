@@ -28,7 +28,7 @@ Every lesson builds only on earlier lessons, listed in `prerequisites`. PC 2's l
 **Owner, on PC 1 (this PC):**
 1. Create a new **private** repository on GitHub (or GitLab).
 2. Connect `001Open-Cosmology-Final` to it and push `main` (Claude can do this when given the address).
-3. Once it exists, tell Claude the repository name, so the "Report a mistake" link on every lesson can point to it. It still points to `raimonvibe/open-cosmology` (`app/courses/[course]/[slug]/page.tsx`).
+3. Done 2026-11-21: the repository is `stefan123-physics/open-cosmology` (https://github.com/stefan123-physics/open-cosmology), and the "Report a mistake" link on every lesson, the issue links and the footer's version link point to it.
 
 **Owner, on PC 2:**
 ```powershell

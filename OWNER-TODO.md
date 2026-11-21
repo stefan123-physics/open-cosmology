@@ -194,7 +194,7 @@ Copy each prompt into the chat at the right moment. The first run (2026-11-15) u
 
 **1. Start the run**
 
-> Add new lessons to Open Cosmology (github.com/raimonvibe/open-cosmology) on your own for up to five hours, without asking me to confirm each step.
+> Add new lessons to Open Cosmology (github.com/stefan123-physics/open-cosmology) on your own for up to five hours, without asking me to confirm each step.
 >
 > Decide yourself which lessons to add next, based on what the site already has.
 > Follow the site's existing rules, make sure the build passes, and commit after each lesson.

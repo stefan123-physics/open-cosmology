@@ -269,5 +269,5 @@ Two further plans: [docs/CALC_TESTS_PLAN.md](docs/CALC_TESTS_PLAN.md) — every 
 
 ## Git
 
-- Commit only when asked. Branch `main`. This folder (`001Open-Cosmology-Final`, Open Cosmology with the High School) is a new local repository started on 2026-11-20 with no remote yet; the owner will choose a new GitHub repository and connect Vercel later. Earlier history lives in the old `raimonvibe/open-cosmology` and `open-cosmology-highschool` repositories.
+- Commit only when asked. Branch `main`. This folder (`001Open-Cosmology-Final`, Open Cosmology with the High School) is a repository started on 2026-11-20; its remote `origin` is https://github.com/stefan123-physics/open-cosmology (since 2026-11-21), which the owner connects to Vercel and opencosmology.eu. Earlier history lives in the old `raimonvibe/open-cosmology` and `open-cosmology-highschool` repositories.
 - Run `npm run build` before committing; it must show `0 error(s)`.

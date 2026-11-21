@@ -196,7 +196,7 @@ export default function Accessibility() {
         The site is tested with keyboard only, in light and dark mode, with reduced motion and at screen widths from 320 pixels,
         and it has a checklist for testing with the NVDA and Orca screen readers. If something is hard to use for you, please open
         an issue on{" "}
-        <a href="https://github.com/raimonvibe/open-cosmology/issues">GitHub</a> so it can be fixed.
+        <a href="https://github.com/stefan123-physics/open-cosmology/issues">GitHub</a> so it can be fixed.
       </p>
     </div>
   );

@@ -7,7 +7,10 @@
  *   app/apple-icon.png         180 px (iPhone/iPad home screen)
  *   public/icons/icon-192.png, icon-512.png, maskable-512.png (Android home screen, via app/manifest.ts)
  *   app/opengraph-image.png, app/twitter-image.png  1200×630 (link previews)
- * Text in the share image uses the OFL fonts in brand/fonts.
+ * Text in the share image uses the OFL fonts in brand/fonts. On Windows, sharp ignores fontconfig and
+ * uses system fonts only, so the share image comes out in Times and a monospace face: check it, and if so
+ * render brand/og.template.svg in a browser that loads brand/fonts with @font-face (headless Edge or Chrome,
+ * --window-size=1200,630 --screenshot) and save that as both share images.
  */
 import fs from "node:fs";
 import os from "node:os";

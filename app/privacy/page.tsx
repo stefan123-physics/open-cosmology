@@ -112,7 +112,7 @@ export default function Privacy() {
       <h2 id="feedback">Reporting mistakes and other feedback</h2>
       <p>
         Mistakes and suggestions are collected as issues on{" "}
-        <a href="https://github.com/raimonvibe/open-cosmology/issues">GitHub</a>. Issues there are public and need a GitHub
+        <a href="https://github.com/stefan123-physics/open-cosmology/issues">GitHub</a>. Issues there are public and need a GitHub
         account; GitHub&apos;s own privacy policy applies. Please do not put personal information in an issue.
       </p>
 

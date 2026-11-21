@@ -143,7 +143,11 @@ export function SiteHeader({ years, tools }: { years: NavYear[]; tools: Tool[] }
           <Crest />
           <span className="brand-words">
             <span className="brand-text">Open Cosmology</span>
-            <span className="brand-motto">Physics &amp; cosmology: four years, plus a graduate year</span>
+            <span className="brand-motto">
+              {pathname.startsWith("/highschool")
+                ? "The High School: physics from the very first step"
+                : "Physics & cosmology, from high school to a graduate year"}
+            </span>
           </span>
         </Link>
         {!isPhone && (

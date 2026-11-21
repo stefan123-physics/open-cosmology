@@ -18,7 +18,7 @@ The calc tests need Python once: `python -m venv .venv`, then `.venv/Scripts/pip
 
 GitHub Actions (`.github/workflows/checks.yml`) runs the content check, type check, calc tests and build on every pull request.
 
-Deploy: import the repository in Vercel (framework preset: Next.js). No environment variables are required; set `NEXT_PUBLIC_SITE_URL` for correct sitemap URLs.
+Deploy: import the repository in Vercel (framework preset: Next.js). No environment variables are required: production builds use https://opencosmology.eu (`SITE_DOMAIN` in `lib/site-url.ts`) for the sitemap, share images and report links; `NEXT_PUBLIC_SITE_URL` overrides it.
 
 ## How it works
 
@@ -102,7 +102,7 @@ The logo and share image are drawn as SVG in `brand/` and rendered by `npm run i
 | `public/icons/icon-192.png`, `icon-512.png`, `maskable-512.png` + `app/manifest.ts` | Android "Add to Home screen" / install |
 | `app/opengraph-image.png`, `app/twitter-image.png` (1200×630) | Link previews on social media and chat apps |
 
-Share images need absolute URLs: on Vercel the production domain is detected automatically; elsewhere set `NEXT_PUBLIC_SITE_URL=https://your-domain`.
+Share images need absolute URLs: production builds use https://opencosmology.eu; for another domain set `NEXT_PUBLIC_SITE_URL=https://your-domain`.
 
 ## License
 

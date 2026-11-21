@@ -48,7 +48,7 @@ const mathFallback = localFont({
 });
 
 const description =
-  "A free, open path to modern cosmology, rewritten from MIT OpenCourseWare: from vectors and motion to the expanding universe, the CMB, inflation, dark matter and dark energy.";
+  "A free, open path to modern cosmology, from a High School course for beginners through a university programme rewritten from MIT OpenCourseWare: from vectors and motion to the expanding universe, the CMB, inflation, dark matter and dark energy.";
 
 // Icons (app/favicon.ico, icon.svg, apple-icon.png) and share images (app/opengraph-image.png,
 // twitter-image.png) are picked up from the app folder automatically; regenerate them with `npm run icons`.
@@ -204,7 +204,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ) : (
                 <>
                   Version{" "}
-                  <a href={`https://github.com/raimonvibe/open-cosmology/commit/${BUILD_VERSION}`}>
+                  <a href={`https://github.com/stefan123-physics/open-cosmology/commit/${BUILD_VERSION}`}>
                     <code>{BUILD_VERSION.slice(0, 7)}</code>
                   </a>
                 </>

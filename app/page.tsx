@@ -23,7 +23,7 @@ export default function Home() {
             Open Cosmology is a free, complete programme in physics: four undergraduate years from classical mechanics and
             electromagnetism through relativity, quantum and statistical physics to the early universe, with the calculus,
             differential equations and linear algebra they rest on, and a fifth, graduate year for dark matter, the growth of
-            structure and general relativity. It is rewritten from MIT lectures as clear
+            structure and general relativity. A High School course comes first, for anyone starting from scratch. The university years are rewritten from MIT lectures as clear
             explanations, interactive graphs and worked examples. Cosmology is the destination: the expanding universe, the Big
             Bang, the cosmic microwave background, inflation, dark matter and dark energy.
           </p>

@@ -70,7 +70,7 @@ export default async function TopicPage({ params }: { params: Promise<Params> })
   const next = ordered[idx + 1];
   // "Report a mistake": a GitHub issue with the page named. Only page details go in the link, never anything about the reader.
   const reportUrl =
-    "https://github.com/raimonvibe/open-cosmology/issues/new?" +
+    "https://github.com/stefan123-physics/open-cosmology/issues/new?" +
     new URLSearchParams({
       title: `Mistake: ${page.title} (${course.id})`,
       body: `Page: ${SITE_URL}${page.href}
