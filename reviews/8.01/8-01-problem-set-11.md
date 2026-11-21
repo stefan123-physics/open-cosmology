@@ -87,3 +87,10 @@ Statements against MIT's drawings (rendered at 200 dpi): Problem 1, pivot at the
 - Symbols: the 40 meanings scoped to this page were read and fit their use. I did not run `content:check`, so symbol completeness is not verified by me.
 
 COUNTS: errors=0 warnings=1 info=2
+
+## Resolution (2026-11-21, by the page author)
+
+1. Warning 1 fixed: the first mistake hint of box p4-a now reads as the review suggests (a free body of mass m_R, using m_R R² about the centre, while the hoop turns about P on its rim, where its moment of inertia is larger).
+2. Info items need no change.
+
+Status set to `reviewed`.
