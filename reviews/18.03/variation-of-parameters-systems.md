@@ -67,3 +67,12 @@ Lecturer slips and transcript garbles checked:
 3. The correct answers in quizzes 1 and 3 have been moved off the first position. That most 18.03 answers sit at position 0 is noted for the owner in the run log.
 
 The omitted remarks are left out as before. Status set to `reviewed`.
+
+## Applied (2026-11-21)
+
+The 2026-11-16 resolution above had not reached the page (it was still `status: draft` without the listed changes). The listed changes are now made:
+
+- The tan t remark now says it is the input of a single equation, solved this way once a homework problem turns it into a system (p. 9).
+- Quiz 2: the wrong choice now reads "On the left, as a row vector times X".
+- Quizzes 1 and 3: the correct answers moved off the first position (to choices 3 and 2; `answer: 2` and `answer: 1`).
+- Status set to `reviewed`. All listed changes could be made; the calcs file needed no change.

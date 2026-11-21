@@ -77,3 +77,14 @@ Lecturer slips and transcript garbles checked:
 2. Info: the demonstration wording now follows the transcript ("swatting", a colleague who has practised for years); "0 < A < 1" for a smaller amplitude; "not differentiable" for A ≠ 0; the electromagnet cites pp. 1–2. A bracket explains why the rest conditions hold just before a kick at 0 (w′ starts at 1) and why the lecture kicks at π/2.
 
 Status set to `reviewed`.
+
+## Applied (2026-11-21)
+
+The 2026-11-16 resolution above had not reached the page (it was still `status: draft` without the listed changes). The listed changes are now made:
+
+- Warning: Dirac is no longer said to have named δ after himself; the page says he brought it into wide use, reports Mattuck's initial-letter remark as a joke, and gives the usual Kronecker-delta account.
+- Demonstration: "a student swatting it; a colleague who has practised for years can stop it dead with a little mallet".
+- "If 0 < A < 1" for a smaller amplitude; "continuous but, for A ≠ 0, not differentiable".
+- The electromagnet sentence now cites pp. 1–2.
+- A bracket after the weight-function definition says the rest conditions hold just before the kick (right after it the velocity is 1) and that this is why the lecture kicked the spring at π/2 (p. 8). Written in words rather than as w′(0⁺) to avoid a new symbol entry.
+- Status set to `reviewed`. All listed changes could be made; the calcs file needed no change.

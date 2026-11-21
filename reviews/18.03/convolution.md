@@ -70,3 +70,14 @@ Lecturer slips and transcript garbles checked:
 2. Info: the dt note now says the lecture corrects the integration variable a few lines later. "Never connect" became "do not use it in connection with". Example (b) now evaluates at t = 10 explicitly. The chicks grow linearly "early in life".
 
 The ice-core figure is left out as before, so no note is needed. Status set to `reviewed`.
+
+## Applied (2026-11-21)
+
+The 2026-11-16 resolution above had not reached the page (it was still `status: draft` without the listed changes). The listed changes are now made:
+
+- Why a convolution: "No, and there never will be" is now "No simple one, and Mattuck says there never will be"; the frontmatter summary says "no simple formula … (and Mattuck says there never will be)".
+- The dt note now says the lecture corrects the integration variable to du a few lines later (p. 1).
+- "Never connect it with" became "do not use it in connection with" the Laplace transform.
+- Example (b) now evaluates at t = 10 explicitly: "At t = 10: (3 ∗ e^(−0.1t))(10) = …" (the number 19.0 and the calcs file are unchanged).
+- The chicks grow linearly "early in life".
+- Status set to `reviewed`. All listed changes could be made.

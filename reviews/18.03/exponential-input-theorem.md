@@ -70,3 +70,12 @@ Lecturer slips checked:
 3. "This lecture and the next" became "the next two weeks", as on p. 1.
 
 The other info notes need no change. Status set to `reviewed`.
+
+## Applied (2026-11-21)
+
+The 2026-11-16 resolution above had not reached the page (it was still `status: draft` without the listed changes). The listed changes are now made:
+
+- Warning 1: the page no longer attributes the name resonance to this lecture; it says "the next lecture calls it resonance".
+- Warning 2: the higher-root remark now gives the pattern in words (x raised to the multiplicity times e^(ax), over the matching derivative of p at a) and explains that the lecture's factorial appears only when the denominator is written with the remaining factor of p, since the derivative already contains it. Written in words to avoid new symbols (p^(k), q) on the page.
+- "This lecture and the next" became "the next two weeks" (p. 1).
+- Status set to `reviewed`. All listed changes could be made; the calcs file needed no change.
