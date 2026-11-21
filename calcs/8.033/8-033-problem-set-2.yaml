@@ -1,0 +1,1068 @@
+# Calculations on content/year-2/8.033/8-033-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# an exact remainder or a numerical Taylor coefficient for the series, a second geometric route for the aberration
+# speeds, Cramer's rule for the inverse Lorentz transformation, the Lorentz transformation and the invariant
+# interval for the clock, and a direct evaluation in double precision where the page uses a series.
+# The page takes c = 3.00e8 m/s; it is the input `cl` here (the constant `c` of calcs/constants.yaml is the exact value).
+
+page: content/year-2/8.033/8-033-problem-set-2.mdx
+calcs:
+  # ---- introduction
+
+  - id: points-total
+    where: 'introduction: the points of the ten problems that count'
+    inputs: {}
+    formula: 3 + 6 + 9 + 3 + 3 + 7.5 + 6 + 3 + 1.5 + 3
+    expected: '45'
+    shown: ['so 45 points count for the score']
+    source: {cite: mit, at: 'pp. 1 to 3 (48 points on the sheet, less the 3 for name and staple)'}
+    origin: page-own
+
+  # ---- Problem 1 and 2: the sliding shape and the transformed equation
+
+  - id: p1-cubic-check
+    kind: identity
+    where: 'Problem 1(a), check: y = (x - Vt)^3 obeys the wave equation (second time derivative = V^2 times second space derivative)'
+    formula: deriv('(x0 - V*x)**3', 'x', t0, 2)
+    equals: V**2 * deriv('(x - V*t0)**3', 'x', x0, 2)
+    samples:
+      V: [1.5, 0.7, 2.0, 3.1]
+      x0: [1.3, 1.2, -0.4, 2.0]
+      t0: [0.2, 0.9, 1.1, 0.1]
+    tolerance: 1e-6
+    shown: ['$\partial^2 y/\partial t^2 = 6V^2(x - Vt)$']
+    source: {cite: mit, at: 'Problem 1(a) (our own check)'}
+    origin: page-own
+
+  # A = 1 - v^2/c^2 and K = 2v/c^2: the transformed equation is solved by a shape moving at V = v + c.
+  # With f = exp(s), s = x' + V t': A - V^2/c^2 + K V must vanish at V = v + c; solved here for A.
+  - id: p2-acoef
+    kind: identity
+    answer: p2-acoef
+    where: 'Problem 2(b), answer box A: against the value that makes exp(x'' + (v + c) t'') a solution, given K = 2v/c^2'
+    formula: 1 - v**2/c**2
+    equals: solve('x - (v + c)**2/c**2 + 2*v*(v + c)/c**2', 'x', -50, 50)
+    samples:
+      v: [0.5, 1.5, 1.0, 0.8]
+      c: [2, 4, 3, 2.5]
+    tolerance: 1e-7
+    shown: ['id="p2-acoef"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # K from the two wave speeds: A - V^2/c^2 + K V = 0 for V = v + c and V = v - c; subtracting gives K = 2v/c^2.
+  - id: p2-kcoef
+    kind: identity
+    answer: p2-kcoef
+    where: 'Problem 2(b), answer box K: against the value fixed by the two wave speeds v + c and v - c'
+    formula: 2*v/c**2
+    equals: ((v + c)**2 - (v - c)**2) / (c**2 * ((v + c) - (v - c)))
+    samples:
+      v: [0.5, 1.5, 1.0, 0.8]
+      c: [2, 4, 3, 2.5]
+    tolerance: 1e-9
+    shown: ['id="p2-kcoef"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # The transformed equation holds for E = (x' + v t' - c t')^3, the Galilean image of (x - ct)^3,
+  # checked with numerical derivatives: A E_xx - E_tt/c^2 + K E_xt = 0, with E_xt = (v - c) E_xx for this shape.
+  - id: p2-transformed-equation
+    kind: identity
+    where: 'Problem 2(b), formula "Wave equation after a Galilean boost": the image of a solution (x - ct)^3 solves it'
+    formula: (1 - v**2/c**2) * deriv('(x + (v - c)*t0)**3', 'x', x0, 2) + 2*v/c**2 * (v - c) * deriv('(x + (v - c)*t0)**3', 'x', x0, 2)
+    equals: deriv('(x0 + (v - c)*x)**3', 'x', t0, 2) / c**2
+    samples:
+      v: [0.5, 1.5, 1.0, 0.8]
+      c: [2, 4, 3, 2.5]
+      x0: [1.3, 1.2, 4.0, 2.0]
+      t0: [0.2, 0.9, 1.1, 0.1]
+    tolerance: 1e-6
+    shown: ['<Formula label="Wave equation after a Galilean boost"']
+    source: {cite: reading2, at: 'slide 9'}
+    origin: page-own
+
+  # ---- Problem 3: the aeroplane
+
+  - id: p3-still-air
+    where: 'Problem 3(a), check: round trip in still air'
+    inputs: {l: 160 km, u: 100 m/s}
+    formula: 2 * l / u
+    expected: 3200 s
+    tolerance: 0.5 s
+    shown: ['Then $t_0 = 3200$ s']
+    source: {cite: mit, at: 'Problem 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-leg-against
+    where: 'Problem 3(a), check: the leg against the wind'
+    inputs: {l: 160 km, u: 100 m/s, v: 60 m/s}
+    formula: l / (u - v)
+    expected: 4000 s
+    tolerance: 0.5 s
+    shown: ['$160\,000/40 = 4000$ s']
+    source: {cite: mit, at: 'Problem 3(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-leg-with
+    where: 'Problem 3(a), check: the leg with the wind'
+    inputs: {l: 160 km, u: 100 m/s, v: 60 m/s}
+    formula: l / (u + v)
+    expected: 1000 s
+    tolerance: 0.5 s
+    shown: ['$160\,000/160 = 1000$ s']
+    source: {cite: mit, at: 'Problem 3(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-along
+    where: 'Problem 3(a), check: MIT''s formula t0/(1 - (v/u)^2) against the sum of the two legs'
+    inputs: {l: 160 km, u: 100 m/s, v: 60 m/s}
+    formula: (2 * l / u) / (1 - (v/u)**2)
+    expected: 5000 s
+    tolerance: 0.5 s
+    shown: ['together $5000$ s', '$3200/(1 - 0.36) = 5000$ s']
+    source: {cite: mit, at: 'Problem 3(a), Eq. (3.1)'}
+    origin: page-own
+
+  - id: p3-ground-speed
+    where: 'Problem 3(b), check: ground speed in the crosswind'
+    inputs: {u: 100 m/s, v: 60 m/s}
+    formula: sqrt(u**2 - v**2)
+    expected: 80 m/s
+    tolerance: 0.5 m/s
+    shown: ['$\sqrt{100^2 - 60^2} = 80$ m/s']
+    source: {cite: mit, at: 'Problem 3(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-across
+    where: 'Problem 3(b), check: MIT''s formula t0/sqrt(1 - (v/u)^2) against two legs at the ground speed'
+    inputs: {l: 160 km, u: 100 m/s, v: 60 m/s}
+    formula: (2 * l / u) / sqrt(1 - (v/u)**2)
+    expected: 4000 s
+    tolerance: 0.5 s
+    shown: ['each leg takes $2000$ s, and the trip $4000$ s', '$3200/0.8 = 4000$ s']
+    source: {cite: mit, at: 'Problem 3(b), Eq. (3.2)'}
+    origin: page-own
+
+  - id: p3-times-identity
+    kind: identity
+    where: 'Problem 3(a) and (b): the closed forms against the sums of the legs'
+    formula: l/(u - v) + l/(u + v) + 2*l/sqrt(u**2 - v**2)
+    equals: (2*l/u)/(1 - (v/u)**2) + (2*l/u)/sqrt(1 - (v/u)**2)
+    samples:
+      l: [1, 160, 7.5, 0.3]
+      u: [1, 100, 3, 2.2]
+      v: [0.5, 60, 2.9, 0.1]
+    tolerance: 1e-10
+    shown: ['<Formula label="Adding the two legs"', '<Formula label="Adding the two crosswind legs"']
+    source: {cite: mit, at: 'Problem 3, Eqs. (3.1) and (3.2)'}
+    origin: page-own
+
+  - id: p3-lecture-facts
+    kind: fact
+    where: 'Problem 3(c): the size of the expected effect and the Earth''s speed, as quoted in the lecture'
+    shown: ['the Earth''s motion at about 30 km/s around the Sun', 'of order $(v/c)^2 \approx 10^{-8}$ of the travel time']
+    source: {cite: reading2, at: 'slide 17'}
+    origin: mit
+
+  # ---- Problem 4: the contraction
+
+  - id: p4-given
+    kind: fact
+    where: 'Problem 4, statement: MIT''s numbers'
+    shown: ['MIT''s sheet gives the arm length as 2.8 m. Take 0.1 nm as the diameter of a typical atom', 'at $v = 30$ km/s, its orbital speed']
+    source: {cite: mit, at: 'Problem 4, p. 2 (the 30 km/s is given in Problem 6, p. 2, and on slide 17 of the Lecture 3 slides)'}
+    origin: mit
+
+  - id: p4-beta
+    where: 'Problem 4, solution: beta for the Earth'
+    inputs: {v: 30 km/s, cl: 3.00e8 m/s}
+    formula: v / cl
+    expected: '1.0e-4'
+    shown: ['$\beta = 3.0\times 10^4/3.00\times 10^8 = 1.0\times 10^{-4}$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-half-beta-sq
+    where: 'Problem 4, solution: half of beta squared'
+    inputs: {v: 30 km/s, cl: 3.00e8 m/s}
+    formula: (v / cl)**2 / 2
+    expected: '5.0e-9'
+    shown: ['$\tfrac12\beta^2 = 5.0\times 10^{-9}$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  # The exact shrinkage, not the series: L (1 - sqrt(1 - beta^2)).
+  - id: p4-shrink
+    where: 'Problem 4, solution: the shrinkage of the arm, from the exact contraction factor'
+    inputs: {v: 30 km/s, cl: 3.00e8 m/s, L: 2.8 m}
+    formula: L * (1 - sqrt(1 - (v/cl)**2))
+    expected: 14 nm
+    tolerance: 0.05 nm
+    shown: ['= 1.4\times 10^{-8}\ \text{m} = 14\ \text{nm}', 'so 14 nm of arm is 28 nm of path']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-n
+    answer: p4-n
+    where: 'Problem 4, answer box: the shrinkage in atomic diameters, from the exact contraction factor'
+    inputs: {v: 30 km/s, cl: 3.00e8 m/s, L: 2.8 m, d_atom: 0.1 nm}
+    formula: L * (1 - sqrt(1 - (v/cl)**2)) / d_atom
+    expected: '140'
+    tolerance: '0.5'
+    shown: ['id="p4-n"', 'About **140 atomic diameters**']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-arm-in-atoms
+    where: 'Problem 4, solution: the arm length in atomic diameters'
+    inputs: {L: 2.8 m, d_atom: 0.1 nm}
+    formula: L / d_atom / 1e9
+    expected: '28'
+    shown: ['on an arm of 28 billion atomic diameters']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-next-term
+    where: 'Problem 4, check: the next term of the expansion, beta^4/8'
+    inputs: {v: 30 km/s, cl: 3.00e8 m/s}
+    formula: (v / cl)**4 / 8
+    expected: '1e-17'
+    tolerance: '0.5e-17'
+    shown: ['$\beta^4/8 \approx 10^{-17}$']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-path-fraction
+    where: 'Problem 4, check: 28 nm of path as a fraction of a 500 nm wavelength (about a twentieth)'
+    inputs: {path: 28 nm, wavelength: 500 nm}
+    formula: path / wavelength
+    expected: '0.05'
+    tolerance: '0.01'
+    shown: ['about a twentieth of a wavelength']
+    source: {cite: reading2, at: 'slide 17 (the wavelength)'}
+    origin: page-own
+
+  - id: p4-lecture-facts
+    kind: fact
+    where: 'Problem 4, check: wavelength and sensitivity quoted in the lecture'
+    shown: ['the light had a wavelength of about 500 nm, and shifts of a hundredth of a wavelength could be seen']
+    source: {cite: reading2, at: 'slide 17'}
+    origin: mit
+
+  # ---- Problem 5: the series
+
+  # Exact remainder of the geometric series: 1/(1 - x) = 1 + x + x^2 + x^3/(1 - x), with x = b^2.
+  - id: p5-g2
+    kind: identity
+    answer: p5-g2
+    where: 'Problem 5(a), answer box: three terms of gamma squared, against the exact value less the exact remainder'
+    formula: 1 + b**2 + b**4
+    equals: 1/(1 - b**2) - b**6/(1 - b**2)
+    samples:
+      b: [0.2, 0.45, 0.7, 0.05]
+    tolerance: 1e-12
+    shown: ['id="p5-g2"']
+    source: {cite: mit, at: 'Problem 5(a), Eq. (5.2)'}
+    origin: mit
+
+  # The coefficients as numerical Taylor coefficients of (1 - x)^(-1/2) at x = 0.
+  - id: p5-g
+    kind: identity
+    answer: p5-g
+    where: 'Problem 5(a), answer box: three terms of gamma, against numerical derivatives of (1 - x)^(-1/2) at 0'
+    formula: 1 + b**2/2 + 3*b**4/8
+    equals: 1 + b**2 * deriv('(1 - x)**(-0.5)', 'x', 0) + b**4 / 2 * deriv('(1 - x)**(-0.5)', 'x', 0, 2)
+    samples:
+      b: [0.2, 0.45, 0.7, 0.05]
+    tolerance: 1e-6
+    shown: ['id="p5-g"']
+    source: {cite: mit, at: 'Problem 5(a), Eq. (5.3)'}
+    origin: mit
+
+  - id: p5-g-limit
+    kind: limit
+    where: 'Problem 5(a): the three-term series approaches the exact gamma as beta falls (error of order beta^6)'
+    formula: (1/sqrt(1 - b**2) - (1 + b**2/2 + 3*b**4/8)) / b**6
+    limit: 5/16
+    vary: {b: [0.3, 0.1, 0.03]}
+    tolerance: 1e-3
+    shown: ['+ \frac{5}{16}\beta^6 + \dots']
+    source: {cite: mit, at: 'Problem 5(a), Eq. (5.3)'}
+    origin: mit
+
+  - id: p5-g01
+    answer: p5-g01
+    where: 'Problem 5(a), answer box: gamma - 1 from three terms at beta = 0.1'
+    inputs: {b: 0.1}
+    formula: b**2/2 + 3*b**4/8
+    expected: '0.0050375'
+    tolerance: '1e-9'
+    shown: ['id="p5-g01"', '$5.0375\times 10^{-3}$', '$1 + 0.005 + 0.0000375$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g01-exact
+    where: 'Problem 5(a), table: exact gamma - 1 at beta = 0.1'
+    inputs: {b: 0.1}
+    formula: 1/sqrt(1 - b**2) - 1
+    expected: '5.03782e-3'
+    shown: ['$5.03782\times 10^{-3}$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g01-miss
+    where: 'Problem 5(a): exact value less the three-term series at beta = 0.1'
+    inputs: {b: 0.1}
+    formula: 1/sqrt(1 - b**2) - (1 + b**2/2 + 3*b**4/8)
+    expected: '3.2e-7'
+    shown: ['by $3.2\times 10^{-7}$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g01-next-term
+    where: 'Problem 5(a): the first term left out at beta = 0.1'
+    inputs: {b: 0.1}
+    formula: 5/16 * b**6
+    expected: '3.1e-7'
+    shown: ['$\tfrac{5}{16}\beta^6 = 3.1\times 10^{-7}$']
+    source: {cite: mit, at: 'Problem 5(a), Eq. (5.3)'}
+    origin: page-own
+
+  - id: p5-g001
+    answer: p5-g001
+    where: 'Problem 5(a), answer box: gamma - 1 at beta = 0.001, from the exact expression'
+    inputs: {b: 0.001}
+    formula: 1/sqrt(1 - b**2) - 1
+    expected: '5.0e-7'
+    shown: ['id="p5-g001"']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g001-digits
+    where: 'Problem 5(a), table: gamma - 1 at beta = 0.001 from the three terms (the exact value agrees to all the digits shown)'
+    inputs: {b: 0.001}
+    formula: b**2/2 + 3*b**4/8
+    expected: '5.00000375e-7'
+    tolerance: '5e-16'
+    shown: ['| $0.001$ | $5.00000375\times 10^{-7}$ | $5.00000375\times 10^{-7}$ |']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g001-exact-digits
+    where: 'Problem 5(a), table: exact gamma - 1 at beta = 0.001 (double precision keeps about nine digits of the difference)'
+    inputs: {b: 0.001}
+    formula: 1/sqrt(1 - b**2) - 1
+    expected: '5.00000375e-7'
+    tolerance: '5e-15'
+    shown: ['| $0.001$ | $5.00000375\times 10^{-7}$ | $5.00000375\times 10^{-7}$ |']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g00001
+    answer: p5-g00001
+    where: 'Problem 5(a), answer box: gamma - 1 at beta = 1e-5, from the exact expression in double precision'
+    inputs: {b: 1e-5}
+    formula: 1/sqrt(1 - b**2) - 1
+    expected: '5.0e-11'
+    shown: ['id="p5-g00001"', '| $10^{-5}$ | $5.0\times 10^{-11}$ | $5.0\times 10^{-11}$ |', 'the whole effect, $5\times 10^{-11}$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-calculator-display
+    where: 'Problem 5(a): gamma at beta = 0.001 to ten digits'
+    inputs: {b: 0.001}
+    formula: 1/sqrt(1 - b**2)
+    expected: '1.000000500'
+    shown: ['shows $\gamma = 1.000000500$ for $\beta = 0.001$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-calculator-display-slow
+    where: 'Problem 5(a): gamma at beta = 1e-5 to ten digits is exactly 1'
+    inputs: {b: 1e-5}
+    formula: 1/sqrt(1 - b**2)
+    expected: '1.000000000'
+    shown: ['it shows exactly 1']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b2a
+    answer: p5-b2a
+    where: 'Problem 5(b), answer box: 1/(2 gamma^2) at gamma = 2'
+    inputs: {g: 2}
+    formula: 1 / (2 * g**2)
+    expected: '0.125'
+    shown: ['id="p5-b2a"', '| $2$ | $0.125$ | $0.13397$ | $0.86603$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b2e
+    answer: p5-b2e
+    where: 'Problem 5(b), answer box: exact 1 - beta at gamma = 2'
+    inputs: {g: 2}
+    formula: 1 - sqrt(1 - 1/g**2)
+    expected: '0.13397'
+    shown: ['id="p5-b2e"', '| $2$ | $0.125$ | $0.13397$ | $0.86603$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-beta2
+    where: 'Problem 5(b), table: exact beta at gamma = 2'
+    inputs: {g: 2}
+    formula: sqrt(1 - 1/g**2)
+    expected: '0.86603'
+    shown: ['| $2$ | $0.125$ | $0.13397$ | $0.86603$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b10a
+    where: 'Problem 5(b), table: 1/(2 gamma^2) at gamma = 10'
+    inputs: {g: 10}
+    formula: 1 / (2 * g**2)
+    expected: '0.005'
+    tolerance: '1e-9'
+    shown: ['| $10$ | $0.005$ | $0.0050126$ | $0.9949874$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b10e
+    answer: p5-b10e
+    where: 'Problem 5(b), answer box: exact 1 - beta at gamma = 10'
+    inputs: {g: 10}
+    formula: 1 - sqrt(1 - 1/g**2)
+    expected: '0.0050126'
+    shown: ['id="p5-b10e"', '| $10$ | $0.005$ | $0.0050126$ | $0.9949874$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-beta10
+    where: 'Problem 5(b), table: exact beta at gamma = 10'
+    inputs: {g: 10}
+    formula: sqrt(1 - 1/g**2)
+    expected: '0.9949874'
+    shown: ['| $10$ | $0.005$ | $0.0050126$ | $0.9949874$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b1000a
+    answer: p5-b1000a
+    where: 'Problem 5(b), answer box: 1/(2 gamma^2) at gamma = 1000'
+    inputs: {g: 1000}
+    formula: 1 / (2 * g**2)
+    expected: '5.0e-7'
+    shown: ['id="p5-b1000a"', '| $10^3$ | $5.0\times 10^{-7}$ | $5.00000125\times 10^{-7}$ | $0.9999994999999$ |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  # Exact 1 - beta in the form that loses no digits: 1/(gamma^2 (1 + beta)).
+  - id: p5-b1000e
+    where: 'Problem 5(b), table: exact 1 - beta at gamma = 1000'
+    inputs: {g: 1000}
+    formula: 1 / (g**2 * (1 + sqrt(1 - 1/g**2)))
+    expected: '5.00000125e-7'
+    tolerance: '5e-16'
+    shown: ['$5.00000125\times 10^{-7}$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-beta1000
+    where: 'Problem 5(b), table: exact beta at gamma = 1000'
+    inputs: {g: 1000}
+    formula: sqrt(1 - 1/g**2)
+    expected: '0.9999994999999'
+    tolerance: '6e-14'
+    shown: ['$0.9999994999999$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-beta-approx-2
+    where: 'Problem 5(b): approximate beta at gamma = 2'
+    inputs: {g: 2}
+    formula: 1 - 1 / (2 * g**2)
+    expected: '0.875'
+    shown: ['$\beta \approx 0.875$, $0.995$ and $0.9999995$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-beta-approx-10
+    where: 'Problem 5(b): approximate beta at gamma = 10'
+    inputs: {g: 10}
+    formula: 1 - 1 / (2 * g**2)
+    expected: '0.995'
+    tolerance: '1e-9'
+    shown: ['$\beta \approx 0.875$, $0.995$ and $0.9999995$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-beta-approx-1000
+    where: 'Problem 5(b): approximate beta at gamma = 1000, and the ten-digit display of the exact beta'
+    inputs: {g: 1000}
+    formula: 1 - 1 / (2 * g**2)
+    expected: '0.9999995'
+    tolerance: '1e-12'
+    shown: ['$\beta \approx 0.875$, $0.995$ and $0.9999995$', 'shows $\beta = 0.9999995000$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-display-1000
+    where: 'Problem 5(b), check: exact beta at gamma = 1000 to ten digits'
+    inputs: {g: 1000}
+    formula: sqrt(1 - 1/g**2)
+    expected: '0.9999995000'
+    shown: ['shows $\beta = 0.9999995000$']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  - id: p5-error-2
+    where: 'Problem 5(b), check: the approximation falls short by (1 - beta)/2, in per cent, at gamma = 2'
+    inputs: {g: 2}
+    formula: 100 * (1 - (1 / (2 * g**2)) / (1 - sqrt(1 - 1/g**2)))
+    expected: '6.7'
+    shown: ['That is 6.7% for $\gamma = 2$']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  - id: p5-error-2-form
+    where: 'Problem 5(b), check: the same shortfall as (1 - beta)/2'
+    inputs: {g: 2}
+    formula: 100 * (1 - sqrt(1 - 1/g**2)) / 2
+    expected: '6.7'
+    shown: ['too small by the fraction $(1 - \beta)/2$']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  - id: p5-error-10
+    where: 'Problem 5(b), check: the shortfall in per cent at gamma = 10'
+    inputs: {g: 10}
+    formula: 100 * (1 - (1 / (2 * g**2)) / (1 - sqrt(1 - 1/g**2)))
+    expected: '0.25'
+    shown: ['0.25% for $\gamma = 10$']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  - id: p5-error-1000
+    where: 'Problem 5(b), check: the shortfall at gamma = 1000 is less than a millionth (it is 2.5e-7)'
+    inputs: {g: 1000}
+    formula: 1 / (2 * g**2 * (1 + sqrt(1 - 1/g**2)))
+    expected: '2.5e-7'
+    shown: ['less than a millionth for $\gamma = 10^3$']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: aberration
+
+  # Second route: the light passes the whole axis while it falls through the height; speed c / cos(alpha), tan(alpha) = v/c.
+  - id: p6-ether
+    kind: identity
+    answer: p6-ether
+    where: 'Problem 6(a), answer box: against c / cos(alpha) with the classical tilt tan(alpha) = v/c'
+    formula: sqrt(c**2 + v**2)
+    equals: c / cos(atan(v/c))
+    samples:
+      c: [2, 4, 3, 2.5]
+      v: [0.5, 1.5, 1.0, 0.8]
+    tolerance: 1e-12
+    shown: ['id="p6-ether"']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  # Relativity: the size of the transformed velocity (-v, -c sqrt(1 - v^2/c^2)).
+  - id: p6-rel
+    kind: identity
+    answer: p6-rel
+    where: 'Problem 6(b), answer box: against the size of the light''s velocity after the relativistic velocity transformation'
+    formula: c
+    equals: sqrt(((0 - v)/(1 - 0*v/c**2))**2 + (-c*sqrt(1 - v**2/c**2)/(1 - 0*v/c**2))**2)
+    samples:
+      c: [2, 4, 3, 2.5]
+      v: [0.5, 1.5, 1.0, 0.8]
+    tolerance: 1e-12
+    shown: ['id="p6-rel"']
+    source: {cite: reading3, at: 'slide 18'}
+    origin: page-own
+
+  - id: p6-tan
+    kind: identity
+    answer: p6-tan
+    where: 'Problem 6(c), answer box: against the tangent of the angle whose sine is beta'
+    formula: b/sqrt(1 - b**2)
+    equals: tan(asin(b))
+    samples:
+      b: [0.2, 0.5, 0.8, 0.01]
+    tolerance: 1e-12
+    shown: ['id="p6-tan"']
+    source: {cite: mit, at: 'Problem 6(c), Eq. (6.2)'}
+    origin: page-own
+
+  # The lessons' aberration formula at theta = 90 degrees: cos(theta') = -beta, so the turn from the perpendicular has sine beta.
+  - id: p6-aberration-formula
+    kind: identity
+    where: 'Problem 6(c), check: the lessons'' aberration formula at 90 degrees gives a turn whose sine is beta'
+    formula: sin(acos((cos(pi/2) - b)/(1 - b*cos(pi/2))) - pi/2)
+    equals: b
+    samples:
+      b: [0.2, 0.5, 0.8, 0.01]
+    tolerance: 1e-10
+    shown: ['it gives $\cos\theta'' = -\beta$']
+    source: {cite: reading3, at: 'slide 21 (as quoted in the lesson on the Lorentz transformation)'}
+    origin: page-own
+
+  - id: p6-ether-excess
+    where: 'Problem 6(a), check: the ether-theory speed exceeds c by about 5 parts in a billion for the Earth'
+    inputs: {b: 1.0e-4}
+    formula: (sqrt(1 + b**2) - 1) * 1e9
+    expected: '5'
+    shown: ['by about 5 parts in a billion for the Earth']
+    source: {cite: mit, at: 'Problem 6(a) (our own check)'}
+    origin: page-own
+
+  - id: p6-angle-arcsec
+    where: 'Problem 6(c), check: the angle of aberration for the Earth, in seconds of arc'
+    inputs: {b: 1.0e-4}
+    formula: asin(b) * 180 / pi * 3600
+    expected: '20.6'
+    shown: ['about 20.6 seconds of arc']
+    source: {cite: mit, at: 'Problem 6(c) (our own check)'}
+    origin: page-own
+
+  - id: p6x-given
+    kind: fact
+    where: 'Problem 6, optional part: the Earth''s orbital speed'
+    shown: ['for $v = 30$ km/s, the Earth''s orbital speed']
+    source: {cite: mit, at: 'Problem 6, optional part, p. 2'}
+    origin: mit
+
+  # Direct evaluation in double precision (the difference of the angles is 5e-13 rad, well above rounding).
+  - id: p6x-frac
+    answer: p6x-frac
+    where: 'Problem 6, optional part, answer box: the fractional difference evaluated directly, not by series'
+    inputs: {v: 30 km/s, cl: 3.00e5 km/s}
+    formula: (asin(v/cl) - atan(v/cl)) / asin(v/cl)
+    expected: '5.0e-9'
+    shown: ['id="p6x-frac"', '$\tfrac12\times 10^{-8} = 5.0\times 10^{-9}$']
+    source: {cite: mit, at: 'Problem 6, optional part (our own solution)'}
+    origin: page-own
+
+  - id: p6x-series
+    kind: limit
+    where: 'Problem 6, optional part: the fractional difference tends to beta^2/2'
+    formula: (asin(b) - atan(b)) / asin(b) / b**2
+    limit: 1/2
+    vary: {b: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['\frac{\alpha_r - \alpha_c}{\alpha_r} \approx \frac{\beta^2}{2}']
+    source: {cite: mit, at: 'Problem 6, optional part (our own solution)'}
+    origin: page-own
+
+  - id: p6x-arcsec
+    where: 'Problem 6, optional part, check: the difference in seconds of arc'
+    inputs: {b: 1.0e-4}
+    formula: (asin(b) - atan(b)) * 180 / pi * 3600
+    expected: '1e-7'
+    tolerance: '0.1e-7'
+    shown: ['about $10^{-7}$ seconds of arc']
+    source: {cite: mit, at: 'Problem 6, optional part (our own check)'}
+    origin: page-own
+
+  # ---- Problem 7: the light sphere
+
+  - id: p7-interval-identity
+    kind: identity
+    where: 'Problem 7(a), formula "The Lorentz transformation keeps the light sphere": x''^2 - (ct'')^2 = x^2 - (ct)^2'
+    formula: (1/(1 - b**2)) * ((x - b*w)**2 - (w - b*x)**2)
+    equals: x**2 - w**2
+    samples:
+      b: [0.6, 0.1, 0.95, 0.3]
+      x: [1, 2.5, -0.7, 4]
+      w: [3, 0.4, 2.2, 1]
+    tolerance: 1e-10
+    shown: ['<Formula label="The Lorentz transformation keeps the light sphere"']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-gamma
+    where: 'Problems 7 to 10: gamma for beta = 0.6'
+    inputs: {b: 0.6}
+    formula: 1 / sqrt(1 - b**2)
+    expected: '1.25'
+    tolerance: '1e-9'
+    shown: ['$\beta = 0.6$, so $\gamma = 1.25$', '$\gamma = 1/\sqrt{1 - 0.36} = 1/0.8 = 1.25$']
+    source: {cite: reading3, at: 'slide 15'}
+    origin: page-own
+
+  - id: p7-event
+    where: 'Problem 7(a), check: the event x = ct = 1 in S'''
+    inputs: {b: 0.6}
+    formula: (1 - b) / sqrt(1 - b**2)
+    expected: '0.5'
+    tolerance: '1e-9'
+    shown: ['$x'' = 1.25(1 - 0.6) = 0.5$ and $ct'' = 1.25(1 - 0.6) = 0.5$']
+    source: {cite: mit, at: 'Problem 7(a) (our own check)'}
+    origin: page-own
+
+  - id: p7-galilean
+    where: 'Problem 7(a), check: the Galilean x'' for the same event'
+    inputs: {b: 0.6}
+    formula: 1 - b
+    expected: '0.4'
+    tolerance: '1e-9'
+    shown: ['would give $x'' = 0.4$ and $ct'' = 1$ instead, a speed of $0.4c$']
+    source: {cite: mit, at: 'Problem 7(a) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 8: the clock
+
+  - id: p8-given
+    kind: fact
+    where: 'Problem 8, statement: MIT''s numbers'
+    shown: ['moves along the $x$ axis of a laboratory at $0.6c$', 'the laboratory clock at the 180 m mark']
+    source: {cite: mit, at: 'Problem 8, p. 3'}
+    origin: mit
+
+  - id: p8-lab
+    answer: p8-lab
+    where: 'Problem 8, answer box: laboratory time of flight'
+    inputs: {x: 180 m, b: 0.6, cl: 3.00e8 m/s}
+    formula: x / (b * cl)
+    expected: 1.0 us
+    tolerance: 0.001 us
+    shown: ['id="p8-lab"', '= 1.0\times 10^{-6}\ \text{s} = 1.0\ \mu\text{s}']
+    source: {cite: mit, at: 'Problem 8 (our own solution)'}
+    origin: page-own
+
+  # The moving clock's reading from the invariant interval, not from t/gamma.
+  - id: p8-clock
+    answer: p8-clock
+    where: 'Problem 8, answer box: the moving clock''s reading, from the invariant interval'
+    inputs: {x: 180 m, b: 0.6, cl: 3.00e8 m/s}
+    formula: sqrt((x / (b * cl))**2 - (x / cl)**2)
+    expected: 0.8 us
+    tolerance: 0.001 us
+    shown: ['id="p8-clock"', '\tau = \frac{t}{\gamma} = 0.8 \times 1.0\ \mu\text{s} = 0.8\ \mu\text{s}']
+    source: {cite: reading4, at: 'slide 4'}
+    origin: page-own
+
+  - id: p8-clock-dilation
+    where: 'Problem 8, solution: the same reading as t/gamma'
+    inputs: {x: 180 m, b: 0.6, cl: 3.00e8 m/s}
+    formula: x / (b * cl) * sqrt(1 - b**2)
+    expected: 0.8 us
+    tolerance: 0.001 us
+    shown: ['\tau = \frac{t}{\gamma} = 0.8 \times 1.0\ \mu\text{s} = 0.8\ \mu\text{s}']
+    source: {cite: reading4, at: 'slide 4'}
+    origin: page-own
+
+  - id: p8-diff
+    answer: p8-diff
+    where: 'Problem 8, answer box: laboratory clock less moving clock'
+    inputs: {x: 180 m, b: 0.6, cl: 3.00e8 m/s}
+    formula: x / (b * cl) - sqrt((x / (b * cl))**2 - (x / cl)**2)
+    expected: 0.2 us
+    tolerance: 0.001 us
+    shown: ['id="p8-diff"', 't - \tau = 0.2\ \mu\text{s}']
+    source: {cite: mit, at: 'Problem 8 (our own solution)'}
+    origin: page-own
+
+  - id: p8-ct-prime
+    where: 'Problem 8, check: ct'' from the Lorentz transformation'
+    inputs: {x: 180 m, b: 0.6}
+    formula: (x / b - b * x) / sqrt(1 - b**2)
+    expected: 240 m
+    tolerance: 0.01 m
+    shown: ['1.25\,(300\ \text{m} - 0.6 \times 180\ \text{m}) = 240$ m']
+    source: {cite: reading3, at: 'slide 16'}
+    origin: page-own
+
+  - id: p8-ct
+    where: 'Problem 8, check: ct in the laboratory'
+    inputs: {x: 180 m, b: 0.6}
+    formula: x / b
+    expected: 300 m
+    tolerance: 0.01 m
+    shown: ['1.25\,(300\ \text{m} - 0.6 \times 180\ \text{m})']
+    source: {cite: mit, at: 'Problem 8 (our own check)'}
+    origin: page-own
+
+  - id: p8-interval
+    where: 'Problem 8, check: the invariant interval'
+    inputs: {}
+    formula: sqrt(300**2 - 180**2)
+    expected: '240'
+    tolerance: '1e-9'
+    shown: ['$(c\tau)^2 = (ct)^2 - x^2 = 300^2 - 180^2 = 240^2\ \text{m}^2$']
+    source: {cite: reading4, at: 'slide 20'}
+    origin: page-own
+
+  - id: p8-contracted
+    where: 'Problem 8, check: the contracted stretch in the clock''s frame'
+    inputs: {x: 180 m, b: 0.6}
+    formula: x * sqrt(1 - b**2)
+    expected: 144 m
+    tolerance: 0.01 m
+    shown: ['contracted to $180/1.25 = 144$ m']
+    source: {cite: reading4, at: 'slide 13'}
+    origin: page-own
+
+  - id: p8-contracted-time
+    where: 'Problem 8, check: the contracted stretch passes at 0.6c'
+    inputs: {x: 144 m, b: 0.6, cl: 3.00e8 m/s}
+    formula: x / (b * cl)
+    expected: 0.8 us
+    tolerance: 0.001 us
+    shown: ['which passes at $0.6c$ in $0.8$ μs']
+    source: {cite: mit, at: 'Problem 8 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 9: the rod
+
+  - id: p9-given
+    kind: fact
+    where: 'Problem 9, statement: MIT''s numbers'
+    shown: ['A rod that is 1.0 m long in its own rest frame slides lengthwise along the $x$ axis of frame $S$ at $0.6c$']
+    source: {cite: mit, at: 'Problem 9, p. 3'}
+    origin: mit
+
+  - id: p9-len
+    answer: p9-len
+    where: 'Problem 9, answer box: the contracted length'
+    inputs: {L0: 1.0 m, b: 0.6}
+    formula: L0 * sqrt(1 - b**2)
+    expected: 0.8 m
+    tolerance: 0.0001 m
+    shown: ['id="p9-len"', '= 1.0\ \text{m} \times 0.8 = 0.8\ \text{m}']
+    source: {cite: reading4, at: 'slide 13'}
+    origin: page-own
+
+  # ---- Problem 10: the inverse (Cramer's rule on the forward equations; g and b are sampled as matching pairs)
+
+  - id: p10-ct
+    kind: identity
+    answer: p10-ct
+    where: 'Problem 10(a), answer box ct: against Cramer''s rule on the forward transformation'
+    formula: g*(T + b*X)
+    equals: (T*g + b*g*X) / (g**2 - b**2*g**2)
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      T: [1, 3, 2.2, 1.7]
+      X: [0.5, 2.5, 1.1, 2.0]
+    tolerance: 1e-12
+    shown: ['id="p10-ct"']
+    source: {cite: reading3, at: 'slide 18'}
+    origin: page-own
+
+  - id: p10-x
+    kind: identity
+    answer: p10-x
+    where: 'Problem 10(a), answer box x: against Cramer''s rule on the forward transformation'
+    formula: g*(X + b*T)
+    equals: (g*X + b*g*T) / (g**2 - b**2*g**2)
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      T: [1, 3, 2.2, 1.7]
+      X: [0.5, 2.5, 1.1, 2.0]
+    tolerance: 1e-12
+    shown: ['id="p10-x"']
+    source: {cite: reading3, at: 'slide 18'}
+    origin: page-own
+
+  # The round trip: forward transformation of the inverse returns the starting coordinates.
+  - id: p10-round-trip
+    kind: identity
+    where: 'Problem 10(b): the forward transformation applied to the inverse returns ct'' (the first row of the product)'
+    formula: (g*(T + b*X) - b*g*(X + b*T)) / sqrt(1 - b**2)
+    equals: T
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      T: [1, 3, 2.2, 1.7]
+      X: [0.5, 2.5, 1.1, 2.0]
+    tolerance: 1e-12
+    shown: ['<Formula label="Product of the boost and its inverse"']
+    source: {cite: mit, at: 'Problem 10 (our own solution)'}
+    origin: page-own
+
+  - id: p10-entries
+    where: 'Problem 10(b), check: beta gamma for beta = 0.6'
+    inputs: {b: 0.6}
+    formula: b / sqrt(1 - b**2)
+    expected: '0.75'
+    tolerance: '1e-9'
+    shown: ['the entries $1.25$ and $\pm 0.75$']
+    source: {cite: mit, at: 'Problem 10 (our own check)'}
+    origin: page-own
+
+  - id: p10-diagonal
+    where: 'Problem 10(b), check: the diagonal of the product'
+    inputs: {}
+    formula: 1.25**2 - 0.75**2
+    expected: '1'
+    tolerance: '1e-12'
+    shown: ['$1.25^2 - 0.75^2 = 1.5625 - 0.5625 = 1$']
+    source: {cite: mit, at: 'Problem 10 (our own check)'}
+    origin: page-own
+
+  - id: p10-offdiagonal
+    where: 'Problem 10(b), check: the product 1.25 times 0.75'
+    inputs: {}
+    formula: 1.25 * 0.75
+    expected: '0.9375'
+    shown: ['$-0.9375 + 0.9375 = 0$']
+    source: {cite: mit, at: 'Problem 10 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 11: Ehrenfest's sphere
+
+  - id: p11-given
+    kind: fact
+    where: 'Problem 11, statement: MIT''s numbers'
+    shown: ['a hollow sphere of radius $3\times 10^8$ m', 'blows through the sphere at 100 km/s', 'in the 3 s after the flash']
+    source: {cite: mit, at: 'Optional Problem 11, p. 3'}
+    origin: mit
+
+  - id: p11-out-and-back
+    where: 'Problem 11: the round trip with no wind'
+    inputs: {R: 3e8 m, cl: 3.00e8 m/s}
+    formula: 2 * R / cl
+    expected: 2.0 s
+    shown: ['$2R/c = 2.0$ s']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-beta
+    where: 'Problem 11(a): beta of the ether wind'
+    inputs: {v: 100 km/s, cl: 3.00e8 m/s}
+    formula: v / cl
+    expected: '3.33e-4'
+    shown: ['$\beta = 1.0\times 10^5/3.00\times 10^8 = 3.33\times 10^{-4}$']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-beta-sq
+    where: 'Problem 11(a): beta squared'
+    inputs: {v: 100 km/s, cl: 3.00e8 m/s}
+    formula: (v / cl)**2
+    expected: '1.11e-7'
+    shown: ['$\beta^2 = 1.11\times 10^{-7}$']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  # Exact legs, not the series: R/(sqrt(c^2 - v^2)) twice, less 2R/c.
+  - id: p11-first
+    answer: p11-first
+    where: 'Problem 11(a), answer box: delay across the wind, from the exact crosswind legs'
+    inputs: {R: 3e8 m, v: 100 km/s, cl: 3.00e8 m/s}
+    formula: 2 * R / sqrt(cl**2 - v**2) - 2 * R / cl
+    expected: 0.111 us
+    tolerance: 0.0005 us
+    shown: ['id="p11-first"', '= 0.111\ \mu\text{s}']
+    source: {cite: mit, at: 'Optional Problem 11(a) (our own solution)'}
+    origin: page-own
+
+  - id: p11-last
+    answer: p11-last
+    where: 'Problem 11(a), answer box: delay along the wind, from the exact legs R/(c - v) + R/(c + v)'
+    inputs: {R: 3e8 m, v: 100 km/s, cl: 3.00e8 m/s}
+    formula: R / (cl - v) + R / (cl + v) - 2 * R / cl
+    expected: 0.222 us
+    tolerance: 0.0005 us
+    shown: ['id="p11-last"', '= 0.222\ \mu\text{s}']
+    source: {cite: mit, at: 'Optional Problem 11(a) (our own solution)'}
+    origin: page-own
+
+  # The closed form of t(theta) against the sum of the two legs, in units with R = 1.
+  - id: p11-general-direction
+    kind: identity
+    where: 'Problem 11(a), formula "Round trip of light at an angle to the ether wind": closed form against the two legs'
+    formula: 1/(sqrt(c**2 - v**2*sin(th)**2) + v*cos(th)) + 1/(sqrt(c**2 - v**2*sin(th)**2) - v*cos(th))
+    equals: (2/c) * (1/(1 - v**2/c**2)) * sqrt(1 - (v/c)**2 * sin(th)**2)
+    samples:
+      c: [2, 4, 3, 1]
+      v: [0.5, 1.5, 2.9, 0.6]
+      th: [0.3, 1.2, 2.5, 1.5707963267948966]
+    tolerance: 1e-10
+    shown: ['<Formula label="Round trip of light at an angle to the ether wind"']
+    source: {cite: mit, at: 'Optional Problem 11(a) (our own solution)'}
+    origin: page-own
+
+  # The radial speed s solves s^2 - 2 s v cos(theta) + v^2 = c^2.
+  - id: p11-radial-speed
+    kind: identity
+    where: 'Problem 11(a): the speed along a radius solves the quadratic for the ether-frame speed c'
+    formula: (sqrt(c**2 - v**2*sin(th)**2) + v*cos(th))**2 - 2*(sqrt(c**2 - v**2*sin(th)**2) + v*cos(th))*v*cos(th) + v**2
+    equals: c**2
+    samples:
+      c: [2, 4, 3, 1]
+      v: [0.5, 1.5, 2.9, 0.6]
+      th: [0.3, 1.2, 2.5, 1.5707963267948966]
+    tolerance: 1e-10
+    shown: ['$s = \sqrt{c^2 - v^2\sin^2\theta} + v\cos\theta$']
+    source: {cite: mit, at: 'Optional Problem 11(a) (our own solution)'}
+    origin: page-own
+
+  - id: p11-check-along
+    where: 'Problem 11(a), check: the factor along the wind for a speed ratio 0.6'
+    inputs: {}
+    formula: 1 / 0.64
+    expected: '1.5625'
+    shown: ['$1/0.64 = 1.5625$ along and $1/0.8 = 1.25$ across']
+    source: {cite: mit, at: 'Optional Problem 11(a) (our own check)'}
+    origin: page-own
+
+  - id: p11-check-across
+    where: 'Problem 11(a), check: the general formula at 90 degrees for a speed ratio 0.6'
+    inputs: {}
+    formula: 1.5625 * sqrt(1 - 0.36)
+    expected: '1.25'
+    tolerance: '1e-9'
+    shown: ['$1.5625 \times 0.8 = 1.25$ at $90°$']
+    source: {cite: mit, at: 'Optional Problem 11(a) (our own check)'}
+    origin: page-own
+
+  - id: p11-difference
+    where: 'Problem 11(b), check: the difference of the two delays, from the exact legs'
+    inputs: {R: 3e8 m, v: 100 km/s, cl: 3.00e8 m/s}
+    formula: R / (cl - v) + R / (cl + v) - 2 * R / sqrt(cl**2 - v**2)
+    expected: 0.111 us
+    tolerance: 0.0005 us
+    shown: ['$(R/c)\beta^2 = 1.0\ \text{s} \times 1.11\times 10^{-7} = 0.111$ μs']
+    source: {cite: mit, at: 'Optional Problem 11(b) (our own check)'}
+    origin: page-own
+
+  - id: p11-mm-facts
+    kind: fact
+    where: 'Problem 11(b), check: the lecture''s numbers for the real experiment'
+    shown: ['the lecture quotes 11 m for the two arms together and the Earth''s 30 km/s (slide 17)', 'light with a wavelength of 500 nm']
+    source: {cite: reading2, at: 'slide 17'}
+    origin: mit
+
+  - id: p11-mm-time
+    where: 'Problem 11(b), check: the change of the time difference on turning the real interferometer'
+    inputs: {L: 11 m, v: 30 km/s, cl: 3.00e8 m/s}
+    formula: L / cl * (v / cl)**2
+    expected: 3.7e-16 s
+    shown: ['$(11\ \text{m}/c)\beta^2 = 3.7\times 10^{-16}$ s']
+    source: {cite: reading2, at: 'slide 17'}
+    origin: page-own
+
+  - id: p11-light-period
+    where: 'Problem 11(b), check: the period of 500 nm light'
+    inputs: {wavelength: 500 nm, cl: 3.00e8 m/s}
+    formula: wavelength / cl
+    expected: 1.7e-15 s
+    shown: ['($1.7\times 10^{-15}$ s)']
+    source: {cite: reading2, at: 'slide 17 (the wavelength)'}
+    origin: page-own
+
+  - id: p11-period-fraction
+    where: 'Problem 11(b), check: the time change as a fraction of the period (about a fifth)'
+    inputs: {L: 11 m, v: 30 km/s, cl: 3.00e8 m/s, wavelength: 500 nm}
+    formula: L * (v / cl)**2 / wavelength
+    expected: '0.2'
+    tolerance: '0.03'
+    shown: ['about a fifth of the period']
+    source: {cite: reading2, at: 'slide 17'}
+    origin: page-own
