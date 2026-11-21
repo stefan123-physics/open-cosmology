@@ -1,0 +1,468 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every formula answer is checked here by an independent route:
+# a Lagrangian or potential-energy derivation, a determinant solved numerically, Cramer's rule, or a limit.
+# Choice boxes cannot be tied to an entry; the numbers behind them are recomputed in the entries without `answer`.
+
+page: content/year-2/8.03/8-03-problem-set-3.mdx
+calcs:
+  # ---- Problem 1: the double pendulum
+  # (a) The page's equations come from the tensions; here they are rebuilt from the Lagrange equations of
+  #     T = (M1+M2)L²θ1'²/2 + M2 L² θ1'θ2' + M2 L² θ2'²/2 and V = (M1+M2) g L θ1²/2 + M2 g L θ2²/2 with M1 = 1, M2 = alpha.
+  - id: p1-a1-by-lagrange
+    kind: identity
+    answer: p1-a1
+    where: 'Problem 1(a), answer box for the first angle: against the first Lagrange equation, with the second one used to remove the angular acceleration of the lower rod'
+    formula: w0**2*(-(1 + alpha)*theta1 + alpha*theta2)
+    equals: solve('(1 + alpha)*q + alpha*(-w0**2*theta2 - q) + (1 + alpha)*w0**2*theta1', 'q', -1000, 1000)
+    samples:
+      w0: [1, 2.5, 1.7]
+      alpha: [0.2, 1, 3.3]
+      theta1: [0.1, -0.2, 0.05]
+      theta2: [0.2, 0.1, -0.15]
+    tolerance: 1e-9
+    shown: ['\ddot\theta_1 = -(1 + \alpha)\,\omega_0^2\,\theta_1 + \alpha\,\omega_0^2\,\theta_2']
+    source: {cite: mit, at: 'Problem 3.1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-a2-by-lagrange
+    kind: identity
+    answer: p1-a2
+    where: 'Problem 1(a), answer box for the second angle: against the second Lagrange equation and the first one'
+    formula: (1 + alpha)*w0**2*(theta1 - theta2)
+    equals: -w0**2*theta2 - solve('(1 + alpha)*q + alpha*(-w0**2*theta2 - q) + (1 + alpha)*w0**2*theta1', 'q', -1000, 1000)
+    samples:
+      w0: [1, 2.5, 1.7]
+      alpha: [0.2, 1, 3.3]
+      theta1: [0.1, -0.2, 0.05]
+      theta2: [0.2, 0.1, -0.15]
+    tolerance: 1e-9
+    shown: ['\ddot\theta_2 = (1 + \alpha)\,\omega_0^2\,(\theta_1 - \theta_2)']
+    source: {cite: mit, at: 'Problem 3.1(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The frequencies against the determinant of the Lagrangian form det(K - w M) = 0, w = omega²/omega0² = q:
+  #     K = diag(1 + alpha, alpha), M = [[1 + alpha, alpha], [alpha, alpha]] gives alpha[(1 + alpha)(1 - q)² - alpha q²] = 0.
+  - id: p1-b1-by-determinant
+    kind: identity
+    answer: p1-b1
+    where: 'Problem 1(b), answer box for the lower frequency: against the lower root of the Lagrangian determinant'
+    formula: w0**2*(1 + alpha - sqrt(alpha*(1 + alpha)))
+    equals: w0**2*solve('(1 + alpha)*(1 - q)**2 - alpha*q**2', 'q', 0, 1)
+    samples:
+      w0: [1, 2, 1.5]
+      alpha: [0.2, 1, 4]
+    tolerance: 1e-9
+    shown: ['\omega_1^2 = \omega_0^2\left[\,1 + \alpha - \sqrt{\alpha(1 + \alpha)}\,\right]']
+    source: {cite: mit, at: 'Problem 3.1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b2-by-determinant
+    kind: identity
+    answer: p1-b2
+    where: 'Problem 1(b), answer box for the higher frequency: against the upper root of the Lagrangian determinant'
+    formula: w0**2*(1 + alpha + sqrt(alpha*(1 + alpha)))
+    equals: w0**2*solve('(1 + alpha)*(1 - q)**2 - alpha*q**2', 'q', 1, 50)
+    samples:
+      w0: [1, 2, 1.5]
+      alpha: [0.2, 1, 4]
+    tolerance: 1e-9
+    shown: ['\omega_2^2 = \omega_0^2\left[\,1 + \alpha + \sqrt{\alpha(1 + \alpha)}\,\right]']
+    source: {cite: mit, at: 'Problem 3.1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-equal-masses-low
+    where: 'Problem 1(b), check: equal masses, lower frequency squared in units of omega0²'
+    inputs: {a: 1}
+    formula: (1 + a) - sqrt(a*(1 + a))
+    expected: 0.586
+    shown: ['0.586']
+    source: {cite: mit, at: 'Problem 3.1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-equal-masses-high
+    where: 'Problem 1(b), check: equal masses, higher frequency squared in units of omega0²'
+    inputs: {a: 1}
+    formula: (1 + a) + sqrt(a*(1 + a))
+    expected: 3.414
+    shown: ['$3.414$']
+    source: {cite: mit, at: 'Problem 3.1(b) (our own check)'}
+    origin: page-own
+
+  # (c) alpha large: the lower root written without the cancellation, (1 + a)/((1 + a) + sqrt(a(1 + a))).
+  - id: p1-c-limit
+    answer: p1-c
+    where: 'Problem 1(c), answer box: lower frequency squared in units of omega0² for a very heavy lower mass (a = 10^6)'
+    inputs: {a: 1000000}
+    formula: (1 + a)/((1 + a) + sqrt(a*(1 + a)))
+    expected: 0.5
+    shown: ['\omega_1^2 \to \omega_0^2\left(1 + \alpha - \alpha - \tfrac12\right) = \tfrac12\,\omega_0^2']
+    source: {cite: mit, at: 'Problem 3.1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-alpha-small-low
+    where: 'Problem 1(d), check: alpha = 0.01, lower frequency squared in units of omega0²'
+    inputs: {a: 0.01}
+    formula: (1 + a) - sqrt(a*(1 + a))
+    expected: 0.9095
+    shown: ['$0.9095\,\omega_0^2$']
+    source: {cite: mit, at: 'Problem 3.1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-d-alpha-small-high
+    where: 'Problem 1(d), check: alpha = 0.01, higher frequency squared in units of omega0²'
+    inputs: {a: 0.01}
+    formula: (1 + a) + sqrt(a*(1 + a))
+    expected: 1.1105
+    shown: ['$1.1105\,\omega_0^2$']
+    source: {cite: mit, at: 'Problem 3.1(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: two coupled LC circuits
+  # The two frequencies against the determinant of the loop equations, with w = omega²:
+  # det [[1/C - L w, -M w], [-M w, 1/C - L w]] = (1/C - L w)² - (M w)² = 0.
+  - id: p2-a1-by-determinant
+    kind: identity
+    answer: p2-a1
+    where: 'Problem 2(a), answer box for equal charges: against the smaller root of the determinant of the loop equations'
+    formula: 1/((L + M)*C)
+    equals: solve('(1/C - L*q)**2 - (M*q)**2', 'q', 0, 1/(C*L))
+    samples:
+      L: [1, 2, 1.5]
+      M: [0.4, 0.8, 0.3]
+      C: [1, 0.5, 2]
+    tolerance: 1e-9
+    shown: ['\omega_1^2 = \frac{1}{(L + M)\,C}']
+    source: {cite: mit, at: 'Problem 3.2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-a2-by-determinant
+    kind: identity
+    answer: p2-a2
+    where: 'Problem 2(a), answer box for opposite charges: against the larger root of the determinant of the loop equations'
+    formula: 1/((L - M)*C)
+    equals: solve('(1/C - L*q)**2 - (M*q)**2', 'q', 1/(C*L), 10/(C*(L - M)))
+    samples:
+      L: [1, 2, 1.5]
+      M: [0.4, 0.8, 0.3]
+      C: [1, 0.5, 2]
+    tolerance: 1e-9
+    shown: ['\omega_2^2 = \frac{1}{(L - M)\,C}']
+    source: {cite: mit, at: 'Problem 3.2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-check-low
+    where: 'Problem 2(a), check: L = 1.0, M = 0.4, C = 1.0, equal charges'
+    inputs: {L: 1.0, M: 0.4, C: 1.0}
+    formula: 1/((L + M)*C)
+    expected: 0.714
+    shown: ['$\omega_1^2 = 0.714$']
+    source: {cite: mit, at: 'Problem 3.2(a) (our own check)'}
+    origin: page-own
+
+  - id: p2-check-high
+    where: 'Problem 2(a), check: L = 1.0, M = 0.4, C = 1.0, opposite charges'
+    inputs: {L: 1.0, M: 0.4, C: 1.0}
+    formula: 1/((L - M)*C)
+    expected: 1.667
+    shown: ['$\omega_2^2 = 1.667$']
+    source: {cite: mit, at: 'Problem 3.2(a) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: three masses on a ring
+  # (a) The force on mass 1 from the potential energy V = (k/2)[(x2 - x1)² + (x3 - x2)² + (x1 - x3)²], with the derivative at x = x1.
+  - id: p3-a-by-potential
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: against minus the derivative of the potential energy of the three springs with respect to x1'
+    formula: (k/m)*(x2 - 2*x1 + x3)
+    equals: -deriv('0.5*k*((x2 - x)**2 + (x3 - x2)**2 + (x - x3)**2)', 'x', x1)/m
+    samples:
+      k: [1, 3, 2.2]
+      m: [1, 2, 0.7]
+      x1: [0.3, -0.5, 0.9]
+      x2: [-0.2, 0.4, 0.1]
+      x3: [0.6, 0.8, -0.7]
+    tolerance: 1e-7
+    shown: ['m\ddot x_1 = k(x_2 - x_1) - k(x_1 - x_3) = k(x_2 - 2x_1 + x_3)']
+    source: {cite: mit, at: 'Problem 3.3(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The eigenvalue of the circulant matrix: omega² = (k/m)(2 - 2 cos(2 pi n/3)) for n = 1 (the same for n = 2).
+  - id: p3-b1-by-circulant
+    kind: identity
+    answer: p3-b1
+    where: 'Problem 3(b), answer box: against the eigenvalue of the circulant matrix, (k/m)(2 - 2 cos(2 pi/3))'
+    formula: 3*k/m
+    equals: (k/m)*(2 - 2*cos(2*pi/3))
+    samples:
+      k: [1, 3, 2.2]
+      m: [1, 2, 0.7]
+    tolerance: 1e-12
+    shown: ['A = (1, -1, 0):\ \omega^2 = \frac{3k}{m}']
+    source: {cite: mit, at: 'Problem 3.3(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: two masses hanging from an oscillating support
+  # (a) The accelerations from minus the derivative of the potential energy (k = w0², m = 1) of the two springs.
+  - id: p4-a1-by-potential
+    kind: identity
+    answer: p4-a1
+    where: 'Problem 4(a), answer box for the upper mass: against minus the derivative of the spring energy with respect to y1 (support at h = A cos(w t))'
+    formula: w0**2*(A*cos(w*t) - 2*y1 + y2)
+    equals: -deriv('0.5*w0**2*((y - A*cos(w*t))**2 + (y - y2)**2)', 'y', y1)
+    samples:
+      w0: [1, 2, 1.3]
+      A: [0.5, 1.5, 1]
+      w: [1, 3, 2.2]
+      t: [0.4, 2, 1.1]
+      y1: [0.3, -0.5, 0.9]
+      y2: [-0.2, 0.4, 0.1]
+    tolerance: 1e-7
+    shown: ['\ddot y_1 = \omega_0^2\left(h - 2y_1 + y_2\right)']
+    source: {cite: mit, at: 'Problem 3.4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-a2-by-potential
+    kind: identity
+    answer: p4-a2
+    where: 'Problem 4(a), answer box for the lower mass: against minus the derivative of the energy of the lower spring with respect to y2'
+    formula: w0**2*(y1 - y2)
+    equals: -deriv('0.5*w0**2*(y1 - y)**2', 'y', y2)
+    samples:
+      w0: [1, 2, 1.3]
+      y1: [0.3, -0.5, 0.9]
+      y2: [-0.2, 0.4, 0.1]
+    tolerance: 1e-7
+    shown: ['\ddot y_2 = \omega_0^2\,(y_1 - y_2)']
+    source: {cite: mit, at: 'Problem 3.4(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The amplitudes against Cramer's rule for the two amplitude equations.
+  - id: p4-b1-by-cramer
+    kind: identity
+    answer: p4-b1
+    where: 'Problem 4(b), answer box for the upper mass: against Cramer''s rule for the two amplitude equations'
+    formula: A*w0**2*(w0**2 - w**2)/(w**4 - 3*w0**2*w**2 + w0**4)
+    equals: (A*w0**2*(w0**2 - w**2))/((2*w0**2 - w**2)*(w0**2 - w**2) - w0**4)
+    samples:
+      A: [0.5, 2, 1.2]
+      w0: [1, 1.5, 1.2]
+      w: [3, 5, 4.1]
+    tolerance: 1e-9
+    shown: ['B_1 = \frac{A\,\omega_0^2\,(\omega_0^2 - \omega^2)}']
+    source: {cite: mit, at: 'Problem 3.4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b2-by-cramer
+    kind: identity
+    answer: p4-b2
+    where: 'Problem 4(b), answer box for the lower mass: against Cramer''s rule, and against the second amplitude equation with B1 taken from the first answer'
+    formula: A*w0**4/(w**4 - 3*w0**2*w**2 + w0**4)
+    equals: w0**2*(A*w0**2*(w0**2 - w**2)/((2*w0**2 - w**2)*(w0**2 - w**2) - w0**4))/(w0**2 - w**2)
+    samples:
+      A: [0.5, 2, 1.2]
+      w0: [1, 1.5, 1.2]
+      w: [3, 5, 4.1]
+    tolerance: 1e-9
+    shown: ['B_2 = \frac{A\,\omega_0^4}']
+    source: {cite: mit, at: 'Problem 3.4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-pole-low-omega
+    where: 'Problem 4(b), the sketch: the lower pole in units of omega0'
+    formula: sqrt(solve('q**2 - 3*q + 1', 'q', 0, 1))
+    expected: 0.618
+    shown: ['$\omega = 0.618\,\omega_0$']
+    source: {cite: mit, at: 'Problem 3.4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-pole-high-omega
+    where: 'Problem 4(b), the sketch: the higher pole in units of omega0'
+    formula: sqrt(solve('q**2 - 3*q + 1', 'q', 1, 10))
+    expected: 1.618
+    shown: ['$\omega = 1.618\,\omega_0$']
+    source: {cite: mit, at: 'Problem 3.4(b) (our own solution)'}
+    origin: page-own
+
+  # The two answers put back into the driven amplitude equation of the upper mass (not used to derive them in this file).
+  - id: p4-b-back-substitution
+    kind: identity
+    where: 'Problem 4(b): the two amplitudes put back into the first amplitude equation give the driving term'
+    formula: (2*w0**2 - w**2)*(A*w0**2*(w0**2 - w**2)/(w**4 - 3*w0**2*w**2 + w0**4)) - w0**2*(A*w0**4/(w**4 - 3*w0**2*w**2 + w0**4))
+    equals: w0**2*A
+    samples:
+      A: [0.5, 2, 1.2]
+      w0: [1, 1.5, 1.2]
+      w: [3, 0.3, 1.4]
+    tolerance: 1e-9
+    shown: ['(2\omega_0^2 - \omega^2)\,B_1 - \omega_0^2B_2 = \omega_0^2A']
+    source: {cite: mit, at: 'Problem 3.4(b) (our own solution)'}
+    origin: page-own
+
+  # (c) The frequencies from the zeros of the denominator, solved numerically.
+  - id: p4-c-low
+    answer: p4-c1
+    where: 'Problem 4(c), answer box: the lower root of lambda² - 3 lambda + 1 = 0'
+    formula: solve('q**2 - 3*q + 1', 'q', 0, 1)
+    expected: 0.382
+    shown: ['= 0.382,\ 2.618']
+    source: {cite: mit, at: 'Problem 3.4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-high
+    answer: p4-c2
+    where: 'Problem 4(c), answer box: the higher root of lambda² - 3 lambda + 1 = 0'
+    formula: solve('q**2 - 3*q + 1', 'q', 1, 10)
+    expected: 2.618
+    shown: ['\frac{3 \mp \sqrt5}{2}']
+    source: {cite: mit, at: 'Problem 3.4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-ratio
+    answer: p4-c3
+    where: 'Problem 4(c), answer box: B2/B1 at the lower pole is 1/(1 - lambda)'
+    formula: 1/(1 - solve('q**2 - 3*q + 1', 'q', 0, 1))
+    expected: 1.618
+    shown: ['$1/(1 - 0.382) = 1.618$']
+    source: {cite: mit, at: 'Problem 3.4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-ratio-high
+    where: 'Problem 4(c): B2/B1 at the higher pole'
+    formula: 1/(1 - solve('q**2 - 3*q + 1', 'q', 1, 10))
+    expected: -0.618
+    shown: ['$1/(1 - 2.618) = -0.618$']
+    source: {cite: mit, at: 'Problem 3.4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: two beads on a string
+  # (a) The accelerations from minus the derivative of the string energy (T/2a)[y1² + (y2 - y1)² + y2²] (both ends at zero), m = 1.
+  - id: p5-a1-by-potential
+    kind: identity
+    answer: p5-a1
+    where: 'Problem 5(a), answer box for bead 1: against minus the derivative of the energy of the three pieces of string with respect to y1'
+    formula: (T/(m*a))*(y2 - 2*y1)
+    equals: -deriv('T/(2*a)*(y**2 + (y2 - y)**2 + y2**2)', 'y', y1)/m
+    samples:
+      T: [1, 4, 2.5]
+      m: [1, 3, 1.4]
+      a: [0.5, 2, 1.1]
+      y1: [0.3, -0.5, 0.9]
+      y2: [-0.2, 0.4, 0.1]
+    tolerance: 1e-7
+    shown: ['m\ddot y_1 = \frac{T}{a}\left(0 - 2y_1 + y_2\right)']
+    source: {cite: mit, at: 'Problem 3.5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a2-by-potential
+    kind: identity
+    answer: p5-a2
+    where: 'Problem 5(a), answer box for bead 2: against minus the derivative of the energy of the three pieces of string with respect to y2'
+    formula: (T/(m*a))*(y1 - 2*y2)
+    equals: -deriv('T/(2*a)*(y1**2 + (y - y1)**2 + y**2)', 'y', y2)/m
+    samples:
+      T: [1, 4, 2.5]
+      m: [1, 3, 1.4]
+      a: [0.5, 2, 1.1]
+      y1: [0.3, -0.5, 0.9]
+      y2: [-0.2, 0.4, 0.1]
+    tolerance: 1e-7
+    shown: ['m\ddot y_2 = \frac{T}{a}\left(y_1 - 2y_2 + 0\right)']
+    source: {cite: mit, at: 'Problem 3.5(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The two frequencies against the dispersion relation of the beaded string, omega² = 4 (T/ma) sin²(ka/2), ka = n pi/3.
+  - id: p5-b1-by-dispersion
+    kind: identity
+    answer: p5-b1
+    where: 'Problem 5(b), answer box for the lower mode: against the beaded-string dispersion relation with ka = pi/3'
+    formula: T/(m*a)
+    equals: 4*(T/(m*a))*sin(pi/6)**2
+    samples:
+      T: [1, 4, 2.5]
+      m: [1, 3, 1.4]
+      a: [0.5, 2, 1.1]
+    tolerance: 1e-12
+    shown: ['\omega_1^2 = \frac{T}{ma}']
+    source: {cite: mit, at: 'Problem 3.5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b2-by-dispersion
+    kind: identity
+    answer: p5-b2
+    where: 'Problem 5(b), answer box for the higher mode: against the beaded-string dispersion relation with ka = 2 pi/3'
+    formula: 3*T/(m*a)
+    equals: 4*(T/(m*a))*sin(pi/3)**2
+    samples:
+      T: [1, 4, 2.5]
+      m: [1, 3, 1.4]
+      a: [0.5, 2, 1.1]
+    tolerance: 1e-12
+    shown: ['\omega_2^2 = \frac{3T}{ma}']
+    source: {cite: mit, at: 'Problem 3.5(b) (our own solution)'}
+    origin: page-own
+
+  # (c) The amplitudes against Cramer's rule with the determinant written out, (2 w0² - wd²)² - w0⁴.
+  - id: p5-c1-by-cramer
+    kind: identity
+    answer: p5-c1
+    where: 'Problem 5(c), answer box for bead 1: against Cramer''s rule for the two amplitude equations'
+    formula: Delta*w0**4/((w0**2 - wd**2)*(3*w0**2 - wd**2))
+    equals: Delta*w0**4/((2*w0**2 - wd**2)**2 - w0**4)
+    samples:
+      Delta: [0.5, 2, 1.2]
+      w0: [1, 1.5, 1.2]
+      wd: [3, 5, 4.1]
+    tolerance: 1e-9
+    shown: ['B_1 = \frac{\Delta\,\omega_0^4}']
+    source: {cite: mit, at: 'Problem 3.5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c2-by-cramer
+    kind: identity
+    answer: p5-c2
+    where: 'Problem 5(c), answer box for bead 2: against Cramer''s rule for the two amplitude equations'
+    formula: Delta*w0**2*(2*w0**2 - wd**2)/((w0**2 - wd**2)*(3*w0**2 - wd**2))
+    equals: Delta*w0**2*(2*w0**2 - wd**2)/((2*w0**2 - wd**2)**2 - w0**4)
+    samples:
+      Delta: [0.5, 2, 1.2]
+      w0: [1, 1.5, 1.2]
+      wd: [3, 5, 4.1]
+    tolerance: 1e-9
+    shown: ['B_2 = \frac{\Delta\,\omega_0^2\,(2\omega_0^2 - \omega_d^2)}']
+    source: {cite: mit, at: 'Problem 3.5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-static-b1
+    where: 'Problem 5(c), check: B1 over Delta for a very slowly shaken end (wd = 0, w0 = 1.3)'
+    inputs: {w0: 1.3}
+    formula: w0**4/((w0**2)*(3*w0**2))
+    expected: 0.3333
+    shown: ['$B_1 = \Delta/3$']
+    source: {cite: mit, at: 'Problem 3.5(c) (our own check)'}
+    origin: page-own
+
+  - id: p5-static-b2
+    where: 'Problem 5(c), check: B2 over Delta for a very slowly shaken end (wd = 0, w0 = 1.3)'
+    inputs: {w0: 1.3}
+    formula: w0**2*(2*w0**2)/((w0**2)*(3*w0**2))
+    expected: 0.6667
+    shown: ['$B_2 = 2\Delta/3$']
+    source: {cite: mit, at: 'Problem 3.5(c) (our own check)'}
+    origin: page-own
+
+  # The two answers put back into the driven amplitude equation of bead 2.
+  - id: p5-c-back-substitution
+    kind: identity
+    where: 'Problem 5(c): the two amplitudes put back into the amplitude equation of bead 2 give the driving term'
+    formula: -w0**2*(Delta*w0**4/((w0**2 - wd**2)*(3*w0**2 - wd**2))) + (2*w0**2 - wd**2)*(Delta*w0**2*(2*w0**2 - wd**2)/((w0**2 - wd**2)*(3*w0**2 - wd**2)))
+    equals: w0**2*Delta
+    samples:
+      Delta: [0.5, 2, 1.2]
+      w0: [1, 1.5, 1.2]
+      wd: [3, 0.4, 1.9]
+    tolerance: 1e-9
+    shown: ['-\omega_0^2B_1 + (2\omega_0^2 - \omega_d^2)\,B_2 = \omega_0^2\Delta']
+    source: {cite: mit, at: 'Problem 3.5(c) (our own solution)'}
+    origin: page-own

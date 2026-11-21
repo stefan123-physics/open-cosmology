@@ -1,0 +1,951 @@
+---
+title: "Problem Set 3: hunting oryx, linearizing near equilibrium, a saloon door and its damping"
+slug: 18-03-problem-set-3
+course: "18.03"
+kind: problems
+set: 3
+lecture: 10
+order: 90
+covers: [5, 9, 10]
+solutions: mit
+summary: Four problems on first-order autonomous equations and on the damped spring. You study a logistic population of oryx that is hunted at a constant rate, find when equilibria exist and which are stable, sketch the five kinds of solution and linearize near the stable population; then you follow the swing of a saloon door in the three cases of damping, with real roots (does the door swing through the frame?), a double root and complex roots (how fast does it oscillate?).
+prerequisites: [autonomous-equations, second-order-constant-coefficients, damped-oscillations]
+source:
+  title: "MIT 18.03 Problem Set 3 (first half and second half)"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_ps3apdf/
+  readings:
+    - title: "18.03 Lecture 5 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/0a544cf76ef5c409ba87ad1309c86e9a_te6Mplq3DCU.pdf
+      location: "pp. 9 and 13"
+    - title: "18.03 Lecture 9 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/1fd3fae817756ec8d0326808c7f918a4_vP-oRQqmeg4.pdf
+      location: "pp. 4, 6, 16 and 18"
+    - title: "18.03 Lecture 10 transcript (Prof. Mattuck)"
+      url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/43b495023daa3a460d0c1eab841ec11f_YQ7HEE8-OfA.pdf
+      location: "pp. 10 and 15"
+license: CC BY-NC-SA 4.0
+references:
+  setTwo:
+    title: "18.03 Problem Set 3: second half (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_pset_03_iipdf/
+    location: "Problems 11 and 12, pp. 1–2"
+  solutions:
+    title: "18.03 Problem Set 3: Part II solutions (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_ps3spdf/
+    location: "Problems 8, 9, 11 and 12, pp. 1–2"
+  notesExercises:
+    title: "18.03 Notes and Exercises, Unit 1 exercises (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_1ex/
+    location: "Exercise 1E-1"
+  notesExercises2:
+    title: "18.03 Notes and Exercises, Unit 2 exercises (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2ex/
+    location: "Exercises 2C-1 and 2G-1"
+status: reviewed
+---
+
+This set practises [first-order autonomous equations](/courses/18-03/autonomous-equations), then the damped spring of [second-order equations with constant coefficients](/courses/18-03/second-order-constant-coefficients) and [complex characteristic roots](/courses/18-03/damped-oscillations). It follows MIT's Problem Set 3, in our own words. MIT handed the sheet out in two halves, which is why OpenCourseWare has two files for it.
+
+MIT's set has two parts. Part II holds MIT's own four problems (60 points), written out below with hints and solutions of our own, based on MIT's published solutions. Part I is a list of short exercises, most of them from MIT's "18.03 Notes and Exercises", which are not rewritten here: the last section of this page lists them with links. MIT numbers the problems 8, 9, 11 and 12 (MIT's problem numbers follow its lecture numbers through the term, and its Lecture 10 was an exam, so there is no Problem 10), and this page keeps those numbers.
+
+MIT labels each problem with the day of the lecture it goes with. Problems 8 and 9 go with MIT's Lectures 8 and 9, the autonomous equations, which are this site's [Lesson 5](/courses/18-03/autonomous-equations) (the linearization of Problem 9 is what MIT's "Linear vs Nonlinear" wrap-up adds to it). Problem 11 goes with MIT's Lecture 11, the spring–mass–dashpot model with real roots, and Problem 12 with its Lecture 12, complex roots: on this site those are [Lesson 9](/courses/18-03/second-order-constant-coefficients) and [Lesson 10](/courses/18-03/damped-oscillations).
+
+MIT's problems are written for two of the course's interactive applets, the Mathlets [Phase Lines](http://math.mit.edu/mathlets/mathlets/phase-lines/) and [Damped Vibrations](http://math.mit.edu/mathlets/mathlets/damped-vibrations/). They let you see the behaviour first. You can use them, or any other tool that draws solutions, or no tool at all: every question here can be answered with pencil and paper.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A formula box takes plain typing, for example `exp(-t/2)` or `1/2 + sqrt(1/4 - a)`, and accepts every correct way of writing the answer. A number box wants a decimal number, not a fraction or a square root, and its question says the unit and how exact your value must be: keep all the digits your calculator shows while you work. The points of each problem, and their split over its parts, are MIT's. Parts that ask you to explain or to sketch have no answer box (or only a box for a piece of them): compare your work with the solution and mark yourself. Where MIT asks an open question, a box may ask for one special case of it, such as a particular starting value: those special cases are our own choice, and the label of the box says which case is meant. In Problem 11, type `x0` for $x_0$ and `v0` for $\dot x_0$. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The solutions follow the method of MIT's published solutions. In two places MIT's printed solution has a slip of sign; the text there says so in brackets.
+
+## Problem 8
+
+<Exercise id="p8" title="Hunting oryx: equilibria, stability and the bifurcation curve" points={16} mit="Part II, Problem 8">
+
+The Kenyan government has a game preserve that supports a population of oryx. Without hunting, the population follows the logistic equation, with a stable population of one kilo-oryx (one thousand animals). The government wants to study the effect of different hunting rates $a$, measured in kilo-oryx per year. MIT's model, with the population $y$ in kilo-oryx and the time $t$ in years, is
+
+<Formula label="The oryx population under hunting" tex="\dot y = (1 - y)\,y - a" cite="mit" at="first half, Problem 9, p. 2" />
+
+<Part label="a" points={3}>
+
+MIT says that this is a good model of the situation. Explain why. (What does the equation say when $a = 0$? What does the term $-a$ add?)
+
+<Hint>
+
+Compare the right side with the logistic equation $\dot y = k_0(1 - y/p)\,y$. Which values of $k_0$ and $p$ turn it into $(1 - y)\,y$?
+
+</Hint>
+
+<Solution>
+
+**The idea.** Match each part of the equation with a feature of the story.
+
+<Step title="Without hunting">
+
+For $a = 0$ the equation is $\dot y = (1 - y)\,y$. This is the logistic equation of [the lesson](/courses/18-03/autonomous-equations),
+
+<Formula label="Logistic equation" tex="\frac{dy}{dt} = (a - by)\,y = ay - by^2" cite="reading1" at="p. 9" />
+
+with its two constants both equal to $1$ (in the lesson's letters, $a = b = 1$; the letter $a$ is hunting in this problem, so we do not use it for the growth rate). Small populations grow at the rate $\dot y \approx y$, and the equilibrium is $y = 1$, one kilo-oryx, as the story demands. The only assumption MIT adds is that the growth rate for a small population is $1$ per year.
+
+</Step>
+
+<Step title="The hunting term">
+
+Hunting at a constant rate removes $a$ kilo-oryx every year, whatever the population is, and so the equation gets the term $-a$. This is the logistic equation with constant harvesting of [the lesson](/courses/18-03/autonomous-equations), with the rate $h = a$.
+
+</Step>
+
+<Step title="Check the result">
+
+At $a = 0$ the model has the equilibria $y = 0$ and $y = 1$, as the story says. For $a > 0$ the right side is lower by the same amount for all $y$, so the population is always smaller than it would be without hunting. That is how hunting should act.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+For which values of $a$ does the equation have two equilibria (critical points), exactly one, and none? For each $a$, find the critical points $y$ and say whether each is stable, unstable or semi-stable.
+
+<Hint>
+
+A critical point is a value of $y$ at which $\dot y = 0$. That is a quadratic equation in $y$, with the number $a$ in it.
+
+</Hint>
+
+<Hint>
+
+The number of real roots of a quadratic equation depends on the sign of its discriminant. For the stability, sketch the parabola $f(y) = (1 - y)\,y - a$ and see where it is above and below the $y$-axis.
+
+</Hint>
+
+<Answer id="p8-b-count" label="The value of $a$ at which the two equilibria merge into one (in kilo-oryx per year):" value="0.25" tolerance="1%" calc="p8-b-merge" />
+
+<Answer id="p8-b-upper" label="The larger equilibrium, for $a$ below that value:" expr="1/2 + sqrt(1/4 - a)"
+  vars={{ a: [0.02, 0.2] }}
+  names={{ a: "a" }}
+  mistakes={[
+    { expr: "1/2 - sqrt(1/4 - a)", hint: "That is the smaller of the two roots. Which one is the larger?" },
+    { expr: "1/2 + sqrt(1/4 + a)", hint: "Put it back into $y^2 - y + a$: you get $2a$, not $0$. Look at the sign under the square root." },
+    { expr: "1/2 + sqrt(1 - 4*a)", hint: "The quadratic formula gives (1 ± √(1 − 4a))/2: the whole square root is halved, not only the 1." }
+  ]} />
+
+<Answer id="p8-b-kind" label="At the value of $a$ where there is exactly one equilibrium, that equilibrium is"
+  choices={["stable", "unstable", "semi-stable", "not an equilibrium at all"]} answer={2} />
+
+<Solution>
+
+**The idea.** Solve $\dot y = 0$ for $y$ with the quadratic formula, then read the stability from the sign of $\dot y$ on each side.
+
+<Step title="The critical points">
+
+Setting the right side to zero and multiplying out gives $y^2 - y + a = 0$, and the quadratic formula gives
+
+<Formula label="Critical points" tex="y = \frac12 \pm \sqrt{\frac14 - a}" cite="solutions" at="Problem 8(b), p. 1" />
+
+The square root is real exactly when $a \le \tfrac14$. So there are two critical points for $a < \tfrac14$, one for $a = \tfrac14$ (namely $y = \tfrac12$), and none for $a > \tfrac14$.
+
+</Step>
+
+<Step title="Stability">
+
+The graph of $f(y) = (1 - y)\,y - a$ against $y$ is a parabola that opens downward. Where it is above the $y$-axis, $\dot y > 0$ and the population grows; where it is below, the population falls. For $a < \tfrac14$ the parabola lies above the axis between the two roots and below it outside them. Hence the population grows towards the larger root from below and falls towards it from above: the larger root is **stable**. It falls away from the smaller root on one side and grows away from it on the other: the smaller root is **unstable**.
+
+<Plot variable="y" domain={[-0.3, 1.3]} range={[-0.6, 0.4]} xLabel="y" yLabel="f"
+  curves={[{ expr: "(1 - y)*y - a" }, { expr: "0", dash: true }]}
+  params={{ a: { value: 0.1875, min: 0, max: 0.35, step: 0.0125, label: "a" } }}
+  caption="The right side f(y) = (1 − y)y − a of the oryx equation. Slide a: the two roots of f approach each other, merge at a = 1/4 and disappear. Where f is positive, the population grows; where it is negative, it falls." />
+
+For $a = \tfrac14$ the parabola just touches the axis from below at $y = \tfrac12$: $f \le 0$ on both sides, so the population falls on both sides. A critical point with the same sign of $\dot y$ on both sides is **semi-stable**: solutions starting just above it fall back to it, but those starting below it fall away from it. For $a > \tfrac14$ the parabola is entirely below the axis, and every solution falls.
+
+</Step>
+
+<Step title="Check the result">
+
+At $a = 0$ the formula gives $y = \tfrac12 \pm \tfrac12$, so $0$ and $1$, the unstable extinction and the stable carrying capacity of the logistic equation. Also $f(\tfrac12) = \tfrac14 - a$ is the top of the parabola, and it is above the axis exactly when $a < \tfrac14$: the same threshold.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+The government hopes to allow 187.5 oryx to be killed in an average year. Find the stable population that results. Also find the critical population below which the oryx die out if the same yearly harvest is kept up.
+
+<Hint>
+
+The unit of $y$ is a kilo-oryx, that is, a thousand animals. What is 187.5 oryx per year in those units?
+
+</Hint>
+
+<Hint>
+
+Use the formula of part (b) for the two critical points. Which one is stable, and which marks the threshold of a crash?
+
+</Hint>
+
+<Answer id="p8-c-stable" label="The stable population, in animals:" value="750" tolerance="1%" calc="p8-c-stable" />
+
+<Answer id="p8-c-crash" label="The population below which it crashes, in animals:" value="250" tolerance="1%" calc="p8-c-crash" />
+
+<Solution>
+
+**The idea.** Convert the harvest to kilo-oryx per year, then use the critical points of part (b).
+
+<Step title="The hunting rate">
+
+187.5 animals is $0.1875$ kilo-oryx, so $a = 0.1875 = \tfrac{3}{16}$ per year, below the limit $\tfrac14$.
+
+</Step>
+
+<Step title="The critical points">
+
+<Formula label="The critical points for a = 3/16" tex="y = \frac12 \pm \sqrt{\frac14 - \frac3{16}} = \frac12 \pm \frac14 \quad\Rightarrow\quad y = \frac34 \ \text{ and } \ y = \frac14" cite="solutions" at="Problem 8(c), p. 1" />
+
+The larger one is stable: a population of $\tfrac34$ kilo-oryx, that is **750 animals**, results in the long run. The smaller one, $\tfrac14$ kilo-oryx or **250 animals**, is unstable: if the population falls below it, the harvest of 187.5 a year is more than the herd can replace, and it is hunted to extinction.
+
+</Step>
+
+<Step title="Check the result">
+
+At $y = \tfrac34$: $(1 - \tfrac34)\cdot\tfrac34 = \tfrac3{16}$, the harvest, so the growth just balances it. The same at $y = \tfrac14$: $\tfrac34\cdot\tfrac14 = \tfrac3{16}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={5}>
+
+For this value $a = \tfrac3{16}$, there are five different kinds of behaviour of the population. (Two solutions are of the same kind if one is the other shifted in time.) Sketch one solution of each kind, showing what it does for very early times and for very late times, and match each with a stretch of the phase line.
+
+<Hint>
+
+The equilibria cut the $y$-axis into three intervals. Count: two equilibria, three intervals.
+
+</Hint>
+
+<Hint>
+
+On each interval, $\dot y$ has one sign, so the solution is monotone. As $t \to \pm\infty$ it must either tend to an equilibrium or run off to $\pm\infty$ (possibly in finite time).
+
+</Hint>
+
+<Answer id="p8-d-low" label="A herd that starts at $y = 0.1$ kilo-oryx (below the critical population)"
+  choices={["falls, and has no animals left after a finite time", "grows to 750 animals", "stays near 250 animals for ever", "falls towards 250 animals but never reaches it"]} answer={0} />
+
+<Solution>
+
+**The idea.** Each of the five kinds is either an equilibrium or an interval between them. On an interval the solution is monotone, so we only need to know where it comes from and where it goes.
+
+<Step title="The five kinds">
+
+1. $y > \tfrac34$: $\dot y < 0$. As $t$ grows the solution falls towards $\tfrac34$, which it approaches but does not reach. Going backward in time it rises, and since $\dot y \approx -y^2$ for large $y$ it escapes to $+\infty$ in finite time.
+2. $y = \tfrac34$: the constant stable solution.
+3. $\tfrac14 < y < \tfrac34$: $\dot y > 0$. The solution rises towards $\tfrac34$ as $t \to \infty$ and, going backward, falls towards $\tfrac14$ as $t \to -\infty$.
+4. $y = \tfrac14$: the constant unstable solution.
+5. $y < \tfrac14$: $\dot y < 0$. Going backward in time the solution rises towards $\tfrac14$ (as $t \to -\infty$). Going forward it falls, reaches $y = 0$ after a finite time (the herd is gone: the model is only meaningful until then) and goes on falling to $-\infty$ in finite time.
+
+</Step>
+
+<Step title="Check the result">
+
+Count: two constant solutions and three intervals, so five. The three intervals are the three stretches of the phase line, in which the arrow points down, up and down. Solutions of kinds 1 and 3 meet the stable point at $\tfrac34$ from above and below, kinds 3 and 5 leave the unstable point at $\tfrac14$ in opposite directions.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={2}>
+
+In the bifurcation diagram, the horizontal axis is $a$ and the vertical axis is the critical points $y$ of the equation for that $a$. Give an equation for the curve of equilibria.
+
+<Hint>
+
+Every point on the curve is a critical point for its own value of $a$. Solve the equation for the critical points for $a$ instead of $y$.
+
+</Hint>
+
+<Answer id="p8-e" label="$a =$" expr="y - y^2"
+  vars={{ y: [0.1, 0.9] }}
+  names={{ y: "y" }}
+  mistakes={[
+    { expr: "y^2 - y", hint: "At y = 1/2 the curve should be at its highest point, a = 1/4 (part b). Yours is negative there." },
+    { expr: "2*y*(1 - y)", hint: "At y = 1/2 this gives a = 1/2. But the largest possible hunting rate with an equilibrium is 1/4." }
+  ]} />
+
+<Solution>
+
+**The idea.** The curve consists of all pairs $(a, y)$ with $\dot y = 0$.
+
+<Step title="The curve">
+
+Put $\dot y = 0$ in the equation of the model and solve for $a$:
+
+<Formula label="The curve of equilibria" tex="y^2 - y + a = 0 \quad\Leftrightarrow\quad a = y - y^2" cite="solutions" at="Problem 8(e), p. 1" />
+
+[MIT's printed solution gives $y^2 - y - a = 0$. That is a sign slip: its own part (b) has $y^2 - y + a = 0$, and so do we.]
+
+</Step>
+
+<Step title="Check the result">
+
+This is a parabola opening to the left, with its tip at $y = \tfrac12$, $a = \tfrac14$. The upper half ($y > \tfrac12$) is the stable branch and the lower half is the unstable branch, and they meet at the tip: the merging of the two equilibria of part (b). At $y = \tfrac34$: $a = \tfrac34 - \tfrac9{16} = \tfrac3{16}$, as in part (c).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 9
+
+<Exercise id="p9" title="Linearizing the oryx equation near equilibrium" points={12} mit="Part II, Problem 9">
+
+Keep the model $\dot y = (1 - y)\,y - a$ with $a = \tfrac3{16}$. Let $y_0$ be its stable critical point, and write $u = y - y_0$ for the excess of the population over equilibrium (so $u < 0$ if the population is below the equilibrium).
+
+<Part label="a" points={3}>
+
+Write the differential equation as an equation for $u$. Check that the new equation is again autonomous and that $u = 0$ is a critical point of it.
+
+<Hint>
+
+By Problem 8(c) the stable critical point is $y_0 = \tfrac34$, so $y = u + \tfrac34$. Substitute that into the right side. Note that $\dot y = \dot u$.
+
+</Hint>
+
+<Answer id="p9-a-y0" label="The stable critical point $y_0 =$" value="0.75" tolerance="1%" calc="p9-a-y0" />
+
+<Answer id="p9-a" label="$\dot u =$" expr="-u/2 - u^2"
+  vars={{ u: [0.1, 0.5] }}
+  names={{ u: "u" }}
+  mistakes={[
+    { expr: "-u/2 + u^2", hint: "Expand (1/4 − u)(u + 3/4): the u² term comes from −u · u, so it carries a minus sign." },
+    { expr: "-u^2", hint: "Look at the terms linear in u: u/4 − 3u/4. They do not cancel." },
+    { expr: "-u/2", hint: "You left out the $u^2$ term. Part (b) asks for that to be dropped, but only after you have found it." }
+  ]} />
+
+<Solution>
+
+**The idea.** Substitute $y = u + y_0$ and expand. Since $y_0$ is a constant, $\dot y = \dot u$.
+
+<Step title="The substitution">
+
+With $y_0 = \tfrac34$, we have $y = u + \tfrac34$ and $1 - y = \tfrac14 - u$. Then
+
+<Formula label="The equation for the excess" tex="\dot u = \left(\tfrac14 - u\right)\left(u + \tfrac34\right) - \tfrac3{16} = -\tfrac12\,u - u^2" cite="solutions" at="Problem 9(a), p. 1" />
+
+[MIT's printed solution writes the second factor as $(u - \tfrac34)$. That is a sign slip: the factor is $y = u + \tfrac34$. The result $-\tfrac12 u - u^2$ is the same as ours.]
+
+</Step>
+
+<Step title="Autonomous, with a critical point at zero">
+
+The right side contains only $u$, and not $t$: the equation is autonomous. At $u = 0$ it is zero, so $u = 0$ is a critical point, and it is the old critical point $y = y_0$ in the new variable.
+
+</Step>
+
+<Step title="Check the result">
+
+The other critical point $y = \tfrac14$ is $u = -\tfrac12$: indeed $-\tfrac12\cdot(-\tfrac12) - \tfrac14 = 0$, so the new equation has the second critical point where it should be.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+For small $u$ the higher powers ($u^2$ and beyond) can be neglected: this is **linearization** near the equilibrium. What is the linearized equation near $u = 0$, and what is its general solution?
+
+<Hint>
+
+When $u$ is small, $u^2$ is much smaller than $u$ itself. Drop it from the equation of part (a).
+
+</Hint>
+
+<Hint>
+
+What is left is a first-order linear equation with a constant coefficient.
+
+</Hint>
+
+<Answer id="p9-b" label="Take the arbitrary constant to be $c = 1$. The solution is $u(t) =$" expr="exp(-t/2)"
+  vars={{ t: [0.5, 4] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "exp(t/2)", hint: "The sign of the rate: the equation says that a positive u falls. Does your function fall?" },
+    { expr: "exp(-t)", hint: "Check it: its derivative is −e^(−t), which is −u, not −u/2." },
+    { expr: "exp(-2*t)", hint: "Differentiate: you get $-2u$. The rate in the equation is one half." }
+  ]} />
+
+<Solution>
+
+**The idea.** Dropping $u^2$ from the equation leaves a linear equation, which is solved by an exponential.
+
+<Step title="Linearize">
+
+The terms of $\dot u = -\tfrac12 u - u^2$ are the linear term $-\tfrac12 u$ and the quadratic term $-u^2$. For small $u$ the second is much smaller than the first: at $u = 0.1$ it is $0.01$ against $0.05$. Dropping it,
+
+<Formula label="The linearized equation" tex="\dot u = -\tfrac12\,u" cite="solutions" at="Problem 9(b), p. 1" />
+
+</Step>
+
+<Step title="Solve">
+
+An equation $\dot u = -\tfrac12 u$ is solved by separation of variables, or by the first-order linear methods of the lessons:
+
+<Formula label="Its general solution" tex="u = c\,e^{-t/2}" cite="solutions" at="Problem 9(b), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+Differentiate: $\dot u = -\tfrac12\,c\,e^{-t/2} = -\tfrac12 u$. The rate is the number $-\tfrac12 = f'(y_0)$, the slope of the right side $f(y) = (1 - y)y - \tfrac3{16}$ at the critical point $y_0 = \tfrac34$: $f'(y) = 1 - 2y$, which is $-\tfrac12$ at $y_0$. This is the general fact behind linearization: near a critical point, the rate is the derivative of the right side there.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Near equilibrium the solutions of the original equation are well approximated by those of its linearization. Give an approximation of $y$ near equilibrium. Use it to answer this: if $y(10) - y_0 = b$, estimate $y(11)$ and $y(12)$. Give the two excesses $y(11) - y_0$ and $y(12) - y_0$ as multiples of $b$.
+
+<Hint>
+
+By part (b) the excess $u = y - y_0$ is approximately $c\,e^{-t/2}$. Each unit of time multiplies it by the same factor. What is that factor?
+
+</Hint>
+
+<Answer id="p9-c-11" label="$\left(y(11) - y_0\right)/b \approx$" value="0.6065" tolerance="0.5%" calc="p9-c-11" />
+
+<Answer id="p9-c-12" label="$\left(y(12) - y_0\right)/b \approx$" value="0.3679" tolerance="0.5%" calc="p9-c-12" />
+
+<Solution>
+
+**The idea.** In the linear approximation the excess decays by a fixed factor in each unit of time.
+
+<Step title="The approximation">
+
+From $y = y_0 + u$ and part (b),
+
+<Formula label="The population near equilibrium" tex="y \approx \tfrac34 + c\,e^{-t/2}" cite="solutions" at="Problem 9(c), p. 1" />
+
+The population relaxes exponentially towards the equilibrium, with decay rate $\tfrac12$ per year.
+
+</Step>
+
+<Step title="The estimates">
+
+At $t = 10$ the excess is $b = c\,e^{-5}$, so $c = b\,e^{5}$. Then at $t = 11$ the excess is $c\,e^{-11/2} = b\,e^{-1/2}$, and at $t = 12$ it is $c\,e^{-6} = b\,e^{-1}$:
+
+<Formula label="The two estimates" tex="y(11) \approx \tfrac34 + b\,e^{-1/2} = \tfrac34 + 0.6065\,b, \qquad y(12) \approx \tfrac34 + b\,e^{-1} = \tfrac34 + 0.3679\,b" cite="solutions" at="Problem 9(c), p. 1 (our own working out of MIT's last question)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The excess shrinks each year: $1 > 0.6065 > 0.3679$, and each year multiplies it by the same factor $e^{-1/2} = 0.6065$: with the rounded values, $0.3679/0.6065 = 0.6066$, the same up to rounding.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Suppose that the linear equation $\dot x + p(t)\,x = q(t)$ is autonomous. What can you say about the functions $p$ and $q$?
+
+<Hint>
+
+Write the equation as $\dot x = q(t) - p(t)\,x$. What does "autonomous" say about the right side, as a function of $x$ and $t$?
+
+</Hint>
+
+<Answer id="p9-d" label="Then"
+  choices={["$p$ and $q$ are both constants", "$p$ is constant and $q$ can be any function of $t$", "$q$ is constant and $p$ can be any function of $t$", "$q$ must be zero and $p$ can be anything"]} answer={0} />
+
+<Solution>
+
+**The idea.** An autonomous equation has a right side that does not depend on $t$ at all, for any value of $x$.
+
+<Step title="The argument">
+
+The right side is $F(x, t) = q(t) - p(t)\,x$. It must have the same value at every time $t$, for every $x$. At $x = 0$ this says that $q(t)$ does not depend on $t$, so $q$ is a constant. Then at $x = 1$ it says that $q - p(t)$ does not depend on $t$, so $p$ is a constant too.
+
+</Step>
+
+<Step title="Check the result">
+
+So an autonomous linear equation is $\dot x + px = q$ with constants $p$ and $q$, as in the examples of [the lesson](/courses/18-03/autonomous-equations) (the bank account $\dot y = ry - w$ is one). Conversely, an equation of this form is autonomous. The linearization of part (b) is of this type, with $p = \tfrac12$ and $q = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 11
+
+<Exercise id="p11" title="The saloon door: overdamping and the swing through the frame" points={15} mit="Part II, Problem 11">
+
+A saloon door can swing right through its frame. A good damper either brings the door to rest on the side it started from or, after a hard shove towards the frame, lets it pass through once and settle on the other side. Behaviour like this belongs to overdamping. MIT's Mathlet "Damped Vibrations" shows solutions of the equation of a spring, a mass and a dashpot:
+
+<Formula label="The damped spring" tex="m\,\ddot x + b\,\dot x + k\,x = 0" cite="setTwo" at="Problem 11, p. 2" />
+
+with initial conditions $x(0) = x_0$ and $\dot x(0) = \dot x_0$. Fix the constants at $m = 0.50$, $b = 1.5$ and $k = 0.625 = \tfrac58$. (MIT notes that the applet only allows $k = 0.62$, and asks you to use $k = \tfrac58$ in your calculations. By our own calculation the roots for $k = 0.62$ are $-0.495$ and $-2.505$, so expect the applet to be a little off.)
+
+<Part label="a" points={4}>
+
+What is the characteristic polynomial? Verify that the roots shown by the applet are correct.
+
+<Hint>
+
+Try the solution $x = e^{st}$ in the equation. The characteristic polynomial is the left side divided by $e^{st}$.
+
+</Hint>
+
+<Hint>
+
+The roots are those of a quadratic polynomial with these numbers. Complete the square, or factor.
+
+</Hint>
+
+<Answer id="p11-a-poly" label="The characteristic polynomial $p(s) = ms^2 + bs + k$, with these numbers, $p(s) =$" expr="s^2/2 + 3*s/2 + 5/8"
+  vars={{ s: [-3, 3] }}
+  names={{ s: "s" }}
+  mistakes={[
+    { expr: "s^2 + 3*s/2 + 5/8", hint: "The mass is m = 1/2, and it multiplies s²: the polynomial is m s² + b s + k." },
+    { expr: "s^2 + 3*s + 5/4", hint: "That is $2p(s)$: you divided the equation by $m$. It has the same roots, but it is not $m s^2 + bs + k$." }
+  ]} />
+
+<Answer id="p11-a-r1" label="The root closer to zero, $s_1 =$" value="-0.5" tolerance="1%" calc="p11-a-r1" />
+
+<Answer id="p11-a-r2" label="The other root, $s_2 =$" value="-2.5" tolerance="1%" calc="p11-a-r2" />
+
+<Solution>
+
+**The idea.** Substituting $e^{st}$ turns the differential equation into a polynomial equation.
+
+<Step title="The characteristic polynomial">
+
+Since $\dot x = s\,e^{st}$ and $\ddot x = s^2 e^{st}$, the equation $m\ddot x + b\dot x + kx = 0$ becomes $(ms^2 + bs + k)\,e^{st} = 0$. With the given numbers,
+
+<Formula label="The characteristic polynomial" tex="p(s) = \tfrac12\,s^2 + \tfrac32\,s + \tfrac58 = \tfrac12\left(s^2 + 3s + \tfrac54\right)" cite="solutions" at="Problem 11(a), p. 2" />
+
+</Step>
+
+<Step title="The roots">
+
+Complete the square: $s^2 + 3s + \tfrac54 = (s + \tfrac32)^2 - 1$, which is zero when $s + \tfrac32 = \pm 1$:
+
+<Formula label="The roots" tex="s = -\tfrac32 \pm 1 \quad\Rightarrow\quad s_1 = -\tfrac12, \qquad s_2 = -\tfrac52" cite="solutions" at="Problem 11(a), p. 2" />
+
+Both are real and negative, and different: the overdamped case.
+
+</Step>
+
+<Step title="Check the result">
+
+The product of the roots is $\tfrac54 = k/m$, and the sum is $-3 = -b/m$, as the factorization $(s + \tfrac12)(s + \tfrac52)$ says. The discriminant $b^2 - 4mk = 2.25 - 1.25 = 1 > 0$ agrees with two real roots.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+What is the general solution? Express its constants in terms of the initial conditions $x(0) = x_0$ and $\dot x(0) = \dot x_0$.
+
+<Hint>
+
+For distinct real roots the general solution is a combination of two exponentials $e^{s_1t}$ and $e^{s_2t}$. Write the solution as $x = c_1e^{-t/2} + c_2e^{-5t/2}$ and differentiate it.
+
+</Hint>
+
+<Hint>
+
+Setting $t = 0$ in $x$ and in $\dot x$ gives two linear equations for $c_1$ and $c_2$ in terms of $x_0$ and $\dot x_0$.
+
+</Hint>
+
+<Answer id="p11-b-c1" label="$c_1 =$" expr="(5*x0 + 2*v0)/4"
+  vars={{ x0: [0.1, 0.9], v0: [-0.9, 0.9] }}
+  names={{ x0: "x_0", v0: "\\dot x_0" }}
+  mistakes={[
+    { expr: "(x0 + 2*v0)/4", hint: "That is minus the other constant, $-c_2$. The constant $c_1$ goes with $e^{-t/2}$." },
+    { expr: "(5*x0 - 2*v0)/4", hint: "Look at the sign of the ẋ₀ term. Try x₀ = 0 and ẋ₀ = 1: then c₁ + c₂ = 0 and −c₁/2 − 5c₂/2 = 1, which makes c₁ positive." }
+  ]} />
+
+<Answer id="p11-b-c2" label="$c_2 =$" expr="-(x0 + 2*v0)/4"
+  vars={{ x0: [0.1, 0.9], v0: [-0.9, 0.9] }}
+  names={{ x0: "x_0", v0: "\\dot x_0" }}
+  mistakes={[
+    { expr: "(x0 + 2*v0)/4", hint: "Add your $c_1$ and your $c_2$: at $t = 0$ they must give $x_0$. Yours do not." },
+    { expr: "-(5*x0 + 2*v0)/4", hint: "Add your $c_1$ and your $c_2$: they must give $x_0$, but yours add up to zero. This is $-c_1$." }
+  ]} />
+
+<Solution>
+
+**The idea.** Two exponentials with the roots of part (a), and two initial conditions to fix the constants.
+
+<Step title="The general solution and its slope">
+
+<Formula label="The general solution" tex="x = c_1\,e^{-t/2} + c_2\,e^{-5t/2}, \qquad \dot x = -\tfrac12\,c_1\,e^{-t/2} - \tfrac52\,c_2\,e^{-5t/2}" cite="solutions" at="Problem 11(b), p. 2" />
+
+</Step>
+
+<Step title="Match the initial conditions">
+
+At $t = 0$ the two exponentials are $1$:
+
+<Formula label="The initial conditions" tex="x_0 = c_1 + c_2, \qquad \dot x_0 = -\tfrac12\,c_1 - \tfrac52\,c_2" cite="solutions" at="Problem 11(b), p. 2" />
+
+Add the first equation to twice the second: $x_0 + 2\dot x_0 = (c_1 + c_2) + (-c_1 - 5c_2) = -4c_2$, so $c_2 = -\tfrac14(x_0 + 2\dot x_0)$. Then $c_1 = x_0 - c_2$:
+
+<Formula label="The constants" tex="c_1 = \tfrac14\,(5x_0 + 2\dot x_0), \qquad c_2 = -\tfrac14\,(x_0 + 2\dot x_0)" cite="solutions" at="Problem 11(b), p. 2" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $x_0 = 0$ and $\dot x_0 = 1$ (a push from the rest position): $c_1 = \tfrac12$ and $c_2 = -\tfrac12$, so $x = \tfrac12(e^{-t/2} - e^{-5t/2})$. It starts at $0$ with slope $\tfrac12(-\tfrac12 + \tfrac52) = 1$, as it must.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+For which initial conditions $(\dot x_0, x_0)$ is the solution "exponential", that is, of the form $c\,e^{rt}$ and not a sum of two such terms? (For the answer boxes, which are our own addition, take $x_0 = 1$: which two values of $\dot x_0$ make the solution exponential?)
+
+<Hint>
+
+The solution is a single exponential when one of the two constants of part (b) is zero.
+
+</Hint>
+
+<Answer id="p11-c-slow" label="With $x_0 = 1$, the $\dot x_0$ for which $x = c\,e^{-t/2}$:" value="-0.5" tolerance="1%" calc="p11-c-slow" />
+
+<Answer id="p11-c-fast" label="With $x_0 = 1$, the $\dot x_0$ for which $x = c\,e^{-5t/2}$:" value="-2.5" tolerance="1%" calc="p11-c-fast" />
+
+<Solution>
+
+**The idea.** One of the two constants must vanish.
+
+<Step title="The two lines of initial conditions">
+
+If $c_2 = 0$, the solution is $c_1 e^{-t/2}$, and this needs $x_0 + 2\dot x_0 = 0$. If $c_1 = 0$, the solution is $c_2 e^{-5t/2}$, and this needs $5x_0 + 2\dot x_0 = 0$:
+
+<Formula label="The exponential solutions" tex="x_0 + 2\dot x_0 = 0 \ \ (x = c\,e^{-t/2}), \qquad 5x_0 + 2\dot x_0 = 0 \ \ (x = c\,e^{-5t/2})" cite="solutions" at="Problem 11(c), p. 2" />
+
+In the $(\dot x_0, x_0)$ plane these are two lines through the origin.
+
+</Step>
+
+<Step title="The numbers">
+
+For $x_0 = 1$: $\dot x_0 = -\tfrac12$ for the slow exponential and $\dot x_0 = -\tfrac52$ for the fast one. The slope of the solution at $t = 0$ is, of course, the root times $x_0$.
+
+</Step>
+
+<Step title="Check the result">
+
+For $c e^{rt}$ with $x_0 = c$, the initial speed is $r x_0$: it is $-\tfrac12$ for $r = -\tfrac12$ and $-\tfrac52$ for $r = -\tfrac52$, as found.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+Fix the initial position at $x(0) = x_0$ (take $x_0 = 0.25$ for the applet). Which values of the initial velocity $\dot x_0$ give solutions that become zero for some positive $t$? In words: how hard must you push the door to make it swing through its closed position and return from the other side? Find the exact range of $\dot x_0$, in terms of $x_0$, and compare with what you see in the applet.
+
+<Hint>
+
+A solution is zero at time $t$ when $c_1e^{-t/2} + c_2e^{-5t/2} = 0$. Divide by $c_1 e^{-t/2}$ (if $c_1 \ne 0$). What must $c_2/c_1$ equal?
+
+</Hint>
+
+<Hint>
+
+The factor $e^{2t}$ is at least $1$ for $t \ge 0$. So the ratio $c_2/c_1$ must be negative and at most $-1$.
+
+</Hint>
+
+<Answer id="p11-d-edge" label="For $x_0 > 0$, the initial velocities with a crossing and those without one are separated by one boundary value. That value is $\dot x_0 =$" expr="-5*x0/2"
+  vars={{ x0: [0.1, 1] }}
+  names={{ x0: "x_0" }}
+  mistakes={[
+    { expr: "-x0/2", hint: "This is the initial velocity for which the solution is the single exponential c e^(−t/2) (c₂ = 0). That one never reaches zero. The boundary is the other single exponential." },
+    { expr: "5*x0/2", hint: "At this speed c₁ and c₂ do have opposite signs, but c₂/c₁ = −0.6, which is not below −1, and −e^(2t) is at most −1 for t ≥ 0. So there is no crossing." }
+  ]} />
+
+<Answer id="p11-d-number" label="For $x_0 = 0.25$ that number is:" value="-0.625" tolerance="1%" calc="p11-d-number" />
+
+<Answer id="p11-d-dir" label="With $x_0 = 0.25$, the door swings through the frame when"
+  choices={["ẋ₀ < −0.625", "ẋ₀ > −0.625", "ẋ₀ < −0.125", "ẋ₀ > 0.625"]} answer={0} />
+
+<Solution>
+
+**The idea.** A zero of $x$ means $c_1e^{-t/2} = -c_2e^{-5t/2}$, which pins down the ratio $c_2/c_1$ as a function of $t$.
+
+<Step title="The condition for a zero">
+
+Dividing by $c_1 e^{-t/2}$ gives $1 + (c_2/c_1)\,e^{-2t} = 0$, that is
+
+<Formula label="Zero of the solution" tex="\frac{c_2}{c_1} = -e^{2t}" cite="solutions" at="Problem 11(d), p. 2" />
+
+The right side is negative, and grows in size from $-1$ at $t = 0$ without limit. So a positive $t$ exists exactly when $c_2/c_1 < -1$ (the ratio is negative and larger in size than $1$). If $c_1 = 0$ the solution is a single exponential, which has no zero.
+
+</Step>
+
+<Step title="In terms of the initial conditions">
+
+By part (b), $c_2/c_1 = -(x_0 + 2\dot x_0)/(5x_0 + 2\dot x_0)$. Requiring that it is below $-1$, so that $c_2$ and $c_1$ have opposite signs with $|c_2| > |c_1|$: either $c_1 > 0$ and $-c_2 > c_1$, or $c_1 < 0$ and $-c_2 < c_1$. For $x_0 > 0$ the first reads $x_0 + 2\dot x_0 > 5x_0 + 2\dot x_0 > 0$, which needs $x_0 < 0$: impossible. The second reads $x_0 + 2\dot x_0 < 5x_0 + 2\dot x_0 < 0$, which is true when $x_0 > 0$ and $5x_0 + 2\dot x_0 < 0$:
+
+<Formula label="The door swings through" tex="x_0 > 0 \ \text{ and } \ \dot x_0 < -\tfrac52\,x_0" cite="solutions" at="Problem 11(d), p. 2" />
+
+For $x_0 < 0$ the same argument gives $\dot x_0 > -\tfrac52 x_0$, the mirror image. With $x_0 = 0.25$ the door must be pushed toward the frame (negative velocity) faster than $\tfrac52 \cdot 0.25 = 0.625$.
+
+</Step>
+
+<Step title="Check the result">
+
+At $\dot x_0 = -0.625$ exactly, $5x_0 + 2\dot x_0 = 0$ and $c_1 = 0$: the solution is $c_2e^{-5t/2}$ with $c_2 = x_0 > 0$, which never reaches zero. A slightly stronger push gives $c_1$ slightly negative and a zero at a late time, where $e^{2t}$ is as large as $|c_2/c_1|$. In the applet, the pushes that make the curve cross the $t$-axis are those with a steeply negative initial slope, which matches. The boundary is the line of initial conditions of the fast exponential, from part (c).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 12
+
+<Exercise id="p12" title="The saloon door: critical damping and complex roots" points={17} mit="Part II, Problem 12">
+
+Continue with the same applet, the same mass $m = 0.50$ and the same spring constant $k = 0.625 = \tfrac58$, but now lower the damping constant $b$.
+
+<Part label="a" points={6}>
+
+At what value of $b$ do the two roots of the characteristic polynomial become equal? Check this with algebra. For that value of $b$, what is the general solution of $m\ddot x + b\dot x + k x = 0$?
+
+<Hint>
+
+A quadratic polynomial has a double root when its discriminant is zero. What is the discriminant of $\tfrac12 s^2 + bs + \tfrac58$?
+
+</Hint>
+
+<Hint>
+
+For a double root $r$, the second solution is not another exponential: it is $t$ times the first.
+
+</Hint>
+
+<Answer id="p12-a-b" label="The critical damping constant $b =$" value="1.118" tolerance="1%" calc="p12-a-b" />
+
+<Answer id="p12-a-x" label="For that $b$, the solution with $x(0) = 1$ and $\dot x(0) = 0$ is $x(t) =$" expr="(1 + sqrt(5)/2*t)*exp(-sqrt(5)/2*t)"
+  vars={{ t: [0.2, 3] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "exp(-sqrt(5)/2*t)", hint: "Differentiate at t = 0: the slope is −√5/2, not 0. The term with t in front must cancel that slope." },
+    { expr: "(1 - sqrt(5)/2*t)*exp(-sqrt(5)/2*t)", hint: "Differentiate at t = 0: the slope comes out as −2b = −√5, not 0. Check the sign of the coefficient of t." }
+  ]} />
+
+<Solution>
+
+**The idea.** The roots of $ms^2 + bs + k$ coincide when the discriminant $b^2 - 4mk$ vanishes.
+
+<Step title="The value of b">
+
+<Formula label="The critical damping constant" tex="b^2 = 4mk = 4 \cdot \tfrac12 \cdot \tfrac58 = \tfrac54, \qquad b = \tfrac{\sqrt5}{2} = 1.118" cite="solutions" at="Problem 12(a), p. 2" />
+
+(We keep $b \ge 0$: a negative damping constant would be a dashpot that pushes the door.) In the form $p(s) = \tfrac12\left(s^2 + 2bs + \tfrac54\right) = \tfrac12\left((s + b)^2 + \tfrac54 - b^2\right)$, the root is $s = -b$ twice when $b^2 = \tfrac54$. It is a coincidence of $m = \tfrac12$ that the root is minus the damping constant itself.
+
+</Step>
+
+<Step title="The general solution">
+
+As in [the lesson](/courses/18-03/second-order-constant-coefficients) the solutions are $e^{-bt}$ and $t\,e^{-bt}$ (the lecture writes the double root as $-a$ and the unknown as $y$; here they are $-b$ and $x$):
+
+<Formula label="Second solution" tex="y = t\,e^{-at}" cite="reading2" at="p. 18" />
+
+<Formula label="The general solution at critical damping" tex="x = (c_1 + c_2\,t)\,e^{-bt}, \qquad b = \tfrac{\sqrt5}{2}" cite="solutions" at="Problem 12(a), p. 2" />
+
+For the starting conditions $x(0) = 1$ and $\dot x(0) = 0$ of the answer box: $x(0) = c_1 = 1$ and $\dot x(0) = c_2 - b\,c_1 = 0$, so $c_2 = b$.
+
+</Step>
+
+<Step title="Check the result">
+
+The discriminant is $b^2 - 4mk = \tfrac54 - \tfrac54 = 0$. The slope of $(1 + bt)e^{-bt}$ at $0$ is $b - b = 0$, and for later times it is $-b^2 t\,e^{-bt} < 0$: the door creeps back without swinging through, which is the aim of a damper.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Now push $b$ lower still, to $b = 0.25$. Pick a nonzero initial condition and watch the solution in the applet; confirm that the roots shown are right and give the general solution.
+
+<Hint>
+
+The discriminant is now negative, so the roots are complex numbers. Write $s = -\alpha \pm i\omega$ and complete the square.
+
+</Hint>
+
+<Hint>
+
+With $b = 0.25$ the polynomial is $\tfrac12\left(s^2 + \tfrac12 s + \tfrac54\right)$.
+
+</Hint>
+
+<Answer id="p12-b-re" label="The real part of the roots, $-\alpha =$" value="-0.25" tolerance="1%" calc="p12-b-re" />
+
+<Answer id="p12-b-im" label="The positive imaginary part of the roots, $\omega =$" value="1.0897" tolerance="0.5%" calc="p12-b-im" />
+
+<Solution>
+
+**The idea.** Complete the square in $p(s)$ and read the roots as a complex pair.
+
+<Step title="The roots">
+
+$p(s) = \tfrac12\left(s^2 + \tfrac12 s + \tfrac54\right) = \tfrac12\left[\left(s + \tfrac14\right)^2 + \tfrac{19}{16}\right]$, because $\tfrac54 - \tfrac1{16} = \tfrac{19}{16}$. So
+
+<Formula label="The roots" tex="s = -\tfrac14 \pm \tfrac{\sqrt{19}}{4}\,i = -0.25 \pm 1.0897\,i" cite="solutions" at="Problem 12(b), p. 2" />
+
+These are the roots the applet shows.
+
+</Step>
+
+<Step title="The general solution">
+
+For complex roots the real solutions are a decaying exponential times a cosine and a sine (the damped oscillation of [Lesson 10](/courses/18-03/damped-oscillations), whose pseudo-frequency is $\omega_1$):
+
+<Formula label="Pseudo-frequency" tex="\omega_1^2 = \omega_0^2 - p^2" cite="reading3" at="p. 15" />
+
+<Formula label="The general solution" tex="x = e^{-t/4}\left(c_1\cos\frac{\sqrt{19}}{4}\,t + c_2\sin\frac{\sqrt{19}}{4}\,t\right) = A\,e^{-t/4}\cos\!\left(\frac{\sqrt{19}}{4}\,t - \phi\right)" cite="solutions" at="Problem 12(b), p. 2" />
+
+Either form will do. The second shows an oscillation of angular frequency $\tfrac{\sqrt{19}}4 = 1.0897$ inside the envelope $\pm A e^{-t/4}$, which decays.
+
+</Step>
+
+<Step title="Check the result">
+
+With the notation of the lesson, $p = \tfrac{b}{2m} = \tfrac14$ and $\omega_0^2 = \tfrac km = \tfrac54$: $\omega_1^2 = \tfrac54 - \tfrac1{16} = \tfrac{19}{16}$, so $\omega_1 = \tfrac{\sqrt{19}}{4}$, the same.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+With these values of $m$, $b$ and $k$, set the initial conditions to $\dot x(0) = 1$ and $x(0) = 0$. Using the cross-hairs of the applet, measure the distances between the first five zeros of the solution. What does the theory predict? Does the door oscillate faster, slower, or at the same rate as it comes to rest? What is the pseudo-period of the solution? Then repeat the measurements with other initial conditions: what do you find, and what does the theory say about the distance between successive zeros of every solution?
+
+<Hint>
+
+For these initial conditions the cosine part of the solution is absent: $x = C\,e^{-t/4}\sin\omega t$. Fix $C$ from the slope at $t = 0$.
+
+</Hint>
+
+<Hint>
+
+The zeros come from the sine alone, since the exponential is never zero. Where does $\sin\omega t$ vanish?
+
+</Hint>
+
+<Answer id="p12-c-x" label="The solution is $x(t) =$" expr="4/sqrt(19)*exp(-t/4)*sin(sqrt(19)*t/4)"
+  vars={{ t: [0.2, 4] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "exp(-t/4)*sin(sqrt(19)*t/4)", hint: "Its slope at t = 0 is √19/4 = 1.09, not 1. Fix the amplitude from ẋ(0) = 1." },
+    { expr: "4/sqrt(19)*sin(sqrt(19)*t/4)", hint: "That is the oscillation without its decay. The roots have the real part −1/4: multiply by e^(−t/4)." },
+    { expr: "4/sqrt(19)*exp(t/4)*sin(sqrt(19)*t/4)", hint: "The real part of the roots is −1/4, so the envelope decays, e^(−t/4), and does not grow." }
+  ]} />
+
+<Answer id="p12-c-gap" label="The distance between successive zeros, in the same time units as the door equation:" value="2.883" tolerance="1%" calc="p12-c-gap" />
+
+<Answer id="p12-c-period" label="The pseudo-period:" value="5.766" tolerance="1%" calc="p12-c-period" />
+
+<Answer id="p12-c-rate" label="As the door comes to rest, its oscillation is"
+  choices={["at the same rate: the zeros stay equally far apart", "slower and slower, with the zeros getting further apart", "faster and faster, with the zeros getting closer together", "irregular, so no rule applies"]} answer={0} />
+
+<Solution>
+
+**The idea.** The zeros of $e^{-t/4}\sin\omega t$ are the zeros of the sine, which are equally spaced by half a period.
+
+<Step title="The solution">
+
+Starting at $x(0) = 0$ kills the cosine term: $x = C\,e^{-t/4}\sin\omega t$ with $\omega = \tfrac{\sqrt{19}}4$. Its slope at $0$ is $C\omega$, which should be $1$:
+
+<Formula label="The solution for the initial push" tex="x = \frac{4}{\sqrt{19}}\,e^{-t/4}\,\sin\frac{\sqrt{19}}{4}\,t" cite="solutions" at="Problem 12(c), p. 2" />
+
+</Step>
+
+<Step title="The zeros">
+
+The exponential is never zero, so $x = 0$ when $\sin\omega t = 0$, that is, $\omega t = n\pi$ with $n = 0, 1, 2, \ldots$. The zeros are $t = n\pi/\omega$, and the distance between successive zeros is half a period:
+
+<Formula label="Distance between zeros" tex="\Delta t = \frac{\pi}{\omega} = \frac{4\pi}{\sqrt{19}} = 2.883, \qquad \text{pseudo-period} = \frac{2\pi}{\omega} = 5.766" cite="solutions" at="Problem 12(c), p. 2" />
+
+The first five zeros are at $0$, $2.883$, $5.766$, $8.649$ and $11.532$. [MIT measured $0.00$, $2.93$, $5.76$, $8.69$ and $11.52$ with the applet: differences $2.93$, $2.83$, $2.93$, $2.83$, close to constant.]
+
+</Step>
+
+<Step title="The door does not speed up or slow down">
+
+The oscillation does not change its rate as the door comes to rest: the zeros are equally spaced, while the amplitude falls. This is true for every solution, not just this one. Every solution other than $x = 0$ has the form $A e^{-t/4}\cos(\omega t - \phi)$, and the zeros of the cosine are always half a period $\pi/\omega$ apart. Other initial conditions only shift the zeros, by changing $\phi$.
+
+</Step>
+
+<Step title="Check the result">
+
+The measured spacings are $2.93, 2.83, 2.93, 2.83$ with a mean of $2.88$, which agrees with $2.883$. The slope of the formula at $t = 0$ is $\tfrac4{\sqrt{19}}\cdot\tfrac{\sqrt{19}}4 = 1$, as demanded.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## More practice: MIT's own solved exercises
+
+Part I of MIT's Problem Set 3 (36 points at MIT, not scored here) is a list of short routine exercises. Most are from the "18.03 Notes and Exercises", which are on MIT OpenCourseWare with the rest of the course, with solutions to the exercises. They are not rewritten here. Try them in [MIT's exercises](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/pages/readings/notes_exe/): the exercises of Unit 1 are in [the Unit 1 file](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_1ex/) (with [its solutions](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_1sol/)) and those of Unit 2 in [the Unit 2 file](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2ex/) (with [its solutions](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_2sol/)). An exercise number such as 2C-1 means section C of Unit 2, exercise 1; the letters after it are its parts.
+
+| For | Exercises in MIT's Notes |
+|---|---|
+| Lesson 5: [autonomous equations](/courses/18-03/autonomous-equations) | 1E-1 (sketch the phase line and typical solutions of several autonomous equations) |
+| Lesson 9: [second-order equations with constant coefficients](/courses/18-03/second-order-constant-coefficients) | 2C-1 a, b (general and initial-value solutions with real roots) |
+| Lesson 10: [complex characteristic roots](/courses/18-03/damped-oscillations) | 2C-1 c, d, e (complex roots, and the double root); 2G-1 (the three cases of $y'' + 2y' + cy = 0$ for different $c$, and for which $c$ the equation is stable, which also uses [stability](/courses/18-03/inhomogeneous-equations-and-stability)) |
+
+MIT's sheet also has a short exercise of its own on $\dot x + 2x = 1$ (solve it three ways, sketch its phase line, and take three steps of Euler's method), which comes with a short answer at the end of the sheet and with the [first half of the problem set](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_ps3apdf/). Its Part I lists further exercises from the course textbook (Edwards and Penney, *Elementary Differential Equations*, 6th edition), which is not openly licensed and is not used on this site, so they are not part of this page.

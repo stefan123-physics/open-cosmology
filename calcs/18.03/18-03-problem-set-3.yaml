@@ -1,0 +1,695 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for Part II; every answer is still checked here by an independent route:
+# critical points as numerical roots of the right side, the linearized rate as a numerical derivative,
+# roots of the characteristic polynomial by a numerical solve, the constants of the door from the two
+# initial conditions solved numerically, and each solution put back into its differential equation
+# (numerical first and second derivatives).
+
+page: content/year-2/18.03/18-03-problem-set-3.mdx
+calcs:
+  # ---- Introduction and last section
+
+  - id: intro-points
+    where: 'Introduction: the points of the four problems of Part II (16 + 12 + 15 + 17)'
+    inputs: {}
+    formula: 16 + 12 + 15 + 17
+    expected: '60'
+    shown: ['four problems (60 points)']
+    source: {cite: solutions, at: 'points in square brackets, pp. 1–2'}
+    origin: mit
+
+  - id: intro-part-i-points
+    where: 'Last section: the points of MIT''s Part I (8 + 12 + 9 + 7)'
+    inputs: {}
+    formula: 8 + 12 + 9 + 7
+    expected: '36'
+    shown: ['(36 points at MIT, not scored here)']
+    source: {cite: solutions, at: 'Part I points, p. 1'}
+    origin: mit
+
+  # ---- Problem 8
+
+  - id: p8-b-merge
+    answer: p8-b-count
+    where: 'Problem 8(b), answer box: the hunting rate at which the equilibria merge is the top of the parabola (1 − y)y, at the root of its slope 1 − 2y'
+    inputs: {}
+    formula: (1 - solve('1 - 2*x', 'x', 0, 1))*solve('1 - 2*x', 'x', 0, 1)
+    expected: '0.25'
+    shown: ['The square root is real exactly when $a \le \tfrac14$']
+    source: {cite: solutions, at: 'Problem 8(b), p. 1'}
+    origin: mit
+
+  - id: p8-b-upper
+    kind: identity
+    answer: p8-b-upper
+    where: 'Problem 8(b), answer box and formula "Critical points": against the numerical root of (1 − y)y − a above y = 1/2'
+    formula: 1/2 + sqrt(1/4 - a)
+    equals: solve('(1 - x)*x - a', 'x', 0.5, 2)
+    samples: {a: [0.02, 0.1, 0.1875, 0.2]}
+    tolerance: 1e-7
+    shown: ['y = \frac12 \pm \sqrt{\frac14 - a}']
+    source: {cite: solutions, at: 'Problem 8(b), p. 1'}
+    origin: mit
+
+  - id: p8-b-lower
+    kind: identity
+    where: 'Problem 8(b), formula "Critical points": the smaller root against the numerical root below y = 1/2'
+    formula: 1/2 - sqrt(1/4 - a)
+    equals: solve('(1 - x)*x - a', 'x', -1, 0.5)
+    samples: {a: [0.02, 0.1, 0.1875, 0.2]}
+    tolerance: 1e-7
+    shown: ['y = \frac12 \pm \sqrt{\frac14 - a}']
+    source: {cite: solutions, at: 'Problem 8(b), p. 1'}
+    origin: mit
+
+  - id: p8-b-wrong-sign
+    kind: identity
+    where: 'Problem 8(b), hint of a listed mistake: 1/2 + √(1/4 + a) put into y² − y + a gives 2a'
+    formula: (1/2 + sqrt(1/4 + a))**2 - (1/2 + sqrt(1/4 + a)) + a
+    equals: 2*a
+    samples: {a: [0.02, 0.1, 0.1875, 0.2]}
+    tolerance: 1e-9
+    shown: ['you get $2a$, not $0$']
+    source: {cite: solutions, at: 'Problem 8(b), p. 1'}
+    origin: page-own
+
+  - id: p8-b-top
+    kind: identity
+    where: 'Problem 8(b), check: the top of the parabola is f(1/2) = 1/4 − a'
+    formula: (1 - 0.5)*0.5 - a
+    equals: 1/4 - a
+    samples: {a: [0.02, 0.1, 0.1875, 0.3]}
+    tolerance: 1e-12
+    shown: ['$f(\tfrac12) = \tfrac14 - a$']
+    source: {cite: solutions, at: 'Problem 8(b), p. 1'}
+    origin: page-own
+
+  - id: p8-c-rate
+    where: 'Problem 8(c): 187.5 animals a year in kilo-oryx a year'
+    inputs: {}
+    formula: 187.5/1000
+    expected: '0.1875'
+    shown: ['$a = 0.1875 = \tfrac{3}{16}$']
+    source: {cite: solutions, at: 'Problem 8(c), p. 1'}
+    origin: mit
+
+  - id: p8-c-rate-fraction
+    where: 'Problem 8(c): 3/16 as a decimal'
+    inputs: {}
+    formula: 3/16
+    expected: '0.1875'
+    shown: ['$a = 0.1875 = \tfrac{3}{16}$']
+    source: {cite: solutions, at: 'Problem 8(c), p. 1'}
+    origin: mit
+
+  - id: p8-c-stable
+    answer: p8-c-stable
+    where: 'Problem 8(c), answer box: the larger numerical root of (1 − y)y − 0.1875, in animals'
+    inputs: {}
+    formula: 1000*solve('(1 - x)*x - 0.1875', 'x', 0.5, 2)
+    expected: '750'
+    shown: ['**750 animals**']
+    source: {cite: solutions, at: 'Problem 8(c), p. 1'}
+    origin: mit
+
+  - id: p8-c-crash
+    answer: p8-c-crash
+    where: 'Problem 8(c), answer box: the smaller numerical root of (1 − y)y − 0.1875, in animals'
+    inputs: {}
+    formula: 1000*solve('(1 - x)*x - 0.1875', 'x', 0, 0.5)
+    expected: '250'
+    shown: ['**250 animals**']
+    source: {cite: solutions, at: 'Problem 8(c), p. 1'}
+    origin: mit
+
+  - id: p8-c-balance
+    where: 'Problem 8(c), check: the growth (1 − y)y at y = 3/4 equals the harvest'
+    inputs: {}
+    formula: (1 - 3/4)*(3/4)
+    expected: '0.1875'
+    shown: ['$(1 - \tfrac34)\cdot\tfrac34 = \tfrac3{16}$']
+    source: {cite: solutions, at: 'Problem 8(c), p. 1'}
+    origin: page-own
+
+  - id: p8-e
+    kind: identity
+    answer: p8-e
+    where: 'Problem 8(e), answer box and formula "The curve of equilibria": against the hunting rate a at which the given y is a critical point (numerical root in a)'
+    formula: y - y**2
+    equals: solve('(1 - y)*y - x', 'x', -1, 1)
+    samples: {y: [0.1, 0.25, 0.5, 0.75, 0.9]}
+    tolerance: 1e-7
+    shown: ['a = y - y^2']
+    source: {cite: solutions, at: 'Problem 8(e), p. 1 (MIT prints the sign of a wrongly)'}
+    origin: mit
+
+  - id: p8-e-check
+    where: 'Problem 8(e), check: a at y = 3/4'
+    inputs: {}
+    formula: 3/4 - 9/16
+    expected: '0.1875'
+    shown: ['$a = \tfrac34 - \tfrac9{16} = \tfrac3{16}$']
+    source: {cite: solutions, at: 'Problem 8(e), p. 1'}
+    origin: page-own
+
+  - id: p8-e-mistake
+    where: 'Problem 8(e), hint of a listed mistake: 2y(1 − y) at y = 1/2'
+    inputs: {}
+    formula: 2*0.5*(1 - 0.5)
+    expected: '0.5'
+    shown: ['At y = 1/2 this gives a = 1/2.']
+    source: {cite: solutions, at: 'Problem 8(e), p. 1'}
+    origin: page-own
+
+  # ---- Problem 9
+
+  - id: p9-a-y0
+    answer: p9-a-y0
+    where: 'Problem 9(a), answer box: the stable critical point as the larger numerical root of (1 − y)y − 3/16'
+    inputs: {}
+    formula: solve('(1 - x)*x - 3/16', 'x', 0.5, 2)
+    expected: '0.75'
+    shown: ['With $y_0 = \tfrac34$']
+    source: {cite: solutions, at: 'Problem 9(a), p. 1'}
+    origin: mit
+
+  - id: p9-a
+    kind: identity
+    answer: p9-a
+    where: 'Problem 9(a), answer box and formula "The equation for the excess": against the original right side at y = u + 3/4'
+    formula: -u/2 - u**2
+    equals: (1 - (u + 0.75))*(u + 0.75) - 3/16
+    samples: {u: [0.1, 0.3, 0.5, -0.2, -0.5, 1.5]}
+    tolerance: 1e-9
+    shown: ['-\tfrac12\,u - u^2']
+    source: {cite: solutions, at: 'Problem 9(a), p. 1 (MIT prints the factor u + 3/4 with the wrong sign)'}
+    origin: mit
+
+  - id: p9-a-second-point
+    where: 'Problem 9(a), check: the other critical point y = 1/4 is u = −1/2, a root of −u/2 − u² between −1 and −0.1'
+    inputs: {}
+    formula: solve('-x/2 - x**2', 'x', -1, -0.1)
+    expected: '-0.5'
+    shown: ['The other critical point $y = \tfrac14$ is $u = -\tfrac12$']
+    source: {cite: solutions, at: 'Problem 9(a), p. 1'}
+    origin: page-own
+
+  - id: p9-b
+    kind: identity
+    answer: p9-b
+    where: 'Problem 9(b), answer box and formula "Its general solution" with c = 1: against the linearized equation, u = −2 du/dt, with the derivative taken numerically'
+    formula: exp(-t/2)
+    equals: -2*deriv('exp(-x/2)', 'x', t)
+    samples: {t: [0.5, 1, 2.3, 4]}
+    tolerance: 1e-7
+    shown: ['u = c\,e^{-t/2}']
+    source: {cite: solutions, at: 'Problem 9(b), p. 1'}
+    origin: mit
+
+  - id: p9-b-square
+    where: 'Problem 9(b): the quadratic term u² at u = 0.1'
+    inputs: {u: 0.1}
+    formula: u**2
+    expected: '0.01'
+    shown: ['at $u = 0.1$ it is $0.01$ against $0.05$']
+    source: {cite: solutions, at: 'Problem 9(b), p. 1'}
+    origin: page-own
+
+  - id: p9-b-linear
+    where: 'Problem 9(b): the size of the linear term u/2 at u = 0.1'
+    inputs: {u: 0.1}
+    formula: u/2
+    expected: '0.05'
+    shown: ['at $u = 0.1$ it is $0.01$ against $0.05$']
+    source: {cite: solutions, at: 'Problem 9(b), p. 1'}
+    origin: page-own
+
+  - id: p9-b-slope
+    where: 'Problem 9(b), check: the numerical slope of f(y) = (1 − y)y − 3/16 at y₀ = 3/4'
+    inputs: {}
+    formula: deriv('(1 - x)*x - 3/16', 'x', 0.75)
+    expected: '-0.5'
+    tolerance: 1e-6
+    shown: ['which is $-\tfrac12$ at $y_0$']
+    source: {cite: solutions, at: 'Problem 9(b), p. 1'}
+    origin: page-own
+
+  - id: p9-c-11
+    answer: p9-c-11
+    where: 'Problem 9(c), answer box: the factor over one year, the exponential of minus the integral of the rate 1/2 from t = 10 to 11'
+    inputs: {}
+    formula: exp(-integrate('0.5 + 0*s', 's', 10, 11))
+    expected: '0.6065'
+    shown: ['b\,e^{-1/2} = \tfrac34 + 0.6065\,b']
+    source: {cite: solutions, at: 'Problem 9(c), p. 1 (the two estimates are our own working out)'}
+    origin: page-own
+
+  - id: p9-c-12
+    answer: p9-c-12
+    where: 'Problem 9(c), answer box: the factor over two years, from t = 10 to 12'
+    inputs: {}
+    formula: exp(-integrate('0.5 + 0*s', 's', 10, 12))
+    expected: '0.3679'
+    shown: ['b\,e^{-1} = \tfrac34 + 0.3679\,b']
+    source: {cite: solutions, at: 'Problem 9(c), p. 1 (the two estimates are our own working out)'}
+    origin: page-own
+
+  - id: p9-c-ratio
+    where: 'Problem 9(c), check: the ratio of the two rounded factors'
+    inputs: {}
+    formula: 0.3679/0.6065
+    expected: '0.6066'
+    shown: ['$0.3679/0.6065 = 0.6066$']
+    source: {cite: solutions, at: 'Problem 9(c), p. 1'}
+    origin: page-own
+
+  # ---- Problem 11
+
+  - id: p11-applet-root-1
+    where: 'Problem 11, statement: the root nearer zero for the applet''s k = 0.62 (s² + 3s + 1.24 = 0)'
+    inputs: {}
+    formula: -1.5 + sqrt(1.5**2 - 0.62/0.5)
+    expected: '-0.495'
+    shown: ['$-0.495$ and $-2.505$']
+    source: {cite: setTwo, at: 'Problem 11, p. 2 (k = 0.62 is MIT''s remark; the roots are our own calculation)'}
+    origin: page-own
+
+  - id: p11-applet-root-2
+    where: 'Problem 11, statement: the other root for the applet''s k = 0.62'
+    inputs: {}
+    formula: -1.5 - sqrt(1.5**2 - 0.62/0.5)
+    expected: '-2.505'
+    shown: ['$-0.495$ and $-2.505$']
+    source: {cite: setTwo, at: 'Problem 11, p. 2 (k = 0.62 is MIT''s remark; the roots are our own calculation)'}
+    origin: page-own
+
+  - id: p11-a-poly
+    kind: identity
+    answer: p11-a-poly
+    where: 'Problem 11(a), answer box and formula "The characteristic polynomial": against (m s² + b s + k) from the differential equation applied to e^(st), divided by e^(st), with numerical derivatives'
+    formula: s**2/2 + 3*s/2 + 5/8
+    equals: (0.5*deriv('exp(s*x)', 'x', 0.3, 2) + 1.5*deriv('exp(s*x)', 'x', 0.3) + 0.625*exp(0.3*s))/exp(0.3*s)
+    samples: {s: [-3, -1.2, 0.4, 1.7, 3]}
+    tolerance: 1e-5
+    shown: ['p(s) = \tfrac12\,s^2 + \tfrac32\,s + \tfrac58']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: mit
+
+  - id: p11-a-r1
+    answer: p11-a-r1
+    where: 'Problem 11(a), answer box: the numerical root of s²/2 + 3s/2 + 5/8 between −1 and 0'
+    inputs: {}
+    formula: solve('x**2/2 + 3*x/2 + 5/8', 'x', -1, 0)
+    expected: '-0.5'
+    shown: ['s_1 = -\tfrac12']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: mit
+
+  - id: p11-a-r2
+    answer: p11-a-r2
+    where: 'Problem 11(a), answer box: the numerical root of s²/2 + 3s/2 + 5/8 between −4 and −1.5'
+    inputs: {}
+    formula: solve('x**2/2 + 3*x/2 + 5/8', 'x', -4, -1.5)
+    expected: '-2.5'
+    shown: ['s_2 = -\tfrac52']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: mit
+
+  - id: p11-a-discriminant
+    where: 'Problem 11(a), check: the discriminant b² − 4mk'
+    inputs: {}
+    formula: 1.5**2 - 4*0.5*0.625
+    expected: '1'
+    shown: ['$b^2 - 4mk = 2.25 - 1.25 = 1 > 0$']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: page-own
+
+  - id: p11-a-b-squared
+    where: 'Problem 11(a), check: b²'
+    inputs: {}
+    formula: 1.5**2
+    expected: '2.25'
+    shown: ['$b^2 - 4mk = 2.25 - 1.25 = 1 > 0$']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: page-own
+
+  - id: p11-a-4mk
+    where: 'Problem 11(a), check: 4mk'
+    inputs: {}
+    formula: 4*0.5*0.625
+    expected: '1.25'
+    shown: ['$b^2 - 4mk = 2.25 - 1.25 = 1 > 0$']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: page-own
+
+  - id: p11-a-product
+    where: 'Problem 11(a), check: the product of the roots is k/m = 5/4'
+    inputs: {}
+    formula: (-0.5)*(-2.5) - 0.625/0.5
+    expected: '0.00'
+    shown: ['The product of the roots is $\tfrac54 = k/m$']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: page-own
+
+  - id: p11-a-sum
+    where: 'Problem 11(a), check: the sum of the roots is −b/m = −3'
+    inputs: {}
+    formula: (-0.5) + (-2.5)
+    expected: '-3'
+    shown: ['the sum is $-3 = -b/m$']
+    source: {cite: solutions, at: 'Problem 11(a), p. 2'}
+    origin: page-own
+
+  - id: p11-b-c1
+    kind: identity
+    answer: p11-b-c1
+    where: 'Problem 11(b), answer box and formula "The constants": against the numerical solution of the two initial conditions, with c₂ = x₀ − c₁ put into the condition on the slope'
+    formula: (5*x0 + 2*v0)/4
+    equals: solve('-x/2 - 5*(x0 - x)/2 - v0', 'x', -50, 50)
+    samples:
+      x0: [0.1, 0.5, 0.9, 0.25, 0.7]
+      v0: [-0.9, 0.3, 0.9, -0.7, -0.2]
+    tolerance: 1e-7
+    shown: ['c_1 = \tfrac14\,(5x_0 + 2\dot x_0)']
+    source: {cite: solutions, at: 'Problem 11(b), p. 2'}
+    origin: mit
+
+  - id: p11-b-c2
+    kind: identity
+    answer: p11-b-c2
+    where: 'Problem 11(b), answer box and formula "The constants": against the numerical solution of the two initial conditions, with c₁ = x₀ − c₂ put into the condition on the slope'
+    formula: -(x0 + 2*v0)/4
+    equals: solve('-(x0 - x)/2 - 5*x/2 - v0', 'x', -50, 50)
+    samples:
+      x0: [0.1, 0.5, 0.9, 0.25, 0.7]
+      v0: [-0.9, 0.3, 0.9, -0.7, -0.2]
+    tolerance: 1e-7
+    shown: ['c_2 = -\tfrac14\,(x_0 + 2\dot x_0)']
+    source: {cite: solutions, at: 'Problem 11(b), p. 2'}
+    origin: mit
+
+  - id: p11-b-ode
+    kind: identity
+    where: 'Problem 11(b): the solution with these constants satisfies the door equation, m x″ + b x′ = −k x (numerical derivatives)'
+    formula: 0.5*deriv('(5*x0 + 2*v0)/4*exp(-x/2) - (x0 + 2*v0)/4*exp(-5*x/2)', 'x', t, 2) + 1.5*deriv('(5*x0 + 2*v0)/4*exp(-x/2) - (x0 + 2*v0)/4*exp(-5*x/2)', 'x', t)
+    equals: -0.625*((5*x0 + 2*v0)/4*exp(-t/2) - (x0 + 2*v0)/4*exp(-5*t/2))
+    samples:
+      x0: [0.1, 0.5, 0.9, 0.25]
+      v0: [-0.9, 0.3, 0.9, -0.7]
+      t: [0.2, 0.3, 2, 0.4]
+    tolerance: 1e-4
+    shown: ['x = c_1\,e^{-t/2} + c_2\,e^{-5t/2}']
+    source: {cite: solutions, at: 'Problem 11(b), p. 2'}
+    origin: mit
+
+  - id: p11-b-check-slope
+    where: 'Problem 11(b), check: the numerical slope at t = 0 of ½(e^(−t/2) − e^(−5t/2)), the solution for x₀ = 0 and ẋ₀ = 1'
+    inputs: {}
+    formula: deriv('0.5*(exp(-x/2) - exp(-5*x/2))', 'x', 0)
+    expected: '1.000'
+    shown: ['It starts at $0$ with slope $\tfrac12(-\tfrac12 + \tfrac52) = 1$']
+    source: {cite: solutions, at: 'Problem 11(b), p. 2'}
+    origin: page-own
+
+  - id: p11-c-slow
+    answer: p11-c-slow
+    where: 'Problem 11(c), answer box: the numerical slope at t = 0 of e^(−t/2), the slow exponential with x₀ = 1'
+    inputs: {}
+    formula: deriv('exp(-x/2)', 'x', 0)
+    expected: '-0.5'
+    tolerance: 1e-6
+    shown: ['$\dot x_0 = -\tfrac12$ for the slow exponential']
+    source: {cite: solutions, at: 'Problem 11(c), p. 2 (x₀ = 1 is our own choice)'}
+    origin: page-own
+
+  - id: p11-c-fast
+    answer: p11-c-fast
+    where: 'Problem 11(c), answer box: the numerical slope at t = 0 of e^(−5t/2), the fast exponential with x₀ = 1'
+    inputs: {}
+    formula: deriv('exp(-5*x/2)', 'x', 0)
+    expected: '-2.5'
+    tolerance: 1e-6
+    shown: ['$\dot x_0 = -\tfrac52$ for the fast one']
+    source: {cite: solutions, at: 'Problem 11(c), p. 2 (x₀ = 1 is our own choice)'}
+    origin: page-own
+
+  - id: p11-c-lines
+    kind: identity
+    where: 'Problem 11(c): on the line x₀ + 2ẋ₀ = 0 the constant c₂ is zero, so c₁ is all of x₀'
+    formula: (5*x0 + 2*(-x0/2))/4
+    equals: x0
+    samples: {x0: [0.1, 0.5, 1, -0.7]}
+    tolerance: 1e-12
+    shown: ['x_0 + 2\dot x_0 = 0 \ \ (x = c\,e^{-t/2})']
+    source: {cite: solutions, at: 'Problem 11(c), p. 2'}
+    origin: mit
+
+  # The boundary by another route: for x0 > 0 the solution starts positive and has at most one zero, so it has
+  # crossed by a late time T exactly when x(T) < 0. The initial velocity at which x(T) = 0 (found numerically,
+  # with x(T) divided by e^(−T/2)) tends to the boundary as T grows; at T = 10 it differs by a part in 10⁹.
+  - id: p11-d-edge
+    kind: identity
+    answer: p11-d-edge
+    where: 'Problem 11(d), answer box and formula "The door swings through": against the initial velocity for which the solution is zero at the late time T = 10'
+    formula: -5*x0/2
+    equals: solve('(5*x0 + 2*x)/4 - (x0 + 2*x)/4*exp(-2*10)', 'x', -10, 0)
+    samples: {x0: [0.1, 0.25, 0.6, 1]}
+    tolerance: 1e-6
+    shown: ['\dot x_0 < -\tfrac52\,x_0']
+    source: {cite: solutions, at: 'Problem 11(d), p. 2'}
+    origin: mit
+
+  - id: p11-d-number
+    answer: p11-d-number
+    where: 'Problem 11(d), answer box: the boundary for x₀ = 0.25, as the initial velocity for which the solution is zero at the late time T = 10'
+    inputs: {}
+    formula: solve('(5*0.25 + 2*x)/4 - (0.25 + 2*x)/4*exp(-2*10)', 'x', -10, 0)
+    expected: '-0.625'
+    shown: ['$\tfrac52 \cdot 0.25 = 0.625$']
+    source: {cite: solutions, at: 'Problem 11(d), p. 2'}
+    origin: mit
+
+  - id: p11-d-number-direct
+    where: 'Problem 11(d): 5/2 times 0.25'
+    inputs: {}
+    formula: 5/2*0.25
+    expected: '0.625'
+    shown: ['$\tfrac52 \cdot 0.25 = 0.625$']
+    source: {cite: solutions, at: 'Problem 11(d), p. 2'}
+    origin: mit
+
+  - id: p11-d-mistake-ratio
+    where: 'Problem 11(d), hint of a listed mistake: c₂/c₁ at ẋ₀ = +5x₀/2 (here with x₀ = 1)'
+    inputs: {}
+    formula: -(1 + 2*2.5)/(5*1 + 2*2.5)
+    expected: '-0.6'
+    shown: ['c₂/c₁ = −0.6']
+    source: {cite: solutions, at: 'Problem 11(d), p. 2'}
+    origin: page-own
+
+  # ---- Problem 12
+
+  - id: p12-a-b
+    answer: p12-a-b
+    where: 'Problem 12(a), answer box: the positive root of b² − 4mk = 0 with m = 1/2, k = 5/8, found numerically'
+    inputs: {}
+    formula: solve('x**2 - 4*0.5*0.625', 'x', 0, 5)
+    expected: '1.118'
+    shown: ['b = \tfrac{\sqrt5}{2} = 1.118']
+    source: {cite: solutions, at: 'Problem 12(a), p. 2'}
+    origin: mit
+
+  - id: p12-a-b-exact
+    where: 'Problem 12(a): √5/2 as a decimal'
+    inputs: {}
+    formula: sqrt(5)/2
+    expected: '1.118'
+    shown: ['b = \tfrac{\sqrt5}{2} = 1.118']
+    source: {cite: solutions, at: 'Problem 12(a), p. 2'}
+    origin: mit
+
+  # The critically damped solution as the limit of the overdamped one: for distinct roots r1, r2 the solution with
+  # x(0) = 1, x'(0) = 0 is (r2 e^(r1 t) − r1 e^(r2 t))/(r2 − r1); here r = −√5/2 ± 0.0001.
+  - id: p12-a-x
+    kind: identity
+    answer: p12-a-x
+    where: 'Problem 12(a), answer box: against the two-exponential solution with the same start and roots −√5/2 ± 0.0001'
+    formula: (1 + sqrt(5)/2*t)*exp(-sqrt(5)/2*t)
+    equals: ((-sqrt(5)/2 - 0.0001)*exp((-sqrt(5)/2 + 0.0001)*t) - (-sqrt(5)/2 + 0.0001)*exp((-sqrt(5)/2 - 0.0001)*t))/(-0.0002)
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-6
+    shown: ['x = (c_1 + c_2\,t)\,e^{-bt}']
+    source: {cite: solutions, at: 'Problem 12(a), p. 2 (the start x(0) = 1, ẋ(0) = 0 is our own choice)'}
+    origin: page-own
+
+  - id: p12-a-x-ode
+    kind: identity
+    where: 'Problem 12(a): (1 + bt)e^(−bt) satisfies m x″ + b x′ = −k x with b = √5/2 (numerical derivatives)'
+    formula: 0.5*deriv('(1 + sqrt(5)/2*x)*exp(-sqrt(5)/2*x)', 'x', t, 2) + sqrt(5)/2*deriv('(1 + sqrt(5)/2*x)*exp(-sqrt(5)/2*x)', 'x', t)
+    equals: -0.625*(1 + sqrt(5)/2*t)*exp(-sqrt(5)/2*t)
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-4
+    shown: ['x = (c_1 + c_2\,t)\,e^{-bt}']
+    source: {cite: solutions, at: 'Problem 12(a), p. 2'}
+    origin: mit
+
+  - id: p12-a-later-slope
+    kind: identity
+    where: 'Problem 12(a), check: the slope of (1 + bt)e^(−bt) is −b² t e^(−bt) (numerical derivative, b = √5/2)'
+    formula: deriv('(1 + sqrt(5)/2*x)*exp(-sqrt(5)/2*x)', 'x', t)
+    equals: -(5/4)*t*exp(-sqrt(5)/2*t)
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-6
+    shown: ['$-b^2 t\,e^{-bt} < 0$']
+    source: {cite: solutions, at: 'Problem 12(a), p. 2'}
+    origin: page-own
+
+  - id: p12-b-re
+    answer: p12-b-re
+    where: 'Problem 12(b), answer box: the real part of the roots is −b/(2m) for b = 0.25, m = 0.5'
+    inputs: {}
+    formula: -0.25/(2*0.5)
+    expected: '-0.25'
+    shown: ['-0.25 \pm 1.0897\,i']
+    source: {cite: solutions, at: 'Problem 12(b), p. 2'}
+    origin: mit
+
+  - id: p12-b-im
+    answer: p12-b-im
+    where: 'Problem 12(b), answer box: the imaginary part by the lesson''s formula ω₁² = ω₀² − p², with ω₀² = k/m and p = b/(2m)'
+    inputs: {}
+    formula: sqrt(0.625/0.5 - (0.25/(2*0.5))**2)
+    expected: '1.0897'
+    shown: ['-0.25 \pm 1.0897\,i']
+    source: {cite: solutions, at: 'Problem 12(b), p. 2'}
+    origin: mit
+
+  - id: p12-b-im-exact
+    where: 'Problem 12(b) and 12(c): √19/4 as a decimal'
+    inputs: {}
+    formula: sqrt(19)/4
+    expected: '1.0897'
+    shown: ['$\tfrac{\sqrt{19}}4 = 1.0897$']
+    source: {cite: solutions, at: 'Problem 12(b), p. 2'}
+    origin: mit
+
+  - id: p12-b-square
+    where: 'Problem 12(b): 5/4 − 1/16 = 19/16, compared as a difference'
+    inputs: {}
+    formula: 5/4 - 1/16 - 19/16
+    expected: '0.000'
+    shown: ['$\tfrac54 - \tfrac1{16} = \tfrac{19}{16}$']
+    source: {cite: solutions, at: 'Problem 12(b), p. 2'}
+    origin: mit
+
+  - id: p12-c-x
+    kind: identity
+    answer: p12-c-x
+    where: 'Problem 12(c), answer box and formula "The solution for the initial push": it satisfies m x″ + b x′ = −k x with m = 0.5, b = 0.25, k = 0.625 (numerical derivatives); the start is checked in the next two entries'
+    formula: 4/sqrt(19)*exp(-t/4)*sin(sqrt(19)*t/4)
+    equals: -(0.5*deriv('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', t, 2) + 0.25*deriv('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', t))/0.625
+    samples: {t: [0.2, 1.1, 2.3, 4]}
+    tolerance: 1e-4
+    shown: ['x = \frac{4}{\sqrt{19}}\,e^{-t/4}\,\sin\frac{\sqrt{19}}{4}\,t']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: mit
+
+  - id: p12-c-x-slope
+    where: 'Problem 12(c), check: the numerical slope of the solution at t = 0 is 1'
+    inputs: {}
+    formula: deriv('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', 0)
+    expected: '1.000'
+    shown: ['$\tfrac4{\sqrt{19}}\cdot\tfrac{\sqrt{19}}4 = 1$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: page-own
+
+  - id: p12-c-mistake-slope
+    where: 'Problem 12(c), hint of a listed mistake: the slope at 0 of e^(−t/4) sin(√19 t/4)'
+    inputs: {}
+    formula: deriv('exp(-x/4)*sin(sqrt(19)*x/4)', 'x', 0)
+    expected: '1.09'
+    shown: ['Its slope at t = 0 is √19/4 = 1.09, not 1.']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: page-own
+
+  - id: p12-c-gap
+    answer: p12-c-gap
+    where: 'Problem 12(c), answer box: the first positive zero of the solution, found numerically between t = 1 and t = 4'
+    inputs: {}
+    formula: solve('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', 1, 4)
+    expected: '2.883'
+    shown: ['\frac{4\pi}{\sqrt{19}} = 2.883']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2 (MIT: 2.8829231)'}
+    origin: mit
+
+  - id: p12-c-gap-exact
+    where: 'Problem 12(c): 4π/√19'
+    inputs: {}
+    formula: 4*pi/sqrt(19)
+    expected: '2.883'
+    shown: ['\frac{4\pi}{\sqrt{19}} = 2.883']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2 (MIT: 2.8829231)'}
+    origin: mit
+
+  - id: p12-c-period
+    answer: p12-c-period
+    where: 'Problem 12(c), answer box: the pseudo-period as the second positive zero of the solution, found numerically between t = 4 and t = 7'
+    inputs: {}
+    formula: solve('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', 4, 7)
+    expected: '5.766'
+    shown: ['\frac{2\pi}{\omega} = 5.766']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: page-own
+
+  - id: p12-c-zero-3
+    where: 'Problem 12(c): the fourth of the first five zeros, found numerically between t = 7 and t = 10'
+    inputs: {}
+    formula: solve('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', 7, 10)
+    expected: '8.649'
+    shown: ['$0$, $2.883$, $5.766$, $8.649$ and $11.532$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: page-own
+
+  - id: p12-c-zero-4
+    where: 'Problem 12(c): the fifth of the first five zeros, found numerically between t = 10 and t = 13'
+    inputs: {}
+    formula: solve('4/sqrt(19)*exp(-x/4)*sin(sqrt(19)*x/4)', 'x', 10, 13)
+    expected: '11.532'
+    shown: ['$0$, $2.883$, $5.766$, $8.649$ and $11.532$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: page-own
+
+  - id: p12-c-mit-zeros
+    kind: fact
+    where: 'Problem 12(c): the zeros MIT''s solution reports from the applet'
+    shown: ['$0.00$, $2.93$, $5.76$, $8.69$ and $11.52$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: mit
+
+  - id: p12-c-mit-diff-1
+    where: 'Problem 12(c): the first and third differences of MIT''s measured zeros (2.93 − 0.00, and 8.69 − 5.76 gives the same)'
+    inputs: {}
+    formula: 8.69 - 5.76
+    expected: '2.93'
+    shown: ['differences $2.93$, $2.83$, $2.93$, $2.83$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: mit
+
+  - id: p12-c-mit-diff-2
+    where: 'Problem 12(c): the second and fourth differences of MIT''s measured zeros (5.76 − 2.93 and 11.52 − 8.69)'
+    inputs: {}
+    formula: 11.52 - 8.69
+    expected: '2.83'
+    shown: ['differences $2.93$, $2.83$, $2.93$, $2.83$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: mit
+
+  - id: p12-c-mit-mean
+    where: 'Problem 12(c), check: the mean of MIT''s four measured spacings'
+    inputs: {}
+    formula: (2.93 + 2.83 + 2.93 + 2.83)/4
+    expected: '2.88'
+    shown: ['with a mean of $2.88$']
+    source: {cite: solutions, at: 'Problem 12(c), p. 2'}
+    origin: page-own
