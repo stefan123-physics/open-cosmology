@@ -141,3 +141,87 @@ Solved from `pc2-handover/work/hs-3-practice-statements.md` and the Block 3 less
 - Not changed: the coverage note about lesson 3.12 (not written yet).
 
 Checks: `npm run calc:test -- -k hs-3-practice` 110 passed; `npm run test:answers` 65 passed; `npm run content:check` 0 error(s), no message for this page. Status set to reviewed.
+
+## Addition (2026-11-21)
+
+Lesson 3.12 (towards-the-universe-expanding-ball) now exists and is reviewed, so the set was extended:
+
+- New counted **Problem 12, "Will this ball of galaxies stop?"** (10 points; exercise id `p13`), on lesson 3.12 only, with our own model values (H = 2.0 × 10⁻¹⁸ s⁻¹ given in SI units, ρ = 1.2 × 10⁻²⁶ kg/m³; none of the lesson's numbers). Parts: (a) ρ_c = 3H²/(8πG) = 7.15 × 10⁻²⁷ kg/m³; (b) choice: ρ/ρ_c = 1.68, so the ball stops and falls back; (c) v/v₀ = 0.664 at r = 1.5 r₀ from v² = v₀²[1 − (ρ/ρ_c)(1 − r₀/r)]; (d) formula box r_max/r₀ = q/(q − 1), q = ρ/ρ_c.
+- The optional meteoroid problem is now **Problem 13**, but keeps its exercise id `p12` and answer ids `p12-a` to `p12-c`, so that progress already stored in readers' browsers keeps its meaning (renaming it would credit old optional answers to the new counted problem). The new problem therefore has id `p13`.
+- `covers` now includes 12, `prerequisites` includes the lesson, the summary and introduction say twelve lessons and 110 points (Problems 1 to 10 count 9 points each, Problems 11 and 12 count 10 points each; Problem 13 is optional). Readings 14 and 15 added (MIT 8.286 Lecture 7 and Lecture 6 transcripts, as cited in lesson 3.12).
+- Calcs: 10 new entries `hs3p-p13-*` (with `answer:` ties for p13-a, p13-c, p13-d); the points entry is now 110. Symbols: `hs-3-practice` added to the lesson 3.12 meanings of H, v₀ and r₀; a new page meaning for q; this page's own meanings of m, v, r, M and r_max extended to name the ball of galaxies.
+- Checks: `pytest -k hs-3-practice` 120 passed; `npm run test:answers` 65 passed; content check 0 error(s).
+
+**Problem 12 has not been reviewed: it needs a blind solve** before the set counts as reviewed again (Problems 1 to 11 and 13 are unchanged apart from the renumbered heading of the meteoroid problem).
+
+## Review of the addition (2026-11-21)
+
+Scope: only the new counted **Problem 12** (exercise id `p13`, "Will this ball of galaxies stop?", 10 points) and the frontmatter and introduction changes (`covers`, `prerequisites`, summary, readings 14 and 15, point total 110, the renumbered optional Problem 13 = id `p12`). Problems 1 to 11 and 13 were not re-reviewed.
+
+Sources read for this addition (downloaded to a scratch folder outside the repo, text extracted with `pdftotext`):
+- https://ocw.mit.edu/courses/8-286-the-early-universe-fall-2013/a8d35e02dbabc99e6a5fb7af82012b61_m00PjHTq6jU.pdf (8.286 Lecture 7 transcript; pp. 17 and 20 read)
+- https://ocw.mit.edu/courses/8-286-the-early-universe-fall-2013/1a0af97c8db7221f47634e47e0bb3324_vKLqWj0FRyc.pdf (8.286 Lecture 6 transcript; pp. 18, 28 and 29 read)
+- Lesson 3.12, `content/year-0/hs-3/towards-the-universe-expanding-ball.mdx` (what the block teaches)
+
+### Blind solve (statements only)
+
+Done from the statement text with hints, solutions, answers and calcs removed. One leak: the extraction kept the continuation line of the part (d) `<Answer>` (its `mistakes` list), so the three wrong forms were seen before part (d) was solved; the solve below does not depend on them.
+
+With G = 6.674 × 10⁻¹¹ N m²/kg² (introduction), H = 2.0 × 10⁻¹⁸ s⁻¹, ρ = 1.2 × 10⁻²⁶ kg/m³:
+- **p13-a:** ρ_c = 3H²/(8πG) = 1.2 × 10⁻³⁵ / 1.6773 × 10⁻⁹ = **7.154 × 10⁻²⁷ kg/m³**.
+- **p13-b:** q = ρ/ρ_c = **1.677** > 1, so the edge energy is negative: **it reaches a largest size, stops and falls back**.
+- **p13-c:** with GM/r₀ = (q/2)H²r₀² (since (4π/3)Gρ_c = H²/2), energy conservation gives v²/v₀² = 1 − q(1 − r₀/r); at r = 1.5 r₀: 1 − 1.6774/3 = 0.4409, **v/v₀ = 0.664**.
+- **p13-d:** v = 0 gives r₀/r = 1 − 1/q, so **r_max/r₀ = q/(q − 1)** (2.476 for this universe; 2 at q = 2).
+
+Comparison with the page (one line per answer id):
+- p13-a: page 7.15e-27, tolerance 3%. Agrees (7.154e-27).
+- p13-b: page answer 0 ("It reaches a largest size, stops and falls back together"). Agrees; the other three choices are wrong (q > 1 rules out "expands for ever"; gravity alone cannot speed the expansion up; the radius cancels).
+- p13-c: page 0.664, tolerance 3%. Agrees (0.6640).
+- p13-d: page `q/(q - 1)`, vars q in [1.1, 5]. Agrees (equal by value at q = 1.1, 1.677, 2, 5: 11, 2.476, 2, 1.25).
+
+### Findings
+
+| # | Severity | Where on page | Source says | Page says | Suggested fix |
+|---|----------|---------------|-------------|-----------|---------------|
+| A1 | warning | Problem 12(a), "Check the result" | (own check: 3H/(8πG) = 6.0 × 10⁻¹⁸/1.677 × 10⁻⁹ = 3.58 × 10⁻⁹, which is 1/H = 5.0 × 10¹⁷ times ρ_c) | "Forgetting to square H would give a number about 10¹⁸ times too large" | The factor is 1/H = 5 × 10¹⁷, a factor 2 off "about 10¹⁸", and the result would not even be a density (wrong unit), so "times too large" compares unlike quantities. Either say "about 5 × 10¹⁷ times larger, and not even in kg/m³" with a calcs entry for it (none exists now), or drop the sentence and keep the unit check. |
+| A2 | info | Problem 12(a), statement | — | "Type a number like `1.2e-26`." | The example is exactly the given density ρ, which a reader could take as a hint or type in. Use a neutral example such as `3.4e-27`. |
+| A3 | info | Problem 12 and 13, ids | — | heading "Problem 12" has exercise id `p13` (anchor `#p13`, answer ids `p13-a` to `p13-d`); heading "Problem 13" has id `p12` | Not confusing for readers: the visible text (introduction, headings, the symbol meanings that say "in Problem 12", calcs comments) consistently uses the displayed numbers, and the `Exercise` component shows only "Problem" / "Optional problem" plus the title, never the id. Only a hand-typed fragment `#p12` / `#p13` would land on the other-numbered problem; the heading anchors `#problem-12` / `#problem-13` are correct. Keeping `p12` for the meteoroid is right for stored progress. No other page or code links to these ids (searched content, lib, components). |
+| A4 | info | This review file, older sections | — | "Blind solve" and the earlier tables call the meteoroid problem "Problem 12" / `p12` | Historical text, correct at the time; the "Addition" section explains the renumbering. No change needed. |
+| A5 | info | frontmatter `status: reviewed` | AGENTS.md: reviewed only when a review exists and all findings are fixed | status stayed `reviewed` while the addition still awaited its blind solve | With this review done and no errors found, `reviewed` can stand once A1 is fixed or recorded as accepted. |
+
+### Formulas and citations (new problem)
+- Readings numbering checked: reading14 = Lecture 7 transcript, reading15 = Lecture 6 transcript (the 14th and 15th entries of `source.readings`).
+- `E_mech/m = ½v² − GM/r`, cited reading15 pp. 28–29: correct. p. 28 has E = ½ȧ² − (4π/3)Gρ_i/a and E_phys = m r_i² E; p. 29 writes it as ½m(ȧ r_i)² − GmM/(a r_i) and identifies it as kinetic plus potential energy of a test particle on the boundary. "(board)" matches how lesson 3.12 cites it.
+- `M = (4/3)πr³ρ`, cited reading15 p. 18: correct (mass inside the shell of initial radius r_i is (4π/3) r_i³ ρ_i).
+- `ρ_c = 3H²/(8πG)`, cited reading14 p. 20 (board): correct (E = 0 critical case, "3H squared over 8 pi G"; ρ > ρ_c closed, ρ < ρ_c open).
+- Speed of the edge, cited reading14 p. 17 (board) with the note that the ρ/ρ_c form is lesson 3.12's: correct (p. 17 has ȧ² = 2E + (8π/3)Gρ_i/a). The `location` strings of readings 14 and 15 match these pages.
+- The hydrogen-atom mass 1.67 × 10⁻²⁷ kg in the check of (a) has no reference on this page; it is lesson 3.12's value (cited there to NIST) and the calcs entry says so. Acceptable for a check line.
+
+### Arithmetic and answer checks
+- Recomputed independently (Python): ρ_c = 7.1541 × 10⁻²⁷; q = 1.67736; 1 − q/3 = 0.44088 (page 1 − 0.559 = 0.441); v/v₀ = 0.66399; critical-ball check √(1/1.5) = 0.8165 (page 0.816); 1.677/0.677 = 2.477 (page 2.48, "about two and a half"); 4.28 atoms per m³ (page 4.3). All match.
+- Calcs: every number of the new problem has a `hs3p-p13-*` entry except the "about 10¹⁸" of A1. `hs3p-p13-d` is an identity checked against a numerical root of 1 − q(1 − 1/X) = 0: sound. `npm run calc:test -- -k hs-3-practice`: 120 passed.
+- Tolerances: 3% on (a) and (c) accepts rounding of G or of q (q = 1.68 gives 0.663) and rejects real mistakes. (d): q ∈ [1.1, 5] keeps q/(q − 1) finite (pole at q = 1 excluded) and physical (q > 1, as the statement asks).
+- Mistakes: `(q - 1)/q` is the reciprocal, below 1 for q > 1, so its hint is true; `1/(q - 1)` gives 1 at q = 2, so its hint ("should grow to twice") is true; `q` with "solve for r₀/r first" is reasonable. Each differs from the answer over the range (`q` equals it only at the single point q = 2).
+- Hints: (a) gives the definition of ρ_c and says the radius cancels; (c) points to the lesson's formula. Neither gives a result away.
+- Every part's solution ends with a check (units and atoms per m³; radius cancels; comparison with the critical ball; the q = 2 and q → 1 limits).
+
+### Only earlier terms
+- Everything used is taught in lesson 3.12: Hubble's law v = Hr, the evenly filled ball and its mass, energy per kilogram of the edge galaxy, critical density, ρ/ρ_c, the speed formula, the largest size where v = 0, dark energy (named in the (b) check), hydrogen atoms per cubic metre. "Like a probe fired below the escape speed" is lesson 3.11. H is given in s⁻¹, so no km/s/Mpc conversion is needed. The general formula q/(q − 1) is new but generalises the lesson's worked example (q = 2 and q = 1.25): appropriate for a practice problem.
+- `prerequisites` now lists `towards-the-universe-expanding-ball` (lesson 3.12, written and reviewed).
+
+### Coverage
+- `covers` is now 1 to 12, and lesson 3.12 is practised in its main points (critical density, sign of the energy, how the edge slows, largest size). Not practised: converting H₀ from km/s/Mpc and the Newtonian Friedmann equation; fine to leave out here (the conversion is in the lesson's quiz).
+
+### Originality and licensing
+- Numbers are the page's own: lesson 3.12 uses H = 2.27 × 10⁻¹⁸ s⁻¹ (70 km/s/Mpc), ρ_c = 9.20 × 10⁻²⁷ kg/m³, q = 2 and 1.25; Guth uses h₀ = 0.67 and 8.4 × 10⁻³⁰ g/cm³. The problem uses H = 2.0 × 10⁻¹⁸ s⁻¹, ρ = 1.2 × 10⁻²⁶ kg/m³, q = 1.677 and r = 1.5 r₀. No sentence copied from the transcripts (compared with pp. 17, 18, 20, 28, 29). No figure. Only MIT OCW (CC BY-NC-SA) is added; no forbidden source cited or used.
+
+### Frontmatter and introduction
+- `covers: [1 … 12]`, `prerequisites` plus lesson 3.12, summary ("Twelve problems and one optional extra", "an expanding ball of galaxies"), introduction ("twelve lessons", "Problems 1 to 10 count 9 points each and Problems 11 and 12 count 10 points each, 110 in all; Problem 13 is optional", Earth values for "Problem 13"): all consistent with the headings and the `points` attributes (10 × 9 + 10 + 10 = 110; the meteoroid is `optional`). The calcs points entry is updated to 110.
+
+### Verdict of the addition
+pass-with-notes: no errors; fix or accept warning A1.
+
+### Resolution of the addition (2026-11-21, by the page author)
+- A1: the sentence on forgetting to square H now says the result is not even in kg/m³ ("check the units"), with no factor quoted, so no calcs entry is needed.
+- A2: the example input is now `3.5e-27`, not the given density.
+- A3–A5: no change; the page stays `status: reviewed`.
