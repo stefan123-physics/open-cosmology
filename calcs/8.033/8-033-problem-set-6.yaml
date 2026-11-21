@@ -1,0 +1,946 @@
+# Calculations on content/year-2/8.033/8-033-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# the centre-of-momentum frame built from its own speed (Problem 1), the null condition and the half-angle form of
+# aberration (Problem 4), the solved motion p = F t and a numerical force balance (Problem 5), a numerical solve of
+# the quadratic (Problem 7), numerical derivatives and integrals (Problem 8).
+# Particle masses: CODATA 2022 (proton 938.272, neutron 939.565, electron 0.510999, alpha 3727.379 MeV) and PDG 2024.
+
+page: content/year-2/8.033/8-033-problem-set-6.mdx
+calcs:
+  # ---- Problem 1: collider against fixed target
+
+  # Independent route: E² = (invariant mass)² + p², with the invariant 2(γ + 1) and p² = γ² − 1 (units of m0 c²).
+  - id: p1-lab
+    kind: identity
+    answer: p1-lab
+    where: 'Problem 1(a), answer box: lab energy from the invariant mass and the momentum'
+    formula: gamma + 1
+    equals: sqrt(2*(gamma + 1) + (gamma**2 - 1))
+    samples:
+      gamma: [1.5, 2, 5, 12.3, 20]
+    tolerance: 1e-12
+    shown: ['id="p1-lab"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the CM frame moves at beta_cm = p/E = sqrt(γ² − 1)/(γ + 1); in it both particles have the
+  # Lorentz factor gamma_cm, so the energy is 2 gamma_cm.
+  - id: p1-cm
+    kind: identity
+    answer: p1-cm
+    where: 'Problem 1(a), answer box: CM energy as twice the Lorentz factor of the CM frame'
+    formula: sqrt(2*(gamma + 1))
+    equals: 2/sqrt(1 - (sqrt(gamma**2 - 1)/(gamma + 1))**2)
+    samples:
+      gamma: [1.5, 2, 5, 12.3, 20]
+    tolerance: 1e-10
+    shown: ['id="p1-cm"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-ratio
+    kind: identity
+    answer: p1-ratio
+    where: 'Problem 1(a), answer box: the ratio is the Lorentz factor of the CM frame'
+    formula: sqrt((gamma + 1)/2)
+    equals: 1/sqrt(1 - (sqrt(gamma**2 - 1)/(gamma + 1))**2)
+    samples:
+      gamma: [1.5, 2, 5, 12.3, 20]
+    tolerance: 1e-10
+    shown: ['id="p1-ratio"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-lhc-design
+    kind: fact
+    where: 'Problem 1(b), statement: the LHC design energy per proton (our own choice of numbers)'
+    value: '7 TeV per proton, 14 TeV in the CM frame'
+    shown: ['each proton with an energy of 7 TeV']
+    source: {cite: reading2, at: 'slide 19 (the LHC; the 7 TeV design energy is also in the lesson''s worked example)'}
+    origin: page-own
+
+  - id: p1-proton
+    kind: fact
+    where: 'Problem 1(b), statement: proton rest energy, CODATA 2022 (938.27208943 MeV)'
+    value: '0.938272 GeV'
+    shown: ['The rest energy of the proton is 0.938272 GeV.']
+    source: {cite: codata, at: 'proton mass energy equivalent in MeV'}
+    origin: later-data
+
+  - id: p1-fixed-target
+    answer: p1-fixed
+    where: 'Problem 1(b), answer box: beam energy on a fixed target for 14 TeV in the CM frame'
+    inputs: {Ecm: 14000 GeV, mp: 0.938272 GeV}
+    formula: Ecm**2/(2*mp) - mp
+    expected: 1.04e5 TeV
+    shown: ['id="p1-fixed"', '= 1.04\times 10^{5}\ \text{TeV}"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-fixed-target-gev
+    where: 'Problem 1(b), solution: the same in GeV'
+    inputs: {Ecm: 14000 GeV, mp: 0.938272 GeV}
+    formula: Ecm**2/(2*mp) - mp
+    expected: 1.04e8 GeV
+    shown: ['1.04\times 10^{8}\ \text{GeV}']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Back the other way: that beam on a proton at rest gives 14 TeV in the CM frame.
+  - id: p1-fixed-target-back
+    where: 'Problem 1(b), statement: 14 TeV in the CM frame, recovered from the beam energy'
+    inputs: {Eb: 1.044473e8 GeV, mp: 0.938272 GeV}
+    formula: sqrt(2*mp*(Eb + mp))
+    expected: 14 TeV
+    tolerance: 0.001 TeV
+    shown: ['so that 14 TeV is available in the CM frame']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-times-lhc
+    where: 'Problem 1(b), check: the fixed-target beam energy over 7 TeV'
+    inputs: {Ecm: 14000 GeV, mp: 0.938272 GeV, E1: 7000 GeV}
+    formula: (Ecm**2/(2*mp) - mp)/E1
+    expected: '15000'
+    tolerance: 100
+    shown: ['about 15 000 times the 7 TeV of one LHC beam']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-gamma-lhc
+    where: 'Problem 1(b), check: Lorentz factor of a 7 TeV proton'
+    inputs: {mp: 0.938272 GeV, E1: 7000 GeV}
+    formula: E1/mp
+    expected: '7460'
+    tolerance: 5
+    shown: ['($\gamma \approx 7460$)']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-cm-lhc-fixed
+    where: 'Problem 1(b), check: CM energy of a 7 TeV proton on a proton at rest'
+    inputs: {mp: 0.938272 GeV, E1: 7000 GeV}
+    formula: sqrt(2*(E1/mp + 1))*mp
+    expected: 115 GeV
+    shown: ['only about 115 GeV in the CM frame']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-cm-lhc-percent
+    where: 'Problem 1(b), check: that CM energy as a percentage of the lab energy (1.6%)'
+    inputs: {mp: 0.938272 GeV, E1: 7000 GeV}
+    formula: 100*sqrt(2*(E1/mp + 1))*mp/(E1 + mp)
+    expected: '1.6'
+    shown: ['less than 2% of the beam energy']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1-lhc-later
+    kind: fact
+    where: 'Problem 1(b), check: first collisions 2009; 6.8 TeV per proton since 2022'
+    value: '2009; 6.8 TeV'
+    shown: ['has run at up to 6.8 TeV per proton']
+    source: {ref: 'CERN: first LHC collisions in November 2009; Run 3 from July 2022 at 6.8 TeV per beam (13.6 TeV collisions)'}
+    origin: later-data
+
+  - id: p1-water-enthalpy
+    kind: fact
+    where: 'Problem 1(c), check: enthalpy of formation of water vapour'
+    value: '241.826 kJ/mol'
+    shown: ['releases 241.826 kJ per mole of water']
+    source: {cite: webbook, at: 'gas phase thermochemistry data, enthalpy of formation'}
+    origin: later-data
+
+  - id: p1-water-ev
+    where: 'Problem 1(c), check: energy released per reaction (two water molecules)'
+    inputs: {H: 241.826 kJ/mol}
+    formula: 2*H/avogadro_constant
+    expected: 5.01 eV
+    shown: ['which is 5.01 eV for the two water molecules']
+    source: {cite: mit, at: 'Problem 1(c) (our own check)'}
+    origin: page-own
+
+  - id: p1-water-rest
+    where: 'Problem 1(c), check: rest energy of two water molecules'
+    inputs: {amu: 931.494 MeV}
+    formula: 2*18.015*amu
+    expected: 3.356e10 eV
+    shown: ['= 3.356\times 10^{10}$ eV']
+    source: {cite: codata, at: 'atomic mass unit energy equivalent, 931.494 MeV; molar mass of water 18.015 g/mol'}
+    origin: page-own
+
+  - id: p1-water-fraction
+    where: 'Problem 1(c), check: fraction of the rest mass that is lost'
+    inputs: {H: 241.826 kJ/mol, amu: 931.494 MeV}
+    formula: (2*H/avogadro_constant)/(2*18.015*amu)
+    expected: '1.5e-10'
+    shown: ['a fraction $1.5\times 10^{-10}$']
+    source: {cite: mit, at: 'Problem 1(c) (our own check)'}
+    origin: page-own
+
+  - id: p1-masses
+    kind: fact
+    where: 'Problem 1(d), solution: rest energies, CODATA 2022 (0.51099895, 938.27208943, 939.56542194 MeV)'
+    value: '0.511, 938.272, 939.565 MeV'
+    shown: ['electron (0.511 MeV), proton (938.272 MeV), neutron (939.565 MeV)']
+    source: {cite: codata, at: 'electron, proton and neutron mass energy equivalents in MeV'}
+    origin: later-data
+
+  - id: p1-z-mass
+    kind: fact
+    where: 'Problem 1(d), solution: Z boson mass, PDG 2024 (91.1880 ± 0.0020 GeV)'
+    value: '91.188 GeV'
+    shown: ['Z boson (91.188 GeV, which is 91 188 MeV)']
+    source: {cite: pdg, at: 'Z boson mass'}
+    origin: later-data
+
+  - id: p1-slide-masses
+    kind: fact
+    where: 'Problem 1(d), solution: the slide''s 2006 values'
+    value: '938.26 and 939.55 MeV'
+    shown: ['938.26 and 939.55 MeV']
+    source: {cite: reading4, at: 'slide 11'}
+    origin: mit
+
+  - id: p1-neutron-excess
+    where: 'Problem 1(d), check: energy left over in neutron decay'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV, me: 0.511 MeV}
+    formula: mn - mp - me
+    expected: 0.782 MeV
+    shown: ['$939.565 - 938.272 - 0.511 = 0.782$ MeV']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1-z-over-proton
+    where: 'Problem 1(d), check: Z boson mass over proton mass'
+    inputs: {mZ: 91188 MeV, mp: 938.272 MeV}
+    formula: mZ/mp
+    expected: '97'
+    shown: ['about 97 times the proton']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: forbidden reactions
+
+  - id: p2-pair-threshold
+    where: 'Problem 2(a), solution: rest energy of an electron-positron pair'
+    inputs: {me: 0.511 MeV}
+    formula: 2*me
+    expected: 1.022 MeV
+    shown: ['$(2m_ec^2)^2 = (1.022\ \text{MeV})^2$']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-excess
+    where: 'Problem 2(b), solution: neutron minus proton minus electron'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV, me: 0.511 MeV}
+    formula: mn - mp - me
+    expected: 0.782 MeV
+    shown: ['by 0.782 MeV, so the two could fly apart']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-pauli
+    kind: fact
+    where: 'Problem 2(b), check: Pauli''s proposal of the neutrino, as on the slide'
+    value: '1931'
+    shown: ['until Pauli proposed the neutrino in 1931']
+    source: {cite: reading4, at: 'slide 19'}
+    origin: mit
+
+  - id: p2-proton-lifetime
+    kind: fact
+    where: 'Problem 2(c), check: proton decay, as on the slide'
+    value: '1e32 years'
+    shown: ['far longer than $10^{32}$ years (slide 19 of Lecture 14)']
+    source: {cite: reading4, at: 'slide 19'}
+    origin: mit
+
+  - id: p2-d-difference
+    where: 'Problem 2(d), solution: neutron minus proton'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV}
+    formula: mn - mp
+    expected: 1.293 MeV
+    shown: ['heavier than the proton by 1.293 MeV']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: rest masses
+
+  - id: p3-a-percent
+    where: 'Problem 3(a), solution: the neutron-proton difference as a percentage'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV}
+    formula: 100*(mn - mp)/mp
+    expected: '0.14'
+    shown: ['a difference of 1.293 MeV or 0.14%']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-electrons
+    where: 'Problem 3(b), solution: 1000 electron rest energies'
+    inputs: {me: 0.511 MeV}
+    formula: 1000*me
+    expected: 511 MeV
+    shown: ['$1000 \times 0.511\ \text{MeV} = 511$ MeV']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-ratio
+    where: 'Problem 3(b), check: proton over electron mass (slide: 1836)'
+    inputs: {mp: 938.27209 MeV, me: 0.51099895 MeV}
+    formula: mp/me
+    expected: '1836'
+    shown: ['The proton is 1836 times as heavy as the electron']
+    source: {cite: reading4, at: 'slide 11'}
+    origin: mit
+
+  - id: p3-c-muon
+    kind: fact
+    where: 'Problem 3(c), solution: muon rest energy, PDG 2024 (105.6583755 MeV)'
+    value: '105.658 MeV'
+    shown: ['105.658 MeV against the electron']
+    source: {cite: pdg, at: 'muon mass'}
+    origin: later-data
+
+  - id: p3-c-ratio
+    where: 'Problem 3(c), solution: muon over electron mass'
+    inputs: {mmu: 105.658 MeV, me: 0.511 MeV}
+    formula: mmu/me
+    expected: '207'
+    shown: ['still 207 times less rest mass']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-gamma-muon
+    where: 'Problem 3(c), check: Lorentz factor of a 10 GeV muon'
+    inputs: {mmu: 105.658 MeV, E1: 10 GeV}
+    formula: E1/mmu
+    expected: '95'
+    shown: ['about 95 for the muon']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3-c-gamma-electron
+    where: 'Problem 3(c), check: Lorentz factor of a 100 GeV electron'
+    inputs: {me: 0.511 MeV, E1: 100 GeV}
+    formula: E1/me
+    expected: '196000'
+    tolerance: 500
+    shown: ['about 196 000 for the electron']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3-d-coulomb-constant
+    where: 'Problem 3(d), formula: e²/(4 pi epsilon0) in eV nm'
+    inputs: {d1: 1 nm}
+    formula: elementary_charge**2/(4*pi*vacuum_permittivity*d1)*d1
+    expected: 1.44 eV*nm
+    shown: ['\frac{1.44\ \text{eV nm}}{0.1\ \text{nm}}']
+    source: {cite: codata, at: 'elementary charge and electric constant'}
+    origin: page-own
+
+  - id: p3-d-coulomb
+    where: 'Problem 3(d), formula: potential energy of two protons 1e-10 m apart'
+    inputs: {d1: 1e-10 m}
+    formula: elementary_charge**2/(4*pi*vacuum_permittivity*d1)
+    expected: 14.4 eV
+    shown: ['= 14.4\ \text{eV} \quad\text{at } r = 10^{-10}\ \text{m}"']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-coulomb-metre
+    where: 'Problem 3(d), solution: the same at 1 m'
+    inputs: {d1: 1 m}
+    formula: elementary_charge**2/(4*pi*vacuum_permittivity*d1)
+    expected: 1.44e-9 eV
+    shown: ['$1.44\times 10^{-9}$ eV']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-fraction
+    where: 'Problem 3(d), check: 14.4 eV as a fraction of the four rest energies'
+    inputs: {U1: 14.4 eV, Mfour: 3755.7 MeV}
+    formula: U1/Mfour
+    expected: '3.8e-9'
+    shown: ['a fraction $3.8\times 10^{-9}$ of the 3755.7 MeV']
+    source: {cite: mit, at: 'Problem 3(d) (our own check)'}
+    origin: page-own
+
+  - id: p3-d-gravity
+    where: 'Problem 3(d), check: electric over gravitational force between two protons, in powers of ten'
+    inputs: {mp: 1.67262e-27 kg, d1: 1 m}
+    formula: log10(elementary_charge**2/(4*pi*vacuum_permittivity*d1**2)/(G*mp**2/d1**2))
+    expected: '36'
+    shown: ['about 36 powers of ten']
+    source: {cite: mit, at: 'Problem 3(d) (our own check)'}
+    origin: page-own
+
+  - id: p3-e-sum
+    where: 'Problem 3(e), solution: rest energy of two free protons and two free neutrons'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV}
+    formula: 2*mp + 2*mn
+    expected: 3755.674 MeV
+    shown: ['$2 \times 938.272 + 2 \times 939.565 = 3755.674$ MeV']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3-e-alpha
+    kind: fact
+    where: 'Problem 3(e), solution: alpha particle rest energy, CODATA 2022 (3727.3794118 MeV)'
+    value: '3727.379 MeV'
+    shown: ['The alpha particle has 3727.379 MeV.']
+    source: {cite: codata, at: 'alpha particle mass energy equivalent in MeV'}
+    origin: later-data
+
+  - id: p3-e-binding
+    where: 'Problem 3(e), formula: binding energy of the alpha particle'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV, ma: 3727.379 MeV}
+    formula: 2*mp + 2*mn - ma
+    expected: 28.295 MeV
+    shown: ['= 28.295\ \text{MeV}"']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3-e-percent
+    where: 'Problem 3(e), check: binding energy as a percentage of the free rest energy'
+    inputs: {mn: 939.565 MeV, mp: 938.272 MeV, ma: 3727.379 MeV}
+    formula: 100*(2*mp + 2*mn - ma)/(2*mp + 2*mn)
+    expected: '0.75'
+    shown: ['lighter than its parts by 0.75%']
+    source: {cite: mit, at: 'Problem 3(e) (our own check)'}
+    origin: page-own
+
+  - id: p3-e-against-d
+    where: 'Problem 3(e), check: binding energy over the electric energy of part (d)'
+    inputs: {Eb: 28.295 MeV, U1: 14.4 eV}
+    formula: Eb/U1
+    expected: '2e6'
+    tolerance: 1e5
+    shown: ['a fraction two million times larger']
+    source: {cite: mit, at: 'Problem 3(e) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: transforming a photon (components in units of hbar omega / c)
+
+  # Independent route: the null condition fixes the x component from the other three (angles in the first quadrant).
+  - id: p4-a
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box: x component from the null condition p_x² = (E/c)² − p_y² − p_z²'
+    formula: sin(theta)*cos(phi)
+    equals: sqrt(1 - cos(theta)**2 - (sin(theta)*sin(phi))**2)
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.0]
+      phi: [0.2, 1.3, 0.7, 1.0, 0.4]
+    tolerance: 1e-10
+    shown: ['id="p4-a"']
+    source: {cite: reading3, at: 'slide 24'}
+    origin: page-own
+
+  # Independent route: solve the inverse boost p_z = gamma (s + beta E'/c) for s = p_z', with E'/c = gamma (1 − beta cos theta).
+  - id: p4-c
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box: against a numerical solve of the inverse Lorentz transformation'
+    formula: (cos(theta) - beta)/sqrt(1 - beta**2)
+    equals: solve('(s + beta*(1 - beta*cos(theta))/sqrt(1 - beta**2))/sqrt(1 - beta**2) - cos(theta)', 's', -10, 10)
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.0]
+      beta: [0.1, 0.8, 0.5, 0.3, 0.65]
+    tolerance: 1e-8
+    shown: ['id="p4-c"']
+    source: {cite: reading1, at: 'slide 27'}
+    origin: page-own
+
+  # Independent route: the photon stays a photon, so E'/c is the length of the transformed 3-momentum.
+  - id: p4-d-e
+    kind: identity
+    answer: p4-d-e
+    where: 'Problem 4(d), answer box: energy ratio from the length of the transformed momentum'
+    formula: (1 - beta*cos(theta))/sqrt(1 - beta**2)
+    equals: sqrt(sin(theta)**2 + ((cos(theta) - beta)/sqrt(1 - beta**2))**2)
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.0]
+      beta: [0.1, 0.8, 0.5, 0.3, 0.65]
+    tolerance: 1e-10
+    shown: ['id="p4-d-e"']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the half-angle form of aberration, tan(theta'/2) = sqrt((1 + beta)/(1 − beta)) tan(theta/2).
+  - id: p4-d-cos
+    kind: identity
+    answer: p4-d-cos
+    where: 'Problem 4(d), answer box: against the half-angle form of the aberration formula'
+    formula: (cos(theta) - beta)/(1 - beta*cos(theta))
+    equals: cos(2*atan(sqrt((1 + beta)/(1 - beta))*tan(theta/2)))
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.0]
+      beta: [0.1, 0.8, 0.5, 0.3, 0.65]
+    tolerance: 1e-10
+    shown: ['id="p4-d-cos"']
+    source: {cite: reading1, at: 'slide 27'}
+    origin: page-own
+
+  - id: p4-d-sine
+    kind: identity
+    where: 'Problem 4(d), check: sin² + cos² of the new angle is 1'
+    formula: (sin(theta)/((1 - beta*cos(theta))/sqrt(1 - beta**2)))**2 + ((cos(theta) - beta)/(1 - beta*cos(theta)))**2
+    equals: 1
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 2.5]
+      beta: [0.1, 0.8, 0.5, 0.3, 0.65]
+    tolerance: 1e-10
+    shown: ['$\sin\theta'' = \sin\theta/[\gamma(1 - \beta\cos\theta)]$']
+    source: {cite: mit, at: 'Problem 4(d) (our own check)'}
+    origin: page-own
+
+  - id: p4-d-forward
+    kind: identity
+    where: 'Problem 4(d), check: the forward photon, gamma (1 − beta) = sqrt((1 − beta)/(1 + beta))'
+    formula: (1 - beta)/sqrt(1 - beta**2)
+    equals: sqrt((1 - beta)/(1 + beta))
+    samples:
+      beta: [0.1, 0.8, 0.5, 0.3, 0.65]
+    tolerance: 1e-12
+    shown: ['$E''/E = \gamma(1 - \beta) = \sqrt{(1 - \beta)/(1 + \beta)}$']
+    source: {cite: mit, at: 'Problem 4(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: speeding up on a circle
+
+  # Independent route: solve the motion. p = F t gives u(t) = (F t/M0)/sqrt(1 + (F t/(M0 c))²); differentiate it
+  # numerically at the time when the Lorentz factor is gamma, t = M0 c sqrt(gamma² − 1)/F.
+  - id: p5-a
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box: against the numerical derivative of the solved motion u(t)'
+    formula: F/(gamma**3*M0)
+    equals: deriv('F*s/M0/sqrt(1 + (F*s/(M0*c))**2)', 's', M0*c*sqrt(gamma**2 - 1)/F)
+    samples:
+      F: [1, 2.5, 5, 3.3, 1.7]
+      gamma: [1.5, 2, 5, 3.1, 4.2]
+      M0: [1, 4, 2.2, 3, 1.5]
+      c: [3, 2, 5, 1, 4]
+    tolerance: 1e-7
+    shown: ['id="p5-a"']
+    source: {cite: mit, at: 'Problem 5(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-gamma-cubed
+    kind: identity
+    where: 'Problem 5(a), formula "Derivative of gamma times u": numerical derivative of u/sqrt(1 − u²) (c = 1)'
+    formula: deriv('s/sqrt(1 - s**2)', 's', u)
+    equals: (1 - u**2)**(-3/2)
+    samples:
+      u: [0.1, 0.5, 0.8, 0.95]
+    tolerance: 1e-7
+    shown: ['<Formula label="Derivative of gamma times u"']
+    source: {cite: reading2, at: 'slide 10'}
+    origin: page-own
+
+  # Independent route: solve the force balance q u B = gamma M0 u²/R numerically for B, with u = c sqrt(1 − 1/gamma²).
+  - id: p5-b
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box: against a numerical solve of the force balance'
+    formula: M0*c*sqrt(gamma**2 - 1)/(q*R)
+    equals: solve('q*(c*sqrt(1 - 1/gamma**2))*s - gamma*M0*(c*sqrt(1 - 1/gamma**2))**2/R', 's', 0, 1000)
+    samples:
+      M0: [1, 4, 2.2, 3, 1.5]
+      c: [2, 5, 3, 4.4, 2.5]
+      gamma: [1.5, 2, 5, 3.1, 4.2]
+      q: [1, 3, 2, 1.4, 2.6]
+      R: [1, 4, 2.5, 3.2, 1.8]
+    tolerance: 1e-8
+    shown: ['id="p5-b"']
+    source: {cite: reading2, at: 'slide 21 (question only; the answer is our own)'}
+    origin: page-own
+
+  - id: p5-b-high-energy
+    kind: limit
+    where: 'Problem 5(b), check: for large gamma, sqrt(gamma² − 1) approaches gamma'
+    formula: sqrt(gamma**2 - 1)/gamma
+    limit: 1
+    vary: {gamma: [10, 100, 1000]}
+    tolerance: 1e-6
+    shown: ['$B \approx \gamma M_0c/(qR) = E/(qcR)$']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: photoelectric effect
+
+  - id: p6-given
+    kind: fact
+    where: 'Problem 6, statement: MIT''s data'
+    value: '1.85 V at 300 nm, 0.82 V at 400 nm'
+    shown: ['is 1.85 V for light with a wavelength of 300 nm and 0.82 V for 400 nm']
+    source: {cite: mit, at: 'Problem 6, p. 2'}
+    origin: mit
+
+  - id: p6-constants
+    kind: fact
+    where: 'Problem 6, statement: elementary charge and speed of light, rounded (CODATA: 1.602176634e-19 C, 299792458 m/s, both exact)'
+    value: '1.602e-19 C, 2.998e8 m/s'
+    shown: ['$q_e = 1.602\times 10^{-19}$ C']
+    source: {cite: codata, at: 'elementary charge; speed of light in vacuum'}
+    origin: page-own
+
+  - id: p6-dv
+    where: 'Problem 6(a), solution: difference of the stopping potentials'
+    inputs: {V1: 1.85 V, V2: 0.82 V}
+    formula: V1 - V2
+    expected: 1.03 V
+    shown: ['$V_1 - V_2 = 1.85 - 0.82 = 1.03$ V']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-f1
+    where: 'Problem 6(a), solution: frequency of the 300 nm light'
+    inputs: {c0: 2.998e8 m/s, l1: 300 nm}
+    formula: c0/l1
+    expected: 9.993e14 Hz
+    shown: ['$c/\lambda_1 = 9.993\times 10^{14}$ Hz']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-f2
+    where: 'Problem 6(a), solution: frequency of the 400 nm light'
+    inputs: {c0: 2.998e8 m/s, l2: 400 nm}
+    formula: c0/l2
+    expected: 7.495e14 Hz
+    shown: ['$c/\lambda_2 = 7.495\times 10^{14}$ Hz']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-df
+    where: 'Problem 6(a), solution: difference of the two frequencies'
+    inputs: {c0: 2.998e8 m/s, l1: 300 nm, l2: 400 nm}
+    formula: c0/l1 - c0/l2
+    expected: 2.498e14 Hz
+    shown: ['which differ by $2.498\times 10^{14}$ Hz']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-h
+    answer: p6-h
+    where: 'Problem 6(a), answer box: Planck''s constant from the two measurements, with the page''s rounded constants'
+    inputs: {qe: 1.602e-19 C, c0: 2.998e8 m/s, V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: qe*(V1 - V2)/(c0*(1/l1 - 1/l2))
+    expected: 6.605e-34 J*s
+    shown: ['id="p6-h"', '= 6.60\times 10^{-34}\ \text{J s}"']
+    source: {cite: mit, at: 'Problem 6(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Second route: the slope of the line through the two points (frequency, kinetic energy), with exact constants.
+  - id: p6-h-exact-constants
+    where: 'Problem 6(a), answer box: the same with unrounded e and c stays within the box tolerance (6.606e-34)'
+    inputs: {V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: (elementary_charge*V1 - elementary_charge*V2)/(c/l1 - c/l2)
+    expected: 6.60e-34 J*s
+    tolerance: 1%
+    shown: ['<Answer id="p6-h" label="$h =$"']
+    source: {cite: mit, at: 'Problem 6(a) (our own check)'}
+    origin: page-own
+
+  - id: p6-h-accepted
+    where: 'Problem 6(a), check: the accepted value of Planck''s constant (exact in the 2019 SI: 6.62607015e-34 J s)'
+    formula: planck_constant
+    expected: 6.626e-34 J*s
+    shown: ['$6.626\times 10^{-34}$ J s']
+    source: {cite: codata, at: 'Planck constant'}
+    origin: page-own
+
+  - id: p6-h-off
+    where: 'Problem 6(a), check: the data''s value against the accepted one, in percent'
+    inputs: {qe: 1.602e-19 C, c0: 2.998e8 m/s, V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: 100*(1 - qe*(V1 - V2)/(c0*(1/l1 - 1/l2))/planck_constant)
+    expected: '0.3'
+    shown: ['give $h$ to 0.3%']
+    source: {cite: mit, at: 'Problem 6(a) (our own check)'}
+    origin: page-own
+
+  - id: p6-h-ev
+    where: 'Problem 6(a), check: Planck''s constant from the data in eV s'
+    inputs: {c0: 2.998e8 m/s, V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: elementary_charge*(V1 - V2)/(c0*(1/l1 - 1/l2))
+    expected: 4.12e-15 eV*s
+    shown: ['$h = 4.12\times 10^{-15}$ eV s']
+    source: {cite: mit, at: 'Problem 6(a) (our own check)'}
+    origin: page-own
+
+  - id: p6-hc
+    where: 'Problem 6(a), check: hc from the data in eV nm'
+    inputs: {V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: elementary_charge*(V1 - V2)/(1/l1 - 1/l2)
+    expected: 1236 eV*nm
+    shown: ['or $hc = 1236$ eV nm']
+    source: {cite: mit, at: 'Problem 6(a) (our own check)'}
+    origin: page-own
+
+  - id: p6-photon-300
+    where: 'Problem 6(b), solution: energy of a 300 nm photon with the data''s hc'
+    inputs: {hc: 1236 eV*nm, l1: 300 nm}
+    formula: hc/l1
+    expected: 4.12 eV
+    shown: ['carry $1236/300 = 4.12$ eV']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-w
+    answer: p6-w
+    where: 'Problem 6(b), answer box: work function from the 300 nm measurement'
+    inputs: {V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: elementary_charge*(V1 - V2)/(1/l1 - 1/l2)/l1 - elementary_charge*V1
+    expected: 2.27 eV
+    shown: ['id="p6-w"', '= 2.27\ \text{eV}"']
+    source: {cite: mit, at: 'Problem 6(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Second route: the 400 nm measurement.
+  - id: p6-w-second
+    where: 'Problem 6(b), check: work function from the 400 nm measurement'
+    inputs: {V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: elementary_charge*(V1 - V2)/(1/l1 - 1/l2)/l2 - elementary_charge*V2
+    expected: 2.27 eV
+    shown: ['$1236/400 - 0.82 = 3.09 - 0.82 = 2.27$ eV']
+    source: {cite: mit, at: 'Problem 6(b) (our own check)'}
+    origin: page-own
+
+  # Independent of h: the line of stopping potential against 1/lambda cuts zero at 1/lambda0.
+  - id: p6-cutoff
+    answer: p6-cutoff
+    where: 'Problem 6(c), answer box: where the straight line of V against 1/lambda reaches zero'
+    inputs: {V1: 1.85 V, V2: 0.82 V, l1: 300 nm, l2: 400 nm}
+    formula: 1/(1/l1 - V1*(1/l1 - 1/l2)/(V1 - V2))
+    expected: 544 nm
+    shown: ['id="p6-cutoff"', '= 544\ \text{nm}"']
+    source: {cite: mit, at: 'Problem 6(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-cutoff-division
+    where: 'Problem 6(c), solution: 1236 eV nm over 2.27 eV'
+    inputs: {hc: 1236 eV*nm, W: 2.27 eV}
+    formula: hc/W
+    expected: 544 nm
+    shown: ['<Formula label="Cutoff wavelength of sodium from the data"']
+    source: {cite: mit, at: 'Problem 6(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-cutoff-frequency
+    where: 'Problem 6(c), check: the cutoff frequency'
+    inputs: {c0: 2.998e8 m/s, l0: 544.49 nm}
+    formula: c0/l0
+    expected: 5.51e14 Hz
+    shown: ['$c/\lambda_0 = 5.51\times 10^{14}$ Hz']
+    source: {cite: mit, at: 'Problem 6(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 7: photon rocket
+
+  # Independent route: a numerical solve of the quadratic f² − 2 gamma f + 1 = 0 between 0 and 1.
+  - id: p7-f
+    kind: identity
+    answer: p7-f
+    where: 'Problem 7(a), answer box: against a numerical solve of the quadratic'
+    formula: gamma - sqrt(gamma**2 - 1)
+    equals: solve('s**2 - 2*gamma*s + 1', 's', 0, 1)
+    samples:
+      gamma: [1.5, 2, 5, 12.3, 20]
+    tolerance: 1e-8
+    shown: ['id="p7-f"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own solution)'}
+    origin: page-own
+
+  # The root satisfies energy conservation: payload energy gamma f plus light energy (1 − f²)/2 is the starting 1.
+  - id: p7-energy
+    kind: identity
+    where: 'Problem 7(a), formula "Energy of the light": energy conservation with the root, in units of M_i c²'
+    formula: gamma*(gamma - sqrt(gamma**2 - 1)) + (1 - (gamma - sqrt(gamma**2 - 1))**2)/2
+    equals: 1
+    samples:
+      gamma: [1.5, 2, 5, 12.3, 20]
+    tolerance: 1e-10
+    shown: ['<Formula label="Energy of the light"']
+    source: {cite: reading2, at: 'slide 5'}
+    origin: page-own
+
+  # And momentum conservation: payload momentum sqrt(gamma² − 1) f equals the light's (1 − f²)/2.
+  - id: p7-momentum
+    kind: identity
+    where: 'Problem 7(a), formula "Energy and momentum of the photon rocket": momentum conservation with the root'
+    formula: sqrt(gamma**2 - 1)*(gamma - sqrt(gamma**2 - 1))
+    equals: (1 - (gamma - sqrt(gamma**2 - 1))**2)/2
+    samples:
+      gamma: [1.5, 2, 5, 12.3, 20]
+    tolerance: 1e-9
+    shown: ['<Formula label="Energy and momentum of the photon rocket"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p7-large-gamma
+    kind: limit
+    where: 'Problem 7(a), check: for large gamma, f approaches 1/(2 gamma)'
+    formula: (gamma - sqrt(gamma**2 - 1))*2*gamma
+    limit: 1
+    vary: {gamma: [10, 100, 1000]}
+    tolerance: 1e-6
+    shown: ['$f \approx 1/(2\gamma)$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  # Independent route: the quadratic solved numerically with gamma = 1/sqrt(1 − beta²).
+  - id: p7-beta
+    kind: identity
+    answer: p7-beta
+    where: 'Problem 7(b), answer box: against a numerical solve of the quadratic with gamma written in beta'
+    formula: sqrt((1 - beta)/(1 + beta))
+    equals: solve('s**2 - 2*s/sqrt(1 - beta**2) + 1', 's', 0, 1)
+    samples:
+      beta: [0.1, 0.3, 0.5, 0.75, 0.9]
+    tolerance: 1e-8
+    shown: ['id="p7-beta"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p7-lesson-example
+    where: 'Problem 7(b), check: the lesson''s example, beta = 0.5'
+    formula: sqrt((1 - 0.5)/(1 + 0.5))
+    expected: '0.577'
+    shown: ['$f = 1/\sqrt3 = 0.577$']
+    source: {cite: reading2, at: 'slide 28 (topic; the formula is the lesson''s own)'}
+    origin: page-own
+
+  - id: p7-one-burn
+    where: 'Problem 7(c), solution: payload fraction for one burn to gamma = 10'
+    formula: 10 - sqrt(99)
+    expected: '0.0501'
+    shown: ['f = 10 - \sqrt{99} = 0.0501"']
+    source: {cite: mit, at: 'Problem 7 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-speed
+    where: 'Problem 7(c), solution: speed for gamma = 10'
+    formula: sqrt(1 - 1/10**2)
+    expected: '0.995'
+    shown: ['$\beta = \sqrt{1 - 1/\gamma^2} = 0.995$']
+    source: {cite: mit, at: 'Problem 7 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-trip
+    answer: p7-trip
+    where: 'Problem 7(c), answer box: four burns to gamma = 10'
+    formula: (10 - sqrt(10**2 - 1))**4
+    expected: '6.31e-6'
+    shown: ['id="p7-trip"', '= 6.31\times 10^{-6}"']
+    source: {cite: mit, at: 'Problem 7 (our own numbers)'}
+    origin: page-own
+
+  # Second route: the form of part (b) with beta = 0.99499, to the fourth power.
+  - id: p7-trip-beta-route
+    where: 'Problem 7(c), check: one burn from the speed, sqrt((1 − beta)/(1 + beta))'
+    formula: sqrt((1 - 0.99499)/(1 + 0.99499))
+    expected: '0.0501'
+    shown: ['$f = \sqrt{(1 - 0.99499)/(1 + 0.99499)} = 0.0501$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  - id: p7-start-mass
+    where: 'Problem 7(c), solution: starting mass per kilogram that comes home'
+    formula: 1/(10 - sqrt(99))**4
+    expected: '158000'
+    tolerance: 500
+    shown: ['needs about 158 000 kg at the start']
+    source: {cite: mit, at: 'Problem 7 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-antiprotons
+    kind: fact
+    where: 'Problem 7(c), solution: antimatter production, as on the slide'
+    value: '100 W for three seconds; efficiency 0.00000001%'
+    shown: ['would light a 100 W bulb for three seconds']
+    source: {cite: reading2, at: 'slide 31'}
+    origin: mit
+
+  - id: p7-gamma-2
+    where: 'Problem 7(c), check: one burn to gamma = 2'
+    formula: 2 - sqrt(3)
+    expected: '0.268'
+    shown: ['$f = 2 - \sqrt3 = 0.268$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  - id: p7-gamma-2-speed
+    where: 'Problem 7(c), check: speed for gamma = 2'
+    formula: sqrt(1 - 1/2**2)
+    expected: '0.866'
+    shown: ['($\beta = 0.866$)']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  - id: p7-gamma-2-trip
+    where: 'Problem 7(c), check: four burns to gamma = 2'
+    formula: (2 - sqrt(3))**4
+    expected: '0.0052'
+    shown: ['$f^4 = 0.0052$']
+    source: {cite: mit, at: 'Problem 7 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 8: smallest surface of revolution
+
+  - id: p8-ring
+    kind: identity
+    where: 'Problem 8(b), check: a horizontal line sweeps a flat ring (numerical integral of 2 pi x)'
+    formula: integrate('2*pi*s', 's', x1, x2)
+    equals: pi*(x2**2 - x1**2)
+    samples:
+      x1: [0.5, 1, 2, 0.3]
+      x2: [1.5, 3, 2.5, 4]
+    tolerance: 1e-9
+    shown: ['$\pi(x_2^2 - x_1^2)$']
+    source: {cite: mit, at: 'Problem 8(b) (our own check)'}
+    origin: page-own
+
+  # Independent route: the numerical derivative of MIT's result (8.5), y = a acosh(x/a) + b.
+  - id: p8-slope
+    kind: identity
+    answer: p8-slope
+    where: 'Problem 8(d), answer box: against the numerical derivative of y = a acosh(x/a) + b'
+    formula: a/sqrt(x**2 - a**2)
+    equals: deriv('a*acosh(s/a) + b', 's', x)
+    samples:
+      a: [0.5, 0.7, 1, 0.85, 0.6]
+      x: [1.5, 2.2, 4, 3.1, 1.8]
+      b: [0, 1, -2, 0.5, 3]
+    tolerance: 1e-7
+    shown: ['id="p8-slope"']
+    source: {cite: mit, at: 'Problem 8(d), eq. (8.4), p. 3'}
+    origin: page-own
+
+  - id: p8-first-integral
+    kind: identity
+    where: 'Problem 8(d), check: the slope satisfies the first integral x y′/sqrt(1 + y′²) = a'
+    formula: x*(a/sqrt(x**2 - a**2))/sqrt(1 + (a/sqrt(x**2 - a**2))**2)
+    equals: a
+    samples:
+      a: [0.5, 0.7, 1, 0.85, 0.6]
+      x: [1.5, 2.2, 4, 3.1, 1.8]
+    tolerance: 1e-10
+    shown: ['so $xy''/\sqrt{1 + y''^2} = a$, as required']
+    source: {cite: mit, at: 'Problem 8(c), eq. (8.3), p. 3'}
+    origin: page-own
+
+  - id: p8-inverse
+    kind: identity
+    where: 'Problem 8(e), check: dx/dy of x = a cosh((y − b)/a), numerically, against sqrt(x² − a²)/a'
+    formula: deriv('a*cosh((s - b)/a)', 's', y)
+    equals: sqrt((a*cosh((y - b)/a))**2 - a**2)/a
+    samples:
+      a: [0.5, 0.7, 1, 0.85]
+      b: [0, 1, -2, 0.5]
+      y: [0.4, 2.2, -1, 1.5]
+    tolerance: 1e-7
+    shown: ['$dx/dy = \sinh[(y - b)/a] = \sqrt{x^2 - a^2}/a$']
+    source: {cite: mit, at: 'Problem 8(e), eq. (8.6), p. 4'}
+    origin: page-own
