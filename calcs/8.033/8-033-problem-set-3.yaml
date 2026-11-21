@@ -1,0 +1,1153 @@
+# Calculations on content/year-2/8.033/8-033-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for the 8.033 problem sets, so every answer is checked here by a route independent of
+# the page where one exists: the invariant interval, the matrix product written out term by term, a numerical
+# derivative (chain rule, wave operator), a numerical solve, or the normalisation of the 4-velocity.
+# In the identities c, g (γ) and b (β) are plain sample numbers; where both g and b appear they are sampled as
+# matching pairs (b = 0.6, g = 1.25; b = 0.8, g = 5/3; b = 0.28, g = 1/0.96; b = 0.96, g = 1/0.28).
+
+page: content/year-2/8.033/8-033-problem-set-3.mdx
+calcs:
+  # ---- Problem 1: four quick questions
+
+  - id: p1-given-speeds
+    kind: fact
+    where: 'Problem 1(a) and (c), statements: the speeds'
+    shown: ['A sphere moves at 90% of the speed of light', 'A lamp moves around you in a circle at 50% of the speed of light']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-contraction-factor
+    where: 'Problem 1(a), check: the contraction factor at beta = 0.9'
+    inputs: {beta: 0.9}
+    formula: sqrt(1 - beta**2)
+    expected: '0.436'
+    shown: ['$\sqrt{1 - 0.81} = 0.436$']
+    source: {cite: mit, at: 'Problem 1(a) (our own check)'}
+    origin: page-own
+
+  - id: p1-transverse-factor
+    where: 'Problem 1(c), check: 1/gamma at beta = 0.5'
+    inputs: {beta: 0.5}
+    formula: sqrt(1 - beta**2)
+    expected: '0.866'
+    shown: ['this is $0.866$ of the emitted frequency']
+    source: {cite: reading3, at: 'slide 28 (transverse Doppler effect; our own number)'}
+    origin: page-own
+
+  # ---- Problem 2: the slanting rod
+
+  - id: p2-given-values
+    kind: fact
+    where: 'Problem 2(c), statement'
+    shown: ['$\theta'' = 30^\circ$ and $\beta = 0.40$']
+    source: {cite: mit, at: 'Problem 2, p. 1'}
+    origin: mit
+
+  # The answer against the two components put together with Pythagoras.
+  - id: p2-len
+    kind: identity
+    answer: p2-len
+    where: 'Problem 2(a), answer box: against the contracted x component and the unchanged y component'
+    formula: L0*sqrt(1 - b**2*cos(th)**2)
+    equals: sqrt((L0*cos(th)*sqrt(1 - b**2))**2 + (L0*sin(th))**2)
+    samples:
+      L0: [1, 0.5, 2, 1.3, 1]
+      b: [0.4, 0.9, 0.2, 0.75, 0.99]
+      th: [0.5236, 0.2, 1.3, 0.8, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p2-len"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # An independent route: the invariant interval. The two marks are simultaneous in S (interval = L^2); in S' they
+  # are L0 apart in space and c dt' = -b L0 cos(th) apart in time.
+  - id: p2-len-by-interval
+    kind: identity
+    where: 'Problem 2(a), check: the same length from the invariant interval'
+    formula: L0*sqrt(1 - b**2*cos(th)**2)
+    equals: sqrt(L0**2 - (-b*L0*cos(th))**2)
+    samples:
+      L0: [1, 0.5, 2, 1.3]
+      b: [0.4, 0.9, 0.2, 0.75]
+      th: [0.5236, 0.2, 1.3, 0.8]
+    tolerance: 1e-9
+    shown: ['so $\Delta s^2 = L''^2 - \beta^2L''^2\cos^2\theta''$']
+    source: {cite: mit, at: 'Problem 2(a) (our own check)'}
+    origin: page-own
+
+  # The angle from the tangent against the angle from the cosine (x component over the length).
+  - id: p2-theta
+    kind: identity
+    answer: p2-theta
+    where: 'Problem 2(b), answer box: against acos(x component / length)'
+    formula: atan(tan(th)/sqrt(1 - b**2))
+    equals: acos(cos(th)*sqrt(1 - b**2)/sqrt(1 - b**2*cos(th)**2))
+    samples:
+      b: [0.4, 0.9, 0.2, 0.75, 0.99]
+      th: [0.5236, 0.2, 1.3, 0.8, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p2-theta"']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-gamma
+    where: 'Problem 2(c): gamma for beta = 0.40'
+    inputs: {beta: 0.40}
+    formula: 1/sqrt(1 - beta**2)
+    expected: '1.0911'
+    shown: ['$\gamma = 1/\sqrt{1 - 0.16} = 1.0911$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-len-num
+    answer: p2-len-num
+    where: 'Problem 2(c), answer box: the length'
+    inputs: {L0: 1.00 m, beta: 0.40}
+    formula: L0*sqrt(1 - beta**2*cos(pi/6)**2)
+    expected: 0.938 m
+    shown: ['id="p2-len-num"']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-theta-num
+    answer: p2-theta-num
+    where: 'Problem 2(c), answer box: the angle in degrees'
+    inputs: {beta: 0.40}
+    formula: atan(tan(pi/6)/sqrt(1 - beta**2))*180/pi
+    expected: '32.2'
+    shown: ['id="p2-theta-num"']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-tan
+    where: 'Problem 2(c): gamma times tan 30 degrees'
+    inputs: {}
+    formula: 1.0911*0.57735
+    expected: '0.6299'
+    shown: ['$\tan\theta = 1.0911 \times 0.57735 = 0.6299$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-dx
+    where: 'Problem 2(c), check: the contracted x component'
+    inputs: {beta: 0.40}
+    formula: cos(pi/6)*sqrt(1 - beta**2)
+    expected: '0.7937'
+    shown: ['$\Delta x = 0.8660/1.0911 = 0.7937$ m']
+    source: {cite: mit, at: 'Problem 2(c) (our own check)'}
+    origin: page-own
+
+  - id: p2-len-from-components
+    where: 'Problem 2(c), check: Pythagoras with the rounded components'
+    inputs: {}
+    formula: sqrt(0.7937**2 + 0.500**2)
+    expected: '0.938'
+    shown: ['$\sqrt{0.7937^2 + 0.500^2} = 0.938$ m']
+    source: {cite: mit, at: 'Problem 2(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: decay in flight
+
+  - id: p3-given-values
+    kind: fact
+    where: 'Problem 3, statement'
+    shown: ['leaves a track $1.05$ mm long before it decays. Its speed relative to the detector was $0.992c$']
+    source: {cite: mit, at: 'Problem 3, p. 1'}
+    origin: mit
+
+  - id: p3-lab-time
+    where: 'Problem 3: the lifetime in the detector frame'
+    inputs: {d: 1.05 mm, beta: 0.992}
+    formula: d/(beta*c)
+    expected: 3.53e-12 s
+    shown: ['(0.992 \times 2.998\times 10^8\ \text{m/s}) = 3.53\times 10^{-12}$ s']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-tau
+    answer: p3-tau
+    where: 'Problem 3, answer box: the proper lifetime'
+    inputs: {d: 1.05 mm, beta: 0.992}
+    formula: d/(beta*c)*sqrt(1 - beta**2)
+    expected: 0.446 ps
+    shown: ['id="p3-tau"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-root
+    where: 'Problem 3: 1/gamma'
+    inputs: {beta: 0.992}
+    formula: sqrt(1 - beta**2)
+    expected: '0.1262'
+    shown: ['= \sqrt{0.015936} = 0.1262$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-gamma
+    where: 'Problem 3: gamma'
+    inputs: {beta: 0.992}
+    formula: 1/sqrt(1 - beta**2)
+    expected: '7.92'
+    shown: ['that is $\gamma = 7.92$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # The same proper lifetime in the particle's frame: the contracted track covered at 0.992c.
+  - id: p3-contracted-track
+    where: 'Problem 3, check: the track in the particle''s frame'
+    inputs: {d: 1.05 mm, beta: 0.992}
+    formula: d*sqrt(1 - beta**2)
+    expected: 0.133 mm
+    shown: ['$1.05\ \text{mm}/7.92 = 0.133$ mm long there']
+    source: {cite: mit, at: 'Problem 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-tau-by-contraction
+    where: 'Problem 3, check: contracted track over speed'
+    inputs: {d: 0.133 mm, beta: 0.992, c0: 2.998e8 m/s}
+    formula: d/(beta*c0)
+    expected: 4.46e-13 s
+    tolerance: 2e-15 s
+    shown: ['$0.133\times 10^{-3}/(0.992 \times 2.998\times 10^8) = 4.46\times 10^{-13}$ s']
+    source: {cite: mit, at: 'Problem 3 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: the pole and the barn
+
+  - id: p4-given-values
+    kind: fact
+    where: 'Problem 4, statement'
+    shown: ['The pole is 10 m long in its own rest frame', 'A barn is at rest in $S$ and is 8 m long there', 'the right end of the pole is at $x = 5$ m, well inside the barn']
+    source: {cite: mit, at: 'Problem 4, p. 2'}
+    origin: mit
+
+  - id: p4-a
+    answer: p4-a
+    where: 'Problem 4(a), answer box: c t'' of event B'
+    inputs: {x: 5 m, ct: 0 m}
+    formula: 2*(ct - sqrt(3)/2*x)
+    expected: -8.66 m
+    shown: ['id="p4-a"']
+    source: {cite: reading1, at: 'slide 16 (the Lorentz transformation; our own numbers)'}
+    origin: page-own
+
+  - id: p4-a-seconds
+    where: 'Problem 4(a): the same time in nanoseconds'
+    inputs: {x: 5 m}
+    formula: -sqrt(3)*x/c
+    expected: -28.9 ns
+    shown: ['$t''_B = -8.66\ \text{m}/c = -28.9$ ns']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-position
+    where: 'Problem 4(a), check: x'' of event B is the right end of the pole'
+    inputs: {x: 5 m, ct: 0 m}
+    formula: 2*(x - sqrt(3)/2*ct)
+    expected: 10 m
+    shown: ['$x''_B = \gamma(x_B - \beta ct_B) = 2 \times 5 = 10$ m']
+    source: {cite: mit, at: 'Problem 4(a) (our own check)'}
+    origin: page-own
+
+  - id: p4-a-interval
+    where: 'Problem 4(a), check: the interval of A and B in S'''
+    inputs: {}
+    formula: 10**2 - 8.66**2
+    expected: '25'
+    shown: ['$10^2 - 8.66^2 = 25\ \text{m}^2$']
+    source: {cite: mit, at: 'Problem 4(a) (our own check)'}
+    origin: page-own
+
+  - id: p4-b-x
+    answer: p4-b-x
+    where: 'Problem 4(b), answer box: x of the left end at the vaulter''s time of B'
+    inputs: {xp: 0 m, ctp: -8.660254 m}
+    formula: 2*(xp + sqrt(3)/2*ctp)
+    expected: -15 m
+    tolerance: 0.001 m
+    shown: ['id="p4-b-x"']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-t
+    answer: p4-b-t
+    where: 'Problem 4(b), answer box: c t of the left end at the vaulter''s time of B'
+    inputs: {xp: 0 m, ctp: -8.660254 m}
+    formula: 2*(ctp + sqrt(3)/2*xp)
+    expected: -17.3 m
+    shown: ['id="p4-b-t"']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # Second route for (b): the left end's world line in S, x = beta c t, at c t = -17.3 m.
+  - id: p4-b-worldline
+    where: 'Problem 4(b), check: the left end on its world line in S'
+    inputs: {ct: -17.3 m}
+    formula: sqrt(3)/2*ct
+    expected: -15 m
+    tolerance: 0.05 m
+    shown: ['it was at $x = -\tfrac{\sqrt 3}{2}\times 17.3 = -15$ m']
+    source: {cite: mit, at: 'Problem 4(b) (our own check)'}
+    origin: page-own
+
+  - id: p4-c-x
+    answer: p4-c-x
+    where: 'Problem 4(c), answer box: x of the right end at the vaulter''s time of A'
+    inputs: {xp: 10 m, ctp: 0 m}
+    formula: 2*(xp + sqrt(3)/2*ctp)
+    expected: 20 m
+    tolerance: 0.001 m
+    shown: ['id="p4-c-x"']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-t
+    answer: p4-c-t
+    where: 'Problem 4(c), answer box: c t of the right end at the vaulter''s time of A'
+    inputs: {xp: 10 m, ctp: 0 m}
+    formula: 2*(ctp + sqrt(3)/2*xp)
+    expected: 17.3 m
+    shown: ['id="p4-c-t"']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # Second route for (c): the right end's world line in S, x = 5 m + beta c t, at c t = 17.3 m.
+  - id: p4-c-worldline
+    where: 'Problem 4(c), check: the right end on its world line in S'
+    inputs: {x0: 5 m, ct: 17.3 m}
+    formula: x0 + sqrt(3)/2*ct
+    expected: 20 m
+    tolerance: 0.05 m
+    shown: ['it has reached $5 + \tfrac{\sqrt 3}{2}\times 17.3 = 20$ m']
+    source: {cite: mit, at: 'Problem 4(c) (our own check)'}
+    origin: page-own
+
+  - id: p4-d-barn
+    where: 'Problem 4(d): the contracted barn'
+    inputs: {L: 8 m}
+    formula: L/2
+    expected: 4 m
+    tolerance: 0.001 m
+    shown: ['is $8\ \text{m}/\gamma = 4$ m long']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-left-door
+    where: 'Problem 4(d): the left door at the instant of B, in S'''
+    inputs: {tip: 10 m, back: 5 m}
+    formula: tip - back/2
+    expected: 7.5 m
+    shown: ['at $x'' = 7.5$ m, and the right door']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-right-door
+    where: 'Problem 4(d): the right door at the instant of B, in S'''
+    inputs: {tip: 10 m, ahead: 3 m}
+    formula: tip + ahead/2
+    expected: 11.5 m
+    shown: ['at $x'' = 11.5$ m']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-open-time
+    where: 'Problem 4(d): c t at which the pole''s tip reaches the right door, in S'
+    inputs: {gap: 3 m}
+    formula: gap/(sqrt(3)/2)
+    expected: 3.46 m
+    shown: ['$ct = 3\ \text{m}/\beta = 3.46$ m']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-open-time-vaulter
+    where: 'Problem 4(d): the same event in the vaulter''s frame'
+    inputs: {x: 8 m, gap: 3 m}
+    formula: 2*(gap/(sqrt(3)/2) - sqrt(3)/2*x)
+    expected: -6.93 m
+    shown: ['2\,(3.464 - 6.928) = -6.93$ m']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-both-closed
+    where: 'Problem 4(d): how long both doors are closed in S'
+    inputs: {gap: 3 m}
+    formula: gap/(sqrt(3)/2)/c
+    expected: 11.6 ns
+    shown: ['about $11.6$ ns']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-door-speed
+    where: 'Problem 4(d), check: the speed of the left door between the two sketches'
+    inputs: {}
+    formula: 7.5/8.66
+    expected: '0.866'
+    shown: ['its speed is $7.5/8.66 = 0.866$ of $c$']
+    source: {cite: mit, at: 'Problem 4(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: the slanted boost
+
+  # Element (1,1) of R(-th) Lx R(th), written out as the sum over the matrix product.
+  - id: p5-xx
+    kind: identity
+    answer: p5-xx
+    where: 'Problem 5(a), answer box: against the matrix product, term by term'
+    formula: 1 + (g - 1)*cos(th)**2
+    equals: cos(th)*g*cos(th) + (-sin(th))*1*(-sin(th))
+    samples:
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716, 1]
+      th: [0.5236, 0.2, 1.3, 0.8, 1.1]
+    tolerance: 1e-9
+    shown: ['id="p5-xx"']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # Element (1,2) of the same product.
+  - id: p5-xy
+    kind: identity
+    answer: p5-xy
+    where: 'Problem 5(a), answer box: against the matrix product, term by term'
+    formula: (g - 1)*sin(th)*cos(th)
+    equals: cos(th)*g*sin(th) + (-sin(th))*1*cos(th)
+    samples:
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      th: [0.5236, 0.2, 1.3, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p5-xy"']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # The time row against the invariant interval: c t' must equal sqrt(x'^2 + y'^2 - x^2 - y^2 + (ct)^2), with x' and
+  # y' from the space rows of the page. w stands for ct. The samples keep c t' positive.
+  - id: p5-t
+    kind: identity
+    answer: p5-t
+    where: 'Problem 5(b), answer box: against the invariant interval, with the space rows of part (a)'
+    formula: g*(w - b*(x*cos(th) + y*sin(th)))
+    equals: sqrt(((1 + (g - 1)*cos(th)**2)*x + (g - 1)*sin(th)*cos(th)*y - g*b*cos(th)*w)**2 + ((g - 1)*sin(th)*cos(th)*x + (1 + (g - 1)*sin(th)**2)*y - g*b*sin(th)*w)**2 - x**2 - y**2 + w**2)
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      th: [0.5236, 0.2, 1.3, 0.8]
+      x: [1, 0.5, 3, 0.7]
+      y: [2, 1.5, 0.5, 0.9]
+      w: [3, 2.5, 4, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p5-t"']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # The vector form against the space row for x'.
+  - id: p5-vector-form
+    kind: identity
+    where: 'Problem 5(b), formula "The slanted boost in vector form": its x component against the space row'
+    formula: x + (g - 1)*(x*cos(th) + y*sin(th))*cos(th) - g*b*w*cos(th)
+    equals: (1 + (g - 1)*cos(th)**2)*x + (g - 1)*sin(th)*cos(th)*y - g*b*cos(th)*w
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      th: [0.5236, 0.2, 1.3, 0.8]
+      x: [1, 0.5, 3, 0.7]
+      y: [2, 1.5, 0.5, 0.9]
+      w: [3, 2.5, 4, 2.2]
+    tolerance: 1e-9
+    shown: ['<Formula label="The slanted boost in vector form"']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-check-along
+    where: 'Problem 5(b), number test: the coordinate along the velocity'
+    inputs: {}
+    formula: 1*cos(pi/6) + 2*sin(pi/6)
+    expected: '1.866'
+    shown: ['$0.866 + 1 = 1.866$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-check-x
+    where: 'Problem 5(b), number test: x'''
+    inputs: {}
+    formula: (1 + 0.25*cos(pi/6)**2)*1 + 0.25*sin(pi/6)*cos(pi/6)*2 - 1.25*0.6*cos(pi/6)*3
+    expected: '-0.545'
+    shown: ['$x'' = -0.545$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-check-y
+    where: 'Problem 5(b), number test: y'''
+    inputs: {}
+    formula: 0.25*sin(pi/6)*cos(pi/6)*1 + (1 + 0.25*sin(pi/6)**2)*2 - 1.25*0.6*sin(pi/6)*3
+    expected: '1.108'
+    shown: ['$y'' = 1.108$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-check-t
+    where: 'Problem 5(b), number test: c t'''
+    inputs: {}
+    formula: 1.25*(3 - 0.6*(1*cos(pi/6) + 2*sin(pi/6)))
+    expected: '2.350'
+    shown: ['$ct'' = 2.350$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  - id: p5-check-interval
+    where: 'Problem 5(b), number test: the interval in S'''
+    inputs: {}
+    formula: 0.297 + 1.228 - 5.525
+    expected: '-4.00'
+    shown: ['= 0.297 + 1.228 - 5.525 = -4.00$']
+    source: {cite: mit, at: 'Problem 5 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: the wave equation
+
+  # dt'/dx by numerical differentiation of t' = g (t - v x / c^2).
+  - id: p6-dx
+    kind: identity
+    answer: p6-dx
+    where: 'Problem 6(a), answer box: against the numerical derivative of t'' with respect to x'
+    formula: -g*v/c**2
+    equals: deriv('g*(t0 - v*x/c**2)', 'x', x0)
+    samples:
+      g: [1.25, 1.6666666666666667, 3, 1.2]
+      v: [0.6, 0.8, 0.3, 0.9]
+      c: [1, 1, 2, 1.5]
+      t0: [0.3, 1.1, 2, 0.7]
+      x0: [0.5, 0.2, 1.4, 3]
+    tolerance: 1e-7
+    shown: ['id="p6-dx"']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  # dx'/dt by numerical differentiation of x' = g (x - v t).
+  - id: p6-dt
+    kind: identity
+    answer: p6-dt
+    where: 'Problem 6(a), answer box: against the numerical derivative of x'' with respect to t'
+    formula: -g*v
+    equals: deriv('g*(x0 - v*x)', 'x', t0)
+    samples:
+      g: [1.25, 1.6666666666666667, 3, 1.2]
+      v: [0.6, 0.8, 0.3, 0.9]
+      t0: [0.3, 1.1, 2, 0.7]
+      x0: [0.5, 0.2, 1.4, 3]
+    tolerance: 1e-7
+    shown: ['id="p6-dt"']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  # Part (b) on a test function: F = x'^3 t'^2, written in the coordinates of S. Its wave operator computed in S by
+  # numerical second derivatives must equal F_x'x' - F_t't'/c^2 = 6 x' t'^2 - 2 x'^3 / c^2.
+  - id: p6-wave-operator
+    kind: identity
+    where: 'Problem 6(b), formula "The wave operator is invariant": tested on F = x''^3 t''^2 with numerical second derivatives in S'
+    formula: deriv('(g*(x - v*t0))**3*(g*(t0 - v*x/c**2))**2', 'x', x0, 2) - deriv('(g*(x0 - v*x))**3*(g*(x - v*x0/c**2))**2', 'x', t0, 2)/c**2
+    equals: 6*(g*(x0 - v*t0))*(g*(t0 - v*x0/c**2))**2 - 2*(g*(x0 - v*t0))**3/c**2
+    samples:
+      g: [1.25, 1.6666666666666667, 1.25]
+      v: [0.6, 0.8, 1.2]
+      c: [1, 1, 2]
+      t0: [0.3, 1.1, 2]
+      x0: [1.5, 0.2, 1.4]
+    tolerance: 1e-5
+    shown: ['<Formula label="The wave operator is invariant"']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  # Part (b), last check: x - ct in the coordinates of S', with x = g (x' + b ct') and ct = g (ct' + b x').
+  - id: p6-light-cone-coordinate
+    kind: identity
+    where: 'Problem 6(b), check: x - ct = gamma (1 - beta) (x'' - ct''), from the inverse transformation'
+    formula: g*(xp + b*wp) - g*(wp + b*xp)
+    equals: g*(1 - b)*(xp - wp)
+    samples:
+      b: [0.6, 0.8, 0.28, 0.96]
+      g: [1.25, 1.6666666666666667, 1.0416666666666667, 3.5714285714285716]
+      xp: [1.3, 0.5, 3, 0.7]
+      wp: [0.4, 1.5, 0.5, 2.2]
+    tolerance: 1e-9
+    shown: ['$x - ct = \gamma(1 - \beta)(x'' - ct'')$']
+    source: {cite: mit, at: 'Problem 6(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 7: two flashes
+
+  - id: p7-given-values
+    kind: fact
+    where: 'Problem 7, statement'
+    shown: ['on the positive $x$ axis of his frame, $2400$ m apart', 'A red flash follows $5.00\ \mu\text{s}$ later']
+    source: {cite: mit, at: 'Problem 7, p. 3'}
+    origin: mit
+
+  - id: p7-cdt
+    where: 'Problem 7(a): c times the time difference'
+    inputs: {dt: 5.00 us}
+    formula: c*dt
+    expected: 1499 m
+    shown: ['($c\,\Delta t = 1499$ m is less than $2400$ m)']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-ratio
+    where: 'Problem 7(a): the ratio a'
+    inputs: {dt: 5.00 us, dx: 2400 m}
+    formula: c*dt/dx
+    expected: '0.6246'
+    shown: ['$a = c\,\Delta t/\Delta x = 1499/2400 = 0.6246$']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-beta
+    answer: p7-beta
+    where: 'Problem 7(a), answer box: the speed of the second observer'
+    inputs: {dt: 5.00 us, dx: 2400 m}
+    formula: 2*(c*dt/dx)/(1 + (c*dt/dx)**2)
+    expected: '0.899'
+    shown: ['id="p7-beta"']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  # The condition itself, solved numerically for beta (the root away from beta = 0).
+  - id: p7-beta-by-solve
+    where: 'Problem 7(a), check: the condition gamma (a - beta) = -a solved numerically'
+    inputs: {}
+    formula: solve('(0.6245676 - x)/sqrt(1 - x**2) + 0.6245676', 'x', 0.3, 0.99)
+    expected: '0.8986'
+    shown: ['With $\beta = 0.8986$']
+    source: {cite: mit, at: 'Problem 7(a) (our own check)'}
+    origin: page-own
+
+  - id: p7-speed
+    where: 'Problem 7(a): the speed in m/s'
+    inputs: {dt: 5.00 us, dx: 2400 m}
+    formula: 2*(c*dt/dx)/(1 + (c*dt/dx)**2)*c
+    expected: 2.69e8 m/s
+    shown: ['about $2.69\times 10^8$ m/s']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-gamma
+    where: 'Problem 7(a), check: gamma'
+    inputs: {beta: 0.8986}
+    formula: 1/sqrt(1 - beta**2)
+    expected: '2.279'
+    shown: ['$\gamma = 2.279$ and']
+    source: {cite: mit, at: 'Problem 7(a) (our own check)'}
+    origin: page-own
+
+  - id: p7-reversed
+    where: 'Problem 7(a), check: gamma (a - beta)'
+    inputs: {dt: 5.00 us, dx: 2400 m}
+    formula: (c*dt/dx - 2*(c*dt/dx)/(1 + (c*dt/dx)**2))/sqrt(1 - (2*(c*dt/dx)/(1 + (c*dt/dx)**2))**2)
+    expected: '-0.6246'
+    shown: ['(0.6246 - 0.8986) = -0.6246$']
+    source: {cite: mit, at: 'Problem 7(a) (our own check)'}
+    origin: page-own
+
+  - id: p7-dx-prime
+    where: 'Problem 7(b): the separation in S'''
+    inputs: {dt: 5.00 us, dx: 2400 m}
+    formula: (dx - 2*(c*dt/dx)/(1 + (c*dt/dx)**2)*c*dt)/sqrt(1 - (2*(c*dt/dx)/(1 + (c*dt/dx)**2))**2)
+    expected: 2400 m
+    tolerance: 0.01 m
+    shown: ['(1 - 0.8986\times 0.6246) = +2400\ \text{m}']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 8: a pair of events
+
+  - id: p8-given-values
+    kind: fact
+    where: 'Problem 8, statement'
+    shown: ['Event 1 is at $x = 200$ m at the time $t = 5.0\ \mu\text{s}$. Event 2 is at $x = 1200$ m at $t = 2.0\ \mu\text{s}$.']
+    source: {cite: mit, at: 'Problem 8, p. 3'}
+    origin: mit
+
+  - id: p8-cdt
+    where: 'Problem 8(a): c times the time difference'
+    inputs: {dt: -3.0 us}
+    formula: c*dt
+    expected: -899.4 m
+    shown: ['so $c\,\Delta t = -899.4$ m']
+    source: {cite: mit, at: 'Problem 8(a) (our own solution)'}
+    origin: page-own
+
+  - id: p8-s2
+    answer: p8-s2
+    where: 'Problem 8(a), answer box: the squared interval'
+    inputs: {dx: 1000 m, dt: -3.0 us}
+    formula: dx**2 - (c*dt)**2
+    expected: 191000 m**2
+    tolerance: 500 m**2
+    shown: ['id="p8-s2"']
+    source: {cite: reading2, at: 'slide 21 (the definition; our own numbers)'}
+    origin: page-own
+
+  - id: p8-s2-round-c
+    where: 'Problem 8(a), check: the same with c = 3.00e8 m/s'
+    inputs: {dx: 1000 m, dt: -3.0 us, c0: 3.00e8 m/s}
+    formula: dx**2 - (c0*dt)**2
+    expected: 1.90e5 m**2
+    shown: ['you get $1.90\times 10^5\ \text{m}^2$']
+    source: {cite: mit, at: 'Problem 8(a) (our own check)'}
+    origin: page-own
+
+  - id: p8-sigma
+    answer: p8-sigma
+    where: 'Problem 8(b), answer box: the proper distance'
+    inputs: {dx: 1000 m, dt: -3.0 us}
+    formula: sqrt(dx**2 - (c*dt)**2)
+    expected: 437 m
+    shown: ['id="p8-sigma"']
+    source: {cite: reading2, at: 'slide 21 (the definition; our own numbers)'}
+    origin: page-own
+
+  - id: p8-beta
+    answer: p8-beta
+    where: 'Problem 8(c), answer box: the speed of the frame in which the events are simultaneous'
+    inputs: {dx: 1000 m, dt: -3.0 us}
+    formula: abs(c*dt/dx)
+    expected: '0.899'
+    shown: ['id="p8-beta"']
+    source: {cite: mit, at: 'Problem 8(c) (our own solution)'}
+    origin: page-own
+
+  # Second route for (b) and (c): the distance in the simultaneous frame is dx / gamma.
+  - id: p8-contracted
+    where: 'Problem 8(c), check: the distance between the events in S'''
+    inputs: {dx: 1000 m, dt: -3.0 us}
+    formula: dx*sqrt(1 - (c*dt/dx)**2)
+    expected: 437 m
+    shown: ['= 1000\ \text{m}\times 0.437 = 437$ m']
+    source: {cite: mit, at: 'Problem 8(c) (our own check)'}
+    origin: page-own
+
+  - id: p8-clock-speed
+    where: 'Problem 8(d): the speed a clock would need'
+    inputs: {dx: 1000 m, dt: 3.0 us}
+    formula: dx/dt
+    expected: 3.3e8 m/s
+    shown: ['a speed of $3.3\times 10^8$ m/s']
+    source: {cite: mit, at: 'Problem 8(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 9: transformation of speeds
+
+  # The speed against the product form of 1 - u^2/c^2 (the normalisation of the 4-velocity).
+  - id: p9-u
+    kind: identity
+    answer: p9-u
+    where: 'Problem 9, answer box: against the product form of 1 - u^2/c^2'
+    formula: sqrt((ux + v)**2 + uy**2*(1 - v**2/c**2))/(1 + ux*v/c**2)
+    equals: c*sqrt(1 - (1 - (ux**2 + uy**2)/c**2)*(1 - v**2/c**2)/(1 + ux*v/c**2)**2)
+    samples:
+      ux: [0.1, 0.6, 0.3, -0.5, 0.0]
+      uy: [0.2, 0.5, 0.9, 0.4, 0.7]
+      v: [0.5, 0.9, 0.2, 0.7, 0.6]
+      c: [1, 1, 1.5, 1, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p9-u"']
+    source: {cite: mit, at: 'Problem 9 (our own solution)'}
+    origin: page-own
+
+  # The limit: with u_x' = 0 the speed goes to c as u_y' goes to c.
+  - id: p9-limit
+    kind: limit
+    where: 'Problem 9, step "The limits": u goes to c when u_y'' goes to c (u_x'' = 0, v = 0.6, c = 1)'
+    formula: sqrt((0 + 0.6)**2 + uy**2*(1 - 0.6**2))/(1 + 0*0.6)
+    limit: '1'
+    vary:
+      uy: [0.9, 0.99, 0.999, 0.9999, 0.999999, 0.99999999]
+    tolerance: 1e-7
+    shown: ['<Formula label="One minus the squared speed"']
+    source: {cite: mit, at: 'Problem 9 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 10: the quasar
+
+  - id: p10-given-values
+    kind: fact
+    where: 'Problem 10, statement: the observed wavelengths are three times the laboratory ones'
+    shown: ['each wavelength is three times as long as the wavelength measured for hydrogen at rest']
+    source: {cite: mit, at: 'Problem 10, p. 3'}
+    origin: mit
+
+  - id: p10-a
+    answer: p10-a
+    where: 'Problem 10(a), answer box: the classical moving-source speed over c'
+    inputs: {ratio: 3}
+    formula: ratio - 1
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['id="p10-a"']
+    source: {cite: mit, at: 'Problem 10(a) (our own solution)'}
+    origin: page-own
+
+  - id: p10-b
+    answer: p10-b
+    where: 'Problem 10(b), answer box: the relativistic speed over c'
+    inputs: {ratio: 3}
+    formula: (ratio**2 - 1)/(ratio**2 + 1)
+    expected: '0.8'
+    tolerance: 1e-9
+    shown: ['id="p10-b"']
+    source: {cite: reading3, at: 'slides 27 and 28 (solved for beta in our own solution)'}
+    origin: page-own
+
+  # The relativistic speed found numerically from the Doppler factor itself.
+  - id: p10-b-by-solve
+    where: 'Problem 10(b), check: sqrt((1 + beta)/(1 - beta)) = 3 solved numerically'
+    inputs: {}
+    formula: solve('sqrt((1 + x)/(1 - x)) - 3', 'x', 0.1, 0.99)
+    expected: '0.8'
+    tolerance: 1e-9
+    shown: ['$\sqrt{1.8/0.2} = \sqrt 9 = 3$']
+    source: {cite: mit, at: 'Problem 10(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 11: the starship
+
+  - id: p11-given-values
+    kind: fact
+    where: 'Problem 11, statement'
+    shown: ['the two beams make an angle of $120^\circ$ with each other']
+    source: {cite: mit, at: 'Problem 11, p. 3'}
+    origin: mit
+
+  - id: p11-beta
+    answer: p11-beta
+    where: 'Problem 11, answer box: the speed over c'
+    inputs: {}
+    formula: cos(pi/3)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['id="p11-beta"']
+    source: {cite: reading3, at: 'slide 27 (aberration; our own solution)'}
+    origin: page-own
+
+  # Independent route: with the full aberration formula, the angle between the two beams in your frame for beta = 0.5.
+  - id: p11-angle-check
+    where: 'Problem 11, check: the angle between the beams for beta = 0.5, in degrees'
+    inputs: {beta: 0.5}
+    formula: 2*acos((cos(pi/2) + beta)/(1 + beta*cos(pi/2)))*180/pi
+    expected: '120'
+    tolerance: 1e-6
+    shown: ['so the angle between the beams is $2\theta'' = 120^\circ$']
+    source: {cite: mit, at: 'Problem 11 (our own check)'}
+    origin: page-own
+
+  - id: p11-gamma
+    where: 'Problem 11, check: the common Doppler factor gamma'
+    inputs: {beta: 0.5}
+    formula: 1/sqrt(1 - beta**2)
+    expected: '1.155'
+    shown: ['$\gamma\omega = 1.155\,\omega$']
+    source: {cite: mit, at: 'Problem 11 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 12: Ives and Stilwell
+
+  - id: p12-given-values
+    kind: fact
+    where: 'Problem 12, statement'
+    shown: ['fly along the axis of an evacuated tube at $2.0\times 10^6$ m/s', 'has the (proper) wavelength $486.133$ nm']
+    source: {cite: mit, at: 'Problem 12, p. 4'}
+    origin: mit
+
+  - id: p12-beta
+    where: 'Problem 12(a): beta'
+    inputs: {v: 2.0e6 m/s, c0: 2.998e8 m/s}
+    formula: v/c0
+    expected: '0.006671'
+    shown: ['$\beta = 2.0\times 10^6/2.998\times 10^8 = 0.006671$']
+    source: {cite: mit, at: 'Problem 12(a) (our own solution)'}
+    origin: page-own
+
+  - id: p12-a
+    answer: p12-a
+    where: 'Problem 12(a), answer box: the wavelength from the approaching atoms'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: l0*sqrt((1 - v/c)/(1 + v/c))
+    expected: 482.901 nm
+    tolerance: 0.001 nm
+    shown: ['id="p12-a"']
+    source: {cite: reading3, at: 'slides 27 and 28 (our own numbers)'}
+    origin: page-own
+
+  - id: p12-b
+    answer: p12-b
+    where: 'Problem 12(b), answer box: the wavelength from the receding atoms'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: l0*sqrt((1 + v/c)/(1 - v/c))
+    expected: 489.387 nm
+    tolerance: 0.001 nm
+    shown: ['id="p12-b"']
+    source: {cite: reading3, at: 'slides 27 and 28 (our own numbers)'}
+    origin: page-own
+
+  - id: p12-a-classical
+    where: 'Problem 12(a), check: the classical moving-source value'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: l0*(1 - v/c)
+    expected: 482.890 nm
+    shown: ['gives $482.890$ nm']
+    source: {cite: mit, at: 'Problem 12(a) (our own check)'}
+    origin: page-own
+
+  - id: p12-b-classical
+    where: 'Problem 12(b), check: the classical moving-source value'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: l0*(1 + v/c)
+    expected: 489.376 nm
+    shown: ['gives $489.376$ nm']
+    source: {cite: mit, at: 'Problem 12(b) (our own check)'}
+    origin: page-own
+
+  - id: p12-classical-shift
+    where: 'Problem 12(b), check: the classical shift'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: l0*v/c
+    expected: 3.243 nm
+    shown: ['$3.243$ nm, in both directions']
+    source: {cite: mit, at: 'Problem 12(b) (our own check)'}
+    origin: page-own
+
+  - id: p12-a-shift
+    where: 'Problem 12(a), check: the relativistic shift towards the blue'
+    inputs: {}
+    formula: 482.901 - 486.133
+    expected: '-3.232'
+    shown: ['The shift is $-3.232$ nm']
+    source: {cite: mit, at: 'Problem 12(a) (our own check)'}
+    origin: page-own
+
+  - id: p12-b-shift
+    where: 'Problem 12(b), check: the relativistic shift towards the red'
+    inputs: {}
+    formula: 489.387 - 486.133
+    expected: '3.254'
+    shown: ['The shift is $+3.254$ nm']
+    source: {cite: mit, at: 'Problem 12(b) (our own check)'}
+    origin: page-own
+
+  - id: p12-c
+    answer: p12-c
+    where: 'Problem 12(c), answer box: average minus the proper wavelength, exact (gamma - 1) lambda_0'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: l0*(1/sqrt(1 - (v/c)**2) - 1)
+    expected: 10.8 pm
+    shown: ['id="p12-c"']
+    source: {cite: mit, at: 'Problem 12(c) (our own solution)'}
+    origin: page-own
+
+  # Second route for (c): the average of the two exact wavelengths, minus the proper wavelength.
+  - id: p12-c-by-average
+    where: 'Problem 12(c), check: the average of the two exact wavelengths minus the proper one'
+    inputs: {v: 2.0e6 m/s, l0: 486.133 nm}
+    formula: (l0*sqrt((1 - v/c)/(1 + v/c)) + l0*sqrt((1 + v/c)/(1 - v/c)))/2 - l0
+    expected: 0.0108 nm
+    shown: ['= 0.0108$ nm, that is $10.8$ pm']
+    source: {cite: mit, at: 'Problem 12(c) (our own check)'}
+    origin: page-own
+
+  - id: p12-c-rounded-average
+    where: 'Problem 12(c), check: the average of the rounded wavelengths'
+    inputs: {}
+    formula: (482.901 + 489.387)/2
+    expected: '486.144'
+    shown: ['$(482.901 + 489.387)/2 = 486.144$ nm']
+    source: {cite: mit, at: 'Problem 12(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 13 (optional): to the galactic centre
+
+  - id: p13-given-values
+    kind: fact
+    where: 'Problem 13, statement'
+    shown: ['The centre of our galaxy is about $28{,}000$ light-years from the Earth.']
+    source: {cite: mit, at: 'Optional Problem 13, p. 4'}
+    origin: mit
+
+  - id: p13-a-example
+    where: 'Problem 13(a): the traveller''s time for gamma = 1000'
+    inputs: {t: 28000 yr, gamma: 1000}
+    formula: t/gamma
+    expected: 28 yr
+    tolerance: 0.001 yr
+    shown: ['With $\gamma = 1000$, for example, the traveller ages 28 years.']
+    source: {cite: mit, at: 'Optional Problem 13(a) (our own example)'}
+    origin: page-own
+
+  - id: p13-gamma-beta
+    where: 'Problem 13(b): gamma times beta'
+    inputs: {d: 28000 ly, tau: 30 yr}
+    formula: d/(c*tau)
+    expected: '933.3'
+    shown: ['c\times 30\ \text{years}} = 933.3']
+    source: {cite: mit, at: 'Optional Problem 13(b) (our own solution)'}
+    origin: page-own
+
+  # The exact 1 - beta from gamma beta, not the approximation 1/(2 gamma^2 beta^2) used on the page.
+  - id: p13-b
+    answer: p13-b
+    where: 'Problem 13(b), answer box: 1 - v/c, exact'
+    inputs: {d: 28000 ly, tau: 30 yr}
+    formula: 1 - (d/(c*tau))/sqrt(1 + (d/(c*tau))**2)
+    expected: '5.74e-7'
+    shown: ['id="p13-b"']
+    source: {cite: mit, at: 'Optional Problem 13(b) (our own solution)'}
+    origin: page-own
+
+  - id: p13-extra-days
+    where: 'Problem 13(b), check: the extra time on Earth''s clocks, in years'
+    inputs: {t: 28000 yr}
+    formula: t*5.74e-7
+    expected: 0.016 yr
+    shown: ['= 0.016$ years']
+    source: {cite: mit, at: 'Optional Problem 13(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 14 (optional): what time is it anyway?
+
+  - id: p14-given-values
+    kind: fact
+    where: 'Problem 14, statement'
+    shown: ['which move relative to each other at $0.60c$']
+    source: {cite: mit, at: 'Optional Problem 14, p. 4'}
+    origin: mit
+
+  - id: p14-a
+    answer: p14-a
+    where: 'Problem 14(a), answer box: the reading by time dilation'
+    inputs: {t: 5.00 us, beta: 0.60}
+    formula: t*sqrt(1 - beta**2)
+    expected: 4.00 us
+    shown: ['id="p14-a"']
+    source: {cite: reading2, at: 'slide 4 (time dilation; our own numbers)'}
+    origin: page-own
+
+  - id: p14-emission-time
+    where: 'Problem 14(b): when the light left the moving clock'
+    inputs: {t: 5.00 us, beta: 0.60}
+    formula: t/(1 + beta)
+    expected: 3.125 us
+    shown: ['so $t_e = 3.125\ \mu\text{s}$']
+    source: {cite: mit, at: 'Optional Problem 14(b) (our own solution)'}
+    origin: page-own
+
+  # The seen reading from the Doppler factor (the page's solution goes through the emission time).
+  - id: p14-b
+    answer: p14-b
+    where: 'Problem 14(b), answer box: the reading he sees, from the Doppler factor'
+    inputs: {t: 5.00 us, beta: 0.60}
+    formula: t*sqrt((1 - beta)/(1 + beta))
+    expected: 2.50 us
+    shown: ['id="p14-b"']
+    source: {cite: mit, at: 'Optional Problem 14(b) (our own solution)'}
+    origin: page-own
+
+  - id: p14-b-by-emission
+    where: 'Problem 14(b): the reading from the emission time'
+    inputs: {t: 5.00 us, beta: 0.60}
+    formula: t/(1 + beta)*sqrt(1 - beta**2)
+    expected: 2.50 us
+    shown: ['$t_e/\gamma = 3.125/1.25 = 2.50\ \mu\text{s}$']
+    source: {cite: mit, at: 'Optional Problem 14(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 15 (optional): the unreachable goal
+
+  - id: p15-given-values
+    kind: fact
+    where: 'Problem 15, statement'
+    shown: ['It is given a speed increment of $0.50c$', 'is more than $0.999c$']
+    source: {cite: mit, at: 'Optional Problem 15, p. 4'}
+    origin: mit
+
+  # The number of increments is the first whole number above log(1999)/log(3) = 6.92: the tolerance 0.1 lets this
+  # entry hold the whole number 7 that the box asks for.
+  - id: p15-n
+    answer: p15-n
+    where: 'Problem 15, answer box: the first whole number above log 1999 / log 3'
+    inputs: {}
+    formula: log((1 + 0.999)/(1 - 0.999))/log(3)
+    expected: '7'
+    tolerance: 0.1
+    shown: ['id="p15-n"']
+    source: {cite: mit, at: 'Optional Problem 15 (our own solution)'}
+    origin: page-own
+
+  - id: p15-ratio
+    where: 'Problem 15, check: the ratio of the rapidities'
+    inputs: {}
+    formula: log((1 + 0.999)/(1 - 0.999))/log(3)
+    expected: '6.92'
+    shown: ['is $6.92$ times that']
+    source: {cite: mit, at: 'Optional Problem 15 (our own check)'}
+    origin: page-own
+
+  - id: p15-after-six
+    where: 'Problem 15, check: the speed after six increments'
+    inputs: {}
+    formula: (3**6 - 1)/(3**6 + 1)
+    expected: '0.99726'
+    shown: ['$0.99726$, $0.99909$']
+    source: {cite: mit, at: 'Optional Problem 15 (our own check)'}
+    origin: page-own
+
+  - id: p15-after-seven
+    where: 'Problem 15, check: the speed after seven increments'
+    inputs: {}
+    formula: (3**7 - 1)/(3**7 + 1)
+    expected: '0.99909'
+    shown: ['The sixth is still below $0.999$, the seventh is above.']
+    source: {cite: mit, at: 'Optional Problem 15 (our own check)'}
+    origin: page-own
+
+  # Step by step with the addition rule, seven times, without the product form.
+  - id: p15-step-by-step
+    where: 'Problem 15, check: seven increments with the addition rule itself'
+    inputs: {}
+    formula: ((((((0.5 + 0.5)/(1 + 0.25) + 0.5)/(1 + 0.5*0.8) + 0.5)/(1 + 0.5*0.9285714285714286) + 0.5)/(1 + 0.5*0.975609756097561) + 0.5)/(1 + 0.5*0.9918032786885246) + 0.5)/(1 + 0.5*0.9972602739726028)
+    expected: '0.99909'
+    shown: ['Step by step: $0.5$, $0.8$, $0.9286$, $0.9756$, $0.9918$']
+    source: {cite: reading1, at: 'slide 18 (addition of parallel velocities; our own numbers)'}
+    origin: page-own
+
+  - id: p15-rapidity
+    where: 'Problem 15, check: the rapidity of 0.5c'
+    inputs: {}
+    formula: log(3)/2
+    expected: '0.549'
+    shown: ['$\tanh^{-1}0.5 = 0.549$']
+    source: {cite: reading2, at: 'slide 17 (rapidity; our own numbers)'}
+    origin: page-own
+
+  - id: p15-rapidity-goal
+    where: 'Problem 15, check: the rapidity of 0.999c'
+    inputs: {}
+    formula: log(1999)/2
+    expected: '3.800'
+    shown: ['$\tanh^{-1}0.999 = 3.800$']
+    source: {cite: reading2, at: 'slide 17 (rapidity; our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 16 (optional): faster than light
+
+  # The threshold speed against a numerical solve of dt' = 0, that is 1 - u v / c^2 = 0, with c = 1.
+  - id: p16-v
+    kind: identity
+    answer: p16-v
+    where: 'Problem 16, answer box: against the root of 1 - u v/c^2 = 0 found numerically (c = 1)'
+    formula: c**2/u
+    equals: solve('1 - x*u/c**2', 'x', 0.01, 0.99)
+    samples:
+      u: [1.5, 2, 4, 1.1]
+      c: [1, 1, 1, 1]
+    tolerance: 1e-9
+    shown: ['id="p16-v"']
+    source: {cite: mit, at: 'Optional Problem 16 (our own solution)'}
+    origin: page-own
