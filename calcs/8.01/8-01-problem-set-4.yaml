@@ -1,0 +1,430 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a numerical solve of the force balance or of the equations of motion (in other axes where that is possible),
+# a numerical integral, or a derivative put back into the equation of motion.
+
+page: content/year-1/8.01/8-01-problem-set-4.mdx
+calcs:
+  # ---- Problem 1
+
+  # (a) Independent route: horizontal and vertical axes instead of the axes along the incline. Horizontal balance
+  # gives N = T cos θ / (sin θ + μ cos θ); the vertical balance is then solved numerically for T; m2 = 2T/g.
+  - id: p1-m2min-by-solve
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Smallest mass that pulls block 1 up": against a numerical solve of the vertical force balance on block 1 (horizontal and vertical axes), with m2 = 2T/g'
+    formula: 2*m1*(sin(th) + mus*cos(th))
+    equals: 2 / g * solve('x*sin(th) - mus*(x*cos(th)/(sin(th) + mus*cos(th)))*sin(th) + (x*cos(th)/(sin(th) + mus*cos(th)))*cos(th) - m1*g', 'x', 0, 100000)
+    samples:
+      m1: [1, 3, 2, 1.7]
+      th: [0.3, 0.8, 0.5, 0.65]
+      mus: [0.2, 0.6, 0.4, 0.33]
+      g: [9.8, 9.8, 9, 10]
+    tolerance: 1e-6
+    shown: ['= 2\,m_1\left(\sin\theta + \mu_s\cos\theta\right)']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-check-vertical-wall
+    kind: identity
+    where: 'Problem 1(a), check: on a vertical wall the formula gives m2 = 2 m1'
+    formula: 2*m1*(sin(pi/2) + mus*cos(pi/2))
+    equals: 2*m1
+    samples:
+      m1: [1, 3, 2]
+      mus: [0.2, 0.6, 0.4]
+    tolerance: 1e-9
+    shown: ['the formula gives $m_2 = 2m_1$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # (b) The same route with the friction turned round: N = T cos θ / (sin θ − μ cos θ).
+  - id: p1-m2max-by-solve
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Largest mass that lets block 1 slide down": against a numerical solve of the vertical force balance on block 1 (horizontal and vertical axes), with m2 = 2T/g'
+    formula: 2*m1*(sin(th) - mus*cos(th))
+    equals: 2 / g * solve('x*sin(th) + mus*(x*cos(th)/(sin(th) - mus*cos(th)))*sin(th) + (x*cos(th)/(sin(th) - mus*cos(th)))*cos(th) - m1*g', 'x', 0, 100000)
+    samples:
+      m1: [1, 3, 2, 1.7]
+      th: [0.7, 1.0, 0.85, 0.9]
+      mus: [0.2, 0.5, 0.4, 0.33]
+      g: [9.8, 9.8, 9, 10]
+    tolerance: 1e-6
+    shown: ['m_{2,\text{max}} = 2\,m_1\left(\sin\theta - \mu_s\cos\theta\right)']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # (c) Numerical solve of the second law of block 1 with the tension from block 2 and the constraint a2 = a1/2.
+  - id: p1-acceleration-by-solve
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box and formula "Acceleration of block 1": against a numerical solve of T − m1 g (sin θ + μk cos θ) = m1 a1 with T = m2 (g − a1/2)/2'
+    formula: 2*g*(m2 - 2*m1*(sin(th) + muk*cos(th)))/(4*m1 + m2)
+    equals: solve('m2*(g - x/2)/2 - m1*g*(sin(th) + muk*cos(th)) - m1*x', 'x', -1000, 1000)
+    samples:
+      m1: [1, 2, 1.5, 1.2]
+      m2: [8, 12, 10, 9]
+      th: [0.3, 0.8, 0.5, 0.65]
+      muk: [0.1, 0.4, 0.25, 0.3]
+      g: [9, 10, 9.8, 9.8]
+    tolerance: 1e-6
+    shown: ['a_1 = \frac{2g\,\big[\,m_2 - 2\,m_1\left(\sin\theta + \mu_k\cos\theta\right)\big]}{4m_1 + m_2}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-check-light-block
+    kind: limit
+    where: 'Problem 1(c), check: for m1 → 0 the acceleration of block 1 goes to 2g'
+    formula: 2*g*(m2 - 2*m1*(sin(th) + muk*cos(th)))/(4*m1 + m2)
+    limit: 2*g
+    inputs: {g: 9.8, m2: 3, th: 0.5, muk: 0.3}
+    vary: {m1: [1e-2, 1e-4, 1e-6]}
+    tolerance: 1e-4
+    shown: ['the formula gives $2g$']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # Independent route: the time needed to slow from v0 to v(t) is (m/b) ∫ e^(−cx) dx from v(t) to v0, done
+  # numerically with the answer as the lower limit. That time must be t.
+  - id: p2-speed-by-integration
+    kind: identity
+    answer: p2-v
+    where: 'Problem 2, answer box and formula "Speed of the particle": v0 minus the numerical time integral of the braking (b/m) e^(cv), with e^(cv) = 1/(e^(−c v0) + b c t/m) from the answer; see also p2-time-by-integration'
+    formula: -log(exp(-c*v0) + b*c*t/m)/c
+    equals: v0 - integrate('b/m/(exp(-c*v0) + b*c*x/m)', 'x', 0, t)
+    samples:
+      b: [1, 3, 2, 2.5]
+      c: [0.1, 0.3, 0.2, 0.25]
+      v0: [2, 5, 3, 4]
+      m: [1, 3, 2, 1.5]
+      t: [0.02, 0.1, 0.05, 0.08]
+    tolerance: 1e-7
+    shown: ['v(t) = -\frac{1}{c}\,\ln\!\left(e^{-cv_0} + \frac{b\,c\,t}{m}\right)']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-time-by-integration
+    kind: identity
+    where: 'Problem 2, formula "Separation of variables": the time to slow from v0 to the answer v(t), by numerical integration of (m/b) e^(−cx) over the speed, equals t'
+    formula: m/b*integrate('exp(-c*x)', 'x', -log(exp(-c*v0) + b*c*t/m)/c, v0)
+    equals: t
+    samples:
+      b: [1, 3, 2, 2.5]
+      c: [0.1, 0.3, 0.2, 0.25]
+      v0: [2, 5, 3, 4]
+      m: [1, 3, 2, 1.5]
+      t: [0.02, 0.1, 0.05, 0.08]
+    tolerance: 1e-7
+    shown: ['-\frac{1}{c}\left(e^{-cv} - e^{-cv_0}\right) = -\frac{b}{m}\,t']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-check-small-c
+    kind: limit
+    where: 'Problem 2, check: for c → 0 the speed becomes v0 − b t/m (constant braking)'
+    formula: -log(exp(-c*v0) + b*c*t/m)/c
+    limit: v0 - b*t/m
+    inputs: {v0: 3, b: 2, t: 0.5, m: 1.5}
+    vary: {c: [1e-2, 1e-4, 1e-6]}
+    tolerance: 1e-4
+    shown: ['v \approx v_0 - bt/m']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-check-stopping-time
+    kind: identity
+    where: 'Problem 2, check (our remark): at the time m (1 − e^(−c v0))/(b c) the speed is zero'
+    formula: -log(exp(-c*v0) + b*c*(m*(1 - exp(-c*v0))/(b*c))/m)/c
+    equals: 0
+    samples:
+      b: [1, 3, 2]
+      c: [0.1, 0.5, 0.2]
+      v0: [2, 5, 3]
+      m: [1, 3, 2]
+    tolerance: 1e-9
+    shown: ['at the time $m\,(1 - e^{-cv_0})/(bc)$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # The tension at r holds the object and every piece of rope beyond r: numerical integral of (m1/l) ω² x.
+  - id: p3-tension-by-integration
+    kind: identity
+    answer: p3-t
+    where: 'Problem 3, answer box and formula "Tension in the spinning rope": the object''s term plus the numerical integral of (m1/l) ω² r′ from r to l'
+    formula: m2*om**2*l + m1*om**2*(l**2 - r**2)/(2*l)
+    equals: m2*l*om**2 + integrate('m1/l*om**2*x', 'x', r, l)
+    samples:
+      m1: [1, 3, 2, 1.5]
+      m2: [1, 3, 2, 2.5]
+      om: [2, 5, 3, 4]
+      l: [1, 2, 1.5, 1.2]
+      r: [0.2, 0.9, 0.5, 0.7]
+    tolerance: 1e-7
+    shown: ['= m_2\,l\,\omega^2 + \frac{m_1\,\omega^2}{2l}\left(l^2 - r^2\right)']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-check-at-shaft
+    kind: identity
+    where: 'Problem 3, check: at r = 0 the tension is (m2 + m1/2) l ω²'
+    formula: m2*om**2*l + m1*om**2*(l**2 - 0**2)/(2*l)
+    equals: (m2 + m1/2)*l*om**2
+    samples:
+      m1: [1, 3, 2]
+      m2: [1, 3, 2]
+      om: [2, 5, 3]
+      l: [1, 2, 1.5]
+    tolerance: 1e-9
+    shown: ['$(m_2 + \tfrac12 m_1)\,l\,\omega^2$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (b) Numerical solve of the capstan relation m2 g = x g e^(−μs π) for the mass x of block 1.
+  - id: p4-sliding-mass-by-solve
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Mass at which the rope begins to slide": against a numerical solve of m2 g = m1 g e^(−μs π)'
+    formula: m2*exp(mus*pi)
+    equals: solve('x*g*exp(-mus*pi) - m2*g', 'x', 0, 100000)
+    samples:
+      m2: [1, 3, 2, 1.5]
+      mus: [0.1, 0.5, 0.3, 0.25]
+      g: [9.8, 9.8, 9, 10]
+    tolerance: 1e-6
+    shown: ['m_1 = m_2\,e^{\mu_s \pi}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-factor-example
+    where: 'Problem 4(b), check: the factor e^(μs π) for μs = 0.3 (our own number)'
+    inputs: {mus: 0.3}
+    formula: exp(mus * pi)
+    expected: 2.6
+    tolerance: 0.05
+    shown: ['$e^{0.3\pi} \approx 2.6$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution; the number 0.3 is ours)'}
+    origin: page-own
+
+  # (c) Numerical solve of the sliding relation with the tensions from the two second laws.
+  - id: p4-acceleration-by-solve
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box and formula "Acceleration of the blocks": against a numerical solve of m2 (g + a) = m1 (g − a) e^(−μk π)'
+    formula: g*(m1 - m2*exp(muk*pi))/(m1 + m2*exp(muk*pi))
+    equals: solve('m2*(g + x) - m1*(g - x)*exp(-muk*pi)', 'x', -1000, 1000)
+    samples:
+      m1: [8, 12, 10, 9]
+      m2: [1, 2, 1.5, 1.2]
+      muk: [0.1, 0.4, 0.25, 0.3]
+      g: [9, 10, 9.8, 9.8]
+    tolerance: 1e-6
+    shown: ['a = \frac{m_1 - m_2\,e^{\mu_k\pi}}{m_1 + m_2\,e^{\mu_k\pi}}\;g']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-check-no-friction
+    kind: identity
+    where: 'Problem 4(c), check: without friction the result is (m1 − m2) g/(m1 + m2)'
+    formula: g*(m1 - m2*exp(0*pi))/(m1 + m2*exp(0*pi))
+    equals: (m1 - m2)*g/(m1 + m2)
+    samples:
+      m1: [8, 12, 10]
+      m2: [1, 2, 1.5]
+      g: [9, 10, 9.8]
+    tolerance: 1e-9
+    shown: ['$(m_1 - m_2)\,g/(m_1 + m_2)$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  # (a) and (b): the solutions of parts (c) and (d), differentiated numerically, must obey these equations.
+  - id: p5-ax-by-derivative
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box and formula "Acceleration along x": against the numerical time derivative, at the time t, of the solution of part (c) that has the velocity vx at that time, vx e^(−C(t′ − t)/m)'
+    formula: -C*vx/m
+    equals: deriv('vx*exp(-C*(x - t)/m)', 'x', t)
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      t: [0.5, 2, 1, 1.5]
+      vx: [1, 5, 3, 2.2]
+    tolerance: 1e-6
+    shown: ['a_x = -\frac{C}{m}\,v_x']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-ay-by-derivative
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Acceleration along y": against the numerical time derivative, at the time t, of the solution of the fall that has the velocity vy at that time, mg/C + (vy − mg/C) e^(−C(t′ − t)/m)'
+    formula: g - C*vy/m
+    equals: deriv('m*g/C + (vy - m*g/C)*exp(-C*(x - t)/m)', 'x', t)
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      g: [9.8, 9.8, 9, 10]
+      t: [0.5, 2, 1, 1.5]
+      vy: [1, 5, 3, 2.2]
+    tolerance: 1e-6
+    shown: ['a_y = g - \frac{C}{m}\,v_y']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  # (c) The time to slow from u to vx(t) is (m/C) ∫ dx/x from vx(t) to u, done numerically.
+  - id: p5-vx-by-integration
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(c), answer box and formula "Horizontal velocity": u plus the numerical time integral of the acceleration −(C/m) vx of part (a), with vx from the answer; see also p5-vx-time'
+    formula: u*exp(-C*t/m)
+    equals: u + integrate('-C/m*u*exp(-C*x/m)', 'x', 0, t)
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      u: [1, 5, 3, 4]
+      t: [0.5, 2, 1, 1.5]
+    tolerance: 1e-7
+    shown: ['v_x(t) = u\,e^{-Ct/m}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-vx-time
+    kind: identity
+    where: 'Problem 5(c), formula "Horizontal velocity": the time to slow from u to the answer vx(t), by numerical integration of (m/C) dx/x, equals t'
+    formula: m/C*integrate('1/x', 'x', u*exp(-C*t/m), u)
+    equals: t
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      u: [1, 5, 3, 4]
+      t: [0.5, 2, 1, 1.5]
+    tolerance: 1e-7
+    shown: ['\ln\frac{v_x}{u} = -\frac{C}{m}\,t']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  # (d) The velocity is the numerical integral of the acceleration g e^(−Ct/m) that follows from part (b);
+  # and the time to reach vy(t) is ∫ dx/(g − Cx/m) from 0 to vy(t), done numerically.
+  - id: p5-vy-by-integration
+    kind: identity
+    answer: p5-d
+    where: 'Problem 5(d), answer box and formula "Vertical velocity": against the numerical time integral of the acceleration g e^(−Ct/m); see also p5-vy-time'
+    formula: m*g/C*(1 - exp(-C*t/m))
+    equals: integrate('g*exp(-C*x/m)', 'x', 0, t)
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      g: [9, 10, 9.8, 9.8]
+      t: [0.5, 2, 1, 1.5]
+    tolerance: 1e-7
+    shown: ['v_y(t) = \frac{m g}{C}\left(1 - e^{-Ct/m}\right)']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-vy-time
+    kind: identity
+    where: 'Problem 5(d), formula "Separation of variables for the fall": the time to reach the answer vy(t), by numerical integration of dx/(g − Cx/m) from 0, equals t'
+    formula: integrate('1/(g - C*x/m)', 'x', 0, m*g/C*(1 - exp(-C*t/m)))
+    equals: t
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      g: [9, 10, 9.8, 9.8]
+      t: [0.5, 2, 1, 1.5]
+    tolerance: 1e-7
+    shown: ['-\frac{m}{C}\,\ln\!\left(1 - \frac{C\,v_y}{m g}\right) = t']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  # (e) The horizontal terminal velocity is zero: the acceleration of part (a) vanishes there, and the
+  # velocity of part (c) goes to zero for large t.
+  - id: p5-vxT-zero
+    kind: identity
+    answer: p5-e
+    where: 'Problem 5(e), answer box: the velocity at which the acceleration −C vx/m is zero, by a numerical solve'
+    formula: 0
+    equals: solve('-C*x/m', 'x', -1000, 1000)
+    samples:
+      C: [0.5, 2, 1]
+      m: [1, 3, 2]
+    tolerance: 1e-6
+    shown: ['gives $v_{xT} = 0$']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5-vx-after-five-times
+    where: 'Problem 5(e), check: the fraction of u left after the time 5 m/C'
+    inputs: {n: 5}
+    formula: exp(-n)
+    expected: 0.007
+    tolerance: 0.0005
+    shown: ['$e^{-5} \approx 0.007$']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  # (f) The velocity at which the acceleration of part (b) is zero, by a numerical solve.
+  - id: p5-vyT-by-solve
+    kind: identity
+    answer: p5-f
+    where: 'Problem 5(f), answer box and formula "Terminal velocity": against a numerical solve of g − C v/m = 0'
+    formula: m*g/C
+    equals: solve('g - C*x/m', 'x', 0, 100000)
+    samples:
+      C: [0.5, 2, 1, 1.5]
+      m: [1, 3, 2, 1.5]
+      g: [9, 10, 9.8, 9.8]
+    tolerance: 1e-6
+    shown: ['v_{yT} = \frac{m g}{C}']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  # Numerical solve of block 1's second law with T1 = 2 T2, T2 = m2 (g − a2) and a1 = −a2/2.
+  - id: p6-acceleration-by-solve
+    kind: identity
+    answer: p6-a2
+    where: 'Problem 6, answer box and formula "Acceleration of block 2": against a numerical solve of m1 g − 2 m2 (g − a2) = −m1 a2/2'
+    formula: 2*g*(2*m2 - m1)/(m1 + 4*m2)
+    equals: solve('m1*g - 2*m2*(g - x) + m1*x/2', 'x', -1000, 1000)
+    samples:
+      m1: [1, 3, 2, 2.5]
+      m2: [1, 3, 2.5, 1]
+      g: [9, 10, 9.8, 9.8]
+    tolerance: 1e-6
+    shown: ['a_2 = \frac{2\,(2m_2 - m_1)}{m_1 + 4m_2}\;g']
+    source: {cite: mit, at: 'Problem 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-check-light-block-1
+    kind: limit
+    where: 'Problem 6, check: for m1 → 0 block 2 falls freely, a2 = g'
+    formula: 2*g*(2*m2 - m1)/(m1 + 4*m2)
+    limit: g
+    inputs: {g: 9.8, m2: 2}
+    vary: {m1: [1e-2, 1e-4, 1e-6]}
+    tolerance: 1e-4
+    shown: ['the formula gives $a_2 = g$']
+    source: {cite: mit, at: 'Problem 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-check-light-block-2
+    kind: limit
+    where: 'Problem 6, check: for m2 → 0 block 2 goes up at twice the free-fall acceleration, a2 = −2g'
+    formula: 2*g*(2*m2 - m1)/(m1 + 4*m2)
+    limit: -2*g
+    inputs: {g: 9.8, m1: 2}
+    vary: {m2: [1e-2, 1e-4, 1e-6]}
+    tolerance: 1e-4
+    shown: ['the formula gives $a_2 = -2g$']
+    source: {cite: mit, at: 'Problem 6 (our own solution)'}
+    origin: page-own
