@@ -1,0 +1,708 @@
+---
+title: "Problem Set 6: root-mean-square voltage, radioactive decay and Simpson's rule"
+slug: 18-01-problem-set-6
+course: "18.01"
+kind: problems
+set: 6
+lecture: 24
+order: 90
+covers: [23, 24]
+solutions: own
+summary: Four problems on average value, probability and numerical integration. You find the voltage that a meter shows for house current, turn areas into probabilities for a point in a square and for the decay of a radioactive particle, prove the formula for the area under a parabola on which Simpson's rule rests, and use the rule on an integral that has no formula.
+prerequisites: [average-value-and-probability, numerical-integration]
+source:
+  title: "MIT 18.01 Problem Set 6"
+  url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/ps6/
+  readings:
+    - title: "18.01 Lecture 23 notes: Work, Average Value, Probability"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec23/
+    - title: "18.01 Lecture 24 notes: Numerical Integration"
+      url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/lec24/
+license: CC BY-NC-SA 4.0
+references:
+  exercisesE:
+    title: "D. Jerison, 18.01 Supplementary Notes, Section E: Exercises, sections 1 to 7 (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/e_exrcs_scsn_1_7/
+    location: "Exercise groups 3G, 4B, 4C, 4D, 4J, 5B and 5C"
+  solutionsS:
+    title: "D. Jerison, 18.01 Supplementary Notes, Section S: Solutions to exercises (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/s_solutns_exrcis/
+    location: "Solutions to groups 3G, 4B, 4C, 4D, 4J, 5B and 5C"
+status: reviewed
+---
+
+This set practises two lessons: [average value, weighted averages and probability](/courses/18-01/average-value-and-probability) and [numerical integration](/courses/18-01/numerical-integration). It follows MIT's Problem Set 6, in our own words.
+
+MIT's set has two parts. Part II holds MIT's longer problems, for which MIT publishes no solutions. Four of them are written out below, with hints and solutions of our own (20 points). Part I is a list of short exercises from MIT's course reader, most of which MIT has solved itself. Those are not rewritten here: the last section of this page lists them and links to MIT's exercises and solutions.
+
+Two items of MIT's Part II are left out, so the problem numbers below start at 2. MIT's Problem 0 (3 points) asks students to name the people they worked with, which is course administration. Problem 1 (7 points) is a pair of exercises on volumes from the course textbook (Simmons, *Calculus with Analytic Geometry*), which is not openly licensed and is not used on this site. It was the only Part II problem on [volumes by disks and shells](/courses/18-01/volumes); the course-reader exercises on volumes are in the list at the end. With those two items, MIT's Part II is worth 30 points.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A formula box takes plain typing, for example `C/sqrt(2)` or `y0 + 4*y1`, and accepts every correct way of writing the answer. Type `sqrt(2)` for $\sqrt2$ and `pi` for $\pi$. A number box wants a decimal number, not a fraction, and its question says how exact your value must be: keep all the digits your calculator shows while you work. Set the calculator to radians for Problem 5. The points per problem are MIT's, and so is the split of Problem 3. The parts of Problems 4 and 5, their letters and their points are ours. If you are stuck, open the hints one at a time. Each problem or part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Parts that ask you to show something have no answer box: compare your work with the solution and mark it yourself. Your score is kept in this browser only.
+
+## Problem 2
+
+<Exercise id="p2" title="The voltage a meter shows" points={4} mit="Part II, Problem 2">
+
+The voltage of the electricity supply in a house swings back and forth. MIT models it by
+
+<Formula label="Voltage of house current" tex="V(t) = C\,\sin(120\pi t)" cite="mit" at="Part II, Problem 2, p. 1" />
+
+Here $t$ is the time in seconds and $C$ is a constant, the amplitude: the voltage swings between $+C$ and $-C$. A period (or cycle) is the time after which $V(t)$ repeats itself.
+
+Take the average value of $V^2$ over one period, and then the square root of that average. The result is called the **root-mean-square** voltage, RMS for short. It is the voltage that a meter on the house shows. ($V^2$ is in square volts. The square root after averaging brings the result back to volts.)
+
+Find the RMS voltage in terms of $C$.
+
+<Hint>
+
+First find the period. The sine repeats when its angle has grown by $2\pi$: how much time does that take here?
+
+</Hint>
+
+<Hint>
+
+The lesson gives the average of a function over an interval as its integral divided by the length of the interval. Apply that to $V^2$ over one period.
+
+</Hint>
+
+<Hint>
+
+To integrate $\sin^2$, write it with the cosine of twice the angle: $\sin^2\theta = \tfrac12(1 - \cos 2\theta)$.
+
+</Hint>
+
+<Answer id="p2-rms" label="RMS voltage $=$" expr="C/sqrt(2)"
+  vars={{ C: [50, 400] }}
+  mistakes={[
+    { expr: "C^2/2", hint: "That is the average of V² itself, in square volts. The RMS is the square root of it." },
+    { expr: "C/2", hint: "You halved C. The half belongs to the average of V², which is C²/2, so the square root has to be taken of the 2 as well." },
+    { expr: "2*C/pi", hint: "That is the average of the size of V, with its sign removed. The RMS squares V first, averages, and only then takes the root." },
+    { expr: "C", hint: "That is the peak voltage. The voltage is below its peak nearly all the time, so the RMS must be smaller." },
+    { expr: "0", hint: "That is the average of V itself: its positive and negative halves cancel. Square V before you average, so that nothing cancels." }
+  ]} />
+
+<Solution>
+
+**The idea.** The average of a function over an interval is its integral divided by the length of the interval. Here the function is $V^2$ and the interval is one period.
+
+<Step title="The period">
+
+The sine repeats when its angle $120\pi t$ grows by $2\pi$. That takes a time $2\pi/(120\pi) = 1/60$ second, so one period runs from $t = 0$ to $t = 1/60$. (The current goes through 60 cycles every second.)
+
+</Step>
+
+<Step title="Set up the average of V²">
+
+The lesson defines the average of $f$ over $a \le x \le b$ as
+
+<Formula label="Average value" tex="\frac{1}{b - a}\int_a^b f(x)\,dx" cite="reading1" at="p. 1" />
+
+For $V^2$ over one period, $b - a = 1/60$, so dividing by it is multiplying by 60:
+
+<Formula label="Average of the squared voltage, set up" tex="\text{average of } V^2 = 60\int_0^{1/60} C^2\sin^2(120\pi t)\,dt" cite="mit" at="Part II, Problem 2 (our own solution)" />
+
+</Step>
+
+<Step title="Integrate">
+
+Use $\sin^2\theta = \tfrac12(1 - \cos 2\theta)$, a half-angle formula from trigonometry (the lesson on [trigonometric integrals](/courses/18-01/trig-integrals) comes back to it), with $\theta = 120\pi t$:
+
+<Formula label="Integral of the squared sine over one period" tex="\int_0^{1/60} \sin^2(120\pi t)\,dt = \left[\frac{t}{2} - \frac{\sin(240\pi t)}{480\pi}\right]_0^{1/60} = \frac{1}{120}" cite="mit" at="Part II, Problem 2 (our own solution)" />
+
+The sine term is zero at both ends, because $240\pi/60 = 4\pi$. So
+
+<Formula label="Average of the squared voltage" tex="\text{average of } V^2 = 60\,C^2 \cdot \frac{1}{120} = \frac{C^2}{2}" cite="mit" at="Part II, Problem 2 (our own solution)" />
+
+</Step>
+
+<Step title="Take the square root">
+
+<Formula label="Root-mean-square voltage" tex="V_{\text{rms}} = \sqrt{\frac{C^2}{2}} = \frac{C}{\sqrt2} \approx 0.7071\,C" cite="mit" at="Part II, Problem 2 (our own solution)" />
+
+(The name $V_{\text{rms}}$ is ours.) The meter shows about 71% of the peak voltage.
+
+</Step>
+
+<Step title="Check the result">
+
+The average of $\sin^2$ over a full period can be found without integrating. The graph of $\cos^2$ is the graph of $\sin^2$ shifted sideways, so over a full period the two have the same average. They add up to $1$ at every moment, so each averages $\tfrac12$. That gives $C^2/2$ again. The units are right too: $C$ is in volts, and so is $C/\sqrt2$. As an example with our own number: a meter that shows $120$ volts means a peak voltage of $C = 120\sqrt2 = 169.7$ volts.
+
+</Step>
+
+</Solution>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Probabilities from areas, and the decay of a particle" points={6} mit="Part II, Problem 3">
+
+The lesson on probability works with one rule:
+
+<Formula label="Probability as a ratio" tex="\text{probability} = \frac{\text{part}}{\text{whole}}" cite="reading1" at="p. 4" />
+
+<Part label="a" points={1}>
+
+A point $(x, y)$ is picked at random from the unit square $0 \le x \le 1$, $0 \le y \le 1$. The probability of landing in a region is the area of that region. What is the probability that $x^2 < y$? Give it as a decimal, correct to three decimal places.
+
+<Hint>
+
+Draw the square and the curve $y = x^2$. On which side of the curve is $x^2 < y$?
+
+</Hint>
+
+<Hint>
+
+The area under the curve is an integral you know. The area you want is what is left of the square.
+
+</Hint>
+
+<Answer id="p3-a" label="Probability that $x^2 < y$:" value="0.667" tolerance="0.001" calc="p3-a-probability" />
+
+<Solution>
+
+**The idea.** The points with $x^2 < y$ are the points of the square above the parabola $y = x^2$. The square has area $1$, so the probability is the area of that region.
+
+<Step title="The area above the parabola">
+
+Above each $x$ between $0$ and $1$, the region runs from $y = x^2$ up to $y = 1$:
+
+<Formula label="Area above the parabola in the unit square" tex="\int_0^1 \left(1 - x^2\right)dx = \left[x - \frac{x^3}{3}\right]_0^1 = \frac23" cite="mit" at="Part II, Problem 3(a) (our own solution)" />
+
+The whole is the area of the square, $1$, so the probability is $\tfrac23 = 0.667$.
+
+</Step>
+
+<Step title="Check the result">
+
+The region under the parabola has area $\int_0^1 x^2\,dx = \tfrac13$. Together with $\tfrac23$ that fills the square. More than half is reasonable: inside the unit square the parabola stays below the diagonal $y = x$, which cuts the square in half.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Now the point is picked from the larger square $0 \le x \le 2$, $0 \le y \le 2$, with a probability proportional to the area. What is the probability that $x^2 < y$? Give it as a decimal, correct to three decimal places.
+
+<Hint>
+
+The whole is no longer $1$. What is it?
+
+</Hint>
+
+<Hint>
+
+Draw the curve $y = x^2$ in this square. It leaves the square through the top edge, not through the corner. At which $x$?
+
+</Hint>
+
+<Answer id="p3-b" label="Probability that $x^2 < y$:" value="0.471" tolerance="0.001" calc="p3-b-probability" />
+
+<Solution>
+
+**The idea.** Part over whole. The whole is the area of the square, $4$. The part is the region above the parabola, and the parabola now reaches the top of the square before it reaches the right-hand side.
+
+<Step title="Where the parabola leaves the square">
+
+The parabola meets the top edge $y = 2$ where $x^2 = 2$, at $x = \sqrt2 = 1.414$. To the right of that, $x^2$ is larger than $2$, so no point of the square has $x^2 < y$ there.
+
+</Step>
+
+<Step title="The part">
+
+<Formula label="Area above the parabola in the larger square" tex="\int_0^{\sqrt2} \left(2 - x^2\right)dx = \left[2x - \frac{x^3}{3}\right]_0^{\sqrt2} = 2\sqrt2 - \frac{2\sqrt2}{3} = \frac{4\sqrt2}{3} = 1.886" cite="mit" at="Part II, Problem 3(b) (our own solution)" />
+
+</Step>
+
+<Step title="Part over whole">
+
+<Formula label="Probability in the larger square" tex="P = \frac{4\sqrt2/3}{4} = \frac{\sqrt2}{3} = 0.471" cite="mit" at="Part II, Problem 3(b) (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+A common slip is to integrate $2 - x^2$ all the way to $x = 2$. That gives $\tfrac43$, and a probability of $\tfrac13$, but it counts the stretch from $\sqrt2$ to $2$, where $2 - x^2$ is negative, as negative area. The probability is smaller than in part (a), which makes sense: in the larger square the parabola climbs steeply and cuts off a strip on the right in which no point qualifies.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={1}>
+
+Evaluate
+
+<Formula label="The whole for the decay" tex="W = \int_0^\infty e^{-at}\,dt = \lim_{N\to\infty}\int_0^N e^{-at}\,dt" cite="mit" at="Part II, Problem 3(c), p. 2" />
+
+for a constant $a > 0$. (That $a$ must be positive is our addition.) This is called an improper integral: it stands for the area of a region that goes on for ever. The letter $W$ stands for "whole".
+
+<Hint>
+
+Integrate from $0$ to $N$ first. Only then let $N$ grow.
+
+</Hint>
+
+<Hint>
+
+What happens to $e^{-aN}$ as $N$ grows, when $a$ is positive?
+
+</Hint>
+
+<Answer id="p3-c" label="$W =$" expr="1/a"
+  vars={{ a: [0.5, 3] }}
+  mistakes={[
+    { expr: "a", hint: "This grows when a grows. But a larger a makes the exponential fall faster, so the area under it must shrink." },
+    { expr: "-1/a", hint: "The area under a positive function cannot be negative. The antiderivative has a minus sign, and so has the lower limit when it is subtracted." },
+    { expr: "1", hint: "That is the height of the curve at t = 0. The antiderivative of the exponential brings in a factor that depends on a." }
+  ]} />
+
+<Solution>
+
+**The idea.** Integrate up to a finite time $N$, then see what is left when $N$ goes to infinity.
+
+<Step title="Integrate up to N">
+
+<Formula label="The area up to N" tex="\int_0^N e^{-at}\,dt = \left[-\frac{e^{-at}}{a}\right]_0^N = \frac{1 - e^{-aN}}{a}" cite="mit" at="Part II, Problem 3(c) (our own solution)" />
+
+</Step>
+
+<Step title="Take the limit">
+
+For $a > 0$ the exponential $e^{-aN}$ goes to $0$ as $N$ grows. So
+
+<Formula label="The whole" tex="W = \lim_{N\to\infty}\frac{1 - e^{-aN}}{a} = \frac1a" cite="mit" at="Part II, Problem 3(c) (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+If $t$ is in seconds, $a$ is in 1/second, because the exponent $at$ must be a pure number. Then $1/a$ is in seconds, as an integral over time of a pure number must be. With $a = 2$ and $N = 5$ the area up to $N$ is already $0.49998$, close to $1/a = 0.5$: the region is endless, but its area is finite.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+A radioactive particle decays at a moment that cannot be predicted. The probability that it decays at some time in the interval $0 \le t \le T$ is
+
+<Formula label="Probability of decay before time T" tex="P([0, T]) = \frac{\text{part}}{\text{whole}} = \frac1W\int_0^T e^{-at}\,dt" cite="mit" at="Part II, Problem 3, p. 2" />
+
+so that $P([0, \infty)) = 1$: the particle is certain to decay at some time. The **half-life** is the time $T$ for which $P([0, T]) = \tfrac12$.
+
+Find the values of $a$ and $W$ for which the half-life is $T = 1$ second, each within 0.5%. Then, for a particle with that half-life, find the probability that it survives until $t = 1$ but decays at some time in the interval $1 \le t \le 2$: write it as an integral, and give its value (the box wants it within $0.001$).
+
+<Hint>
+
+Work out $P([0, T])$ with the $W$ of part (c). The result has no fraction left in it.
+
+</Hint>
+
+<Hint>
+
+A particle that decays between $t = 1$ and $t = 2$ has survived until $t = 1$. So the part is the area under $e^{-at}$ from $1$ to $2$.
+
+</Hint>
+
+<Answer id="p3-d-a" label="$a =$" value="0.6931" unit="per second" tolerance="0.5%" calc="p3-d-a" />
+
+<Answer id="p3-d-w" label="$W =$" value="1.4427" unit="seconds" tolerance="0.5%" calc="p3-d-w" />
+
+<Answer id="p3-d-p" label="Probability of decay between $t = 1$ and $t = 2$:" value="0.25" tolerance="0.001" calc="p3-d-probability" />
+
+<Solution>
+
+**The idea.** With $W = 1/a$ the probability of decay before time $T$ is $1 - e^{-aT}$. The half-life fixes $a$, and the probability for any other interval is again part over whole.
+
+<Step title="The probability of decay before T">
+
+<Formula label="Decay before time T, worked out" tex="P([0, T]) = a\int_0^T e^{-at}\,dt = a \cdot \frac{1 - e^{-aT}}{a} = 1 - e^{-aT}" cite="mit" at="Part II, Problem 3(d) (our own solution)" />
+
+</Step>
+
+<Step title="The half-life fixes a and W">
+
+Put $T = 1$ and $P = \tfrac12$:
+
+<Formula label="The constants for a half-life of one second" tex="1 - e^{-a} = \frac12 \quad\Longrightarrow\quad e^{-a} = \frac12 \quad\Longrightarrow\quad a = \ln 2 = 0.6931, \qquad W = \frac1a = \frac{1}{\ln 2} = 1.4427" cite="mit" at="Part II, Problem 3(d) (our own solution)" />
+
+Here $a$ is in 1/second and $W$ in seconds.
+
+</Step>
+
+<Step title="Decay between t = 1 and t = 2">
+
+The particle decays in this interval exactly when its moment of decay lies between $1$ and $2$. That is the area under $e^{-at}$ from $1$ to $2$, divided by the whole:
+
+<Formula label="Probability of decay in the second half-life" tex="P([1, 2]) = \frac1W\int_1^2 e^{-at}\,dt = e^{-a} - e^{-2a} = \frac12 - \frac14 = \frac14" cite="mit" at="Part II, Problem 3(d) (our own solution)" />
+
+With a calculator: $\ln 2 \times \int_1^2 e^{-0.6931t}\,dt = 0.25$, a probability of 25%.
+
+</Step>
+
+<Step title="Check the result">
+
+The chance to survive the first second is $\tfrac12$. For a particle that has survived, the next second is one more half-life, so it decays in it with chance $\tfrac12$ again: $\tfrac12 \times \tfrac12 = \tfrac14$. The three possibilities also add up to certainty: $\tfrac12$ for decay before $t = 1$, $\tfrac14$ between $1$ and $2$, and $e^{-2a} = \tfrac14$ for surviving beyond $t = 2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Why Simpson's rule works: the area under a parabola" points={6} mit="Part II, Problem 4">
+
+The lesson on numerical integration states the formula behind Simpson's rule without proof. Here you prove it.
+
+Take an interval from $x_0$ to $x_2$ of length $2h$, with its midpoint $x_1$, and any three points $(x_0, y_0)$, $(x_1, y_1)$, $(x_2, y_2)$ above them. Exactly one quadratic function
+
+<Formula label="The parabola through three points" tex="y = Ax^2 + Bx + C" cite="mit" at="Part II, Problem 4, p. 2" />
+
+has a graph through all three points. Simpson's rule rests on the claim that the area under this parabola, above the interval from $x_0$ to $x_2$, is
+
+<Formula label="Area under the parabola" tex="\frac{h}{3}\left(y_0 + 4y_1 + y_2\right)" cite="mit" at="Part II, Problem 4, p. 2" />
+
+This is the lesson's formula with $h$ for $\Delta x$ (Lecture 24 notes, p. 3). MIT points out what the proof teaches: a calculation becomes short when you use symmetry and look ahead to see what you really need.
+
+Sliding the parabola to the left or to the right does not change the area under it. So you may put the midpoint at zero: $x_0 = -h$, $x_1 = 0$, $x_2 = h$. Everything below is to be expressed in $h$, $y_0$, $y_1$ and $y_2$.
+
+<Part label="a" points={1}>
+
+Make a sketch of the three points and the parabola, and find $C$.
+
+<Hint>
+
+One of the three points has $x = 0$. Put it into the equation of the parabola.
+
+</Hint>
+
+<Answer id="p4-a" label="$C =$" expr="y1"
+  vars={{ y0: [1, 3], y1: [10, 12], y2: [7, 9] }}
+  names={{ y0: "y_0", y1: "y_1", y2: "y_2" }}
+  mistakes={[
+    { expr: "(y0 + y2)/2", hint: "That is the height, at the midpoint, of the straight line that joins the two outer points. The parabola need not pass there: it passes through the middle point itself." },
+    { expr: "y0", hint: "That is the height at the left end, x = -h. C is the value of the quadratic at x = 0." },
+    { expr: "y2", hint: "That is the height at the right end, x = h. C is the value of the quadratic at x = 0." }
+  ]} />
+
+<Solution>
+
+**The idea.** At $x = 0$ the terms $Ax^2$ and $Bx$ vanish, so the quadratic takes the value $C$ there.
+
+<Step title="The sketch">
+
+Mark $-h$, $0$ and $h$ on the $x$-axis, with the points $(-h, y_0)$, $(0, y_1)$ and $(h, y_2)$ above them, and draw a parabola through the three points. The area in question lies between the parabola and the $x$-axis, from $-h$ to $h$.
+
+</Step>
+
+<Step title="Use the middle point">
+
+The parabola passes through $(0, y_1)$:
+
+<Formula label="The constant term" tex="y_1 = A \cdot 0^2 + B \cdot 0 + C = C" cite="mit" at="Part II, Problem 4 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+$C$ is a height, like $y_1$. It does not depend on the other two points: they fix $A$ and $B$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Show, by integrating, that the area can be found once you know $A$ alone (besides $C$), or better still the combination $2Ah^2$.
+
+<Hint>
+
+Integrate $Ax^2 + Bx + C$ from $-h$ to $h$, term by term. One term gives nothing. Why?
+
+</Hint>
+
+<Hint>
+
+Take a factor $h/3$ out of your result, to make it look like the formula you are aiming for.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The interval from $-h$ to $h$ is symmetric about zero, so the odd term $Bx$ integrates to zero. $B$ never has to be found.
+
+<Step title="Integrate term by term">
+
+<Formula label="Area in terms of A and C" tex="\int_{-h}^{h}\left(Ax^2 + Bx + C\right)dx = \left[\frac{Ax^3}{3} + \frac{Bx^2}{2} + Cx\right]_{-h}^{h} = \frac{2Ah^3}{3} + 2Ch" cite="mit" at="Part II, Problem 4 (our own solution)" />
+
+The middle term is the same at both ends, $Bh^2/2$, and drops out.
+
+</Step>
+
+<Step title="Take out the factor h/3">
+
+<Formula label="Area in terms of 2Ah² and C" tex="\frac{2Ah^3}{3} + 2Ch = \frac{h}{3}\left(2Ah^2 + 6C\right)" cite="mit" at="Part II, Problem 4 (our own solution)" />
+
+$C$ is known from part (a). So the only thing still to find is $2Ah^2$.
+
+</Step>
+
+<Step title="Check the result">
+
+For the flat line $y = C$ (with $A = 0$ and $B = 0$) this gives $2Ch$: width $2h$ times height $C$, the area of a rectangle. With our own numbers $A = 3$, $B = 5$, $C = 2$ and $h = 1$ the formula gives $\tfrac13(6 + 12) = 6$, and the integral of $3x^2 + 5x + 2$ from $-1$ to $1$ is $\left[x^3 + \tfrac52 x^2 + 2x\right]_{-1}^{1} = 5.5 - (-0.5) = 6$ as well, whatever $B$ is.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+Find $2Ah^2$ in terms of $y_0$, $y_1$ and $y_2$.
+
+<Hint>
+
+Write down what it means that the parabola passes through the two outer points. That gives two equations.
+
+</Hint>
+
+<Hint>
+
+You do not want $B$. Combine the two equations so that it disappears.
+
+</Hint>
+
+<Answer id="p4-c" label="$2Ah^2 =$" expr="y0 + y2 - 2*y1"
+  vars={{ y0: [1, 3], y1: [10, 12], y2: [7, 9] }}
+  names={{ y0: "y_0", y1: "y_1", y2: "y_2" }}
+  mistakes={[
+    { expr: "y0 + y2", hint: "The sum of the two outer heights is 2Ah² + 2C. The 2C still has to be taken off." },
+    { expr: "(y0 + y2 - 2*y1)/2", hint: "That is Ah². The question asks for twice that." },
+    { expr: "y2 - y0", hint: "Subtracting the two outer equations removes A and leaves 2Bh. Add them instead." },
+    { expr: "y0 + y2 - y1", hint: "The sum of the two outer heights contains C twice, so C = y1 has to be taken off twice." }
+  ]} />
+
+<Solution>
+
+**The idea.** The two outer points give two equations in which $B$ appears with opposite signs. Adding them removes $B$ and leaves exactly the combination $2Ah^2$.
+
+<Step title="The two outer points">
+
+<Formula label="The parabola at the two ends" tex="y_0 = Ah^2 - Bh + C, \qquad y_2 = Ah^2 + Bh + C" cite="mit" at="Part II, Problem 4 (our own solution)" />
+
+</Step>
+
+<Step title="Add them">
+
+<Formula label="The combination that is needed" tex="y_0 + y_2 = 2Ah^2 + 2C \quad\Longrightarrow\quad 2Ah^2 = y_0 + y_2 - 2y_1" cite="mit" at="Part II, Problem 4 (our own solution)" />
+
+using $C = y_1$ from part (a).
+
+</Step>
+
+<Step title="Check the result">
+
+If the three points lie on a straight line, $y_1$ is the average of $y_0$ and $y_2$, and the result is $0$: no $x^2$ term is needed, as it should be. For the parabola $y = x^2$ with $h = 1$ the heights are $1$, $0$ and $1$, and the result is $2$, which is $2Ah^2$ with $A = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={1}>
+
+Put the results of parts (a) to (c) together to prove the formula for the area.
+
+<Hint>
+
+Part (b) gave the area in terms of $2Ah^2$ and $C$. Parts (a) and (c) give those two in terms of the three heights.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Substitute.
+
+<Step title="Substitute into the area">
+
+<Formula label="The area under the parabola, proved" tex="\frac{h}{3}\left(2Ah^2 + 6C\right) = \frac{h}{3}\left(y_0 + y_2 - 2y_1 + 6y_1\right) = \frac{h}{3}\left(y_0 + 4y_1 + y_2\right)" cite="mit" at="Part II, Problem 4 (our own solution)" />
+
+</Step>
+
+<Step title="Why the shift was allowed (our remark)">
+
+Sliding the parabola sideways keeps the three heights, the width $2h$ and the area. The shifted curve is still the graph of a quadratic function. So the formula, which contains only $h$ and the three heights, holds wherever the interval lies.
+
+</Step>
+
+<Step title="Check the result">
+
+For the constant function $y = 1$ the formula gives $\tfrac{h}{3}(1 + 4 + 1) = 2h$, the area of a rectangle of width $2h$ and height $1$. For $y = x^2$ from $-1$ to $1$ it gives $\tfrac13(1 + 0 + 1) = \tfrac23$, and indeed $\int_{-1}^{1} x^2\,dx = \tfrac23$. The middle height counts four times as much as each outer height: the weights $1$, $4$, $1$ of the lesson.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Simpson's rule on a Fresnel integral" points={4} mit="Part II, Problem 5">
+
+The function $\cos(t^2)$ has no antiderivative that can be written with the usual functions, so its integrals have to be computed numerically. They are called Fresnel integrals. This problem is about
+
+<Formula label="The Fresnel integral of Problem 5" tex="\int_0^a \cos(t^2)\,dt \qquad \text{with } a = \sqrt{\pi/2}" cite="mit" at="Part II, Problem 5, p. 2" />
+
+Use a calculator, set to radians, to make a table of values of $\cos(t^2)$, and approximate the integral with Simpson's rule:
+
+<Formula label="Simpson's rule" tex="\int_a^b f(x)\,dx \approx \frac{\Delta x}{3}\left(y_0 + 4y_1 + 2y_2 + 4y_3 + \cdots + 2y_{n-2} + 4y_{n-1} + y_n\right)" cite="reading2" at="p. 4" />
+
+Write your approximations to six decimal places. Each box accepts a value within $0.000005$ of ours, so do not round $a$ or the values in your table while you work.
+
+For comparison: to five decimal places the integral is $0.97745$. (MIT's sheet prints $1.22505$ as the exact value. That number is $\sqrt{\pi/2}$ times the integral, $1.253314 \times 0.977451$, so it is not the value to compare with. The correction is ours.)
+
+<Part label="a" points={2}>
+
+Use four intervals.
+
+<Hint>
+
+Four intervals of equal width from $0$ to $a$ need five values of $t$. What is $t^2$ at each of them, as a multiple of $\pi$?
+
+</Hint>
+
+<Hint>
+
+The weights for four intervals are $1, 4, 2, 4, 1$, and the sum is multiplied by $\Delta x/3$ with $\Delta x = a/4$.
+
+</Hint>
+
+<Answer id="p5-a" label="Simpson's rule, four intervals:" value="0.978219" tolerance="0.000005" calc="p5-a-simpson-4" />
+
+<Solution>
+
+**The idea.** Divide the interval into four equal pieces, tabulate the integrand at the five points, and add the values with the weights $1, 4, 2, 4, 1$.
+
+<Step title="The table">
+
+Here $a = \sqrt{\pi/2} = 1.253314$ and $\Delta x = a/4 = 0.313329$. The points are $t = i\,a/4$ with $i$ from 0 to 4, so there $t^2 = i^2\pi/32$:
+
+| $i$ | $t$ | $t^2$ | $\cos(t^2)$ | weight |
+|---|---|---|---|---|
+| 0 | 0 | 0 | 1 | 1 |
+| 1 | 0.313329 | $\pi/32$ | 0.995185 | 4 |
+| 2 | 0.626657 | $\pi/8$ | 0.923880 | 2 |
+| 3 | 0.939986 | $9\pi/32$ | 0.634393 | 4 |
+| 4 | 1.253314 | $\pi/2$ | 0 | 1 |
+
+</Step>
+
+<Step title="Add with the weights">
+
+<Formula label="Simpson's rule with four intervals" tex="\frac{0.313329}{3}\left(1 + 4 \times 0.995185 + 2 \times 0.923880 + 4 \times 0.634393 + 0\right) = 0.1044428 \times 9.366071 = 0.978219" cite="mit" at="Part II, Problem 5 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The value is $0.000768$ above the integral, $0.977451$: correct to about three decimal places, from only five values of the function. The last value in the table is exactly $0$, because $a$ was chosen so that $a^2 = \pi/2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Use eight intervals.
+
+<Hint>
+
+The five points of part (a) are every second point of the new table, so only four values are new.
+
+</Hint>
+
+<Hint>
+
+The weights are now $1, 4, 2, 4, 2, 4, 2, 4, 1$, and $\Delta x = a/8$.
+
+</Hint>
+
+<Answer id="p5-b" label="Simpson's rule, eight intervals:" value="0.977503" tolerance="0.000005" calc="p5-b-simpson-8" />
+
+<Solution>
+
+**The idea.** The same, with half the step. The old points keep their values but most of them get a new weight.
+
+<Step title="The table">
+
+Now $\Delta x = a/8 = 0.156664$, the points are $t = i\,a/8$ with $i$ from 0 to 8, and there $t^2 = i^2\pi/128$:
+
+| $i$ | $t$ | $\cos(t^2)$ | weight |
+|---|---|---|---|
+| 0 | 0 | 1 | 1 |
+| 1 | 0.156664 | 0.999699 | 4 |
+| 2 | 0.313329 | 0.995185 | 2 |
+| 3 | 0.469993 | 0.975702 | 4 |
+| 4 | 0.626657 | 0.923880 | 2 |
+| 5 | 0.783321 | 0.817585 | 4 |
+| 6 | 0.939986 | 0.634393 | 2 |
+| 7 | 1.096650 | 0.359895 | 4 |
+| 8 | 1.253314 | 0 | 1 |
+
+</Step>
+
+<Step title="Add with the weights">
+
+The values with weight 4 add up to $3.152881$ and those with weight 2 to $2.553458$:
+
+<Formula label="Simpson's rule with eight intervals" tex="\frac{0.156664}{3}\left(1 + 4 \times 3.152881 + 2 \times 2.553458 + 0\right) = 0.0522214 \times 18.718438 = 0.977503" cite="mit" at="Part II, Problem 5 (our own solution)" />
+
+</Step>
+
+<Step title="Check: compare the two approximations">
+
+With eight intervals the value is only $0.000052$ above the integral, against $0.000768$ with four. Halving the step made the error about 15 times smaller. That fits the lecture's rough statement that the error of Simpson's rule is of the order of $(\Delta x)^4$ (Lecture 24 notes, p. 5): half the step should give about $\tfrac{1}{16}$ of the error.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## More practice: MIT's own solved exercises
+
+Part I of MIT's Problem Set 6 (22 points at MIT, not scored here) is a list of short exercises from Section E of the course's Supplementary Notes. David Jerison, who wrote them, also wrote out their solutions, in Section S. Both are on MIT OpenCourseWare under the same licence as the rest of the course, so they are not rewritten here: open [the exercises (Section E)](https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/e_exrcs_scsn_1_7/), try them, then compare with [MIT's solutions (Section S)](https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/resources/s_solutns_exrcis/).
+
+An exercise number such as 4C-2 means Section 4, group C, exercise 2; the letters after it are its parts. MIT assigned these, lecture by lecture:
+
+| For | Exercises in Section E |
+|---|---|
+| Lecture 22: [volumes by disks and shells](/courses/18-01/volumes) | 4B-2e, g, 4B-5; 4C-1a, 4C-2, 4C-3; 4J-3 |
+| Lecture 23: [average value and probability](/courses/18-01/average-value-and-probability) | 4D-2, 4D-3, 4D-5 |
+| Lecture 24: [numerical integration](/courses/18-01/numerical-integration) | 3G-1a, d, 3G-4 |
+| Lecture 27: [trigonometric integrals](/courses/18-01/trig-integrals), and direct substitution | 5B-9, 5B-11, 5B-13, 5B-16; 5C-5, 5C-7, 5C-9, 5C-11 |
+
+MIT's sheet calls the last of these Lecture 25, its number in the Fall 2006 calendar. In the lecture list of OpenCourseWare, and on this site, trigonometric integrals are Lecture 27, after the review for the third exam and the exam itself. MIT's list also has three exercises for Lecture 23 from the course textbook by Simmons, and sections of that book to read. They are not part of this page.
