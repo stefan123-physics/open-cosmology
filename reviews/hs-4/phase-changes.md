@@ -98,3 +98,6 @@ All recomputed independently:
 - Licensing note: quiz 5 choices now write $100\ \text{°C}$ in maths like the other questions.
 - Notes: slope written ΔT/ΔQ; the graph instruction now reads "Make the mass smaller and watch the flat parts shrink" (the slider default is its maximum, 0.25 kg, which the caption uses); Summary now says "carries heat away at about 500 W". The notes on the escape-energy ratio and the body's specific heat need no change.
 - Checks: `npm run calc:test -- -k phase-changes`: 33 passed. `npm run content:check`: 0 error(s), no message for this page. Status set to reviewed.
+
+## Later correction (2026-11-21, by the page author)
+- Found by the blind review of hs-4-practice: the `at` text of Q = mL and the reading location said the latent heat of fusion is "stored on freezing and released on melting", repeating a slip in the MIT 3.012 notes (p. 8). Both now say it is taken in on melting and given out on freezing, with a bracket noting the slip in the notes. The lesson's body text was already right.
