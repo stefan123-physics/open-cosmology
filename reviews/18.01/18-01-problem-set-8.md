@@ -113,3 +113,13 @@ No disagreement between my answers and the page's.
 8. info: the MIT 8B points slip is verified.
 
 COUNTS: errors=1 warnings=3 info=4
+
+## Resolution (2026-11-21, by the page author)
+
+1. Error 1 fixed: the 13 solution formulas of the 8B problems now cite `reading1` (the 8B sheet), with "Problem Set 8B, " dropped from their `at`.
+2. Warning 2 fixed: the catenoid's least-area claim in 8A Problem 2(d) now holds only "for circles that are not too far apart", with a bracketed note that for circles far apart the two flat discs have less area and a stretched film breaks into them.
+3. Warning 3 fixed: the lecture-number paragraph adds that the notes for L'Hôpital's rule and improper integrals keep MIT's numbers 34 and 35 in their headings, which is why the solutions cite "Lecture 34 notes" and "Lecture 35 notes".
+4. Warning 4 fixed: the `vars` of box a3-b are now x in [-0.9, 0.9], so the listed mistake sqrt(1 - x^2) is finite at every sample point and is recognised.
+5. Info items left as they are (number boxes take no listed mistakes in this run's pages; hint 3 of b1e is the last hint; the soap-film sentence is short and attributed).
+
+Status set to `reviewed`.
