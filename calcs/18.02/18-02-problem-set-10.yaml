@@ -1,0 +1,500 @@
+# Calculations on content/year-1/18.02/18-02-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# OpenCourseWare has no solutions for Part B of this set, so every answer is checked here by an independent route:
+# the two fluxes by numerical integration around the circle, the limits of the triple integrals by solving the
+# equations of the surfaces along a ray or a slice, the integral of the distance by numerical double integration in
+# both coordinate systems, and the pull of the hemisphere by numerical double integration in cylindrical coordinates
+# (the page's solution uses spherical coordinates).
+
+page: content/year-1/18.02/18-02-problem-set-10.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points-mit
+    where: 'Introduction: the points of MIT''s four problems of Part B (4 each)'
+    inputs: {}
+    formula: 4 * 4
+    expected: '16'
+    shown: ['four longer problems of 4 points each (16 points)']
+    source: {cite: mit, at: 'Part B, p. 1'}
+    origin: mit
+
+  - id: intro-points-here
+    where: 'Introduction: the points of the three problems written out here (4 + 4 + 4)'
+    inputs: {}
+    formula: 4 + 4 + 4
+    expected: '12'
+    shown: ['hints and solutions of our own (12 points)']
+    source: {cite: mit, at: 'Part B, p. 1'}
+    origin: page-own
+
+  - id: intro-part-a-points
+    kind: fact
+    where: 'Last section: the points of MIT''s Part A'
+    shown: ['10 points at MIT']
+    source: {cite: mit, at: 'Part A, p. 1'}
+    origin: mit
+
+  - id: intro-lecture-numbers
+    where: 'Introduction: MIT''s Lecture 29 is three higher than the site''s Lecture 26 (three exam days counted)'
+    inputs: {}
+    formula: 29 - 3
+    expected: '26'
+    shown: ['MIT''s Lectures 28 and 29 are Lectures 25 and 26 here']
+    source: {cite: mit, at: 'Part A, p. 1'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  - id: p1-divergence
+    kind: identity
+    where: 'Problem 1(a), formula "The divergence of the field": P_x + Q_y = 0 away from the origin, by numerical derivatives'
+    formula: deriv('q/(q**2 + y**2)', 'q', x) + deriv('q/(x**2 + q**2)', 'q', y)
+    equals: 0*x
+    samples: {x: [0.3, 1.2, -0.7, 2, -1.5], y: [0.4, -0.9, 0.2, 1.5, -2]}
+    tolerance: 1e-8
+    shown: ['= \frac{y^2 - x^2}{r^4} + \frac{x^2 - y^2}{r^4} = 0']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-px
+    kind: identity
+    where: 'Problem 1(a), formula "The two partial derivatives": P_x against a numerical derivative'
+    formula: (y**2 - x**2)/(x**2 + y**2)**2
+    equals: deriv('q/(q**2 + y**2)', 'q', x)
+    samples: {x: [0.3, 1.2, -0.7, 2, -1.5], y: [0.4, -0.9, 0.2, 1.5, -2]}
+    tolerance: 1e-8
+    shown: ['= \frac{y^2 - x^2}{r^4}, \qquad']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-flux
+    answer: p1-a-flux
+    where: 'Problem 1(a), answer box: the flux through the circle of radius 0.5, by numerical integration around the circle'
+    inputs: {a: 0.5}
+    formula: integrate('a*(a + cos(q))/(1 + 2*a*cos(q) + a**2)', 'q', 0, 2*pi)
+    expected: '0'
+    tolerance: 1e-8
+    shown: ['A computer gives $0$ for this integral at $a = 0.5$']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-a-flux-other-radius
+    where: 'Problem 1(a): the flux through the circle of radius 0.6 of the diagram, by numerical integration'
+    inputs: {a: 0.6}
+    formula: integrate('a*(a + cos(q))/(1 + 2*a*cos(q) + a**2)', 'q', 0, 2*pi)
+    expected: '0'
+    tolerance: 1e-8
+    shown: ['= \int\int_R 0\,dA = 0 \qquad (a < 1)']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-integrand
+    kind: identity
+    where: 'Problem 1(a), check: the integrand F · n ds/dt on the circle against the field and the normal written out'
+    formula: a*(a + cos(t))/(1 + 2*a*cos(t) + a**2)
+    equals: (((1 + a*cos(t))*cos(t) + (a*sin(t))*sin(t)) / ((1 + a*cos(t))**2 + (a*sin(t))**2)) * a
+    samples: {a: [0.5, 0.6, 1.6, 2, 2.5], t: [0.3, 2.9, 1.1, 4, 5.5]}
+    tolerance: 1e-12
+    shown: ['\frac{a\,(a + \cos t)}{1 + 2a\cos t + a^2}\,dt']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-b-fn
+    kind: identity
+    answer: p1-b-fn
+    where: 'Problem 1(b), answer box: F · n on the circle of radius ε, against the field and the normal at the point (ε cos t, ε sin t)'
+    formula: 1/eps
+    equals: ((eps*cos(t))*(eps*cos(t)/eps) + (eps*sin(t))*(eps*sin(t)/eps)) / ((eps*cos(t))**2 + (eps*sin(t))**2)
+    samples: {eps: [0.1, 0.3, 0.5, 0.7, 0.9], t: [0.3, 2.9, 1.1, 4, 5.5]}
+    tolerance: 1e-12
+    shown: ['= \frac{x^2 + y^2}{\varepsilon^3} = \frac{1}{\varepsilon}']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-flux
+    answer: p1-b-flux
+    where: 'Problem 1(b), answer box: the flux through the circle of radius 2, by numerical integration around the circle'
+    inputs: {a: 2}
+    formula: integrate('a*(a + cos(q))/(1 + 2*a*cos(q) + a**2)', 'q', 0, 2*pi)
+    expected: '6.283'
+    shown: ['At $a = 2$ a computer gives $6.283$ for it']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-b-two-pi
+    where: 'Problem 1(b), formula "The flux for a circle that encloses the origin": 2π'
+    inputs: {}
+    formula: 2*pi
+    expected: '6.283'
+    shown: ['= 2\pi = 6.283 \qquad (a > 1)']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-flux-diagram-radius
+    where: 'Problem 1(b): the flux through the circle of radius 1.6 of the diagram, by numerical integration'
+    inputs: {a: 1.6}
+    formula: integrate('a*(a + cos(q))/(1 + 2*a*cos(q) + a**2)', 'q', 0, 2*pi)
+    expected: '6.283'
+    shown: ['radius a = 1.6 (solid)']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-small-circle-fits
+    where: 'Problem 1(b), diagram: the small circle of radius 0.3 fits inside the circle of radius 1.6, because 0.3 is less than a − 1'
+    inputs: {}
+    formula: 1.6 - 1
+    expected: '0.6'
+    shown: ['a small circle of radius 0.3 around the origin (dashed), which lies inside C']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-at-one
+    kind: identity
+    where: 'Problem 1(b), check: at a = 1 the integrand is 1/2 wherever it is defined'
+    formula: (1 + cos(t))/(2 + 2*cos(t))
+    equals: 0.5 + 0*t
+    samples: {t: [0.3, 1.1, 2.9, 4, 5.5]}
+    tolerance: 1e-12
+    shown: ['$\tfrac{1 + \cos t}{2 + 2\cos t} = \tfrac12$']
+    source: {cite: mit, at: 'Part B, Problem 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3(a)
+
+  - id: p3-a-rmax
+    kind: identity
+    answer: p3-a-rmax
+    where: 'Problem 3(a), answer box: the largest r at height z, against the root of r² + (z − a)² = a² found numerically'
+    formula: sqrt(2*a*z - z**2)
+    equals: solve('q**2 + (z - a)**2 - a**2', 'q', 0, 2*a)
+    samples: {a: [2, 2.5, 3, 1, 1], z: [0.5, 0.9, 0.7, 0.5, 1.6]}
+    tolerance: 1e-9
+    shown: ['0 \le r \le \sqrt{2az - z^2}']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-slice-end
+    where: 'Problem 3(a), graph: the slice at height 0.5 of the ball of radius 1 ends at r = 0.866'
+    inputs: {}
+    formula: sqrt(2*1*0.5 - 0.5**2)
+    expected: '0.866'
+    shown: ['runs from the axis to r = 0.866']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-ray-end
+    where: 'Problem 3(a), graph: the ray at φ = π/3 ends at r = 2 cos(π/3) sin(π/3), the same point'
+    inputs: {}
+    formula: 2*cos(pi/3)*sin(pi/3)
+    expected: '0.866'
+    shown: ['x <= 0.866 ? 0.57735*x : NaN']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-ray-height
+    where: 'Problem 3(a), graph: the ray at φ = π/3 ends at height z = 2 cos²(π/3)'
+    inputs: {}
+    formula: 2*cos(pi/3)**2
+    expected: '0.5'
+    shown: ['points={[{ x: 0.866, y: 0.5, label: "surface", offCurve: true }]}']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-ray-slope
+    where: 'Problem 3(a), graph: the slope z/r of the ray at φ = π/3'
+    inputs: {}
+    formula: 1/tan(pi/3)
+    expected: '0.57735'
+    shown: ['0.57735*x']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-inner
+    kind: identity
+    where: 'Problem 3(a), formula "Inner integral": against numerical integration over r'
+    formula: ((2*a*z)**1.5 - z**3)/3
+    equals: integrate('sqrt(q**2 + z**2)*q', 'q', 0, sqrt(2*a*z - z**2))
+    samples: {a: [1, 1, 2, 0.5, 3], z: [0.5, 1.6, 0.9, 0.8, 5]}
+    tolerance: 1e-9
+    shown: ['= \tfrac13\left((2az)^{3/2} - z^3\right)']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-middle
+    kind: identity
+    where: 'Problem 3(a), formula "Middle integral": against numerical integration over z'
+    formula: 4*a**4/5
+    equals: integrate('((2*a*q)**1.5 - q**3)/3', 'q', 0, 2*a)
+    samples: {a: [0.5, 1, 1.5, 2, 3]}
+    tolerance: 1e-9
+    shown: ['16a^4 = \frac{4a^4}{5}']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-middle-fraction
+    where: 'Problem 3(a), formula "Middle integral": (1/3)(2/5 − 1/4) · 16'
+    inputs: {}
+    formula: (1/3)*(2/5 - 1/4)*16
+    expected: '0.8'
+    tolerance: 1e-12
+    shown: ['\tfrac13\left(\tfrac25 - \tfrac14\right) 16a^4']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-integral
+    kind: identity
+    answer: p3-a-integral
+    where: 'Problem 3(a), answer box: the integral of the distance over the ball, against a numerical double integral in cylindrical coordinates'
+    formula: 8*pi*a**4/5
+    equals: 2*pi*integrate('integrate("sqrt(r**2 + q**2)*r", "r", 0, sqrt(2*a*q - q**2))', 'q', 0, 2*a)
+    samples: {a: [1, 1.5, 2]}
+    tolerance: 1e-7
+    shown: ['tex="\int\int\int_D \sqrt{r^2 + z^2}\,dV = 2\pi \cdot \frac{4a^4}{5} = \frac{8\pi a^4}{5}"']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-average-factor
+    where: 'Problem 3(a), formula "The average distance, from cylindrical coordinates": (8 · 3)/(5 · 4) = 6/5'
+    inputs: {}
+    formula: (8*3)/(5*4) - 6/5
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['= \frac{8 \cdot 3}{5 \cdot 4}\,a = \frac{6a}{5}']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3(b)
+
+  - id: p3-b-rhomax
+    kind: identity
+    answer: p3-b-rhomax
+    where: 'Problem 3(b), answer box: the upper limit of ρ, against the point where the ray at angle φ meets the sphere r² + (z − a)² = a², found numerically'
+    formula: 2*a*cos(phi)
+    equals: solve('(q*sin(phi))**2 + (q*cos(phi) - a)**2 - a**2', 'q', 0.05*a, 5*a)
+    samples: {a: [1, 2, 1.5, 1, 2], phi: [0.2, 0.7, 0.45, 1.0472, 1.4]}
+    tolerance: 1e-9
+    shown: ['tex="\rho = 2a\cos\varphi, \qquad 0 \le \varphi \le \frac{\pi}{2}']
+    source: {cite: reading3, at: 'Lecture 26, p. 2'}
+    origin: mit
+
+  - id: p3-b-inner
+    kind: identity
+    where: 'Problem 3(b), formula "Inner integral": against numerical integration over ρ'
+    formula: 4*a**4*cos(phi)**4*sin(phi)
+    equals: integrate('q**3*sin(phi)', 'q', 0, 2*a*cos(phi))
+    samples: {a: [1, 2, 1.5, 1, 2], phi: [0.2, 0.7, 0.45, 1.0472, 1.4]}
+    tolerance: 1e-9
+    shown: ['= 4a^4\cos^4\varphi\,\sin\varphi']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-middle
+    kind: identity
+    where: 'Problem 3(b), formula "Middle integral": against numerical integration over φ'
+    formula: 4*a**4/5
+    equals: integrate('4*a**4*cos(q)**4*sin(q)', 'q', 0, pi/2)
+    samples: {a: [0.5, 1, 1.5, 2, 3]}
+    tolerance: 1e-9
+    shown: ['4a^4\left[-\tfrac15\cos^5\varphi\right]_0^{\pi/2} = \frac{4a^4}{5}']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-average
+    kind: identity
+    answer: p3-b-average
+    where: 'Problem 3(b), answer box: the average distance, against a numerical double integral in spherical coordinates divided by the volume of the ball'
+    formula: 6*a/5
+    equals: 2*pi*integrate('integrate("rho**3*sin(q)", "rho", 0, 2*a*cos(q))', 'q', 0, pi/2) / (4*pi*a**3/3)
+    samples: {a: [1, 1.5, 2]}
+    tolerance: 1e-8
+    shown: ['= \frac{1}{\tfrac43\pi a^3} \cdot \frac{8\pi a^4}{5} = \frac{6a}{5}']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-average-decimal
+    where: 'Problem 3(b), check: 6/5 as a decimal'
+    inputs: {}
+    formula: 6/5
+    expected: '1.2'
+    shown: ['$\tfrac65 a = 1.2\,a$']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-centre-integral
+    kind: identity
+    where: 'Problem 3(b), check: the integral of the distance to the centre of the ball is π a⁴'
+    formula: pi*a**4
+    equals: 2*pi*integrate('q**3', 'q', 0, a)*integrate('sin(q)', 'q', 0, pi)
+    samples: {a: [0.5, 1, 1.5, 2, 3]}
+    tolerance: 1e-9
+    shown: ['\rho^3\sin\varphi\,d\rho\,d\varphi\,d\theta = \pi a^4$']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-b-centre-average
+    where: 'Problem 3(b), check: the average distance to the centre, π a⁴ divided by the volume, for a = 1'
+    inputs: {}
+    formula: pi / (4*pi/3)
+    expected: '0.75'
+    shown: ['= \tfrac34 a = 0.75\,a$']
+    source: {cite: mit, at: 'Part B, Problem 3 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4(a)
+
+  - id: p4-a-flat
+    kind: identity
+    answer: p4-a-flat
+    where: 'Problem 4(a), answer box: where the ray at angle φ reaches the plane z = a, found numerically'
+    formula: a/cos(phi)
+    equals: solve('q*cos(phi) - a', 'q', 0.1*a, 10*a)
+    samples: {a: [1, 2, 1.5, 1, 2], phi: [0.1, 0.6, 0.35, 0.5, 0.2]}
+    tolerance: 1e-9
+    shown: ['\rho = \frac{a}{\cos\varphi}, \qquad\qquad']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-curved
+    kind: identity
+    answer: p4-a-curved
+    where: 'Problem 4(a), answer box: where the ray at angle φ meets the sphere r² + (z − a)² = a², found numerically'
+    formula: 2*a*cos(phi)
+    equals: solve('(q*sin(phi))**2 + (q*cos(phi) - a)**2 - a**2', 'q', 0.05*a, 5*a)
+    samples: {a: [1, 2, 1.5, 1, 2], phi: [0.9, 1.4, 1.1, 1.3, 1.0]}
+    tolerance: 1e-9
+    shown: ['\text{curved surface:} \quad \rho = 2a\cos\varphi']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-angle
+    answer: p4-a-angle
+    where: 'Problem 4(a), answer box: the angle at which the two upper limits a/cos φ and 2a cos φ are equal, found numerically (a = 1)'
+    inputs: {}
+    formula: solve('1/cos(q) - 2*cos(q)', 'q', 0.3, 1.2)
+    expected: '0.785'
+    shown: ['$\varphi = \pi/4 = 0.785$']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-angle-rim
+    where: 'Problem 4(a): the angle of the ray to the rim, from tan φ = r/z = 1'
+    inputs: {}
+    formula: atan(1)
+    expected: '0.785'
+    shown: ['value="0.785"']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a-rim-distance
+    where: 'Problem 4(a), check: both formulas give ρ = √2 a at φ = π/4 (difference, a = 1)'
+    inputs: {}
+    formula: 1/cos(pi/4) - 2*cos(pi/4)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['$a/\cos\tfrac{\pi}{4} = \sqrt2\,a$ and $2a\cos\tfrac{\pi}{4} = \sqrt2\,a$']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4(b)
+
+  - id: p4-b-first
+    kind: identity
+    where: 'Problem 4(b), formula "First piece": against numerical integration over φ'
+    formula: a*(1 - sqrt(2)/2)
+    equals: integrate('(a/cos(q))*cos(q)*sin(q)', 'q', 0, pi/4)
+    samples: {a: [0.5, 1, 1.5, 2, 3]}
+    tolerance: 1e-9
+    shown: ['= a\left(1 - \frac{\sqrt2}{2}\right)']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-second
+    kind: identity
+    where: 'Problem 4(b), formula "Second piece": against numerical integration over φ'
+    formula: sqrt(2)*a/6
+    equals: integrate('(2*a*cos(q))*cos(q)*sin(q)', 'q', pi/4, pi/2)
+    samples: {a: [0.5, 1, 1.5, 2, 3]}
+    tolerance: 1e-9
+    shown: ['= \frac{\sqrt2}{6}\,a']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-force
+    kind: identity
+    answer: p4-b-force
+    where: 'Problem 4(b), answer box: the attraction, against a numerical double integral of z/(r² + z²)^(3/2) in cylindrical coordinates'
+    formula: 2*pi*G*a*(1 - sqrt(2)/3)
+    equals: 2*pi*G*integrate('integrate("q*r/(r**2 + q**2)**1.5", "r", 0, sqrt(2*a*q - q**2))', 'q', 0, a)
+    samples: {G: [1, 0.5, 2], a: [1, 2, 1.5]}
+    tolerance: 1e-6
+    shown: ['= 2\pi G a\left(1 - \frac{\sqrt2}{3}\right) = 3.321\,G a']
+    source: {cite: notesProblems, at: 'Exercise 5C-5 (answer printed in the Notes)'}
+    origin: mit
+
+  - id: p4-b-force-decimal
+    where: 'Problem 4(b): 2π(1 − √2/3) as a decimal'
+    inputs: {}
+    formula: 2*pi*(1 - sqrt(2)/3)
+    expected: '3.321'
+    shown: ['= 3.321\,G a']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-cyl-inner
+    kind: identity
+    where: 'Problem 4(b), check in cylindrical coordinates, inner integral: against numerical integration over r'
+    formula: 1 - sqrt(z/(2*a))
+    equals: integrate('z*q/(q**2 + z**2)**1.5', 'q', 0, sqrt(2*a*z - z**2))
+    samples: {a: [1, 1, 2, 0.5, 3], z: [0.5, 0.9, 0.9, 0.4, 2.5]}
+    tolerance: 1e-9
+    shown: ['= 1 - \sqrt{\frac{z}{2a}}']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-cyl-result
+    kind: identity
+    where: 'Problem 4(b), check in cylindrical coordinates, the result: against numerical integration over z'
+    formula: a*(1 - sqrt(2)/3)
+    equals: integrate('1 - sqrt(q/(2*a))', 'q', 0, a)
+    samples: {a: [0.5, 1, 1.5, 2, 3]}
+    tolerance: 1e-9
+    shown: ['a - \frac{1}{\sqrt{2a}} \cdot \tfrac23 a^{3/2}']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-whole-ball
+    where: 'Problem 4(b), check: the pull of the whole ball on a unit mass on its surface, (4/3)π, in units of G a'
+    inputs: {}
+    formula: 4*pi/3
+    expected: '4.189'
+    shown: ['$\tfrac43\pi G a = 4.189\,G a$']
+    source: {cite: reading3, at: 'Lecture 26, p. 2'}
+    origin: page-own
+
+  - id: p4-b-share
+    where: 'Problem 4(b), check: the share of the near half in the pull of the whole ball, in percent'
+    inputs: {}
+    formula: 100 * (2*pi*(1 - sqrt(2)/3)) / (4*pi/3)
+    expected: '79'
+    shown: ['which is 79%']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-far-half
+    where: 'Problem 4(b), check: the pull of the far half, by numerical integration over the rays between the plane z = a and the sphere (units of G a)'
+    inputs: {}
+    formula: 2*pi*integrate('(2*cos(q) - 1/cos(q))*cos(q)*sin(q)', 'q', 0, pi/4)
+    expected: '0.868'
+    shown: ['$0.868\,G a$']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4-b-far-half-difference
+    where: 'Problem 4(b), check: the pull of the far half as the whole ball minus the near half (units of G a)'
+    inputs: {}
+    formula: 4*pi/3 - 2*pi*(1 - sqrt(2)/3)
+    expected: '0.868'
+    shown: ['The far half gives the rest, $0.868\,G a$']
+    source: {cite: mit, at: 'Part B, Problem 4 (our own check)'}
+    origin: page-own
