@@ -1,0 +1,665 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# the equations of motion of the end beads written out directly (with the walls, not with imaginary beads), the
+# eigenvalues of the 3-bead matrix from its characteristic polynomial, numerical derivatives (the wave equation and
+# the boundary conditions as residuals) and numerical integration of the Fourier coefficients over the zigzag.
+
+page: content/year-2/8.03/8-03-problem-set-4.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: four problems of 25 points'
+    formula: 4 * 25
+    expected: 100
+    shown: ['All four problems count for the score (100 points)']
+    source: {cite: mit, at: 'Problems 4.1 to 4.4, pp. 1-2'}
+    origin: mit
+
+  # ---- Problem 1: the beaded string between two walls
+
+  - id: p1-wall
+    kind: identity
+    answer: p1-wall
+    where: 'Problem 1(a), answer box: the wall force against the force of an imaginary bead 0 at -y1'
+    formula: -2*T*y1/a
+    equals: -T*(y1 - (0 - y1))/a
+    samples:
+      T: [1, 2.5, 3, 1.7]
+      y1: [0.1, 0.3, 0.5, 0.2]
+      a: [0.5, 1, 2, 1.3]
+    shown: ['id="p1-wall"']
+    source: {cite: mit, at: 'Problem 4.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The slope of a straight string from height 0 at the wall to y1 at distance a/2, by a numerical derivative.
+  - id: p1-wall-slope
+    kind: identity
+    where: 'Problem 1(a), solution: tension times the slope of the wall piece'
+    formula: -2*T*y1/a
+    equals: -T*deriv('y1*u/(a/2)', 'u', a/4)
+    samples:
+      T: [1, 2.5, 3, 1.7]
+      y1: [0.1, 0.3, 0.5, 0.2]
+      a: [0.5, 1, 2, 1.3]
+    shown: ['F_{\text{wall}} = -T\,\frac{y_1}{a/2} = -\frac{2T}{a}\,y_1']
+    source: {cite: mit, at: 'Problem 4.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Equation of bead 1: wall force plus the force of the string to bead 2 = (T/a)(-3 y1 + y2).
+  - id: p1-bead1
+    kind: identity
+    where: 'Problem 1(a), check: the equation of bead 1 both ways'
+    formula: T/a*(-3*y1 + y2)
+    equals: -2*T*y1/a - T*(y1 - y2)/a
+    samples:
+      T: [1, 2.5, 3, 1.7]
+      y1: [0.1, 0.3, 0.5, 0.2]
+      y2: [0.4, -0.2, 0.1, 0.3]
+      a: [0.5, 1, 2, 1.3]
+    shown: ['is $m\ddot y_1 = \frac{T}{a}(-3y_1 + y_2)$, the same as the sum']
+    source: {cite: mit, at: 'Problem 4.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Right-hand wall: the imaginary amplitude x that makes the string force on bead N equal to the wall force.
+  - id: p1-bc
+    kind: identity
+    answer: p1-bc
+    where: 'Problem 1(b), answer box: against the solve of "wall force = force of bead N+1"'
+    formula: -AN
+    equals: solve('-2*AN + (AN - x)', 'x', -10, 10)
+    samples:
+      AN: [0.5, 1, 2, 1.3]
+    shown: ['id="p1-bc"']
+    source: {cite: mit, at: 'Problem 4.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ka: the root of the right-hand condition sin((N+1/2)x) + sin((N-1/2)x) = 0 nearest to n pi/N.
+  - id: p1-ka
+    kind: identity
+    answer: p1-ka
+    where: 'Problem 1(c), answer box: against a numerical root of the right-hand wall condition'
+    formula: n*pi/N
+    equals: solve('sin((N + 0.5)*x) + sin((N - 0.5)*x)', 'x', (n - 0.4)*pi/N, (n + 0.4)*pi/N)
+    samples:
+      n: [1, 2, 3, 1, 4, 2]
+      N: [5, 5, 7, 2, 9, 3]
+    shown: ['id="p1-ka"']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The number of modes: the 3-bead matrix has exactly three eigenvalues (entries p1-n3-*), one per bead.
+  - id: p1-count
+    kind: identity
+    answer: p1-count
+    where: 'Problem 1(c), answer box: three beads, three roots of the characteristic polynomial (1, 3 and 4)'
+    formula: N
+    equals: solve('(3 - x)*((2 - x)*(3 - x) - 2)', 'x', 0.5, 1.5) + solve('(3 - x)*((2 - x)*(3 - x) - 2)', 'x', 2.5, 3.5) + solve('(3 - x)*((2 - x)*(3 - x) - 2)', 'x', 3.5, 4.5) - 5
+    samples:
+      N: [3]
+    shown: ['id="p1-count"']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Frequency and shape together, in the row of an inner bead j:
+  # omega^2 A_j = omega_0^2 (-A_{j-1} + 2 A_j - A_{j+1}) with A_j = sin((j - 1/2) n pi/N).
+  - id: p1-omega
+    kind: identity
+    answer: p1-omega
+    where: 'Problem 1(c), answer box: against the equation of motion of bead j with the mode shape put in'
+    formula: 2*sqrt(T/(m*a))*sin(n*pi/(2*N))
+    equals: sqrt(T/(m*a)*(2 - (sin((j - 1.5)*n*pi/N) + sin((j + 0.5)*n*pi/N))/sin((j - 0.5)*n*pi/N)))
+    samples:
+      T: [1, 2, 3, 1.5, 2.5, 1]
+      m: [0.5, 1, 2, 1.5, 0.7, 1]
+      a: [0.5, 1, 2, 1.2, 0.8, 1]
+      N: [5, 5, 7, 9, 6, 8]
+      n: [1, 2, 3, 4, 5, 2]
+      j: [2, 2, 4, 2, 3, 5]
+    tolerance: 1e-9
+    shown: ['id="p1-omega"']
+    source: {cite: reading2, at: 'p. 3'}
+    origin: page-own
+
+  # The real equation of bead 1 (wall at a/2, no imaginary bead): omega^2 A_1 = omega_0^2 (3 A_1 - A_2).
+  - id: p1-row-1
+    kind: identity
+    where: 'Problem 1(c), solution: the mode satisfies the equation of the first bead, written with the wall'
+    formula: 4*sin(n*pi/(2*N))**2
+    equals: 3 - sin(1.5*n*pi/N)/sin(0.5*n*pi/N)
+    samples:
+      N: [1, 2, 2, 3, 3, 3, 5, 7, 9]
+      n: [1, 1, 2, 1, 2, 3, 4, 3, 9]
+    tolerance: 1e-9
+    shown: ['\omega_n = 2\sqrt{\frac{T}{ma}}\,\sin\frac{n\pi}{2N}, \qquad n = 1, 2, \dots, N']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The real equation of bead N (wall at a/2): omega^2 A_N = omega_0^2 (3 A_N - A_{N-1}).
+  - id: p1-row-N
+    kind: identity
+    where: 'Problem 1(c), solution: the mode satisfies the equation of the last bead, written with the wall'
+    formula: 4*sin(n*pi/(2*N))**2
+    equals: 3 - sin((N - 1.5)*n*pi/N)/sin((N - 0.5)*n*pi/N)
+    samples:
+      N: [1, 2, 2, 3, 3, 3, 5, 7, 9]
+      n: [1, 1, 2, 1, 2, 3, 4, 3, 9]
+    tolerance: 1e-9
+    shown: ['y_j^{(n)}(t) = C_n\,\sin\left[\left(j - \tfrac12\right)\frac{n\pi}{N}\right]\cos(\omega_n t + \phi_n)']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-shape
+    kind: identity
+    answer: p1-shape
+    where: 'Problem 1(c), answer box: against the mix of sin(jka) and cos(jka) with the phase -ka/2'
+    formula: sin((j - 1/2)*n*pi/N)
+    equals: sin(j*n*pi/N)*cos(n*pi/(2*N)) - cos(j*n*pi/N)*sin(n*pi/(2*N))
+    samples:
+      j: [1, 2, 3, 5, 4]
+      n: [1, 2, 3, 1, 2]
+      N: [5, 6, 7, 8, 5]
+    tolerance: 1e-9
+    shown: ['id="p1-shape"']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The left-hand condition with the phase -ka/2: A_0 + A_1 = 0.
+  - id: p1-left-condition
+    kind: identity
+    where: 'Problem 1(c), solution: the phase -ka/2 satisfies A_0 = -A_1 for any ka'
+    formula: sin((0 - 0.5)*q) + 1
+    equals: 1 - sin((1 - 0.5)*q)
+    samples:
+      q: [0.3, 1.1, 2.0, 3.0]
+    tolerance: 1e-9
+    shown: ['\Longrightarrow\quad \alpha = -\frac{ka}{2}']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n1
+    where: 'Problem 1(c), check: one bead between two pieces of length a/2, omega/omega_0'
+    inputs: {N: 1, n: 1}
+    formula: 2*sin(n*pi/(2*N))
+    expected: 2
+    tolerance: 1e-9
+    shown: ['so $m\ddot y_1 = -4Ty_1/a$ and $\omega = 2\omega_0$']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n2-low
+    where: 'Problem 1(c), check: two beads, the lower mode omega/omega_0 against the direct value sqrt(2)'
+    inputs: {N: 2, n: 1}
+    formula: 2*sin(n*pi/(2*N))
+    expected: 1.414
+    shown: ['\omega_1 = 2\omega_0\sin\frac{\pi}{4} = 1.414\,\omega_0']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n2-direct
+    where: 'Problem 1(c), check: two beads solved directly, eigenvalues of rows (3, -1), (-1, 3)'
+    formula: solve('(3 - x)**2 - 1', 'x', 1, 3) + 10*solve('(3 - x)**2 - 1', 'x', 3, 5)
+    expected: 42
+    tolerance: 1e-9
+    shown: ['Moving together ($y_1 = y_2$) gives $\omega^2 = 2\omega_0^2$, and moving opposite ($y_1 = -y_2$) gives $\omega^2 = 4\omega_0^2$']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n3-formula
+    where: 'Problem 1(c), check: three beads, omega^2/omega_0^2 from the formula: 1 + 10*3 + 100*4'
+    formula: 4*sin(pi/6)**2 + 10*4*sin(2*pi/6)**2 + 100*4*sin(3*pi/6)**2
+    expected: 431
+    tolerance: 1e-9
+    shown: ['the formula gives $\omega^2/\omega_0^2 = 1$, $3$ and $4$']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n3-roots
+    where: 'Problem 1(c), check: three beads, the roots of the characteristic polynomial of rows (3,-1,0), (-1,2,-1), (0,-1,3)'
+    formula: solve('(3 - x)*((2 - x)*(3 - x) - 1) - (3 - x)', 'x', 0.5, 1.5) + 10*solve('(3 - x)*((2 - x)*(3 - x) - 1) - (3 - x)', 'x', 2.5, 3.5) + 100*solve('(3 - x)*((2 - x)*(3 - x) - 1) - (3 - x)', 'x', 3.5, 4.5)
+    expected: 431
+    tolerance: 1e-9
+    shown: ['with rows $(3, -1, 0)$, $(-1, 2, -1)$ and $(0, -1, 3)$']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n3-trace
+    where: 'Problem 1(c), check: three beads, the sum of the three values of the formula (the trace is 3 + 2 + 3 = 8)'
+    formula: 4*sin(pi/6)**2 + 4*sin(2*pi/6)**2 + 4*sin(3*pi/6)**2
+    expected: 8
+    tolerance: 1e-9
+    shown: ['Their sum is 8 and their product is 12']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n3-product
+    where: 'Problem 1(c), check: three beads, the product of the three values of the formula'
+    formula: 4*sin(pi/6)**2 * 4*sin(2*pi/6)**2 * 4*sin(3*pi/6)**2
+    expected: 12
+    tolerance: 1e-9
+    shown: ['which are the trace and the determinant of the matrix']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n3-det
+    where: 'Problem 1(c), check: three beads, the determinant 3(2*3 - 1) - (-1)(-1*3 - 0)'
+    formula: 3*(2*3 - 1) - 1*3
+    expected: 12
+    tolerance: 1e-9
+    shown: ['which are the trace and the determinant of the matrix']
+    source: {cite: mit, at: 'Problem 4.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Continuum limit: for n much smaller than N, omega_n -> (n pi/(N a)) sqrt(T a/m).
+  - id: p1-continuum
+    kind: limit
+    where: 'Problem 1(c), check: many beads, the frequency of a continuous string of length N a'
+    inputs: {T: 2, m: 0.5, a: 0.1, n: 3}
+    formula: 2*sqrt(T/(m*a))*sin(n*pi/(2*N))
+    limit: n*pi/(N*a)*sqrt(T*a/m)
+    vary: {N: [10, 100, 1000, 10000]}
+    tolerance: 1e-6
+    shown: ['\omega_n \approx \frac{n\pi}{Na}\sqrt{\frac{Ta}{m}}']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: page-own
+
+  # ---- Problem 2: the reflection symmetry
+
+  - id: p2-count
+    answer: p2-count
+    where: 'Problem 2(a), answer box: one mode for each of the two angles (the two roots of the eigenvalue equation of a 2 x 2 matrix)'
+    formula: 1 + 1
+    expected: 2
+    shown: ['id="p2-count"']
+    source: {cite: mit, at: 'Problem 4.2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-beta
+    where: 'Problem 2(b), solution: the eigenvalues of S, roots of det(S - beta I) = beta^2 - 1, coded as root1 + 10*root2'
+    formula: solve('(0 - x)*(0 - x) - (-1)*(-1)', 'x', -2, 0) + 10*solve('(0 - x)*(0 - x) - (-1)*(-1)', 'x', 0, 2)
+    expected: 9
+    tolerance: 1e-9
+    shown: ['so $\beta = \pm 1$']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  # First row of S A = beta A: -A2 = beta A1, so A1/A2 = -1/beta.
+  - id: p2-r1
+    answer: p2-r1
+    where: 'Problem 2(b), answer box: the amplitude ratio for the eigenvalue -1'
+    inputs: {beta: -1}
+    formula: -1/beta
+    expected: 1
+    shown: ['id="p2-r1"']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  - id: p2-r2
+    answer: p2-r2
+    where: 'Problem 2(b), answer box: the amplitude ratio for the eigenvalue +1'
+    inputs: {beta: 1}
+    formula: -1/beta
+    expected: -1
+    shown: ['id="p2-r2"']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  # Second row of S A = beta A must agree: -A1 = beta A2, so A1/A2 = -beta, equal to -1/beta for beta = +1 or -1.
+  - id: p2-second-row
+    kind: identity
+    where: 'Problem 2(b), solution: the second row of S A = beta A gives the same ratio'
+    formula: -1/beta
+    equals: -beta
+    samples:
+      beta: [-1, 1]
+    shown: ['The first row of $SA = \beta A$ reads $-A_2 = \beta A_1$, so $A_1/A_2 = -1/\beta$']
+    source: {cite: reading1, at: 'p. 2'}
+    origin: page-own
+
+  # A matrix with rows (p, q), (q, p): (1, 1) and (1, -1) are eigenvectors with p + q and p - q.
+  - id: p2-symmetric-matrix
+    kind: identity
+    where: 'Problem 2(b), check: the commuting matrix acting on (1, 1) and on (1, -1), first and second rows'
+    formula: (p*1 + q*1) + 10*(q*1 + p*1) + 100*(p*1 + q*(-1)) + 1000*(q*1 + p*(-1))
+    equals: (p + q)*1 + 10*(p + q)*1 + 100*(p - q)*1 + 1000*(p - q)*(-1)
+    samples:
+      p: [5, 3.2, 7]
+      q: [-2, 1.1, -0.5]
+    shown: ['with $\omega^2 = p + q$ and $p - q$']
+    source: {cite: mit, at: 'Problem 4.2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: the string with two free ends
+
+  # k_m: the m-th positive root of "slope of cos(kx) at x = L is zero", sin(kL) = 0.
+  - id: p3-k
+    kind: identity
+    answer: p3-k
+    where: 'Problem 3(a), answer box: against a numerical root of the slope of cos(kx) at x = L'
+    formula: m*pi/L
+    equals: solve('deriv("cos(x*u)", "u", L)', 'x', (m - 0.4)*pi/L, (m + 0.4)*pi/L)
+    samples:
+      m: [1, 2, 3, 4, 5]
+      L: [0.5, 1, 2, 1.3, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p3-k"']
+    source: {cite: reading3, at: 'p. 3'}
+    origin: page-own
+
+  # omega_m: from the wave equation as a residual, omega^2 = -(T/mu) y''/y for the shape cos(m pi x/L).
+  - id: p3-omega
+    kind: identity
+    answer: p3-omega
+    where: 'Problem 3(a), answer box: against the wave equation with a numerical second derivative of the shape'
+    formula: m*pi/L*sqrt(T/mu)
+    equals: sqrt(-(T/mu)*deriv('cos(m*pi*u/L)', 'u', x, 2)/cos(m*pi*x/L))
+    samples:
+      m: [1, 2, 3, 4, 5]
+      L: [0.5, 1, 2, 1.3, 0.8]
+      T: [1, 2, 4, 3, 1.5]
+      mu: [0.3, 1, 2, 0.7, 1.2]
+      x: [0.1, 0.2, 0.3, 0.15, 0.05]
+    tolerance: 1e-6
+    shown: ['id="p3-omega"']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: page-own
+
+  # The shape: zero slope at x = 0 and at x = L (1 is added to both sides because the value is zero).
+  - id: p3-shape
+    kind: identity
+    answer: p3-shape
+    where: 'Problem 3(a), answer box: against the general mode sin(k x + alpha) with alpha = pi/2'
+    formula: cos(m*pi*x/L)
+    equals: sin(m*pi*x/L + pi/2)
+    samples:
+      m: [1, 2, 3, 4]
+      x: [0.1, 0.5, 0.9, 0.3]
+      L: [1, 2, 1.5, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p3-shape"']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: page-own
+
+  - id: p3-slope-ends
+    kind: identity
+    where: 'Problem 3(a), solution: the slope of the mode shape at both rings is zero (1 added to both sides)'
+    formula: 1 + deriv('cos(m*pi*u/L)', 'u', 0) + deriv('cos(m*pi*u/L)', 'u', L)
+    equals: 1
+    samples:
+      m: [1, 2, 3, 4, 5]
+      L: [0.5, 1, 2, 1.3, 0.8]
+    tolerance: 1e-6
+    shown: ['k_m = \frac{m\pi}{L}, \qquad \omega_m = \frac{m\pi}{L}\sqrt{\frac{T}{\mu}}, \qquad y_m(x, t) = A_m\cos\frac{m\pi x}{L}']
+    source: {cite: mit, at: 'Problem 4.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-wavelength
+    kind: identity
+    where: 'Problem 3(a), check: the wavelength 2 pi/k_m'
+    formula: 2*pi/(m*pi/L)
+    equals: 2*L/m
+    samples:
+      m: [1, 2, 3]
+      L: [1, 2, 0.5]
+    shown: ['The wavelength of mode $m$ is $2\pi/k_m = 2L/m$']
+    source: {cite: mit, at: 'Problem 4.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Nodes of mode 3: the length divided by half a wavelength (2L/3)/2.
+  - id: p3-nodes
+    answer: p3-nodes
+    where: 'Problem 3(b), answer box: the number of half wavelengths of mode 3 on the string, one node in each'
+    inputs: {m: 3}
+    formula: 1/((2/m)/2)
+    expected: 3
+    shown: ['id="p3-nodes"']
+    source: {cite: mit, at: 'Problem 4.3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The three nodes of mode 3 are zeros of cos(3 pi x/L), between points where the shape has opposite signs.
+  - id: p3-nodes-positions
+    where: 'Problem 3(b), solution: the zeros of cos(3 pi x) in (0, 1), coded as x1 + 10*x2 + 100*x3 (1/6, 1/2, 5/6)'
+    formula: solve('cos(3*pi*x)', 'x', 0.01, 0.3) + 10*solve('cos(3*pi*x)', 'x', 0.4, 0.6) + 100*solve('cos(3*pi*x)', 'x', 0.7, 0.99)
+    expected: 88.5
+    tolerance: 1e-6
+    shown: ['Mode 3 has **three**, at $L/6$, $L/2$ and $5L/6$']
+    source: {cite: mit, at: 'Problem 4.3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-nodes-mode-2
+    where: 'Problem 3(b), solution: the zeros of cos(2 pi x) in (0, 1), coded as x1 + 10*x2 (1/4, 3/4)'
+    formula: solve('cos(2*pi*x)', 'x', 0.01, 0.45) + 10*solve('cos(2*pi*x)', 'x', 0.55, 0.99)
+    expected: 7.75
+    tolerance: 1e-6
+    shown: ['Mode 2 has two, at $L/4$ and $3L/4$']
+    source: {cite: mit, at: 'Problem 4.3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-slope
+    kind: identity
+    answer: p3-slope
+    where: 'Problem 3(c), answer box: omega_m over k_m from part (a)'
+    formula: sqrt(T/mu)
+    equals: (m*pi/L*sqrt(T/mu))/(m*pi/L)
+    samples:
+      T: [1, 2, 4, 3]
+      mu: [0.3, 1, 2, 0.7]
+      m: [1, 2, 3, 4]
+      L: [0.5, 1, 2, 1.3]
+    shown: ['id="p3-slope"']
+    source: {cite: reading3, at: 'p. 1'}
+    origin: page-own
+
+  # ---- Problem 4: the zigzag
+
+  - id: p4-shape-corners
+    kind: fact
+    where: 'Problem 4, statement: the corners of the zigzag'
+    shown: ['up to the height $A$ at $x = -L/2$ and down to $-A$ at $x = L/2$']
+    source: {cite: mit, at: 'Problem 4.4, Figure 3, p. 2'}
+    origin: mit
+
+  # omega_m: the wave equation as a residual for the shape sin(m pi (x + L)/(2L)).
+  - id: p4-omega
+    kind: identity
+    answer: p4-omega
+    where: 'Problem 4(b), answer box: against the wave equation with a numerical second derivative of the shape'
+    formula: m*pi/(2*L)*sqrt(T/mu)
+    equals: sqrt(-(T/mu)*deriv('sin(m*pi*(u + L)/(2*L))', 'u', x, 2)/sin(m*pi*(x + L)/(2*L)))
+    samples:
+      m: [1, 2, 3, 4, 5]
+      L: [0.5, 1, 2, 1.3, 0.8]
+      T: [1, 2, 4, 3, 1.5]
+      mu: [0.3, 1, 2, 0.7, 1.2]
+      x: [0.1, 0.2, 0.3, 0.15, 0.05]
+    tolerance: 1e-6
+    shown: ['id="p4-omega"']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: page-own
+
+  - id: p4-fixed-ends
+    kind: identity
+    where: 'Problem 4(b), solution: the mode shape is zero at both walls (1 added to both sides)'
+    formula: 1 + sin(m*pi*(0 - L + L)/(2*L)) + sin(m*pi*(L + L)/(2*L))
+    equals: 1
+    samples:
+      m: [1, 2, 3, 4, 5, 6]
+      L: [0.5, 1, 2, 1.3, 0.8, 1]
+    tolerance: 1e-9
+    shown: ['k_m = \frac{m\pi}{2L}, \qquad \omega_m = v_p k_m = \frac{m\pi}{2L}\sqrt{\frac{T}{\mu}}']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: page-own
+
+  # Normalisation: the integral of sin^2 over the length 2L is L.
+  - id: p4-norm
+    kind: identity
+    where: 'Problem 4(b), hint and solution: the factor 1/L in the coefficient formula'
+    formula: integrate('sin(m*pi*(x + L)/(2*L))**2', 'x', 0 - L, L)
+    equals: L
+    samples:
+      m: [1, 2, 3, 6]
+      L: [1, 2, 0.5, 1.5]
+    tolerance: 1e-9
+    shown: ['A_m = \frac{1}{L}\int_{-L}^{L} y(x, 0)\,\sin\left[k_m(x + L)\right]dx']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  # The coefficients by direct numerical integration over the three straight pieces (A = 1, L = 1).
+  - id: p4-a2
+    answer: p4-a2
+    where: 'Problem 4(b), answer box: A_2/A by numerical integration of the zigzag times mode 2'
+    formula: integrate('2*(x + 1)*sin(2*pi*(x + 1)/2)', 'x', -1, -0.5) + integrate('-2*x*sin(2*pi*(x + 1)/2)', 'x', -0.5, 0.5) + integrate('2*(x - 1)*sin(2*pi*(x + 1)/2)', 'x', 0.5, 1)
+    expected: 0.8106
+    shown: ['id="p4-a2"']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a6
+    answer: p4-a6
+    where: 'Problem 4(b), answer box: A_6/A by numerical integration of the zigzag times mode 6'
+    formula: integrate('2*(x + 1)*sin(6*pi*(x + 1)/2)', 'x', -1, -0.5) + integrate('-2*x*sin(6*pi*(x + 1)/2)', 'x', -0.5, 0.5) + integrate('2*(x - 1)*sin(6*pi*(x + 1)/2)', 'x', 0.5, 1)
+    expected: -0.09006
+    shown: ['id="p4-a6"']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a2-closed
+    where: 'Problem 4(b), solution: A_2/A = 8/pi^2'
+    formula: 8/pi**2
+    expected: 0.8106
+    shown: ['A_2 = \frac{8A}{\pi^2} = 0.8106\,A']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a6-closed
+    where: 'Problem 4(b), solution: A_6/A = -8/(9 pi^2)'
+    formula: -8/(9*pi**2)
+    expected: -0.09006
+    shown: ['A_6 = -\frac{8A}{9\pi^2} = -0.09006\,A']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The closed form for every m against the numerical integral: (32/(pi^2 m^2)) sin(m pi/4) for even m, zero for odd m
+  # (the factor (1 + cos(m pi))/2 is 1 for even m and 0 for odd m). 1 is added to both sides because many values are zero.
+  - id: p4-all-m
+    kind: identity
+    where: 'Problem 4(b), solution: the coefficient formula for m = 1 to 10 and 14 against numerical integration'
+    formula: 1 + 32/(pi**2*m**2)*sin(m*pi/4)*(1 + cos(m*pi))/2
+    equals: 1 + integrate('2*(x + 1)*sin(m*pi*(x + 1)/2)', 'x', -1, -0.5) + integrate('-2*x*sin(m*pi*(x + 1)/2)', 'x', -0.5, 0.5) + integrate('2*(x - 1)*sin(m*pi*(x + 1)/2)', 'x', 0.5, 1)
+    samples:
+      m: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14]
+    tolerance: 1e-9
+    shown: ['\dfrac{32A}{\pi^2m^2}\,\sin\dfrac{m\pi}{4} & m = 2, 6, 10, \dots']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The triangle g (height 1, top at L/2) projected on sin(n pi x/L), numerically, for odd and even n.
+  - id: p4-triangle
+    kind: identity
+    where: 'Problem 4(b), solution: the triangle integral against numerical integration (1 added to both sides)'
+    formula: 1 + 4*L/(n**2*pi**2)*sin(n*pi/2)
+    equals: 1 + integrate('2*x/L*sin(n*pi*x/L)', 'x', 0, L/2) + integrate('2*(L - x)/L*sin(n*pi*x/L)', 'x', L/2, L)
+    samples:
+      n: [1, 2, 3, 4, 5, 7]
+      L: [1, 2, 0.5, 1.5, 1, 3]
+    tolerance: 1e-9
+    shown: ['\int_0^{L} g(x)\sin\frac{n\pi x}{L}\,dx = \frac{4L}{n^2\pi^2}\,\sin\frac{n\pi}{2}']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-first-half
+    kind: identity
+    where: 'Problem 4(b), solution: the first half of the triangle integral, with q = n pi/L'
+    formula: 1 - cos(n*pi/2)/(n*pi/L) + 2*sin(n*pi/2)/(L*(n*pi/L)**2)
+    equals: 1 + integrate('2*x/L*sin(n*pi*x/L)', 'x', 0, L/2)
+    samples:
+      n: [1, 2, 3, 4, 5, 7]
+      L: [1, 2, 0.5, 1.5, 1, 3]
+    tolerance: 1e-9
+    shown: ['= -\frac{\cos\frac{n\pi}{2}}{q} + \frac{2\sin\frac{n\pi}{2}}{L\,q^2}']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The two forms of the series agree term by term: A_m sin(k_m (x + L)) = -(8A/(pi^2 n^2)) sin(n pi/2) sin(n pi x/L), m = 2n, n odd.
+  - id: p4-two-forms
+    kind: identity
+    where: 'Problem 4(b), solution: a term of the series in its two forms (A = 1, L = 1)'
+    formula: 32/(pi**2*(2*n)**2)*sin(2*n*pi/4)*sin(2*n*pi*(x + 1)/2)
+    equals: -8/pi**2*sin(n*pi/2)/n**2*sin(n*pi*x)
+    samples:
+      n: [1, 3, 5, 7]
+      x: [-0.5, 0.3, 0.7, -0.2]
+    tolerance: 1e-9
+    shown: ['= -\frac{8A}{\pi^2}\sum_{n = 1, 3, 5, \dots}\frac{\sin\frac{n\pi}{2}}{n^2}']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-three-terms
+    where: 'Problem 4(b), check: the first three terms of the series at the corner x = -L/2'
+    formula: 8/pi**2*(1 + 1/9 + 1/25)
+    expected: 0.9331
+    shown: ['The first three terms already give $0.9331\,A$']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The value the whole series must reach at the corner: the zigzag itself, which is exactly A there.
+  - id: p4-corner
+    where: 'Problem 4(b), check: the zigzag at its first corner, 2(x + L)/L at x = -L/2, in units of A'
+    inputs: {L: 1}
+    formula: 2*(0 - L/2 + L)/L
+    expected: 1
+    tolerance: 1e-9
+    shown: ['so $y = A$, as it must be']
+    source: {cite: mit, at: 'Problem 4.4, Figure 3, p. 2'}
+    origin: mit
+
+  - id: p4-odd-squares
+    kind: fact
+    where: 'Problem 4(b), check: the sum of 1/n^2 over the odd numbers (a standard series)'
+    shown: ['the whole sum of $1/n^2$ over the odd numbers is $\pi^2/8$']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution; standard series)'}
+    origin: page-own
+
+  # Period: all excited modes are odd multiples of omega_2 = pi v/L, so the period is 2 pi/omega_2 = 2L/v.
+  - id: p4-period
+    kind: identity
+    where: 'Problem 4(b), check: the period of the motion'
+    formula: 2*pi/(2*pi/(2*L)*sqrt(T/mu))
+    equals: 2*L/sqrt(T/mu)
+    samples:
+      L: [1, 2, 0.5]
+      T: [1, 4, 2]
+      mu: [1, 0.5, 2]
+    shown: ['So the motion repeats after the time $2\pi/\omega_2 = 2L/v_p$']
+    source: {cite: mit, at: 'Problem 4.4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a10
+    where: 'Problem 4(c), solution: A_10/A by numerical integration'
+    formula: integrate('2*(x + 1)*sin(10*pi*(x + 1)/2)', 'x', -1, -0.5) + integrate('-2*x*sin(10*pi*(x + 1)/2)', 'x', -0.5, 0.5) + integrate('2*(x - 1)*sin(10*pi*(x + 1)/2)', 'x', 0.5, 1)
+    expected: 0.03242
+    shown: ['are $0.8106$, $-0.09006$, $0.03242$, $-0.01654$, … times $A$']
+    source: {cite: mit, at: 'Problem 4.4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-a14
+    where: 'Problem 4(c), solution: A_14/A by numerical integration'
+    formula: integrate('2*(x + 1)*sin(14*pi*(x + 1)/2)', 'x', -1, -0.5) + integrate('-2*x*sin(14*pi*(x + 1)/2)', 'x', -0.5, 0.5) + integrate('2*(x - 1)*sin(14*pi*(x + 1)/2)', 'x', 0.5, 1)
+    expected: -0.01654
+    shown: ['The marks for $m = 2, 6, 10, 14, \dots$']
+    source: {cite: mit, at: 'Problem 4.4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Mode 4 has nodes at both corners of the zigzag (1 added to both sides).
+  - id: p4-mode-4-nodes
+    kind: identity
+    where: 'Problem 4(c), check: mode 4 vanishes at x = -L/2 and x = L/2'
+    formula: 1 + sin(4*pi*(0 - L/2 + L)/(2*L)) + sin(4*pi*(L/2 + L)/(2*L))
+    equals: 1
+    samples:
+      L: [1, 2, 0.7]
+    tolerance: 1e-9
+    shown: ['$m = 4$ has nodes at $x = \pm L/2$']
+    source: {cite: mit, at: 'Problem 4.4(c), p. 3 (our own solution)'}
+    origin: page-own
