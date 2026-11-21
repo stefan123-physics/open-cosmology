@@ -83,3 +83,5 @@ COUNTS: errors=0 warnings=1 info=4
 2. Info items need no change.
 
 Status set to `reviewed`.
+
+3. Added after the review: a link from Problem 1 to Problem 3 of Problem Set 3, now that that set is on the site.
