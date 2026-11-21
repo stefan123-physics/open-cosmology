@@ -1,0 +1,751 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# a numerical integral of the energy density, a numerical derivative of the wave itself (the wave equation or the
+# boundary condition as a residual), a numerical solve of the boundary condition, or a limit.
+# In the nested expressions q is the variable of the integral, derivative or solve.
+
+page: content/year-2/8.03/8-03-problem-set-5.mdx
+calcs:
+  # ---- Problem 1: the energy of a vibrating string
+
+  # The mode A sin(n pi x/L) cos(w t) must solve the wave equation (M/L) psi_tt = T psi_xx: w^2 = -(T L/M) S''/S.
+  - id: p1-wn
+    kind: identity
+    answer: p1-wn
+    where: 'Problem 1(a), answer box: frequency of mode n, against the wave equation applied to the mode shape'
+    formula: n*pi*sqrt(T/(M*L))
+    equals: sqrt(-(T*L/M)*deriv('sin(n*pi*q/L)', 'q', x, 2)/sin(n*pi*x/L))
+    samples:
+      n: [1, 2, 3, 4]
+      T: [1.5, 2.0, 3.5, 2.6]
+      M: [0.7, 1.2, 1.9, 1.0]
+      L: [1.6, 2.2, 2.9, 2.0]
+      x: [0.3, 0.5, 0.4, 0.2]
+    tolerance: 1e-5
+    shown: ['id="p1-wn"']
+    source: {cite: mit, at: 'Problem 5.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Route 1 (independent of the page's route): the potential energy at the largest displacement.
+  - id: p1-e
+    kind: identity
+    answer: p1-e
+    where: 'Problem 1(a), answer box: energy of mode n, against the integrated potential energy at the largest displacement'
+    formula: n**2*pi**2*T*A**2/(4*L)
+    equals: integrate('0.5*T*(A*n*pi/L*cos(n*pi*q/L))**2', 'q', 0, L)
+    samples:
+      n: [1, 2, 3, 4]
+      T: [1.5, 2.0, 3.5, 2.6]
+      A: [0.6, 1.1, 1.8, 0.9]
+      L: [1.6, 2.2, 2.9, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p1-e"']
+    source: {cite: mit, at: 'Problem 5.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Route 2: the page's own route, the kinetic energy when the string is straight, integrated numerically.
+  - id: p1-e-kinetic
+    kind: identity
+    where: 'Problem 1(a), solution: the integrated kinetic energy when the string is straight'
+    formula: n**2*pi**2*T*A**2/(4*L)
+    equals: integrate('0.5*(M/L)*(A*n*pi*sqrt(T/(M*L))*sin(n*pi*q/L))**2', 'q', 0, L)
+    samples:
+      n: [1, 2, 3, 4]
+      T: [1.5, 2.0, 3.5, 2.6]
+      A: [0.6, 1.1, 1.8, 0.9]
+      L: [1.6, 2.2, 2.9, 2.0]
+      M: [0.7, 1.2, 1.9, 1.0]
+    tolerance: 1e-8
+    shown: ['\frac{\rho_L}{2}\,A^2\omega_n^2\cdot\frac{L}{2} = \frac14\,M A^2\omega_n^2']
+    source: {cite: reading2, at: 'p. 3 (the kinetic energy of a string; the integral is our own)'}
+    origin: page-own
+
+  # The total energy (kinetic plus potential) of the two modes together, integrated along the string at an arbitrary
+  # time t: it must equal the sum of the two mode energies, whatever t and the phase pi/4.
+  - id: p1-e2
+    kind: identity
+    answer: p1-e2
+    where: 'Problem 1(b), answer box: against the integrated kinetic plus potential energy of the superposition at time t'
+    formula: pi**2*T*(A1**2 + 9*A3**2)/(4*L)
+    equals: integrate('0.5*(M/L)*(A1*pi*sqrt(T/(M*L))*sin(pi*q/L)*sin(pi*sqrt(T/(M*L))*t) + 3*A3*pi*sqrt(T/(M*L))*sin(3*pi*q/L)*sin(3*pi*sqrt(T/(M*L))*t - pi/4))**2 + 0.5*T*(A1*pi/L*cos(pi*q/L)*cos(pi*sqrt(T/(M*L))*t) + 3*A3*pi/L*cos(3*pi*q/L)*cos(3*pi*sqrt(T/(M*L))*t - pi/4))**2', 'q', 0, L)
+    samples:
+      T: [1.5, 2.0, 3.5, 2.6]
+      A1: [0.6, 1.1, 1.8, 0.9]
+      A3: [1.4, 0.7, 0.5, 1.9]
+      L: [1.6, 2.2, 2.9, 2.0]
+      M: [0.7, 1.2, 1.9, 1.0]
+      t: [0.0, 0.37, 1.3, 2.9]
+    tolerance: 1e-8
+    shown: ['id="p1-e2"']
+    source: {cite: mit, at: 'Problem 5.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cross-term
+    where: 'Problem 1(b), solution: the integral of the product of the two mode shapes is zero'
+    inputs: {L: 2.3}
+    formula: integrate('sin(pi*q/L)*sin(3*pi*q/L)', 'q', 0, L)
+    expected: 0
+    tolerance: 1e-9
+    shown: ['\int_0^L \sin\!\left(\frac{\pi x}{L}\right)\sin\!\left(\frac{3\pi x}{L}\right)dx = 0']
+    source: {cite: reading1, at: 'p. 5 (orthogonality of the sine functions)'}
+    origin: page-own
+
+  - id: p1-cross-term-cosines
+    where: 'Problem 1(b), solution: the cross term of the potential energy, with the two cosines, is zero as well'
+    inputs: {L: 2.3}
+    formula: integrate('cos(pi*q/L)*cos(3*pi*q/L)', 'q', 0, L)
+    expected: 0
+    tolerance: 1e-9
+    shown: ['whose cross term has the two cosines instead, and that integral is zero as well']
+    source: {cite: mit, at: 'Problem 5.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-nine-times
+    where: 'Problem 1(b), check: for equal amplitudes the third mode has nine times the energy of the first'
+    inputs: {n: 3}
+    formula: n**2
+    expected: 9
+    shown: ['so the third mode counts 3² = 9 times, not 3 times']
+    source: {cite: mit, at: 'Problem 5.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the square pulse
+
+  # The speed against the beaded string of Lecture 8 in the limit of small spacing a: beads of mass rho*a,
+  # omega = 2 sqrt(T/(m a)) sin(k a/2), and omega/k tends to sqrt(T/rho).
+  - id: p2-v
+    kind: limit
+    answer: p2-v
+    where: 'Problem 2(a), answer box: the wave speed, as the limit of omega/k of the beaded string for small spacing'
+    inputs: {T: 2.5, rho: 0.6, k: 1.7}
+    formula: sqrt(T/rho)
+    limit: 2*sqrt(T/(rho*a*a))*sin(k*a/2)/k
+    vary: {a: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 1e-6
+    shown: ['id="p2-v"']
+    source: {cite: reading1, at: 'p. 1'}
+    origin: mit
+
+  - id: p2-given-shape
+    kind: fact
+    where: 'Problem 2, statement: the pulse of width L/4 centred on the middle of the string'
+    shown: ['the piece between $x = 3L/8$ and $x = 5L/8$ is displaced by a height $h$']
+    source: {cite: mit, at: 'Problem 5.2, p. 1, and Figure 1, p. 2'}
+    origin: mit
+
+  # In Problem 2 lengths are in units of L and heights in units of h. The starting pulse is
+  # box(u) = 0.5*((u - 0.375)/|u - 0.375| - (u - 0.625)/|u - 0.625|): 1 between 3/8 and 5/8, 0 outside.
+  # d = v t is the distance travelled.
+  - id: p2-b-height
+    answer: p2-b-height
+    where: 'Problem 2(b), answer box: displacement at x = 3L/4 at t = L/(4v), from the two travelling half pulses'
+    inputs: {x: 0.75, d: 0.25}
+    formula: 0.5*0.5*((x - d - 0.375)/abs(x - d - 0.375) - (x - d - 0.625)/abs(x - d - 0.625)) + 0.5*0.5*((x + d - 0.375)/abs(x + d - 0.375) - (x + d - 0.625)/abs(x + d - 0.625))
+    expected: 0.5
+    tolerance: 1e-9
+    shown: ['id="p2-b-height"']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: p2-b-height-left
+    where: 'Problem 2(b), solution: displacement at x = L/4 at t = L/(4v) (the pulse going left)'
+    inputs: {x: 0.25, d: 0.25}
+    formula: 0.5*0.5*((x - d - 0.375)/abs(x - d - 0.375) - (x - d - 0.625)/abs(x - d - 0.625)) + 0.5*0.5*((x + d - 0.375)/abs(x + d - 0.375) - (x + d - 0.625)/abs(x + d - 0.625))
+    expected: 0.5
+    tolerance: 1e-9
+    shown: ['The pulse going left lies between $L/8$ and $3L/8$, with its centre at $L/4$']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: p2-b-flat-middle
+    where: 'Problem 2(b), solution: the middle of the string is flat at t = L/(4v)'
+    inputs: {x: 0.5, d: 0.25}
+    formula: 0.5*0.5*((x - d - 0.375)/abs(x - d - 0.375) - (x - d - 0.625)/abs(x - d - 0.625)) + 0.5*0.5*((x + d - 0.375)/abs(x + d - 0.375) - (x + d - 0.625)/abs(x + d - 0.625))
+    expected: 0
+    tolerance: 1e-9
+    shown: ['They have just separated: the middle piece, between $3L/8$ and $5L/8$, is flat']
+    source: {cite: reading2, at: 'p. 4'}
+    origin: page-own
+
+  - id: p2-b-centre
+    answer: p2-b-centre
+    where: 'Problem 2(b), answer box: centre of the pulse going right, the mean of its two edges after a shift of L/4'
+    inputs: {left: 0.375, right: 0.625, d: 0.25}
+    formula: ((left + d) + (right + d))/2
+    expected: 0.75
+    tolerance: 1e-9
+    shown: ['id="p2-b-centre"']
+    source: {cite: mit, at: 'Problem 5.2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-edges
+    where: 'Problem 2(b), solution: right-hand edge of the pulse going right, 5/8 + 1/4 = 7/8, still 1/8 from the wall'
+    inputs: {right: 0.625, d: 0.25}
+    formula: 1 - (right + d)
+    expected: 0.125
+    tolerance: 1e-9
+    shown: ['Neither has reached a wall, since both are still $L/8$ away from it']
+    source: {cite: mit, at: 'Problem 5.2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-area
+    where: 'Problem 2(b), check: the area of the two half pulses equals the area of the starting pulse (units h L)'
+    formula: 2*0.5*0.25 - 1*0.25
+    expected: 0
+    tolerance: 1e-12
+    shown: ['Now it is $2 \times (h/2) \times (L/4)$, the same']
+    source: {cite: mit, at: 'Problem 5.2(b), p. 1 (our own check)'}
+    origin: page-own
+
+  # At t = L/v (d = 1) the waves have left the string, so the starting shape is continued beyond the walls:
+  # odd about x = 0, F(u) = -box(-u) for -1 < u < 0, and odd about x = 1, F(u) = -box(2 - u) for 1 < u < 2.
+  # psi(x) = 0.5 F(x - d) + 0.5 F(x + d) with x - d = -0.5 and x + d = 1.5.
+  - id: p2-c-mid
+    answer: p2-c-mid
+    where: 'Problem 2(c), answer box: displacement of the middle at t = L/v, from the odd continuation of the starting shape beyond both walls'
+    inputs: {x: 0.5, d: 1}
+    formula: -0.5*0.5*((-(x - d) - 0.375)/abs(-(x - d) - 0.375) - (-(x - d) - 0.625)/abs(-(x - d) - 0.625)) - 0.5*0.5*((2 - (x + d) - 0.375)/abs(2 - (x + d) - 0.375) - (2 - (x + d) - 0.625)/abs(2 - (x + d) - 0.625))
+    expected: -1
+    tolerance: 1e-9
+    shown: ['id="p2-c-mid"']
+    source: {cite: mit, at: 'Problem 5.2(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The same from the normal modes: every odd mode has the factor cos(m pi) = -1 at t = L/v.
+  - id: p2-c-odd-modes
+    where: 'Problem 2(c), check: cos(m pi) for an odd mode (m = 3) at t = L/v'
+    inputs: {m: 3}
+    formula: cos(m*pi)
+    expected: -1
+    tolerance: 1e-12
+    shown: ['$-1$ for odd $m$ and $+1$ for even $m$']
+    source: {cite: mit, at: 'Problem 5.2(c), p. 1 (our own check)'}
+    origin: page-own
+
+  # A symmetric starting shape has no even modes: the Fourier coefficient of mode 2 of the pulse is zero.
+  - id: p2-c-even-mode-absent
+    where: 'Problem 2(c), check: the Fourier coefficient of mode 2 of the starting pulse (units h)'
+    formula: 2*integrate('sin(2*pi*q)', 'q', 0.375, 0.625)
+    expected: 0
+    tolerance: 1e-9
+    shown: ['so it contains only the odd modes']
+    source: {cite: reading1, at: 'p. 5 (the formula for the Fourier coefficients)'}
+    origin: page-own
+
+  # ---- Problem 3: the Gaussian pulse
+
+  - id: p3-ke
+    kind: identity
+    answer: p3-ke
+    where: 'Problem 3(a), answer box: against half rho times the square of the numerical time derivative of the pulse'
+    formula: 0.5*rho*v**2*y0**2*(x - v*t)**2/s**4*exp(-(x - v*t)**2/s**2)
+    equals: 0.5*rho*deriv('y0*exp(-0.5*((x - v*q)/s)**2)', 'q', t)**2
+    samples:
+      rho: [0.6, 1.3, 1.9, 0.8]
+      v: [1.1, 1.5, 1.9, 1.3]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.1, 1.4, 1.9, 1.6]
+      x: [2.1, 2.5, 2.9, 0.2]
+      t: [0.15, 0.3, 0.45, 1.0]
+    tolerance: 1e-5
+    shown: ['id="p3-ke"']
+    source: {cite: reading2, at: 'p. 3 (the kinetic energy of a string; applied to the pulse by us)'}
+    origin: page-own
+
+  - id: p3-pe
+    kind: identity
+    answer: p3-pe
+    where: 'Problem 3(b), answer box: against half T times the square of the numerical slope of the pulse'
+    formula: 0.5*T*y0**2*(x - v*t)**2/s**4*exp(-(x - v*t)**2/s**2)
+    equals: 0.5*T*deriv('y0*exp(-0.5*((q - v*t)/s)**2)', 'q', x)**2
+    samples:
+      T: [0.6, 1.3, 1.9, 0.8]
+      v: [1.1, 1.5, 1.9, 1.3]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.1, 1.4, 1.9, 1.6]
+      x: [2.1, 2.5, 2.9, 0.2]
+      t: [0.15, 0.3, 0.45, 1.0]
+    tolerance: 1e-5
+    shown: ['id="p3-pe"']
+    source: {cite: reading2, at: 'p. 3 (the potential energy of a string; applied to the pulse by us)'}
+    origin: page-own
+
+  # With v = sqrt(T/rho) the two densities are equal at every point: both sides from numerical derivatives.
+  - id: p3-densities-equal
+    kind: identity
+    where: 'Problem 3(b), solution: kinetic and potential energy per unit length are equal when v^2 = T/rho'
+    formula: 0.5*rho*deriv('y0*exp(-0.5*((x - sqrt(T/rho)*q)/s)**2)', 'q', t)**2
+    equals: 0.5*T*deriv('y0*exp(-0.5*((q - sqrt(T/rho)*t)/s)**2)', 'q', x)**2
+    samples:
+      T: [0.6, 1.3, 1.9, 0.8]
+      rho: [0.6, 1.3, 0.5, 1.7]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.1, 1.4, 1.9, 1.6]
+      x: [2.1, 2.5, 2.9, 0.2]
+      t: [0.15, 0.3, 0.45, 1.0]
+    tolerance: 1e-5
+    shown: ['The two energies per unit length are the same function: equal at every point and at every time']
+    source: {cite: mit, at: 'Problem 5.3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-hump-height
+    where: 'Problem 3(a), check: the height of the two humps in the units of the plot, u^2 exp(-u^2) at u = 1'
+    inputs: {u: 1}
+    formula: u**2*exp(-u**2)
+    expected: 0.368
+    shown: ['which is $1/e = 0.368$ in the units of the plot']
+    source: {cite: mit, at: 'Problem 5.3(a), p. 2 (our own check)'}
+    origin: page-own
+
+  # The humps sit one sigma from the top: the derivative of u^2 exp(-u^2) vanishes at u = 1.
+  - id: p3-hump-position
+    where: 'Problem 3(a), sketch: the kinetic energy density is largest at x = vt ± sigma (u in units of sigma)'
+    formula: solve('2*q*exp(-q**2) - 2*q**3*exp(-q**2)', 'q', 0.5, 2)
+    expected: 1
+    tolerance: 1e-8
+    shown: ['It is largest at $x = vt \pm \sigma$, on the two flanks']
+    source: {cite: mit, at: 'Problem 5.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # MIT's hint integral, checked numerically (the integrand is negligible beyond 12/sqrt(a)).
+  - id: p3-gaussian-integral
+    kind: identity
+    where: 'Problem 3(c), statement: the Gaussian integral of the hint'
+    formula: 1/(2*a)*sqrt(pi/a)
+    equals: 2*integrate('q**2*exp(-a*q**2)', 'q', 0, 12/sqrt(a))
+    samples:
+      a: [0.3, 1.0, 2.7]
+    tolerance: 1e-8
+    shown: ['\int_{-\infty}^{\infty} x^2 e^{-a x^2}\,dx = \frac{1}{2a}\sqrt{\frac{\pi}{a}}']
+    source: {cite: mit, at: 'Problem 5.3(c), p. 2 (hint)'}
+    origin: mit
+
+  # The total energy: kinetic plus potential density from numerical derivatives of the pulse (rho = T/v^2),
+  # integrated numerically over the string at an arbitrary time.
+  - id: p3-e
+    kind: identity
+    answer: p3-e
+    where: 'Problem 3(c), answer box: against the numerical integral of the summed energy densities (the integrand is checked in p3-e-integrand)'
+    formula: sqrt(pi)*T*y0**2/(2*s)
+    equals: integrate('T*(y0*q/s**2)**2*exp(-q**2/s**2)', 'q', -12*s, 0) + integrate('T*(y0*q/s**2)**2*exp(-q**2/s**2)', 'q', 0, 12*s)
+    samples:
+      T: [0.6, 1.3, 1.9, 0.8]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.3, 1.6, 2.4, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p3-e"']
+    source: {cite: mit, at: 'Problem 5.3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The integrand used in p3-e is the sum of the two densities: checked against numerical derivatives of the pulse.
+  - id: p3-e-integrand
+    kind: identity
+    where: 'Problem 3(c), solution: the integrand, against kinetic plus potential density from numerical derivatives (rho = T/v^2)'
+    formula: T*(y0*(x - v*t)/s**2)**2*exp(-(x - v*t)**2/s**2)
+    equals: 0.5*(T/v**2)*deriv('y0*exp(-0.5*((x - v*q)/s)**2)', 'q', t)**2 + 0.5*T*deriv('y0*exp(-0.5*((q - v*t)/s)**2)', 'q', x)**2
+    samples:
+      T: [0.6, 1.3, 1.9, 0.8]
+      v: [1.1, 1.5, 1.9, 1.3]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.1, 1.4, 1.9, 1.6]
+      x: [2.1, 2.5, 2.9, 0.2]
+      t: [0.15, 0.3, 0.45, 1.0]
+    tolerance: 1e-5
+    shown: ['E = \int_{-\infty}^{\infty}\frac{T y_0^2}{\sigma^4}\,u^2\,e^{-u^2/\sigma^2}\,du']
+    source: {cite: mit, at: 'Problem 5.3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-p
+    kind: identity
+    answer: p3-p
+    where: 'Problem 3(d), answer box: against -T times the numerical slope times the numerical velocity of the pulse at x0'
+    formula: T*v*y0**2*(x0 - v*t)**2/s**4*exp(-(x0 - v*t)**2/s**2)
+    equals: -T*deriv('y0*exp(-0.5*((q - v*t)/s)**2)', 'q', x0)*deriv('y0*exp(-0.5*((x0 - v*q)/s)**2)', 'q', t)
+    samples:
+      T: [0.6, 1.3, 1.9, 0.8]
+      v: [1.1, 1.5, 1.9, 1.3]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.1, 1.4, 1.9, 1.6]
+      x0: [2.1, 2.5, 2.9, 0.2]
+      t: [0.15, 0.3, 0.45, 1.0]
+    tolerance: 1e-5
+    shown: ['id="p3-p"']
+    source: {cite: mit, at: 'Problem 5.3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The power integrated over all time is the energy of the pulse (the top passes x0 at t = x0/v).
+  - id: p3-p-integral
+    kind: identity
+    where: 'Problem 3(d), check: the time integral of the power equals the total energy'
+    formula: sqrt(pi)*T*y0**2/(2*s)
+    equals: integrate('T*v*y0**2*(x0 - v*q)**2/s**4*exp(-(x0 - v*q)**2/s**2)', 'q', x0/v - 12*s/v, x0/v) + integrate('T*v*y0**2*(x0 - v*q)**2/s**4*exp(-(x0 - v*q)**2/s**2)', 'q', x0/v, x0/v + 12*s/v)
+    samples:
+      T: [0.6, 1.3, 1.9, 0.8]
+      v: [1.1, 1.5, 1.9, 1.3]
+      y0: [0.7, 1.2, 1.8, 0.5]
+      s: [1.1, 1.4, 1.9, 1.6]
+      x0: [2.1, 2.5, 2.9, 0.2]
+    tolerance: 1e-8
+    shown: ['so $\int P\,dt = E$']
+    source: {cite: mit, at: 'Problem 5.3(d), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: two tensions joined by a ring
+
+  # cos(k x - w t) must solve rho psi_tt = T_R psi_xx: k^2 = -rho C''(t)/(T_R C(t)) with C = cos(w t).
+  - id: p4-kr
+    kind: identity
+    answer: p4-kr
+    where: 'Problem 4(a), answer box: the wave number on the right, against the wave equation of that piece'
+    formula: w*sqrt(rho/TR)
+    equals: sqrt(-rho*deriv('cos(w*q)', 'q', t, 2)/(TR*cos(w*t)))
+    samples:
+      w: [1.2, 2.0, 2.8]
+      rho: [0.4, 0.6, 0.75]
+      TR: [1.6, 2.5, 3.8]
+      t: [0.2, 0.4, 0.1]
+    tolerance: 1e-5
+    shown: ['id="p4-kr"']
+    source: {cite: reading2, at: 'p. 6 (k = ω/v on each side)'}
+    origin: page-own
+
+  # R as the numerical root of the two boundary conditions combined, Z_L (1 - R) = Z_R (1 + R).
+  - id: p4-r
+    kind: identity
+    answer: p4-r
+    where: 'Problem 4(c), answer box: R, against a numerical solve of the two boundary conditions'
+    formula: (sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR))
+    equals: solve('sqrt(TL*rho)*(1 - q) - sqrt(TR*rho)*(1 + q)', 'q', -1, 1)
+    samples:
+      TL: [1.1, 1.5, 1.9, 3.0]
+      TR: [3.2, 4.5, 5.8, 1.2]
+      rho: [0.4, 0.6, 0.75, 1.0]
+    tolerance: 1e-8
+    shown: ['id="p4-r"']
+    source: {cite: mit, at: 'Problem 5.4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-tau
+    kind: identity
+    answer: p4-tau
+    where: 'Problem 4(c), answer box: tau = 1 + R, with R from a numerical solve of the boundary conditions'
+    formula: 2*sqrt(TL)/(sqrt(TL) + sqrt(TR))
+    equals: 1 + solve('sqrt(TL*rho)*(1 - q) - sqrt(TR*rho)*(1 + q)', 'q', -1, 1)
+    samples:
+      TL: [1.1, 1.5, 1.9, 3.0]
+      TR: [3.2, 4.5, 5.8, 1.2]
+      rho: [0.4, 0.6, 0.75, 1.0]
+    tolerance: 1e-8
+    shown: ['id="p4-tau"']
+    source: {cite: mit, at: 'Problem 5.4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Fully independent: the actual waves, with the page's R and tau, put into the force condition at x = 0 by
+  # numerical differentiation: T_L times the slope on the left equals T_R times the slope on the right, at any time.
+  - id: p4-force-condition
+    kind: identity
+    where: 'Problem 4(b) and (c): the waves with the page R and tau satisfy the force condition on the ring'
+    formula: TL*deriv('cos(w*sqrt(rho/TL)*q - w*t) + (sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR))*cos(w*sqrt(rho/TL)*q + w*t)', 'q', 0)
+    equals: TR*deriv('2*sqrt(TL)/(sqrt(TL) + sqrt(TR))*cos(w*sqrt(rho/TR)*q - w*t)', 'q', 0)
+    samples:
+      TL: [1.1, 1.5, 1.9, 3.0]
+      TR: [3.2, 4.5, 5.8, 1.2]
+      rho: [0.4, 0.6, 0.75, 1.0]
+      w: [1.2, 2.0, 2.8, 1.6]
+      t: [0.3, 0.9, 1.7, 2.4]
+    tolerance: 1e-5
+    shown: ['tex="-T_L\,\frac{\partial\psi_L}{\partial x} + T_R\,\frac{\partial\psi_R}{\partial x} = 0 \quad\text{at } x = 0"']
+    source: {cite: mit, at: 'Problem 5.4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Continuity at x = 0 with the page's R and tau, at any time.
+  - id: p4-continuity
+    kind: identity
+    where: 'Problem 4(c): the waves with the page R and tau are continuous at the ring'
+    formula: cos(-w*t) + (sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR))*cos(w*t)
+    equals: 2*sqrt(TL)/(sqrt(TL) + sqrt(TR))*cos(-w*t)
+    samples:
+      TL: [1.1, 1.5, 1.9, 3.0]
+      TR: [3.2, 4.5, 5.8, 1.2]
+      w: [1.2, 2.0, 2.8, 1.6]
+      t: [0.3, 0.9, 1.7, 2.4]
+    tolerance: 1e-10
+    shown: ['tex="1 + R = \tau"']
+    source: {cite: mit, at: 'Problem 5.4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-energy-balance
+    kind: identity
+    where: 'Problem 4(d): Z_L (1 - R^2) = Z_R tau^2 with the page R and tau'
+    formula: sqrt(TL*rho)*(1 - ((sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR)))**2)
+    equals: sqrt(TR*rho)*(2*sqrt(TL)/(sqrt(TL) + sqrt(TR)))**2
+    samples:
+      TL: [1.1, 1.5, 1.9, 3.0]
+      TR: [3.2, 4.5, 5.8, 1.2]
+      rho: [0.4, 0.6, 0.75, 1.0]
+    tolerance: 1e-10
+    shown: ['tex="Z_L\left(1 - R^2\right) = Z_R\,\tau^2"']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The average power of a sine wave: the cycle average of -T psi_x psi_t from numerical derivatives.
+  - id: p4-average-power
+    kind: identity
+    where: 'Problem 4(d), solution: the average power of a travelling sine wave is Z w^2 a^2 / 2'
+    formula: 0.5*sqrt(T*rho)*w**2*A**2
+    equals: w/(2*pi)*integrate('T*A*w*sqrt(rho/T)*sin(w*sqrt(rho/T)*x - w*q)*A*w*sin(w*sqrt(rho/T)*x - w*q)', 'q', 0, 2*pi/w)
+    samples:
+      T: [1.1, 2.5, 3.9]
+      rho: [0.4, 0.6, 0.75]
+      w: [1.2, 2.0, 2.8]
+      A: [0.6, 1.1, 1.8]
+      x: [0.0, 0.7, -1.3]
+    tolerance: 1e-8
+    shown: ['\langle P\rangle = \tfrac12\,T k\,\omega\,a^2 = \tfrac12\,Z\,\omega^2 a^2']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-example-r
+    where: 'Problem 4(d), example T_R = 4 T_L: the reflection coefficient'
+    inputs: {TL: 1, TR: 4}
+    formula: (sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR))
+    expected: -0.33333
+    shown: ['so $R = (1 - 2)/(1 + 2) = -\tfrac13$ and $\tau = \tfrac23$']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-example-tau
+    where: 'Problem 4(d), example T_R = 4 T_L: the transmission coefficient'
+    inputs: {TL: 1, TR: 4}
+    formula: 2*sqrt(TL)/(sqrt(TL) + sqrt(TR))
+    expected: 0.66667
+    shown: ['so $R = (1 - 2)/(1 + 2) = -\tfrac13$ and $\tau = \tfrac23$']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-example-z
+    where: 'Problem 4(d), example T_R = 4 T_L: the ratio of the impedances'
+    inputs: {TL: 1, TR: 4}
+    formula: sqrt(TR/TL)
+    expected: 2
+    tolerance: 1e-12
+    shown: ['For $T_R = 4T_L$: $Z_R = 2Z_L$']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-frac
+    answer: p4-frac
+    where: 'Problem 4(d), answer box: transmitted fraction of the power for T_R = 4 T_L'
+    inputs: {TL: 1, TR: 4}
+    formula: sqrt(TR/TL)*(2*sqrt(TL)/(sqrt(TL) + sqrt(TR)))**2
+    expected: 0.8889
+    shown: ['id="p4-frac"']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-frac-shown
+    where: 'Problem 4(d), solution: transmitted fraction, as printed'
+    inputs: {TL: 1, TR: 4}
+    formula: sqrt(TR/TL)*(2*sqrt(TL)/(sqrt(TL) + sqrt(TR)))**2
+    expected: 0.889
+    shown: ['$(Z_R/Z_L)\,\tau^2 = 2 \times \tfrac49 = \tfrac89 = 0.889$']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-frac-reflected
+    where: 'Problem 4(d), solution: reflected fraction of the power for T_R = 4 T_L'
+    inputs: {TL: 1, TR: 4}
+    formula: ((sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR)))**2
+    expected: 0.111
+    shown: ['the reflected fraction is $R^2 = \tfrac19 = 0.111$']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-fractions-sum
+    where: 'Problem 4(d), solution: reflected plus transmitted fraction'
+    inputs: {TL: 1, TR: 4}
+    formula: ((sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR)))**2 + sqrt(TR/TL)*(2*sqrt(TL)/(sqrt(TL) + sqrt(TR)))**2
+    expected: 1
+    tolerance: 1e-12
+    shown: ['Together they make 1.']
+    source: {cite: mit, at: 'Problem 5.4(d), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p4-limit-tight
+    kind: limit
+    where: 'Problem 4(e): R tends to -1 when T_R is much larger than T_L'
+    inputs: {TL: 1}
+    formula: (sqrt(TL) - sqrt(TR))/(sqrt(TL) + sqrt(TR))
+    limit: -1
+    vary: {TR: [1e2, 1e4, 1e6, 1e8, 1e10]}
+    tolerance: 1e-4
+    shown: ['so $R \to -1$ and $\tau \to 0$']
+    source: {cite: mit, at: 'Problem 5.4(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-limit-slack
+    kind: limit
+    where: 'Problem 4(e): tau tends to 2 when T_R is much smaller than T_L'
+    inputs: {TL: 1}
+    formula: 2*sqrt(TL)/(sqrt(TL) + sqrt(TR))
+    limit: 2
+    vary: {TR: [1e-2, 1e-4, 1e-6, 1e-8, 1e-10]}
+    tolerance: 1e-4
+    shown: ['For $T_R \ll T_L$: $R \to +1$ and $\tau \to 2$']
+    source: {cite: mit, at: 'Problem 5.4(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-limit-slack-power
+    kind: limit
+    where: 'Problem 4(e), check: the transmitted fraction of the power tends to 0 when T_R is much smaller than T_L'
+    inputs: {TL: 1}
+    formula: 1 + sqrt(TR/TL)*(2*sqrt(TL)/(sqrt(TL) + sqrt(TR)))**2
+    limit: 1
+    vary: {TR: [1e-2, 1e-4, 1e-6, 1e-8, 1e-10]}
+    tolerance: 1e-4
+    shown: ['the transmitted fraction $(Z_R/Z_L)\tau^2$ goes to zero with $Z_R$']
+    source: {cite: mit, at: 'Problem 5.4(e), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: the ring on a greased wire
+
+  # r as the numerical root of the boundary condition with f' = 1 and g' = q: (T/v)(q - 1) + b (1 + q) = 0.
+  - id: p5-r
+    kind: identity
+    answer: p5-r
+    where: 'Problem 5(b), answer box: r, against a numerical solve of the boundary condition'
+    formula: (sqrt(T*rho) - b)/(sqrt(T*rho) + b)
+    equals: solve('T/sqrt(T/rho)*(q - 1) + b*(1 + q)', 'q', -1, 1)
+    samples:
+      T: [1.2, 2.0, 3.6, 1.0]
+      rho: [1.3, 2.4, 3.7, 1.0]
+      b: [0.3, 0.5, 0.75, 4.0]
+    tolerance: 1e-8
+    shown: ['id="p5-r"']
+    source: {cite: mit, at: 'Problem 5.5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Fully independent: a Gaussian incident pulse f(s) = exp(-s^2) and the reflected pulse r f(t + x/v) put into the
+  # boundary condition T y_x + b y_t = 0 at x = 0, both derivatives numerical.
+  - id: p5-boundary-condition
+    kind: identity
+    where: 'Problem 5(b): a Gaussian pulse and its reflection with the page r satisfy the boundary condition'
+    formula: T*deriv('exp(-(t - q/sqrt(T/rho))**2) + (sqrt(T*rho) - b)/(sqrt(T*rho) + b)*exp(-(t + q/sqrt(T/rho))**2)', 'q', 0)
+    equals: -b*deriv('exp(-q**2) + (sqrt(T*rho) - b)/(sqrt(T*rho) + b)*exp(-q**2)', 'q', t)
+    samples:
+      T: [1.2, 2.0, 3.6, 1.0]
+      rho: [1.3, 2.4, 3.7, 1.0]
+      b: [0.3, 0.5, 0.75, 4.0]
+      t: [0.4, -0.7, 1.1, 0.25]
+    tolerance: 1e-5
+    shown: ['tex="g(t) = \frac{Z - b}{Z + b}\,f(t)']
+    source: {cite: mit, at: 'Problem 5.5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-energy-balance
+    kind: identity
+    where: 'Problem 5(b), check: Z (1 - r^2) = b (1 + r)^2'
+    formula: sqrt(T*rho)*(1 - ((sqrt(T*rho) - b)/(sqrt(T*rho) + b))**2)
+    equals: b*(1 + (sqrt(T*rho) - b)/(sqrt(T*rho) + b))**2
+    samples:
+      T: [1.2, 2.0, 3.6, 1.0]
+      rho: [1.3, 2.4, 3.7, 1.0]
+      b: [0.3, 0.5, 0.75, 4.0]
+    tolerance: 1e-10
+    shown: ['$Z(1 - r^2) = b(1 + r)^2$ because $Z(1 - r) = b(1 + r)$']
+    source: {cite: mit, at: 'Problem 5.5(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p5-limit-free
+    kind: limit
+    where: 'Problem 5(c): r tends to +1 without grease'
+    inputs: {T: 2, rho: 3}
+    formula: (sqrt(T*rho) - b)/(sqrt(T*rho) + b)
+    limit: 1
+    vary: {b: [1e-1, 1e-3, 1e-5, 1e-7]}
+    tolerance: 1e-6
+    shown: ['For $b \to 0$: $r \to Z/Z = 1$, so $g = f$']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-limit-clamped
+    kind: limit
+    where: 'Problem 5(c): r tends to -1 for very thick grease'
+    inputs: {T: 2, rho: 3}
+    formula: (sqrt(T*rho) - b)/(sqrt(T*rho) + b)
+    limit: -1
+    vary: {b: [1e1, 1e3, 1e5, 1e7, 1e9]}
+    tolerance: 1e-6
+    shown: ['For $b \to \infty$: $r \to -b/b = -1$, so $g = -f$']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The matched drag as the numerical root of r(b) = 0.
+  - id: p5-match
+    kind: identity
+    answer: p5-match
+    where: 'Problem 5(c), answer box: the drag constant without reflection, against a numerical solve of r(b) = 0'
+    formula: sqrt(T*rho)
+    equals: solve('(sqrt(T*rho) - q)/(sqrt(T*rho) + q)', 'q', 0, 20)
+    samples:
+      T: [1.2, 2.0, 3.6]
+      rho: [1.6, 2.4, 3.7]
+    tolerance: 1e-8
+    shown: ['id="p5-match"']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p5-example-r
+    where: 'Problem 5(c), example b = 3 Z: the factor r (Z taken as 1)'
+    inputs: {Z: 1, b: 3}
+    formula: (Z - b)/(Z + b)
+    expected: -0.5
+    tolerance: 1e-12
+    shown: ['For $b = 3Z$: $r = (1 - 3)/(1 + 3) = -\tfrac12$']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p5-abs
+    answer: p5-abs
+    where: 'Problem 5(c), answer box: absorbed fraction of the energy for b = 3 Z, from the power taken up by the drag, b (1 + r)^2 / Z'
+    inputs: {Z: 1, b: 3}
+    formula: b*(1 + (Z - b)/(Z + b))**2/Z
+    expected: 0.75
+    tolerance: 1e-9
+    shown: ['id="p5-abs"']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p5-abs-shown
+    where: 'Problem 5(c), solution: absorbed fraction 1 - r^2 for b = 3 Z'
+    inputs: {Z: 1, b: 3}
+    formula: 1 - ((Z - b)/(Z + b))**2
+    expected: 0.75
+    tolerance: 1e-9
+    shown: ['$1 - r^2 = \tfrac34 = 0.75$']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p5-abs-third
+    where: 'Problem 5(c), check: absorbed fraction for b = Z/3, from 4 Z b/(Z + b)^2'
+    inputs: {Z: 3, b: 1}
+    formula: 4*Z*b/(Z + b)**2
+    expected: 0.75
+    tolerance: 1e-9
+    shown: ['both give 0.75']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p5-abs-formula
+    kind: identity
+    where: 'Problem 5(c), check: 1 - r^2 = 4 Z b/(Z + b)^2'
+    formula: 1 - ((Z - b)/(Z + b))**2
+    equals: 4*Z*b/(Z + b)**2
+    samples:
+      Z: [0.5, 1.0, 2.7, 3.0]
+      b: [0.3, 1.0, 0.9, 9.0]
+    tolerance: 1e-12
+    shown: ['$1 - r^2 = 4Zb/(Z + b)^2$']
+    source: {cite: mit, at: 'Problem 5.5(c), p. 3 (our own check)'}
+    origin: page-own

@@ -1,0 +1,508 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for Part II; every answer is still checked here by an independent route:
+# the Fourier coefficients of the triangle wave by numerical integration, the responses by putting them back into
+# their differential equations (numerical derivatives), the impulse and step responses through their Laplace
+# transforms (numerical integrals), and every convolution by numerical integration of its defining integral.
+
+page: content/year-2/18.03/18-03-problem-set-6.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the four problems of Part II (20 + 12 + 24 + 24)'
+    inputs: {}
+    formula: 20 + 12 + 24 + 24
+    expected: '80'
+    shown: ['four problems (80 points)']
+    source: {cite: solutions, at: 'Part II solutions, pp. 1–2'}
+    origin: mit
+
+  - id: intro-part-i-points
+    kind: fact
+    where: 'Introduction and last section: the points of MIT''s Part I (8 + 0 + 8 + 0)'
+    shown: ['(16 points at MIT, not scored here)']
+    source: {cite: solutions, at: 'Part I points, p. 1'}
+    origin: mit
+
+  # ---- Problem 22
+
+  - id: p22-series-b1
+    kind: identity
+    where: 'Problem 22, the Fourier series of the triangle wave: the coefficient of sin t, (2/π) times the integral of g(t) sin t over half a period, equals 4/π'
+    formula: (2/pi)*(integrate('x*sin(x)', 'x', 0, pi/2) + integrate('(pi - x)*sin(x)', 'x', pi/2, pi))
+    equals: 4/pi + 0*z
+    samples: {z: [1]}
+    tolerance: 1e-9
+    shown: ['g(t) = \frac{4}{\pi}\left(\sin t - \frac{1}{3^2}\sin 3t + \frac{1}{5^2}\sin 5t - \cdots\right)']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: mit
+
+  - id: p22-series-b3-b5-b2
+    kind: identity
+    where: 'Problem 22, the Fourier series: the coefficients of sin 3t and sin 5t are −4/(9π) and 4/(25π), and the coefficient of sin 2t is zero (sum of the three checked against −4/(9π) + 4/(25π))'
+    formula: (2/pi)*(integrate('x*(sin(3*x) + sin(5*x) + sin(2*x))', 'x', 0, pi/2) + integrate('(pi - x)*(sin(3*x) + sin(5*x) + sin(2*x))', 'x', pi/2, pi))
+    equals: -4/(9*pi) + 4/(25*pi) + 0*z
+    samples: {z: [1]}
+    tolerance: 1e-8
+    shown: ['The series of $g$ has a term $\sin mt$ with a coefficient different from zero for every odd $m$']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: mit
+
+  - id: p22-a-one-term
+    kind: identity
+    where: 'Problem 22(a), formula "Response to one sine": the second derivative of A sin ωt/(ω₀² − ω²) plus ω₀² times it equals A sin ωt'
+    formula: deriv('A*sin(om*x)/(w0**2 - om**2)', 'x', t, 2) + w0**2*A*sin(om*t)/(w0**2 - om**2)
+    equals: A*sin(om*t)
+    samples:
+      A: [1, 0.5, 2, 1.3]
+      om: [1, 3, 5, 1]
+      w0: [1.6, 2.2, 0.7, 4]
+      t: [0.3, 1.1, 2, 0.8]
+    tolerance: 1e-5
+    shown: ['x = \frac{A\sin\omega t}{\omega_0^2 - \omega^2} \quad\text{solves}']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: mit
+
+  - id: p22-a-c1
+    kind: identity
+    answer: p22-a-c1
+    where: 'Problem 22(a), answer box: the coefficient of sin t in x_p, against the numerically integrated Fourier coefficient of g divided by ω₀² − 1'
+    formula: 4/(pi*(w0**2 - 1))
+    equals: (2/pi)*(integrate('x*sin(x)', 'x', 0, pi/2) + integrate('(pi - x)*sin(x)', 'x', pi/2, pi))/(w0**2 - 1)
+    samples: {w0: [1.2, 1.7, 2, 2.8]}
+    tolerance: 1e-8
+    shown: ['expr="4/(pi*(w0^2 - 1))"']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: mit
+
+  - id: p22-a-c3
+    kind: identity
+    answer: p22-a-c3
+    where: 'Problem 22(a), answer box: the coefficient of sin 3t in x_p, against the numerically integrated Fourier coefficient of g divided by ω₀² − 9'
+    formula: -4/(9*pi*(w0**2 - 9))
+    equals: (2/pi)*(integrate('x*sin(3*x)', 'x', 0, pi/2) + integrate('(pi - x)*sin(3*x)', 'x', pi/2, pi))/(w0**2 - 9)
+    samples: {w0: [1.2, 1.7, 2, 2.8]}
+    tolerance: 1e-8
+    shown: ['expr="-4/(9*pi*(w0^2 - 9))"']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: mit
+
+  - id: p22-a-check-1
+    where: 'Problem 22(a), check: the coefficient of sin t for ω₀ = 2'
+    inputs: {}
+    formula: 4/(pi*(2**2 - 1))
+    expected: '0.4244'
+    shown: ['\dfrac{4}{3\pi} = 0.4244']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: page-own
+
+  - id: p22-a-check-3
+    where: 'Problem 22(a), check: the coefficient of sin 3t for ω₀ = 2'
+    inputs: {}
+    formula: -4/(9*pi*(2**2 - 9))
+    expected: '0.0283'
+    shown: ['-\dfrac{4}{9\pi(4 - 9)} = 0.0283']
+    source: {cite: solutions, at: 'Problem 22(a), p. 1'}
+    origin: page-own
+
+  - id: p22-b-resonant
+    kind: identity
+    where: 'Problem 22(b), formula "The resonant response": the second derivative of −(A/2m) t cos mt plus m² times it equals A sin mt'
+    formula: deriv('-A/(2*m)*x*cos(m*x)', 'x', t, 2) + m**2*(-A/(2*m)*t*cos(m*t))
+    equals: A*sin(m*t)
+    samples:
+      A: [1, 0.5, 2, 1.3]
+      m: [1, 3, 5, 1]
+      t: [0.4, 1.1, 2, 2.6]
+    tolerance: 1e-5
+    shown: ['x = -\frac{A}{2m}\,t\cos mt \quad\text{solves}']
+    source: {cite: mit, at: 'Part II, Problem 22(b) (our own solution)'}
+    origin: page-own
+
+  - id: p22-c-below
+    answer: p22-c-below
+    where: 'Problem 22(c), answer box: the coefficient of sin t for ω₀ = 0.9, from the numerically integrated Fourier coefficient of g divided by 0.81 − 1'
+    inputs: {}
+    formula: (2/pi)*(integrate('x*sin(x)', 'x', 0, pi/2) + integrate('(pi - x)*sin(x)', 'x', pi/2, pi))/(0.9**2 - 1)
+    expected: '-6.70'
+    shown: ['\dfrac{4}{\pi(0.81 - 1)} = -6.70']
+    source: {cite: solutions, at: 'Problem 22(c), p. 1'}
+    origin: page-own
+
+  - id: p22-c-above
+    answer: p22-c-above
+    where: 'Problem 22(c), answer box: the coefficient of sin t for ω₀ = 1.1, from the numerically integrated Fourier coefficient of g divided by 1.21 − 1'
+    inputs: {}
+    formula: (2/pi)*(integrate('x*sin(x)', 'x', 0, pi/2) + integrate('(pi - x)*sin(x)', 'x', pi/2, pi))/(1.1**2 - 1)
+    expected: '6.06'
+    shown: ['\dfrac{4}{\pi(1.21 - 1)} = 6.06']
+    source: {cite: solutions, at: 'Problem 22(c), p. 1'}
+    origin: page-own
+
+  - id: p22-c-third
+    where: 'Problem 22(c), check: the coefficient of sin 3t for ω₀ = 0.9'
+    inputs: {}
+    formula: -4/(9*pi*(0.9**2 - 9))
+    expected: '0.0173'
+    shown: ['the coefficient of $\sin 3t$ is $0.0173$']
+    source: {cite: solutions, at: 'Problem 22(c), p. 1'}
+    origin: page-own
+
+  - id: p22-d-half
+    where: 'Problem 22(d), check: for ω₀ = 1/2 the free period 2π/ω₀, in units of π'
+    inputs: {}
+    formula: (2*pi/0.5)/pi
+    expected: '4'
+    shown: ['the free oscillation $\cos\frac{t}{2}$ has period $4\pi$']
+    source: {cite: solutions, at: 'Problem 22(d), p. 1'}
+    origin: page-own
+
+  - id: p22-e-period
+    answer: p22-e-period
+    where: 'Problem 22(e), answer box: for ω₀ = 3/2, three free periods 2π/ω₀'
+    inputs: {}
+    formula: 3*(2*pi/1.5)
+    expected: '12.57'
+    shown: ['The shortest time that is a whole number of both is $4\pi = 12.57$']
+    source: {cite: mit, at: 'Part II, Problem 22(e) (our own addition)'}
+    origin: page-own
+
+  - id: p22-e-period-input
+    where: 'Problem 22(e), check: the same time is two periods 2π of the input'
+    inputs: {}
+    formula: 2*(2*pi)
+    expected: '12.57'
+    shown: ['three free periods and two periods of the input']
+    source: {cite: mit, at: 'Part II, Problem 22(e) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 23
+
+  - id: p23-c-integral
+    where: 'Problem 23(c), check: the integral of f′ over all t, the box 2 × 1 and two spikes of −1'
+    inputs: {}
+    formula: integrate('2 + 0*x', 'x', 0, 1) - 1 - 1
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['the box contributes $2 \times 1 = 2$ and the two spikes contribute $-1$ each']
+    source: {cite: solutions, at: 'Problem 23(c), p. 1'}
+    origin: page-own
+
+  - id: p23-c-ends
+    where: 'Problem 23(c): the values of 2t − 1 at the ends of the window, t = 0 and t = 1, differ by the box area 2'
+    inputs: {}
+    formula: (2*1 - 1) - (2*0 - 1)
+    expected: '2'
+    shown: ['At $t = 0$ the function jumps from $0$ to $-1$, down by $1$. At $t = 1$ it jumps from $1$ to $0$']
+    source: {cite: solutions, at: 'Problem 23(c), p. 1'}
+    origin: mit
+
+  - id: p23-d-test
+    where: 'Problem 23(d), check: the formula u(t)t − u(t − 1) − u(t − 2) − … at t = 2.3'
+    inputs: {}
+    formula: 2.3 - 1 - 1
+    expected: '0.3'
+    shown: ['so $f = 2.3 - 1 - 1 = 0.3$']
+    source: {cite: solutions, at: 'Problem 23(d), p. 1'}
+    origin: page-own
+
+  # ---- Problem 24
+
+  - id: p24-a
+    kind: identity
+    answer: p24-a
+    where: 'Problem 24(a), answer box: the unit impulse response, against the numerical derivative of the unit step response of part (b)'
+    formula: exp(-t)*sin(t)/2
+    equals: deriv('(1 - exp(-x)*(cos(x) + sin(x)))/4', 'x', t)
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-7
+    shown: ['expr="exp(-t)*sin(t)/2"']
+    source: {cite: solutions, at: 'Problem 24(a), p. 1'}
+    origin: mit
+
+  - id: p24-a-ode
+    kind: identity
+    where: 'Problem 24(a): for t > 0 the impulse response solves 2ẍ + 4ẋ + 4x = 0 (the left side, plus 1, equals 1)'
+    formula: 2*deriv('exp(-x)*sin(x)/2', 'x', t, 2) + 4*deriv('exp(-x)*sin(x)/2', 'x', t) + 4*exp(-t)*sin(t)/2 + 1
+    equals: 1 + 0*t
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-6
+    shown: ['w(t) = \frac{1}{2}\,u(t)\,e^{-t}\sin t']
+    source: {cite: solutions, at: 'Problem 24(a), p. 1'}
+    origin: mit
+
+  - id: p24-a-slope
+    where: 'Problem 24(a): the slope of the impulse response just after the kick, 1 over the coefficient of ẍ'
+    inputs: {}
+    formula: deriv('exp(-x)*sin(x)/2', 'x', 0)
+    expected: '0.5'
+    tolerance: 1e-6
+    shown: ['w(0) = 0, \qquad \dot w(0^+) = \frac{1}{2}']
+    source: {cite: solutions, at: 'Problem 24(a), p. 1'}
+    origin: mit
+
+  - id: p24-a-laplace
+    kind: identity
+    where: 'Problem 24(a), check: the Laplace transform of the impulse response (integrated numerically to t = 80) equals 1/(2s² + 4s + 4)'
+    formula: integrate('exp(-s*x)*exp(-x)*sin(x)/2', 'x', 0, 80)
+    equals: 1/(2*s**2 + 4*s + 4)
+    samples: {s: [0.5, 1, 2, 3.5]}
+    tolerance: 1e-7
+    shown: ['\dfrac{1}{2s^2 + 4s + 4} = \dfrac{1}{2}\cdot\dfrac{1}{(s + 1)^2 + 1}']
+    source: {cite: solutions, at: 'Problem 24(a), p. 1'}
+    origin: page-own
+
+  - id: p24-b
+    kind: identity
+    answer: p24-b
+    where: 'Problem 24(b), answer box: the unit step response, against the numerical integral of the impulse response from 0 to t'
+    formula: (1 - exp(-t)*(cos(t) + sin(t)))/4
+    equals: integrate('exp(-x)*sin(x)/2', 'x', 0, t)
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-8
+    shown: ['expr="(1 - exp(-t)*(cos(t) + sin(t)))/4"']
+    source: {cite: solutions, at: 'Problem 24(b), p. 1'}
+    origin: mit
+
+  - id: p24-b-ode
+    kind: identity
+    where: 'Problem 24(b): for t > 0 the step response solves 2ẍ + 4ẋ + 4x = 1'
+    formula: 2*deriv('(1 - exp(-x)*(cos(x) + sin(x)))/4', 'x', t, 2) + 4*deriv('(1 - exp(-x)*(cos(x) + sin(x)))/4', 'x', t) + (1 - exp(-t)*(cos(t) + sin(t)))
+    equals: 1 + 0*t
+    samples: {t: [0.2, 0.9, 1.7, 3]}
+    tolerance: 1e-6
+    shown: ['v(t) = \frac{1}{4}\,u(t)\Bigl(1 - e^{-t}\,(\cos t + \sin t)\Bigr)']
+    source: {cite: solutions, at: 'Problem 24(b), p. 1'}
+    origin: mit
+
+  - id: p24-b-rest
+    where: 'Problem 24(b): the slope of the step response at t = 0 is zero (rest initial conditions)'
+    inputs: {}
+    formula: deriv('(1 - exp(-x)*(cos(x) + sin(x)))/4', 'x', 0)
+    expected: '0'
+    tolerance: 1e-7
+    shown: ['Then $\dot x(0) = -a + b = 0$ gives $b = -\frac{1}{4}$ too']
+    source: {cite: solutions, at: 'Problem 24(b), p. 1'}
+    origin: mit
+
+  - id: p24-b-num
+    where: 'Problem 24(b), check: v(1), by integrating the impulse response from 0 to 1'
+    inputs: {}
+    formula: integrate('exp(-x)*sin(x)/2', 'x', 0, 1)
+    expected: '0.1229'
+    shown: ['= 0.1229']
+    source: {cite: solutions, at: 'Problem 24(b), p. 1'}
+    origin: page-own
+
+  - id: p24-c-num
+    where: 'Problem 24(c), check: the slope of v at t = 1 (numerical derivative) equals w(1)'
+    inputs: {}
+    formula: deriv('(1 - exp(-x)*(cos(x) + sin(x)))/4', 'x', 1)
+    expected: '0.1548'
+    shown: ['\frac{1}{2}e^{-1}\sin 1 = 0.1548']
+    source: {cite: solutions, at: 'Problem 24(c), p. 1'}
+    origin: page-own
+
+  - id: p24-d-1
+    kind: identity
+    answer: p24-d-1
+    where: 'Problem 24(d)(1), answer box: p for the impulse response 2u(t), against 1 over its numerically integrated Laplace transform (the box variable D stands for s)'
+    formula: D/2
+    equals: 1/integrate('2*exp(-D*x)', 'x', 0, 200)
+    samples: {D: [0.5, 1, 2, 3]}
+    tolerance: 1e-7
+    shown: ['expr="D/2"']
+    source: {cite: solutions, at: 'Problem 24(d)(i), p. 1'}
+    origin: mit
+
+  - id: p24-d-2
+    kind: identity
+    answer: p24-d-2
+    where: 'Problem 24(d)(2), answer box: p for the impulse response u(t)t, against 1 over its numerically integrated Laplace transform'
+    formula: D**2
+    equals: 1/integrate('x*exp(-D*x)', 'x', 0, 200)
+    samples: {D: [0.5, 1, 2, 3]}
+    tolerance: 1e-7
+    shown: ['expr="D^2"']
+    source: {cite: solutions, at: 'Problem 24(d)(ii), p. 1'}
+    origin: mit
+
+  - id: p24-d-3
+    kind: identity
+    answer: p24-d-3
+    where: 'Problem 24(d)(3), answer box: p for the impulse response u(t)t², against 1 over its numerically integrated Laplace transform'
+    formula: D**3/2
+    equals: 1/integrate('x**2*exp(-D*x)', 'x', 0, 200)
+    samples: {D: [0.5, 1, 2, 3]}
+    tolerance: 1e-7
+    shown: ['expr="D^3/2"']
+    source: {cite: solutions, at: 'Problem 24(d)(iii), p. 2'}
+    origin: mit
+
+  # ---- Problem 25
+
+  - id: p25-a
+    kind: identity
+    answer: p25-a
+    where: 'Problem 25(a), answer box and formula "The convolution": against the numerical convolution integral of e^(−k(t−τ)) cos ωτ'
+    formula: (k*cos(omega*t) + omega*sin(omega*t) - k*exp(-k*t))/(k**2 + omega**2)
+    equals: integrate('exp(-k*(t - s))*cos(omega*s)', 's', 0, t)
+    samples:
+      k: [0.5, 1, 2, 1.3]
+      omega: [0.5, 3, 1, 2.2]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-8
+    shown: ['x(t) = \frac{k\cos\omega t + \omega\sin\omega t - k\,e^{-kt}}{k^2 + \omega^2}']
+    source: {cite: solutions, at: 'Problem 25(a), p. 2'}
+    origin: mit
+
+  - id: p25-a-ode
+    kind: identity
+    where: 'Problem 25(a), verification: the numerical derivative of the convolution plus k times it equals cos ωt'
+    formula: deriv('(k*cos(omega*x) + omega*sin(omega*x) - k*exp(-k*x))/(k**2 + omega**2)', 'x', t) + k*(k*cos(omega*t) + omega*sin(omega*t) - k*exp(-k*t))/(k**2 + omega**2)
+    equals: cos(omega*t)
+    samples:
+      k: [0.5, 1, 2, 1.3]
+      omega: [0.5, 3, 1, 2.2]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-6
+    shown: ['\dot x = \frac{-k\omega\sin\omega t + \omega^2\cos\omega t + k^2e^{-kt}}{k^2 + \omega^2}']
+    source: {cite: solutions, at: 'Problem 25(a), p. 2'}
+    origin: mit
+
+  - id: p25-a-num
+    where: 'Problem 25(a), check: k = 1, ω = 1, t = π, by numerical integration of the convolution'
+    inputs: {}
+    formula: integrate('exp(-(pi - s))*cos(s)', 's', 0, pi)
+    expected: '-0.5216'
+    shown: ['\frac{1}{2}(-1 + 0 - e^{-\pi}) = -0.5216']
+    source: {cite: solutions, at: 'Problem 25(a), p. 2'}
+    origin: page-own
+
+  - id: p25-b
+    kind: identity
+    answer: p25-b
+    where: 'Problem 25(b), answer box: against the numerical convolution integral of sin ω₀(t − τ)/ω₀ with 1'
+    formula: (1 - cos(w0*t))/w0**2
+    equals: integrate('sin(w0*(t - s))/w0', 's', 0, t)
+    samples:
+      w0: [0.5, 1, 2, 3]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-8
+    shown: ['expr="(1 - cos(w0*t))/w0^2"']
+    source: {cite: solutions, at: 'Problem 25(b), p. 2'}
+    origin: mit
+
+  - id: p25-b-ode
+    kind: identity
+    where: 'Problem 25(b), verification: the numerical second derivative of the convolution plus ω₀² times it equals 1'
+    formula: deriv('(1 - cos(w0*x))/w0**2', 'x', t, 2) + (1 - cos(w0*t))
+    equals: 1 + 0*t
+    samples:
+      w0: [0.5, 1, 2, 3]
+      t: [0.3, 1, 3, 2.1]
+    tolerance: 1e-5
+    shown: ['= \frac{1 - \cos\omega_0t}{\omega_0^2}']
+    source: {cite: solutions, at: 'Problem 25(b), p. 2'}
+    origin: mit
+
+  - id: p25-c
+    kind: identity
+    answer: p25-c
+    where: 'Problem 25(c), answer box: t² ∗ t against the numerical integral of (t − τ)² τ'
+    formula: t**4/12
+    equals: integrate('(t - s)**2*s', 's', 0, t)
+    samples: {t: [0.5, 1, 2, 3]}
+    tolerance: 1e-9
+    shown: ['expr="t^4/12"']
+    source: {cite: solutions, at: 'Problem 25(c), p. 2'}
+    origin: mit
+
+  - id: p25-c-commute
+    kind: identity
+    where: 'Problem 25(c): t ∗ t², the numerical integral of (t − τ) τ², equals t⁴/12 too'
+    formula: integrate('(t - s)*s**2', 's', 0, t)
+    equals: t**4/12
+    samples: {t: [0.5, 1, 2, 3]}
+    tolerance: 1e-9
+    shown: ['\frac{1}{3}t^4 - \frac{1}{4}t^4 = \frac{1}{12}t^4']
+    source: {cite: solutions, at: 'Problem 25(c), p. 2'}
+    origin: mit
+
+  - id: p25-c-terms
+    where: 'Problem 25(c): the three terms of t² ∗ t, 1/2 − 2/3 + 1/4 = 1/12'
+    inputs: {}
+    formula: (1/2 - 2/3 + 1/4)*12
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['\frac{1}{2}t^4 - \frac{2}{3}t^4 + \frac{1}{4}t^4 = \frac{1}{12}t^4']
+    source: {cite: solutions, at: 'Problem 25(c), p. 2'}
+    origin: mit
+
+  - id: p25-d-tt
+    kind: identity
+    answer: p25-d-tt
+    where: 'Problem 25(d), answer box: t ∗ t against the numerical integral of (t − τ) τ'
+    formula: t**3/6
+    equals: integrate('(t - s)*s', 's', 0, t)
+    samples: {t: [0.5, 1, 2, 3]}
+    tolerance: 1e-9
+    shown: ['expr="t^3/6"']
+    source: {cite: solutions, at: 'Problem 25(d), p. 2'}
+    origin: mit
+
+  - id: p25-d
+    kind: identity
+    answer: p25-d
+    where: 'Problem 25(d), answer box: (t ∗ t) ∗ t against the numerical integral of ((t − τ)³/6) τ'
+    formula: t**5/120
+    equals: integrate('(t - s)**3/6*s', 's', 0, t)
+    samples: {t: [0.5, 1, 2, 3]}
+    tolerance: 1e-9
+    shown: ['expr="t^5/120"']
+    source: {cite: solutions, at: 'Problem 25(d), p. 2'}
+    origin: mit
+
+  - id: p25-d-assoc
+    kind: identity
+    where: 'Problem 25(d): t ∗ (t ∗ t), the numerical integral of (t − τ) τ³/6, equals t⁵/120 too'
+    formula: integrate('(t - s)*s**3/6', 's', 0, t)
+    equals: t**5/120
+    samples: {t: [0.5, 1, 2, 3]}
+    tolerance: 1e-9
+    shown: ['\frac{1}{6}\Bigl(\frac{1}{4} - \frac{1}{5}\Bigr)t^5 = \frac{1}{120}t^5']
+    source: {cite: solutions, at: 'Problem 25(d), p. 2'}
+    origin: mit
+
+  - id: p25-d-bracket
+    where: 'Problem 25(d), check: the bracket 1/2 − 1 + 3/4 − 1/5 = 1/20, the same as 1/4 − 1/5'
+    inputs: {}
+    formula: (1/2 - 1 + 3/4 - 1/5)/(1/4 - 1/5)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['$\frac{1}{2} - 1 + \frac{3}{4} - \frac{1}{5} = \frac{1}{20}$']
+    source: {cite: solutions, at: 'Problem 25(d), p. 2'}
+    origin: page-own
+
+  - id: p25-d-laplace
+    kind: identity
+    where: 'Problem 25(d), check: the Laplace transform of t⁵/120 (integrated numerically) equals 1/s⁶, the product of three transforms 1/s²'
+    formula: integrate('exp(-s*x)*x**5/120', 'x', 0, 200)
+    equals: 1/s**6
+    samples: {s: [0.5, 1, 2, 3]}
+    tolerance: 1e-7
+    shown: ['\dfrac{t^5}{5!} = \dfrac{t^5}{120}']
+    source: {cite: solutions, at: 'Problem 25(d), p. 2'}
+    origin: page-own
+
+  - id: p25-c-laplace
+    kind: identity
+    where: 'Problem 25(c), check: the Laplace transform of t⁴/12 (integrated numerically) equals 2/s⁵'
+    formula: integrate('exp(-s*x)*x**4/12', 'x', 0, 200)
+    equals: 2/s**5
+    samples: {s: [0.5, 1, 2, 3]}
+    tolerance: 1e-7
+    shown: ['\dfrac{2t^4}{4!} = \dfrac{t^4}{12}']
+    source: {cite: solutions, at: 'Problem 25(c), p. 2'}
+    origin: page-own

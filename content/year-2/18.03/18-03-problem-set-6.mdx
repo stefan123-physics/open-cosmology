@@ -1,0 +1,1030 @@
+---
+title: "Problem Set 6: a triangle wave on a spring, steps and delta functions, impulse and step responses, and convolution"
+slug: 18-03-problem-set-6
+course: "18.03"
+kind: problems
+set: 6
+lecture: 23
+order: 90
+covers: [17, 21, 22, 23]
+solutions: mit
+summary: Four problems on periodic inputs, jumps and kicks. You drive an undamped spring with a triangle wave and find when a periodic solution exists, when it is the only one and what happens near resonance; write functions with jumps in terms of the unit step and find their generalized derivatives with delta functions; find the unit impulse response and the unit step response of a second-order operator, and the operators that have three given impulse responses; and compute convolutions, checking that they solve their differential equations with rest initial conditions.
+prerequisites: [fourier-series-particular-solutions, convolution, laplace-discontinuous-inputs, impulse-inputs-delta-function]
+source:
+  title: "MIT 18.03 Problem Set 6"
+  url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_pset_06pdf/
+license: CC BY-NC-SA 4.0
+references:
+  solutions:
+    title: "MIT 18.03 Problem Set 6: Part II Solutions"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_pset_06_solpdf/
+    location: "Part II solutions, pp. 1–2"
+  notesProblems:
+    title: "18.03 Notes and Exercises, Exercises section 7: Fourier Series (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_7ex/
+    location: "Exercise group 7C, Applications to resonant frequencies"
+  notesSolutions:
+    title: "18.03 Notes and Exercises, Solutions to exercises, section 7 (MIT OpenCourseWare)"
+    url: https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_7sol/
+    location: "Solutions to 7C-1 and 7C-2, p. 3"
+status: reviewed
+---
+
+This set practises four lessons: [particular solutions from Fourier series](/courses/18-03/fourier-series-particular-solutions), [the convolution formula](/courses/18-03/convolution), [the unit step and discontinuous inputs](/courses/18-03/laplace-discontinuous-inputs), and [impulse inputs, the delta function and the weight function](/courses/18-03/impulse-inputs-delta-function). It follows MIT's Problem Set 6, in our own words.
+
+MIT's sheet has two parts. Part II holds MIT's own four problems (80 points), and MIT's solutions are on OpenCourseWare. All four are written out below, with hints and solutions in our own words, following the method of MIT's solutions and checked again independently. Part I (16 points at MIT) is short; the last section of this page lists it.
+
+MIT labels each problem with the day of its lecture in the Spring 2010 calendar, whose numbers differ from the lecture numbers of this site. MIT's Problem 22 belongs to Lecture 17 here, Problem 23 to Lectures 22 and 23, Problem 24 to Lecture 23, and Problem 25 to Lectures 21 and 23.
+
+One difference in method. The lessons of this site follow Prof. Mattuck's lectures, which reach the unit step, the delta function, the weight function and convolution through the Laplace transform. MIT's Problem Set 6 was written for a term in which these were treated directly in the time domain, before the Laplace transform. The solutions below follow MIT's time-domain method, and use the Laplace transform of the lessons as a second route in the checks. In MIT's words the weight function $w(t)$ of the lessons is the **unit impulse response**, and the response to the unit step is the **unit step response** $v(t)$.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A formula box takes plain typing, for example `exp(-t)*sin(t)/2`, and accepts every correct way of writing the answer. Type `w0` for $\omega_0$, `omega` for $\omega$, `pi` for $\pi$, `k` for $k$, `t` for $t$, `D` for the operator $D$ and `exp(-t)` for $e^{-t}$. A number box wants a decimal number, and its question says how exact your value must be: keep all the digits your calculator shows while you work. The points of each part are MIT's, taken from its solutions; how a part's points are shared between its answer boxes is ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Parts that ask you to sketch, to show or to verify something have no answer box, or a box for only a piece of them: compare your work with the solution and mark it yourself. Your score is kept in this browser only.
+
+## Problem 22
+
+<Exercise id="p22" title="A triangle wave drives a spring" points={20} mit="Part II, Problem 22">
+
+Let $g(t)$ be the function of period $2\pi$ with $g(t) = t$ for $-\frac{\pi}{2} \le t \le \frac{\pi}{2}$ and $g(t) = \pi - t$ for $\frac{\pi}{2} \le t \le \frac{3\pi}{2}$: a triangle wave.
+
+<Plot variable="t" domain={[-3.1416, 9.4248]} range={[-2, 2]} xLabel="t" yLabel="g"
+  curves={[{ expr: "asin(sin(t))" }]}
+  caption="The triangle wave g(t) over two periods, computed from asin(sin t), which is t between −π/2 and π/2 and π − t between π/2 and 3π/2." />
+
+Its Fourier series was found in Problem 21(f) of MIT's Problem Set 5, and MIT's solution to this problem quotes it:
+
+<Formula label="Fourier series of the triangle wave" tex="g(t) = \frac{4}{\pi}\left(\sin t - \frac{1}{3^2}\sin 3t + \frac{1}{5^2}\sin 5t - \cdots\right)" cite="solutions" at="Problem 22(a), p. 1" />
+
+This wave is the input of an undamped spring with natural frequency $\omega_0 > 0$:
+
+<Formula label="The driven spring" tex="\ddot x + \omega_0^2\,x = g(t)" cite="mit" at="Part II, Problem 22(a), p. 1" />
+
+(MIT writes the natural frequency as $\omega_n$. This page writes $\omega_0$, as [the lesson](/courses/18-03/fourier-series-particular-solutions) does, where $\omega_n$ is the $n$th frequency of the input.)
+
+<Part label="a" points={4}>
+
+Find a periodic solution $x_p$ of the equation, as a series (if there is one).
+
+<Hint>
+
+The equation is linear, so you may answer the input one term at a time and add the answers.
+
+</Hint>
+
+<Hint>
+
+For a single term $A\sin\omega t$ on the right, try $x = c\sin\omega t$ and find $c$. When does this fail?
+
+</Hint>
+
+<Answer id="p22-a-c1" label="The coefficient of $\sin t$ in $x_p$ is" expr="4/(pi*(w0^2 - 1))"
+  vars={{ w0: [1.2, 2.8] }}
+  names={{ w0: "\\omega_0" }}
+  mistakes={[
+    { expr: "4/(pi*(1 - w0^2))", hint: "In this range ω₀ is larger than 1 and your coefficient is negative. A spring driven below its natural frequency moves with the input, not against it. Substitute c sin t once more and watch the sign of the second derivative." },
+    { expr: "4/(pi*w0^2)", hint: "That would be right if the second derivative of sin t were zero. It is −sin t." },
+    { expr: "4/(pi*(w0^2 + 1))", hint: "The second derivative of sin t is −sin t, so the term is ω₀² − 1, not ω₀² + 1. Your coefficient could never become large, and near ω₀ = 1 it must." }
+  ]} />
+
+<Answer id="p22-a-c3" label="The coefficient of $\sin 3t$ in $x_p$ is" expr="-4/(9*pi*(w0^2 - 9))"
+  vars={{ w0: [1.2, 2.8] }}
+  names={{ w0: "\\omega_0" }}
+  mistakes={[
+    { expr: "4/(9*pi*(w0^2 - 9))", hint: "Look at the sign of the sin 3t term of the input: the series of g alternates, and that term is −(4/9π) sin 3t." },
+    { expr: "-4/(3*pi*(w0^2 - 9))", hint: "The input's coefficients fall like 1 over the square of the frequency: the sin 3t term has 3² = 9 below, not 3." },
+    { expr: "-4/(9*pi*(w0^2 - 3))", hint: "Differentiating sin 3t twice gives −9 sin 3t: the frequency is squared, so the term is ω₀² − 9." }
+  ]} />
+
+<Solution>
+
+**The idea.** By superposition, the response to a sum of sines is the sum of the responses to each sine, and each of those is a sine of the same frequency.
+
+<Step title="One term">
+
+Put $x = c\sin\omega t$ into $\ddot x + \omega_0^2x = A\sin\omega t$. The left side is $c(\omega_0^2 - \omega^2)\sin\omega t$, so $c = A/(\omega_0^2 - \omega^2)$, as long as $\omega \ne \omega_0$:
+
+<Formula label="Response to one sine" tex="x = \frac{A\sin\omega t}{\omega_0^2 - \omega^2} \quad\text{solves}\quad \ddot x + \omega_0^2\,x = A\sin\omega t" cite="solutions" at="Problem 22(a), p. 1" />
+
+</Step>
+
+<Step title="Add the terms">
+
+The input has the frequencies $1, 3, 5, \dots$ Use the one-term result for each, with the coefficients of the series of $g$:
+
+<Formula label="A periodic solution" tex="x_p = \frac{4}{\pi}\left(\frac{\sin t}{\omega_0^2 - 1^2} - \frac{1}{3^2}\,\frac{\sin 3t}{\omega_0^2 - 3^2} + \frac{1}{5^2}\,\frac{\sin 5t}{\omega_0^2 - 5^2} - \cdots\right)" cite="solutions" at="Problem 22(a), p. 1" />
+
+This works as long as $\omega_0$ is not an odd integer, so that no denominator is zero. Every term has period $2\pi$, so $x_p$ is periodic with period $2\pi$.
+
+</Step>
+
+<Step title="Check the result">
+
+For $\omega_0 = 2$ the first two coefficients are $\dfrac{4}{3\pi} = 0.4244$ and $-\dfrac{4}{9\pi(4 - 9)} = 0.0283$: the second one is positive because both the input coefficient and the denominator are negative. A limit: for a very stiff spring (large $\omega_0$) every denominator is close to $\omega_0^2$, so $x_p \approx g(t)/\omega_0^2$, the solution of $\omega_0^2x = g$ in which the spring follows the input with no delay. That is what a stiff spring does.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+For which positive values of $\omega_0$ is there no periodic solution?
+
+<Hint>
+
+Look at the denominators of your series. For which $\omega_0$ does one of them vanish?
+
+</Hint>
+
+<Hint>
+
+When a denominator vanishes the spring is driven exactly at its natural frequency. What does [the lesson on resonance](/courses/18-03/resonance-and-beats) say about the solutions then?
+
+</Hint>
+
+<Answer id="p22-b" label="There is no periodic solution when $\omega_0$ is"
+  choices={["any positive integer", "an even positive integer", "an odd positive integer", "equal to 1, and for no other value"]} answer={2} />
+
+<Solution>
+
+**The idea.** A periodic solution fails to exist exactly when the input contains a sine at the natural frequency of the spring: that term is in resonance.
+
+<Step title="Which frequencies the input has">
+
+The series of $g$ has a term $\sin mt$ with a coefficient different from zero for every odd $m$, and no other terms. So the spring is in resonance with one term of the input when $\omega_0 = 1, 3, 5, \dots$ An even integer is harmless: $g$ has no term of even frequency.
+
+</Step>
+
+<Step title="Why resonance leaves no periodic solution">
+
+MIT's solution states the answer. The reason, in our words: for $\omega_0 = m$, the response to the term $A\sin mt$ is no longer a sine but
+
+<Formula label="The resonant response" tex="x = -\frac{A}{2m}\,t\cos mt \quad\text{solves}\quad \ddot x + m^2x = A\sin mt" cite="mit" at="Part II, Problem 22(b) (our own solution)" />
+
+whose swings grow without bound. All the other terms of the input still give bounded sines, and the solutions of the homogeneous equation are bounded too. So every solution contains the growing term and none is periodic.
+
+</Step>
+
+<Step title="Check the result">
+
+Differentiate $x = -\frac{A}{2m}t\cos mt$ twice: $\ddot x = A\sin mt + \frac{Am}{2}t\cos mt$. Adding $m^2x = -\frac{Am}{2}t\cos mt$ leaves $A\sin mt$, as it should. It is the companion, for a sine input, of the resonant solution $\dfrac{t\sin\omega_0t}{2\omega_0}$ for a cosine input in [the lesson on resonance](/courses/18-03/resonance-and-beats).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Write $\omega_r$ for the smallest value you found in part (b). What does the periodic solution look like, approximately, when $\omega_0$ is just below $\omega_r$? And when $\omega_0$ is just above $\omega_r$?
+
+<Hint>
+
+Which term of the series for $x_p$ has a very small denominator when $\omega_0$ is close to $\omega_r$?
+
+</Hint>
+
+<Hint>
+
+Look at the sign of that denominator on each side of $\omega_r$, and compare the sign of the term with the sign of $\sin t$ in the input.
+
+</Hint>
+
+<Answer id="p22-c-below" label="For $\omega_0 = 0.9$, the coefficient of $\sin t$ in $x_p$ (to three significant figures) is" value="-6.70" tolerance="0.03" calc="p22-c-below" />
+
+<Answer id="p22-c-above" label="For $\omega_0 = 1.1$, the coefficient of $\sin t$ in $x_p$ (to three significant figures) is" value="6.06" tolerance="0.03" calc="p22-c-above" />
+
+<Answer id="p22-c-shape" label="For $\omega_0$ just below $\omega_r$ the periodic solution is close to"
+  choices={["a large multiple of sin t that moves with the input (in phase)", "a large multiple of sin t that moves against the input (in antiphase)", "a large multiple of sin 3t", "the input itself, g(t)"]} answer={1} />
+
+<Solution>
+
+**The idea.** Near a resonance one term of the series has a very small denominator and swamps all the others.
+
+<Step title="The dominant term">
+
+The smallest value is $\omega_r = 1$. For $\omega_0$ close to $1$ the first term of $x_p$ dominates:
+
+<Formula label="Near the first resonance" tex="x_p \approx \frac{4}{\pi}\,\frac{\sin t}{\omega_0^2 - 1}" cite="solutions" at="Problem 22(c), p. 1" />
+
+Its amplitude is large, because $\omega_0^2 - 1$ is small.
+
+</Step>
+
+<Step title="Below and above">
+
+For $\omega_0$ just below $1$ the denominator is negative: $x_p$ is close to a large negative multiple of $\sin t$. The input's own largest term is a positive multiple of $\sin t$, so the spring moves against the input: it is in antiphase. For $\omega_0$ just above $1$ the denominator is positive and the spring moves with the input, in phase, again with a large amplitude.
+
+<Plot variable="t" domain={[0, 6.2832]} range={[-8, 8]} xLabel="t" yLabel="x"
+  curves={[
+    { expr: "(4/pi)*(sin(t)/(0.81 - 1) - sin(3*t)/(9*(0.81 - 9)) + sin(5*t)/(25*(0.81 - 25)))", label: "0.9" },
+    { expr: "(4/pi)*(sin(t)/(1.21 - 1) - sin(3*t)/(9*(1.21 - 9)) + sin(5*t)/(25*(1.21 - 25)))", label: "1.1", dash: true },
+    { expr: "asin(sin(t))", label: "g" }
+  ]}
+  caption="The periodic solution for natural frequency 0.9 (solid) and 1.1 (dashed), computed from the first three terms of the series, with the input g. Below resonance the spring moves against the input, above resonance with it." />
+
+</Step>
+
+<Step title="Check the result">
+
+With $\omega_0 = 0.9$ the coefficient of $\sin t$ is $\dfrac{4}{\pi(0.81 - 1)} = -6.70$, and with $\omega_0 = 1.1$ it is $\dfrac{4}{\pi(1.21 - 1)} = 6.06$. The next term is tiny beside them: for $\omega_0 = 0.9$ the coefficient of $\sin 3t$ is $0.0173$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+For which values of $\omega_0$ is there more than one periodic solution? (MIT's solution calls this a tricky question.)
+
+<Hint>
+
+Every solution is $x_p$ plus a solution $a\cos\omega_0t + b\sin\omega_0t$ of the homogeneous equation. The first has period $2\pi$. What is the period of the second?
+
+</Hint>
+
+<Hint>
+
+A sum of two periodic functions is periodic when some whole number of periods of the one equals some whole number of periods of the other.
+
+</Hint>
+
+<Answer id="p22-d" label="There is more than one periodic solution when $\omega_0$ is"
+  choices={["any positive number that is not an odd integer", "an even integer, and for no other value", "a rational number that is not an odd integer", "no value at all: a periodic solution is always the only one"]} answer={2} />
+
+<Solution>
+
+**The idea.** The general solution is $x_p$ plus the free oscillation of the spring. It is periodic when the two periods, $2\pi$ and $2\pi/\omega_0$, fit into a common period.
+
+<Step title="The general solution">
+
+When $\omega_0$ is not an odd integer, $x_p$ of part (a) exists and has period $2\pi$. The general solution is
+
+<Formula label="General solution" tex="x = x_p + a\cos\omega_0t + b\sin\omega_0t" cite="solutions" at="Problem 22(d), p. 1" />
+
+and the added part has period $2\pi/\omega_0$.
+
+</Step>
+
+<Step title="A common period">
+
+The sum repeats after a time $T$ that is both a whole number $m$ of periods $2\pi$ and a whole number $n$ of periods $2\pi/\omega_0$: $2\pi m = 2\pi n/\omega_0$, so $\omega_0 = n/m$, a rational number. Then every choice of $a$ and $b$ gives a periodic solution, with period $2\pi m$: there are infinitely many. So the answer is: $\omega_0$ rational, but not an odd integer.
+
+</Step>
+
+<Step title="Irrational values (our addition)">
+
+MIT's solution stops there. If $\omega_0$ is irrational, $x_p$ is the only periodic solution. Suppose $x = x_p + h$ repeats after a time $T$, where $h$ is a free oscillation that is not zero. Then $x_p(t + T) - x_p(t)$, which is made of sines and cosines of odd integer frequencies, would cancel $h(t + T) - h(t)$, which has the frequency $\omega_0$. Sinusoids of different frequencies cannot cancel, so both differences are zero: $T$ is a multiple of $2\pi$ (because $x_p$ contains $\sin t$) and a multiple of $2\pi/\omega_0$, which makes $\omega_0$ rational after all.
+
+</Step>
+
+<Step title="Check the result">
+
+Take $\omega_0 = \frac{1}{2}$: the free oscillation $\cos\frac{t}{2}$ has period $4\pi$, which is two periods of $x_p$, so $x_p + a\cos\frac{t}{2} + b\sin\frac{t}{2}$ repeats after $4\pi$ for every $a$ and $b$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={4}>
+
+For the values of $\omega_0$ found in part (d), are all solutions of $\ddot x + \omega_0^2x = g(t)$ periodic?
+
+<Hint>
+
+In part (d), was there any condition on the constants $a$ and $b$?
+
+</Hint>
+
+<Answer id="p22-e" label="For those values of $\omega_0$:"
+  choices={["Yes: every solution is periodic", "No: only the solutions with a = b = 0", "No: only the solutions with b = 0", "Only when ω₀ is an even integer"]} answer={0} />
+
+<Answer id="p22-e-period" label="Our own extra: for $\omega_0 = \frac{3}{2}$, the shortest time after which every solution repeats is (to four significant figures)" value="12.57" tolerance="0.01" calc="p22-e-period" />
+
+<Solution>
+
+**The idea.** The argument of part (d) never used the values of $a$ and $b$.
+
+<Step title="Every solution">
+
+For $\omega_0 = n/m$ (not an odd integer) every solution $x_p + a\cos\omega_0t + b\sin\omega_0t$ repeats after the time $2\pi m$. So yes: all solutions are periodic. When $\omega_0$ is an even integer the free oscillation itself repeats after $2\pi$, so all solutions have period $2\pi$, the period of the input.
+
+</Step>
+
+<Step title="Check the result">
+
+For $\omega_0 = \frac{3}{2}$ the free oscillation has period $\frac{4\pi}{3}$ and $x_p$ has period $2\pi$. The shortest time that is a whole number of both is $4\pi = 12.57$: three free periods and two periods of the input. (This number is our addition; MIT asks only the yes-or-no question.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 23
+
+<Exercise id="p23" title="Steps, jumps and delta functions" points={12} mit="Part II, Problem 23">
+
+Three tools are needed. The unit step $u(t - a)$ is $0$ before $t = a$ and $1$ after it ([the lesson on the unit step](/courses/18-03/laplace-discontinuous-inputs)). The delta function $\delta(t - a)$ is a unit impulse at $t = a$, and formally $u' = \delta$ ([the lesson on the delta function](/courses/18-03/impulse-inputs-delta-function)). The **generalized derivative** of a function with jumps, which MIT's problem asks for, is its ordinary derivative wherever the function is smooth, plus a delta function for every jump: a jump of size $c$ at $t = a$, counted positive when the function jumps up, adds $c\,\delta(t - a)$.
+
+For each of the four functions below, (i) draw its graph, (ii) draw the graph of its generalized derivative, showing each delta function as a spike with its size written beside it, and (iii) write a formula for $f(t)$ and one for $f'(t)$, using steps $u(t - a)$, delta functions $\delta(t - a)$ and ordinary functions. A few single values of $t$ may stay undefined.
+
+<Part label="a" points={3}>
+
+$f(t) = 0$ for $t < 0$ and $f(t) = -t$ for $t > 0$.
+
+<Hint>
+
+Multiplying a function by $u(t)$ switches it on at $t = 0$. Does this $f$ jump anywhere?
+
+</Hint>
+
+<Answer id="p23-a" label="The generalized derivative is $f'(t) =$"
+  choices={["−u(t) − δ(t)", "−δ(t)", "−u(t)t", "−u(t)"]} answer={3} />
+
+<Solution>
+
+**The idea.** Switch $-t$ on with a unit step. The graph has a corner at $t = 0$, not a jump, so no delta function appears.
+
+<Step title="The formulas">
+
+<Formula label="A ramp downwards" tex="f(t) = -u(t)\,t, \qquad f'(t) = -u(t)" cite="solutions" at="Problem 23(a), p. 1" />
+
+The graph of $f$ lies on the axis up to $t = 0$ and then falls with slope $-1$. The graph of $f'$ is $0$ for $t < 0$ and $-1$ for $t > 0$: a step downwards, undefined at $t = 0$ itself.
+
+</Step>
+
+<Step title="Check the result">
+
+$f$ is continuous at $0$: both sides give $0$. So the derivative has no delta function, and its integral from any negative time to $t > 0$ is $-t = f(t)$, as it must be.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+$f(t) = 0$ for $t < 0$ and $f(t) = 1 - t$ for $t > 0$.
+
+<Hint>
+
+Compare the values just before and just after $t = 0$.
+
+</Hint>
+
+<Answer id="p23-b" label="The generalized derivative is $f'(t) =$"
+  choices={["−u(t)", "−u(t) + δ(t)", "−u(t) − δ(t)", "δ(t) − u(t)t"]} answer={1} />
+
+<Solution>
+
+**The idea.** Now the function jumps up by $1$ at $t = 0$, and a jump up by $1$ gives $+\delta(t)$.
+
+<Step title="The formulas">
+
+<Formula label="A jump, then a ramp" tex="f(t) = u(t)\,(1 - t), \qquad f'(t) = -u(t) + \delta(t)" cite="solutions" at="Problem 23(b), p. 1" />
+
+<Plot variable="t" domain={[-1, 2.5]} range={[-1.6, 1.2]} xLabel="t" yLabel="f"
+  curves={[{ expr: "t < 0 ? 0 : (t < 0.04 ? NaN : 1 - t)" }]}
+  caption="The function of part (b), computed from u(t)(1 − t): zero for negative t, a jump up to 1 at t = 0, then a fall with slope −1." />
+
+The graph of $f'$ is the same downward step as in part (a), with one upward spike of size $1$ at $t = 0$.
+
+</Step>
+
+<Step title="Check the result">
+
+By the product rule, $\frac{d}{dt}\bigl(u(t)(1 - t)\bigr) = \delta(t)(1 - t) - u(t)$, and a delta function at $0$ only feels the value of its factor at $0$, which is $1$. That gives $\delta(t) - u(t)$ again.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+$f(t) = 0$ for $t < 0$, $f(t) = 2t - 1$ for $0 < t < 1$, and $f(t) = 0$ for $t > 1$.
+
+<Hint>
+
+The difference $u(t) - u(t - 1)$ is $1$ between $0$ and $1$ and $0$ elsewhere: a window.
+
+</Hint>
+
+<Hint>
+
+There are two jumps. Find the size and the direction of each from the values of $2t - 1$ at the two ends of the window.
+
+</Hint>
+
+<Answer id="p23-c-f" label="A formula for $f$ is $f(t) =$"
+  choices={["u(t)(2t − 1) − u(t − 1)", "(u(t) − u(t − 1))(2t − 1)", "u(t − 1)(2t − 1)", "(u(t) + u(t − 1))(2t − 1)"]} answer={1} />
+
+<Answer id="p23-c-df" label="The generalized derivative is $f'(t) =$"
+  choices={["2(u(t) − u(t − 1)) + δ(t) + δ(t − 1)", "2(u(t) − u(t − 1)) − δ(t) + δ(t − 1)", "2(u(t) − u(t − 1)) − δ(t) − δ(t − 1)", "2(u(t) − u(t − 1))"]} answer={2} />
+
+<Solution>
+
+**The idea.** Cut the line $2t - 1$ out with a window. The function jumps at both ends of the window.
+
+<Step title="The formula for f">
+
+<Formula label="A windowed line" tex="f(t) = \bigl(u(t) - u(t - 1)\bigr)(2t - 1)" cite="solutions" at="Problem 23(c), p. 1" />
+
+<Plot variable="t" domain={[-1, 2.5]} range={[-1.4, 1.4]} xLabel="t" yLabel="f"
+  curves={[{ expr: "t < 0 ? 0 : (t < 0.04 ? NaN : (t < 0.97 ? 2*t - 1 : (t < 1.01 ? NaN : 0)))" }]}
+  caption="The function of part (c), computed from (u(t) − u(t − 1))(2t − 1): a jump down to −1 at t = 0, a rise with slope 2 to the value 1, and a jump down to 0 at t = 1." />
+
+</Step>
+
+<Step title="The derivative">
+
+Inside the window the slope is $2$, outside it is $0$. At $t = 0$ the function jumps from $0$ to $-1$, down by $1$. At $t = 1$ it jumps from $1$ to $0$, down by $1$ again. Each jump down by $1$ gives a delta function with a minus sign:
+
+<Formula label="Its generalized derivative" tex="f'(t) = 2\bigl(u(t) - u(t - 1)\bigr) - \delta(t) - \delta(t - 1)" cite="solutions" at="Problem 23(c), p. 1" />
+
+The graph of $f'$ is a box of height $2$ over $0 < t < 1$ with a downward spike of size $1$ at each end.
+
+</Step>
+
+<Step title="Check the result">
+
+$f$ is zero far to the left and far to the right, so the integral of $f'$ over all $t$ must be $0$. It is: the box contributes $2 \times 1 = 2$ and the two spikes contribute $-1$ each.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+$f(t) = 0$ for $t < 0$, and for $t > 0$ the function is $t$ minus the largest integer that is not larger than $t$: $f(t) = t - n$ for $n < t < n + 1$, with $n = 0, 1, 2, \dots$ (MIT writes this with floor brackets around $t$. It is a sawtooth: the part of $t$ after the decimal point.)
+
+<Hint>
+
+Start from the ramp $u(t)\,t$. What must be taken away once $t$ passes $1$, and again when it passes $2$?
+
+</Hint>
+
+<Hint>
+
+Taking away $1$ from the time $t = n$ onwards is done by subtracting $u(t - n)$.
+
+</Hint>
+
+<Answer id="p23-d-f" label="A formula for $f$ is $f(t) =$"
+  choices={["u(t)t − u(t − 1) − u(t − 2) − u(t − 3) − ⋯", "u(t)t − u(t − 1)(t − 1) − u(t − 2)(t − 2) − ⋯", "u(t)t − δ(t − 1) − δ(t − 2) − δ(t − 3) − ⋯", "u(t)(t − 1)"]} answer={0} />
+
+<Answer id="p23-d-df" label="The generalized derivative is $f'(t) =$"
+  choices={["u(t) − u(t − 1) − u(t − 2) − ⋯", "u(t) + δ(t − 1) + δ(t − 2) + ⋯", "u(t)", "u(t) − δ(t − 1) − δ(t − 2) − δ(t − 3) − ⋯"]} answer={3} />
+
+<Solution>
+
+**The idea.** The sawtooth is a ramp that is pulled down by $1$ at every positive integer.
+
+<Step title="The formula for f">
+
+MIT's solution first writes $f$ as a sum of windowed pieces, $(u(t) - u(t - 1))\,t + (u(t - 1) - u(t - 2))(t - 1) + \cdots$, and then collects the terms. (In MIT's printed solution the third piece has the window $u(t - 1) - u(t - 2)$ again, a misprint for $u(t - 2) - u(t - 3)$.) The result is
+
+<Formula label="The sawtooth" tex="f(t) = u(t)\,t - u(t - 1) - u(t - 2) - u(t - 3) - \cdots" cite="solutions" at="Problem 23(d), p. 1" />
+
+<Plot variable="t" domain={[-1, 4]} range={[-0.4, 1.4]} xLabel="t" yLabel="f"
+  curves={[{ expr: "t < 0 ? 0 : ((t - floor(t)) > 0.95 ? NaN : t - floor(t))" }]}
+  caption="The sawtooth of part (d), computed from t − floor(t) for positive t: it rises with slope 1 and jumps down by 1 at t = 1, 2, 3 and so on." />
+
+</Step>
+
+<Step title="The derivative (our own; MIT's solution gives only f)">
+
+The slope is $1$ for all $t > 0$ between the jumps, and at each positive integer $n$ the function jumps down by $1$. There is no jump at $t = 0$, where both sides are $0$:
+
+<Formula label="Its generalized derivative" tex="f'(t) = u(t) - \delta(t - 1) - \delta(t - 2) - \delta(t - 3) - \cdots" cite="mit" at="Part II, Problem 23(d) (our own solution)" />
+
+The graph of $f'$ is the unit step with a downward spike of size $1$ at every positive integer.
+
+</Step>
+
+<Step title="Check the result">
+
+Test the formula for $f$ at $t = 2.3$: $u(t)\,t = 2.3$, and the steps at $1$ and $2$ are switched on, so $f = 2.3 - 1 - 1 = 0.3$, the part after the decimal point. The same answer comes from integrating $f'$ from a negative time to $2.3$: the step gives $2.3$ and the two spikes passed on the way give $-1$ each.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 24
+
+<Exercise id="p24" title="Impulse response and step response" points={24} mit="Part II, Problem 24">
+
+An operator such as $2D^2 + 4D + 4I$ stands for the system $2\ddot x + 4\dot x + 4x = q(t)$ with input $q$: $D$ means differentiation and $I$ leaves a function as it is. MIT calls it an LTI operator: linear, and time-invariant because its coefficients are constant. Its **unit impulse response** $w(t)$ is the solution with input $\delta(t)$ that is zero for $t < 0$ (rest initial conditions): the weight function of [the lesson](/courses/18-03/impulse-inputs-delta-function). Its **unit step response** $v(t)$ is the solution with input $u(t)$ that is zero for $t < 0$.
+
+<Part label="a" points={4}>
+
+Find the unit impulse response $w(t)$ of the operator $2D^2 + 4D + 4I$.
+
+<Hint>
+
+For $t > 0$ the input is zero, so $w$ solves the homogeneous equation $2\ddot x + 4\dot x + 4x = 0$. All that the kick does is set the values at $t = 0^+$, just after it.
+
+</Hint>
+
+<Hint>
+
+A unit kick on a second-order system leaves the position where it was and makes the velocity jump by $1$ divided by the coefficient of $\ddot x$. Or take the route of the lesson: $w$ is the inverse Laplace transform of $1/(2s^2 + 4s + 4)$.
+
+</Hint>
+
+<Answer id="p24-a" label="For $t > 0$: $w(t) =$" expr="exp(-t)*sin(t)/2"
+  vars={{ t: [0.2, 3] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "exp(-t)*sin(t)", hint: "Your slope just after t = 0 is 1. The coefficient of the second derivative is 2, so a unit kick makes the velocity jump by 1/2." },
+    { expr: "exp(-t)*cos(t)/2", hint: "Your response starts at the value 1/2. A kick on a second-order system changes the velocity at once, but not the position: w must start at 0." },
+    { expr: "exp(-2*t)*sin(2*t)/2", hint: "Check the roots: 2s² + 4s + 4 = 2(s² + 2s + 2) has the roots −1 ± i, not −2 ± 2i." }
+  ]} />
+
+<Solution>
+
+**The idea.** After the kick the system is free, so $w$ is a solution of the homogeneous equation for $t > 0$, picked out by the two values the kick leaves behind at $t = 0^+$.
+
+<Step title="The free solutions">
+
+The characteristic polynomial $2s^2 + 4s + 4 = 2(s^2 + 2s + 2)$ has the roots $-1 \pm i$, so the homogeneous equation has the solutions
+
+<Formula label="General homogeneous solution" tex="x = e^{-t}\,(a\cos t + b\sin t)" cite="solutions" at="Problem 24(a), p. 1" />
+
+</Step>
+
+<Step title="The values just after the kick">
+
+<Formula label="What the unit kick leaves behind" tex="w(0) = 0, \qquad \dot w(0^+) = \frac{1}{2}" cite="solutions" at="Problem 24(a), p. 1" />
+
+Why: integrate $2\ddot w + 4\dot w + 4w = \delta(t)$ over a very short time around $0$. The right side gives $1$. On the left only $2\ddot w$ can give something that does not shrink with the interval, namely $2$ times the jump of $\dot w$. So $\dot w$ jumps from $0$ to $\frac{1}{2}$, and $w$ itself stays continuous.
+
+</Step>
+
+<Step title="Fit the constants">
+
+$w(0) = 0$ gives $a = 0$. Then $w = be^{-t}\sin t$ has the slope $b$ at $0$, so $b = \frac{1}{2}$:
+
+<Formula label="Unit impulse response" tex="w(t) = \frac{1}{2}\,u(t)\,e^{-t}\sin t" cite="solutions" at="Problem 24(a), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+The route of the lesson gives the same: $\dfrac{1}{2s^2 + 4s + 4} = \dfrac{1}{2}\cdot\dfrac{1}{(s + 1)^2 + 1}$, and the inverse Laplace transform of $\dfrac{1}{(s + 1)^2 + 1}$ is $e^{-t}\sin t$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Find the unit step response $v(t)$ of the same operator.
+
+<Hint>
+
+For $t > 0$ the input is the constant $1$. Find a constant solution first, then add the general solution of the homogeneous equation.
+
+</Hint>
+
+<Hint>
+
+A step is not a kick: both the position and the velocity start at $0$.
+
+</Hint>
+
+<Answer id="p24-b" label="For $t > 0$: $v(t) =$" expr="(1 - exp(-t)*(cos(t) + sin(t)))/4"
+  vars={{ t: [0.2, 3] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "(1 - exp(-t)*cos(t))/4", hint: "Your slope at t = 0 is 1/4. With a step input the system starts from rest: the slope at 0 must be 0 as well as the value." },
+    { expr: "1 - exp(-t)*(cos(t) + sin(t))", hint: "For large t your answer tends to 1. Put a constant x into 2ẍ + 4ẋ + 4x = 1 to see where the system settles." },
+    { expr: "(1 - exp(-t)*(cos(t) - sin(t)))/4", hint: "Your slope at t = 0 is 1/2, not 0. Differentiate e^(−t)(a cos t + b sin t) once more with care: its slope at 0 is b − a." }
+  ]} />
+
+<Solution>
+
+**The idea.** For $t > 0$ the equation is $2\ddot x + 4\dot x + 4x = 1$: a constant particular solution plus a free solution, fitted to rest initial conditions.
+
+<Step title="General solution for t > 0">
+
+The constant $x_p = \frac{1}{4}$ solves the equation, since then $4x = 1$. So
+
+<Formula label="Solutions with input 1" tex="x = \frac{1}{4} + e^{-t}\,(a\cos t + b\sin t), \qquad \dot x = e^{-t}\bigl((-a + b)\cos t + (-a - b)\sin t\bigr)" cite="solutions" at="Problem 24(b), p. 1" />
+
+</Step>
+
+<Step title="Rest initial conditions">
+
+$x(0) = 0$ gives $\frac{1}{4} + a = 0$, so $a = -\frac{1}{4}$. Then $\dot x(0) = -a + b = 0$ gives $b = -\frac{1}{4}$ too:
+
+<Formula label="Unit step response" tex="v(t) = \frac{1}{4}\,u(t)\Bigl(1 - e^{-t}\,(\cos t + \sin t)\Bigr)" cite="solutions" at="Problem 24(b), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$ the bracket is $1 - 1 = 0$. For large $t$ the response settles at $\frac{1}{4}$, the constant solution. A number: $v(1) = \frac{1}{4}\bigl(1 - e^{-1}(\cos 1 + \sin 1)\bigr) = 0.1229$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Verify that $\dot v = w$. (It should be so, because the inputs are related in the same way: $\dot u = \delta$.)
+
+<Hint>
+
+Differentiate your $v$ for $t > 0$ with the product rule. Then think about $t = 0$: does $v$ jump there?
+
+</Hint>
+
+<Solution>
+
+**The idea.** Differentiate the formula for $v$ and compare with $w$.
+
+<Step title="Differentiate">
+
+Use the formula for $\dot x$ in part (b) with $a = b = -\frac{1}{4}$: then $-a + b = 0$ and $-a - b = \frac{1}{2}$, so for $t > 0$
+
+<Formula label="The derivative of the step response" tex="\dot v = e^{-t}\Bigl(0\cdot\cos t + \frac{1}{2}\sin t\Bigr) = \frac{1}{2}\,e^{-t}\sin t = w" cite="solutions" at="Problem 24(c), p. 1" />
+
+</Step>
+
+<Step title="Check the result">
+
+For $t < 0$ both $v$ and $w$ are zero. At $t = 0$ the function $v$ is continuous (it starts at $0$), so its generalized derivative has no delta function there, and $\dot v = w$ holds for all $t$. A number: the slope of $v$ at $t = 1$ is $\frac{1}{2}e^{-1}\sin 1 = 0.1548$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={12}>
+
+Go the other way. For each of the three functions below, find the operator $p(D)$, a polynomial in $D$ with constant coefficients, that has it as its unit impulse response.
+
+1. $2u(t)$.
+2. $u(t)\,t$.
+3. $u(t)\,t^2$.
+
+(Type $D$ as `D`, for example `3*D^2 + D`.)
+
+<Hint>
+
+Differentiate the function, in the generalized sense, until a delta function appears. How many derivatives does it take? That is the order of the operator.
+
+</Hint>
+
+<Hint>
+
+$p(D)$ applied to the function must give exactly $\delta(t)$: no steps and no other terms left over. Choose the coefficients to make that happen. On the lesson's route, $p(s)$ is $1$ divided by the Laplace transform of the function.
+
+</Hint>
+
+<Answer id="p24-d-1" label="For $2u(t)$: $p(D) =$" expr="D/2"
+  vars={{ D: [0.5, 3] }}
+  names={{ D: "D" }}
+  mistakes={[
+    { expr: "2*D", hint: "Apply your operator to 2u(t): 2D gives 4δ(t), four times too much." },
+    { expr: "D", hint: "Apply your operator to 2u(t): D gives 2δ(t), twice too much." },
+    { expr: "D^2/2", hint: "The function 2u(t) already jumps, so one derivative gives a delta function. A second-order operator would produce the derivative of a delta function." }
+  ]} />
+
+<Answer id="p24-d-2" label="For $u(t)\,t$: $p(D) =$" expr="D^2"
+  vars={{ D: [0.5, 3] }}
+  names={{ D: "D" }}
+  mistakes={[
+    { expr: "D", hint: "Apply your operator to u(t)t: D gives u(t), a step, not a delta function. Differentiate once more." },
+    { expr: "D^2/2", hint: "Apply your operator to u(t)t: the second derivative is δ(t), so D²/2 gives only half a unit impulse." },
+    { expr: "D^2 + D", hint: "Apply your operator to u(t)t: D² gives δ(t), but the extra D leaves a step u(t) behind." }
+  ]} />
+
+<Answer id="p24-d-3" label="For $u(t)\,t^2$: $p(D) =$" expr="D^3/2"
+  vars={{ D: [0.5, 3] }}
+  names={{ D: "D" }}
+  mistakes={[
+    { expr: "D^3", hint: "Apply your operator to u(t)t²: the third derivative is 2δ(t), twice too much." },
+    { expr: "2*D^3", hint: "Apply your operator to u(t)t²: the third derivative is 2δ(t), so 2D³ gives 4δ(t). Divide instead of multiplying." },
+    { expr: "D^2/2", hint: "Apply your operator to u(t)t²: the second derivative is 2u(t), still a step. The delta function appears only at the third derivative." }
+  ]} />
+
+<Solution>
+
+**The idea.** The impulse response of an operator of order $n$ has its first jump in the derivative of order $n - 1$. So count the derivatives needed to reach a delta function, then fix the coefficients so that $p(D)w = \delta$ exactly.
+
+<Step title="1. A jump in the value">
+
+$2u(t)$ jumps itself, so the operator is of first order, $aD + bI$:
+
+<Formula label="First order" tex="(aD + bI)\,(2u) = 2a\,\delta(t) + 2b\,u(t)" cite="solutions" at="Problem 24(d)(i), p. 1" />
+
+This is $\delta(t)$ when $b = 0$ and $a = \frac{1}{2}$: $p(D) = \frac{1}{2}D$.
+
+</Step>
+
+<Step title="2. A jump in the slope">
+
+$w = u(t)\,t$ has no jump, but its derivative $\dot w = u(t)$ has, so the operator is of second order, $a_2D^2 + a_1D + a_0I$. Since $\ddot w = \delta(t)$,
+
+<Formula label="Second order" tex="(a_2D^2 + a_1D + a_0I)\,\bigl(u(t)\,t\bigr) = a_2\,\delta(t) + a_1\,u(t) + a_0\,u(t)\,t" cite="solutions" at="Problem 24(d)(ii), p. 1" />
+
+which is $\delta(t)$ when $a_2 = 1$ and $a_1 = a_0 = 0$: $p(D) = D^2$. (MIT's first argument reaches the same by noting that for $t > 0$ the function $t$ must solve the homogeneous equation, $a_1 + a_0t = 0$, and that the slope at $0^+$ must be $1/a_2$.)
+
+</Step>
+
+<Step title="3. A jump in the second derivative">
+
+$w = u(t)\,t^2$ has $\dot w = 2u(t)\,t$, $\ddot w = 2u(t)$ and third derivative $2\delta(t)$: a third-order operator. As before the lower terms would leave a step, a ramp and a parabola behind, so their coefficients are zero, and $a_3\cdot 2\delta(t) = \delta(t)$ gives $a_3 = \frac{1}{2}$:
+
+<Formula label="Third order" tex="p(D) = \frac{1}{2}D^3, \qquad \frac{1}{2}D^3\bigl(u(t)\,t^2\bigr) = \delta(t)" cite="solutions" at="Problem 24(d)(iii), p. 2" />
+
+</Step>
+
+<Step title="Check the result">
+
+On the lesson's route the transfer function $1/p(s)$ is the Laplace transform of $w$. The transforms of $2$, $t$ and $t^2$ are $\dfrac{2}{s}$, $\dfrac{1}{s^2}$ and $\dfrac{2}{s^3}$, and $1$ divided by these gives $\dfrac{s}{2}$, $s^2$ and $\dfrac{s^3}{2}$: the same three polynomials.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 25
+
+<Exercise id="p25" title="Convolution" points={24} mit="Part II, Problem 25">
+
+The convolution of two functions is
+
+<Formula label="Convolution" tex="w(t) * q(t) = \int_0^{t}w(t - \tau)\,q(\tau)\,d\tau" cite="solutions" at="Problem 25(a), p. 2" />
+
+([the lesson on convolution](/courses/18-03/convolution) writes the variable of integration as $u$; here $u$ is the unit step, so this page writes $\tau$, as MIT does). If $w$ is the unit impulse response of an operator, then $w * q$ is the solution of the equation with input $q(t)$ and rest initial conditions. In this problem every function is taken for $t > 0$.
+
+<Part label="a" points={6}>
+
+The operator $D + kI$ has the unit impulse response $w(t) = e^{-kt}$ for $t > 0$ (MIT's Part I, Problem 24, whose answer is printed on the sheet). Let $q(t) = \cos\omega t$. Compute $w(t) * q(t)$, and verify that it is the solution of $\dot x + kx = q(t)$ with rest initial conditions.
+
+<Hint>
+
+Write the integral out: $\int_0^t e^{-k(t - \tau)}\cos\omega\tau\,d\tau$. The factor $e^{-kt}$ does not depend on $\tau$.
+
+</Hint>
+
+<Hint>
+
+$e^{k\tau}\cos\omega\tau$ is the real part of $e^{(k + i\omega)\tau}$, which is easy to integrate. Or integrate by parts twice.
+
+</Hint>
+
+<Answer id="p25-a" label="$w(t) * q(t) =$" expr="(k*cos(omega*t) + omega*sin(omega*t) - k*exp(-k*t))/(k^2 + omega^2)"
+  vars={{ k: [0.5, 2], omega: [0.5, 3], t: [0.3, 3] }}
+  names={{ k: "k", omega: "\\omega", t: "t" }}
+  mistakes={[
+    { expr: "(k*cos(omega*t) + omega*sin(omega*t))/(k^2 + omega^2)", hint: "That is the steady oscillation alone. At t = 0 it equals k/(k² + ω²), not 0, and a convolution integral from 0 to 0 is 0. The lower limit of the integral gives one more term." },
+    { expr: "(k*cos(omega*t) + omega*sin(omega*t) - exp(-k*t))/(k^2 + omega^2)", hint: "At t = 0 your answer is (k − 1)/(k² + ω²), which is zero only for k = 1. Check the factor in front of the exponential." },
+    { expr: "(k*cos(omega*t) - omega*sin(omega*t) - k*exp(-k*t))/(k^2 + omega^2)", hint: "Your slope at t = 0 is (k² − ω²)/(k² + ω²). The equation says ẋ(0) = cos 0 − k x(0) = 1. Check the sign of the sine term when you take the real part." }
+  ]} />
+
+<Solution>
+
+**The idea.** Take $e^{-kt}$ out of the integral and integrate a complex exponential, then take the real part.
+
+<Step title="The integral">
+
+<Formula label="Set up" tex="x(t) = \int_0^{t}e^{-k(t - \tau)}\cos\omega\tau\,d\tau = e^{-kt}\,\operatorname{Re}\int_0^{t}e^{(k + i\omega)\tau}\,d\tau = e^{-kt}\,\operatorname{Re}\,\frac{e^{(k + i\omega)t} - 1}{k + i\omega}" cite="solutions" at="Problem 25(a), p. 2" />
+
+</Step>
+
+<Step title="The real part">
+
+Multiply top and bottom by $k - i\omega$, so the denominator becomes $k^2 + \omega^2$, and take $e^{-kt}$ inside: the numerator is $(k - i\omega)\bigl(\cos\omega t + i\sin\omega t - e^{-kt}\bigr)$, with real part $k\cos\omega t + \omega\sin\omega t - ke^{-kt}$:
+
+<Formula label="The convolution" tex="x(t) = \frac{k\cos\omega t + \omega\sin\omega t - k\,e^{-kt}}{k^2 + \omega^2}" cite="solutions" at="Problem 25(a), p. 2" />
+
+</Step>
+
+<Step title="Verify the equation">
+
+Differentiate:
+
+<Formula label="Its derivative" tex="\dot x = \frac{-k\omega\sin\omega t + \omega^2\cos\omega t + k^2e^{-kt}}{k^2 + \omega^2}" cite="solutions" at="Problem 25(a), p. 2" />
+
+In $\dot x + kx$ the sine terms cancel, the exponentials cancel, and the cosines add to $\dfrac{(\omega^2 + k^2)\cos\omega t}{k^2 + \omega^2} = \cos\omega t$. And $x(0) = \dfrac{k - k}{k^2 + \omega^2} = 0$. So the convolution is the solution that starts from rest: of all the possible transients $ce^{-kt}$ it has picked the one that makes $x(0) = 0$.
+
+</Step>
+
+<Step title="Check the result">
+
+A number, with $k = 1$, $\omega = 1$ and $t = \pi$: the formula gives $\frac{1}{2}(-1 + 0 - e^{-\pi}) = -0.5216$, and computing the integral $\int_0^{\pi}e^{-(\pi - \tau)}\cos\tau\,d\tau$ numerically gives the same value.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+The operator $D^2 + \omega_0^2I$ has the unit impulse response $w(t) = \dfrac{1}{\omega_0}\sin\omega_0t$ for $t > 0$ (again MIT's Part I, Problem 24, where the natural frequency is written $\omega_n$). Let $q(t) = 1$. Compute $w(t) * q(t)$, and verify that it is the solution of $\ddot x + \omega_0^2x = q(t)$ with rest initial conditions.
+
+<Hint>
+
+With $q = 1$ the integral is $\dfrac{1}{\omega_0}\int_0^t\sin\omega_0(t - \tau)\,d\tau$. Mind the sign that the inner $-\tau$ gives when you integrate.
+
+</Hint>
+
+<Answer id="p25-b" label="$w(t) * q(t) =$" expr="(1 - cos(w0*t))/w0^2"
+  vars={{ w0: [0.5, 3], t: [0.3, 3] }}
+  names={{ w0: "\\omega_0", t: "t" }}
+  mistakes={[
+    { expr: "(1 - cos(w0*t))/w0", hint: "Count the factors 1/ω₀: one stands in w, and integrating the sine gives another. As a test, the constant solution of ẍ + ω₀²x = 1 is 1/ω₀², and the answer must swing around it." },
+    { expr: "(cos(w0*t) - 1)/w0^2", hint: "Your answer is never positive. A constant push in the positive direction on a spring at rest moves it in the positive direction. Check the sign from the inner −τ." },
+    { expr: "sin(w0*t)/w0", hint: "That is w itself. Convolving with 1 integrates w from 0 to t." }
+  ]} />
+
+<Solution>
+
+**The idea.** Convolving with $1$ is integrating: $w * 1 = \int_0^t w(t - \tau)\,d\tau$.
+
+<Step title="The integral">
+
+The antiderivative of $\sin\omega_0(t - \tau)$ with respect to $\tau$ is $+\dfrac{1}{\omega_0}\cos\omega_0(t - \tau)$, because the inner derivative is $-\omega_0$:
+
+<Formula label="The convolution" tex="x(t) = \frac{1}{\omega_0}\int_0^{t}\sin\omega_0(t - \tau)\,d\tau = \frac{1}{\omega_0^2}\Bigl[\cos\omega_0(t - \tau)\Bigr]_0^t = \frac{1 - \cos\omega_0t}{\omega_0^2}" cite="solutions" at="Problem 25(b), p. 2" />
+
+</Step>
+
+<Step title="Verify the equation">
+
+$\dot x = \dfrac{1}{\omega_0}\sin\omega_0t$ and $\ddot x = \cos\omega_0t$, so $\ddot x + \omega_0^2x = \cos\omega_0t + 1 - \cos\omega_0t = 1$. Also $x(0) = 0$ and $\dot x(0) = 0$: rest initial conditions. Again the convolution has chosen, among all the solutions $\dfrac{1}{\omega_0^2} + a\cos\omega_0t + b\sin\omega_0t$, the one that starts from rest.
+
+</Step>
+
+<Step title="Check the result">
+
+$\dot x$ is $w$ itself, as in Problem 24(c): this $x$ is the unit step response of the operator, and it agrees with the answer MIT prints for its Part I, Problem 24. It swings between $0$ and $\dfrac{2}{\omega_0^2}$ around the constant solution $\dfrac{1}{\omega_0^2}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={6}>
+
+Compute $t^2 * t$ and $t * t^2$. Are they equal?
+
+<Hint>
+
+In $t^2 * t$ the first function is taken at $t - \tau$ and the second at $\tau$: the integrand is $(t - \tau)^2\,\tau$. Multiply out and integrate each power of $\tau$, treating $t$ as a constant.
+
+</Hint>
+
+<Answer id="p25-c" label="$t^2 * t =$" expr="t^4/12"
+  vars={{ t: [0.5, 3] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "t^3", hint: "That is the ordinary product. A convolution is an integral over τ from 0 to t." },
+    { expr: "t^4/4", hint: "That is the integral of τ²·τ, with both functions taken at the same time τ. One of the two must be taken at t − τ." },
+    { expr: "t^4/3", hint: "That is the integral of t·τ² alone. In a convolution one factor is taken at t − τ, and that brings more terms." }
+  ]} />
+
+<Answer id="p25-c-equal" label="Compared with $t^2 * t$, the convolution $t * t^2$ is"
+  choices={["twice as large", "the same function", "the same apart from its sign", "a different power of t"]} answer={1} />
+
+<Solution>
+
+**The idea.** Write each convolution as an integral of a polynomial in $\tau$.
+
+<Step title="The two integrals">
+
+<Formula label="t² ∗ t" tex="t^2 * t = \int_0^{t}(t - \tau)^2\,\tau\,d\tau = \int_0^{t}\bigl(t^2\tau - 2t\tau^2 + \tau^3\bigr)\,d\tau = \frac{1}{2}t^4 - \frac{2}{3}t^4 + \frac{1}{4}t^4 = \frac{1}{12}t^4" cite="solutions" at="Problem 25(c), p. 2" />
+
+<Formula label="t ∗ t²" tex="t * t^2 = \int_0^{t}(t - \tau)\,\tau^2\,d\tau = \int_0^{t}\bigl(t\tau^2 - \tau^3\bigr)\,d\tau = \frac{1}{3}t^4 - \frac{1}{4}t^4 = \frac{1}{12}t^4" cite="solutions" at="Problem 25(c), p. 2" />
+
+They are equal, as they must be: convolution is commutative.
+
+</Step>
+
+<Step title="Check the result">
+
+With the convolution formula of the lesson: the Laplace transforms of $t^2$ and $t$ are $\dfrac{2}{s^3}$ and $\dfrac{1}{s^2}$, their product is $\dfrac{2}{s^5}$, and that is the transform of $\dfrac{2t^4}{4!} = \dfrac{t^4}{12}$. The lesson's quiz has the same convolution.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={6}>
+
+Compute $(t * t) * t$ and $t * (t * t)$. Are they equal?
+
+<Hint>
+
+Find $t * t$ first. It is a single power of $t$ with a number in front.
+
+</Hint>
+
+<Hint>
+
+Then convolve that result with $t$, once with the result in the first place (taken at $t - \tau$) and once in the second place (taken at $\tau$).
+
+</Hint>
+
+<Answer id="p25-d-tt" label="$t * t =$" expr="t^3/6"
+  vars={{ t: [0.5, 3] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "t^2", hint: "That is the ordinary product. A convolution is an integral over τ from 0 to t." },
+    { expr: "t^3/3", hint: "That is the integral of τ·τ, with both functions taken at the same time τ. One of the two must be taken at t − τ." },
+    { expr: "t^3/2", hint: "That is only the integral of tτ. The integrand (t − τ)τ has a second term." }
+  ]} />
+
+<Answer id="p25-d" label="$(t * t) * t =$" expr="t^5/120"
+  vars={{ t: [0.5, 3] }}
+  names={{ t: "t" }}
+  mistakes={[
+    { expr: "t^5/20", hint: "That is t³ ∗ t. The inner convolution t ∗ t is t³ with a number in front, and that number stays in front." },
+    { expr: "t^5/30", hint: "That is the integral of (τ³/6)·τ, with both functions taken at the same time τ. One of the two must be taken at t − τ." },
+    { expr: "t^3", hint: "That is the ordinary product of three factors t. Each convolution is an integral, and each one raises the power by one more than a product would." }
+  ]} />
+
+<Answer id="p25-d-equal" label="Compared with $(t * t) * t$, the convolution $t * (t * t)$ is"
+  choices={["the same function", "six times as large", "the same apart from its sign", "a different power of t"]} answer={0} />
+
+<Solution>
+
+**The idea.** Do the inner convolution first, then the outer one, in both orders.
+
+<Step title="t ∗ t">
+
+<Formula label="The inner convolution" tex="t * t = \int_0^{t}(t - \tau)\,\tau\,d\tau = \int_0^{t}\bigl(t\tau - \tau^2\bigr)\,d\tau = \frac{1}{2}t^3 - \frac{1}{3}t^3 = \frac{1}{6}t^3" cite="solutions" at="Problem 25(d), p. 2" />
+
+</Step>
+
+<Step title="The two triple convolutions">
+
+In $(t * t) * t$ the result $\frac{1}{6}t^3$ is taken at $t - \tau$:
+
+<Formula label="(t ∗ t) ∗ t" tex="(t * t) * t = \frac{1}{6}\int_0^{t}(t - \tau)^3\,\tau\,d\tau = \frac{1}{6}\Bigl(\frac{1}{2} - \frac{3}{3} + \frac{3}{4} - \frac{1}{5}\Bigr)t^5 = \frac{1}{120}t^5" cite="solutions" at="Problem 25(d), p. 2" />
+
+In $t * (t * t)$ it is taken at $\tau$:
+
+<Formula label="t ∗ (t ∗ t)" tex="t * (t * t) = \frac{1}{6}\int_0^{t}(t - \tau)\,\tau^3\,d\tau = \frac{1}{6}\Bigl(\frac{1}{4} - \frac{1}{5}\Bigr)t^5 = \frac{1}{120}t^5" cite="solutions" at="Problem 25(d), p. 2" />
+
+They are equal: the brackets may be moved, so convolution is associative in this example.
+
+</Step>
+
+<Step title="Check the result">
+
+The bracket of the first integral is $\frac{1}{2} - 1 + \frac{3}{4} - \frac{1}{5} = \frac{1}{20}$, the same as $\frac{1}{4} - \frac{1}{5}$ in the second. With the Laplace transform: $t$ has the transform $\dfrac{1}{s^2}$, three of them multiply to $\dfrac{1}{s^6}$ in any order, and that is the transform of $\dfrac{t^5}{5!} = \dfrac{t^5}{120}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## More practice: MIT's own Part I exercises
+
+Part I of MIT's Problem Set 6 (16 points at MIT, not scored here) has two items. They are not rewritten here.
+
+| For | Exercises |
+|---|---|
+| MIT's Problem 22: periodic solutions and resonance, the lesson on [particular solutions from Fourier series](/courses/18-03/fourier-series-particular-solutions) | Notes exercises 7C-1 and 7C-2 |
+| MIT's Problem 24: step response and impulse response, the lesson on [impulse inputs and the weight function](/courses/18-03/impulse-inputs-delta-function) | A problem of MIT's own: find the unit impulse response and the unit step response of the operators $D + kI$ and $D^2 + \omega_n^2I$. MIT prints the answers at the end of [its sheet](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_pset_06pdf/); the two impulse responses are the ones used in Problem 25 above |
+
+The two Notes exercises come from MIT's "18.03 Notes and Exercises", which is on MIT OpenCourseWare under the same licence as the rest of the course: open [the exercises, section 7](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_7ex/), try them, then compare with [MIT's solutions](https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/resources/mit18_03s10_7sol/) (handwritten; 7C-1 and 7C-2 are on its third page). An exercise number such as 7C-2 means section 7, group C, exercise 2.
+
+For MIT's Problems 23 and 25 the sheet's Part I has nothing. This set's Part I has no exercises from the course textbook (Edwards and Penney); the sheet names sections of that book only as reading, and the textbook is not openly licensed and is not used on this site.

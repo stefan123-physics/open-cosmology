@@ -1,0 +1,682 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for Part II; every answer is still checked here by an independent route:
+# the circuit results from the differential equation itself (a numerical derivative, the root of the reactance,
+# undetermined coefficients instead of the complex gain), the damping ratio from the root of the halving condition,
+# and every Fourier coefficient from its integral (the page finds most of them without integrals).
+
+page: content/year-2/18.03/18-03-problem-set-5.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the four problems of Part II (28 + 12 + 12 + 32)'
+    inputs: {}
+    formula: 28 + 12 + 12 + 32
+    expected: '84'
+    shown: ['four problems (84 points)']
+    source: {cite: solutions, at: 'Part II solutions, pp. 1–2'}
+    origin: mit
+
+  - id: intro-part-i-points
+    kind: fact
+    where: 'Last section: the points of MIT''s Part I (4 + 0 + 4 + 4)'
+    shown: ['(12 points at MIT, not scored here)']
+    source: {cite: solutions, at: 'Part I points, p. 1'}
+    origin: mit
+
+  # ---- Problem 17
+
+  - id: p17-steady-state
+    kind: identity
+    where: 'Problem 17: the steady current I = A sin(ωt − φ), with A of part (d) and tan φ = (Lω − 1/(Cω))/R, satisfies the circuit equation. For a sinusoid Ï = −ω²I, so the left side is (1/C − Lω²)I + Rİ (numerical derivative); both sides divided by V₀ω'
+    formula: ((1/C - L*omega**2)*(V0/sqrt(R**2 + (L*omega - 1/(C*omega))**2)*sin(omega*t - atan((L*omega - 1/(C*omega))/R))) + R*deriv('V0/sqrt(R**2 + (L*omega - 1/(C*omega))**2)*sin(omega*x - atan((L*omega - 1/(C*omega))/R))', 'x', t))/(V0*omega)
+    equals: cos(omega*t)
+    samples:
+      V0: [500, 100, 300, 500]
+      R: [100, 50, 200, 100]
+      L: [1, 0.5, 2, 0.5]
+      C: [0.0001, 0.00005, 0.0002, 0.00002]
+      omega: [100, 200, 60, 200]
+      t: [0.004, 0.002, 0.03, 0.011]
+    tolerance: 1e-6
+    shown: ['Write it as $I(t) = A\sin(\omega t - \phi)$']
+    source: {cite: mit, at: 'Part II, Problem 17, p. 2'}
+    origin: page-own
+
+  - id: p17-b-cap
+    kind: identity
+    answer: p17-b-cap
+    where: 'Problem 17(b), answer box and formula "Condition for current in phase with voltage": against the root in C of the reactance Lω − 1/(Cω), where the phase lag atan((Lω − 1/(Cω))/R) is zero'
+    formula: 1/(L*omega**2)
+    equals: solve('L*omega - 1/(x*omega)', 'x', 0.0000001, 1)
+    samples:
+      L: [0.1, 0.5, 1, 2]
+      omega: [500, 200, 100, 50]
+    tolerance: 1e-6
+    shown: ['C = \frac{1}{L\,\omega^2}']
+    source: {cite: solutions, at: 'Problem 17(b), p. 1'}
+    origin: mit
+
+  - id: p17-b-example
+    where: 'Problem 17(b), check: C in μF for L = 0.5 H, ω = 200 rad/s'
+    inputs: {}
+    formula: 1/(0.5*200**2)*1e6
+    expected: '50'
+    shown: ['F $= 50$ μF']
+    source: {cite: solutions, at: 'Problem 17(b), p. 1'}
+    origin: mit
+
+  - id: p17-b-example-farad
+    where: 'Problem 17(b), check: 0.5 × 200² = 20000'
+    inputs: {}
+    formula: 0.5*200**2
+    expected: '20000'
+    shown: ['= 1/20000 = 50 \times 10^{-6}$ F']
+    source: {cite: solutions, at: 'Problem 17(b), p. 1'}
+    origin: mit
+
+  - id: p17-b-num
+    answer: p17-b-num
+    where: 'Problem 17(b), answer box: C in μF for L = 0.2 H, ω = 500 rad/s, as the root of the reactance'
+    inputs: {}
+    formula: solve('0.2*500 - 1/(x*500)', 'x', 0.0000001, 1)*1e6
+    expected: '20'
+    tolerance: 0.001
+    shown: ['F $= 20$ μF']
+    source: {cite: solutions, at: 'Problem 17(b), p. 1'}
+    origin: page-own
+
+  - id: p17-b-num-farad
+    where: 'Problem 17(b), check: 1/(0.2 × 500²) in farads'
+    inputs: {}
+    formula: 1/(0.2*500**2)
+    expected: '2e-5'
+    shown: ['= 2 \times 10^{-5}$ F']
+    source: {cite: solutions, at: 'Problem 17(b), p. 1'}
+    origin: page-own
+
+  - id: p17-c-omega
+    answer: p17-c-omega
+    where: 'Problem 17(c), answer box: ω of the largest amplitude for L = 1 H, C = 10⁻⁴ F, as the root of the reactance Lω − 1/(Cω)'
+    inputs: {}
+    formula: solve('1*x - 1/(0.0001*x)', 'x', 1, 1000)
+    expected: '100'
+    tolerance: 0.001
+    shown: ['\omega_r = 1/\sqrt{10^{-4}} = 100$ rad/s']
+    source: {cite: solutions, at: 'Problem 17(c) and (d), p. 1'}
+    origin: mit
+
+  - id: p17-c-amp
+    answer: p17-c-amp
+    where: 'Problem 17(c), answer box: the amplitude formula at ω = 100 rad/s for R = 100 Ω, L = 1 H, C = 10⁻⁴ F, V₀ = 500 V'
+    inputs: {}
+    formula: 500/sqrt(100**2 + (1*100 - 1/(0.0001*100))**2)
+    expected: '5'
+    tolerance: 0.001
+    shown: ['I_r = 500/100 = 5$ A']
+    source: {cite: solutions, at: 'Problem 17(c) and (d), p. 1'}
+    origin: mit
+
+  - id: p17-c-lag
+    answer: p17-c-lag
+    where: 'Problem 17(c), answer box: the phase lag atan((Lω − 1/(Cω))/R) at ω = 100 rad/s'
+    inputs: {}
+    formula: atan((1*100 - 1/(0.0001*100))/100)
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['so the phase lag at $\omega_r$ is zero']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: mit
+
+  - id: p17-d-amp
+    kind: identity
+    answer: p17-d-amp
+    where: 'Problem 17(d), answer box and formula "Amplitude of the current": against undetermined coefficients, I = a cos ωt + b sin ωt with P = 1/C − Lω², Q = Rω: Pa + Qb = V₀ω, Pb − Qa = 0, so √(a² + b²) = V₀ω/√(P² + Q²)'
+    formula: V0/sqrt(R**2 + (L*omega - 1/(C*omega))**2)
+    equals: sqrt((V0*omega*(1/C - L*omega**2)/((1/C - L*omega**2)**2 + (R*omega)**2))**2 + (V0*omega*R*omega/((1/C - L*omega**2)**2 + (R*omega)**2))**2)
+    samples:
+      V0: [500, 100, 300, 450]
+      R: [100, 50, 200, 120]
+      L: [1, 0.5, 2, 1.5]
+      C: [0.0001, 0.00005, 0.0002, 0.00015]
+      omega: [100, 250, 60, 290]
+    tolerance: 1e-9
+    shown: ['A(\omega) = \frac{V_0}{\sqrt{R^2 + \bigl(L\omega - \frac{1}{C\omega}\bigr)^2}}']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: mit
+
+  - id: p17-d-omega
+    kind: identity
+    answer: p17-d-omega
+    where: 'Problem 17(d), answer box and formula "Resonant frequency of the current": against the root in ω of the reactance Lω − 1/(Cω)'
+    formula: 1/sqrt(L*C)
+    equals: solve('L*x - 1/(C*x)', 'x', 1, 100000)
+    samples:
+      L: [0.5, 1, 2, 1.5]
+      C: [0.0001, 0.0001, 0.001, 0.0004]
+    tolerance: 1e-6
+    shown: ['\omega_r = \frac{1}{\sqrt{LC}}']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: mit
+
+  - id: p17-d-peak-symmetry
+    kind: identity
+    where: 'Problem 17(d): the amplitude is the same at ω_r·q and ω_r/q, so its one peak is at ω_r (here V₀ = 1)'
+    formula: 1/sqrt(R**2 + (L*(q/sqrt(L*C)) - 1/(C*(q/sqrt(L*C))))**2)
+    equals: 1/sqrt(R**2 + (L*(1/(q*sqrt(L*C))) - 1/(C*(1/(q*sqrt(L*C)))))**2)
+    samples:
+      R: [100, 50, 200, 120]
+      L: [1, 0.5, 2, 1.5]
+      C: [0.0001, 0.00005, 0.0002, 0.00015]
+      q: [1.1, 2, 0.7, 5]
+    tolerance: 1e-9
+    shown: ['The point of that line closest to the origin is $Ri$']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: page-own
+
+  - id: p17-d-ir
+    kind: identity
+    answer: p17-d-ir
+    where: 'Problem 17(d), answer box and formula "Largest amplitude of the current": against the amplitude formula evaluated at ω = 1/√(LC)'
+    formula: V0/R
+    equals: V0/sqrt(R**2 + (L*(1/sqrt(L*C)) - 1/(C*(1/sqrt(L*C))))**2)
+    samples:
+      V0: [500, 100, 300, 450]
+      R: [100, 50, 200, 120]
+      L: [1, 0.5, 2, 1.5]
+      C: [0.0001, 0.00005, 0.0002, 0.00015]
+    tolerance: 1e-9
+    shown: ['I_r = \frac{V_0}{R}']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: mit
+
+  - id: p17-d-below
+    where: 'Problem 17(d), check: the amplitude at ω = 90 rad/s'
+    inputs: {}
+    formula: 500/sqrt(100**2 + (1*90 - 1/(0.0001*90))**2)
+    expected: '4.89'
+    shown: ['$4.89$ A at $\omega = 90$ rad/s']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: page-own
+
+  - id: p17-d-above
+    where: 'Problem 17(d), check: the amplitude at ω = 110 rad/s'
+    inputs: {}
+    formula: 500/sqrt(100**2 + (1*110 - 1/(0.0001*110))**2)
+    expected: '4.91'
+    shown: ['$4.91$ A at $\omega = 110$ rad/s']
+    source: {cite: solutions, at: 'Problem 17(d), p. 1'}
+    origin: page-own
+
+  # ---- Problem 18
+
+  - id: p18-alpha
+    where: 'Problem 18, formula "The constant α": ln 2/(2π)'
+    inputs: {}
+    formula: log(2)/(2*pi)
+    expected: '0.1103178'
+    shown: ['\alpha = \frac{\ln 2}{2\pi} \simeq 0.1103178']
+    source: {cite: mit, at: 'Part II, Problem 18, p. 2'}
+    origin: mit
+
+  - id: p18-zeta
+    kind: identity
+    answer: p18-zeta
+    where: 'Problem 18, answer box and formula "Damping ratio from the number of cycles": against the root in ζ of ζ/√(1 − ζ²) = α/n'
+    formula: (alpha/n)/sqrt(1 + (alpha/n)**2)
+    equals: solve('x/sqrt(1 - x**2) - alpha/n', 'x', 0, 0.999)
+    samples:
+      alpha: [0.1103178, 0.1103178, 0.1103178, 0.1103178]
+      n: [1, 2, 5, 10]
+    tolerance: 1e-7
+    shown: ['\zeta = \frac{\alpha/n}{\sqrt{1 + (\alpha/n)^2}}']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-halving
+    kind: identity
+    where: 'Problem 18: with the formula for ζ, the exponential factor after n cycles, exp(−2πnζ/√(1 − ζ²)), is one half'
+    formula: exp(-2*pi*n*((log(2)/(2*pi*n))/sqrt(1 + (log(2)/(2*pi*n))**2))/sqrt(1 - ((log(2)/(2*pi*n))/sqrt(1 + (log(2)/(2*pi*n))**2))**2))
+    equals: 0.5 + 0*n
+    samples:
+      n: [0.5, 1, 3, 10, 40]
+    tolerance: 1e-9
+    shown: ['\frac{1}{2} = e^{-2\pi n\zeta/\sqrt{1 - \zeta^2}}']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-alpha-over-n
+    where: 'Problem 18, step "Ten cycles": α/n for n = 10'
+    inputs: {}
+    formula: log(2)/(2*pi*10)
+    expected: '0.01103178'
+    shown: ['$\alpha/n = 0.01103178$']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-num
+    answer: p18-num
+    where: 'Problem 18, answer box: ζ for n = 10, as the root of 2π·10·ζ/√(1 − ζ²) = ln 2'
+    inputs: {}
+    formula: solve('2*pi*10*x/sqrt(1 - x**2) - log(2)', 'x', 0, 0.999)
+    expected: '0.01103'
+    shown: ['so $\zeta = 0.0110311$']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-num-digits
+    where: 'Problem 18, step "Ten cycles": ζ to six significant figures, from the formula'
+    inputs: {}
+    formula: (log(2)/(2*pi*10))/sqrt(1 + (log(2)/(2*pi*10))**2)
+    expected: '0.0110311'
+    shown: ['Put $\zeta = 0.0110311$ back']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-ratio
+    answer: p18-ratio
+    where: 'Problem 18, answer box: ζ/(α/n) for n = 10, with ζ from the root of the halving condition'
+    inputs: {}
+    formula: solve('2*pi*10*x/sqrt(1 - x**2) - log(2)', 'x', 0, 0.999)/(log(2)/(2*pi*10))
+    expected: '0.999939'
+    shown: ['1/\sqrt{1 + (\alpha/n)^2} = 0.99993916$']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-ratio-digits
+    where: 'Problem 18, step "Ten cycles": MIT''s 0.99993916'
+    inputs: {}
+    formula: 1/sqrt(1 + (log(2)/(2*pi*10))**2)
+    expected: '0.99993916'
+    shown: ['= 0.99993916$, so']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: mit
+
+  - id: p18-parts
+    where: 'Problem 18, step "Ten cycles": the exact value is smaller by about 6 parts in 100 000'
+    inputs: {}
+    formula: (1 - 1/sqrt(1 + (log(2)/(2*pi*10))**2))*100000
+    expected: '6'
+    shown: ['about 6 parts in 100 000']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: page-own
+
+  - id: p18-check
+    where: 'Problem 18, check: 2π·10·ζ/√(1 − ζ²) for ζ = 0.0110311'
+    inputs: {}
+    formula: 2*pi*10*0.0110311/sqrt(1 - 0.0110311**2)
+    expected: '0.6931'
+    shown: ['= 0.6931 = \ln 2$']
+    source: {cite: solutions, at: 'Problem 18, p. 1'}
+    origin: page-own
+
+  # ---- Problem 20
+
+  - id: p20-a-three-terms
+    where: 'Problem 20(a), check: 1 − 1/3 + 1/5'
+    inputs: {}
+    formula: 1 - 1/3 + 1/5
+    expected: '0.867'
+    shown: ['1 - \frac{1}{3} + \frac{1}{5} = 0.867$']
+    source: {cite: solutions, at: 'Problem 20(a), p. 1'}
+    origin: page-own
+
+  - id: p20-a-target
+    where: 'Problem 20(a), check: π/4'
+    inputs: {}
+    formula: pi/4
+    expected: '0.785'
+    shown: ['$\frac{\pi}{4} = 0.785$']
+    source: {cite: secondHalf, at: 'Part II, Problem 20(b), p. 2'}
+    origin: page-own
+
+  - id: p20-b-a1
+    answer: p20-b-a1
+    where: 'Problem 20(b), answer box: a₁ = (2/π) ∫ f cos t over (0, π), split at π/2'
+    inputs: {}
+    formula: (2/pi)*(integrate('(pi/4)*cos(t)', 't', 0, pi/2) - integrate('(pi/4)*cos(t)', 't', pi/2, pi))
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['with $a_1 = 1$, $a_2 = 0$']
+    source: {cite: solutions, at: 'Problem 20(b), p. 2'}
+    origin: mit
+
+  - id: p20-b-a2
+    answer: p20-b-a2
+    where: 'Problem 20(b), answer box: a₂ from the integral'
+    inputs: {}
+    formula: (2/pi)*(integrate('(pi/4)*cos(2*t)', 't', 0, pi/2) - integrate('(pi/4)*cos(2*t)', 't', pi/2, pi))
+    expected: '0'
+    tolerance: 1e-6
+    shown: ['For even $n$, $\sin(n\pi/2) = 0$.']
+    source: {cite: solutions, at: 'Problem 20(b), p. 2'}
+    origin: mit
+
+  - id: p20-b-a3
+    answer: p20-b-a3
+    where: 'Problem 20(b), answer box: a₃ from the integral'
+    inputs: {}
+    formula: (2/pi)*(integrate('(pi/4)*cos(3*t)', 't', 0, pi/2) - integrate('(pi/4)*cos(3*t)', 't', pi/2, pi))
+    expected: '-0.333'
+    shown: ['$a_3 = -\frac{1}{3} = -0.333$']
+    source: {cite: solutions, at: 'Problem 20(b), p. 2'}
+    origin: mit
+
+  - id: p20-b-a5
+    answer: p20-b-a5
+    where: 'Problem 20(b), answer box: a₅ from the integral'
+    inputs: {}
+    formula: (2/pi)*(integrate('(pi/4)*cos(5*t)', 't', 0, pi/2) - integrate('(pi/4)*cos(5*t)', 't', pi/2, pi))
+    expected: '0.2'
+    tolerance: 1e-6
+    shown: ['$a_5 = \frac{1}{5} = 0.2$']
+    source: {cite: solutions, at: 'Problem 20(b), p. 2'}
+    origin: mit
+
+  - id: p20-b-closed-form
+    kind: identity
+    where: 'Problem 20(b), formula "The coefficients in closed form": sin(nπ/2)/n against the integral, n = 1 to 6'
+    formula: sin(n*pi/2)/n
+    equals: (2/pi)*(integrate('(pi/4)*cos(n*t)', 't', 0, pi/2) - integrate('(pi/4)*cos(n*t)', 't', pi/2, pi))
+    samples:
+      n: [1, 2, 3, 4, 5, 6]
+    tolerance: 1e-7
+    shown: ['= \frac{1}{n}\sin\frac{n\pi}{2}']
+    source: {cite: solutions, at: 'Problem 20(b), p. 2'}
+    origin: mit
+
+  - id: p20-c-formula
+    kind: identity
+    where: 'Problem 20(c), formula "Mean square distance to the target": against the integral of the squared difference over half a period (the integrand is even), with the sliders a₁ and a₃ (A₁ = 1, A₃ = −1/3)'
+    formula: pi**2/16 - (a1*1 + a3*(-1/3)) + 0.5*(a1**2 + a3**2)
+    equals: (1/pi)*(integrate('(pi/4 - a1*cos(t) - a3*cos(3*t))**2', 't', 0, pi/2) + integrate('(-pi/4 - a1*cos(t) - a3*cos(3*t))**2', 't', pi/2, pi))
+    samples:
+      a1: [1, 0.5, 0.2, -0.4]
+      a3: [-0.3333, 0.1, -0.5, 0.6]
+    tolerance: 1e-7
+    shown: ['= \frac{\pi^2}{16} - \sum_n a_nA_n + \frac{1}{2}\sum_n a_n^2']
+    source: {cite: secondHalf, at: 'Part II, Problem 20(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p20-c-squares
+    kind: identity
+    where: 'Problem 20(c), formula "The distance as a sum of separate parabolas": the completed squares against the expanded form, for two sliders'
+    formula: pi**2/16 - 0.5*(1 + 1/9) + 0.5*((a1 - 1)**2 + (a3 + 1/3)**2)
+    equals: pi**2/16 - (a1*1 + a3*(-1/3)) + 0.5*(a1**2 + a3**2)
+    samples:
+      a1: [1, 0.5, 0.2, -0.4]
+      a3: [-0.3333, 0.1, -0.5, 0.6]
+    tolerance: 1e-9
+    shown: ['- \frac{1}{2}\sum_n A_n^2 + \frac{1}{2}\sum_n\,(a_n - A_n)^2']
+    source: {cite: secondHalf, at: 'Part II, Problem 20(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p20-c-d2
+    where: 'Problem 20(c), step "The two boxes": D² = π²/16 − 1/2'
+    inputs: {}
+    formula: pi**2/16 - 0.5
+    expected: '0.1169'
+    shown: ['$D^2 = \pi^2/16 - \frac{1}{2} = 0.1169$']
+    source: {cite: secondHalf, at: 'Part II, Problem 20(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p20-c-rms
+    answer: p20-c-rms
+    where: 'Problem 20(c), answer box: the root mean square distance between f and cos t, from the integral of the squared difference'
+    inputs: {}
+    formula: sqrt((1/pi)*(integrate('(pi/4 - cos(t))**2', 't', 0, pi/2) + integrate('(-pi/4 - cos(t))**2', 't', pi/2, pi)))
+    expected: '0.342'
+    shown: ['so $D = 0.342$']
+    source: {cite: secondHalf, at: 'Part II, Problem 20(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p20-c-eleven
+    where: 'Problem 20(c), check: the distance with the exact coefficients up to n = 11'
+    inputs: {}
+    formula: sqrt(pi**2/16 - 0.5*(1 + 1/9 + 1/25 + 1/49 + 1/81 + 1/121))
+    expected: '0.1442'
+    shown: ['\frac{1}{121}\bigr)} = 0.1442$']
+    source: {cite: secondHalf, at: 'Part II, Problem 20(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p20-c-mathlet
+    kind: fact
+    where: 'Problem 20(c), check: the slider values and the distance shown in the picture of the Mathlet in MIT''s solution'
+    shown: ['$1.000$, $-0.330$, $0.200$, $-0.145$, $0.112$ and $-0.090$', 'the distance $0.14420$']
+    source: {cite: solutions, at: 'Problem 20(c), p. 2'}
+    origin: mit
+
+  # ---- Problem 21
+
+  - id: p21-a-cos
+    answer: p21-a-cos
+    where: 'Problem 21(a), answer box: the coefficient of cos t from the integral formula, (1/π) ∫ 2 sin(t − π/3) cos t over a period'
+    inputs: {}
+    formula: (1/pi)*integrate('2*sin(t - pi/3)*cos(t)', 't', -pi, pi)
+    expected: '-1.732'
+    shown: ['$a_1 = -\sqrt 3 = -1.732$']
+    source: {cite: solutions, at: 'Problem 21(a), p. 2'}
+    origin: mit
+
+  - id: p21-a-sin
+    answer: p21-a-sin
+    where: 'Problem 21(a), answer box: the coefficient of sin t from the integral formula'
+    inputs: {}
+    formula: (1/pi)*integrate('2*sin(t - pi/3)*sin(t)', 't', -pi, pi)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['$b_1 = 1$, and every other coefficient is zero']
+    source: {cite: solutions, at: 'Problem 21(a), p. 2'}
+    origin: mit
+
+  - id: p21-a-amplitude
+    where: 'Problem 21(a), check: the amplitude √(3 + 1)'
+    inputs: {}
+    formula: sqrt(sqrt(3)**2 + 1**2)
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['is $\sqrt{3 + 1} = 2$']
+    source: {cite: solutions, at: 'Problem 21(a), p. 2'}
+    origin: page-own
+
+  - id: p21-b-b1
+    answer: p21-b-b1
+    where: 'Problem 21(b), answer box: b₁ for period 4π from the integral'
+    inputs: {}
+    formula: (1/pi)*(integrate('sin(1*t/2)', 't', 0, pi) - integrate('sin(1*t/2)', 't', pi, 2*pi))
+    expected: '0'
+    tolerance: 1e-6
+    shown: ['so $c_n = 0, 0, 4, 0$']
+    source: {cite: solutions, at: 'Problem 21(b), p. 2'}
+    origin: mit
+
+  - id: p21-b-b2
+    answer: p21-b-b2
+    where: 'Problem 21(b), answer box: b₂ for period 4π from the integral'
+    inputs: {}
+    formula: (1/pi)*(integrate('sin(2*t/2)', 't', 0, pi) - integrate('sin(2*t/2)', 't', pi, 2*pi))
+    expected: '1.273'
+    shown: ['$b_2 = \frac{4}{\pi} = 1.273$']
+    source: {cite: solutions, at: 'Problem 21(b), p. 2'}
+    origin: mit
+
+  - id: p21-b-b4
+    answer: p21-b-b4
+    where: 'Problem 21(b), answer box: b₄ for period 4π from the integral'
+    inputs: {}
+    formula: (1/pi)*(integrate('sin(4*t/2)', 't', 0, pi) - integrate('sin(4*t/2)', 't', pi, 2*pi))
+    expected: '0'
+    tolerance: 1e-6
+    shown: ['So $b_n = 0$ unless $n = 2, 6, 10, \dots$']
+    source: {cite: solutions, at: 'Problem 21(b), p. 2'}
+    origin: mit
+
+  - id: p21-b-b6
+    answer: p21-b-b6
+    where: 'Problem 21(b), answer box: b₆ for period 4π from the integral'
+    inputs: {}
+    formula: (1/pi)*(integrate('sin(6*t/2)', 't', 0, pi) - integrate('sin(6*t/2)', 't', pi, 2*pi))
+    expected: '0.424'
+    shown: ['$b_6 = \frac{4}{3\pi} = 0.424$']
+    source: {cite: solutions, at: 'Problem 21(b), p. 2'}
+    origin: mit
+
+  - id: p21-b-cn
+    kind: identity
+    where: 'Problem 21(b), formula "The coefficients in terms of c_n": (2/(πn))(1 − 2cos(nπ/2) + cos nπ) against the integral, n = 1 to 8'
+    formula: (2/(pi*n))*(1 - 2*cos(n*pi/2) + cos(n*pi))
+    equals: (1/pi)*(integrate('sin(n*t/2)', 't', 0, pi) - integrate('sin(n*t/2)', 't', pi, 2*pi))
+    samples:
+      n: [1, 2, 3, 4, 5, 6, 7, 8]
+    tolerance: 1e-7
+    shown: ['c_n = 1 - 2\cos\frac{n\pi}{2} + \cos n\pi']
+    source: {cite: solutions, at: 'Problem 21(b), p. 2'}
+    origin: mit
+
+  - id: p21-c-factor
+    where: 'Problem 21(c): the common factor 2√2/π'
+    inputs: {}
+    formula: 2*sqrt(2)/pi
+    expected: '0.9003'
+    shown: ['\frac{2\sqrt 2}{\pi} = 0.9003$']
+    source: {cite: solutions, at: 'Problem 21(c), p. 2'}
+    origin: mit
+
+  - id: p21-c-cos1
+    answer: p21-c-cos1
+    where: 'Problem 21(c), answer box: the coefficient of cos t from the integral over one period, +1 on (π/4, 5π/4) and −1 on (5π/4, 9π/4)'
+    inputs: {}
+    formula: (1/pi)*(integrate('cos(t)', 't', pi/4, 5*pi/4) - integrate('cos(t)', 't', 5*pi/4, 9*pi/4))
+    expected: '-0.900'
+    shown: ['So the coefficient of $\cos t$ is $-0.900$']
+    source: {cite: solutions, at: 'Problem 21(c), p. 2'}
+    origin: mit
+
+  - id: p21-c-sin3
+    answer: p21-c-sin3
+    where: 'Problem 21(c), answer box: the coefficient of sin 3t from the integral over one period'
+    inputs: {}
+    formula: (1/pi)*(integrate('sin(3*t)', 't', pi/4, 5*pi/4) - integrate('sin(3*t)', 't', 5*pi/4, 9*pi/4))
+    expected: '-0.300'
+    shown: ['$-\frac{0.9003}{3} = -0.300$']
+    source: {cite: solutions, at: 'Problem 21(c), p. 2'}
+    origin: mit
+
+  - id: p21-c-cos5
+    answer: p21-c-cos5
+    where: 'Problem 21(c), answer box: the coefficient of cos 5t from the integral over one period'
+    inputs: {}
+    formula: (1/pi)*(integrate('cos(5*t)', 't', pi/4, 5*pi/4) - integrate('cos(5*t)', 't', 5*pi/4, 9*pi/4))
+    expected: '0.180'
+    shown: ['$\frac{0.9003}{5} = 0.180$']
+    source: {cite: solutions, at: 'Problem 21(c), p. 2'}
+    origin: mit
+
+  - id: p21-c-signs
+    kind: identity
+    where: 'Problem 21(c), formula "Signs of the shifted terms": the cosine and sine coefficients −(4/(πn)) sin(nπ/4) and (4/(πn)) cos(nπ/4) against the integrals, n = 1, 3, 5, 7 (sum of the two, to test both at once with different weights)'
+    formula: -(4/(pi*n))*sin(n*pi/4) + 2*(4/(pi*n))*cos(n*pi/4)
+    equals: (1/pi)*(integrate('cos(n*t)', 't', pi/4, 5*pi/4) - integrate('cos(n*t)', 't', 5*pi/4, 9*pi/4)) + 2*(1/pi)*(integrate('sin(n*t)', 't', pi/4, 5*pi/4) - integrate('sin(n*t)', 't', 5*pi/4, 9*pi/4))
+    samples:
+      n: [1, 3, 5, 7]
+    tolerance: 1e-7
+    shown: ['-\sin(n\pi/4) & -\beta & -\beta & \beta & \beta']
+    source: {cite: solutions, at: 'Problem 21(c), p. 2'}
+    origin: mit
+
+  - id: p21-d-const
+    answer: p21-d-const
+    where: 'Problem 21(d), answer box: the constant term as the average over the period 1 (the function is 3 on (0, 1/2) and −1 on (1/2, 1))'
+    inputs: {}
+    formula: integrate('3 + 0*t', 't', 0, 0.5) + integrate('-1 + 0*t', 't', 0.5, 1)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['is $\frac{1}{2}(3 + (-1)) = 1$']
+    source: {cite: solutions, at: 'Problem 21(d), p. 2'}
+    origin: mit
+
+  - id: p21-d-sin
+    answer: p21-d-sin
+    where: 'Problem 21(d), answer box: the coefficient of sin 2πt from the integral for period 1 (L = 1/2): 2 ∫ over (0, 1)'
+    inputs: {}
+    formula: 2*(integrate('3*sin(2*pi*t)', 't', 0, 0.5) + integrate('-1*sin(2*pi*t)', 't', 0.5, 1))
+    expected: '2.546'
+    shown: ['is $\frac{8}{\pi} = 2.546$']
+    source: {cite: solutions, at: 'Problem 21(d), p. 2'}
+    origin: mit
+
+  - id: p21-d-period
+    answer: p21-d-period
+    where: 'Problem 21(d), answer box: the period of sq(2πt), 2π divided by 2π'
+    inputs: {}
+    formula: 2*pi/(2*pi)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['The smallest period is $1$:']
+    source: {cite: solutions, at: 'Problem 21(d), p. 2'}
+    origin: mit
+
+  - id: p21-d-quarter
+    where: 'Problem 21(d), check: the series at t = 1/4, 1 + (8/π)(π/4)'
+    inputs: {}
+    formula: 1 + (8/pi)*(pi/4)
+    expected: '3'
+    tolerance: 1e-9
+    shown: ['= 1 + \frac{8}{\pi}\cdot\frac{\pi}{4} = 3$']
+    source: {cite: solutions, at: 'Problem 21(d), p. 2'}
+    origin: page-own
+
+  - id: p21-e-cos3
+    answer: p21-e-cos3
+    where: 'Problem 21(e), answer box: the coefficient of cos 3t of (π/4) sq(t + π/2), from the integral over (−π/2, 3π/2)'
+    inputs: {}
+    formula: (1/pi)*(integrate('(pi/4)*cos(3*t)', 't', -pi/2, pi/2) - integrate('(pi/4)*cos(3*t)', 't', pi/2, 3*pi/2))
+    expected: '-0.333'
+    shown: ['f(t) = \cos t - \frac{1}{3}\cos 3t + \frac{1}{5}\cos 5t - \cdots" cite="solutions" at="Problem 21(e), p. 2"']
+    source: {cite: solutions, at: 'Problem 21(e), p. 2'}
+    origin: mit
+
+  - id: p21-f-sin1
+    answer: p21-f-sin1
+    where: 'Problem 21(f), answer box: the coefficient of sin t of the triangle wave from the half-interval integral (g = t on (0, π/2), π − t on (π/2, π))'
+    inputs: {}
+    formula: (2/pi)*(integrate('t*sin(t)', 't', 0, pi/2) + integrate('(pi - t)*sin(t)', 't', pi/2, pi))
+    expected: '1.273'
+    shown: ['is $\frac{4}{\pi} = 1.273$']
+    source: {cite: solutions, at: 'Problem 21(f), p. 2'}
+    origin: mit
+
+  - id: p21-f-sin3
+    answer: p21-f-sin3
+    where: 'Problem 21(f), answer box: the coefficient of sin 3t of the triangle wave from the half-interval integral'
+    inputs: {}
+    formula: (2/pi)*(integrate('t*sin(3*t)', 't', 0, pi/2) + integrate('(pi - t)*sin(3*t)', 't', pi/2, pi))
+    expected: '-0.141'
+    shown: ['is $-\frac{4}{9\pi} = -0.141$']
+    source: {cite: solutions, at: 'Problem 21(f), p. 2'}
+    origin: mit
+
+  - id: p21-f-coefficients
+    kind: identity
+    where: 'Problem 21(f), formula "Fourier series of the triangle wave": (4/(πn²)) sin(nπ/2) against the half-interval integral, n = 1 to 6'
+    formula: (4/(pi*n**2))*sin(n*pi/2)
+    equals: (2/pi)*(integrate('t*sin(n*t)', 't', 0, pi/2) + integrate('(pi - t)*sin(n*t)', 't', pi/2, pi))
+    samples:
+      n: [1, 2, 3, 4, 5, 6]
+    tolerance: 1e-7
+    shown: ['- \frac{1}{3^2}\sin 3t + \frac{1}{5^2}\sin 5t - \cdots']
+    source: {cite: solutions, at: 'Problem 21(f), p. 2'}
+    origin: mit
+
+  - id: p21-f-top
+    kind: identity
+    where: 'Problem 21(f), check: (4/π)(π²/8) = π/2 (the sum of 1/n² over odd n is π²/8)'
+    formula: (4/pi)*(pi**2/8) + 0*k
+    equals: pi/2 + 0*k
+    samples:
+      k: [1]
+    tolerance: 1e-12
+    shown: ['= \frac{4}{\pi}\cdot\frac{\pi^2}{8} = \frac{\pi}{2}$']
+    source: {cite: solutions, at: 'Problem 21(f), p. 2'}
+    origin: page-own
