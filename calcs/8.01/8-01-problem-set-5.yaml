@@ -1,0 +1,604 @@
+# Calculations on content/year-1/8.01/8-01-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every formula answer is checked here by an independent route:
+# a numerical solve of the motion in time, a numerical integration, or (Problem 5) an integration of particle 1's
+# own velocity from the exact solution of the inverse-cube two-body problem.
+# g = 9.8 m/s² throughout.
+
+page: content/year-1/8.01/8-01-problem-set-5.mdx
+calcs:
+  # ---- Problem 1
+
+  # (a) The answer against a numerical solve: the bullet speed x at which the speed at the edge is zero.
+  - id: p1-umin-by-solve
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Smallest speed of the bullet": against a numerical solve of v_e² = 0 for the bullet speed'
+    formula: (m1 + m2)/m1*sqrt(2*mu*g*d)
+    equals: solve('(m1 * x / (m1 + m2))**2 - 2 * mu * g * d', 'x', 0, 1000000)
+    samples:
+      m1: [0.01, 0.05, 0.010, 1]
+      m2: [1, 3, 1.99, 0.5]
+      mu: [0.2, 0.8, 0.40, 0.33]
+      g: [9, 10, 9.8, 9.81]
+      d: [0.5, 2, 1.5, 7]
+    tolerance: 1e-7
+    shown: ['u_\text{min} = \frac{m_1 + m_2}{m_1}\,\sqrt{2\,\mu_k g\,d}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-total-mass
+    where: 'Problem 1(a), check: mass of bullet and block together (our numbers)'
+    inputs: {m1: 0.010 kg, m2: 1.99 kg}
+    formula: m1 + m2
+    expected: 2.00 kg
+    shown: ['a block of 1.99 kg make 2.00 kg together']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-mass-ratio
+    where: 'Problem 1(a), check: total mass over bullet mass'
+    inputs: {m1: 0.010 kg, m2: 1.99 kg}
+    formula: (m1 + m2) / m1
+    expected: '200'
+    shown: ['200 times the mass of the bullet']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-start-speed
+    where: 'Problem 1(a), check: speed the block needs just after the collision'
+    inputs: {mu: 0.40, g: 9.8 m/s**2, d: 1.5 m}
+    formula: sqrt(2 * mu * g * d)
+    expected: 3.43 m/s
+    shown: ['$\sqrt{2 \times 0.40 \times 9.8 \times 1.5} = 3.43$ m/s']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-umin-example
+    where: 'Problem 1(a), check: u_min for our numbers'
+    inputs: {m1: 0.010 kg, m2: 1.99 kg, mu: 0.40, g: 9.8 m/s**2, d: 1.5 m}
+    formula: (m1 + m2) / m1 * sqrt(2 * mu * g * d)
+    expected: 686 m/s
+    shown: ['$u_\text{min} = 200 \times 3.43 = 686$ m/s']
+    source: {cite: mit, at: 'Problem 1(a) (our own numbers)'}
+    origin: page-own
+
+  # (b) The answer against the motion in time: the slide ends at the time x with V x − μ g x²/2 = d,
+  # the speed is then V − μ g x, and the fall adds the time sqrt(2h/g).
+  - id: p1-xf-by-time
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Where the block lands": against a numerical solve of the slide in time'
+    formula: sqrt((m1*u/(m1 + m2))**2 - 2*mu*g*d)*sqrt(2*h/g)
+    equals: (m1 * u / (m1 + m2) - mu * g * solve('m1 * u / (m1 + m2) * x - mu * g * x**2 / 2 - d', 'x', 0, m1 * u / (m1 + m2) / (mu * g))) * sqrt(2 * h / g)
+    samples:
+      m1: [0.02, 0.05, 0.010, 0.03]
+      m2: [1, 2, 1.99, 1.5]
+      u: [600, 900, 900, 750]
+      mu: [0.1, 0.3, 0.40, 0.2]
+      g: [9, 10, 9.8, 9.81]
+      d: [0.5, 1.5, 1.5, 1]
+      h: [0.5, 2, 0.80, 1.2]
+    tolerance: 1e-7
+    shown: ['x_f = v_e\,t_f = \sqrt{\left(\frac{m_1 u}{m_1 + m_2}\right)^2 - 2\,\mu_k g\,d}\;\sqrt{\frac{2h}{g}}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-after-collision
+    where: 'Problem 1(b), check: speed just after the collision for u = 900 m/s'
+    inputs: {m1: 0.010 kg, m2: 1.99 kg, u: 900 m/s}
+    formula: m1 * u / (m1 + m2)
+    expected: 4.5 m/s
+    shown: ['$900/200 = 4.5$ m/s']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-b-friction-term
+    where: 'Problem 1(b), check: 2 μ_k g d in m²/s²'
+    inputs: {mu: 0.40, g: 9.8 m/s**2, d: 1.5 m}
+    formula: 2 * mu * g * d
+    expected: 11.76 m**2/s**2
+    shown: ['\sqrt{4.5^2 - 11.76}']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-b-edge-speed
+    where: 'Problem 1(b), check: speed at the edge'
+    inputs: {V: 4.5 m/s, k: 11.76 m**2/s**2}
+    formula: sqrt(V**2 - k)
+    expected: 2.91 m/s
+    shown: ['$v_e = \sqrt{4.5^2 - 11.76} = 2.91$ m/s']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-b-fall-time
+    where: 'Problem 1(b), check: time of the fall through 0.80 m'
+    inputs: {h: 0.80 m, g: 9.8 m/s**2}
+    formula: sqrt(2 * h / g)
+    expected: 0.404 s
+    shown: ['$\sqrt{2 \times 0.80/9.8} = 0.404$ s']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-b-xf-example
+    where: 'Problem 1(b), check: x_f for our numbers'
+    inputs: {m1: 0.010 kg, m2: 1.99 kg, u: 900 m/s, mu: 0.40, g: 9.8 m/s**2, d: 1.5 m, h: 0.80 m}
+    formula: sqrt((m1 * u / (m1 + m2))**2 - 2 * mu * g * d) * sqrt(2 * h / g)
+    expected: 1.18 m
+    shown: ['$x_f = 2.91 \times 0.404 = 1.18$ m']
+    source: {cite: mit, at: 'Problem 1(b) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # The answer against the motion in time: the acrobat reaches h0 at the time x with v0 x − g x²/2 = h0
+  # (the first root, before the top), with the speed v0 − g x; the grab scales it by mA/(mA + mB).
+  - id: p2-hf-by-time
+    kind: identity
+    answer: p2-h
+    where: 'Problem 2, answer box and formula "Greatest height of acrobat and clown": against a numerical solve of the climb in time'
+    formula: h0 + (mA/(mA + mB))**2*(v0**2 - 2*g*h0)/(2*g)
+    equals: h0 + (mA / (mA + mB) * (v0 - g * solve('v0 * x - g * x**2 / 2 - h0', 'x', 0, v0 / g)))**2 / (2 * g)
+    samples:
+      mA: [50, 80, 60, 70]
+      mB: [40, 70, 40, 0.001]
+      g: [9, 10, 9.8, 9.81]
+      h0: [1, 3, 3.0, 2]
+      v0: [10, 15, 10, 12]
+    tolerance: 1e-7
+    shown: ['= h_0 + \left(\frac{m_A}{m_A + m_B}\right)^2 \frac{v_0^2 - 2\,g\,h_0}{2g}']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-alone
+    where: 'Problem 2, check: height the acrobat reaches alone'
+    inputs: {v0: 10 m/s, g: 9.8 m/s**2}
+    formula: v0**2 / (2 * g)
+    expected: 5.10 m
+    shown: ['$10^2/19.6 = 5.10$ m']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-two-g-h0
+    where: 'Problem 2, check: 2 g h0'
+    inputs: {g: 9.8 m/s**2, h0: 3.0 m}
+    formula: 2 * g * h0
+    expected: 58.8 m**2/s**2
+    shown: ['$v_1^2 = 100 - 58.8 = 41.2\ \text{m}^2/\text{s}^2$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-v1-squared
+    where: 'Problem 2, check: v1²'
+    inputs: {v0: 10 m/s, g: 9.8 m/s**2, h0: 3.0 m}
+    formula: v0**2 - 2 * g * h0
+    expected: 41.2 m**2/s**2
+    shown: ['$v_1^2 = 100 - 58.8 = 41.2\ \text{m}^2/\text{s}^2$']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-v1
+    where: 'Problem 2, check: speed of the acrobat at the platform'
+    inputs: {v0: 10 m/s, g: 9.8 m/s**2, h0: 3.0 m}
+    formula: sqrt(v0**2 - 2 * g * h0)
+    expected: 6.42 m/s
+    shown: ['so $v_1 = 6.42$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-mass-factor
+    where: 'Problem 2, check: mA/(mA + mB)'
+    inputs: {mA: 60 kg, mB: 40 kg}
+    formula: mA / (mA + mB)
+    expected: '0.60'
+    shown: ['$v_2 = 0.60 \times 6.42 = 3.85$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-v2
+    where: 'Problem 2, check: speed just after the grab'
+    inputs: {mA: 60 kg, mB: 40 kg, v0: 10 m/s, g: 9.8 m/s**2, h0: 3.0 m}
+    formula: mA / (mA + mB) * sqrt(v0**2 - 2 * g * h0)
+    expected: 3.85 m/s
+    shown: ['$v_2 = 0.60 \times 6.42 = 3.85$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-extra-height
+    where: 'Problem 2, check: height gained after the grab, (mA/(mA + mB))² v1²/(2g)'
+    inputs: {f: 0.36, k: 41.2 m**2/s**2, g: 9.8 m/s**2}
+    formula: f * k / (2 * g)
+    expected: 0.757 m
+    shown: ['$0.36 \times 41.2/19.6 = 0.757$ m']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-hf-example
+    where: 'Problem 2, check: h_f for our numbers'
+    inputs: {mA: 60 kg, mB: 40 kg, v0: 10 m/s, g: 9.8 m/s**2, h0: 3.0 m}
+    formula: h0 + (mA / (mA + mB))**2 * (v0**2 - 2 * g * h0) / (2 * g)
+    expected: 3.76 m
+    shown: ['to $h_f = 3.76$ m']
+    source: {cite: mit, at: 'Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-given-stress
+    kind: fact
+    where: 'Problem 3, statement: breaking force per unit of area of the tibia'
+    shown: ['about $1.6 \times 10^8\ \text{N/m}^2$']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-area
+    kind: fact
+    where: 'Problem 3, statement: smallest cross-section of the tibia'
+    shown: ['an area of about $3.2\ \text{cm}^2$']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-mass
+    kind: fact
+    where: 'Problem 3, statement: mass of the person'
+    shown: ['A person of mass $m = 60$ kg']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-height
+    kind: fact
+    where: 'Problem 3, statement: height of the jump'
+    shown: ['from a height $h_0 = 2.0$ m']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-given-d
+    kind: fact
+    where: 'Problem 3, statement: distance by which the centre of mass sinks'
+    shown: ['sinks by just $d = 1.0$ cm']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: mit
+
+  - id: p3-v-squared
+    where: 'Problem 3(a), step "The speed at the ground": v²'
+    inputs: {g: 9.8 m/s**2, h0: 2.0 m}
+    formula: 2 * g * h0
+    expected: 39.2 m**2/s**2
+    shown: ['$v^2 = 2 g h_0 = 2 \times 9.8 \times 2.0 = 39.2\ \text{m}^2/\text{s}^2$']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-v
+    where: 'Problem 3(a), step "The speed at the ground": v'
+    inputs: {g: 9.8 m/s**2, h0: 2.0 m}
+    formula: sqrt(2 * g * h0)
+    expected: 6.261 m/s
+    shown: ['so $v = 6.26$ m/s', '60 \times 6.261/(3.194 \times 10^{-3})']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-tcol-seconds
+    where: 'Problem 3(a), formula "Collision time at constant deceleration", and the unrounded value used in part (b)'
+    inputs: {g: 9.8 m/s**2, h0: 2.0 m, d: 0.010 m}
+    formula: 2 * d / sqrt(2 * g * h0)
+    expected: 3.194e-3 s
+    shown: ['= 3.2 \times 10^{-3}\ \text{s}', '60 \times 6.261/(3.194 \times 10^{-3})']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-tcol
+    answer: p3-a
+    where: 'Problem 3(a), answer box: the collision time in milliseconds, to two significant figures'
+    inputs: {g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm}
+    formula: 2 * d / sqrt(2 * g * h0)
+    expected: 3.2 ms
+    shown: ['That is 3.2 ms.']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-deceleration
+    where: 'Problem 3(a), check: the deceleration'
+    inputs: {g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm}
+    formula: 2 * g * h0 / (2 * d)
+    expected: 1960 m/s**2
+    shown: ['$v/\Delta t_\text{col} = v^2/(2d) = 39.2/0.020 = 1960\ \text{m/s}^2$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-deceleration-in-g
+    where: 'Problem 3(a), check: the deceleration in units of g, equal to h0/d'
+    inputs: {h0: 2.0 m, d: 1.0 cm}
+    formula: h0 / d
+    expected: '200'
+    shown: ['which is 200 times $g$', 'a distance 200 times shorter', '$1 + h_0/d = 1 + 200$', 'about 200 times harder']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-impulse-term
+    where: 'Problem 3(b), step "The numbers": m v / Δt'
+    inputs: {m: 60 kg, g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm}
+    formula: m * sqrt(2 * g * h0) / (2 * d / sqrt(2 * g * h0))
+    expected: 1.176e5 N
+    shown: ['$60 \times 6.261/(3.194 \times 10^{-3}) = 1.176 \times 10^5$ N', 'N_\text{ave} = 1.176 \times 10^5\ \text{N} + 588\ \text{N}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-weight
+    where: 'Problem 3(b), step "The numbers": the weight'
+    inputs: {m: 60 kg, g: 9.8 m/s**2}
+    formula: m * g
+    expected: 588 N
+    shown: ['$60 \times 9.8 = 588$ N', '+ 588\ \text{N} = 1.18 \times 10^5\ \text{N}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-nave
+    answer: p3-b
+    where: 'Problem 3(b), answer box: average force of the ground'
+    inputs: {m: 60 kg, g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm}
+    formula: m * sqrt(2 * g * h0) / (2 * d / sqrt(2 * g * h0)) + m * g
+    expected: 1.18e5 N
+    shown: ['= 1.18 \times 10^5\ \text{N}', 'pass on $1.18 \times 10^5$ N, more than twice']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-nave-second-law
+    where: 'Problem 3(b), check: m (a + g)'
+    inputs: {m: 60 kg, a: 1960 m/s**2, g: 9.8 m/s**2}
+    formula: m * (a + g)
+    expected: 1.18e5 N
+    shown: ['$N_\text{ave} = 60 \times (1960 + 9.8) = 1.18 \times 10^5$ N']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-nave-four-figures
+    where: 'Problem 3(c): N_ave to four figures, from the form m g (1 + h0/d)'
+    inputs: {m: 60 kg, g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm}
+    formula: m * g * (1 + h0 / d)
+    expected: 1.182e5 N
+    shown: ['\frac{1.182 \times 10^5}{588}', 'from $1.182 \times 10^5$ N to $1.176 \times 10^5$ N']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ratio
+    answer: p3-c
+    where: 'Problem 3(c), answer box: N_ave over the weight'
+    inputs: {h0: 2.0 m, d: 1.0 cm}
+    formula: 1 + h0 / d
+    expected: '201'
+    shown: ['= 201']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-gravity-share
+    where: 'Problem 3(c): the weight as a percentage of N_ave'
+    inputs: {h0: 2.0 m, d: 1.0 cm}
+    formula: 100 / (1 + h0 / d)
+    expected: '0.5'
+    shown: ['a change of half a percent']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-area-si
+    where: 'Problem 3(d): the area in m²'
+    inputs: {A: 3.2 cm**2}
+    formula: A
+    expected: 3.2e-4 m**2
+    shown: ['$3.2\ \text{cm}^2 = 3.2 \times 10^{-4}\ \text{m}^2$', '\times 3.2 \times 10^{-4}\ \text{m}^2 = 5.1', '\text{N}/(3.2 \times 10^{-4}\ \text{m}^2)']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-breaking-force
+    where: 'Problem 3(d), formula "Breaking force of one tibia"'
+    inputs: {s: 1.6e8 N/m**2, A: 3.2 cm**2}
+    formula: s * A
+    expected: 5.1e4 N
+    shown: ['= 5.1 \times 10^4\ \text{N}', 'still above $5.1 \times 10^4$ N']
+    source: {cite: mit, at: 'Problem 3 (MIT''s numbers; the solution is our own)'}
+    origin: page-own
+
+  - id: p3-force-per-leg
+    where: 'Problem 3(d): half of N_ave'
+    inputs: {m: 60 kg, g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm}
+    formula: m * g * (1 + h0 / d) / 2
+    expected: 5.9e4 N
+    shown: ['half, $5.9 \times 10^4$ N', '$5.9 \times 10^4\ \text{N}/(3.2 \times 10^{-4}\ \text{m}^2)']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-two-legs-limit
+    where: 'Problem 3(d): breaking force of two tibias together'
+    inputs: {s: 1.6e8 N/m**2, A: 3.2 cm**2}
+    formula: 2 * s * A
+    expected: 1.02e5 N
+    shown: ['both legs together can take $1.02 \times 10^5$ N at most']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ratio-one-leg
+    where: 'Problem 3(d): N_ave over the breaking force of one tibia ("more than twice")'
+    inputs: {m: 60 kg, g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm, s: 1.6e8 N/m**2, A: 3.2 cm**2}
+    formula: m * g * (1 + h0 / d) / (s * A)
+    expected: '2.3'
+    shown: ['more than twice the breaking force']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-stress-two-legs
+    where: 'Problem 3(d), check: force per unit of area in each bone on two legs'
+    inputs: {m: 60 kg, g: 9.8 m/s**2, h0: 2.0 m, d: 1.0 cm, A: 3.2 cm**2}
+    formula: m * g * (1 + h0 / d) / 2 / A
+    expected: 1.8e8 N/m**2
+    shown: ['= 1.8 \times 10^8\ \text{N/m}^2$']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-soft-landing
+    where: 'Problem 3(d), check: N_ave for d = 1.0 cm over N_ave for d = 10 cm ("about ten times smaller")'
+    inputs: {h0: 2.0 m, d1: 1.0 cm, d2: 10 cm}
+    formula: (1 + h0 / d1) / (1 + h0 / d2)
+    expected: '9.6'
+    shown: ['a force about ten times smaller']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (a) The answer against a numerical integration of x dm with dm = (M/L) dx.
+  - id: p4-uniform-by-integration
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Centre of mass of the uniform rod": against numerical integration'
+    formula: L/2
+    equals: integrate('x * M / L', 'x', 0, L) / M
+    samples:
+      L: [1, 3, 2.4, 0.37]
+      M: [1, 5, 0.6, 12]
+    tolerance: 1e-9
+    shown: ['= \frac{L}{2}\,\hat i']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # (b) λ0 against the numerical integral of x³/L³ from 0 to L, which must equal M/λ0.
+  - id: p4-lambda0-by-integration
+    kind: identity
+    answer: p4-b-lambda
+    where: 'Problem 4(b), answer box and formula "Total mass of the rod": against numerical integration of the density'
+    formula: 4*M/L
+    equals: M / integrate('x**3 / L**3', 'x', 0, L)
+    samples:
+      L: [1, 3, 2.4, 0.37]
+      M: [1, 5, 0.6, 12]
+    tolerance: 1e-9
+    shown: ['\lambda_0 = \frac{4M}{L}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # (b) x_cm against the ratio of the two numerical integrals; the constant lam cancels.
+  - id: p4-xcm-by-integration
+    kind: identity
+    answer: p4-b-x
+    where: 'Problem 4(b), answer box and formula "Centre of mass of the rod that grows heavier": against the ratio of two numerical integrals'
+    formula: 4*L/5
+    equals: integrate('x * lam * x**3 / L**3', 'x', 0, L) / integrate('lam * x**3 / L**3', 'x', 0, L)
+    samples:
+      L: [1, 3, 2.4, 0.37]
+      lam: [4, 6.67, 1, 130]
+    tolerance: 1e-9
+    shown: ['= \frac{4L}{5}\,\hat i']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # The pattern for a density that grows as x^n, checked for n = 2 (MIT's Example 10.3) and other n.
+  - id: p4-pattern-lambda0
+    kind: identity
+    where: 'Problem 4(b), check: λ0 = (n+1) M/L for a density λ0 x^n/L^n'
+    formula: (n + 1) * M / L
+    equals: M / integrate('x**n / L**n', 'x', 0, L)
+    samples:
+      n: [2, 3, 1, 5.5]
+      L: [1, 3, 2.4, 0.37]
+      M: [1, 5, 0.6, 12]
+    tolerance: 1e-9
+    shown: ['$\lambda_0 = (n+1)\,M/L$']
+    source: {cite: mit, at: 'Problem 4(b) (our own remark)'}
+    origin: page-own
+
+  - id: p4-pattern-xcm
+    kind: identity
+    where: 'Problem 4(b), check: x_cm = (n+1) L/(n+2) for a density λ0 x^n/L^n'
+    formula: (n + 1) * L / (n + 2)
+    equals: integrate('x * x**n', 'x', 0, L) / integrate('x**n', 'x', 0, L)
+    samples:
+      n: [2, 3, 1, 5.5]
+      L: [1, 3, 2.4, 0.37]
+    tolerance: 1e-9
+    shown: ['$x_\text{cm} = (n+1)\,L/(n+2)$']
+    source: {cite: mit, at: 'Problem 4(b) (our own remark)'}
+    origin: page-own
+
+  - id: p4-notes-example
+    kind: fact
+    where: 'Problem 4(b), check: results of Example 10.3 of the course notes for a density that grows as x²'
+    shown: ['$\lambda_0 = 3M/L$ and $x_\text{cm} = 3L/4$']
+    source: {cite: reading1, at: 'Example 10.3, Eqs. (10.5.13) and (10.5.14), p. 10-9'}
+    origin: mit
+
+  # ---- Problem 5
+
+  # The answer against the motion itself. For an inverse-cube attraction of strength kf (force kf/r³) the
+  # separation obeys r² = d² − 2 d v0 x + (v0² − w²) x², with x the time since t0 and w² = kf/(μ d²)
+  # (μ the reduced mass): d²(r²)/dt² is constant for this force law. The collision is at x = d/(v0 + w),
+  # so a given collision time fixes w = d/(t1 − t0) − v0. Particle 1 has the velocity
+  # V_cm − (m2/(m1 + m2)) dr/dt. Its integral over the whole trip must equal L.
+  - id: p5-distance-by-integration
+    kind: identity
+    answer: p5-dist
+    where: 'Problem 5, answer box and formula "Distance travelled by particle 1": against numerical integration of the velocity of particle 1 in the exact inverse-cube motion'
+    formula: (m2*d + m1*v0*(t1 - t0))/(m1 + m2)
+    equals: integrate('m1 * v0 / (m1 + m2) - m2 / (m1 + m2) * (-d * v0 + (v0**2 - (d / (t1 - t0) - v0)**2) * x) / sqrt(d**2 - 2 * d * v0 * x + (v0**2 - (d / (t1 - t0) - v0)**2) * x**2)', 'x', 0, t1 - t0)
+    samples:
+      m1: [1, 2, 1.0, 5, 1.5]
+      m2: [3, 5, 3.0, 0.2, 4]
+      d: [10, 20, 12, 15, 11]
+      v0: [1, 2, 2.0, 1.5, 0]
+      t0: [0, 1, 0, 2.5, 0.7]
+      t1: [2, 3, 4.0, 9, 3.3]
+    tolerance: 1e-6
+    shown: ['L = X_\text{cm}(t_1) - 0 = \frac{m_2\,d + m_1 v_0\,(t_1 - t_0)}{m_1 + m_2}']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-cm-start
+    where: 'Problem 5, check: distance from particle 1 to the centre of mass at t0 (our numbers)'
+    inputs: {m1: 1.0 kg, m2: 3.0 kg, d: 12 m}
+    formula: m2 * d / (m1 + m2)
+    expected: 9.0 m
+    shown: ['$3.0 \times 12/4.0 = 9.0$ m']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-cm-speed
+    where: 'Problem 5, check: speed of the centre of mass'
+    inputs: {m1: 1.0 kg, m2: 3.0 kg, v0: 2.0 m/s}
+    formula: m1 * v0 / (m1 + m2)
+    expected: 0.50 m/s
+    shown: ['$1.0 \times 2.0/4.0 = 0.50$ m/s']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-cm-distance
+    where: 'Problem 5, check: distance the centre of mass covers in 4.0 s'
+    inputs: {V: 0.50 m/s, t: 4.0 s}
+    formula: V * t
+    expected: 2.0 m
+    shown: ['so it covers 2.0 m']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-L-example
+    where: 'Problem 5, check: L for our numbers'
+    inputs: {m1: 1.0 kg, m2: 3.0 kg, d: 12 m, v0: 2.0 m/s, t: 4.0 s}
+    formula: (m2 * d + m1 * v0 * t) / (m1 + m2)
+    expected: 11 m
+    shown: ['$L = 9.0 + 2.0 = 11$ m']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-particle-2
+    where: 'Problem 5, check: distance particle 2 travels'
+    inputs: {d: 12 m, L: 11 m}
+    formula: d - L
+    expected: 1.0 m
+    shown: ['the remaining 1.0 m']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-no-attraction
+    where: 'Problem 5, check: distance at constant speed'
+    inputs: {v0: 2.0 m/s, t: 4.0 s}
+    formula: v0 * t
+    expected: 8.0 m
+    shown: ['$2.0 \times 4.0 = 8.0$ m']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
