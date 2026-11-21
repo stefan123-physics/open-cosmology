@@ -1,0 +1,1388 @@
+# Calculations on content/year-2/8.033/8-033-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# a numerical integral, a numerical solve of the defining condition, a derivative, or a second physical argument.
+# Unless a unit is given, quantities are pure numbers: ages in units of 1/H0 or in Gyr, lengths in cm in Problem 11.
+
+page: content/year-2/8.033/8-033-problem-set-8.mdx
+calcs:
+  # ---- Problem 1: geodesics
+
+  - id: p1-time
+    kind: identity
+    answer: p1-time
+    where: 'Problem 1(b), answer box: against the numerical integral of the square root of the metric for a clock at rest (a(t) = 0.3 x^(2/3) as an example, comoving speed 0)'
+    formula: t1 - t0
+    equals: integrate('sqrt(1 - (0.3*x**(2/3))**2 * 0**2)', 'x', t0, t1)
+    samples:
+      t0: [1, 2, 3.5, 5]
+      t1: [6, 8, 9, 12]
+    tolerance: 1e-9
+    shown: ['id="p1-time"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # A moving clock ages less: comoving speed w out and back, with a(t) = 0.3 t^(2/3).
+  - id: p1-moving-less
+    where: 'Problem 1(a), solution: a path with comoving speed 0.5 between t = 1 and t = 6 ages less than t1 − t0 = 5 (ratio below 1)'
+    formula: integrate('sqrt(1 - (0.3*x**(2/3))**2 * 0.5**2)', 'x', 1, 6) / 5
+    expected: '0.935'
+    tolerance: 0.001
+    shown: ['a path that moves at all has a square root below 1 for some stretch of time']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: cosmic expansion
+
+  - id: p2-dist
+    kind: identity
+    answer: p2-dist
+    where: 'Problem 2(a), answer box: against the numerical integral of dσ/dx = a along the line'
+    formula: a*x0
+    equals: integrate('sqrt(a**2 + 0*x)', 'x', 0, x0)
+    samples:
+      a: [0.2, 0.7, 1, 1.8, 3]
+      x0: [1, 2.5, 4, 7, 10]
+    tolerance: 1e-9
+    shown: ['id="p2-dist"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-ratio
+    kind: identity
+    answer: p2-ratio
+    where: 'Problem 2(b), answer box: against the ratio of two separations computed with part (a), for several comoving distances'
+    formula: a1/a2
+    equals: integrate('sqrt(a1**2 + 0*x)', 'x', 0, x0) / integrate('sqrt(a2**2 + 0*x)', 'x', 0, x0)
+    samples:
+      a1: [0.2, 0.9, 1.5, 3]
+      a2: [4, 5, 7.5, 9]
+      x0: [1, 3, 6, 10]
+    tolerance: 1e-9
+    shown: ['id="p2-ratio"']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  # H = σ̇/σ for σ = a(t) x0 with the example a = t^(2/3): equals ȧ/a = 2/(3t), whatever x0 is.
+  - id: p2-hubble
+    kind: identity
+    where: 'Problem 2(c), solution: σ̇/σ for σ = a(t) x0 with a = t^(2/3) equals ȧ/a = 2/(3t), for every x0'
+    formula: deriv('x**(2/3)*x0', 'x', t) / (t**(2/3)*x0)
+    equals: 2/(3*t)
+    samples:
+      t: [0.5, 1, 2, 5]
+      x0: [1, 3, 6, 10]
+    tolerance: 1e-6
+    shown: ['H = \frac{\dot\sigma}{\sigma} = \frac{\dot a\,x_0}{a\,x_0} = \frac{\dot a}{a}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3, part I: escape speed
+
+  # The potential energy is minus the work to pull the masses apart: ∫ from a to infinity of GMm/x² dx,
+  # computed with u = 1/x as ∫ from 0 to 1/a of GMm du.
+  - id: p3-energy
+    kind: identity
+    answer: p3-energy
+    where: 'Problem 3 I(a), answer box: against the kinetic energy minus the work needed to separate the masses (numerical integral of the force)'
+    formula: m*v**2/2 - G*M*m/a
+    equals: m*v**2/2 - integrate('G*M*m + 0*x', 'x', 0, 1/a)
+    samples:
+      m: [0.5, 1, 1.5, 2]
+      v: [1, 2, 3.5, 5]
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+      a: [1, 2, 3, 4]
+    tolerance: 1e-9
+    shown: ['id="p3-energy"']
+    source: {cite: mit, at: 'Problem 3 I(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-force
+    kind: identity
+    where: 'Problem 3 I(a), check: the derivative of the potential energy −GMm/a with respect to a is the size of the force GMm/a²'
+    formula: deriv('-G*M*m/x', 'x', a)
+    equals: G*M*m/a**2
+    samples:
+      m: [0.5, 1, 1.5, 2]
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+      a: [1, 2, 3, 4]
+    tolerance: 1e-6
+    shown: ['$GMm/a$ is a force $GMm/a^2$ times a distance']
+    source: {cite: mit, at: 'Problem 3 I(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-escape
+    kind: identity
+    answer: p3-escape
+    where: 'Problem 3 I(b), answer box: against a numerical solve of E/m = v²/2 − GM/a = 0'
+    formula: sqrt(2*G*M/a)
+    equals: solve('x**2/2 - G*M/a', 'x', 0, 100)
+    samples:
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+      a: [1, 2, 3, 4]
+    tolerance: 1e-8
+    shown: ['id="p3-escape"']
+    source: {cite: mit, at: 'Problem 3 I(b) (our own solution)'}
+    origin: page-own
+
+  # The travel time from 0 to a at the local escape speed, ∫ da / sqrt(2GM/a), must equal t.
+  - id: p3-a-of-t
+    kind: identity
+    answer: p3-a-of-t
+    where: 'Problem 3 I(c), answer box: against a numerical solve of (travel time from 0 to x at the escape speed) = t, with the travel time (2/3) x^(3/2)/sqrt(2GM)'
+    formula: (9*G*M/2)**(1/3)*t**(2/3)
+    equals: solve('2/3*x**1.5/sqrt(2*G*M) - t', 'x', 0, 1000)
+    samples:
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+      t: [0.5, 1, 2.5, 4]
+    tolerance: 1e-8
+    shown: ['id="p3-a-of-t"']
+    source: {cite: mit, at: 'Problem 3 I(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-of-t-ode
+    kind: identity
+    where: 'Problem 3 I(c), solution: the result obeys da/dt = sqrt(2GM/a) (numerical derivative)'
+    formula: deriv('(9*G*M/2)**(1/3)*x**(2/3)', 'x', t)
+    equals: sqrt(2*G*M/((9*G*M/2)**(1/3)*t**(2/3)))
+    samples:
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+      t: [0.5, 1, 2.5, 4]
+    tolerance: 1e-6
+    shown: ['\quad\Longrightarrow\quad a(t) = \left(\frac{9GM}{2}\right)^{1/3}t^{2/3}']
+    source: {cite: mit, at: 'Problem 3 I(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-age
+    kind: identity
+    answer: p3-age
+    where: 'Problem 3 I(d), answer box: against the numerical integral of da/v from 0 to a0, with v the escape speed at each distance'
+    formula: sqrt(2*a0**3/(9*G*M))
+    equals: integrate('sqrt(x/(2*G*M))', 'x', 0, a0)
+    samples:
+      a0: [1, 2, 3, 4]
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+    tolerance: 1e-8
+    shown: ['id="p3-age"']
+    source: {cite: mit, at: 'Problem 3 I(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-age-two-thirds
+    kind: identity
+    where: 'Problem 3 I(d), check: the time is 2/3 of the present distance over the present speed'
+    formula: sqrt(2*a0**3/(9*G*M))
+    equals: 2/3*a0/sqrt(2*G*M/a0)
+    samples:
+      a0: [1, 2, 3, 4]
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+    tolerance: 1e-12
+    shown: ['t = \sqrt{\frac{2a_0^3}{9GM}} = \frac23\,\frac{a_0}{\sqrt{2GM/a_0}}']
+    source: {cite: mit, at: 'Problem 3 I(d) (our own solution)'}
+    origin: page-own
+
+  # E < 0: the kinetic energy E + GMm/a is zero at a = GMm/|E| (E written as −En).
+  - id: p3-amax
+    kind: identity
+    where: 'Problem 3 I(e), solution: the turning distance GMm/|E| against a numerical solve of E + GMm/a = 0'
+    formula: G*M*m/En
+    equals: solve('-En + G*M*m/x', 'x', 0.001, 10000)
+    samples:
+      En: [1, 2, 5, 10]
+      G: [0.5, 1, 1.5, 2]
+      M: [5, 10, 15, 20]
+      m: [0.5, 1, 1.5, 2]
+    tolerance: 1e-8
+    shown: ['$a_{\max} = GMm/|E|$']
+    source: {cite: mit, at: 'Problem 3 I(e) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3, part II: the universe
+
+  - id: p3-blob
+    kind: identity
+    answer: p3-blob
+    where: 'Problem 3 II(a), answer box: against the energy of part I(a) with M = (4π/3)ρa³ put in'
+    formula: m*v**2/2 - 4*pi*G*rho*m*a**2/3
+    equals: m*v**2/2 - G*(4*pi/3*rho*a**3)*m/a
+    samples:
+      m: [0.5, 1, 1.5, 2]
+      v: [1, 2, 3.5, 5]
+      G: [0.5, 1, 1.5, 2]
+      rho: [0.5, 1, 2, 3]
+      a: [1.5, 2, 3, 4]
+    tolerance: 1e-12
+    shown: ['id="p3-blob"']
+    source: {cite: mit, at: 'Problem 3 II(a) (our own solution)'}
+    origin: page-own
+
+  # Independent route: from the energy with E = −k m c²/2, solve for the speed numerically, then H² = (v/a)².
+  - id: p3-friedmann
+    kind: identity
+    answer: p3-friedmann
+    where: 'Problem 3 II(b), answer box: against (v/a)² with v solved numerically from the energy equation, E = −k m c²/2 (m = 1)'
+    formula: 8*pi*G*rho/3 - k*c**2/a**2
+    equals: (solve('x**2/2 - 4*pi*G*rho*a**2/3 + k*c**2/2', 'x', 0, 1000)/a)**2
+    samples:
+      G: [0.5, 1, 1.5, 2]
+      rho: [0.5, 1, 2, 3]
+      k: [0.2, 0.5, 0.8, 1]
+      c: [1, 1.5, 1, 1.2]
+      a: [1, 2, 3, 4]
+    tolerance: 1e-8
+    shown: ['id="p3-friedmann"']
+    source: {cite: mit, at: 'Problem 3 II(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b
+    answer: p3-b
+    where: 'Problem 3 II(c), answer box: the power B = 2/3'
+    formula: 2/3
+    expected: '0.6667'
+    shown: ['id="p3-b"', '\propto t^{2/3}, \qquad B = \frac23']
+    source: {cite: mit, at: 'Problem 3 II(c) (our own solution)'}
+    origin: page-own
+
+  # Check of B by the Friedmann equation: for a = t^(2/3), H² a³ is constant (here 4/9).
+  - id: p3-b-friedmann
+    kind: identity
+    where: 'Problem 3 II(c), check: a = t^(2/3) has H² ∝ a⁻³: (ȧ/a)² a³ = 4/9 at every time'
+    formula: (deriv('x**(2/3)', 'x', t)/t**(2/3))**2 * (t**(2/3))**3
+    equals: 4/9 + 0*t
+    samples:
+      t: [0.5, 1, 2, 5]
+    tolerance: 1e-6
+    shown: ['$H = \dot a/a = \frac23/t$ indeed has $H^2 \propto t^{-2}$']
+    source: {cite: mit, at: 'Problem 3 II(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-age-h
+    kind: identity
+    answer: p3-age-h
+    where: 'Problem 3 II(d), answer box: against the age integral of Problem 5 for matter only, ∫ da/(aH) with H = H a^(−3/2)'
+    formula: 2/(3*H)
+    equals: integrate('sqrt(x)', 'x', 0, 1)/H
+    samples:
+      H: [0.5, 1, 2, 3]
+    tolerance: 1e-8
+    shown: ['id="p3-age-h"']
+    source: {cite: mit, at: 'Problem 3 II(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: solving the Friedmann equation
+
+  - id: p4-photons
+    answer: p4-photons
+    where: 'Problem 4(a), answer box: the power 1/2'
+    formula: 1/2
+    expected: '0.5'
+    shown: ['id="p4-photons"', 'a^2 \propto t \;\Longrightarrow\; a \propto t^{1/2}']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-photons-check
+    kind: identity
+    where: 'Problem 4(a), check: a = t^(1/2) has H² a⁴ constant (1/4)'
+    formula: (deriv('x**(1/2)', 'x', t)/t**(1/2))**2 * (t**(1/2))**4
+    equals: 1/4 + 0*t
+    samples:
+      t: [0.5, 1, 2, 5]
+    tolerance: 1e-6
+    shown: ['$H^2 \propto t^{-2} \propto a^{-4}$']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4-empty
+    answer: p4-empty
+    where: 'Problem 4(b), answer box: the power 1'
+    formula: 2/2
+    expected: '1'
+    shown: ['id="p4-empty"', '\text{constant} \;\Longrightarrow\; a \propto t']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-empty-check
+    kind: identity
+    where: 'Problem 4(b), check: a = t has H² a² constant (1)'
+    formula: (deriv('x', 'x', t)/t)**2 * t**2
+    equals: 1 + 0*t
+    samples:
+      t: [0.5, 1, 2, 5]
+    tolerance: 1e-6
+    shown: ['\frac{da}{dt} = \text{constant}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-vacuum
+    kind: identity
+    answer: p4-vacuum
+    where: 'Problem 4(c), answer box: against its own numerical derivative divided by H0 (so ȧ/a = H0)'
+    formula: exp(H0*t)
+    equals: deriv('exp(H0*x)', 'x', t)/H0
+    samples:
+      H0: [0.2, 0.5, 1, 1.5]
+      t: [0.5, 1, 2, 3]
+    tolerance: 1e-6
+    shown: ['id="p4-vacuum"']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the age of the universe
+
+  - id: p5-matter
+    answer: p5-matter
+    where: 'Problem 5(a), answer box: numerical age integral for matter only'
+    formula: integrate('1/(x*sqrt(x**(-3)))', 'x', 0, 1)
+    expected: '0.6667'
+    shown: ['id="p5-matter"', '| matter only | 0.6667 | 9.32 |']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-photons
+    answer: p5-photons
+    where: 'Problem 5(b), answer box: numerical age integral for photons only'
+    formula: integrate('1/(x*sqrt(x**(-4)))', 'x', 0, 1)
+    expected: '0.5'
+    shown: ['id="p5-photons"', '| photons only | 0.5 | 6.99 |']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-empty
+    answer: p5-empty
+    where: 'Problem 5(c), answer box: numerical age integral for the empty universe'
+    formula: integrate('1/(x*sqrt(x**(-2)))', 'x', 0, 1)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['id="p5-empty"', '| empty | 1 | 13.98 |']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-lcdm
+    answer: p5-lcdm
+    where: 'Problem 5(d), answer box: numerical age integral for Ω_m = 0.3, Ω_Λ = 0.7'
+    formula: integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1)
+    expected: '0.9641'
+    shown: ['id="p5-lcdm"', '0.79682 \times 1.20994 = 0.9641', 'gives 0.9641 as well']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-lcdm-log
+    where: 'Problem 5(d), solution: the form with the logarithm on the sheet of MIT'
+    formula: 2/3*(1 - 0.3)**(-1/2)*log(0.3**(-1/2) + ((1 - 0.3)/0.3)**(1/2))
+    expected: '0.9641'
+    shown: ['0.79682 \times 1.20994 = 0.9641']
+    source: {cite: mit, at: 'Problem 5(d), p. 3'}
+    origin: mit
+
+  - id: p5-lcdm-forms
+    kind: identity
+    where: 'Problem 5(d), statement: the two closed forms and the numerical integral agree for several Ω_m (called w here)'
+    formula: 2/3*(1 - w)**(-1/2)*asinh(((1 - w)/w)**(1/2))
+    equals: integrate('1/sqrt(w/x + (1 - w)*x**2)', 'x', 0, 1)
+    samples:
+      w: [0.1, 0.3, 0.5, 0.9]
+    tolerance: 1e-7
+    shown: ['<Formula label="Age of a flat universe with matter and vacuum energy"']
+    source: {cite: mit, at: 'Problem 5(d), p. 3'}
+    origin: mit
+
+  - id: p5-lcdm-forms-log
+    kind: identity
+    where: 'Problem 5(d), statement: the logarithm form equals the inverse-sinh form'
+    formula: 2/3*(1 - w)**(-1/2)*log(w**(-1/2) + ((1 - w)/w)**(1/2))
+    equals: 2/3*(1 - w)**(-1/2)*asinh(((1 - w)/w)**(1/2))
+    samples:
+      w: [0.1, 0.3, 0.5, 0.9]
+    tolerance: 1e-12
+    shown: ['<Formula label="Age of a flat universe with matter and vacuum energy"']
+    source: {cite: mit, at: 'Problem 5(d), p. 3'}
+    origin: mit
+
+  - id: p5-root-1
+    where: 'Problem 5(d), solution: 0.7^(−1/2)'
+    formula: 0.7**(-1/2)
+    expected: '1.19523'
+    shown: ['$(1 - \Omega_m)^{-1/2} = 0.7^{-1/2} = 1.19523$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-root-2
+    where: 'Problem 5(d), solution: 0.3^(−1/2)'
+    formula: 0.3**(-1/2)
+    expected: '1.82574'
+    shown: ['$\Omega_m^{-1/2} = 1.82574$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-root-3
+    where: 'Problem 5(d), solution and Problem 5(i): (0.7/0.3)^(1/2)'
+    formula: (0.7/0.3)**(1/2)
+    expected: '1.52753'
+    shown: ['$(0.7/0.3)^{1/2} = 1.52753$', '$\sqrt{0.7/0.3} = 1.52753$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-prefactor
+    where: 'Problem 5(d) and 5(i), solution: 2/(3 sqrt(0.7))'
+    formula: 2/(3*sqrt(0.7))
+    expected: '0.79682'
+    shown: ['0.79682 \times 1.20994', '$2/(3\sqrt{0.7}) = 0.79682$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-log
+    where: 'Problem 5(d), solution: the logarithm'
+    formula: log(0.3**(-1/2) + (0.7/0.3)**(1/2))
+    expected: '1.20994'
+    shown: ['\ln\left(1.82574 + 1.52753\right) = 0.79682 \times 1.20994']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-hubble-time
+    where: 'Problem 5(e), solution: the Hubble time for h = 0.7 with the conversion of MIT'
+    formula: 9.7846/0.7
+    expected: '13.978'
+    shown: ['$1/H_0 = 9.7846/0.7 = 13.978$ Gyr']
+    source: {cite: mit, at: 'Problem 5(e), p. 4'}
+    origin: mit
+
+  - id: p5-conversion
+    kind: fact
+    where: 'Problem 5(e), statement: the conversion 1/H0 = 9.7846 Gyr / h (also Lecture 18, slide 7) and H0 = 100 h km/s/Mpc'
+    shown: ['$H_0^{-1} \approx h^{-1} \times 9.7846$ Gyr', '$= 70$ km/s/Mpc']
+    source: {cite: mit, at: 'Problem 5(e), p. 4'}
+    origin: mit
+
+  # The conversion recomputed: 1/(100 km/s/Mpc) in Gyr with the Julian year of pint is 9.778.
+  - id: p5-conversion-julian
+    where: 'Problem 5(e), check: 1/(100 km/s/Mpc) with a year of 365.25 days (the 9.778 of the lesson)'
+    inputs: {H: 100 km/s/Mpc}
+    formula: 1/H
+    expected: 9.778 Gyr
+    shown: ['(9.778, for a year of 365.25 days; MIT''s 9.7846 belongs to a year of 365 days)']
+    source: {cite: reading1, at: 'slide 7'}
+    origin: page-own
+
+  - id: p5-conversion-365
+    where: 'Problem 5(e), check: the same with a year of 365 days gives the 9.7846 of MIT'
+    inputs: {H: 100 km/s/Mpc}
+    formula: 1/H * 365.25/365
+    expected: 9.7846 Gyr
+    shown: ['MIT''s 9.7846 belongs to a year of 365 days']
+    source: {cite: reading1, at: 'slide 7'}
+    origin: page-own
+
+  - id: p5-gyr-matter
+    answer: p5-gyr-matter
+    where: 'Problem 5(e), answer box: matter only'
+    formula: 9.7846/0.7 * integrate('sqrt(x)', 'x', 0, 1)
+    expected: '9.32'
+    shown: ['id="p5-gyr-matter"', '| matter only | 0.6667 | 9.32 |', 'gives 9.32 Gyr against 13.98 Gyr']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5-gyr-photons
+    answer: p5-gyr-photons
+    where: 'Problem 5(e), answer box: photons only'
+    formula: 9.7846/0.7 * integrate('x', 'x', 0, 1)
+    expected: '6.99'
+    shown: ['id="p5-gyr-photons"', '| photons only | 0.5 | 6.99 |']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5-gyr-empty
+    answer: p5-gyr-empty
+    where: 'Problem 5(e), answer box: empty universe'
+    formula: 9.7846/0.7 * 1
+    expected: '13.98'
+    shown: ['id="p5-gyr-empty"', '| empty | 1 | 13.98 |']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5-gyr-lcdm
+    answer: p5-gyr-lcdm
+    where: 'Problem 5(e), answer box: the favoured model'
+    formula: 9.7846/0.7 * integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1)
+    expected: '13.48'
+    shown: ['id="p5-gyr-lcdm"', '| 0.9641 | 13.48 |', 'an age today of 13.48 Gyr']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5-lesson-age
+    where: 'Problem 5(e), check: the same model with the conversion 9.778 of the lesson gives 13.5'
+    formula: 9.778/0.7 * integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1)
+    expected: '13.5'
+    shown: ['finds 13.5 Gyr for the favoured model']
+    source: {cite: reading1, at: 'slide 8 (the lesson''s worked example)'}
+    origin: page-own
+
+  - id: p5-closed-number
+    where: 'Problem 5(f), solution: the dimensionless age of the closed model (Ω_m 0.3, Ω_Λ 0.8, Ω_k −0.1)'
+    formula: integrate('1/sqrt(0.3/x - 0.1 + 0.8*x**2)', 'x', 0, 1)
+    expected: '0.9967'
+    shown: ['= 0.9967, \qquad t_0 = 0.9967 \times 13.978 = 13.93']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5-closed
+    answer: p5-closed
+    where: 'Problem 5(f), answer box: the age of the closed model in Gyr'
+    formula: 9.7846/0.7 * integrate('1/sqrt(0.3/x - 0.1 + 0.8*x**2)', 'x', 0, 1)
+    expected: '13.93'
+    shown: ['id="p5-closed"', '(13.93 against 13.48 Gyr)', 'from 13.48 to 13.93 Gyr']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  # The hint's substitution a = u²: the same integral with a smooth integrand.
+  - id: p5-closed-substitution
+    where: 'Problem 5(f), hint: the integral after a = u², integrand 2u²/sqrt(Ω_m + Ω_k u² + Ω_Λ u⁶)'
+    formula: integrate('2*x**2/sqrt(0.3 - 0.1*x**2 + 0.8*x**6)', 'x', 0, 1)
+    expected: '0.9967'
+    shown: ['the integrand becomes $2u^2/(\Omega_m + \Omega_k u^2 + \Omega_\Lambda u^6)^{1/2}$']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  # Part (g): the rearranged root is the same function.
+  - id: p5-g-rearranged
+    kind: identity
+    where: 'Problem 5(g), formula "The root, rearranged": both sides agree (w = Ω_m, l = Ω_Λ)'
+    formula: w/a + (1 - w - l) + l*a**2
+    equals: 1 + w*(1/a - 1) - l*(1 - a**2)
+    samples:
+      w: [0.3, 1, 0.3, 2]
+      l: [0.7, 0, 0.8, 0.1]
+      a: [0.1, 0.5, 0.8, 0.95]
+    tolerance: 1e-12
+    shown: ['= 1 + \Omega_m\left(\frac1a - 1\right) - \Omega_\Lambda\left(1 - a^2\right)']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  # Part (g) by numbers: the age falls with Ω_m and rises with Ω_Λ (ratios of ages at nearby parameters).
+  - id: p5-g-matter
+    where: 'Problem 5(g): raising Ω_m from 0.3 to 0.4 at Ω_Λ = 0.7 lowers the age (ratio below 1)'
+    formula: integrate('1/sqrt(0.4/x - 0.1 + 0.7*x**2)', 'x', 0, 1) / integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1)
+    expected: '0.946'
+    shown: ['More matter makes the root larger at every $a$, the integrand smaller and the universe **younger**.']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  - id: p5-g-lambda
+    where: 'Problem 5(g): raising Ω_Λ from 0.7 to 0.8 at Ω_m = 0.3 raises the age (ratio above 1)'
+    formula: integrate('1/sqrt(0.3/x - 0.1 + 0.8*x**2)', 'x', 0, 1) / integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1)
+    expected: '1.034'
+    shown: ['More vacuum energy makes the root smaller at every $a$, the integrand larger and the universe **older**.']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  - id: p5-tz
+    kind: identity
+    answer: p5-tz
+    where: 'Problem 5(h), answer box: against the numerical age integral over the scale factor from 0 to 1/(1 + z), matter only'
+    formula: (2/3)*(1 + z)**(-3/2)
+    equals: integrate('1/(x*sqrt(x**(-3)))', 'x', 0, 1/(1 + z))
+    samples:
+      z: [0, 0.5, 3, 6, 10]
+    tolerance: 1e-8
+    shown: ['id="p5-tz"']
+    source: {cite: mit, at: 'Problem 5(h) (our own solution)'}
+    origin: page-own
+
+  - id: p5-tz-direct
+    kind: identity
+    where: 'Problem 5(h), solution: against the integral over redshift itself, cut off at z + 10⁵ (the tail left out is below 10⁻⁶ of the result)'
+    formula: (2/3)*(1 + z)**(-3/2)
+    equals: integrate('(1 + z + (1/x - 1))**(-5/2)/x**2', 'x', 1e-5, 1)
+    samples:
+      z: [0, 0.5, 3, 6, 10]
+    tolerance: 1e-5
+    shown: ['= \frac23\left(1 + z\right)^{-3/2}']
+    source: {cite: mit, at: 'Problem 5(h) (our own solution)'}
+    origin: page-own
+
+  - id: p5-tz-eighth
+    where: 'Problem 5(h), check: at z = 3 the age is 1/8 of the present one'
+    formula: (1/4)**(3/2)
+    expected: '0.125'
+    shown: ['$(1/4)^{3/2} = 1/8$']
+    source: {cite: mit, at: 'Problem 5(h) (our own solution)'}
+    origin: page-own
+
+  - id: p5-ta-formula
+    kind: identity
+    where: 'Problem 5(i), formula "Age at scale factor a": against the numerical age integral from 0 to a (w = Ω_m)'
+    formula: 2/(3*sqrt(1 - w))*asinh(sqrt((1 - w)/w)*a**(3/2))
+    equals: integrate('1/sqrt(w/x + (1 - w)*x**2)', 'x', 0, a)
+    samples:
+      w: [0.3, 0.3, 0.3, 0.5, 0.9]
+      a: [0.001, 0.142857, 1, 0.5, 0.25]
+    tolerance: 1e-7
+    shown: ['<Formula label="Age at scale factor a, flat universe with matter and vacuum energy"']
+    source: {cite: mit, at: 'Problem 5(d), p. 3 (the same integral with the upper limit a; our own step)'}
+    origin: page-own
+
+  - id: p5-z6-a
+    where: 'Problem 5(i), solution: 7^(−3/2)'
+    formula: 7**(-3/2)
+    expected: '0.05399'
+    shown: ['$a^{3/2} = 7^{-3/2} = 0.05399$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z6-arg
+    where: 'Problem 5(i), solution: the argument of the inverse sinh at z = 6'
+    formula: sqrt(0.7/0.3)*7**(-3/2)
+    expected: '0.08248'
+    shown: ['gives 0.08248, and $\sinh^{-1}0.08248 = 0.08239$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z6-asinh
+    where: 'Problem 5(i), solution: the inverse sinh at z = 6'
+    formula: asinh(sqrt(0.7/0.3)*7**(-3/2))
+    expected: '0.08239'
+    shown: ['$\sinh^{-1}0.08248 = 0.08239$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z6-h0t
+    where: 'Problem 5(i), solution: H0 t at z = 6'
+    formula: 2/(3*sqrt(0.7))*asinh(sqrt(0.7/0.3)*7**(-3/2))
+    expected: '0.06565'
+    shown: ['$H_0t = 0.06565$, so $t = 0.06565 \times 13.978 = 0.918$ Gyr']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  # Independent route for the boxes: the numerical age integral up to a = 1/(1 + z).
+  - id: p5-z6
+    answer: p5-z6
+    where: 'Problem 5(i), answer box: the age at z = 6 in Gyr, by numerical integration'
+    formula: 9.7846/0.7 * integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1/7)
+    expected: '0.918'
+    shown: ['id="p5-z6"', '0.06565 \times 13.978 = 0.918$ Gyr']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z1000-a
+    where: 'Problem 5(i), solution: 1001^(−3/2)'
+    formula: 1001**(-3/2)
+    expected: '3.158e-5'
+    shown: ['$a^{3/2} = 1001^{-3/2} = 3.158 \times 10^{-5}$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z1000-arg
+    where: 'Problem 5(i), solution: the argument at z = 1000'
+    formula: sqrt(0.7/0.3)*1001**(-3/2)
+    expected: '4.823e-5'
+    shown: ['the argument is $4.823 \times 10^{-5}$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z1000-h0t
+    where: 'Problem 5(i), solution: H0 t at z = 1000'
+    formula: 2/(3*sqrt(0.7))*asinh(sqrt(0.7/0.3)*1001**(-3/2))
+    expected: '3.843e-5'
+    shown: ['$H_0t = 3.843 \times 10^{-5}$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-z1000
+    answer: p5-z1000
+    where: 'Problem 5(i), answer box: the age at z = 1000 in Myr, by numerical integration (photons neglected)'
+    formula: 1000 * 9.7846/0.7 * integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1/1001)
+    expected: '0.537'
+    shown: ['id="p5-z1000"', '$= 0.537$ Myr, or 537,000 years']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-highz-6
+    where: 'Problem 5(i), check: the high-redshift form at z = 6, in Gyr'
+    formula: 9.7846/0.7 * 2/3 * 0.3**(-1/2) * 7**(-3/2)
+    expected: '0.919'
+    shown: ['It gives 0.919 Gyr at $z = 6$ and 0.537 Myr at $z = 10^3$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-highz-1000
+    where: 'Problem 5(i), check: the high-redshift form at z = 1000, in Myr'
+    formula: 1000 * 9.7846/0.7 * 2/3 * 0.3**(-1/2) * 1001**(-3/2)
+    expected: '0.537'
+    shown: ['It gives 0.919 Gyr at $z = 6$ and 0.537 Myr at $z = 10^3$']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-quasar-fraction
+    where: 'Problem 5(i), check: the age at z = 6 as a fraction of the present age (less than 7%)'
+    formula: integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1/7) / integrate('1/sqrt(0.3/x + 0.7*x**2)', 'x', 0, 1)
+    expected: '0.068'
+    shown: ['less than 7% of its present age']
+    source: {cite: mit, at: 'Problem 5(i) (our own solution)'}
+    origin: page-own
+
+  - id: p5-cmb-slide
+    kind: fact
+    where: 'Problem 5(i) and 6(a): the age at the release of the microwave background on the slide'
+    shown: ['Slide 11 of Lecture 19 gives 379,000 years', '| release of the microwave background | 379,000 years (about $3 \times 10^5$ years) |']
+    source: {cite: reading2, at: 'slide 11'}
+    origin: mit
+
+  # ---- Problem 6: key concepts
+
+  - id: p6-planck
+    where: 'Problem 6(a), table: the Planck time sqrt(ħG/c⁵)'
+    formula: sqrt(hbar*G/c**5)
+    expected: 5.4e-44 s
+    shown: ['$\sqrt{\hbar G/c^5} = 5.4 \times 10^{-44}$ s']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-inflation
+    kind: fact
+    where: 'Problem 6(a), table: inflation in a fraction of a second (slide), of the order of 1e-35 s in typical models (the 8.286 lessons of this site quote times of this order)'
+    shown: ['| inflation | a tiny fraction of a second (of the order of $10^{-35}$ s in typical models) | Lecture 19, slide 11: "fraction of a second" |']
+    source: {cite: reading2, at: 'slide 11'}
+    origin: mit
+
+  - id: p6-history-slides
+    kind: fact
+    where: 'Problem 6(a), table: nucleosynthesis at 3 minutes, last scattering at 3e5 years, galaxy formation at 3e9 years (Lecture 20, slide 31); first stars at about 400 million years and today 13.7 billion years (Lecture 19, slide 11)'
+    shown: ['| primordial nucleosynthesis | about 3 minutes | Lecture 20, slide 31 |', '| first stars | about 400 million years | Lecture 19, slide 11 |', '| typical galaxies | about $3 \times 10^9$ years | Lecture 20, slide 31 |', '| today | 13.7 billion years | Lecture 19, slide 11 |']
+    source: {cite: reading3, at: 'slide 31'}
+    origin: mit
+
+  - id: p6-sun
+    kind: fact
+    where: 'Problem 6(a), table: the Sun is about halfway through a life of about 10 billion years'
+    shown: ['| death of the Sun | about 5 billion years from now, so at roughly 19 billion years | the Sun is about halfway through a life of about 10 billion years |']
+    source: {ref: 'NASA Science, Sun: Facts: the Sun is about 4.5 billion years old and about halfway through its life'}
+    origin: later-data
+
+  - id: p6-sun-age
+    where: 'Problem 6(a), table: 13.7 + 5 billion years, rounded'
+    formula: 13.7 + 5
+    expected: '19'
+    tolerance: 0.5
+    shown: ['at roughly 19 billion years']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-span
+    where: 'Problem 6(a), check: the epochs span more than 60 powers of ten (Planck time to 19 billion years)'
+    inputs: {t: 19e9 yr}
+    formula: log10(t/sqrt(hbar*G/c**5))
+    expected: '61'
+    tolerance: 0.5
+    shown: ['the epochs span more than 60 of them']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-stars
+    kind: fact
+    where: 'Problem 6(b), table: the number of stars in the Milky Way'
+    shown: ['| stars in our Galaxy | at least 100 billion | $10^{11}$ |']
+    source: {ref: 'NASA Science, The Milky Way Galaxy: at least 100 billion stars'}
+    origin: later-data
+
+  - id: p6-sun-light
+    where: 'Problem 6(b), table: light time over one astronomical unit (149,597,870,700 m, exact by definition)'
+    inputs: {d: 149597870700 m}
+    formula: d/c
+    expected: 8.3 min
+    shown: ['| light time to the Sun | 8.3 minutes | $10^{1}$ minutes |']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-pluto-distance
+    kind: fact
+    where: 'Problem 6(b), table: the mean distance of Pluto from the Sun, 39.5 astronomical units'
+    shown: ['(at its mean distance of 39.5 times the Earth''s)']
+    source: {ref: 'NASA Pluto Fact Sheet: semimajor axis 39.48 au'}
+    origin: later-data
+
+  - id: p6-pluto-minutes
+    where: 'Problem 6(b), check: 39.5 × 8.3 minutes'
+    formula: 39.5 * 8.3
+    expected: '328'
+    shown: ['$39.5 \times 8.3$ minutes $= 328$ minutes $= 5.5$ hours']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-pluto-hours
+    where: 'Problem 6(b), table and check: the light time to Pluto in hours'
+    formula: 39.5 * 8.3 / 60
+    expected: '5.5'
+    shown: ['| light time to Pluto | about 5.5 hours', '$= 5.5$ hours']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-proxima
+    kind: fact
+    where: 'Problem 6(b), table: the distance of Proxima Centauri, 4.2 light years (as in the lesson on the twin paradox)'
+    shown: ['| light time to the second closest star (Proxima Centauri) | 4.2 years | $10^{1}$ years |']
+    source: {ref: 'NASA Exoplanet Archive, Proxima Centauri: distance 1.30 pc = 4.2 light years'}
+    origin: later-data
+
+  - id: p6-andromeda
+    kind: fact
+    where: 'Problem 6(b), table: the distance of the Andromeda galaxy, 2.5 million light years'
+    shown: ['| distance to the Andromeda galaxy | 2.5 million light years | $10^{6}$ light years |']
+    source: {ref: 'NASA Science, Messier 31 (The Andromeda Galaxy): 2.5 million light years'}
+    origin: later-data
+
+  - id: p6-log-42
+    where: 'Problem 6(b), check: 4.2 as a power of ten'
+    formula: log10(4.2)
+    expected: '0.62'
+    shown: ['4.2 and 5.5 are $10^{0.62}$ and $10^{0.74}$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-log-55
+    where: 'Problem 6(b), check: 5.5 as a power of ten'
+    formula: log10(5.5)
+    expected: '0.74'
+    shown: ['4.2 and 5.5 are $10^{0.62}$ and $10^{0.74}$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-ladder-1
+    where: 'Problem 6(b), check: from the Sun (8.3 light minutes) to the next star (4.2 light years), a factor of about 3e5'
+    inputs: {d1: 4.2 yr, d2: 8.3 min}
+    formula: d1/d2
+    expected: '3e5'
+    tolerance: 0.5e5
+    shown: ['a factor of about $3 \times 10^5$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-ladder-2
+    where: 'Problem 6(b), check: from the next star to Andromeda, a factor of about 6e5'
+    formula: 2.5e6/4.2
+    expected: '6e5'
+    tolerance: 0.5e5
+    shown: ['another factor of about $6 \times 10^5$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-slides-2005
+    kind: fact
+    where: 'Problem 6(d), table: the 2005 list (Lecture 18, slide 8)'
+    shown: ['| $h$ | 0.70 | 0.7 | 0.7 |', '| dark energy, $\Omega_\Lambda$ | 0.7 | 0.75 | 0.725 |', '| baryons, $\Omega_b$ | 0.05 | 0.04 | 0.045 |', '| dark matter, $\Omega_d$ | 0.25 | 0.21 | 0.23 |']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: p6-slides-2006
+    kind: fact
+    where: 'Problem 6(d), table: the 2006 list (Lecture 19, slide 6)'
+    shown: ['| $h$ | 0.70 | 0.7 | 0.7 |', '| dark energy, $\Omega_\Lambda$ | 0.7 | 0.75 | 0.725 |', '| baryons, $\Omega_b$ | 0.05 | 0.04 | 0.045 |', '| dark matter, $\Omega_d$ | 0.25 | 0.21 | 0.23 |']
+    source: {cite: reading2, at: 'slide 6'}
+    origin: mit
+
+  - id: p6-h
+    answer: p6-h
+    where: 'Problem 6(d), answer box: the middle of the two slide values of h'
+    formula: (0.70 + 0.7)/2
+    expected: '0.7'
+    shown: ['id="p6-h"', '| $h$ | 0.70 | 0.7 | 0.7 |']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: p6-lambda
+    answer: p6-lambda
+    where: 'Problem 6(d), answer box: the middle of the two slide values of Ω_Λ'
+    formula: (0.7 + 0.75)/2
+    expected: '0.725'
+    shown: ['id="p6-lambda"', '| 0.7 | 0.75 | 0.725 |']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: p6-baryon
+    answer: p6-baryon
+    where: 'Problem 6(d), answer box: the middle of the two slide values of Ω_b'
+    formula: (0.05 + 0.04)/2
+    expected: '0.045'
+    shown: ['id="p6-baryon"', '| 0.05 | 0.04 | 0.045 |']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: p6-dark
+    answer: p6-dark
+    where: 'Problem 6(d), answer box: the middle of the two slide values of Ω_d'
+    formula: (0.25 + 0.21)/2
+    expected: '0.23'
+    shown: ['id="p6-dark"', '| 0.25 | 0.21 | 0.23 |']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: mit
+
+  - id: p6-sum-2005
+    where: 'Problem 6(d), check: the 2005 list adds up to 1'
+    formula: 0.05 + 0.25 + 0.7
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$0.05 + 0.25 + 0.7 = 1$']
+    source: {cite: reading1, at: 'slide 8'}
+    origin: page-own
+
+  - id: p6-sum-2006
+    where: 'Problem 6(d), check: the 2006 list adds up to 1'
+    formula: 0.04 + 0.21 + 0.75
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$0.04 + 0.21 + 0.75 = 1$']
+    source: {cite: reading2, at: 'slide 6'}
+    origin: page-own
+
+  - id: p6-dark-ratio
+    where: 'Problem 6(d), check: dark matter is about five times the ordinary matter (0.23/0.045)'
+    formula: 0.23/0.045
+    expected: '5'
+    tolerance: 0.5
+    shown: ['Dark matter is about five times the ordinary matter.']
+    source: {cite: mit, at: 'Problem 6(d) (our own solution)'}
+    origin: page-own
+
+  - id: p6-planck-2018
+    kind: fact
+    where: 'Problem 6(d), check: the Planck 2018 values, rounded (h = 0.674, Ω_Λ = 0.685, Ω_b h² = 0.0224 and Ω_c h² = 0.120, so Ω_b ≈ 0.049 and Ω_c ≈ 0.264)'
+    shown: ['about 0.67, 0.69, 0.05 and 0.26']
+    source: {ref: 'Planck Collaboration 2018, Planck 2018 results. VI. Cosmological parameters, arXiv:1807.06209 (abstract and Table 2)'}
+    origin: later-data
+
+  # ---- Optional Problem 7: the accelerating universe
+
+  - id: p7-values
+    where: 'Optional Problem 7(a), check: the bracket at a = 0.25'
+    formula: 0.3/0.25 + 0.7*0.25**2
+    expected: '1.244'
+    shown: ['1.244 at $a = 0.25$']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-values-2
+    where: 'Optional Problem 7(a), check: the bracket at a = 0.5'
+    formula: 0.3/0.5 + 0.7*0.5**2
+    expected: '0.775'
+    shown: ['0.775 at $a = 0.5$']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-values-3
+    where: 'Optional Problem 7(a), check: the bracket at a = 1.5'
+    formula: 0.3/1.5 + 0.7*1.5**2
+    expected: '1.775'
+    shown: ['1.775 at $a = 1.5$']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the zero of the numerical derivative of the bracket.
+  - id: p7-amin
+    answer: p7-amin
+    where: 'Optional Problem 7(b), answer box: the zero of the derivative of 0.3/a + 0.7a², solved numerically'
+    formula: solve('-0.3/x**2 + 1.4*x', 'x', 0.1, 2)
+    expected: '0.598'
+    shown: ['id="p7-amin"', '\left(\frac{0.3}{1.4}\right)^{1/3} = 0.598']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-amin-closed
+    where: 'Optional Problem 7(b), solution: the closed form (Ω_m/(2Ω_Λ))^(1/3)'
+    formula: (0.3/1.4)**(1/3)
+    expected: '0.598'
+    shown: ['\left(\frac{0.3}{1.4}\right)^{1/3} = 0.598']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-fmin
+    where: 'Optional Problem 7(b), check: the value of the bracket at the minimum'
+    formula: 0.3/(0.3/1.4)**(1/3) + 0.7*(0.3/1.4)**(2/3)
+    expected: '0.752'
+    shown: ['Its value there is 0.752']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-speed-min
+    where: 'Optional Problem 7(b), check: the slowest expansion speed as a fraction of the present one'
+    formula: sqrt(0.3/(0.3/1.4)**(1/3) + 0.7*(0.3/1.4)**(2/3))
+    expected: '0.867'
+    shown: ['$\sqrt{0.752} = 0.867$']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-redshift
+    where: 'Optional Problem 7(b), check: the redshift of the slowest expansion'
+    formula: 1/(0.3/1.4)**(1/3) - 1
+    expected: '0.67'
+    shown: ['$1/0.598 - 1 = 0.67$']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-slope
+    where: 'Optional Problem 7(c), check: the slope of the bracket at a = 1, by numerical derivative'
+    formula: deriv('0.3/x + 0.7*x**2', 'x', 1)
+    expected: '1.1'
+    tolerance: 0.001
+    shown: ['$-\Omega_m + 2\Omega_\Lambda = -0.3 + 1.4 = 1.1$']
+    source: {cite: mit, at: 'Optional Problem 7 (our own solution)'}
+    origin: page-own
+
+  # ---- Optional Problem 8: the cycloid
+
+  # The pair (8.1), (8.2) obeys the Friedmann equation: ȧ = (da/dθ)/(dt/dθ), with H0 = 1 and w = Ω_m, q = θ.
+  - id: p8-cycloid
+    kind: identity
+    where: 'Optional Problem 8(a): the cycloid obeys ȧ² = Ω_m/a − (Ω_m − 1), with numerical derivatives with respect to θ (H0 = 1)'
+    formula: (deriv('w/(w - 1)/2*(1 - cos(x))', 'x', q) / deriv('w/(w - 1)**1.5/2*(x - sin(x))', 'x', q))**2
+    equals: w/(w/(w - 1)/2*(1 - cos(q))) - (w - 1)
+    samples:
+      w: [1.2, 2, 3, 4, 2]
+      q: [0.5, 1, 2, 4, 5.5]
+    tolerance: 1e-6
+    shown: ['<Formula label="Cycloid solution"']
+    source: {cite: mit, at: 'Optional Problem 8, equations (8.1) and (8.2), p. 5'}
+    origin: mit
+
+  # Independent route: twice the numerical time from a = 0 to the largest size, ∫ da / sqrt(Ω_m/a − (Ω_m − 1)).
+  - id: p8-crunch
+    kind: identity
+    answer: p8-crunch
+    where: 'Optional Problem 8(b), answer box: against twice the numerical integral of da/ȧ from 0 to the largest size'
+    formula: pi*m/(m - 1)**(3/2)
+    equals: 2*integrate('1/sqrt(m/x - (m - 1))', 'x', 0, m/(m - 1))
+    samples:
+      m: [1.2, 1.5, 2, 3, 4]
+    tolerance: 1e-6
+    shown: ['id="p8-crunch"']
+    source: {cite: mit, at: 'Optional Problem 8 (our own addition)'}
+    origin: page-own
+
+  - id: p8-crunch-two
+    where: 'Optional Problem 8(b), check: twice the critical density gives H0 t = 2π'
+    formula: pi*2/(2 - 1)**(3/2)
+    expected: '6.28'
+    shown: ['$H_0t = 2\pi = 6.28$ Hubble times']
+    source: {cite: mit, at: 'Optional Problem 8 (our own addition)'}
+    origin: page-own
+
+  # ---- Optional Problem 9: once round
+
+  # χ = H0 sqrt(Ω_m − 1) ∫ dt/a over the whole life, with dt = da/ȧ: twice the integral up to the largest size.
+  - id: p9-round
+    kind: identity
+    where: 'Optional Problem 9: the angle covered from bang to crunch, 2 sqrt(Ω_m − 1) ∫ da/(a ȧ) up to the largest size, equals 2π for every Ω_m (H0 = 1)'
+    formula: 2*sqrt(m - 1)*integrate('1/(x*sqrt(m/x - (m - 1)))', 'x', 0, m/(m - 1))
+    equals: 2*pi + 0*m
+    samples:
+      m: [1.2, 1.5, 2, 3, 4]
+    tolerance: 1e-6
+    shown: ['\chi = \int_0^{2\pi} d\theta = 2\pi']
+    source: {cite: mit, at: 'Optional Problem 9 (our own solution)'}
+    origin: page-own
+
+  # ---- Optional Problem 10: Minkowski space in disguise
+
+  - id: p10-r
+    kind: identity
+    answer: p10-r
+    where: 'Optional Problem 10(a), answer box: R is the root of the coefficient t²r² of the angular part'
+    formula: t*r
+    equals: sqrt(t**2*r**2)
+    samples:
+      t: [0.5, 1, 2, 3]
+      r: [0.2, 0.7, 1.3, 2]
+    tolerance: 1e-12
+    shown: ['id="p10-r"']
+    source: {cite: mit, at: 'Optional Problem 10 (our own solution)'}
+    origin: page-own
+
+  # Independent route: build T up along a line of constant t from r = 0, with ∂T/∂r = t r/sqrt(1 + r²)
+  # (what the dr² coefficient of the metric demands once R = t r).
+  - id: p10-t
+    kind: identity
+    answer: p10-t
+    where: 'Optional Problem 10(a), answer box: against T = t at r = 0 plus the numerical integral of t x/sqrt(1 + x²) from 0 to r'
+    formula: t*sqrt(1 + r**2)
+    equals: t + integrate('t*x/sqrt(1 + x**2)', 'x', 0, r)
+    samples:
+      t: [0.5, 1, 2, 3]
+      r: [0.2, 0.7, 1.3, 2]
+    tolerance: 1e-8
+    shown: ['id="p10-t"']
+    source: {cite: mit, at: 'Optional Problem 10 (our own solution)'}
+    origin: page-own
+
+  - id: p10-metric-tt
+    kind: identity
+    where: 'Optional Problem 10(b): the dt² coefficient, (∂T/∂t)² − (∂R/∂t)² = 1 (numerical derivatives)'
+    formula: deriv('x*sqrt(1 + r**2)', 'x', t)**2 - deriv('x*r', 'x', t)**2
+    equals: 1 + 0*t
+    samples:
+      t: [0.5, 1, 2, 3]
+      r: [0.2, 0.7, 1.3, 2]
+    tolerance: 1e-6
+    shown: ['<Formula label="Time and radial parts"']
+    source: {cite: mit, at: 'Optional Problem 10 (our own solution)'}
+    origin: page-own
+
+  - id: p10-metric-rr
+    kind: identity
+    where: 'Optional Problem 10(b): the dr² coefficient, (∂T/∂r)² − (∂R/∂r)² = −t²/(1 + r²) (numerical derivatives)'
+    formula: deriv('t*sqrt(1 + x**2)', 'x', r)**2 - deriv('t*x', 'x', r)**2
+    equals: -t**2/(1 + r**2)
+    samples:
+      t: [0.5, 1, 2, 3]
+      r: [0.2, 0.7, 1.3, 2]
+    tolerance: 1e-6
+    shown: ['<Formula label="Time and radial parts"']
+    source: {cite: mit, at: 'Optional Problem 10 (our own solution)'}
+    origin: page-own
+
+  # The mixed coefficient: (∂T/∂t)(∂T/∂r) and (∂R/∂t)(∂R/∂r) are equal, so the dt dr terms cancel.
+  - id: p10-metric-tr
+    kind: identity
+    where: 'Optional Problem 10(b): the dt dr terms cancel, (∂T/∂t)(∂T/∂r) = (∂R/∂t)(∂R/∂r) (numerical derivatives)'
+    formula: deriv('x*sqrt(1 + r**2)', 'x', t)*deriv('t*sqrt(1 + x**2)', 'x', r)
+    equals: deriv('x*r', 'x', t)*deriv('t*x', 'x', r)
+    samples:
+      t: [0.5, 1, 2, 3]
+      r: [0.2, 0.7, 1.3, 2]
+    tolerance: 1e-6
+    shown: ['\left(2tr - 2tr\right)dt\,dr']
+    source: {cite: mit, at: 'Optional Problem 10 (our own solution)'}
+    origin: page-own
+
+  - id: p10-gamma
+    kind: identity
+    where: 'Optional Problem 10(a), check: a galaxy with the velocity r/sqrt(1 + r²) has γ = sqrt(1 + r²)'
+    formula: 1/sqrt(1 - (r/sqrt(1 + r**2))**2)
+    equals: sqrt(1 + r**2)
+    samples:
+      r: [0.2, 0.7, 1.3, 2]
+    tolerance: 1e-12
+    shown: ['$\gamma = \sqrt{1 + r^2}$']
+    source: {cite: mit, at: 'Optional Problem 10 (our own solution)'}
+    origin: page-own
+
+  # ---- Optional Problem 11: the balloon (our own numbers, lengths in cm, times in s)
+
+  - id: p11-given
+    kind: fact
+    where: 'Optional Problem 11, statement: our own numbers'
+    shown: ['$R_0 = 6$ cm and $u = 0.5$ cm/s', '24 ink dots', 'at the time $t = 8$ s']
+    source: {cite: mit, at: 'Optional Problem 11 (our own situation and numbers)'}
+    origin: page-own
+
+  - id: p11-radius
+    where: 'Optional Problem 11(a), solution: the radius at t = 8 s'
+    formula: 6 + 0.5*8
+    expected: '10'
+    shown: ['$R = 6 + 0.5 \times 8 = 10$ cm']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-angle
+    where: 'Optional Problem 11(a), solution: the angle between neighbours'
+    formula: 2*pi/24
+    expected: '0.2618'
+    shown: ['$\theta = 2\pi/24 = 0.2618$ rad']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-s
+    answer: p11-s
+    where: 'Optional Problem 11(a), answer box: the arc between neighbours'
+    formula: (6 + 0.5*8)*2*pi/24
+    expected: '2.618'
+    shown: ['id="p11-s"', '$s = R\theta = 2.618$ cm']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-circle
+    where: 'Optional Problem 11(a), check: 24 gaps make the whole circle'
+    formula: 24 * 2.618
+    expected: '62.83'
+    shown: ['$24 \times 2.618 = 62.83$ cm $= 2\pi \times 10$ cm']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the numerical time derivative of the arc s(t) = (6 + 0.5 t) θ.
+  - id: p11-v
+    answer: p11-v
+    where: 'Optional Problem 11(b), answer box: the numerical derivative of the arc at t = 8 s'
+    formula: deriv('(6 + 0.5*x)*2*pi/24', 'x', 8)
+    expected: '0.1309'
+    shown: ['id="p11-v"', '$v = \dot s = \dot R\,\theta = 0.5 \times 0.2618 = 0.1309$ cm/s']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-h
+    answer: p11-h
+    where: 'Optional Problem 11(b), answer box: the ratio of the numerical speed to the distance'
+    formula: deriv('(6 + 0.5*x)*2*pi/24', 'x', 8) / ((6 + 0.5*8)*2*pi/24)
+    expected: '0.05'
+    tolerance: 1e-6
+    shown: ['id="p11-h"', '$H = v/s = 0.1309/2.618 = 0.05$ per second', '$H = \dot R/R = 0.5/10 = 0.05$ per second']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-sfar
+    where: 'Optional Problem 11(c), solution: the arc of a quarter circle'
+    formula: 10*pi/2
+    expected: '15.71'
+    shown: ['$s = 10 \times \pi/2 = 15.71$ cm']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-vfar
+    answer: p11-vfar
+    where: 'Optional Problem 11(c), answer box: the numerical derivative of the quarter-circle arc at t = 8 s'
+    formula: deriv('(6 + 0.5*x)*pi/2', 'x', 8)
+    expected: '0.785'
+    shown: ['id="p11-vfar"', '$v = 0.5 \times \pi/2 = 0.785$ cm/s']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-ratio-far
+    where: 'Optional Problem 11(c), check: v/s for the far dot'
+    formula: 0.785/15.71
+    expected: '0.05'
+    tolerance: 0.0005
+    shown: ['$v/s = 0.785/15.71 = 0.05$ per second']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  - id: p11-hubble-time
+    where: 'Optional Problem 11(d), check: 1/H at t = 8 s'
+    formula: (6 + 0.5*8)/0.5
+    expected: '20'
+    shown: ['$1/H = 20$ s at $t = 8$ s']
+    source: {cite: mit, at: 'Optional Problem 11 (our own solution)'}
+    origin: page-own
+
+  # ---- Optional Problem 12: the map of universes
+
+  - id: p12-accel
+    kind: identity
+    answer: p12-accel
+    where: 'Optional Problem 12(a), answer box: against a numerical solve of (slope of f at a = 1) = 0 for Ω_Λ, the slope taken as a numerical derivative'
+    formula: m/2
+    equals: solve('-m + 2*x', 'x', 0, 5)
+    samples:
+      m: [0.2, 0.3, 1, 2, 2.5]
+    tolerance: 1e-8
+    shown: ['id="p12-accel"']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-slope
+    kind: identity
+    where: 'Optional Problem 12(a), solution: the slope of f at a = 1 is −Ω_m + 2Ω_Λ (numerical derivative; w = Ω_m, l = Ω_Λ)'
+    formula: deriv('w/x + (1 - w - l) + l*x**2', 'x', 1)
+    equals: -w + 2*l
+    samples:
+      w: [0.3, 1, 2, 0.5]
+      l: [0.7, 0.2, 1.5, -0.5]
+    tolerance: 1e-6
+    shown: ['= -\Omega_m + 2\Omega_\Lambda = 0']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  # The parametric border: f and df/da both vanish at a = s (w and l are the two formulas).
+  - id: p12-border-f
+    kind: identity
+    where: 'Optional Problem 12(b), formula "Border curve": f(s) = 0 on the curve (1 is added to both sides so that the comparison is relative)'
+    formula: 1 + (2*s**3/((s - 1)**2*(2*s + 1)))/s + (1 - 2*s**3/((s - 1)**2*(2*s + 1)) - 1/((s - 1)**2*(2*s + 1))) + (1/((s - 1)**2*(2*s + 1)))*s**2
+    equals: 1 + 0*s
+    samples:
+      s: [0.2, 0.444, 0.6, 2.5, 2.879, 10]
+    tolerance: 1e-9
+    shown: ['<Formula label="Border curve, with the touching point s as parameter"']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-border-slope
+    kind: identity
+    where: 'Optional Problem 12(b), formula "Border curve": Ω_Λ = Ω_m/(2s³) on the curve (the slope condition)'
+    formula: 1/((s - 1)**2*(2*s + 1))
+    equals: (2*s**3/((s - 1)**2*(2*s + 1)))/(2*s**3)
+    samples:
+      s: [0.2, 0.444, 0.6, 2.5, 2.879, 10]
+    tolerance: 1e-12
+    shown: ['gives $\Omega_\Lambda = \Omega_m/(2s^3)$']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-factor
+    kind: identity
+    where: 'Optional Problem 12(b), solution: 2s³ − 3s² + 1 = (s − 1)²(2s + 1)'
+    formula: 2*s**3 - 3*s**2 + 1
+    equals: (s - 1)**2*(2*s + 1)
+    samples:
+      s: [0.2, 0.444, 0.6, 2.5, 2.879, 10]
+    tolerance: 1e-9
+    shown: ['$2s^3 - 3s^2 + 1 = (s - 1)^2(2s + 1)$']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-s
+    where: 'Optional Problem 12(b), solution: the root above 1 of s³ − 3s² + 1 = 0'
+    formula: solve('x**3 - 3*x**2 + 1', 'x', 2, 3)
+    expected: '2.879'
+    shown: ['The root above 1 is $s = 2.879$']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-forever
+    answer: p12-forever
+    where: 'Optional Problem 12(b), answer box: 1/s³ at that root'
+    formula: 1/solve('x**3 - 3*x**2 + 1', 'x', 2, 3)**3
+    expected: '0.0419'
+    shown: ['id="p12-forever"', 'the vacuum parameter is $1/s^3 = 0.0419$']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  # Independent route: with Ω_m = 2 and Ω_Λ = 0.0419, the smallest value of f for a > 1 is zero
+  # (shown as 1 + f at the minimum, found from the zero of the slope).
+  - id: p12-forever-check
+    where: 'Optional Problem 12(b), check: for Ω_m = 2 and Ω_Λ = 0.041889, f at its minimum (where −2/a² + 2Ω_Λ a = 0) is zero; printed as 1 + f'
+    formula: 1 + 2/solve('-2/x**2 + 2*0.041889*x', 'x', 1, 10) + (1 - 2 - 0.041889) + 0.041889*solve('-2/x**2 + 2*0.041889*x', 'x', 1, 10)**2
+    expected: '1.0000'
+    shown: ['it almost stops at $a = 2.879$']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-nbb-s
+    where: 'Optional Problem 12(c), check: the touching point of the no-big-bang border at Ω_m = 0.3'
+    formula: solve('2*x**3/((x - 1)**2*(2*x + 1)) - 0.3', 'x', 0.01, 0.9)
+    expected: '0.444'
+    shown: ['the border lies at $s = 0.444$']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-nbb-lambda
+    where: 'Optional Problem 12(c), check: Ω_Λ on the no-big-bang border at Ω_m = 0.3, as Ω_m/(2s³)'
+    formula: 0.3/(2*solve('2*x**3/((x - 1)**2*(2*x + 1)) - 0.3', 'x', 0.01, 0.9)**3)
+    expected: '1.713'
+    shown: ['where the vacuum parameter is 1.713']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-favoured
+    where: 'Optional Problem 12(a), check: the acceleration border at Ω_m = 0.3'
+    formula: 0.3/2
+    expected: '0.15'
+    shown: ['($0.7 > 0.15$)']
+    source: {cite: mit, at: 'Optional Problem 12 (our own solution)'}
+    origin: page-own
+
+  - id: p12-mit-figure
+    kind: fact
+    where: 'Optional Problem 12, statement: the axes of the figure on the sheet of MIT (Ω_m from 0 to 2.5, Ω_Λ from −1 to 3); the figure is not reproduced'
+    shown: ['$\Omega_m$ runs along the horizontal axis (from 0 to 2.5) and $\Omega_\Lambda$ along the vertical axis (from $-1$ to 3)']
+    source: {cite: mit, at: 'Optional Problem 12, p. 6'}
+    origin: mit
