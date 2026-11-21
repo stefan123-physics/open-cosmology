@@ -1,0 +1,756 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="..."> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# MIT's full formula for the phase velocity evaluated in the limit, numerical derivatives of omega(k) = k v_p,
+# numerical roots of the tangent condition on the dispersion curve, and numerical Fourier integrals of the pulse.
+# In the nested expressions q and p are the variables of the integral, derivative or solve.
+# Problem 2: the curve drawn on the page is omega(k) = 7 - 6 [0.4 E(k; 0.6) + 0.6 E(k; 1.7)], with
+# E(k; w) = [tanh((k + 3.5)/w) - tanh((k - 3.5)/w)]/(2 tanh(3.5/w)) (even in k, 1 at k = 0, 0 at large k),
+# in units of 10^4 1/s with k in 1/m (a formula of our own, fitted to points read from MIT's Figure 1).
+
+page: content/year-2/8.03/8-03-problem-set-7.mdx
+calcs:
+  # ---- Problem 1: water waves, v_p^2 = (g/k + T k/rho) tanh(k h)
+
+  - id: p1-given
+    kind: fact
+    where: 'Problem 1, statement: the density of water and the critical wavelength MIT gives'
+    shown: ['$\rho = 1$ g/cm³', 'MIT gives $\lambda_c = 2$ cm']
+    source: {cite: mit, at: 'Problem 7.1, p. 1'}
+    origin: mit
+
+  - id: p1-density
+    where: 'Problem 1, statement: 1 g/cm^3 in kg/m^3'
+    inputs: {rho: "1 g/cm**3"}
+    formula: rho
+    expected: 1000 kg/m**3
+    tolerance: 1e-9 kg/m**3
+    shown: ['which is $1000$ kg/m³']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (unit conversion by us)'}
+    origin: page-own
+
+  - id: p1-g
+    kind: fact
+    where: 'Problem 1, statement: the value of g used for numbers (MIT only says "on Earth")'
+    shown: ['take $g = 9.8$ m/s²']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (the value is ours)'}
+    origin: page-own
+
+  # The crossover as a numerical root: g/k = T k/rho solved for k, then lambda = 2 pi/k.
+  - id: p1-lc
+    kind: identity
+    answer: p1-lc
+    where: 'Problem 1(a), answer box: the wavelength 2 pi/k at the numerical root of "gravity term = surface-tension term"'
+    formula: 2*pi*sqrt(T/(rho*g))
+    equals: 2*pi/solve('g/q - T*q/rho', 'q', 1, 100000)
+    samples:
+      T: [0.0993, 0.05, 0.2]
+      rho: [1000, 800, 13600]
+      g: [9.8, 3.7, 9.8]
+    tolerance: 1e-9
+    shown: ['id="p1-lc"']
+    source: {cite: mit, at: 'Problem 7.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-tension
+    answer: p1-tension
+    where: 'Problem 1(a), answer box: T as the numerical root of "the two terms are equal at lambda = 2 cm"'
+    inputs: {rho: 1000, g: 9.8, lc: 0.02}
+    formula: solve('g/(2*pi/lc) - q*(2*pi/lc)/rho', 'q', 0.001, 10)
+    expected: 0.0993
+    tolerance: 0.1%
+    shown: ['id="p1-tension"']
+    source: {cite: mit, at: 'Problem 7.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-tension-shown
+    where: 'Problem 1(a), solution: T = rho g lambda_c^2/(4 pi^2)'
+    inputs: {rho: 1000, g: 9.8, lc: 0.02}
+    formula: rho*g*lc**2/(4*pi**2)
+    expected: 0.099
+    shown: ['\approx 0.099\ \text{N/m}', '\frac{1000 \times 9.8 \times (0.02)^2}{4\pi^2}']
+    source: {cite: mit, at: 'Problem 7.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-term-ratio
+    kind: identity
+    where: 'Problem 1(a), check: gravity term over surface-tension term equals (lambda/lambda_c)^2'
+    formula: (g/k)/(T*k/rho)
+    equals: ((2*pi/k)/(2*pi*sqrt(T/(rho*g))))**2
+    samples:
+      T: [0.0993, 0.05, 0.2]
+      rho: [1000, 800, 13600]
+      g: [9.8, 3.7, 9.8]
+      k: [3141.6, 10, 500]
+    tolerance: 1e-9
+    shown: ['\rho g/(Tk^2) = (\lambda/\lambda_c)^2']
+    source: {cite: mit, at: 'Problem 7.1(a), p. 1 (our own check)'}
+    origin: page-own
+
+  # Shallow water: the full formula (T = 0) at k h of about 0.001, and the numerical slope of omega = k v_p there.
+  - id: p1b-vp
+    kind: identity
+    answer: p1b-vp
+    where: 'Problem 1(b), answer box: the full formula of MIT without surface tension at very small k h'
+    formula: sqrt(g*h)
+    equals: sqrt(g/k*tanh(k*h))
+    samples:
+      g: [9.8, 5, 15]
+      h: [1, 0.5, 3]
+      k: [0.001, 0.002, 0.0003]
+    tolerance: 1e-5
+    shown: ['id="p1b-vp"']
+    source: {cite: mit, at: 'Problem 7.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-vg
+    kind: identity
+    answer: p1b-vg
+    where: 'Problem 1(b), answer box: numerical d omega/dk of omega = sqrt(g k tanh(k h)) at very small k h'
+    formula: sqrt(g*h)
+    equals: deriv('sqrt(g*q*tanh(q*h))', 'q', k)
+    samples:
+      g: [9.8, 5, 15]
+      h: [1, 0.5, 3]
+      k: [0.001, 0.002, 0.0003]
+    tolerance: 1e-5
+    shown: ['id="p1b-vg"']
+    source: {cite: mit, at: 'Problem 7.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-example
+    where: 'Problem 1(b), check: speed in water 1 m deep'
+    inputs: {g: 9.8, h: 1}
+    formula: sqrt(g*h)
+    expected: 3.1
+    shown: ['\sqrt{9.8 \times 1} \approx 3.1$ m/s']
+    source: {cite: mit, at: 'Problem 7.1(b), p. 1 (our own example)'}
+    origin: page-own
+
+  - id: p1b-series
+    kind: identity
+    where: 'Problem 1(b), check: the next term of the series, v_p = sqrt(g h)[1 - (k h)^2/6]'
+    formula: sqrt(g*h)*(1 - (k*h)**2/6)
+    equals: sqrt(g/k*tanh(k*h))
+    samples:
+      g: [9.8, 5, 15]
+      h: [1, 0.5, 3]
+      k: [0.1, 0.2, 0.03]
+    tolerance: 1e-4
+    shown: ['\left[1 - (kh)^2/6\right]']
+    source: {cite: mit, at: 'Problem 7.1(b), p. 1 (our own check)'}
+    origin: page-own
+
+  # Deep water: the full formula (T = 0) at k h of 40 or more, and the numerical slope of omega there.
+  - id: p1c-vp
+    kind: identity
+    answer: p1c-vp
+    where: 'Problem 1(c), answer box: the full formula of MIT without surface tension at large k h'
+    formula: sqrt(g/k)
+    equals: sqrt(g/k*tanh(k*h))
+    samples:
+      g: [9.8, 5, 15]
+      k: [1, 2, 0.5]
+      h: [40, 20, 100]
+    tolerance: 1e-9
+    shown: ['id="p1c-vp"']
+    source: {cite: mit, at: 'Problem 7.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-vg
+    kind: identity
+    answer: p1c-vg
+    where: 'Problem 1(c), answer box: numerical d omega/dk of omega = sqrt(g k tanh(k h)) at large k h'
+    formula: sqrt(g/k)/2
+    equals: deriv('sqrt(g*q*tanh(q*h))', 'q', k)
+    samples:
+      g: [9.8, 5, 15]
+      k: [1, 2, 0.5]
+      h: [40, 20, 100]
+    tolerance: 1e-6
+    shown: ['id="p1c-vg"']
+    source: {cite: mit, at: 'Problem 7.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-example-vp
+    where: 'Problem 1(c), check: phase velocity of a 10 m wave on deep water'
+    inputs: {g: 9.8, lam: 10}
+    formula: sqrt(g*lam/(2*pi))
+    expected: 3.9
+    shown: ['$v_p \approx 3.9$ m/s']
+    source: {cite: mit, at: 'Problem 7.1(c), p. 1 (our own example)'}
+    origin: page-own
+
+  - id: p1c-example-vg
+    where: 'Problem 1(c), check: group velocity of a 10 m wave on deep water'
+    inputs: {g: 9.8, lam: 10}
+    formula: sqrt(g*lam/(2*pi))/2
+    expected: 2.0
+    shown: ['$v_g \approx 2.0$ m/s']
+    source: {cite: mit, at: 'Problem 7.1(c), p. 1 (our own example)'}
+    origin: page-own
+
+  - id: p1c-tanh
+    where: 'Problem 1(c), check: tanh(k h) when the depth is half a wavelength'
+    inputs: {lam: 1, h: 0.5}
+    formula: tanh(2*pi/lam*h)
+    expected: 0.996
+    shown: ['\tanh\pi \approx 0.996']
+    source: {cite: mit, at: 'Problem 7.1(c), p. 1 (our own check)'}
+    origin: page-own
+
+  # Capillary waves: the full formula with gravity kept, at k of about 10^6 per metre in deep water, and the numerical slope of omega there.
+  - id: p1d-vp
+    kind: identity
+    answer: p1d-vp
+    where: 'Problem 1(d), answer box: the full formula of MIT at a wave number where gravity is negligible'
+    formula: sqrt(T*k/rho)
+    equals: sqrt((g/k + T*k/rho)*tanh(k*h))
+    samples:
+      T: [0.0993, 0.05, 0.2]
+      k: [1000000, 2000000, 500000]
+      rho: [1000, 800, 1200]
+      g: [9.8, 9.8, 9.8]
+      h: [1, 1, 1]
+    tolerance: 1e-5
+    shown: ['id="p1d-vp"']
+    source: {cite: mit, at: 'Problem 7.1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1d-vg
+    kind: identity
+    answer: p1d-vg
+    where: 'Problem 1(d), answer box: numerical d omega/dk of the full omega(k) where gravity is negligible'
+    formula: 3*sqrt(T*k/rho)/2
+    equals: deriv('sqrt((g*q + T*q**3/rho)*tanh(q*h))', 'q', k)
+    samples:
+      T: [0.0993, 0.05, 0.2]
+      k: [1000000, 2000000, 500000]
+      rho: [1000, 800, 1200]
+      g: [9.8, 9.8, 9.8]
+      h: [1, 1, 1]
+    tolerance: 1e-5
+    shown: ['id="p1d-vg"']
+    source: {cite: mit, at: 'Problem 7.1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1d-example-vp
+    where: 'Problem 1(d), check: phase velocity of 2 mm ripples with the T of part (a)'
+    inputs: {rho: 1000, g: 9.8, lc: 0.02, lam: 0.002}
+    formula: sqrt(rho*g*lc**2/(4*pi**2)*(2*pi/lam)/rho)
+    expected: 0.56
+    shown: ['$v_p \approx 0.56$ m/s']
+    source: {cite: mit, at: 'Problem 7.1(d), p. 1 (our own example)'}
+    origin: page-own
+
+  - id: p1d-example-vg
+    where: 'Problem 1(d), check: group velocity of 2 mm ripples'
+    inputs: {rho: 1000, g: 9.8, lc: 0.02, lam: 0.002}
+    formula: 1.5*sqrt(rho*g*lc**2/(4*pi**2)*(2*pi/lam)/rho)
+    expected: 0.84
+    shown: ['$v_g \approx 0.84$ m/s']
+    source: {cite: mit, at: 'Problem 7.1(d), p. 1 (our own example)'}
+    origin: page-own
+
+  - id: p1d-example-ratio
+    where: 'Problem 1(d), check: the gravity term over the surface-tension term for 2 mm ripples'
+    inputs: {rho: 1000, g: 9.8, lc: 0.02, lam: 0.002}
+    formula: (g/(2*pi/lam))/(rho*g*lc**2/(4*pi**2)*(2*pi/lam)/rho)
+    expected: 0.01
+    tolerance: 1e-9
+    shown: ['(\lambda/\lambda_c)^2 = 0.01$', 'so 1% of it']
+    source: {cite: mit, at: 'Problem 7.1(d), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-vg-relation
+    kind: identity
+    where: 'Problem 1(d), check: v_g = v_p + k dv_p/dk, with the full deep-water formula'
+    formula: deriv('q*sqrt(g/q + T*q/rho)', 'q', k)
+    equals: sqrt(g/k + T*k/rho) + k*deriv('sqrt(g/q + T*q/rho)', 'q', k)
+    samples:
+      T: [0.0993, 0.05, 0.2]
+      rho: [1000, 800, 1200]
+      g: [9.8, 9.8, 3.7]
+      k: [100, 400, 900]
+    tolerance: 1e-6
+    shown: ['v_g = v_p + k\,\frac{dv_p}{dk}']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-equal-at-crossover
+    kind: identity
+    where: 'Problem 1(d), check: at k_c the group velocity (numerical slope of omega) equals the phase velocity'
+    formula: sqrt(2*g/sqrt(rho*g/T))
+    equals: deriv('sqrt(g*q + T*q**3/rho)', 'q', sqrt(rho*g/T))
+    samples:
+      T: [0.0993, 0.05, 0.2]
+      rho: [1000, 800, 1200]
+      g: [9.8, 9.8, 3.7]
+    tolerance: 1e-6
+    shown: ['so $v_g = v_p$. For water']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-vmin
+    where: 'Problem 1(d), check: the smallest phase velocity on deep water, v_p at lambda_c = 2 cm'
+    inputs: {rho: 1000, g: 9.8, lc: 0.02}
+    formula: sqrt(g/(2*pi/lc) + rho*g*lc**2/(4*pi**2)*(2*pi/lc)/rho)
+    expected: 0.25
+    shown: ['\sqrt{g\lambda_c/\pi} \approx 0.25$ m/s']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-vmin-is-minimum
+    where: 'Problem 1(d), check: the phase velocity has zero slope in k at k_c'
+    inputs: {T: 0.0993, rho: 1000, g: 9.8}
+    formula: deriv('sqrt(g/q + T*q/rho)', 'q', sqrt(rho*g/T))
+    expected: 0
+    tolerance: 1e-9
+    shown: ['there $dv_p/dk = 0$']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-plot-t-over-rho
+    where: 'Problem 1(d), graph: T/rho in m^3/s^2 used in the two curves'
+    inputs: {g: 9.8, lc: 0.02}
+    formula: g*lc**2/(4*pi**2)
+    expected: 9.929e-5
+    shown: ['9.929e-5*200*pi/L']
+    source: {cite: mit, at: 'Problem 7.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-plot-point
+    where: 'Problem 1(d), graph: the marked point, v_p = v_g at lambda = 2 cm, in cm/s'
+    inputs: {g: 9.8, lc: 0.02}
+    formula: 100*sqrt(g*lc/pi)
+    expected: 24.98
+    shown: ['y: 24.98']
+    source: {cite: mit, at: 'Problem 7.1, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: the dispersion curve (omega in 10^4 1/s, k in 1/m, speeds in 10^4 m/s, all as plain numbers)
+
+  - id: p2-given
+    kind: fact
+    where: 'Problem 2: the frequency at which the curve of MIT starts'
+    shown: ['The curve starts at $\omega_0 = 1 \times 10^4$ s⁻¹ at $k = 0$.']
+    source: {cite: mit, at: 'Problem 7.2(c), p. 2'}
+    origin: mit
+
+  - id: p2-curve-start
+    where: 'Problem 2, graph: the drawn curve starts at omega = 1 at k = 0'
+    formula: 7 - 1.2*(tanh((0 + 3.5)/0.6) - tanh((0 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((0 + 3.5)/1.7) - tanh((0 - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 1
+    tolerance: 1e-12
+    shown: ['It leaves the vertical axis horizontally at ω = 1 × 10⁴ s⁻¹']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (our own curve)'}
+    origin: page-own
+
+  - id: p2-curve-flat-start
+    where: 'Problem 2, graph: the drawn curve is horizontal at k = 0 (v_g = 0 there)'
+    formula: deriv('7 - 1.2*(tanh((q + 3.5)/0.6) - tanh((q - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((q + 3.5)/1.7) - tanh((q - 3.5)/1.7))/tanh(3.5/1.7)', 'q', 0)
+    expected: 0
+    tolerance: 1e-9
+    shown: ['v_g = \frac{d\omega}{dk} \to 0']
+    source: {cite: mit, at: 'Problem 7.2(c), p. 2 (our own curve)'}
+    origin: page-own
+
+  - id: p2-curve-top
+    kind: limit
+    where: 'Problem 2, graph: the drawn curve tends to 7 at large k'
+    formula: 7 - 1.2*(tanh((k + 3.5)/0.6) - tanh((k - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((k + 3.5)/1.7) - tanh((k - 3.5)/1.7))/tanh(3.5/1.7)
+    limit: 7
+    vary: {k: [8, 12, 20, 40, 80]}
+    tolerance: 1e-9
+    shown: ['flattens out towards 7 × 10⁴ s⁻¹']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (our own curve)'}
+    origin: page-own
+
+  # The two tangent points as the extrema of omega/k: d(omega/k)/dk = 0, by numerical derivative and Brent root.
+  - id: p2-low
+    answer: p2-low
+    where: 'Problem 2(a), answer box: omega where v_p = omega/k has its minimum (numerical derivative and root)'
+    formula: 7 - 1.2*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) + 3.5)/0.6) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) + 3.5)/1.7) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 1.56
+    tolerance: 0.2%
+    shown: ['id="p2-low"']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution, for the curve drawn on the page)'}
+    origin: page-own
+
+  - id: p2-high
+    answer: p2-high
+    where: 'Problem 2(a), answer box: omega where v_p = omega/k has its maximum'
+    formula: 7 - 1.2*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) + 3.5)/0.6) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) + 3.5)/1.7) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 5.82
+    tolerance: 0.2%
+    shown: ['id="p2-high"']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution, for the curve drawn on the page)'}
+    origin: page-own
+
+  - id: p2-low-k
+    where: 'Problem 2(a), solution: wave number of the lower tangent point'
+    formula: solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3)
+    expected: 2.175
+    tolerance: 0.001
+    shown: ['near $k \approx 2.2$ per metre', 'x: 2.175']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-high-k
+    where: 'Problem 2(a), solution: wave number of the upper tangent point'
+    formula: solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5)
+    expected: 4.311
+    tolerance: 0.001
+    shown: ['near $k \approx 4.3$ per metre', 'x: 4.311']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-low-shown
+    where: 'Problem 2(a), solution: the lower frequency as printed, and the point A of the graph'
+    formula: 7 - 1.2*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) + 3.5)/0.6) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) + 3.5)/1.7) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 1.561
+    tolerance: 0.001
+    shown: ['\omega \approx 1.6 \times 10^4\ \text{s}^{-1}', 'y: 1.561', 'gives $\omega = 1.56$ and $5.82$']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-high-shown
+    where: 'Problem 2(a), solution: the higher frequency as printed, and the point B of the graph'
+    formula: 7 - 1.2*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) + 3.5)/0.6) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) + 3.5)/1.7) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 5.815
+    tolerance: 0.001
+    shown: ['\omega \approx 5.8 \times 10^4\ \text{s}^{-1}', 'y: 5.815']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-low-speed
+    where: 'Problem 2(a), solution: the common speed at A, the slope of the line from the origin'
+    formula: (7 - 1.2*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) + 3.5)/0.6) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) + 3.5)/1.7) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3) - 3.5)/1.7))/tanh(3.5/1.7))/(solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 1.5, 3))
+    expected: 0.7175
+    tolerance: 0.0002
+    shown: ['about $0.72 \times 10^4$ m/s', '0.7175*k', 'the slopes 0.72 and 1.35']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-high-speed
+    where: 'Problem 2(a), solution: the common speed at B'
+    formula: (7 - 1.2*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) + 3.5)/0.6) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) + 3.5)/1.7) - tanh((solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5) - 3.5)/1.7))/tanh(3.5/1.7))/(solve('deriv("(7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7))/p", "p", q)', 'q', 4, 5))
+    expected: 1.3490
+    tolerance: 0.0002
+    shown: ['about $1.35 \times 10^4$ m/s', '1.3490*k']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-low-tangent
+    where: 'Problem 2(a), check: at A the tangent slope equals omega/k'
+    formula: deriv('7 - 1.2*(tanh((q + 3.5)/0.6) - tanh((q - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((q + 3.5)/1.7) - tanh((q - 3.5)/1.7))/tanh(3.5/1.7)', 'q', 2.17544) - (7 - 1.2*(tanh((2.17544 + 3.5)/0.6) - tanh((2.17544 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((2.17544 + 3.5)/1.7) - tanh((2.17544 - 3.5)/1.7))/tanh(3.5/1.7))/2.17544
+    expected: 0
+    tolerance: 1e-4
+    shown: ['At the points A and B the line from the origin is also the tangent']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-high-tangent
+    where: 'Problem 2(a), check: at B the tangent slope equals omega/k'
+    formula: deriv('7 - 1.2*(tanh((q + 3.5)/0.6) - tanh((q - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((q + 3.5)/1.7) - tanh((q - 3.5)/1.7))/tanh(3.5/1.7)', 'q', 4.31077) - (7 - 1.2*(tanh((4.31077 + 3.5)/0.6) - tanh((4.31077 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((4.31077 + 3.5)/1.7) - tanh((4.31077 - 3.5)/1.7))/tanh(3.5/1.7))/4.31077
+    expected: 0
+    tolerance: 1e-4
+    shown: ['touches the upper bend from above']
+    source: {cite: mit, at: 'Problem 7.2(a), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-mit-reading
+    kind: fact
+    where: 'Problem 2(a), check: the two tangent points read from the printed figure of MIT (digitised by the blind reviewer: 1.51 and 5.87)'
+    shown: ['come out near $1.5$ and $5.9$']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (read from the figure)'}
+    origin: mit
+
+  - id: p2-fit-2
+    where: 'Problem 2, graph: the drawn curve against the point (2, 1.42) read from the figure of MIT, within 0.07'
+    formula: 7 - 1.2*(tanh((2 + 3.5)/0.6) - tanh((2 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((2 + 3.5)/1.7) - tanh((2 - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 1.42
+    tolerance: 0.07
+    shown: ['fitted to points read from MIT''s printed figure']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (our own curve)'}
+    origin: page-own
+
+  - id: p2-fit-2-5
+    where: 'Problem 2, graph: the drawn curve against the point (2.5, 1.84) read from the figure of MIT, within 0.07'
+    formula: 7 - 1.2*(tanh((2.5 + 3.5)/0.6) - tanh((2.5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((2.5 + 3.5)/1.7) - tanh((2.5 - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 1.84
+    tolerance: 0.07
+    shown: ['id="p2"']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (our own curve)'}
+    origin: page-own
+
+  - id: p2-fit-4-5
+    where: 'Problem 2, graph: the drawn curve against the point (4.5, 6.1) read from the figure of MIT, within 0.07'
+    formula: 7 - 1.2*(tanh((4.5 + 3.5)/0.6) - tanh((4.5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((4.5 + 3.5)/1.7) - tanh((4.5 - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 6.1
+    tolerance: 0.07
+    shown: ['id="p2"']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (our own curve)'}
+    origin: page-own
+
+  - id: p2-fit-5
+    where: 'Problem 2, graph: the drawn curve against the point (5, 6.47) read from the figure of MIT, within 0.07'
+    formula: 7 - 1.2*(tanh((5 + 3.5)/0.6) - tanh((5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((5 + 3.5)/1.7) - tanh((5 - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 6.47
+    tolerance: 0.07
+    shown: ['id="p2"']
+    source: {cite: mit, at: 'Problem 7.2, Figure 1, p. 2 (our own curve)'}
+    origin: page-own
+
+  # The steepest point as the numerical root of the second derivative; the largest group velocity is the slope there.
+  - id: p2-w
+    answer: p2-w
+    where: 'Problem 2(b), answer box: omega at the steepest point, where the second derivative of the curve is zero'
+    formula: 7 - 1.2*(tanh((solve('deriv("7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7)", "p", q, 2)', 'q', 3, 4) + 3.5)/0.6) - tanh((solve('deriv("7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7)", "p", q, 2)', 'q', 3, 4) - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((solve('deriv("7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7)", "p", q, 2)', 'q', 3, 4) + 3.5)/1.7) - tanh((solve('deriv("7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7)", "p", q, 2)', 'q', 3, 4) - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 3.94
+    tolerance: 0.2%
+    shown: ['id="p2-w"']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution, for the curve drawn on the page)'}
+    origin: page-own
+
+  - id: p2-v
+    answer: p2-v
+    where: 'Problem 2(b), answer box: the slope of the curve at its steepest point'
+    formula: deriv('7 - 1.2*(tanh((q + 3.5)/0.6) - tanh((q - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((q + 3.5)/1.7) - tanh((q - 3.5)/1.7))/tanh(3.5/1.7)', 'q', solve('deriv("7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7)", "p", q, 2)', 'q', 3, 4))
+    expected: 3.09
+    tolerance: 0.2%
+    shown: ['id="p2-v"']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution, for the curve drawn on the page)'}
+    origin: page-own
+
+  - id: p2-k-steep
+    where: 'Problem 2(b), solution: wave number of the steepest point'
+    formula: solve('deriv("7 - 1.2*(tanh((p + 3.5)/0.6) - tanh((p - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((p + 3.5)/1.7) - tanh((p - 3.5)/1.7))/tanh(3.5/1.7)", "p", q, 2)', 'q', 3, 4)
+    expected: 3.5
+    tolerance: 0.001
+    shown: ['near $k \approx 3.5$ per metre', 'rises most steeply near k = 3.5 per metre']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-w-shown
+    where: 'Problem 2(b), solution: the mean frequency as printed'
+    formula: 7 - 1.2*(tanh((3.5 + 3.5)/0.6) - tanh((3.5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((3.5 + 3.5)/1.7) - tanh((3.5 - 3.5)/1.7))/tanh(3.5/1.7)
+    expected: 3.9
+    shown: ['\omega \approx 3.9 \times 10^4\ \text{s}^{-1}']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-tangent-left
+    where: 'Problem 2(b), solution: the steepest tangent at k = 3'
+    formula: 7 - 1.2*(tanh((3.5 + 3.5)/0.6) - tanh((3.5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((3.5 + 3.5)/1.7) - tanh((3.5 - 3.5)/1.7))/tanh(3.5/1.7) + deriv('7 - 1.2*(tanh((q + 3.5)/0.6) - tanh((q - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((q + 3.5)/1.7) - tanh((q - 3.5)/1.7))/tanh(3.5/1.7)', 'q', 3.5)*(3 - 3.5)
+    expected: 2.4
+    tolerance: 0.02
+    shown: ['$(3,\ 2.4)$']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-tangent-right
+    where: 'Problem 2(b), solution: the steepest tangent at k = 4'
+    formula: 7 - 1.2*(tanh((3.5 + 3.5)/0.6) - tanh((3.5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((3.5 + 3.5)/1.7) - tanh((3.5 - 3.5)/1.7))/tanh(3.5/1.7) + deriv('7 - 1.2*(tanh((q + 3.5)/0.6) - tanh((q - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((q + 3.5)/1.7) - tanh((q - 3.5)/1.7))/tanh(3.5/1.7)', 'q', 3.5)*(4 - 3.5)
+    expected: 5.5
+    tolerance: 0.02
+    shown: ['$(4,\ 5.5)$']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-v-shown
+    where: 'Problem 2(b), solution: the slope read from the two points'
+    formula: (5.5 - 2.4)/(4 - 3)
+    expected: 3.1
+    tolerance: 1e-9
+    shown: ['= 3.1 \times 10^4\ \text{m/s}', '(5.5 - 2.4) \times 10^4', '(4 - 3)\ \text{m}^{-1}']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-vp-steep
+    where: 'Problem 2(b), check: the phase velocity at the steepest point'
+    formula: (7 - 1.2*(tanh((3.5 + 3.5)/0.6) - tanh((3.5 - 3.5)/0.6))/tanh(3.5/0.6) - 1.8*(tanh((3.5 + 3.5)/1.7) - tanh((3.5 - 3.5)/1.7))/tanh(3.5/1.7))/3.5
+    expected: 1.1
+    shown: ['3.9/3.5 \approx 1.1 \times 10^4$ m/s']
+    source: {cite: mit, at: 'Problem 7.2(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: the Gaussian pulse; C(omega) = (1/2 pi) * integral of f(t) exp(i omega t) dt with f(t) = exp(-(v t/s)^2/2)
+
+  - id: p3-given
+    kind: fact
+    where: 'Problem 3: the two widths MIT asks to sketch'
+    shown: ['for $\sigma = 1$ and for $\sigma = 5$']
+    source: {cite: mit, at: 'Problem 7.3(c), p. 3'}
+    origin: mit
+
+  - id: p3-v-choice
+    kind: fact
+    where: 'Problem 3(d): the speed chosen for the sketches (ours; MIT gives none)'
+    shown: ['and $v = 1$ m/s (our choice']
+    source: {cite: mit, at: 'Problem 7.3(d), p. 3 (the value is ours)'}
+    origin: page-own
+
+  # The transform by numerical integration over t; the limits +-40 are at least 8 widths s/v away.
+  - id: p3-c
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(a), answer box: against the numerical Fourier integral (the sine part vanishes because f is even)'
+    formula: s/(v*sqrt(2*pi))*exp(-s**2*w**2/(2*v**2))
+    equals: integrate('exp(-(v*q/s)**2/2)*cos(w*q)', 'q', -40, 40)/(2*pi)
+    samples:
+      s: [1, 5, 1]
+      v: [1, 1, 2]
+      w: [0.5, 0.1, 1.3]
+    tolerance: 1e-7
+    shown: ['id="p3-c"']
+    source: {cite: mit, at: 'Problem 7.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-sw
+    kind: identity
+    answer: p3-sw
+    where: 'Problem 3(a), answer box: the width from the curvature of the numerical C at omega = 0: sigma_omega^2 = -C(0)/C″(0) = integral of f over integral of t^2 f'
+    formula: v/s
+    equals: sqrt(integrate('exp(-(v*q/s)**2/2)', 'q', -40, 40)/integrate('q**2*exp(-(v*q/s)**2/2)', 'q', -40, 40))
+    samples:
+      s: [1, 5, 1]
+      v: [1, 1, 2]
+    tolerance: 1e-7
+    shown: ['id="p3-sw"']
+    source: {cite: mit, at: 'Problem 7.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-prod
+    kind: identity
+    answer: p3-prod
+    where: 'Problem 3(b), answer box: sigma times the width found numerically'
+    formula: v
+    equals: s*sqrt(integrate('exp(-(v*q/s)**2/2)', 'q', -40, 40)/integrate('q**2*exp(-(v*q/s)**2/2)', 'q', -40, 40))
+    samples:
+      s: [1, 5, 1]
+      v: [1, 1, 2]
+    tolerance: 1e-7
+    shown: ['id="p3-prod"']
+    source: {cite: mit, at: 'Problem 7.3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-square
+    kind: identity
+    where: 'Problem 3(a), solution: completing the square, real part (the square of t - i w tau^2 has the real part t^2 - w^2 tau^4)'
+    formula: -t**2/(2*tau**2)
+    equals: -(t**2 - w**2*tau**4)/(2*tau**2) - w**2*tau**2/2
+    samples:
+      t: [0.3, 1.1, 2.0]
+      w: [0.7, 1.9, 0.4]
+      tau: [1, 0.5, 2.5]
+    tolerance: 1e-9
+    shown: ['-\frac{(t - i\omega\tau^2)^2}{2\tau^2} - \frac{\omega^2\tau^2}{2}']
+    source: {cite: mit, at: 'Problem 7.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-square-imaginary
+    kind: identity
+    where: 'Problem 3(a), solution: completing the square, imaginary part (the square has the imaginary part -2 t w tau^2)'
+    formula: w*t
+    equals: 2*t*w*tau**2/(2*tau**2)
+    samples:
+      t: [0.3, 1.1, 2.0]
+      w: [0.7, 1.9, 0.4]
+      tau: [1, 0.5, 2.5]
+    tolerance: 1e-9
+    shown: ['the cross term is $+i\omega t$']
+    source: {cite: mit, at: 'Problem 7.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-area
+    where: 'Problem 3(a), check: the area under C(omega) is f(0) = 1'
+    inputs: {s: 5, v: 2}
+    formula: integrate('s/(v*sqrt(2*pi))*exp(-s**2*q**2/(2*v**2))', 'q', -8, 8)
+    expected: 1
+    tolerance: 1e-9
+    shown: ['(\tau/\sqrt{2\pi}) \times \sqrt{2\pi}/\tau = 1']
+    source: {cite: mit, at: 'Problem 7.3(a), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p3-uncertainty
+    where: 'Problem 3(b), check: Delta t Delta omega of the Gaussian, with the intensity-weighted spreads of Lecture 15'
+    inputs: {s: 2, v: 1.5}
+    formula: sqrt(integrate('q**2*exp(-(v*q/s)**2)', 'q', -30, 30)/integrate('exp(-(v*q/s)**2)', 'q', -30, 30))*sqrt(integrate('q**2*exp(-(s*q/v)**2)', 'q', -30, 30)/integrate('exp(-(s*q/v)**2)', 'q', -30, 30))
+    expected: 0.5
+    tolerance: 1e-9
+    shown: ['\tau\sigma_\omega/2 = \tfrac12$']
+    source: {cite: reading3, at: 'p. 2 (definitions of the spreads) and p. 4 (the bound)'}
+    origin: page-own
+
+  - id: p3-exponential
+    where: 'Problem 3(b), check: Delta t Delta omega of the two-sided exponential exp(-a|t|), C = a/(pi (a^2 + omega^2)); both functions are even, so half ranges; the frequency integrals are cut at 4000 a'
+    inputs: {a: 1}
+    formula: sqrt(integrate('q**2*exp(-2*a*q)', 'q', 0, 60)/integrate('exp(-2*a*q)', 'q', 0, 60))*sqrt(integrate('q**2/(a**2 + q**2)**2', 'q', 0, 4000)/integrate('1/(a**2 + q**2)**2', 'q', 0, 4000))
+    expected: 0.71
+    shown: ['1/\sqrt2 \approx 0.71']
+    source: {cite: reading3, at: 'p. 1 (the pulse and its C) and p. 2 (definitions of the spreads)'}
+    origin: page-own
+
+  - id: p3-at-sigma
+    where: 'Problem 3(c), check: the pulse at one width from its centre'
+    formula: exp(-1/2)
+    expected: 0.61
+    shown: ['e^{-1/2} \approx 0.61']
+    source: {cite: mit, at: 'Problem 7.3(c), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-at-3sigma
+    where: 'Problem 3(c), check: the pulse at three widths from its centre'
+    formula: exp(-9/2)
+    expected: 0.011
+    shown: ['e^{-9/2} \approx 0.011']
+    source: {cite: mit, at: 'Problem 7.3(c), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-peak
+    answer: p3-peak
+    where: 'Problem 3(d), answer box: C(0) for sigma = 5 m and v = 1 m/s, by numerical integration of the signal'
+    inputs: {s: 5, v: 1}
+    formula: integrate('exp(-(v*q/s)**2/2)', 'q', -60, 60)/(2*pi)
+    expected: 1.995
+    shown: ['id="p3-peak"']
+    source: {cite: mit, at: 'Problem 7.3(d), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-peak-shown
+    where: 'Problem 3(d), solution: the peak for sigma = 5 m'
+    formula: 5/sqrt(2*pi)
+    expected: 1.995
+    shown: ['\frac{5}{\sqrt{2\pi}}\ \text{s} \approx 1.995\ \text{s}']
+    source: {cite: mit, at: 'Problem 7.3(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-peak-1
+    where: 'Problem 3(d), solution: the peak for sigma = 1 m'
+    inputs: {s: 1, v: 1}
+    formula: integrate('exp(-(v*q/s)**2/2)', 'q', -40, 40)/(2*pi)
+    expected: 0.399
+    shown: ['\approx 0.399\ \text{s}']
+    source: {cite: mit, at: 'Problem 7.3(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-width-5
+    where: 'Problem 3(d), solution: the width of the spectrum for sigma = 5 m and v = 1 m/s'
+    inputs: {s: 5, v: 1}
+    formula: sqrt(integrate('exp(-(v*q/s)**2/2)', 'q', -40, 40)/integrate('q**2*exp(-(v*q/s)**2/2)', 'q', -40, 40))
+    expected: 0.2
+    tolerance: 1e-7
+    shown: ['\sigma_\omega = 0.2\ \text{s}^{-1}']
+    source: {cite: mit, at: 'Problem 7.3(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-width-1
+    where: 'Problem 3(d), solution: the width of the spectrum for sigma = 1 m and v = 1 m/s'
+    inputs: {s: 1, v: 1}
+    formula: sqrt(integrate('exp(-(v*q/s)**2/2)', 'q', -40, 40)/integrate('q**2*exp(-(v*q/s)**2/2)', 'q', -40, 40))
+    expected: 1
+    tolerance: 1e-7
+    shown: ['\sigma_\omega = 1\ \text{s}^{-1}']
+    source: {cite: mit, at: 'Problem 7.3(d), p. 3 (our own solution)'}
+    origin: page-own

@@ -1,0 +1,714 @@
+# Calculations on content/year-2/8.03/8-03-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this homework, so every answer is checked here by a route independent of the page:
+# a numerical derivative of the dispersion relation, a numerical time average of the field behind the devices,
+# numerical derivatives of the fields put into Maxwell's equations, a numerical second derivative of the electron's
+# path, a numerical integral of the energy flow over a sphere, or a numerical solve of the reflection amplitude.
+# In the nested expressions q and p are the variables of the integral, derivative or solve.
+# The speed of light c is a sample value here (it overrides the constant of calcs/constants.yaml), not 3e8.
+# The size of the electron's charge is e, as in the page's boxes: the sample values override Euler's number.
+
+page: content/year-2/8.03/8-03-problem-set-9.mdx
+calcs:
+  # ---- Problem 1: the ionosphere, n^2 = 1 - wp^2/w^2
+
+  # k as the numerical root of the dispersion relation w = sqrt(wp^2 + c^2 k^2), which is n = ck/w squared and
+  # rearranged; the root lies between 0 and the vacuum value w/c.
+  - id: p1-k
+    kind: identity
+    answer: p1-k
+    where: 'Problem 1(a), answer box: k against the numerical root of w = sqrt(wp^2 + c^2 k^2)'
+    formula: sqrt(w**2 - wp**2)/c
+    equals: solve('sqrt(wp**2 + c**2*q**2) - w', 'q', 0.001, w/c)
+    samples:
+      w: [2.0, 3.1, 3.9]
+      wp: [0.6, 1.4, 1.0]
+      c: [2.0, 3.0, 4.5]
+    tolerance: 1e-8
+    shown: ['id="p1-k"']
+    source: {cite: mit, at: 'Problem 9.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # With this k the wave cos(k z - w t) solves the wave equation of the medium, d2E/dz2 = (n^2/c^2) d2E/dt2
+  # (numerical second derivatives).
+  - id: p1-k-wave-equation
+    kind: identity
+    where: 'Problem 1(a) and (c): with this k the wave cos(kz - wt) solves the wave equation with n^2 = 1 - wp^2/w^2'
+    formula: deriv('cos(sqrt(w**2 - wp**2)/c*q - w*t)', 'q', z, 2)
+    equals: (1 - wp**2/w**2)/c**2*deriv('cos(sqrt(w**2 - wp**2)/c*z - w*q)', 'q', t, 2)
+    samples:
+      w: [2.0, 3.1, 3.9]
+      wp: [0.6, 1.4, 1.0]
+      c: [2.0, 3.0, 4.5]
+      z: [0.3, 1.1, 0.6]
+      t: [0.2, 0.5, 0.9]
+    tolerance: 1e-5
+    shown: ['In other words $\omega^2 = \omega_p^2 + c^2k^2$.']
+    source: {cite: mit, at: 'Problem 9.1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-k-from-n
+    kind: identity
+    where: 'Problem 1(a), solution: k = n w/c with MIT''s n'
+    formula: sqrt(w**2 - wp**2)/c
+    equals: sqrt(1 - wp**2/w**2)*w/c
+    samples:
+      w: [2.0, 3.1, 3.9]
+      wp: [0.6, 1.4, 1.0]
+      c: [2.0, 3.0, 4.5]
+    tolerance: 1e-12
+    shown: ['label="Wave number in the ionosphere"']
+    source: {cite: reading4, at: 'p. 3'}
+    origin: page-own
+
+  # Part (b), in units with wp = 1 and c = 1: w(k) = sqrt(1 + k^2). The wave number at w = sqrt(2) is the root of
+  # sqrt(1 + k^2) = sqrt(2); the phase velocity is w/k there and the group velocity the numerical slope of w(k).
+  - id: p1-vp
+    answer: p1-vp
+    where: 'Problem 1(b), answer box: phase velocity over c at w = sqrt(2) wp, as w/k with k solved from the dispersion relation'
+    formula: sqrt(2)/solve('sqrt(1 + q**2) - sqrt(2)', 'q', 0.5, 2)
+    expected: 1.414
+    shown: ['id="p1-vp"', 'v_p = \sqrt2\,c \approx 1.414\,c']
+    source: {cite: mit, at: 'Problem 9.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-vg
+    answer: p1-vg
+    where: 'Problem 1(b), answer box: group velocity over c, as the numerical slope of w(k) = sqrt(1 + k^2) at k = 1'
+    formula: deriv('sqrt(1 + q**2)', 'q', 1)
+    expected: 0.707
+    shown: ['id="p1-vg"', 'v_g = \frac{c}{\sqrt2} \approx 0.707\,c']
+    source: {cite: mit, at: 'Problem 9.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n
+    where: 'Problem 1(b), solution: the index at w = sqrt(2) wp is 1/sqrt(2)'
+    inputs: {ratio: 2}
+    formula: sqrt(1 - 1/ratio) - 1/sqrt(2)
+    expected: 0
+    tolerance: 1e-12
+    shown: ['$n = \sqrt{1 - \tfrac12} = 1/\sqrt2$']
+    source: {cite: mit, at: 'Problem 9.1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-vg-formula
+    kind: identity
+    where: 'Problem 1(b), solution: v_g = c n against the numerical slope of w(k) = sqrt(wp^2 + c^2 k^2)'
+    formula: c*sqrt(1 - wp**2/w**2)
+    equals: deriv('sqrt(wp**2 + c**2*q**2)', 'q', sqrt(w**2 - wp**2)/c)
+    samples:
+      w: [2.0, 3.1, 3.9]
+      wp: [0.6, 1.4, 1.0]
+      c: [2.0, 3.0, 4.5]
+    tolerance: 1e-6
+    shown: ['label="The two velocities in the ionosphere"']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  - id: p1-product
+    kind: identity
+    where: 'Problem 1(b), check: v_p v_g = c^2'
+    formula: (c/sqrt(1 - wp**2/w**2))*(c*sqrt(1 - wp**2/w**2))
+    equals: c**2
+    samples:
+      w: [2.0, 3.1, 3.9]
+      wp: [0.6, 1.4, 1.0]
+      c: [2.0, 3.0, 4.5]
+    tolerance: 1e-12
+    shown: ['The product is $v_pv_g = c^2$']
+    source: {cite: mit, at: 'Problem 9.1(b), p. 1 (our own check)'}
+    origin: page-own
+
+  # Part (c): below the plasma frequency exp(-kappa z) cos(w t) solves d2E/dz2 = (n^2/c^2) d2E/dt2 with n^2 < 0.
+  - id: p1-evanescent
+    kind: identity
+    where: 'Problem 1(c): the decaying field solves the wave equation of the medium for w < wp'
+    formula: deriv('exp(-sqrt(wp**2 - w**2)/c*q)*cos(w*t)', 'q', z, 2)
+    equals: (1 - wp**2/w**2)/c**2*deriv('exp(-sqrt(wp**2 - w**2)/c*z)*cos(w*q)', 'q', t, 2)
+    samples:
+      w: [0.5, 1.1, 0.9]
+      wp: [0.9, 1.4, 2.0]
+      c: [2.0, 3.0, 4.5]
+      z: [0.3, 1.1, 0.6]
+      t: [0.2, 0.5, 0.9]
+    tolerance: 1e-5
+    shown: ['label="The field below the plasma frequency"']
+    source: {cite: mit, at: 'Problem 9.1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: polarizers and the quarter-wave plate. Axes: x and y; an axis at the angle th from y has the
+  # unit vector (sin th, cos th). The incoming field is (0, 1) cos(u), u the phase; I/I0 = 2 <E^2> over one period.
+
+  - id: p2-a
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box: twice the time average of the square of the field projected on the easy axis of A'
+    formula: I0*cos(tA)**2
+    equals: I0*2/(2*pi)*integrate('((0*sin(tA) + 1*cos(tA))*cos(q))**2', 'q', 0, 2*pi)
+    samples:
+      I0: [1.2, 2.0, 2.7]
+      tA: [0.3, 0.8, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p2-a"']
+    source: {cite: reading2, at: 'p. 5'}
+    origin: page-own
+
+  # After A the field is cos(tA) (sin tA, cos tA); B keeps its component along (sin tB, cos tB): a dot product of
+  # components, not the angle difference used on the page.
+  - id: p2-b
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box: the field after A projected on the easy axis of B by components'
+    formula: I0*cos(tA)**2*cos(tB - tA)**2
+    equals: I0*(cos(tA)*(sin(tA)*sin(tB) + cos(tA)*cos(tB)))**2
+    samples:
+      I0: [1.2, 2.0, 2.7]
+      tA: [0.3, 0.8, 1.2]
+      tB: [1.3, 0.4, 0.9]
+    tolerance: 1e-12
+    shown: ['id="p2-b"']
+    source: {cite: mit, at: 'Problem 9.2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-b-45
+    where: 'Problem 2(b), check: A at 45 degrees and B at 90 degrees pass a quarter'
+    inputs: {tA: 45, tB: 90}
+    formula: cos(tA*pi/180)**2*cos((tB - tA)*pi/180)**2
+    expected: 0.25
+    tolerance: 1e-12
+    shown: ['$I_b = I_0\cos^2 45°\cos^2 45° = I_0/4$']
+    source: {cite: mit, at: 'Problem 9.2(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # Behind the plate: fast part cos(tC) cos(u), slow part sin(tC) cos(u - pi/2). Twice the time average of the
+  # sum of the two squares.
+  - id: p2-d
+    kind: identity
+    answer: p2-d
+    where: 'Problem 2(d), answer box: twice the time average of the squared field behind the plate'
+    formula: I0
+    equals: I0*2/(2*pi)*integrate('(cos(tC)*cos(q))**2 + (sin(tC)*cos(q - pi/2))**2', 'q', 0, 2*pi)
+    samples:
+      I0: [1.2, 2.0, 2.7]
+      tC: [0.3, 0.8, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p2-d"']
+    source: {cite: reading3, at: 'pp. 1-2'}
+    origin: page-own
+
+  # After B (along y): the y component is cos(tC) times the fast part plus sin(tC) times the slow part.
+  - id: p2-e
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(e), answer box: twice the time average of the squared y component behind the plate'
+    formula: I0*(cos(tC)**4 + sin(tC)**4)
+    equals: I0*2/(2*pi)*integrate('(cos(tC)*cos(tC)*cos(q) + sin(tC)*sin(tC)*cos(q - pi/2))**2', 'q', 0, 2*pi)
+    samples:
+      I0: [1.2, 2.0, 2.7]
+      tC: [0.3, 0.8, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p2-e"']
+    source: {cite: mit, at: 'Problem 9.2(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-other-form
+    kind: identity
+    where: 'Problem 2(e), solution: cos^4 + sin^4 = 1 - sin^2(2 theta)/2'
+    formula: cos(tC)**4 + sin(tC)**4
+    equals: 1 - 0.5*sin(2*tC)**2
+    samples:
+      tC: [0.3, 0.8, 1.2]
+    tolerance: 1e-12
+    shown: ['I_0\left[1 - \tfrac12\sin^2(2\theta_C)\right]']
+    source: {cite: mit, at: 'Problem 9.2(e), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-45
+    where: 'Problem 2(e), check and caption: at 45 degrees half of the light passes'
+    inputs: {tC: 45}
+    formula: cos(tC*pi/180)**4 + sin(tC*pi/180)**4
+    expected: 0.5
+    tolerance: 1e-12
+    shown: ['$I_b = I_0/2$', 'half of it at 45° and 135°']
+    source: {cite: mit, at: 'Problem 9.2(e), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-e-135
+    where: 'Problem 2(e), caption: at 135 degrees half of the light passes'
+    inputs: {tC: 135}
+    formula: cos(tC*pi/180)**4 + sin(tC*pi/180)**4
+    expected: 0.5
+    tolerance: 1e-12
+    shown: ['half of it at 45° and 135°']
+    source: {cite: mit, at: 'Problem 9.2(e), p. 2 (our own check)'}
+    origin: page-own
+
+  # The matrix of the notes: lower right entry sin^2 + i cos^2 for a fast axis at th from x; with th = pi/2 - tC
+  # its squared size is the answer.
+  - id: p2-e-matrix
+    kind: identity
+    where: 'Problem 2(e), check: squared size of the lower right entry of the quarter-wave matrix with theta = 90 degrees - theta_C'
+    formula: cos(tC)**4 + sin(tC)**4
+    equals: (sin(pi/2 - tC)**2)**2 + (cos(pi/2 - tC)**2)**2
+    samples:
+      tC: [0.3, 0.8, 1.2]
+    tolerance: 1e-12
+    shown: ['$E_0^2(\cos^4\theta_C + \sin^4\theta_C)$']
+    source: {cite: reading3, at: 'p. 2'}
+    origin: page-own
+
+  # ---- Problem 3: the wave in a dielectric. Phase w (sqrt(ke) z/c - t).
+
+  - id: p3-angle
+    kind: fact
+    where: 'Problem 3, statement: the angle of the electric field to the x axis'
+    shown: ['at $30°$ to the $x$ axis']
+    source: {cite: mit, at: 'Problem 9.3, p. 2'}
+    origin: mit
+
+  # The components give the amplitude E0 and the angle 30 degrees: Ex = E0 cos(30 deg) cos(phase).
+  - id: p3-ex
+    kind: identity
+    answer: p3-ex
+    where: 'Problem 3(a), answer box: E_x as E0 cos(30 degrees) times a wave that keeps its value along z = (c/sqrt(ke)) t'
+    formula: sqrt(3)/2*E0*cos(w*(sqrt(ke)*z/c - t))
+    equals: E0*cos(30*pi/180)*cos(w*(sqrt(ke)*(z + c/sqrt(ke)*d)/c - (t + d)))
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+      d: [0.25, 0.7, 1.1]
+    tolerance: 1e-10
+    shown: ['id="p3-ex"']
+    source: {cite: mit, at: 'Problem 9.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ey
+    kind: identity
+    answer: p3-ey
+    where: 'Problem 3(a), answer box: E_y as E0 sin(30 degrees) times the same travelling wave'
+    formula: E0/2*cos(w*(sqrt(ke)*z/c - t))
+    equals: E0*sin(30*pi/180)*cos(w*(sqrt(ke)*(z + c/sqrt(ke)*d)/c - (t + d)))
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+      d: [0.25, 0.7, 1.1]
+    tolerance: 1e-10
+    shown: ['id="p3-ey"']
+    source: {cite: mit, at: 'Problem 9.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The wave solves the wave equation of the medium only with k = w sqrt(ke)/c.
+  - id: p3-wave-equation
+    kind: identity
+    where: 'Problem 3(a) and (c): E_x solves d2E/dz2 = (ke/c^2) d2E/dt2'
+    formula: deriv('sqrt(3)/2*E0*cos(w*(sqrt(ke)*q/c - t))', 'q', z, 2)
+    equals: ke/c**2*deriv('sqrt(3)/2*E0*cos(w*(sqrt(ke)*z/c - q))', 'q', t, 2)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-5
+    shown: ['label="Wave equation in the medium"']
+    source: {cite: reading4, at: 'p. 3'}
+    origin: page-own
+
+  # Faraday's law, x component: (curl E)_x = -dE_y/dz = -dB_x/dt, so dB_x/dt = dE_y/dz. Integrated in time from
+  # the instant w (sqrt(ke) z/c - t) = pi/2 at which the wave is zero, with a numerical derivative of E_y.
+  - id: p3-bx
+    kind: identity
+    answer: p3-bx
+    where: 'Problem 3(a), answer box: B_x against the time integral of Faraday''s law with a numerical dE_y/dz'
+    formula: -sqrt(ke)*E0/(2*c)*cos(w*(sqrt(ke)*z/c - t))
+    equals: integrate("deriv('E0/2*cos(w*(sqrt(ke)*p/c - q))', 'p', z)", 'q', sqrt(ke)*z/c - pi/(2*w), t)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-5
+    shown: ['id="p3-bx"']
+    source: {cite: mit, at: 'Problem 9.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Faraday's law, y component: (curl E)_y = dE_x/dz = -dB_y/dt.
+  - id: p3-by
+    kind: identity
+    answer: p3-by
+    where: 'Problem 3(a), answer box: B_y against the time integral of Faraday''s law with a numerical dE_x/dz'
+    formula: sqrt(3)*sqrt(ke)*E0/(2*c)*cos(w*(sqrt(ke)*z/c - t))
+    equals: integrate("-deriv('sqrt(3)/2*E0*cos(w*(sqrt(ke)*p/c - q))', 'p', z)", 'q', sqrt(ke)*z/c - pi/(2*w), t)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-5
+    shown: ['id="p3-by"']
+    source: {cite: mit, at: 'Problem 9.3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Ampere's law in the medium, x component: (curl B)_x = -dB_y/dz = (ke/c^2) dE_x/dt.
+  - id: p3-ampere
+    kind: identity
+    where: 'Problem 3(a), check: the fields satisfy Ampere''s law of the medium, -dB_y/dz = (ke/c^2) dE_x/dt'
+    formula: -deriv('sqrt(3)*sqrt(ke)*E0/(2*c)*cos(w*(sqrt(ke)*q/c - t))', 'q', z)
+    equals: ke/c**2*deriv('sqrt(3)/2*E0*cos(w*(sqrt(ke)*z/c - q))', 'q', t)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-6
+    shown: ['label="Maxwell''s equations in a linear dielectric"']
+    source: {cite: reading4, at: 'p. 3'}
+    origin: page-own
+
+  - id: p3-b-angle
+    where: 'Problem 3(a), check: B, along (-1/2, sqrt(3)/2), is at 120 degrees to the x axis'
+    formula: acos(-0.5)*180/pi
+    expected: 120
+    tolerance: 1e-9
+    shown: ['at $120°$ to the $x$ axis']
+    source: {cite: mit, at: 'Problem 9.3(a), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p3-amplitude
+    where: 'Problem 3(a), check: the squares of the two factors add up to 1'
+    formula: (sqrt(3)/2)**2 + (1/2)**2
+    expected: 1
+    tolerance: 1e-12
+    shown: ['\left(\tfrac34 + \tfrac14\right)E_0^2']
+    source: {cite: mit, at: 'Problem 9.3(a), p. 2 (our own check)'}
+    origin: page-own
+
+  # Average of S_z = (E_x B_y - E_y B_x)/mu0 over one period, as a numerical integral.
+  - id: p3-s
+    kind: identity
+    answer: p3-s
+    where: 'Problem 3(b), answer box: numerical average over one period of (E_x B_y - E_y B_x)/mu0'
+    formula: sqrt(ke)*E0**2/(2*mu0*c)
+    equals: w/(2*pi)*integrate('((sqrt(3)/2*E0*cos(w*(sqrt(ke)*z/c - q)))*(sqrt(3)*sqrt(ke)*E0/(2*c)*cos(w*(sqrt(ke)*z/c - q))) - (E0/2*cos(w*(sqrt(ke)*z/c - q)))*(-sqrt(ke)*E0/(2*c)*cos(w*(sqrt(ke)*z/c - q))))/mu0', 'q', 0, 2*pi/w)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      mu0: [0.5, 1.3, 2.0]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p3-s"']
+    source: {cite: reading4, at: 'p. 3 (the Poynting vector)'}
+    origin: page-own
+
+  # Energy density times speed: (eps E0^2/4 + B0^2/(4 mu0)) * c/sqrt(ke), with eps = ke/(mu0 c^2), B0 = sqrt(ke) E0/c.
+  - id: p3-s-energy
+    kind: identity
+    where: 'Problem 3(b), check: the average flow is the average energy density times the speed c/sqrt(ke)'
+    formula: sqrt(ke)*E0**2/(2*mu0*c)
+    equals: (ke/(mu0*c**2)*E0**2/4 + (sqrt(ke)*E0/c)**2/(4*mu0))*c/sqrt(ke)
+    samples:
+      E0: [1.2, 2.0, 2.7]
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      mu0: [0.5, 1.3, 2.0]
+    tolerance: 1e-12
+    shown: ['together $\tfrac12\kappa_e\varepsilon_0E_0^2$']
+    source: {cite: mit, at: 'Problem 9.3(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # K as the ratio of the numerical second derivatives of the wave of part (a).
+  - id: p3-k
+    kind: identity
+    answer: p3-k
+    where: 'Problem 3(c), answer box: K as d2E/dz2 over d2E/dt2 for the wave of part (a)'
+    formula: ke/c**2
+    equals: deriv('cos(w*(sqrt(ke)*q/c - t))', 'q', z, 2)/deriv('cos(w*(sqrt(ke)*z/c - q))', 'q', t, 2)
+    samples:
+      ke: [1.6, 2.5, 3.8]
+      c: [2.0, 3.0, 4.5]
+      w: [0.6, 1.1, 1.8]
+      z: [0.4, 1.3, 2.2]
+      t: [0.3, 0.8, 1.9]
+    tolerance: 1e-5
+    shown: ['id="p3-k"']
+    source: {cite: mit, at: 'Problem 9.3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the spiralling electron, x = al cos(be t), y = al sin(be t), z = ga t; charge -e.
+
+  # The frequency as one over the period; half a period is the first zero of sin(be t) after t = 0.
+  - id: p4-nu
+    kind: identity
+    answer: p4-nu
+    where: 'Problem 4(a), answer box: frequency as one over twice the time to the first zero of y(t) after t = 0'
+    formula: be/(2*pi)
+    equals: 1/(2*solve('sin(be*q)', 'q', 0.5*pi/be, 1.5*pi/be))
+    samples:
+      be: [0.6, 1.4, 2.7]
+    tolerance: 1e-8
+    shown: ['id="p4-nu"']
+    source: {cite: mit, at: 'Problem 9.4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The wave number as minus the numerical slope in R of the phase be (t - R/c) of the field of part (b).
+  - id: p4-k
+    kind: identity
+    answer: p4-k
+    where: 'Problem 4(a), answer box: wave number as minus the slope in R of the phase be (t - R/c)'
+    formula: be/c
+    equals: -deriv('be*(t - q/c)', 'q', R)
+    samples:
+      be: [0.6, 1.4, 2.7]
+      c: [2.0, 3.0, 4.5]
+      t: [3.1, 4.0, 4.8]
+      R: [1.1, 1.5, 1.9]
+    tolerance: 1e-7
+    shown: ['id="p4-k"']
+    source: {cite: mit, at: 'Problem 9.4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Position (ii): the unit acceleration (cos u, sin u, 0) has the component cos(u)/sqrt(2) along (x - z)/sqrt(2)
+  # and sin(u) along y. The axis ratio is the root of the ratio of the two mean squares.
+  - id: p4-ratio
+    answer: p4-ratio
+    where: 'Problem 4(a), answer box: short over long axis at (ii), from the mean squares of the two transverse components'
+    formula: sqrt(integrate('(cos(q)*1/sqrt(2) + 0*(-1/sqrt(2)))**2', 'q', 0, 2*pi)/integrate('sin(q)**2', 'q', 0, 2*pi))
+    expected: 0.707
+    shown: ['id="p4-ratio"', '$1/\sqrt2 \approx 0.707$ times as long']
+    source: {cite: mit, at: 'Problem 9.4(a)(ii), p. 3 (our own solution)'}
+    origin: page-own
+
+  # |a_perp|^2 = |a|^2 - (a . r)^2 must equal the sum of the squares of the two transverse components at (ii).
+  - id: p4-aperp-ii
+    kind: identity
+    where: 'Problem 4(a)(ii): the two transverse components carry all of the perpendicular acceleration'
+    formula: (cos(u)/sqrt(2))**2 + sin(u)**2
+    equals: 1 - (cos(u)/sqrt(2))**2
+    samples:
+      u: [0.4, 1.9, 4.3]
+    tolerance: 1e-12
+    shown: ['label="Perpendicular acceleration at position (ii)"']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  # Fields at (0, 0, R): E = -q a/(4 pi eps0 c^2 R) with q = -e and a the numerical second derivative of the
+  # path at the retarded time t - R/c.
+  - id: p4-ex
+    kind: identity
+    answer: p4-ex
+    where: 'Problem 4(b), answer box: E_x from the numerical second derivative of x(t) at the retarded time'
+    formula: -e*al*be**2*cos(be*(t - R/c))/(4*pi*eps0*c**2*R)
+    equals: -(-e)*deriv('al*cos(be*q)', 'q', t - R/c, 2)/(4*pi*eps0*c**2*R)
+    samples:
+      e: [1.1, 1.6, 1.9]
+      al: [0.6, 1.2, 1.8]
+      be: [0.6, 1.4, 1.9]
+      t: [3.1, 4.0, 4.8]
+      R: [1.1, 1.5, 1.9]
+      c: [2.0, 3.0, 4.5]
+      eps0: [0.7, 0.4, 1.1]
+    tolerance: 1e-5
+    shown: ['id="p4-ex"']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  - id: p4-ey
+    kind: identity
+    answer: p4-ey
+    where: 'Problem 4(b), answer box: E_y from the numerical second derivative of y(t) at the retarded time'
+    formula: -e*al*be**2*sin(be*(t - R/c))/(4*pi*eps0*c**2*R)
+    equals: -(-e)*deriv('al*sin(be*q)', 'q', t - R/c, 2)/(4*pi*eps0*c**2*R)
+    samples:
+      e: [1.1, 1.6, 1.9]
+      al: [0.6, 1.2, 1.8]
+      be: [0.6, 1.4, 1.9]
+      t: [3.1, 4.0, 4.8]
+      R: [1.1, 1.5, 1.9]
+      c: [2.0, 3.0, 4.5]
+      eps0: [0.7, 0.4, 1.1]
+    tolerance: 1e-5
+    shown: ['id="p4-ey"']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  # B = z-hat x E / c: B_x = -E_y/c and B_y = E_x/c, with E from the numerical acceleration.
+  - id: p4-bx
+    kind: identity
+    answer: p4-bx
+    where: 'Problem 4(b), answer box: B_x = -E_y/c with E_y from the numerical acceleration'
+    formula: e*al*be**2*sin(be*(t - R/c))/(4*pi*eps0*c**3*R)
+    equals: -(-(-e)*deriv('al*sin(be*q)', 'q', t - R/c, 2)/(4*pi*eps0*c**2*R))/c
+    samples:
+      e: [1.1, 1.6, 1.9]
+      al: [0.6, 1.2, 1.8]
+      be: [0.6, 1.4, 1.9]
+      t: [3.1, 4.0, 4.8]
+      R: [1.1, 1.5, 1.9]
+      c: [2.0, 3.0, 4.5]
+      eps0: [0.7, 0.4, 1.1]
+    tolerance: 1e-5
+    shown: ['id="p4-bx"']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  - id: p4-by
+    kind: identity
+    answer: p4-by
+    where: 'Problem 4(b), answer box: B_y = E_x/c with E_x from the numerical acceleration'
+    formula: -e*al*be**2*cos(be*(t - R/c))/(4*pi*eps0*c**3*R)
+    equals: (-(-e)*deriv('al*cos(be*q)', 'q', t - R/c, 2)/(4*pi*eps0*c**2*R))/c
+    samples:
+      e: [1.1, 1.6, 1.9]
+      al: [0.6, 1.2, 1.8]
+      be: [0.6, 1.4, 1.9]
+      t: [3.1, 4.0, 4.8]
+      R: [1.1, 1.5, 1.9]
+      c: [2.0, 3.0, 4.5]
+      eps0: [0.7, 0.4, 1.1]
+    tolerance: 1e-5
+    shown: ['id="p4-by"']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  # The power as the integral of the average energy flow of part (d) over the sphere of radius R:
+  # <S> = e^2 al^2 be^4 (1 + cos^2 th)/(32 pi^2 eps0 c^3 R^2), area element 2 pi R^2 sin(th) d th.
+  - id: p4-p
+    kind: identity
+    answer: p4-p
+    where: 'Problem 4(c), answer box: Larmor power against the numerical integral of the average energy flow over a sphere'
+    formula: e**2*al**2*be**4/(6*pi*eps0*c**3)
+    equals: integrate('e**2*al**2*be**4*(1 + cos(q)**2)/(32*pi**2*eps0*c**3*R**2)*2*pi*R**2*sin(q)', 'q', 0, pi)
+    samples:
+      e: [1.1, 1.6, 1.9]
+      al: [0.6, 1.2, 1.8]
+      be: [0.6, 1.4, 1.9]
+      R: [1.1, 1.5, 1.9]
+      c: [2.0, 3.0, 4.5]
+      eps0: [0.7, 0.4, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p4-p"']
+    source: {cite: mit, at: 'Problem 9.4(c), p. 3'}
+    origin: page-own
+
+  - id: p4-sphere-integral
+    where: 'Problem 4(d), check: the integral of 1 + cos^2(theta) over all directions is 16 pi/3'
+    formula: integrate('(1 + cos(q)**2)*2*pi*sin(q)', 'q', 0, pi) - 16*pi/3
+    expected: 0
+    tolerance: 1e-9
+    shown: ['$2\pi\left(2 + \tfrac23\right) = \tfrac{16\pi}{3}$']
+    source: {cite: mit, at: 'Problem 9.4(d), p. 4 (our own check)'}
+    origin: page-own
+
+  # The average of |a_perp|^2/|a|^2 over a turn in the direction (theta, phi), as a numerical integral.
+  - id: p4-angular
+    kind: identity
+    where: 'Problem 4(d), solution: the average of |a_perp|^2 over a turn is (1 + cos^2 theta)/2 times |a|^2'
+    formula: (1 + cos(th)**2)/2
+    equals: 1/(2*pi)*integrate('1 - (sin(th)*cos(q - ph))**2', 'q', 0, 2*pi)
+    samples:
+      th: [0.3, 1.2, 2.5]
+      ph: [0.0, 0.9, 2.2]
+    tolerance: 1e-9
+    shown: ['label="Average energy flow in the direction θ"']
+    source: {cite: mit, at: 'Problem 9.4(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  # Largest over smallest: the average of |a_perp|^2 on the axis (all of a) over that in the plane of the circle
+  # (direction x: only the y component, sin^2), both as numerical averages over a turn.
+  - id: p4-d
+    answer: p4-d
+    where: 'Problem 4(d), answer box: average of |a_perp|^2 on the z axis over that on the x axis'
+    formula: integrate('cos(q)**2 + sin(q)**2', 'q', 0, 2*pi)/integrate('sin(q)**2', 'q', 0, 2*pi)
+    expected: 2
+    tolerance: 1e-9
+    shown: ['id="p4-d"', 'label="Largest over smallest energy flow"']
+    source: {cite: mit, at: 'Problem 9.4(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: Brewster's angle
+
+  # Independent of the right-angle condition: the reflected amplitude (alpha - beta)/(alpha + beta) of the lesson
+  # vanishes where cos(theta_T)/cos(theta_I) = n, with theta_T from Snell's law.
+  - id: p5-b
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box: arctan(n) against the numerical root of alpha = beta, with Snell''s law'
+    formula: atan(n)
+    equals: solve('cos(asin(sin(q)/n))/cos(q) - n', 'q', 0.6, 1.4)
+    samples:
+      n: [1.3, 1.52, 2.4]
+    tolerance: 1e-8
+    shown: ['id="p5-b"']
+    source: {cite: reading4, at: 'pp. 6-7'}
+    origin: page-own
+
+  - id: p5-n
+    kind: fact
+    where: 'Problem 5(b), statement: the refractive index of our own example'
+    shown: ['in degrees for a glass with $n_{\text{glass}} = 1.52$']
+    source: {cite: mit, at: 'Problem 9.5(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p5-deg
+    answer: p5-deg
+    where: 'Problem 5(b), answer box: Brewster''s angle in degrees for n = 1.52, as the numerical root of alpha = beta'
+    inputs: {n: 1.52}
+    formula: solve('cos(asin(sin(q)/n))/cos(q) - n', 'q', 0.6, 1.4)*180/pi
+    expected: 56.7
+    shown: ['id="p5-deg"', '\arctan(1.52) \approx 56.7°', 'gives $56.7°$ again']
+    source: {cite: mit, at: 'Problem 9.5(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p5-thetaT
+    where: 'Problem 5(b), solution: the angle of the refracted ray for n = 1.52'
+    inputs: {n: 1.52}
+    formula: 90 - atan(n)*180/pi
+    expected: 33.3
+    shown: ['$\theta_T = 90° - 56.7° = 33.3°$']
+    source: {cite: mit, at: 'Problem 9.5(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p5-snell-left
+    where: 'Problem 5(b), check: sine of Brewster''s angle for n = 1.52'
+    inputs: {n: 1.52}
+    formula: sin(atan(n))
+    expected: 0.835
+    shown: ['$\sin 56.7° \approx 0.835$']
+    source: {cite: mit, at: 'Problem 9.5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-snell-right
+    where: 'Problem 5(b), check: n times the sine of the refracted angle for n = 1.52'
+    inputs: {n: 1.52}
+    formula: n*sin(pi/2 - atan(n))
+    expected: 0.835
+    shown: ['$1.52\sin 33.3° \approx 0.835$']
+    source: {cite: mit, at: 'Problem 9.5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-limit
+    where: 'Problem 5(b), check: Brewster''s angle tends to 45 degrees as n tends to 1'
+    inputs: {n: 1}
+    formula: atan(n)*180/pi
+    expected: 45
+    tolerance: 1e-9
+    shown: ['$\theta_B \to 45°$']
+    source: {cite: mit, at: 'Problem 9.5(b), p. 4 (our own check)'}
+    origin: page-own
