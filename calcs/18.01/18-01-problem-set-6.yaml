@@ -1,0 +1,733 @@
+# Calculations on content/year-1/18.01/18-01-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for Part II of this set, so every answer is checked here by an independent route:
+# a numerical integration, an equation solved numerically, or the parabola through three points built from
+# Lagrange's interpolation formula (which the page does not use).
+
+page: content/year-1/18.01/18-01-problem-set-6.mdx
+calcs:
+  # ---- Problem 2
+
+  - id: p2-frequency
+    kind: fact
+    where: 'Problem 2: the angle 120πt of the voltage, MIT''s formula'
+    shown: ['V(t) = C\,\sin(120\pi t)']
+    source: {cite: mit, at: 'Part II, Problem 2, p. 1'}
+    origin: mit
+
+  - id: p2-period
+    where: 'Problem 2: the period 2π/(120π) is 1/60 second (checked as 60 periods in one second)'
+    inputs: {}
+    formula: 60 * 2*pi / (120*pi)
+    expected: '1'
+    shown: ['$2\pi/(120\pi) = 1/60$ second']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-angle-at-end
+    where: 'Problem 2: the angle 240πt at t = 1/60, in units of π'
+    inputs: {}
+    formula: 240 / 60
+    expected: '4'
+    shown: ['because $240\pi/60 = 4\pi$']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-sine-squared-integral
+    where: 'Problem 2, formula "Integral of the squared sine over one period": 1/120, by numerical integration (checked as 120 times the integral)'
+    inputs: {}
+    formula: 120 * integrate('sin(120*pi*t)**2', 't', 0, 1/60)
+    expected: '1.000'
+    shown: ['\right]_0^{1/60} = \frac{1}{120}']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-antiderivative
+    kind: identity
+    where: 'Problem 2: the antiderivative t/2 − sin(240πt)/(480π) against a numerical integral of sin²(120πt) from 0 to s'
+    formula: s/2 - sin(240*pi*s)/(480*pi)
+    equals: integrate('sin(120*pi*t)**2', 't', 0, s)
+    samples: {s: [0.001, 0.004, 0.009, 0.0125, 0.0166]}
+    tolerance: 1e-8
+    shown: ['\left[\frac{t}{2} - \frac{\sin(240\pi t)}{480\pi}\right]']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-average-of-square
+    kind: identity
+    where: 'Problem 2, formula "Average of the squared voltage": C²/2 against 60 times the numerical integral of V² over one period'
+    formula: C**2 / 2
+    equals: 60 * integrate('(C*sin(120*pi*t))**2', 't', 0, 1/60)
+    samples: {C: [50, 120, 169.7, 400]}
+    tolerance: 1e-8
+    shown: ['= 60\,C^2 \cdot \frac{1}{120} = \frac{C^2}{2}']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  # The answer against the definition: the square root of the average of V² over one period, integrated numerically.
+  - id: p2-rms
+    kind: identity
+    answer: p2-rms
+    where: 'Problem 2, answer box: C/√2 against the square root of 60 times the numerical integral of V² over one period'
+    formula: C/sqrt(2)
+    equals: sqrt(60 * integrate('(C*sin(120*pi*t))**2', 't', 0, 1/60))
+    samples: {C: [50, 120, 169.7, 400]}
+    tolerance: 1e-8
+    shown: ['V_{\text{rms}} = \sqrt{\frac{C^2}{2}} = \frac{C}{\sqrt2}']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-factor
+    where: 'Problem 2: 1/√2'
+    inputs: {}
+    formula: 1 / sqrt(2)
+    expected: '0.7071'
+    shown: ['\approx 0.7071\,C']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-percent
+    where: 'Problem 2: the RMS as a percentage of the peak'
+    inputs: {}
+    formula: 100 / sqrt(2)
+    expected: '71'
+    shown: ['about 71% of the peak voltage']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-example
+    where: 'Problem 2, check: the peak voltage when the meter shows 120 volts (our own example)'
+    inputs: {rms: 120}
+    formula: rms * sqrt(2)
+    expected: '169.7'
+    shown: ['$C = 120\sqrt2 = 169.7$ volts']
+    source: {cite: mit, at: 'Part II, Problem 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-a-probability
+    answer: p3-a
+    where: 'Problem 3(a), answer box: the area of the unit square above y = x², by numerical integration'
+    inputs: {}
+    formula: integrate('1 - x**2', 'x', 0, 1)
+    expected: '0.667'
+    shown: ['the probability is $\tfrac23 = 0.667$']
+    source: {cite: mit, at: 'Part II, Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-under
+    where: 'Problem 3(a), check: the area under the parabola is 1/3 (checked as 3 times the integral)'
+    inputs: {}
+    formula: 3 * integrate('x**2', 'x', 0, 1)
+    expected: '1.000'
+    shown: ['$\int_0^1 x^2\,dx = \tfrac13$']
+    source: {cite: mit, at: 'Part II, Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-edge
+    where: 'Problem 3(b): where the parabola meets the top edge y = 2, found by solving x² = 2'
+    inputs: {}
+    formula: solve('x**2 - 2', 'x', 0, 2)
+    expected: '1.414'
+    shown: ['at $x = \sqrt2 = 1.414$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-area
+    where: 'Problem 3(b), formula "Area above the parabola in the larger square", by numerical integration'
+    inputs: {}
+    formula: integrate('2 - x**2', 'x', 0, sqrt(2))
+    expected: '1.886'
+    shown: ['= \frac{4\sqrt2}{3} = 1.886']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-area-closed-form
+    kind: identity
+    where: 'Problem 3(b): 4√2/3 against the numerical integral of 2 − x² from 0 to √2 (u is a dummy)'
+    formula: 4*sqrt(2)/3 + 0*u
+    equals: integrate('2 - x**2', 'x', 0, sqrt(2)) + 0*u
+    samples: {u: [1]}
+    tolerance: 1e-9
+    shown: ['= 2\sqrt2 - \frac{2\sqrt2}{3}']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-probability
+    answer: p3-b
+    where: 'Problem 3(b), answer box: the area above the parabola divided by the area 4 of the square'
+    inputs: {}
+    formula: integrate('2 - x**2', 'x', 0, solve('x**2 - 2', 'x', 0, 2)) / 4
+    expected: '0.471'
+    shown: ['= \frac{\sqrt2}{3} = 0.471']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-slip
+    where: 'Problem 3(b), check: integrating 2 − x² all the way to x = 2 gives 4/3 (checked as 3 times the integral)'
+    inputs: {}
+    formula: 3 * integrate('2 - x**2', 'x', 0, 2)
+    expected: '4.000'
+    shown: ['That gives $\tfrac43$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-slip-probability
+    where: 'Problem 3(b), check: the wrong probability that slip gives is 1/3 (checked as 3 times it)'
+    inputs: {}
+    formula: 3 * integrate('2 - x**2', 'x', 0, 2) / 4
+    expected: '1.000'
+    shown: ['and a probability of $\tfrac13$']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # The whole against a numerical integral up to 60/a, where the exponential has fallen to e^(−60).
+  - id: p3-c-whole
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(c), answer box and formula "The whole": 1/a against the numerical integral of e^(−at) from 0 to 60/a'
+    formula: 1/a
+    equals: integrate('exp(-a*t)', 't', 0, 60/a)
+    samples: {a: [0.5, 0.6931, 1.0, 2.0, 3.0]}
+    tolerance: 1e-8
+    shown: ['W = \lim_{N\to\infty}\frac{1 - e^{-aN}}{a} = \frac1a']
+    source: {cite: mit, at: 'Part II, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-up-to-n
+    kind: identity
+    where: 'Problem 3(c), formula "The area up to N": (1 − e^(−aN))/a against a numerical integral'
+    formula: (1 - exp(-a*N)) / a
+    equals: integrate('exp(-a*t)', 't', 0, N)
+    samples:
+      a: [0.5, 1.0, 2.0, 3.0]
+      N: [1.0, 4.0, 5.0, 0.3]
+    tolerance: 1e-8
+    shown: ['\right]_0^N = \frac{1 - e^{-aN}}{a}']
+    source: {cite: mit, at: 'Part II, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-limit
+    kind: limit
+    where: 'Problem 3(c): (1 − e^(−aN))/a → 1/a as N grows, for a = 2'
+    formula: (1 - exp(-2*N)) / 2
+    limit: 0.5
+    vary: {N: [1, 2, 5, 10, 20, 40]}
+    tolerance: 1e-9
+    shown: ['the exponential $e^{-aN}$ goes to $0$ as $N$ grows']
+    source: {cite: mit, at: 'Part II, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-check
+    where: 'Problem 3(c), check: the area up to N = 5 for a = 2'
+    inputs: {a: 2, N: 5}
+    formula: (1 - exp(-a*N)) / a
+    expected: '0.49998'
+    shown: ['is already $0.49998$, close to $1/a = 0.5$']
+    source: {cite: mit, at: 'Part II, Problem 3(c) (our own numbers)'}
+    origin: page-own
+
+  - id: p3-d-before-t
+    kind: identity
+    where: 'Problem 3(d), formula "Decay before time T, worked out": 1 − e^(−aT) against a times the numerical integral of e^(−at) from 0 to T'
+    formula: 1 - exp(-a*T)
+    equals: a * integrate('exp(-a*t)', 't', 0, T)
+    samples:
+      a: [0.5, 0.6931, 2.0, 3.0]
+      T: [1.0, 1.0, 0.4, 2.5]
+    tolerance: 1e-8
+    shown: ['= a \cdot \frac{1 - e^{-aT}}{a} = 1 - e^{-aT}']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  # a from the definition of the half-life: solve a ∫₀¹ e^(−at) dt = 1/2 numerically, with the integral done numerically too.
+  - id: p3-d-a
+    answer: p3-d-a
+    where: 'Problem 3(d), answer box: a for a half-life of 1 second, by solving a·∫₀¹ e^(−at) dt = 1/2 numerically'
+    inputs: {}
+    formula: solve('a * integrate("exp(-a*t)", "t", 0, 1) - 0.5', 'a', 0.1, 5)
+    expected: '0.6931'
+    shown: ['a = \ln 2 = 0.6931']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-w
+    answer: p3-d-w
+    where: 'Problem 3(d), answer box: W for a half-life of 1 second, as the numerical integral of e^(−t ln 2) from 0 to 90'
+    inputs: {}
+    formula: integrate('exp(-log(2)*t)', 't', 0, 90)
+    expected: '1.4427'
+    shown: ['\frac{1}{\ln 2} = 1.4427']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-probability
+    answer: p3-d-p
+    where: 'Problem 3(d), answer box: the probability of decay between t = 1 and t = 2, by numerical integration'
+    inputs: {}
+    formula: log(2) * integrate('exp(-log(2)*t)', 't', 1, 2)
+    expected: '0.25'
+    shown: ['$\ln 2 \times \int_1^2 e^{-0.6931t}\,dt = 0.25$']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-interval
+    kind: identity
+    where: 'Problem 3(d), formula "Probability of decay in the second half-life": e^(−a) − e^(−2a) against a times the numerical integral from 1 to 2'
+    formula: exp(-a) - exp(-2*a)
+    equals: a * integrate('exp(-a*t)', 't', 1, 2)
+    samples: {a: [0.5, 0.6931, 2.0, 3.0]}
+    tolerance: 1e-8
+    shown: ['= e^{-a} - e^{-2a} = \frac12 - \frac14 = \frac14']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-percent
+    where: 'Problem 3(d): the probability as a percentage'
+    inputs: {}
+    formula: 100 * (exp(-log(2)) - exp(-2*log(2)))
+    expected: '25'
+    shown: ['a probability of 25%']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-beyond
+    where: 'Problem 3(d), check: the probability of surviving beyond t = 2 is 1/4, and the three probabilities add up to 1'
+    inputs: {}
+    formula: 0.5 + 0.25 + exp(-2*log(2))
+    expected: '1.000'
+    shown: ['and $e^{-2a} = \tfrac14$ for surviving beyond $t = 2$']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+  # The parabola through (−h, y0), (0, y1), (h, y2) in Lagrange's form, which the page does not use:
+  # y0·x(x − h)/(2h²) − y1·(x + h)(x − h)/h² + y2·(x + h)x/(2h²).
+
+  - id: p4-a-constant
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box: C = y1 against the value at x = 0 of the Lagrange parabola through the three points'
+    formula: y1
+    equals: deriv('(y0*x*(x - h)/(2*h**2) - y1*(x + h)*(x - h)/h**2 + y2*(x + h)*x/(2*h**2)) * s', 's', 1, 1) + 0*x
+    samples:
+      y0: [1.0, 3.0, 2.2, -1.0]
+      y1: [4.0, 6.0, 5.1, 2.0]
+      y2: [7.0, 9.0, 8.4, 0.5]
+      h: [1.0, 0.5, 2.0, 0.3]
+      x: [0, 0, 0, 0]
+    tolerance: 1e-6
+    shown: ['y_1 = A \cdot 0^2 + B \cdot 0 + C = C']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-area
+    kind: identity
+    where: 'Problem 4(b), formula "Area in terms of A and C": 2Ah³/3 + 2Ch against the numerical integral of Ax² + Bx + C from −h to h'
+    formula: 2*A*h**3/3 + 2*C*h
+    equals: integrate('A*x**2 + B*x + C', 'x', -h, h)
+    samples:
+      A: [3.0, -1.0, 0.5, 2.0]
+      B: [5.0, 2.0, -4.0, 0.0]
+      C: [2.0, 6.0, 1.5, 3.0]
+      h: [1.0, 0.5, 2.0, 0.3]
+    tolerance: 1e-8
+    shown: ['\right]_{-h}^{h} = \frac{2Ah^3}{3} + 2Ch']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-factored
+    kind: identity
+    where: 'Problem 4(b), formula "Area in terms of 2Ah² and C": (h/3)(2Ah² + 6C) against the same numerical integral'
+    formula: h/3 * (2*A*h**2 + 6*C)
+    equals: integrate('A*x**2 + B*x + C', 'x', -h, h)
+    samples:
+      A: [3.0, -1.0, 0.5, 2.0]
+      B: [5.0, 2.0, -4.0, 0.0]
+      C: [2.0, 6.0, 1.5, 3.0]
+      h: [1.0, 0.5, 2.0, 0.3]
+    tolerance: 1e-8
+    shown: ['\frac{2Ah^3}{3} + 2Ch = \frac{h}{3}\left(2Ah^2 + 6C\right)']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-check-formula
+    where: 'Problem 4(b), check with A = 3, C = 2, h = 1: (h/3)(2Ah² + 6C)'
+    inputs: {A: 3, C: 2, h: 1}
+    formula: h/3 * (2*A*h**2 + 6*C)
+    expected: '6'
+    shown: ['the formula gives $\tfrac13(6 + 12) = 6$']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-b-check-integral
+    where: 'Problem 4(b), check: the integral of 3x² + 5x + 2 from −1 to 1, numerically'
+    inputs: {}
+    formula: integrate('3*x**2 + 5*x + 2', 'x', -1, 1)
+    expected: '6.000'
+    shown: ['= 5.5 - (-0.5) = 6$ as well']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-b-check-upper
+    where: 'Problem 4(b), check: x³ + (5/2)x² + 2x at x = 1'
+    inputs: {x: 1}
+    formula: x**3 + 2.5*x**2 + 2*x
+    expected: '5.5'
+    shown: ['\right]_{-1}^{1} = 5.5']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-b-check-lower
+    where: 'Problem 4(b), check: x³ + (5/2)x² + 2x at x = −1'
+    inputs: {x: -1}
+    formula: x**3 + 2.5*x**2 + 2*x
+    expected: '-0.5'
+    shown: ['5.5 - (-0.5)']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # 2Ah² = h² times the second derivative of the parabola; the second derivative is taken numerically from the Lagrange form.
+  - id: p4-c-combination
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box: y0 + y2 − 2 y1 against h² times the numerical second derivative of the Lagrange parabola through the three points'
+    formula: y0 + y2 - 2*y1
+    equals: h**2 * deriv('y0*x*(x - h)/(2*h**2) - y1*(x + h)*(x - h)/h**2 + y2*(x + h)*x/(2*h**2)', 'x', 0.2, 2)
+    samples:
+      y0: [1.0, 3.0, 2.2, -1.0]
+      y1: [4.0, 6.0, 5.1, 2.0]
+      y2: [7.5, 9.5, 8.4, 0.5]
+      h: [1.0, 0.5, 2.0, 0.3]
+    tolerance: 1e-4
+    shown: ['2Ah^2 = y_0 + y_2 - 2y_1']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-check
+    where: 'Problem 4(c), check: y = x² with h = 1 has heights 1, 0, 1'
+    inputs: {y0: 1, y1: 0, y2: 1}
+    formula: y0 + y2 - 2*y1
+    expected: '2'
+    shown: ['and the result is $2$, which is $2Ah^2$ with $A = 1$']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # The whole formula against the numerical integral of the Lagrange parabola from −h to h.
+  - id: p4-d-area
+    kind: identity
+    where: 'Problem 4(d), formula "The area under the parabola, proved": (h/3)(y0 + 4 y1 + y2) against the numerical integral of the Lagrange parabola through the three points'
+    formula: h/3 * (y0 + 4*y1 + y2)
+    equals: integrate('y0*x*(x - h)/(2*h**2) - y1*(x + h)*(x - h)/h**2 + y2*(x + h)*x/(2*h**2)', 'x', -h, h)
+    samples:
+      y0: [1.0, 3.0, 2.2, -1.0]
+      y1: [4.0, 6.0, 5.1, 2.0]
+      y2: [7.5, 9.5, 8.4, 0.5]
+      h: [1.0, 0.5, 2.0, 0.3]
+    tolerance: 1e-8
+    shown: ['= \frac{h}{3}\left(y_0 + y_2 - 2y_1 + 6y_1\right)']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-d-check-constant
+    where: 'Problem 4(d), check: y = 1 gives (h/3)·6 = 2h (checked for h = 1)'
+    inputs: {h: 1}
+    formula: h/3 * (1 + 4 + 1)
+    expected: '2'
+    shown: ['$\tfrac{h}{3}(1 + 4 + 1) = 2h$']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-d-check-square
+    where: 'Problem 4(d), check: the integral of x² from −1 to 1 is 2/3 (checked as 3 times the integral)'
+    inputs: {}
+    formula: 3 * integrate('x**2', 'x', -1, 1)
+    expected: '2.000'
+    shown: ['$\int_{-1}^{1} x^2\,dx = \tfrac23$']
+    source: {cite: mit, at: 'Part II, Problem 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-upper-limit
+    where: 'Problem 5: a = √(π/2)'
+    inputs: {}
+    formula: sqrt(pi/2)
+    expected: '1.253314'
+    shown: ['$a = \sqrt{\pi/2} = 1.253314$']
+    source: {cite: mit, at: 'Part II, Problem 5, p. 2'}
+    origin: page-own
+
+  - id: p5-exact
+    where: 'Problem 5: the integral itself, by numerical integration, to five decimal places'
+    inputs: {}
+    formula: integrate('cos(t**2)', 't', 0, sqrt(pi/2))
+    expected: '0.97745'
+    shown: ['the integral is $0.97745$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-exact-6
+    where: 'Problem 5: the integral to six decimal places'
+    inputs: {}
+    formula: integrate('cos(t**2)', 't', 0, sqrt(pi/2))
+    expected: '0.977451'
+    shown: ['above the integral, $0.977451$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
+
+  # MIT's sheet prints 1.22505 as "the exact answer". It is √(π/2) times the integral: a slip in the source, not repeated.
+  - id: p5-mit-printed-value
+    where: 'Problem 5: the number MIT prints, 1.22505, is √(π/2) times the integral'
+    inputs: {}
+    formula: sqrt(pi/2) * integrate('cos(t**2)', 't', 0, sqrt(pi/2))
+    expected: '1.22505'
+    shown: ['MIT''s sheet prints $1.22505$ as the exact value', '$1.253314 \times 0.977451$']
+    source: {cite: mit, at: 'Part II, Problem 5, p. 2'}
+    origin: slip
+
+  - id: p5-a-step
+    where: 'Problem 5(a): the step a/4 (also t₁ of the table and t₂ of part (b))'
+    inputs: {}
+    formula: sqrt(pi/2) / 4
+    expected: '0.313329'
+    shown: ['$\Delta x = a/4 = 0.313329$', '| 1 | 0.313329 | $\pi/32$', '| 2 | 0.313329 |', '\frac{0.313329}{3}']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-t2
+    where: 'Problem 5(a), table: t₂ = 2a/4 (t₄ of part (b))'
+    inputs: {}
+    formula: 2 * sqrt(pi/2) / 4
+    expected: '0.626657'
+    shown: ['| 2 | 0.626657 | $\pi/8$', '| 4 | 0.626657 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-t3
+    where: 'Problem 5(a), table: t₃ = 3a/4 (t₆ of part (b))'
+    inputs: {}
+    formula: 3 * sqrt(pi/2) / 4
+    expected: '0.939986'
+    shown: ['| 3 | 0.939986 | $9\pi/32$', '| 6 | 0.939986 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-y1
+    where: 'Problem 5(a), table: cos(π/32)'
+    inputs: {}
+    formula: cos((sqrt(pi/2) / 4)**2)
+    expected: '0.995185'
+    shown: ['$\pi/32$ | 0.995185 | 4 |', '| 0.313329 | 0.995185 | 2 |', '4 \times 0.995185']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-y2
+    where: 'Problem 5(a), table: cos(π/8)'
+    inputs: {}
+    formula: cos((2 * sqrt(pi/2) / 4)**2)
+    expected: '0.923880'
+    shown: ['$\pi/8$ | 0.923880 | 2 |', '| 0.626657 | 0.923880 | 2 |', '2 \times 0.923880']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-y3
+    where: 'Problem 5(a), table: cos(9π/32)'
+    inputs: {}
+    formula: cos((3 * sqrt(pi/2) / 4)**2)
+    expected: '0.634393'
+    shown: ['$9\pi/32$ | 0.634393 | 4 |', '| 0.939986 | 0.634393 | 2 |', '4 \times 0.634393']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-squares
+    where: 'Problem 5(a): t₁² = (a/4)² is π/32 (checked as the ratio)'
+    inputs: {}
+    formula: (sqrt(pi/2) / 4)**2 / (pi/32)
+    expected: '1.000'
+    shown: ['so there $t^2 = i^2\pi/32$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-weighted-sum
+    where: 'Problem 5(a): the weighted sum of the five values'
+    inputs: {}
+    formula: 1 + 4*cos(pi/32) + 2*cos(pi/8) + 4*cos(9*pi/32) + cos(pi/2)
+    expected: '9.366071'
+    shown: ['\times 9.366071']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-factor
+    where: 'Problem 5(a): Δx/3 for four intervals'
+    inputs: {}
+    formula: sqrt(pi/2) / 4 / 3
+    expected: '0.1044428'
+    shown: ['= 0.1044428 \times']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-simpson-4
+    answer: p5-a
+    where: 'Problem 5(a), answer box: Simpson''s rule with four intervals, added up term by term'
+    inputs: {n: 4}
+    formula: sqrt(pi/2)/n/3 * (cos(0) + 4*cos(1*pi/(2*n**2)) + 2*cos(4*pi/(2*n**2)) + 4*cos(9*pi/(2*n**2)) + cos(16*pi/(2*n**2)))
+    expected: '0.978219'
+    shown: ['\times 9.366071 = 0.978219']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-error
+    where: 'Problem 5(a), check: Simpson with four intervals minus the integral'
+    inputs: {}
+    formula: sqrt(pi/2)/12 * (1 + 4*cos(pi/32) + 2*cos(pi/8) + 4*cos(9*pi/32) + cos(pi/2)) - integrate('cos(t**2)', 't', 0, sqrt(pi/2))
+    expected: '0.000768'
+    shown: ['The value is $0.000768$ above the integral', 'against $0.000768$ with four']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-b-step
+    where: 'Problem 5(b): the step a/8 (also t₁ of the table)'
+    inputs: {}
+    formula: sqrt(pi/2) / 8
+    expected: '0.156664'
+    shown: ['$\Delta x = a/8 = 0.156664$', '| 1 | 0.156664 |', '\frac{0.156664}{3}']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-squares
+    where: 'Problem 5(b): t₁² = (a/8)² is π/128 (checked as the ratio)'
+    inputs: {}
+    formula: (sqrt(pi/2) / 8)**2 / (pi/128)
+    expected: '1.000'
+    shown: ['and there $t^2 = i^2\pi/128$']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-t3
+    where: 'Problem 5(b), table: t₃ = 3a/8'
+    inputs: {}
+    formula: 3 * sqrt(pi/2) / 8
+    expected: '0.469993'
+    shown: ['| 3 | 0.469993 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-t5
+    where: 'Problem 5(b), table: t₅ = 5a/8'
+    inputs: {}
+    formula: 5 * sqrt(pi/2) / 8
+    expected: '0.783321'
+    shown: ['| 5 | 0.783321 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-t7
+    where: 'Problem 5(b), table: t₇ = 7a/8'
+    inputs: {}
+    formula: 7 * sqrt(pi/2) / 8
+    expected: '1.096650'
+    shown: ['| 7 | 1.096650 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-y1
+    where: 'Problem 5(b), table: cos(π/128)'
+    inputs: {}
+    formula: cos((sqrt(pi/2) / 8)**2)
+    expected: '0.999699'
+    shown: ['| 0.156664 | 0.999699 | 4 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-y3
+    where: 'Problem 5(b), table: cos(9π/128)'
+    inputs: {}
+    formula: cos((3 * sqrt(pi/2) / 8)**2)
+    expected: '0.975702'
+    shown: ['| 0.469993 | 0.975702 | 4 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-y5
+    where: 'Problem 5(b), table: cos(25π/128)'
+    inputs: {}
+    formula: cos((5 * sqrt(pi/2) / 8)**2)
+    expected: '0.817585'
+    shown: ['| 0.783321 | 0.817585 | 4 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-y7
+    where: 'Problem 5(b), table: cos(49π/128)'
+    inputs: {}
+    formula: cos((7 * sqrt(pi/2) / 8)**2)
+    expected: '0.359895'
+    shown: ['| 1.096650 | 0.359895 | 4 |']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-sum-4
+    where: 'Problem 5(b): the sum of the four values with weight 4'
+    inputs: {}
+    formula: cos(pi/128) + cos(9*pi/128) + cos(25*pi/128) + cos(49*pi/128)
+    expected: '3.152881'
+    shown: ['add up to $3.152881$', '4 \times 3.152881']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-sum-2
+    where: 'Problem 5(b): the sum of the three values with weight 2'
+    inputs: {}
+    formula: cos(4*pi/128) + cos(16*pi/128) + cos(36*pi/128)
+    expected: '2.553458'
+    shown: ['those with weight 2 to $2.553458$', '2 \times 2.553458']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-weighted-sum
+    where: 'Problem 5(b): the weighted sum of the nine values'
+    inputs: {}
+    formula: 1 + 4*(cos(pi/128) + cos(9*pi/128) + cos(25*pi/128) + cos(49*pi/128)) + 2*(cos(4*pi/128) + cos(16*pi/128) + cos(36*pi/128)) + cos(pi/2)
+    expected: '18.718438'
+    shown: ['\times 18.718438']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-factor
+    where: 'Problem 5(b): Δx/3 for eight intervals'
+    inputs: {}
+    formula: sqrt(pi/2) / 8 / 3
+    expected: '0.0522214'
+    shown: ['= 0.0522214 \times']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-simpson-8
+    answer: p5-b
+    where: 'Problem 5(b), answer box: Simpson''s rule with eight intervals, added up term by term from t = i·a/8'
+    inputs: {a: 1.2533141373155001}
+    formula: a/8/3 * (cos(0) + 4*cos((a/8)**2) + 2*cos((2*a/8)**2) + 4*cos((3*a/8)**2) + 2*cos((4*a/8)**2) + 4*cos((5*a/8)**2) + 2*cos((6*a/8)**2) + 4*cos((7*a/8)**2) + cos(a**2))
+    expected: '0.977503'
+    shown: ['\times 18.718438 = 0.977503']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-error
+    where: 'Problem 5(b), check: Simpson with eight intervals minus the integral'
+    inputs: {}
+    formula: sqrt(pi/2)/24 * (1 + 4*(cos(pi/128) + cos(9*pi/128) + cos(25*pi/128) + cos(49*pi/128)) + 2*(cos(4*pi/128) + cos(16*pi/128) + cos(36*pi/128))) - integrate('cos(t**2)', 't', 0, sqrt(pi/2))
+    expected: '0.000052'
+    shown: ['only $0.000052$ above the integral']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-b-error-ratio
+    where: 'Problem 5(b), check: the error with four intervals divided by the error with eight'
+    inputs: {i: 0.9774514242913297}
+    formula: (sqrt(pi/2)/12 * (1 + 4*cos(pi/32) + 2*cos(pi/8) + 4*cos(9*pi/32)) - i) / (sqrt(pi/2)/24 * (1 + 4*(cos(pi/128) + cos(9*pi/128) + cos(25*pi/128) + cos(49*pi/128)) + 2*(cos(4*pi/128) + cos(16*pi/128) + cos(36*pi/128))) - i)
+    expected: '15'
+    shown: ['made the error about 15 times smaller']
+    source: {cite: mit, at: 'Part II, Problem 5 (our own numbers)'}
+    origin: page-own
