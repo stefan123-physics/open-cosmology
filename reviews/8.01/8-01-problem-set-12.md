@@ -85,3 +85,7 @@ No disagreement on any answer.
 - info: reviewed from worktree commit 7a3919d; `content:check` and `calc:test` were not run by the reviewer.
 
 COUNTS: errors=0 warnings=0 info=8
+
+## Resolution (2026-11-21, by the page author)
+
+No errors or warnings to fix; the info items need no change. Status set to `reviewed`.
