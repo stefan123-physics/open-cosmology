@@ -1,0 +1,435 @@
+# Calculations on content/year-2/18.03/18-03-problem-set-1.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT's solutions are on OpenCourseWare, but every answer is still checked here by an independent route:
+# numerical integration (Problems 0 and 3), numerical differentiation (Problems 0, 1 and 3), the explicit Euler sums
+# (Problem 2) and a numerical root solver (Problem 1).
+
+page: content/year-2/18.03/18-03-problem-set-1.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-part-i-points
+    kind: fact
+    where: 'Last section: the points of MIT''s Part I'
+    shown: ['worth 23 points at MIT']
+    source: {cite: mit, at: 'Part I, solutions p. 1 (9 + 6 + 4 + 4)'}
+    origin: mit
+
+  # ---- Problem 0
+
+  - id: p0-a-example
+    where: 'Problem 0(a), check: with k0 = 2 and a = 1 the rate at t = 0'
+    inputs: {}
+    formula: 2/1**2
+    expected: '2'
+    tolerance: '0.001'
+    shown: ['the rate is $2/1^2 = 2$ per year']
+    source: {cite: mit, at: 'Part II, Problem 0(a) (our own solution)'}
+    origin: page-own
+
+  - id: p0-b
+    kind: identity
+    answer: p0-b
+    where: 'Problem 0(b), answer box: k0 x/(a+t)^2 against the numerical derivative of the solution C e^(-k0/(a+t)), whose value x is given at each sample'
+    formula: k0*x/(a+t)**2
+    equals: deriv('C*exp(-k0/(a+s))', 's', t)
+    samples: {C: [2, 1, 3], k0: [1.5, 0.5, 2], a: [2, 1, 4], t: [1, 3, 0.5], x: [1.2130613194252668, 0.8824969025845955, 1.9235411652898637]}
+    tolerance: 1e-6
+    shown: ["x' = \\frac{k_0}{(a+t)^2}\\,x"]
+    source: {cite: mit, at: 'Part II, Problem 0(b) (our own solution)'}
+    origin: page-own
+
+  - id: p0-c
+    kind: identity
+    answer: p0-c
+    where: 'Problem 0(c), answer box: C e^(-k0/(a+t)) against C e^(integral of k from 0 to t, minus k0/a), by numerical integration of k(s) = k0/(a+s)^2'
+    formula: C*exp(-k0/(a+t))
+    equals: C*exp(integrate('k0/(a+s)**2', 's', 0, t) - k0/a)
+    samples: {C: [2, 1, 3], k0: [1.5, 0.5, 2], a: [2, 1, 4], t: [1, 3, 0.5]}
+    tolerance: 1e-6
+    shown: ['x(t) = C\,e^{-k_0/(a+t)}, \qquad C \text{ any real number}']
+    source: {cite: mit, at: 'Part II, Problem 0(c) (our own solution)'}
+    origin: page-own
+
+  - id: p0-d
+    kind: limit
+    answer: p0-d
+    where: 'Problem 0(d), answer box: x0 e^(k0/a) against x(T) = x0 e^(integral of k from 0 to T) as T grows'
+    inputs: {x0: 2, k0: 1.5, a: 2}
+    formula: x0*exp(k0/a)
+    limit: x0*exp(integrate('k0/(a+s)**2', 's', 0, T))
+    vary: {T: [100, 10000, 1000000]}
+    tolerance: 1e-5
+    shown: ['\lim_{t \to \infty} x(t) = x_0\,e^{k_0/a}']
+    source: {cite: mit, at: 'Part II, Problem 0(d) (our own solution)'}
+    origin: page-own
+
+  - id: p0-d-total-growth
+    where: 'Problem 0(d), reason: the integral of k from 0 to infinity is k0/a, shown for k0 = 1.5 and a = 2'
+    inputs: {}
+    formula: integrate('1.5/(2+s)**2', 's', 0, inf)
+    expected: '0.75'
+    tolerance: '0.0001'
+    shown: ['is finite, because']
+    source: {cite: mit, at: 'Part II, Problem 0(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  - id: p1-c-a
+    answer: p1-c-a
+    where: 'Problem 1(c), answer box: a = y^2 + 1 at the point where the isocline x = y^2 + 1 has slope 1/(2y) = −1'
+    inputs: {}
+    formula: solve('1/(2*y) + 1', 'y', -5, -0.01)**2 + 1
+    expected: '1.25'
+    tolerance: '0.0001'
+    shown: ['(a, b) = \left(\tfrac54,\ -\tfrac12\right) = (1.25,\ -0.5)']
+    source: {cite: mit, at: 'Part II, Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-b
+    answer: p1-c-b
+    where: 'Problem 1(c), answer box: b = the y where the slope 1/(2y) of the isocline is −1'
+    inputs: {}
+    formula: solve('1/(2*y) + 1', 'y', -5, -0.01)
+    expected: '-0.5'
+    tolerance: '0.0001'
+    shown: ['(a, b) = \left(\tfrac54,\ -\tfrac12\right) = (1.25,\ -0.5)']
+    source: {cite: mit, at: 'Part II, Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-slope
+    where: 'Problem 1(c), check: the slope y^2 − x of the equation at (1.25, −0.5)'
+    inputs: {}
+    formula: (-0.5)**2 - 1.25
+    expected: '-1'
+    tolerance: '0.0001'
+    shown: ['(-0.5)^2 - 1.25 = 0.25 - 1.25 = -1']
+    source: {cite: mit, at: 'Part II, Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-isocline-slope
+    kind: identity
+    where: 'Problem 1(d), the slope of the lower branch y = −√(x−1) of the isocline m = −1, against its numerical derivative'
+    formula: -1/(2*sqrt(x-1))
+    equals: deriv('-sqrt(s-1)', 's', x)
+    samples: {x: [1.3, 2, 5, 40]}
+    tolerance: 1e-6
+    shown: ['$-1/(2\sqrt{x-1})$']
+    source: {cite: mit, at: 'Part II, Problem 1(d)(i) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-nullcline-slope
+    kind: identity
+    where: 'Problem 1(d), the slope of the lower branch y = −√x of the nullcline, against its numerical derivative'
+    formula: -1/(2*sqrt(x))
+    equals: deriv('-sqrt(s)', 's', x)
+    samples: {x: [1.3, 2, 5, 40]}
+    tolerance: 1e-6
+    shown: ['Its slope $-1/(2\sqrt x)$ is negative']
+    source: {cite: mit, at: 'Part II, Problem 1(d)(iii) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-gap
+    kind: identity
+    where: 'Problem 1(d), the gap between the two bounds, √x − √(x−1) = 1/(√x + √(x−1))'
+    formula: sqrt(x) - sqrt(x-1)
+    equals: 1/(sqrt(x) + sqrt(x-1))
+    samples: {x: [2, 5, 50, 1000]}
+    tolerance: 1e-9
+    shown: ['$\sqrt x - \sqrt{x-1} = 1/(\sqrt x + \sqrt{x-1})$']
+    source: {cite: mit, at: 'Part II, Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-f
+    kind: limit
+    answer: p1-d-f
+    where: 'Problem 1(d), answer box: −√x against −√x + 1/(4x), the asymptotic form of the solutions, for growing x'
+    inputs: {}
+    formula: -sqrt(x)
+    limit: -sqrt(x) + 1/(4*x)
+    vary: {x: [100, 10000, 1000000]}
+    tolerance: 1e-3
+    shown: ['-\sqrt{x} < y(x) < -\sqrt{x-1}']
+    source: {cite: mit, at: 'Part II, Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-residual
+    kind: limit
+    where: 'Problem 1(d), check: y = −√x + 1/(4x) puts the equation y'' = y^2 − x right to leading order (derivative against y^2 − x, for growing x)'
+    inputs: {}
+    formula: deriv('-sqrt(s) + 1/(4*s)', 's', x)
+    limit: (-sqrt(x) + 1/(4*x))**2 - x
+    vary: {x: [100, 400, 1600, 10000]}
+    tolerance: 1e-3
+    shown: ['so $u \approx \dfrac{1}{4x} > 0$']
+    source: {cite: mit, at: 'Part II, Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-quarter
+    where: 'Problem 1(d), check: 1/(4x) at x = 100'
+    inputs: {}
+    formula: 1/(4*100)
+    expected: '0.0025'
+    tolerance: '0.000001'
+    shown: ['$1/(4\cdot 100)$']
+    source: {cite: mit, at: 'Part II, Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-numerics
+    kind: fact
+    where: 'Problem 1(d), check: the value of y(x) + √x at x = 100, from a numerical ODE solver started at x = 5/4 from five values below −1/2'
+    shown: ['is $0.0025$ in every case']
+    source: {cite: mit, at: 'Part II, Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-separatrix-y0
+    kind: fact
+    where: 'Problem 1(b): the separatrix at x = 0, from a numerical ODE solver integrated backwards from x = 200, y = √200 (0.7290)'
+    shown: ['at about $y = 0.73$']
+    source: {cite: mit, at: 'Part II, Problem 1(b) (our own computation)'}
+    origin: page-own
+
+  - id: p1-e
+    kind: identity
+    answer: p1-e
+    where: 'Problem 1(e), answer box: c = d^2 against the root c of d^2 − c = 0 found numerically'
+    formula: d**2
+    equals: solve('d**2 - c', 'c', 0, 100)
+    samples: {d: [0.5, 1, 1.7, 2.5]}
+    tolerance: 1e-6
+    shown: ['0 = d^2 - c, \qquad c = d^2']
+    source: {cite: mit, at: 'Part II, Problem 1(e) (our own solution)'}
+    origin: page-own
+
+  - id: p1-e-example
+    where: 'Problem 1(e), check: the slope (−1)^2 − 1 at the point (1, −1)'
+    inputs: {}
+    formula: (-1)**2 - 1
+    expected: '0'
+    tolerance: '0.0001'
+    shown: ['$(-1)^2 - 1 = 0$']
+    source: {cite: mit, at: 'Part II, Problem 1(e) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-a
+    answer: p2-a
+    where: 'Problem 2(a), answer box: y(1) = the integral of 2s from 0 to 1'
+    inputs: {}
+    formula: integrate('2*s', 's', 0, 1)
+    expected: '1'
+    tolerance: '0.0001'
+    shown: ['y(x) = x^2, \qquad y(1) = 1']
+    source: {cite: mit, at: 'Part II, Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2-b
+    answer: p2-b
+    where: 'Problem 2(b), answer box: Euler with two steps of size 1/2, slopes 2·0 and 2·(1/2)'
+    inputs: {}
+    formula: 0.5*(2*0) + 0.5*(2*0.5)
+    expected: '0.5'
+    tolerance: '0.0001'
+    shown: ['y_2 = y_1 + h \cdot 1 = 0 + \tfrac12 \cdot 1 = \tfrac12']
+    source: {cite: mit, at: 'Part II, Problem 2, p. 3'}
+    origin: page-own
+
+  - id: p2-c
+    answer: p2-c
+    where: 'Problem 2(c), answer box: Euler with three steps of size 1/3, slopes 2·0, 2·(1/3), 2·(2/3)'
+    inputs: {}
+    formula: (1/3)*(2*0 + 2*(1/3) + 2*(2/3))
+    expected: '0.6667'
+    tolerance: '0.0001'
+    shown: ['y_3 = 0 + \tfrac13\cdot 0 + \tfrac13\cdot\tfrac23 + \tfrac13\cdot\tfrac43 = \tfrac29 + \tfrac49 = \tfrac23']
+    source: {cite: mit, at: 'Part II, Problem 2, p. 3'}
+    origin: page-own
+
+  - id: p2-d
+    kind: identity
+    answer: p2-d
+    where: 'Problem 2(d), answer box: (n−1)/n against n(n−1)h^2 with h = 1/n'
+    formula: (n-1)/n
+    equals: n*(n-1)*(1/n)**2
+    samples: {n: [2, 3, 5, 10, 20]}
+    tolerance: 1e-12
+    shown: ['y_n = \frac{n(n-1)}{n^2} = \frac{n-1}{n} = 1 - \frac1n']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-sum-4
+    kind: identity
+    where: 'Problem 2(d): the explicit Euler sum for n = 4 steps of size 1/4 against (n−1)/n'
+    formula: (n-1)/n
+    equals: (1/4)*(2*0 + 2*(1/4) + 2*(2/4) + 2*(3/4))
+    samples: {n: [4]}
+    tolerance: 1e-12
+    shown: ['y_n = \frac{n(n-1)}{n^2} = \frac{n-1}{n} = 1 - \frac1n']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-sum-5
+    kind: identity
+    where: 'Problem 2(d): the explicit Euler sum for n = 5 steps of size 1/5 against (n−1)/n'
+    formula: (n-1)/n
+    equals: (1/5)*(2*0 + 2*(1/5) + 2*(2/5) + 2*(3/5) + 2*(4/5))
+    samples: {n: [5]}
+    tolerance: 1e-12
+    shown: ['y_n = \frac{n(n-1)}{n^2} = \frac{n-1}{n} = 1 - \frac1n']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-limit
+    kind: limit
+    where: 'Problem 2(d): (n−1)/n approaches y(1) = 1 as n grows'
+    inputs: {}
+    formula: (n-1)/n
+    limit: '1'
+    vary: {n: [10, 100, 1000, 100000]}
+    tolerance: 1e-4
+    shown: ['the approximations do converge to the exact value']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-n2
+    where: 'Problem 2(d), check: the formula at n = 2'
+    inputs: {n: 2}
+    formula: (n-1)/n
+    expected: '0.5'
+    tolerance: '0.0001'
+    shown: ['For $n = 2$ the formula gives $\tfrac12$ and for $n = 3$ it gives $\tfrac23$']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-n3
+    where: 'Problem 2(d), check: the formula at n = 3'
+    inputs: {n: 3}
+    formula: (n-1)/n
+    expected: '0.6667'
+    tolerance: '0.0001'
+    shown: ['For $n = 2$ the formula gives $\tfrac12$ and for $n = 3$ it gives $\tfrac23$']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-e
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(e), answer box: 1/n against y(1) minus the explicit Euler value (n−1)/n computed from the sum n(n−1)h^2'
+    formula: 1/n
+    equals: 1 - n*(n-1)*(1/n)**2
+    samples: {n: [2, 3, 5, 10, 20]}
+    tolerance: 1e-12
+    shown: ['y(1) - y_n = 1 - \frac{n-1}{n} = \frac1n = h']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-n2
+    where: 'Problem 2(e), check: the error at n = 2 is 1 − 1/2'
+    inputs: {}
+    formula: 1 - 0.5
+    expected: '0.5'
+    tolerance: '0.0001'
+    shown: ['With $n = 2$ the error is $1 - \tfrac12 = \tfrac12 = h$']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-e-n3
+    where: 'Problem 2(e), check: the error at n = 3 is 1 − 2/3'
+    inputs: {}
+    formula: 1 - 2/3
+    expected: '0.3333'
+    tolerance: '0.0001'
+    shown: ['and with $n = 3$ it is $1 - \tfrac23 = \tfrac13 = h$']
+    source: {cite: mit, at: 'Part II, Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-a
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: I x − q against the numerical derivative of the solution q/I + (x0 − q/I) e^(I t), whose value x is given at each sample'
+    formula: I*x - q
+    equals: deriv('q/I + (x0 - q/I)*exp(I*s)', 's', t)
+    samples: {x0: [5, 1, 4], I: [0.05, 0.2, 0.1], q: [0.3, 0.1, 1.0], t: [2, 1.5, 3], x: [4.894829081924352, 1.1749294037880016, 1.9008471545439818]}
+    tolerance: 1e-6
+    shown: ["x' = I\\,x - q"]
+    source: {cite: mit, at: 'Part II, Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box: the solution against q/I + (x0 − q/I)(1 + I times the integral of e^(I s) from 0 to t)'
+    formula: q/I + (x0 - q/I)*exp(I*t)
+    equals: q/I + (x0 - q/I)*(1 + I*integrate('exp(I*s)', 's', 0, t))
+    samples: {x0: [5, 1, 4], I: [0.05, 0.2, 0.1], q: [0.3, 0.1, 1.0], t: [2, 1.5, 3]}
+    tolerance: 1e-6
+    shown: ['x(t) = \frac{q}{I} + \left(x_0 - \frac{q}{I}\right)e^{It}']
+    source: {cite: mit, at: 'Part II, Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c
+    answer: p3-c
+    where: 'Problem 3(c), answer box: the constant balance q/I with q = 12 000 dollars per year and I = 0.05 per year'
+    inputs: {}
+    formula: 12000/0.05
+    expected: '240000'
+    tolerance: '1'
+    shown: ['x = \frac{q}{I} = \frac{12\,000}{0.05} = 240\,000 \text{ dollars}']
+    source: {cite: mit, at: 'Part II, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-interest
+    where: 'Problem 3(c), check: 5% of 240 000 dollars per year'
+    inputs: {}
+    formula: 240000*0.05
+    expected: '12000'
+    tolerance: '1'
+    shown: ['Interest on 240 000 dollars at 5 per cent per year is 12 000 dollars per year']
+    source: {cite: mit, at: 'Part II, Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d
+    answer: p3-d
+    where: 'Problem 3(d), answer box: (q/I)(1 − e^(−I T)) with q = 12 000, I = 0.05 and T = 20'
+    inputs: {}
+    formula: (12000/0.05)*(1 - exp(-0.05*20))
+    expected: '151708.93'
+    tolerance: '0.005'
+    shown: ['x_0 = 240\,000\,(1 - e^{-1}) = 240\,000 \cdot 0.632\,120\,56 = 151\,708.93 \text{ dollars}']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-solution-zero
+    kind: identity
+    where: 'Problem 3(d): with this starting fund the solution of part (b) is zero at T = 20'
+    formula: q/I + (x0 - q/I)*exp(I*20)
+    equals: 0*x0
+    samples: {q: [12000], I: [0.05], x0: [151708.93411885385]}
+    tolerance: 1e-6
+    shown: ['x_0 = \frac{q}{I}\left(1 - e^{-IT}\right)']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-percent
+    where: 'Problem 3(d): the fraction of the sum of part (c), 1 − e^(−1), as a percentage'
+    inputs: {}
+    formula: 100*(1 - exp(-1))
+    expected: '63'
+    tolerance: '0.5'
+    shown: ['That is about 63 per cent of the sum in part (c).']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-no-interest
+    where: 'Problem 3(d), check: a fund with no interest needs 20 years of payments of 12 000 dollars'
+    inputs: {}
+    formula: 20*12000
+    expected: '240000'
+    tolerance: '1'
+    shown: ['$20 \cdot 12\,000 = 240\,000$ dollars']
+    source: {cite: mit, at: 'Part II, Problem 3(d) (our own solution)'}
+    origin: page-own
