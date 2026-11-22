@@ -1,0 +1,831 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# numerical integration of x|Ψ|² and of ψ₂(−iħ d/dx)ψ₃ for Problem 1, numerical derivatives for the Wronskian and for
+# the Schrödinger equation of the rectangle, numerical solves of the matching conditions in two different algebraic
+# forms for the wells of Problems 4 to 6, and a Rayleigh quotient (an upper bound) for the quartic potential.
+# The numbers the page reports from the shooting method were found by the writer with a numerical integration of the
+# differential equations (SciPy solve_ivp, outside this file, which cannot integrate differential equations); they
+# agree with the roots of the matching conditions below to the digits shown.
+
+page: content/year-2/8.04/8-04-problem-set-6.mdx
+calcs:
+  # ---- Problem 1: a superposition in the infinite square well
+
+  - id: p1-norm
+    where: 'Problem 1(a), solution: the two squared coefficients add to 1'
+    formula: 1/3 + 2/3
+    expected: '1'
+    shown: ['It is normalized: $\frac13 + \frac23 = 1$.']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-prob1
+    answer: p1-prob1
+    where: 'Problem 1(b), answer box: the probability of E_1 (what is left after E_2 and E_3)'
+    formula: 1 - (1/sqrt(3))**2 - (sqrt(2/3))**2
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['id="p1-prob1"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-prob2
+    answer: p1-prob2
+    where: 'Problem 1(b), answer box: the probability of E_2'
+    formula: (1/sqrt(3))**2
+    expected: '0.3333'
+    shown: ['id="p1-prob2"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-prob3
+    answer: p1-prob3
+    where: 'Problem 1(b), answer box: the probability of E_3'
+    formula: (sqrt(2/3))**2
+    expected: '0.6667'
+    shown: ['id="p1-prob3"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: integrate x|Ψ(x,t)|² numerically over the well.
+  - id: p1-x
+    kind: identity
+    answer: p1-x
+    where: 'Problem 1(c), answer box and formula "Expectation value of x at time t": against numerical integration of x|Ψ|² over the well'
+    formula: a/2 - 32*sqrt(2)*a*cos(w*t)/(25*pi**2)
+    equals: integrate('x*((1/3)*(2/a)*sin(2*pi*x/a)**2 + (2/3)*(2/a)*sin(3*pi*x/a)**2 + 2*(sqrt(2)/3)*(2/a)*sin(2*pi*x/a)*sin(3*pi*x/a)*cos(w*t))', 'x', 0, a)
+    samples:
+      a: [1, 0.5, 2, 1.3]
+      w: [1, 2, 0.5, 1.7]
+      t: [0, 0.4, 1.2, 2.9]
+    tolerance: 1e-8
+    shown: ['\langle x\rangle = \frac a2 - \frac{32\sqrt2}{25\pi^2}\,a\cos\omega t']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cross
+    kind: identity
+    where: 'Problem 1(c), formula "The cross integral, result": against numerical integration'
+    formula: -48*a/(25*pi**2)
+    equals: integrate('x*(2/a)*sin(2*pi*x/a)*sin(3*pi*x/a)', 'x', 0, a)
+    samples:
+      a: [1, 0.5, 2, 1.3]
+    tolerance: 1e-8
+    shown: ['= -\frac{48\,a}{25\pi^2}"']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-x-amplitude
+    where: 'Problem 1(c), formula: the amplitude of the swing of ⟨x⟩ in units of a'
+    formula: 32*sqrt(2)/(25*pi**2)
+    expected: '0.183'
+    shown: ['\approx a\left(0.5 - 0.183\cos\omega t\right)']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-x-min
+    where: 'Problem 1(c), check: the smallest ⟨x⟩ in units of a'
+    formula: 0.5 - 32*sqrt(2)/(25*pi**2)
+    expected: '0.317'
+    shown: ['swings between $0.317a$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-x-max
+    where: 'Problem 1(c), check: the largest ⟨x⟩ in units of a'
+    formula: 0.5 + 32*sqrt(2)/(25*pi**2)
+    expected: '0.683'
+    shown: ['and $0.683a$: it stays inside the well']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the cross term of ⟨p⟩ from the integral of ψ₂(−iħ d/dx)ψ₃, without Ehrenfest's theorem and
+  # without the relation between ω and m.
+  - id: p1-p
+    kind: identity
+    answer: p1-p
+    where: 'Problem 1(d), answer box and formula "Expectation value of p at time t": against the direct integral of ψ₂ p̂ ψ₃'
+    formula: 16*sqrt(2)*hbar*sin(w*t)/(5*a)
+    equals: -2*(sqrt(2)/3)*hbar*sin(w*t)*integrate('(2/a)*sin(2*pi*x/a)*(3*pi/a)*cos(3*pi*x/a)', 'x', 0, a)
+    samples:
+      hbar: [1, 2, 0.5, 1.3]
+      a: [1, 0.5, 2, 1.3]
+      w: [1, 2, 0.5, 1.7]
+      t: [0.3, 0.4, 1.2, 2.9]
+    tolerance: 1e-8
+    shown: ['= \frac{16\sqrt2}{5}\,\frac{\hbar}{a}\,\sin\omega t"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The page's own route: m times the numerical time derivative of ⟨x⟩, with m = 5π²ħ/(2a²ω).
+  - id: p1-p-ehrenfest
+    kind: identity
+    where: 'Problem 1(d), formula: m d⟨x⟩/dt with m from the definition of ω'
+    formula: 16*sqrt(2)*hbar*sin(w*t)/(5*a)
+    equals: (5*pi**2*hbar/(2*a**2*w)) * deriv('a/2 - 32*sqrt(2)*a*cos(w*s)/(25*pi**2)', 's', t)
+    samples:
+      hbar: [1, 2, 0.5, 1.3]
+      a: [1, 0.5, 2, 1.3]
+      w: [1, 2, 0.5, 1.7]
+      t: [0.3, 0.4, 1.2, 2.9]
+    tolerance: 1e-7
+    shown: ['In the third step $m\omega = 5\pi^2\hbar/(2a^2)$ was used.']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-p-overlap
+    kind: identity
+    where: 'Problem 1(d), check: the integral of sin(2πx/a) cos(3πx/a) over the well is −4a/(5π)'
+    formula: -4*a/(5*pi)
+    equals: integrate('sin(2*pi*x/a)*cos(3*pi*x/a)', 'x', 0, a)
+    samples:
+      a: [1, 0.5, 2, 1.3]
+    tolerance: 1e-8
+    shown: ['\left(-\frac{4a}{5\pi}\right) = \frac{24\,i\hbar}{5a}$']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-p-max
+    where: 'Problem 1(d), check: the largest ⟨p⟩ in units of ħ/a'
+    formula: 16*sqrt(2)/5
+    expected: '4.53'
+    shown: ['The largest value, $4.53\,\hbar/a$']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-p-rms
+    where: 'Problem 1(d), check: the root-mean-square momentum in units of ħ/a'
+    formula: sqrt((1/3)*(2*pi)**2 + (2/3)*(3*pi)**2)
+    expected: '8.51'
+    shown: ['\;\hbar/a = 8.51\,\hbar/a$']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the Wronskian (our own problem)
+
+  # Independent route: the two derivatives taken numerically.
+  - id: p2-w
+    kind: identity
+    answer: p2-w
+    where: 'Problem 2(c), answer box and formula "W for the cosine and the sine": with numerical derivatives of sin and cos'
+    formula: k
+    equals: cos(k*x)*deriv('sin(k*s)', 's', x) - sin(k*x)*deriv('cos(k*s)', 's', x)
+    samples:
+      k: [0.5, 1, 2, 3]
+      x: [0.3, 1.2, 0.7, 2.5]
+    tolerance: 1e-7
+    shown: ['= k\left(\cos^2kx + \sin^2kx\right) = k"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem and solution)'}
+    origin: page-own
+
+  # ---- Problem 3: the rectangular well
+
+  # Independent route: apply −(ħ²/2m)(∂²/∂x² + ∂²/∂y²) to the eigenfunction numerically at a point and divide by it.
+  - id: p3-e
+    kind: identity
+    answer: p3-e
+    where: 'Problem 3(a), answer box: the energy, against the numerical second derivatives of the eigenfunction'
+    formula: pi**2*hbar**2/(2*m)*(nx**2/Lx**2 + ny**2/Ly**2)
+    equals: -(hbar**2/(2*m))*(deriv('sin(nx*pi*s/Lx)', 's', xp, 2)/sin(nx*pi*xp/Lx) + deriv('sin(ny*pi*s/Ly)', 's', yp, 2)/sin(ny*pi*yp/Ly))
+    samples:
+      hbar: [1, 2, 0.5, 1.3]
+      m: [1, 0.5, 2, 1.7]
+      Lx: [1, 2, 1.5, 1.2]
+      Ly: [2.2, 3, 2.5, 2.9]
+      nx: [1, 2, 3, 1]
+      ny: [1, 3, 2, 2]
+      xp: [0.3, 0.4, 0.2, 0.5]
+      yp: [0.7, 0.4, 0.3, 0.6]
+    tolerance: 1e-6
+    shown: ['E_{n_x, n_y} = \frac{\hbar^2\pi^2}{2m}\left(\frac{n_x^2}{L_x^2} + \frac{n_y^2}{L_y^2}\right), \qquad n_x, n_y = 1, 2, 3, \dots']
+    source: {cite: reading2, at: 'p. 3, eq. (1.11), once for each direction'}
+    origin: page-own
+
+  # Independent route: integrate the squared product of sines over the rectangle numerically.
+  - id: p3-n
+    kind: identity
+    answer: p3-n
+    where: 'Problem 3(a), answer box: the normalization constant, against numerical integration over the rectangle'
+    formula: 2/sqrt(Lx*Ly)
+    equals: 1/sqrt(integrate('sin(nx*pi*s/Lx)**2', 's', 0, Lx) * integrate('sin(ny*pi*s/Ly)**2', 's', 0, Ly))
+    samples:
+      Lx: [1, 2, 1.5, 1.2]
+      Ly: [2.2, 3, 2.5, 2.9]
+      nx: [1, 2, 3, 1]
+      ny: [1, 3, 2, 2]
+    tolerance: 1e-8
+    shown: ['gives $N = 2/\sqrt{L_xL_y}$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-hint
+    kind: fact
+    where: 'Problem 3(b), statement: MIT''s hint'
+    shown: ['MIT''s hint for those is $49 + 1 = 25 + 25$.']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: mit
+
+  # The three states (1,7), (7,1), (5,5): each sum of squares divided by 50 is 1, and there are three of them.
+  # That 50 is the smallest such sum and 65 the next was checked by listing all sums (the writer's script, and the
+  # list in the solution's check).
+  - id: p3-count
+    answer: p3-count
+    where: 'Problem 3(b), answer box: the states with n_x² + n_y² = 50'
+    formula: (1**2 + 7**2)/50 + (7**2 + 1**2)/50 + (5**2 + 5**2)/50
+    expected: '3'
+    tolerance: 1e-9
+    shown: ['id="p3-count"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (MIT''s hint; the count is our addition)'}
+    origin: page-own
+
+  - id: p3-next
+    answer: p3-next
+    where: 'Problem 3(b), answer box and formula "The next accidental degeneracy": 1² + 8²'
+    formula: 1**2 + 8**2
+    expected: '65'
+    tolerance: 1e-9
+    shown: ['id="p3-next"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-next-other
+    where: 'Problem 3(b), formula "The next accidental degeneracy": 4² + 7² is 65 as well'
+    formula: 4**2 + 7**2
+    expected: '65'
+    tolerance: 1e-9
+    shown: ['tex="1^2 + 8^2 = 4^2 + 7^2 = 65"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-85
+    where: 'Problem 3(b), solution: 2² + 9² and 6² + 7² (their difference is zero)'
+    formula: (2**2 + 9**2) - (6**2 + 7**2) + 85
+    expected: '85'
+    tolerance: 1e-9
+    shown: ['After that comes $85 = 2^2 + 9^2 = 6^2 + 7^2$.']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-sums-list
+    kind: fact
+    where: 'Problem 3(b), check: the sums n_x² + n_y² with 1 ≤ n_x ≤ n_y in rising order (listed by the writer''s script)'
+    shown: ['begins 2, 5, 8, 10, 13, 17, 18, 20, 25, 26, 29, 32, 34, 37, 40, 41, 45, 50, 50.', 'the list runs 52, 53, 58, 61, 65, 65, with no repeat before 65']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rect-example
+    where: 'Problem 3(c), check: L_x = 2L_y, states (2,2) and (4,1) (their difference is zero)'
+    formula: (2**2 + 4*2**2) - (4**2 + 4*1**2) + 20
+    expected: '20'
+    tolerance: 1e-9
+    shown: ['$(2, 2)$ and $(4, 1)$ both give $n_x^2 + 4n_y^2 = 20$']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the well with a step, below the step
+
+  # Independent route: the logarithmic derivative of sinh κ(2a − x) at x = a, taken numerically (in units of a).
+  - id: p4-rhs
+    kind: identity
+    answer: p4-rhs
+    where: 'Problem 4(a), answer box: a ψ′/ψ at the step from the right-hand piece, by numerical derivative'
+    formula: -xi*cosh(xi)/sinh(xi)
+    equals: deriv('sinh(xi*(2 - s))', 's', 1)/sinh(xi)
+    samples:
+      xi: [0.5, 1, 2, 3]
+    tolerance: 1e-7
+    shown: ['tex="\eta\cot\eta = -\xi\coth\xi, \qquad \eta^2 + \xi^2 = z_0^2"']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The same from the left: a ψ′/ψ of sin kx at x = a is η cot η.
+  - id: p4-lhs
+    kind: identity
+    where: 'Problem 4(a): a ψ′/ψ at the step from the left-hand piece, by numerical derivative'
+    formula: et*cos(et)/sin(et)
+    equals: deriv('sin(et*s)', 's', 1)/sin(et)
+    samples:
+      et: [0.5, 2, 2.7, 5.3]
+    tolerance: 1e-7
+    shown: ['A\sin ka = B\sinh\kappa a, \qquad Ak\cos ka = -B\kappa\cosh\kappa a']
+    source: {cite: reading1, at: 'p. 5, eq. (2.23)'}
+    origin: page-own
+
+  - id: p4-z0
+    kind: fact
+    where: 'Problem 4(b), statement: MIT''s value z0 = 2π'
+    shown: ['Take $z_0 = 2\pi$. How many states with $E < V_0$ are there?']
+    source: {cite: mit, at: 'Problem 4(b), p. 2'}
+    origin: mit
+
+  # One root in each interval ((n − 1/2)π, nπ) below z0 = 2π: n = 1 and n = 2, so z0/π of them. The two solves below
+  # find both; in (0, π/2) and (π, 3π/2) the left side is above −1 and the right side below −1, so there is none.
+  - id: p4-n
+    answer: p4-n
+    where: 'Problem 4(b), answer box: the number of states below the step for z0 = 2π'
+    inputs: {z0: 6.283185307179586}
+    formula: z0/pi
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['id="p4-n"']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-e1
+    answer: p4-e1
+    where: 'Problem 4(b), answer box: the lowest energy over V0, from the root of η cot η + ξ coth ξ = 0 between π/2 and π'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('q*cos(q)/sin(q) + sqrt(z0**2 - q**2)*cosh(sqrt(z0**2 - q**2))/sinh(sqrt(z0**2 - q**2))', 'q', 1.6, 3.1)**2 / z0**2
+    expected: '0.18436'
+    shown: ['id="p4-e1"', '\frac{E_1}{V_0} = \frac{\eta_1^2}{4\pi^2} = 0.18436;']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-e2
+    answer: p4-e2
+    where: 'Problem 4(b), answer box: the second energy over V0, from the root between 3π/2 and 2π'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('q*cos(q)/sin(q) + sqrt(z0**2 - q**2)*cosh(sqrt(z0**2 - q**2))/sinh(sqrt(z0**2 - q**2))', 'q', 4.8, 6.2)**2 / z0**2
+    expected: '0.70747'
+    shown: ['id="p4-e2"', '\frac{E_2}{V_0} = 0.70747"']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent form: the two matching conditions cross-multiplied (no division, no cot or coth), solved for the
+  # energy itself instead of η: √e z0 cos(√e z0) sinh ξ + ξ sin(√e z0) cosh ξ = 0 with ξ = z0 √(1 − e).
+  - id: p4-e1-direct
+    where: 'Problem 4(b): the lowest energy again, from the cross-multiplied matching conditions solved for E/V0'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('sqrt(en)*z0*cos(sqrt(en)*z0)*sinh(z0*sqrt(1 - en)) + z0*sqrt(1 - en)*sin(sqrt(en)*z0)*cosh(z0*sqrt(1 - en))', 'en', 0.1, 0.24)
+    expected: '0.18436'
+    shown: ['Lowest: $E_1/V_0 =$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-e2-direct
+    where: 'Problem 4(b): the second energy again, from the cross-multiplied matching conditions solved for E/V0'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('sqrt(en)*z0*cos(sqrt(en)*z0)*sinh(z0*sqrt(1 - en)) + z0*sqrt(1 - en)*sin(sqrt(en)*z0)*cosh(z0*sqrt(1 - en))', 'en', 0.6, 0.95)
+    expected: '0.70747'
+    shown: ['Next: $E_2/V_0 =$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-eta1
+    where: 'Problem 4(b), formula: η of the lowest state'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('q*cos(q)/sin(q) + sqrt(z0**2 - q**2)*cosh(sqrt(z0**2 - q**2))/sinh(sqrt(z0**2 - q**2))', 'q', 1.6, 3.1)
+    expected: '2.6978'
+    shown: ['tex="\eta_1 = 2.6978,']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-xi1
+    where: 'Problem 4(b), formula: ξ of the lowest state'
+    inputs: {z0: 6.283185307179586, eta1: 2.69780739}
+    formula: sqrt(z0**2 - eta1**2)
+    expected: '5.6745'
+    shown: ['\xi_1 = 5.6745,']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-eta2
+    where: 'Problem 4(b), formula: η of the second state'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('q*cos(q)/sin(q) + sqrt(z0**2 - q**2)*cosh(sqrt(z0**2 - q**2))/sinh(sqrt(z0**2 - q**2))', 'q', 4.8, 6.2)
+    expected: '5.2849'
+    shown: ['\eta_2 = 5.2849,']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-xi2
+    where: 'Problem 4(b), formula: ξ of the second state'
+    inputs: {z0: 6.283185307179586, eta2: 5.28486569}
+    formula: sqrt(z0**2 - eta2**2)
+    expected: '3.3983'
+    shown: ['\xi_2 = 3.3983,']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-mit-digits
+    kind: fact
+    where: 'Problem 4(b), check: the digits of E1 and E2 that MIT prints in its Problem 5 (0.##436 and 0.##747)'
+    shown: ['prints the last three digits of each energy, 436 and 747: they agree']
+    source: {cite: mit, at: 'Problem 5, p. 3'}
+    origin: mit
+
+  - id: p4-infinite-well
+    where: 'Problem 4(b), check: E/V0 for η = π, the infinite well of width a'
+    inputs: {z0: 6.283185307179586}
+    formula: pi**2 / z0**2
+    expected: '0.25'
+    shown: ['so $E/V_0 = 0.25$ and 1']
+    source: {cite: reading2, at: 'p. 3, eq. (1.11)'}
+    origin: page-own
+
+  - id: p4-plot-b1
+    where: 'Problem 4(b), graph: the constant B/A = sin η / sinh ξ of the lowest state'
+    inputs: {eta1: 2.69780739, xi1: 5.67452667}
+    formula: sin(eta1)/sinh(xi1)
+    expected: '0.0029474'
+    shown: ['0.0029474*sinh(5.67453*(2 - u))']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-plot-b2
+    where: 'Problem 4(b), graph: the constant B/A = sin η / sinh ξ of the second state'
+    inputs: {eta2: 5.28486569, xi2: 3.39832491}
+    formula: sin(eta2)/sinh(xi2)
+    expected: '-0.0562615'
+    shown: ['-0.0562615*sinh(3.39832*(2 - u))']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the shooting method
+
+  - id: p5-mit-start
+    kind: fact
+    where: 'Problem 5, statement: MIT''s starting value of e, the end of the integration, and the remark on the ground state'
+    shown: ['(it starts with 0.65)', 'from $u = 0$ to $u = 3.5$ with the starting values', 'MIT says that the ground state energy lies a little above 0.65.']
+    source: {cite: mit, at: 'Problem 5, pp. 2–3'}
+    origin: mit
+
+  # The quartic ground state by a route that is not the shooting method: the Rayleigh quotient of the trial function
+  # exp(−0.6875u² − 0.1179u⁴), which is an upper bound on the ground state energy. It gives 0.66804; the shooting
+  # method (SciPy, outside this file) gives 0.667986.
+  - id: p5-quartic
+    answer: p5-quartic
+    where: 'Problem 5(a), answer box: the ground state of −ψ″/2 + (u⁴ − e)ψ = 0, by the Rayleigh quotient of a trial function'
+    inputs: {al: 0.6875, be: 0.1179}
+    formula: integrate('(0.5*(2*al*x + 4*be*x**3)**2 + x**4)*exp(-2*al*x**2 - 2*be*x**4)', 'x', 0, 6) / integrate('exp(-2*al*x**2 - 2*be*x**4)', 'x', 0, 6)
+    expected: '0.668'
+    shown: ['id="p5-quartic"']
+    source: {cite: mit, at: 'Problem 5, pp. 2–3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-quartic-digits
+    where: 'Problem 5(a), formula "Ground state of the quartic potential": the same upper bound lies within 0.0001 above the value from shooting'
+    inputs: {al: 0.6875, be: 0.1179}
+    formula: integrate('(0.5*(2*al*x + 4*be*x**3)**2 + x**4)*exp(-2*al*x**2 - 2*be*x**4)', 'x', 0, 6) / integrate('exp(-2*al*x**2 - 2*be*x**4)', 'x', 0, 6)
+    expected: '0.66799'
+    tolerance: 0.0001
+    shown: ['tex="e_0 = 0.66799"']
+    source: {cite: mit, at: 'Problem 5, pp. 2–3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-quartic-bracket
+    kind: fact
+    where: 'Problem 5(a): the shot at e = 0.65 ends far up and at e = 0.70 far down (the writer''s numerical integration)'
+    shown: ['at $e = 0.65$ the solution ends far up, at $e = 0.70$ far down']
+    source: {cite: mit, at: 'Problem 5, pp. 2–3 (our own solution)'}
+    origin: page-own
+
+  # Independent route: on the left half sin(z0 √e u) solves the unit-free equation (k² = 2mE/ħ² gives ka = z0 √e),
+  # so C = e ψ/ψ″ there, with ψ″ taken numerically.
+  - id: p5-c
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(a), answer box: the constant in front of ψ″, from the known solution sin(z0 √e u) on the left half'
+    formula: -1/z0**2
+    equals: en*sin(z0*sqrt(en)*up)/deriv('sin(z0*sqrt(en)*s)', 's', up, 2)
+    samples:
+      z0: [1.5, 3, 6.283185307, 7]
+      en: [0.3, 0.7, 0.18, 2.1]
+      up: [0.4, 0.3, 0.6, 0.15]
+    tolerance: 1e-6
+    shown: ['So $C = -1/z_0^2$, which is $-1/(4\pi^2)$ here.']
+    source: {cite: mit, at: 'Problem 5(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-shoot-brackets
+    kind: fact
+    where: 'Problem 5(a) and (b): the intervals in which ψ(2) changes sign, and the levels between E4 and E9 (the writer''s numerical integration)'
+    shown: ['changes sign between $e = 0.18$ and $0.19$, and again between $0.70$ and $0.71$', 'changes sign between $1.20$ and $1.21$ and between $1.56$ and $1.57$', 'changes sign near $e = 2.084$, $2.800$, $3.561$, $4.535$ and then between $5.55$ and $5.56$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  # Above the step: η cot η + q cot q = 0 with η = z0 √e and q = z0 √(e − 1). Independent of the shooting method.
+  - id: p5-e3
+    answer: p5-e3
+    where: 'Problem 5(a), answer box: the third level, from the matching condition above the step'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('sqrt(en)*z0*cos(sqrt(en)*z0)*sin(z0*sqrt(en - 1)) + z0*sqrt(en - 1)*sin(sqrt(en)*z0)*cos(z0*sqrt(en - 1))', 'en', 1.15, 1.3)
+    expected: '1.2065'
+    shown: ['id="p5-e3"', 'tex="\frac{E_3}{V_0} = 1.2065,']
+    source: {cite: mit, at: 'Problem 5(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-e4
+    answer: p5-e4
+    where: 'Problem 5(a), answer box: the fourth level, from the matching condition above the step'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('sqrt(en)*z0*cos(sqrt(en)*z0)*sin(z0*sqrt(en - 1)) + z0*sqrt(en - 1)*sin(sqrt(en)*z0)*cos(z0*sqrt(en - 1))', 'en', 1.45, 1.7)
+    expected: '1.5625'
+    shown: ['id="p5-e4"', '\frac{E_4}{V_0} = 1.5625"']
+    source: {cite: mit, at: 'Problem 5(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-e4-exact
+    where: 'Problem 5(a), check: η = 5π/2 gives e = 25/16, and then q = z0 √(e − 1) is 3π/2'
+    inputs: {z0: 6.283185307179586}
+    formula: z0*sqrt((5*pi/2)**2/z0**2 - 1) / (3*pi/2) * 25/16
+    expected: '1.5625'
+    shown: ['at $e = 25/16 = 1.5625$ exactly, $\eta = 5\pi/2$ and $q = 3\pi/2$']
+    source: {cite: mit, at: 'Problem 5(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-e9
+    answer: p5-e9
+    where: 'Problem 5(b), answer box: the ninth level (8 nodes), from the matching condition above the step'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('sqrt(en)*z0*cos(sqrt(en)*z0)*sin(z0*sqrt(en - 1)) + z0*sqrt(en - 1)*sin(sqrt(en)*z0)*cos(z0*sqrt(en - 1))', 'en', 5.4, 5.7)
+    expected: '5.557'
+    shown: ['id="p5-e9"']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-e9-digits
+    where: 'Problem 5(b), formula "The ninth level"'
+    inputs: {z0: 6.283185307179586}
+    formula: solve('sqrt(en)*z0*cos(sqrt(en)*z0)*sin(z0*sqrt(en - 1)) + z0*sqrt(en - 1)*sin(sqrt(en)*z0)*cos(z0*sqrt(en - 1))', 'en', 5.4, 5.7)
+    expected: '5.5574'
+    shown: ['tex="\frac{E_9}{V_0} = 5.5574"']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # The nodes of the ninth level: η/π and q/π both lie between 4 and 5, so each half has 4 zeros inside it.
+  - id: p5-e9-eta
+    where: 'Problem 5(b), check: η = z0 √e of the ninth level'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: z0*sqrt(e9)
+    expected: '14.812'
+    shown: ['with $\eta = z_0\sqrt e = 14.812$']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-e9-q
+    where: 'Problem 5(b), check: q = z0 √(e − 1) of the ninth level'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: z0*sqrt(e9 - 1)
+    expected: '13.413'
+    shown: ['with $q = 13.413$']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-nodes-left
+    where: 'Problem 5(b): zeros of sin(ηu) inside the left half, the whole part of η/π'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: z0*sqrt(e9)/pi
+    expected: '4.7'
+    shown: ['Its wavefunction has 4 zeros left of the step and 4 right of it.']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-nodes-right
+    where: 'Problem 5(b): zeros of sin(q(2 − u)) inside the right half, the whole part of q/π'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: z0*sqrt(e9 - 1)/pi
+    expected: '4.3'
+    shown: ['so 8 nodes means the ninth level']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent of reading the plot: the exact pieces sin(ηu)/η and A_R sin(q(2 − u)), continuous at the step.
+  - id: p5-ratio
+    answer: p5-ratio
+    where: 'Problem 5(b), answer box: A_L/A_R = |sin q / sin η| from continuity at the step'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: abs(sin(z0*sqrt(e9 - 1))/sin(z0*sqrt(e9)))
+    expected: '0.960'
+    shown: ['id="p5-ratio"', '= \frac{0.06751}{0.07034} = 0.960"', '\left|\sin q/\sin\eta\right| = 0.960$']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-al
+    where: 'Problem 5(b): A_L = 1/η for the solution that starts with slope 1'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: 1/(z0*sqrt(e9))
+    expected: '0.06751'
+    shown: ['are $A_L = 0.06751$', 'so $A_L = 1/\eta = 0.06751$, as read off']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ar
+    where: 'Problem 5(b): A_R = A_L |sin η / sin q|'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: abs(sin(z0*sqrt(e9))/sin(z0*sqrt(e9 - 1)))/(z0*sqrt(e9))
+    expected: '0.07034'
+    shown: ['and $A_R = 0.07034$:']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-plot-ratio
+    where: 'Problem 5(b), graph: A_R/A_L = sin η / sin q (positive)'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: sin(z0*sqrt(e9))/sin(z0*sqrt(e9 - 1))
+    expected: '1.04195'
+    shown: ['1.04195*sin(13.41341*(2 - u))']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-pred
+    answer: p5-pred
+    where: 'Problem 5(b), answer box: the ratio of amplitudes predicted from the local wavelengths'
+    inputs: {e9: 5.557413655}
+    formula: ((e9 - 1)/e9)**0.25
+    expected: '0.952'
+    shown: ['id="p5-pred"', '\left(\frac{4.5574}{5.5574}\right)^{1/4} = 0.952"']
+    source: {cite: reading3, at: 'p. 4, eq. (2.3), and p. 6, eq. (2.8)'}
+    origin: page-own
+
+  - id: p5-pred-e4
+    where: 'Problem 5(b), check: the predicted ratio for the fourth level'
+    formula: (0.5625/1.5625)**0.25
+    expected: '0.775'
+    shown: ['the rule predicts $(0.5625/1.5625)^{1/4} = 0.775$']
+    source: {cite: reading3, at: 'p. 4, eq. (2.3), and p. 6, eq. (2.8)'}
+    origin: page-own
+
+  - id: p5-rule-error
+    where: 'Problem 5(b): the rule is off by less than 1% for the ninth level (relative difference in percent)'
+    inputs: {z0: 6.283185307179586, e9: 5.557413655}
+    formula: 100*(abs(sin(z0*sqrt(e9 - 1))/sin(z0*sqrt(e9))) - ((e9 - 1)/e9)**0.25)/abs(sin(z0*sqrt(e9 - 1))/sin(z0*sqrt(e9)))
+    expected: '0.85'
+    shown: ['The rule is off by less than 1% here, although the potential jumps.']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6: the model of the hydrogen molecular ion
+
+  - id: p6-mit-values
+    kind: fact
+    where: 'Problem 6, statement: MIT''s values for hydrogen and for the well of Problem Set 5'
+    shown: ['E_0 = -\frac{e^2}{2a_0} = -13.6\ \text{eV}"', 'MIT quotes the result of that problem: $z_0 = 1.3192$ and', 'V_0 = z_0^2\left|E_0\right| = 1.7402\left|E_0\right| = 23.67\ \text{eV}"', 'Work with $\gamma = 0.2$.']
+    source: {cite: mit, at: 'Problem 6, pp. 3–4'}
+    origin: mit
+
+  - id: p6-z0-single
+    where: 'Problem 6: MIT''s z0 recovered: the even ground state of one well at ε = −1 has ξ tan ξ = 1, and z0² = ξ² + 1'
+    formula: sqrt(solve('q*tan(q) - 1', 'q', 0.5, 1.2)**2 + 1)
+    expected: '1.3192'
+    tolerance: 0.0001
+    shown: ['The well stands for the pull of the proton']
+    source: {cite: reading2, at: 'p. 8, eq. (2.34)'}
+    origin: mit
+
+  - id: p6-z0-squared
+    where: 'Problem 6(a), formula "The model ion, unit-free": z0² (MIT prints 1.7402)'
+    formula: 1.3192**2
+    expected: '1.7403'
+    shown: ['-z_0^2 = -1.7403, & 0.2 < |u| < 2.2']
+    source: {cite: mit, at: 'Problem 6, p. 3'}
+    origin: page-own
+
+  - id: p6-v0
+    where: 'Problem 6: the depth of the well in eV'
+    formula: 1.3192**2 * 13.6
+    expected: '23.67'
+    shown: ['1.7402\left|E_0\right| = 23.67']
+    source: {cite: mit, at: 'Problem 6, p. 3'}
+    origin: mit
+
+  # The exact condition for the even states in its arctan form, solved for κ; E = −κ² |E0|.
+  - id: p6-e
+    answer: p6-e
+    where: 'Problem 6(a), answer box: the lowest energy in eV, from the exact matching condition (arctan form)'
+    inputs: {z0: 1.3192, g: 0.2, E0: 13.6}
+    formula: -E0 * solve('2*sqrt(z0**2 - q**2) - atan(q/sqrt(z0**2 - q**2)) - atan(q/sqrt(z0**2 - q**2)*tanh(q*g))', 'q', 1.0, 1.25)**2
+    expected: '-17.26'
+    shown: ['id="p6-e"', 'E = -1.2693 \times 13.6\ \text{eV} = -17.26\ \text{eV}"']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  # Independent form: carry cosh(κu) through the well as A cos k(u − γ) + B sin k(u − γ) and demand ψ′ = −κψ at the
+  # outer edge; no arctan, no division of the conditions.
+  - id: p6-eps
+    where: 'Problem 6(a), formula: ε = −κ² from the matching conditions written out piece by piece'
+    inputs: {z0: 1.3192, g: 0.2}
+    formula: -solve('sqrt(z0**2 - q**2)*(-cosh(q*g)*sin(2*sqrt(z0**2 - q**2)) + q*sinh(q*g)/sqrt(z0**2 - q**2)*cos(2*sqrt(z0**2 - q**2))) + q*(cosh(q*g)*cos(2*sqrt(z0**2 - q**2)) + q*sinh(q*g)/sqrt(z0**2 - q**2)*sin(2*sqrt(z0**2 - q**2)))', 'q', 1.0, 1.25)**2
+    expected: '-1.2693'
+    shown: ['tex="\varepsilon = -1.2693, \qquad']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-kappa
+    where: 'Problem 6(a), check: κ of the lowest state'
+    inputs: {z0: 1.3192, g: 0.2}
+    formula: solve('2*sqrt(z0**2 - q**2) - atan(q/sqrt(z0**2 - q**2)) - atan(q/sqrt(z0**2 - q**2)*tanh(q*g))', 'q', 1.0, 1.25)
+    expected: '1.1266'
+    shown: ['is $\kappa = 1.1266$, $k = 0.6863$']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-k
+    where: 'Problem 6(a), check: k of the lowest state'
+    inputs: {z0: 1.3192, kap: 1.12663337}
+    formula: sqrt(z0**2 - kap**2)
+    expected: '0.6863'
+    shown: ['with κ = 1.1266 and k = 0.6863 (not normalized)']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-plot-a
+    where: 'Problem 6(a), graph: the constant cosh(κγ) in front of the cosine'
+    inputs: {g: 0.2, kap: 1.12663337}
+    formula: cosh(kap*g)
+    expected: '1.02549'
+    shown: ['1.02549*cos(0.68628*(abs(u) - 0.2))']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-plot-b
+    where: 'Problem 6(a), graph: the constant (κ/k) sinh(κγ) in front of the sine'
+    inputs: {z0: 1.3192, g: 0.2, kap: 1.12663337}
+    formula: kap*sinh(kap*g)/sqrt(z0**2 - kap**2)
+    expected: '0.37304'
+    shown: ['0.37304*sin(0.68628*(abs(u) - 0.2))']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-plot-c
+    where: 'Problem 6(a), graph: the value of the wavefunction at the outer edge of the well'
+    inputs: {z0: 1.3192, g: 0.2, kap: 1.12663337}
+    formula: cosh(kap*g)*cos(2*sqrt(z0**2 - kap**2)) + kap*sinh(kap*g)/sqrt(z0**2 - kap**2)*sin(2*sqrt(z0**2 - kap**2))
+    expected: '0.56769'
+    shown: ['0.56769*exp(-1.12663*(abs(u) - 2.2))']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-shoot-bracket
+    kind: fact
+    where: 'Problem 6(a): the shot runs off upwards at ε = −1.30 and downwards at −1.20, and upwards for all trial values from −1.74 to −1.27 (the writer''s numerical integration to u = 8)'
+    shown: ['At $\varepsilon = -1.30$ the solution runs off upwards, at $\varepsilon = -1.20$ downwards.', 'between $-1.74$ and $-1.27$ the even solution runs off upwards']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-gain
+    where: 'Problem 6(a), check: how far the shared electron lies below one atom, in eV'
+    formula: 0.2693 * 13.6
+    expected: '3.66'
+    shown: ['by $0.2693\times 13.6 = 3.66$ eV']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-distance
+    where: 'Problem 6(b), statement: the distance between the centres of the wells in units of a0'
+    inputs: {g: 0.2}
+    formula: 2*(1 + g)
+    expected: '2.4'
+    shown: ['so that they are $2(1 + \gamma)a_0 = 2.4\,a_0$ apart']
+    source: {cite: mit, at: 'Problem 6, p. 4 (the centres of the wells as the places of the protons: our reading)'}
+    origin: page-own
+
+  - id: p6-repulsion
+    where: 'Problem 6(b), formula "Repulsion of the two protons", in eV'
+    formula: 2 * 13.6 / 2.4
+    expected: '11.33'
+    shown: ['= 0.8333\times 13.6\ \text{eV} = 11.33\ \text{eV}"']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-repulsion-factor
+    where: 'Problem 6(b), formula: 2/2.4'
+    formula: 2 / 2.4
+    expected: '0.8333'
+    shown: ['\frac{2\left|E_0\right|a_0}{2.4\,a_0}']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-sum
+    answer: p6-sum
+    where: 'Problem 6(b), answer box: the electron''s energy plus the repulsion, in eV, from the exact matching condition'
+    inputs: {z0: 1.3192, g: 0.2, E0: 13.6}
+    formula: -E0 * solve('2*sqrt(z0**2 - q**2) - atan(q/sqrt(z0**2 - q**2)) - atan(q/sqrt(z0**2 - q**2)*tanh(q*g))', 'q', 1.0, 1.25)**2 + 2*E0/(2*(1 + g))
+    expected: '-5.93'
+    shown: ['id="p6-sum"', 'E_\text{total} = -17.26\ \text{eV} + 11.33\ \text{eV} = -5.93\ \text{eV}"']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-nist
+    kind: fact
+    where: 'Problem 6(b): NIST Chemistry WebBook, H2+ dissociation energy note, D0 = 2.65073 eV (calculated)'
+    shown: ['The real ion needs about 2.65 eV to fall apart']
+    source: {cite: nist-h2plus, at: 'D₀ note'}
+    origin: later-data
+
+  - id: p6-real-total
+    where: 'Problem 6(b): the energy of the real ion measured from three particles far apart, in eV'
+    formula: -13.6 - 2.65
+    expected: '-16.25'
+    shown: ['about $-13.6 - 2.65 = -16.25$ eV']
+    source: {cite: nist-h2plus, at: 'D₀ note'}
+    origin: later-data
+
+  - id: p6-unbound
+    where: 'Problem 6(b): how far the model ion lies above a hydrogen atom and a far proton, in eV'
+    formula: -5.93 + 13.6
+    expected: '7.67'
+    shown: ['by 7.67 eV: in this model the ion would fall apart']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own

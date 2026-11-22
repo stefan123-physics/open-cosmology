@@ -1,0 +1,1059 @@
+---
+title: "Problem Set 6: Square wells, degeneracy and the shooting method"
+slug: 8-04-problem-set-6
+course: "8.04"
+kind: problems
+set: 6
+lecture: 13
+order: 90
+covers: [10, 11, 12, 13]
+solutions: own
+summary: "Six problems on bound states. A superposition of two states of the infinite square well, with its moving average position and momentum; why bound states in one dimension are never degenerate; the rectangular well in the plane and its degeneracies; an infinite well with a step inside; the shooting method, applied to a quartic potential and to the well with a step; and a model of the hydrogen molecular ion made of two square wells."
+prerequisites: [stationary-states, square-wells, shape-of-wavefunctions, shooting-method]
+source:
+  title: "MIT 8.04 Problem Set 6 (Spring 2016)"
+  url: https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/mit8_04s16_ps6_2016/
+  readings:
+    - title: "8.04 lecture notes, Chapter 10: Solving the Time-Independent Schrödinger Equation (Prof. Barton Zwiebach)"
+      url: https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/mit8_04s16_lecnotes10/
+    - title: "8.04 lecture notes, Chapter 11: The Infinite Square Well and the Finite Square Well (Prof. Barton Zwiebach)"
+      url: https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/mit8_04s16_lecnotes11/
+    - title: "8.04 lecture notes, Chapter 12: General Properties, Bound States in Slowly Varying Potentials, Sketching Wavefunctions, Shooting Method (Prof. Barton Zwiebach)"
+      url: https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/resources/mit8_04s16_lecnotes12/
+license: CC BY-NC-SA 4.0
+references:
+  nist-h2plus:
+    title: "NIST Chemistry WebBook: constants of diatomic molecules, H₂⁺"
+    url: https://webbook.nist.gov/cgi/cbook.cgi?ID=C12184906&Mask=1000
+    location: "note on the dissociation energy, D₀ = 2.65073 eV (calculated)"
+status: reviewed
+---
+
+This set practises four lessons: [stationary states](/courses/8-04/stationary-states), [the infinite and finite square wells](/courses/8-04/square-wells), [general properties of bound states and the shape of wavefunctions](/courses/8-04/shape-of-wavefunctions), and [the shooting method](/courses/8-04/shooting-method). The problems follow MIT's Problem Set 6, in our own words. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+A few things differ from MIT's sheet. Its announcement (a reading from a textbook) is left out. MIT's Problem 2 is a problem from a textbook (Griffiths), named only by its number. The textbook is not used here: Problem 2 is our own problem on the title that MIT's sheet gives it, the non-degeneracy of bound states in one dimension. MIT's Problem 5 prints a few lines of Mathematica code. They are not repeated: the problem says in words what the program must do, and any tool will do (Python, a spreadsheet, an online solver of differential equations). In the same problem MIT prints the two energies of Problem 4 with their first two digits hidden, as a check. Here the answer boxes of Problem 4 do that job. Some answer boxes are our additions, each marked as such: the two counting boxes of Problem 3(b), the coefficient box of Problem 5(a), and the last choice box of Problem 6(b). The sheet's pages are numbered: "p. 1" to "p. 4" below are the printed page numbers.
+
+## How to answer
+
+Work each problem on paper first (Problems 5 and 6 also need a computer). Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit shown. A formula box takes plain typing, for example `a/2 + a*cos(w*t)/pi^2`, and accepts every correct way of writing the answer. Write the symbols of the box exactly as the box names them: `hbar` stands for $\hbar$, `w` for $\omega$, `xi` for $\xi$, `z0` for $z_0$, `Lx`, `Ly`, `nx` and `ny` for $L_x$, $L_y$, $n_x$ and $n_y$. The boxes know `sinh`, `cosh` and `tanh`, but not `coth`: write `cosh(xi)/sinh(xi)`.
+
+MIT gives the points per problem. The splits between parts are ours. Several parts ask you to show something: those parts have no box, so open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The notation is that of the lessons: $\Psi(x, t)$ for a wavefunction that depends on time, $\psi(x)$ for an energy eigenstate, $\langle x\rangle$ and $\langle p\rangle$ for expectation values, $k$ for the wavenumber where the particle is classically allowed and $\kappa$ for the decay constant where it is forbidden. Problems 4 to 6 use unit-free numbers $\xi$, $\eta$ and $z_0$ as the square-well lesson does, but take care: in Problem 4 MIT gives the two letters $\xi$ and $\eta$ the opposite roles.
+
+## Problem 1
+
+<Exercise id="p1" title="Particle in a square well" points={10} mit="Problem 1">
+
+A particle of mass $m$ moves in an infinite square well of width $a$, with walls at $x = 0$ and $x = a$. At time $t = 0$ its wavefunction is
+
+<Formula label="The wavefunction at time zero" tex="\Psi(x, 0) = \frac{1}{\sqrt3}\,\sqrt{\frac2a}\,\sin\frac{2\pi x}{a} + \sqrt{\frac23}\,\sqrt{\frac2a}\,\sin\frac{3\pi x}{a}" cite="mit" at="Problem 1, p. 1" />
+
+<Part label="a" points={3}>
+
+Is $\Psi$ an energy eigenstate? Find $\Psi(x, t)$.
+
+<Hint>
+
+Compare the two terms with the energy eigenstates $\psi_n(x) = \sqrt{2/a}\,\sin(n\pi x/a)$ of the lesson. Which values of $n$ appear?
+
+</Hint>
+
+<Hint>
+
+Each energy eigenstate evolves on its own, with its own phase factor $e^{-iE_nt/\hbar}$.
+
+</Hint>
+
+<Answer id="p1-eigen" choices={["No: it is a sum of two eigenstates with different energies, so it has no single energy", "Yes: a sum of energy eigenstates is again an energy eigenstate", "Yes: its energy is the weighted average of the two energies", "No: it is not normalized, so it cannot be an eigenstate"]} answer={0} />
+
+<Solution>
+
+**The idea.** Read off the two eigenstates in the sum and give each its own phase.
+
+<Step title="Not an eigenstate">
+
+With the lesson's states and energies (lecture notes, Chapter 11, eq. (1.11)),
+
+<Formula label="States and energies of the infinite square well" tex="\psi_n(x) = \sqrt{\frac2a}\,\sin\frac{n\pi x}{a}, \qquad E_n = \frac{\hbar^2\pi^2n^2}{2ma^2}" cite="reading2" at="p. 3, eq. (1.11)" />
+
+the wavefunction is $\Psi(x, 0) = \frac{1}{\sqrt3}\psi_2 + \sqrt{\frac23}\,\psi_3$. Applying $\hat H$ gives $\frac{1}{\sqrt3}E_2\psi_2 + \sqrt{\frac23}E_3\psi_3$, which is not a number times $\Psi$, because $E_2 \ne E_3$. So $\Psi$ is not an energy eigenstate. It is normalized: $\frac13 + \frac23 = 1$.
+
+</Step>
+
+<Step title="The wavefunction at time t">
+
+Each stationary state carries the phase $e^{-iE_nt/\hbar}$ (Chapter 10, eq. (1.15)):
+
+<Formula label="The wavefunction at time t" tex="\Psi(x, t) = \frac{1}{\sqrt3}\,\sqrt{\frac2a}\,\sin\frac{2\pi x}{a}\;e^{-iE_2t/\hbar} + \sqrt{\frac23}\,\sqrt{\frac2a}\,\sin\frac{3\pi x}{a}\;e^{-iE_3t/\hbar}, \qquad E_2 = \frac{4\hbar^2\pi^2}{2ma^2}, \quad E_3 = \frac{9\hbar^2\pi^2}{2ma^2}" cite="reading1" at="p. 3, eq. (1.15)" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$ both phases are 1 and the starting wavefunction comes back. The two phases turn at different rates, so $\Psi(x, t)$ is not one function of $x$ times one function of $t$: it is not stationary.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+The energy is measured at time $t$. What is the probability of finding each of the three values $\dfrac{\hbar^2\pi^2}{2ma^2}$, $\dfrac{4\hbar^2\pi^2}{2ma^2}$ and $\dfrac{9\hbar^2\pi^2}{2ma^2}$? Type each as a decimal number.
+
+<Hint>
+
+The three values are $E_1$, $E_2$ and $E_3$. The probability of finding $E_n$ is the squared size of the coefficient of $\psi_n$ in $\Psi(x, t)$.
+
+</Hint>
+
+<Answer id="p1-prob1" label="Probability of $\frac{\hbar^2\pi^2}{2ma^2}$:" value="0" tolerance="0.001" calc="p1-prob1" />
+
+<Answer id="p1-prob2" label="Probability of $\frac{4\hbar^2\pi^2}{2ma^2}$:" value="0.3333" tolerance="1%" calc="p1-prob2" />
+
+<Answer id="p1-prob3" label="Probability of $\frac{9\hbar^2\pi^2}{2ma^2}$:" value="0.6667" tolerance="1%" calc="p1-prob3" />
+
+<Solution>
+
+**The idea.** The probability of an energy is the squared size of the coefficient of its eigenstate (the lesson on [observables and measurement](/courses/8-04/observables-measurement-uncertainty)).
+
+<Step title="The three probabilities">
+
+At time $t$ the coefficients are $c_1 = 0$, $c_2 = \frac{1}{\sqrt3}e^{-iE_2t/\hbar}$ and $c_3 = \sqrt{\frac23}\,e^{-iE_3t/\hbar}$. A phase has size 1, so
+
+<Formula label="Probabilities of the three energies" tex="P(E_1) = 0, \qquad P(E_2) = \left|c_2\right|^2 = \frac13, \qquad P(E_3) = \left|c_3\right|^2 = \frac23" cite="mit" at="Problem 1(b), p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The three add up to 1, and none depends on the time: the probabilities of energies never change, although the wavefunction does.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Find the expectation value $\langle x\rangle$ at time $t$. Write it with the frequency
+
+<Formula label="The beat frequency of the two states" tex="\omega \equiv \frac{E_3 - E_2}{\hbar} = \frac{5\pi^2\hbar}{2ma^2}" cite="mit" at="Problem 1(c), p. 1 (the name ω is ours)" />
+
+so that your answer contains only $a$, $\omega$ and $t$.
+
+<Hint>
+
+$|\Psi|^2$ has three pieces: one from $\psi_2$ alone, one from $\psi_3$ alone, and a cross term that oscillates as $\cos\omega t$.
+
+</Hint>
+
+<Hint>
+
+By symmetry each state alone gives $\langle x\rangle = a/2$. For the cross term you need $\int_0^a x\,\psi_2\psi_3\,dx$. Turn the product of sines into a difference of cosines and integrate by parts.
+
+</Hint>
+
+<Answer id="p1-x" label="$\langle x\rangle =$" expr="a/2 - 32*sqrt(2)*a*cos(w*t)/(25*pi^2)"
+  vars={{ a: [0.5, 2], w: [0.5, 2], t: [0.2, 1.2] }}
+  names={{ w: "\\omega" }}
+  mistakes={[
+    { expr: "a/2 + 32*sqrt(2)*a*cos(w*t)/(25*pi^2)", hint: "Check the sign of the integral of x ψ₂ψ₃: it is negative, so the particle starts left of the centre." },
+    { expr: "a/2 - 16*sqrt(2)*a*cos(w*t)/(25*pi^2)", hint: "There are two cross terms, complex conjugates of each other. Together they give twice the real part." },
+    { expr: "a/2", hint: "That holds for a stationary state. Here the cross term between ψ₂ and ψ₃ does not vanish." },
+    { expr: "-32*sqrt(2)*a*cos(w*t)/(25*pi^2)", hint: "The two terms without a time dependence are missing: each state alone has ⟨x⟩ = a/2." }
+  ]} />
+
+<Solution>
+
+**The idea.** Use the lesson's formula for the expectation value in a superposition of two stationary states: two constant terms and an oscillating cross term.
+
+<Step title="The three terms">
+
+With real $\psi_2$, $\psi_3$ and the coefficients of part (a), the formula of Chapter 10, eq. (1.18) reads
+
+<Formula label="Expectation value of x in the superposition" tex="\langle x\rangle = \frac13\int_0^a x\,\psi_2^2\,dx + \frac23\int_0^a x\,\psi_3^2\,dx + 2\,\frac{\sqrt2}{3}\,\cos\omega t\int_0^a x\,\psi_2\psi_3\,dx" cite="reading1" at="p. 3, eq. (1.18)" />
+
+Each $\psi_n^2$ is symmetric about the centre of the well, so the first two integrals are both $a/2$, and together the constant terms give $\left(\frac13 + \frac23\right)\frac a2 = \frac a2$.
+
+</Step>
+
+<Step title="The cross integral">
+
+With $\sin A\sin B = \frac12\left[\cos(A - B) - \cos(A + B)\right]$,
+
+<Formula label="The cross integral, step 1" tex="\int_0^a x\,\psi_2\psi_3\,dx = \frac1a\int_0^a x\left[\cos\frac{\pi x}{a} - \cos\frac{5\pi x}{a}\right]dx" cite="mit" at="Problem 1(c), p. 1 (our own solution)" />
+
+Integrating by parts, $\int_0^a x\cos(q\pi x/a)\,dx = \frac{a^2}{q^2\pi^2}\left[\cos q\pi - 1\right]$, which is $-\frac{2a^2}{q^2\pi^2}$ for odd $q$. So
+
+<Formula label="The cross integral, result" tex="\int_0^a x\,\psi_2\psi_3\,dx = \frac1a\left[-\frac{2a^2}{\pi^2} + \frac{2a^2}{25\pi^2}\right] = -\frac{48\,a}{25\pi^2}" cite="mit" at="Problem 1(c), p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="The result">
+
+<Formula label="Expectation value of x at time t" tex="\langle x\rangle = \frac a2 - \frac{32\sqrt2}{25\pi^2}\,a\cos\omega t \approx a\left(0.5 - 0.183\cos\omega t\right)" cite="mit" at="Problem 1(c), p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The average position swings between $0.317a$ and $0.683a$: it stays inside the well, as it must. It swings about the centre, and with the frequency $(E_3 - E_2)/\hbar$ set by the difference of the two energies, as the lesson says. If one coefficient were zero the cross term would be gone and $\langle x\rangle = a/2$ at all times.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+Find the expectation value $\langle p\rangle$ at time $t$. Write it with $\hbar$, $a$, $\omega$ and $t$ only (no $m$).
+
+<Hint>
+
+There is a quick way: how is $\langle p\rangle$ related to the rate of change of $\langle x\rangle$?
+
+</Hint>
+
+<Hint>
+
+$\langle p\rangle = m\,d\langle x\rangle/dt$ (the lesson on [the time dependence of expectation values](/courses/8-04/momentum-space-expectation-values) shows it for a free particle; a potential $V(x)$ commutes with $\hat x$ and changes nothing). Afterwards remove $m$ with the definition of $\omega$.
+
+</Hint>
+
+<Answer id="p1-p" label="$\langle p\rangle =$" expr="16*sqrt(2)*hbar*sin(w*t)/(5*a)"
+  vars={{ hbar: [0.5, 2], a: [0.5, 2], w: [0.5, 2], t: [0.2, 1.2] }}
+  names={{ hbar: "\\hbar", w: "\\omega" }}
+  mistakes={[
+    { expr: "-16*sqrt(2)*hbar*sin(w*t)/(5*a)", hint: "At t = 0 the average position is at its smallest and starts to grow, so ⟨p⟩ is positive just after." },
+    { expr: "0", hint: "That holds for a stationary state, and for the two terms without a time dependence. The cross term gives a momentum that oscillates." },
+    { expr: "16*sqrt(2)*hbar*cos(w*t)/(5*a)", hint: "⟨p⟩ follows the rate of change of ⟨x⟩, so a cosine in ⟨x⟩ becomes a sine here: ⟨p⟩ is zero at t = 0." }
+  ]} />
+
+<Solution>
+
+**The idea.** The momentum is the mass times the velocity of the average position.
+
+<Step title="Differentiate">
+
+<Formula label="Expectation value of p at time t" tex="\langle p\rangle = m\,\frac{d\langle x\rangle}{dt} = \frac{32\sqrt2}{25\pi^2}\,ma\,\omega\,\sin\omega t = \frac{32\sqrt2}{25\pi^2}\cdot\frac{5\pi^2\hbar}{2a}\,\sin\omega t = \frac{16\sqrt2}{5}\,\frac{\hbar}{a}\,\sin\omega t" cite="mit" at="Problem 1(d), p. 1 (our own solution)" />
+
+In the third step $m\omega = 5\pi^2\hbar/(2a^2)$ was used.
+
+</Step>
+
+<Step title="Check the result">
+
+Directly: each real state alone has $\langle p\rangle = 0$, and the cross term needs $\int_0^a\psi_2\left(-i\hbar\,\psi_3'\right)dx = -i\hbar\cdot\frac{6\pi}{a^2}\int_0^a\sin\frac{2\pi x}{a}\cos\frac{3\pi x}{a}\,dx = -i\hbar\cdot\frac{6\pi}{a^2}\cdot\left(-\frac{4a}{5\pi}\right) = \frac{24\,i\hbar}{5a}$. Twice the real part of $\frac{\sqrt2}{3}\,e^{-i\omega t}\cdot\frac{24\,i\hbar}{5a}$ is $\frac{16\sqrt2}{5}\frac{\hbar}{a}\sin\omega t$: the same. The units are those of $\hbar$ over a length, a momentum. The largest value, $4.53\,\hbar/a$, is smaller than the root-mean-square momentum $\sqrt{\langle p^2\rangle} = \sqrt{\frac13(2\pi)^2 + \frac23(3\pi)^2}\;\hbar/a = 8.51\,\hbar/a$, as the size of an average must be.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Non-degeneracy of bound states in one dimension" points={10} mit="Problem 2">
+
+This is our own problem. MIT's sheet gives only the title and a pointer to a textbook, which is not used here.
+
+Two different states are called degenerate when they have the same energy. The lesson states without proof that bound states in one dimension are never degenerate. Prove it here. Let $\psi_1(x)$ and $\psi_2(x)$ be two real solutions of the time-independent Schrödinger equation on the whole line, with the same potential $V(x)$ and the same energy $E$:
+
+<Formula label="Two solutions with one energy" tex="-\frac{\hbar^2}{2m}\,\psi_1'' + V\psi_1 = E\psi_1, \qquad -\frac{\hbar^2}{2m}\,\psi_2'' + V\psi_2 = E\psi_2" cite="mit" at="Problem 2, p. 1 (our own problem)" />
+
+<Part label="a" points={3}>
+
+Define the function $W(x) = \psi_1\psi_2' - \psi_2\psi_1'$ (it is called the Wronskian of the two solutions). Show that $W$ does not depend on $x$.
+
+<Hint>
+
+Multiply the first equation by $\psi_2$ and the second by $\psi_1$, and subtract.
+
+</Hint>
+
+<Hint>
+
+Then compare what is left with the derivative $dW/dx$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The terms with $V$ and $E$ cancel between the two equations, and what is left is the derivative of $W$.
+
+<Step title="Subtract the equations">
+
+$\psi_2$ times the first equation minus $\psi_1$ times the second: the terms $V\psi_1\psi_2$ and $E\psi_1\psi_2$ appear in both and cancel. This leaves
+
+<Formula label="What is left after subtracting" tex="-\frac{\hbar^2}{2m}\left(\psi_2\psi_1'' - \psi_1\psi_2''\right) = 0" cite="mit" at="Problem 2, p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Recognize the derivative">
+
+<Formula label="The derivative of W" tex="\frac{dW}{dx} = \psi_1'\psi_2' + \psi_1\psi_2'' - \psi_2'\psi_1' - \psi_2\psi_1'' = \psi_1\psi_2'' - \psi_2\psi_1'' = 0" cite="mit" at="Problem 2, p. 1 (our own solution)" />
+
+So $W$ is the same number at every $x$.
+
+</Step>
+
+<Step title="Check the result">
+
+Nothing was assumed about the potential except that it is the same in both equations, and nothing about bound states. The result holds for any two solutions with equal energy. (At a delta function the slopes jump, but $\psi_1'$ and $\psi_2'$ jump in proportion to $\psi_1$ and $\psi_2$, so $W$ does not jump.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Now let both solutions be bound states: $\psi_1 \to 0$ and $\psi_2 \to 0$ as $x \to \pm\infty$, with slopes that stay finite. Show that $\psi_2 = c\,\psi_1$ for some constant $c$, so that the two are the same state.
+
+<Hint>
+
+What is the value of the constant $W$? Look far away.
+
+</Hint>
+
+<Hint>
+
+$W = 0$ says $\psi_2'/\psi_2 = \psi_1'/\psi_1$ wherever neither function is zero. Both sides are derivatives of logarithms.
+
+</Hint>
+
+<Hint>
+
+At a point where $\psi_1 = 0$, the slope $\psi_1'$ is not zero (otherwise $\psi_1$ would vanish everywhere). Use that to carry the constant $c$ across the zero.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The constant $W$ can be read off at infinity, where it is zero. A vanishing $W$ forces the two functions to be proportional.
+
+<Step title="W is zero">
+
+Far away both $\psi_1$ and $\psi_2$ go to zero while the slopes stay finite, so $W = \psi_1\psi_2' - \psi_2\psi_1' \to 0$. By part (a) $W$ is constant, so $W = 0$ at every $x$.
+
+</Step>
+
+<Step title="Between the zeros">
+
+On a stretch where neither function vanishes, divide $\psi_1\psi_2' = \psi_2\psi_1'$ by $\psi_1\psi_2$:
+
+<Formula label="Equal logarithmic derivatives" tex="\frac{\psi_2'}{\psi_2} = \frac{\psi_1'}{\psi_1} \quad\Longrightarrow\quad \ln\left|\psi_2\right| = \ln\left|\psi_1\right| + \text{constant} \quad\Longrightarrow\quad \psi_2 = c\,\psi_1" cite="mit" at="Problem 2, p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Across a zero">
+
+Let $\psi_1(x_0) = 0$. Then $\psi_1'(x_0) \ne 0$: a solution of a second-order equation with value and slope both zero at one point is zero everywhere. $W = 0$ at $x_0$ gives $\psi_2(x_0)\,\psi_1'(x_0) = 0$, so $\psi_2(x_0) = 0$ too: the two functions have the same zeros. Left and right of $x_0$ they are proportional, say with constants $c_-$ and $c_+$. The slopes $\psi_2' = c_\pm\psi_1'$ must agree at $x_0$, where $\psi_1' \ne 0$, so $c_- = c_+$. One constant $c$ serves for the whole line.
+
+</Step>
+
+<Step title="Check the result">
+
+The infinite square well and the finite well of the lessons agree: every bound state there has its own energy. The proof used two things that part (c) and part (d) will take away in turn: that the wavefunctions vanish far away, and that a solution cannot vanish on a whole stretch.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+A free particle on a circle (the lesson on stationary states) does have degenerate states: for $k \ne 0$, $\psi_1 = \cos kx$ and $\psi_2 = \sin kx$ have the same energy. Compute their $W$, and say which step of the proof fails.
+
+<Hint>
+
+Put the two functions into $W = \psi_1\psi_2' - \psi_2\psi_1'$ and simplify.
+
+</Hint>
+
+<Answer id="p2-w" label="$W =$" expr="k"
+  vars={{ k: [0.5, 3], x: [0.3, 1.2] }}
+  mistakes={[
+    { expr: "-k", hint: "Check the order: W = ψ₁ψ₂′ − ψ₂ψ₁′, with ψ₁ = cos kx and ψ₂ = sin kx." },
+    { expr: "k*cos(2*k*x)", hint: "A sign slip: the two terms add to k(cos² kx + sin² kx), not to k(cos² kx − sin² kx)." },
+    { expr: "0", hint: "The derivative of cos kx is −k sin kx, so the second term is +k sin² kx and does not cancel the first." }
+  ]} />
+
+<Solution>
+
+**The idea.** On a circle nothing forces $W$ to vanish, because there is no "far away".
+
+<Step title="Compute W">
+
+<Formula label="W for the cosine and the sine" tex="W = \cos kx\cdot k\cos kx - \sin kx\cdot\left(-k\sin kx\right) = k\left(\cos^2kx + \sin^2kx\right) = k" cite="mit" at="Problem 2, p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="The step that fails">
+
+$W$ is constant, as part (a) says it must be, but it is not zero. The first step of part (b) fails: on a circle the wavefunctions do not go to zero anywhere, so $W$ cannot be read off as zero. The two states are normalizable there for another reason (the circle has a finite length), and they are truly different states.
+
+</Step>
+
+<Step title="Check the result">
+
+$W$ has the units of $\psi^2$ over a length, and $k$ is one over a length, which fits for these unit-free functions. For $k = 0$ the sine is zero everywhere and only one state is left: the lesson's one level without degeneracy.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+Two infinite square wells of the same width lie side by side on the $x$ axis, with a stretch between them where the potential is infinite. A state that sits in the left well only and a state that sits in the right well only then have the same energy and both vanish far away. Which step of the proof in part (b) fails here?
+
+<Hint>
+
+Where is $\psi_1$ zero? Where is $\psi_2$ zero? Follow the proof through the stretch between the wells.
+
+</Hint>
+
+<Answer id="p2-two" choices={["The step across a zero: each state vanishes on a whole stretch, not only at single points, so the constant c may differ from one well to the other", "The step W = 0: these states do not vanish far away", "Part (a): W is not constant when the potential has walls", "No step fails: the two states are in fact the same state"]} answer={0} />
+
+<Solution>
+
+**The idea.** With an infinite barrier a solution may vanish on a whole interval, and the argument that carries $c$ across a zero breaks down.
+
+<Step title="Follow the proof">
+
+Let $\psi_1$ live in the left well and $\psi_2$ in the right well. Both vanish far away, and $W = 0$ everywhere: inside the left well $\psi_2$ and $\psi_2'$ are both zero, inside the right well $\psi_1$ and $\psi_1'$ are, and elsewhere all four are. So the first step of part (b) holds. In the left well $\psi_2 = c\,\psi_1$ holds with $c = 0$. In the right well it cannot hold for any $c$, since $\psi_1 = 0$ there and $\psi_2$ is not.
+
+</Step>
+
+<Step title="The step that fails">
+
+The step across a zero assumed that $\psi_1' \ne 0$ wherever $\psi_1 = 0$. That rests on the equation having finite terms. Where $V$ is infinite the wavefunction is zero on a whole stretch, slope included, and the two wells are cut off from each other: the proportionality constant is free to change from one well to the other. So the theorem needs a potential that does not split the line into separate pieces.
+
+</Step>
+
+<Step title="Check the result">
+
+Make the barrier between the wells high but finite and the degeneracy goes away: the states now leak into each other's well, the proof applies, and the two lowest states become one even and one odd state with slightly different energies. Problem 6 shows such a pair of wells.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Infinite rectangular well in the plane" points={10} mit="Problem 3">
+
+A particle of mass $m$ moves in the $xy$ plane. The potential is zero inside the rectangle $0 \le x \le L_x$, $0 \le y \le L_y$ and infinite everywhere else.
+
+<Part label="a" points={4}>
+
+Use the Schrödinger equation in two dimensions to find the energy eigenstates. Give the energies $E_{n_x, n_y}$, and the constant $N$ in the normalized eigenfunctions $\psi_{n_x, n_y}(x, y) = N\sin\dfrac{n_x\pi x}{L_x}\,\sin\dfrac{n_y\pi y}{L_y}$, with $N > 0$.
+
+<Hint>
+
+Inside the rectangle the equation is $-\frac{\hbar^2}{2m}\left(\frac{\partial^2\psi}{\partial x^2} + \frac{\partial^2\psi}{\partial y^2}\right) = E\psi$. Try a product $\psi(x, y) = X(x)\,Y(y)$.
+
+</Hint>
+
+<Hint>
+
+After dividing by $XY$, one term depends only on $x$ and the other only on $y$, so each is a constant. Each is the one-dimensional infinite well of the lesson.
+
+</Hint>
+
+<Answer id="p3-e" label="$E_{n_x, n_y} =$" expr="pi^2*hbar^2/(2*m)*(nx^2/Lx^2 + ny^2/Ly^2)"
+  vars={{ hbar: [0.5, 2], m: [0.5, 2], Lx: [1, 2], Ly: [2.2, 3], nx: [1, 3], ny: [1, 3] }}
+  names={{ hbar: "\\hbar", Lx: "L_x", Ly: "L_y", nx: "n_x", ny: "n_y" }}
+  mistakes={[
+    { expr: "pi^2*hbar^2/(2*m)*(nx/Lx + ny/Ly)^2", hint: "The energies of the two directions add, not the wavenumbers: E = ħ²(k_x² + k_y²)/(2m)." },
+    { expr: "hbar^2/(2*m)*(nx^2/Lx^2 + ny^2/Ly^2)", hint: "The wavenumber along x is n_x π/L_x: the factor π² is missing." },
+    { expr: "pi^2*hbar^2/(2*m)*(nx^2 + ny^2)/(Lx*Ly)", hint: "Each direction has its own length: n_x goes with L_x and n_y with L_y." }
+  ]} />
+
+<Answer id="p3-n" label="$N =$" expr="2/sqrt(Lx*Ly)"
+  vars={{ Lx: [1, 2], Ly: [2.2, 3] }}
+  names={{ Lx: "L_x", Ly: "L_y" }}
+  mistakes={[
+    { expr: "sqrt(2/(Lx*Ly))", hint: "Each direction brings a factor √(2/L). Their product has a 2 on top, not √2." },
+    { expr: "4/(Lx*Ly)", hint: "That is N². Take the square root." }
+  ]} />
+
+<Solution>
+
+**The idea.** The equation separates: a product of two one-dimensional infinite wells, with energies that add.
+
+<Step title="Separate the variables">
+
+Put $\psi = X(x)Y(y)$ into the equation and divide by $XY$:
+
+<Formula label="The separated equation" tex="-\frac{\hbar^2}{2m}\,\frac{X''}{X} - \frac{\hbar^2}{2m}\,\frac{Y''}{Y} = E" cite="mit" at="Problem 3(a), p. 1 (our own solution)" />
+
+The first term depends only on $x$ and the second only on $y$, yet they add to a constant. So each is a constant: $-\frac{\hbar^2}{2m}X'' = E_xX$ and $-\frac{\hbar^2}{2m}Y'' = E_yY$ with $E = E_x + E_y$.
+
+</Step>
+
+<Step title="Two infinite wells">
+
+The wavefunction must vanish on the edge of the rectangle, where the potential is infinite: $X(0) = X(L_x) = 0$ and $Y(0) = Y(L_y) = 0$. Each factor is the lesson's infinite well (Chapter 11, eq. (1.11)), with widths $L_x$ and $L_y$:
+
+<Formula label="Eigenstates and energies of the rectangular well" tex="\psi_{n_x, n_y} = \frac{2}{\sqrt{L_xL_y}}\,\sin\frac{n_x\pi x}{L_x}\,\sin\frac{n_y\pi y}{L_y}, \qquad E_{n_x, n_y} = \frac{\hbar^2\pi^2}{2m}\left(\frac{n_x^2}{L_x^2} + \frac{n_y^2}{L_y^2}\right), \qquad n_x, n_y = 1, 2, 3, \dots" cite="reading2" at="p. 3, eq. (1.11), once for each direction" />
+
+</Step>
+
+<Step title="Check the result">
+
+The normalization: $\int_0^{L_x}\sin^2\frac{n_x\pi x}{L_x}\,dx = \frac{L_x}{2}$ and the same for $y$, so $N^2\cdot\frac{L_x}{2}\cdot\frac{L_y}{2} = 1$ gives $N = 2/\sqrt{L_xL_y}$. It has the units of one over a length, right for a wavefunction in two dimensions. Neither number may be zero, or the wavefunction vanishes: the lowest energy is $E_{1, 1}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Now take a square, $L_x = L_y = L$. The energies are then $E = \dfrac{\hbar^2\pi^2}{2mL^2}\left(n_x^2 + n_y^2\right)$, and some of them belong to more than one state. Some of these degeneracies have a simple reason in a symmetry: find them and say which symmetry (the choice box). Others are accidental: they look random. MIT's hint for those is $49 + 1 = 25 + 25$.
+
+Our additions: how many different states have $n_x^2 + n_y^2 = 50$? And what is the next value of $n_x^2 + n_y^2$ above 50 at which an accidental degeneracy occurs?
+
+<Hint>
+
+What happens to the energy when the two numbers $n_x$ and $n_y$ trade places? Which operation on the square does that to the wavefunction?
+
+</Hint>
+
+<Hint>
+
+For the accidental ones, look for a whole number that is a sum of two squares of positive whole numbers in two different ways, not counting the order.
+
+</Hint>
+
+<Answer id="p3-sym" choices={["Swapping x and y, a reflection in a diagonal of the square: it turns the state (n_x, n_y) into (n_y, n_x), which has the same energy", "The reflection x → L − x: it turns the state (n_x, n_y) into (n_y, n_x)", "A half turn about the centre of the square: it turns the state (n_x, n_y) into (n_y, n_x)", "No symmetry: every degeneracy of the square is accidental"]} answer={0} />
+
+<Answer id="p3-count" label="Number of states with $n_x^2 + n_y^2 = 50$:" value="3" tolerance="0.1" calc="p3-count" />
+
+<Answer id="p3-next" label="Next accidental degeneracy at $n_x^2 + n_y^2 =$" value="65" tolerance="0.1" calc="p3-next" />
+
+<Solution>
+
+**The idea.** The square looks the same when $x$ and $y$ are swapped, so $(n_x, n_y)$ and $(n_y, n_x)$ share an energy. Anything beyond that is a coincidence of whole numbers.
+
+<Step title="The degeneracy from symmetry">
+
+For $n_x \ne n_y$ the states $\psi_{n_x, n_y}$ and $\psi_{n_y, n_x}$ are different functions with the same energy, since $n_x^2 + n_y^2$ does not care about the order. Swapping $x \leftrightarrow y$ is a reflection in the diagonal through the corner at the origin. It leaves the square and so the potential unchanged, and it turns one of the two states into the other. Examples: $(1, 2)$ and $(2, 1)$ with $n_x^2 + n_y^2 = 5$; $(1, 3)$ and $(3, 1)$ with 10. States with $n_x = n_y$, such as $(1, 1)$ and $(2, 2)$, have no partner of this kind. The reflections $x \to L - x$ and $y \to L - y$ and the half turn turn each state into itself, up to a sign. The quarter turns and the reflection in the other diagonal swap $(n_x, n_y)$ and $(n_y, n_x)$, up to a sign, so they explain the same degeneracy and no other.
+
+</Step>
+
+<Step title="Accidental degeneracies">
+
+MIT's hint: $7^2 + 1^2 = 5^2 + 5^2 = 50$. So the level with $n_x^2 + n_y^2 = 50$ holds the states $(1, 7)$, $(7, 1)$ and $(5, 5)$: three states. The pair $(1, 7)$, $(7, 1)$ is explained by the symmetry, but no symmetry of the square turns either into $(5, 5)$. The next case is
+
+<Formula label="The next accidental degeneracy" tex="1^2 + 8^2 = 4^2 + 7^2 = 65" cite="mit" at="Problem 3(b), p. 2 (our own solution)" />
+
+with the four states $(1, 8)$, $(8, 1)$, $(4, 7)$ and $(7, 4)$. After that comes $85 = 2^2 + 9^2 = 6^2 + 7^2$.
+
+</Step>
+
+<Step title="Check the result">
+
+A list of all sums $n_x^2 + n_y^2$ with $1 \le n_x \le n_y$, in rising order, begins 2, 5, 8, 10, 13, 17, 18, 20, 25, 26, 29, 32, 34, 37, 40, 41, 45, 50, 50. The first value that appears twice is 50, so there is no accidental degeneracy below it. Between 50 and 65 the list runs 52, 53, 58, 61, 65, 65, with no repeat before 65.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+Show that when $(L_x/L_y)^2$ is an irrational number, there are no degeneracies at all.
+
+<Hint>
+
+Suppose two different states $(n_x, n_y)$ and $(n_x', n_y')$ had the same energy. Write that down and solve for $(L_x/L_y)^2$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** A degeneracy would give $(L_x/L_y)^2$ as a ratio of whole numbers.
+
+<Step title="Suppose two states share an energy">
+
+Let $(n_x, n_y)$ and $(n_x', n_y')$ have equal energies. Multiplying $E$ by $2mL_x^2/(\hbar^2\pi^2)$:
+
+<Formula label="Equal energies" tex="n_x^2 + \frac{L_x^2}{L_y^2}\,n_y^2 = n_x'^2 + \frac{L_x^2}{L_y^2}\,n_y'^2 \quad\Longrightarrow\quad n_x^2 - n_x'^2 = \frac{L_x^2}{L_y^2}\left(n_y'^2 - n_y^2\right)" cite="mit" at="Problem 3(c), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Two cases">
+
+If $n_y' \ne n_y$ (both positive, so $n_y'^2 \ne n_y^2$), divide: $(L_x/L_y)^2 = \left(n_x^2 - n_x'^2\right)/\left(n_y'^2 - n_y^2\right)$, a ratio of whole numbers. That is rational, against the assumption. So $n_y' = n_y$. Then the right side is zero, so $n_x'^2 = n_x^2$, and since both are positive, $n_x' = n_x$. The two states are the same state.
+
+</Step>
+
+<Step title="Check the result">
+
+The square has $(L_x/L_y)^2 = 1$, a rational number, and it does have degeneracies, as part (b) showed. A rectangle with $L_x = 2L_y$ has them too: $(2, 2)$ and $(4, 1)$ both give $n_x^2 + 4n_y^2 = 20$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="An infinite square well with a step" points={10} mit="Problem 4">
+
+A particle of mass $m$ moves in one dimension in the potential
+
+<Formula label="The well with a step" tex="V(x) = \begin{cases} \infty, & x < 0 \\ 0, & 0 < x < a \\ V_0, & a < x < 2a \\ \infty, & x > 2a \end{cases} \qquad (V_0 > 0)" cite="mit" at="Problem 4, p. 2" />
+
+<Part label="a" points={5}>
+
+Find the equations that fix the stationary states with energies $0 < E < V_0$. Use MIT's definitions
+
+<Formula label="MIT's unit-free numbers for this problem" tex="k^2 \equiv \frac{2mE}{\hbar^2}, \qquad \kappa^2 \equiv \frac{2m(V_0 - E)}{\hbar^2}, \qquad z_0^2 = \frac{2ma^2V_0}{\hbar^2}, \qquad \eta \equiv ka, \qquad \xi \equiv \kappa a" cite="mit" at="Problem 4(a), p. 2" />
+
+Take care: here $\eta$ belongs to the allowed region and $\xi$ to the forbidden one, the other way round from the square-well lesson. Your equations should contain only $\xi$, $\eta$ and $z_0$. One of them can be written as $\eta\cot\eta = (\ldots)$ with only $\xi$ on the right: type that right side.
+
+<Hint>
+
+On the left, $0 < x < a$, the solution oscillates and must vanish at $x = 0$. On the right, $a < x < 2a$, it is built from $e^{\pm\kappa x}$ and must vanish at $x = 2a$. Which combination of the two exponentials vanishes at $2a$?
+
+</Hint>
+
+<Hint>
+
+Use $A\sin kx$ and $B\sinh\kappa(2a - x)$. Both $\psi$ and $\psi'$ are continuous at $x = a$. Divide the two conditions to get rid of $A$ and $B$.
+
+</Hint>
+
+<Answer id="p4-rhs" label="$\eta\cot\eta =$" expr="-xi*cosh(xi)/sinh(xi)"
+  vars={{ xi: [0.5, 3] }}
+  names={{ xi: "\\xi" }}
+  mistakes={[
+    { expr: "xi*cosh(xi)/sinh(xi)", hint: "Check the sign of the slope on the right: sinh κ(2a − x) falls as x grows." },
+    { expr: "-xi*sinh(xi)/cosh(xi)", hint: "That belongs to cosh κ(2a − x), which does not vanish at the wall x = 2a. The wall needs the sinh." },
+    { expr: "-xi*cos(xi)/sin(xi)", hint: "The region on the step is classically forbidden for E < V₀: the solution there is built from exponentials, not from sines." },
+    { expr: "-xi", hint: "That is the limit of a very wide step region, where only the decaying exponential survives. Here the wall at 2a is close, and both exponentials are needed." }
+  ]} />
+
+<Solution>
+
+**The idea.** A sine from the left wall, a hyperbolic sine from the right wall, matched in value and slope at the step.
+
+<Step title="The two pieces">
+
+For $0 < x < a$ the equation is $\psi'' = -k^2\psi$, and $\psi(0) = 0$ selects $\psi = A\sin kx$. For $a < x < 2a$ it is $\psi'' = \kappa^2\psi$, and $\psi(2a) = 0$ selects $\psi = B\sinh\kappa(2a - x)$.
+
+</Step>
+
+<Step title="Match at the step">
+
+The potential jumps by a finite amount at $x = a$, so $\psi$ and $\psi'$ are both continuous there (Chapter 10, eq. (2.23)):
+
+<Formula label="Continuity at the step" tex="A\sin ka = B\sinh\kappa a, \qquad Ak\cos ka = -B\kappa\cosh\kappa a" cite="reading1" at="p. 5, eq. (2.23): ψ and ψ′ are continuous at a finite jump; the two conditions are worked out here" />
+
+Divide the second by the first and multiply by $a$:
+
+<Formula label="The two equations for the bound states" tex="\eta\cot\eta = -\xi\coth\xi, \qquad \eta^2 + \xi^2 = z_0^2" cite="mit" at="Problem 4(a), p. 2 (our own solution)" />
+
+The second equation follows from the definitions: $k^2 + \kappa^2 = 2mV_0/\hbar^2$. Two equations for two unknowns, and the energy is then $E/V_0 = \eta^2/z_0^2$.
+
+</Step>
+
+<Step title="Check the result">
+
+For a very wide or very high step ($\xi \to \infty$) the right side goes to $-\infty$, which needs $\eta \to n\pi$: the infinite well of width $a$, as it should be. And $\xi\coth\xi \ge 1$ for every $\xi$, so $\eta\cot\eta \le -1$: the solutions have $\cot\eta < 0$, so $\eta$ lies in the second or fourth quarter of a turn, and so on.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Take $z_0 = 2\pi$. How many states with $E < V_0$ are there? Find their energies as fractions of $V_0$, to at least 4 significant digits. (You need to solve an equation numerically: a calculator with a solver, a spreadsheet or a plot will do.)
+
+<Hint>
+
+Put $\xi = \sqrt{z_0^2 - \eta^2}$ into the first equation. The left side $\eta\cot\eta$ must be at most $-1$: in which ranges of $\eta$ below $z_0 = 2\pi$ is the cotangent negative?
+
+</Hint>
+
+<Hint>
+
+Look for one root with $\pi/2 < \eta < \pi$ and one with $3\pi/2 < \eta < 2\pi$, by trying values and halving the interval. Then $E/V_0 = \eta^2/z_0^2$.
+
+</Hint>
+
+<Answer id="p4-n" label="Number of states with $E < V_0$:" value="2" tolerance="0.1" calc="p4-n" />
+
+<Answer id="p4-e1" label="Lowest: $E_1/V_0 =$" value="0.18436" tolerance="0.0001" calc="p4-e1" />
+
+<Answer id="p4-e2" label="Next: $E_2/V_0 =$" value="0.70747" tolerance="0.0001" calc="p4-e2" />
+
+<Solution>
+
+**The idea.** One unknown is left after putting in $\xi = \sqrt{4\pi^2 - \eta^2}$. Count the ranges where a root can be, then find the roots numerically.
+
+<Step title="Count the roots">
+
+Since $0 < E < V_0$, $\eta$ runs from 0 to $z_0 = 2\pi$. The equation needs $\eta\cot\eta \le -1$, so $\cot\eta < 0$: $\eta$ lies between $\pi/2$ and $\pi$, or between $3\pi/2$ and $2\pi$. In each of these ranges $\eta\cot\eta$ falls from 0 to $-\infty$, while the right side $-\xi\coth\xi$ rises (towards $-1$ as $\eta \to 2\pi$). So each range holds exactly one crossing: two states.
+
+</Step>
+
+<Step title="Solve">
+
+Halving the interval, or any root finder, gives
+
+<Formula label="The two bound states below the step" tex="\eta_1 = 2.6978,\ \ \xi_1 = 5.6745,\ \ \frac{E_1}{V_0} = \frac{\eta_1^2}{4\pi^2} = 0.18436; \qquad \eta_2 = 5.2849,\ \ \xi_2 = 3.3983,\ \ \frac{E_2}{V_0} = 0.70747" cite="mit" at="Problem 4(b), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+MIT's Problem 5 prints the last three digits of each energy, 436 and 747: they agree. For comparison, an infinite well of width $a$ alone would have $\eta = \pi$ and $2\pi$, so $E/V_0 = 0.25$ and 1. Both states lie lower than that, because the wavefunction can spread a little into the step. The graph shows the two states.
+
+<Plot variable="u" domain={[0, 2]} range={[-1.2, 1.2]} xLabel="x / a" yLabel="ψ"
+  curves={[
+    { expr: "u <= 1 ? sin(2.69781*u) : 0.0029474*sinh(5.67453*(2 - u))", label: "E₁" },
+    { expr: "u <= 1 ? sin(5.28487*u) : -0.0562615*sinh(3.39832*(2 - u))", label: "E₂", dash: true }
+  ]}
+  caption="The two states below the step for z₀ = 2π, computed from A sin(ηu) on the left and B sinh(ξ(2 − u)) on the right with the numbers above (not normalized). The step is at x/a = 1. Left of it each state is close to a state of an infinite well of width a. On the step it dies away quickly, the lower state fastest." />
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Shooting method and application" points={15} mit="Problem 5">
+
+**A warm-up.** For a particle in a quartic potential, $V(x) \propto x^4$, a change from $x$ to a unit-free variable $u$ brings the Schrödinger equation to the form
+
+<Formula label="The quartic potential, unit-free" tex="-\frac12\,\frac{d^2\psi}{du^2} + \left(u^4 - e\right)\psi = 0" cite="mit" at="Problem 5, p. 2" />
+
+where the pure number $e$ measures the energy. (In this problem $e$ is that number, not the base of the natural logarithm.) MIT's sheet gives a short Mathematica program for the even states. In words, it does this: choose a value of $e$ (it starts with 0.65); integrate the equation numerically from $u = 0$ to $u = 3.5$ with the starting values $\psi(0) = 1$, $\psi'(0) = 0$; plot $\psi(u)$. Do the same with any tool you like, and change $e$ by trial and error until the solution no longer runs off to $+\infty$ or $-\infty$. MIT says that the ground state energy lies a little above 0.65.
+
+**The application.** Go back to the well with a step of Problem 4, again with $z_0 = 2\pi$.
+
+<Part label="a" points={9}>
+
+First find the ground state value of $e$ for the quartic potential (the warm-up).
+
+Then, for the well with a step, put $x = au$ with $0 \le u \le 2$, and write $V = V_0f(u)$ with a suitable $f(u)$. Find the differential equation for the energy eigenstates in which no units appear and the energy enters as the pure number $e = E/V_0$. Written as $C\,\dfrac{d^2\psi}{du^2} + \left(f(u) - e\right)\psi = 0$, what is the constant $C$ in terms of $z_0$? (The box for $C$ is our addition.)
+
+Test your equation with the shooting method: recover $E_1$ and $E_2$ of Problem 4. Then find the next two levels, $E_3$ and $E_4$, as fractions of $V_0$.
+
+<Hint>
+
+For the quartic: at $e = 0.65$ the solution runs off one way, at $e = 0.70$ the other way. Halve the interval, keeping one end of each kind.
+
+</Hint>
+
+<Hint>
+
+For the well: with $x = au$, $\frac{d^2}{dx^2} = \frac{1}{a^2}\frac{d^2}{du^2}$. Divide the whole equation by $V_0$ and look for $z_0^2$.
+
+</Hint>
+
+<Hint>
+
+This potential is not even, but it has hard walls: start at the left wall with $\psi(0) = 0$, $\psi'(0) = 1$, integrate to $u = 2$, and change $e$ until $\psi(2) = 0$. Tell your program about the jump of $f$ at $u = 1$ (or integrate the two halves one after the other).
+
+</Hint>
+
+<Answer id="p5-quartic" label="Quartic potential, ground state: $e =$" value="0.668" tolerance="0.002" calc="p5-quartic" />
+
+<Answer id="p5-c" label="$C =$" expr="-1/z0^2"
+  vars={{ z0: [1.5, 7] }}
+  names={{ z0: "z_0" }}
+  mistakes={[
+    { expr: "-1/2", hint: "That is the constant of the quartic equation. Here, dividing ħ²/(2ma²) by V₀ gives a number that depends on z₀." },
+    { expr: "1/z0^2", hint: "Check the sign: the kinetic term is −(ħ²/2m) d²ψ/dx²." },
+    { expr: "-1/z0", hint: "z₀ is defined through its square: z₀² = 2ma²V₀/ħ²." },
+    { expr: "-z0^2", hint: "Upside down: ħ²/(2ma²V₀) = 1/z₀²." }
+  ]} />
+
+<Answer id="p5-e3" label="$E_3/V_0 =$" value="1.2065" tolerance="0.001" calc="p5-e3" />
+
+<Answer id="p5-e4" label="$E_4/V_0 =$" value="1.5625" tolerance="0.001" calc="p5-e4" />
+
+<Solution>
+
+**The idea.** Clean the units out, then shoot from the left wall and aim for a zero at the right wall.
+
+<Step title="The quartic warm-up">
+
+Integrating from $\psi(0) = 1$, $\psi'(0) = 0$ to $u = 3.5$: at $e = 0.65$ the solution ends far up, at $e = 0.70$ far down. Halving the interval again and again closes in on
+
+<Formula label="Ground state of the quartic potential" tex="e_0 = 0.66799" cite="mit" at="Problem 5, pp. 2–3 (our own solution)" />
+
+a little above 0.65, as MIT says. At this value the solution falls smoothly towards zero and stays near zero out to $u = 3.5$.
+
+</Step>
+
+<Step title="The unit-free equation">
+
+With $x = au$ and $V = V_0f(u)$ the equation $-\frac{\hbar^2}{2m}\psi'' + (V - E)\psi = 0$ becomes $-\frac{\hbar^2}{2ma^2}\frac{d^2\psi}{du^2} + V_0\left(f - e\right)\psi = 0$. Dividing by $V_0$:
+
+<Formula label="The well with a step, unit-free" tex="-\frac{1}{z_0^2}\,\frac{d^2\psi}{du^2} + \left(f(u) - e\right)\psi = 0, \qquad f(u) = \begin{cases} 0, & 0 < u < 1 \\ 1, & 1 < u < 2 \end{cases}, \qquad \psi(0) = \psi(2) = 0" cite="mit" at="Problem 5(a), p. 3 (our own solution)" />
+
+So $C = -1/z_0^2$, which is $-1/(4\pi^2)$ here.
+
+</Step>
+
+<Step title="Shoot">
+
+Start with $\psi(0) = 0$, $\psi'(0) = 1$ (the lesson's rule for a hard wall, Chapter 12, p. 12) and integrate to $u = 2$. The value $\psi(2)$ changes sign between $e = 0.18$ and $0.19$, and again between $0.70$ and $0.71$. Closing in gives $e = 0.18436$ and $0.70747$: the energies of Problem 4. Going on, $\psi(2)$ changes sign between $1.20$ and $1.21$ and between $1.56$ and $1.57$:
+
+<Formula label="The third and fourth levels" tex="\frac{E_3}{V_0} = 1.2065, \qquad \frac{E_4}{V_0} = 1.5625" cite="mit" at="Problem 5(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Above the step the right piece oscillates too, $\psi = B\sin q(2 - u)$ with $q = z_0\sqrt{e - 1}$, and the matching of Problem 4 turns into $\eta\cot\eta = -q\cot q$ with $\eta = z_0\sqrt e$. The roots of that equation are the values found by shooting. The fourth level is a special case: at $e = 25/16 = 1.5625$ exactly, $\eta = 5\pi/2$ and $q = 3\pi/2$, both cotangents vanish, and the wave arrives at the step with zero slope from both sides.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+The lesson says that in a slowly varying potential the amplitude of the wavefunction goes roughly as the square root of the local de Broglie wavelength. A step is not slowly varying, but we can see numerically how well the rule holds.
+
+Build the energy eigenstate with 8 nodes (the eighth excited state) and find its energy as a fraction of $V_0$. Let $A_L$ and $A_R$ be the amplitudes of the oscillation on the left half and on the right half of the well. Read $A_L/A_R$ from your wavefunction, and compare with what the de Broglie wavelength predicts. The box for the ratio you read off accepts values within 0.5%, so that it tells your reading apart from the prediction.
+
+<Hint>
+
+Count the levels upwards from Problem 4: the state with 8 nodes is the ninth level. Count the zeros of your solution between the walls to be sure.
+
+</Hint>
+
+<Hint>
+
+For the prediction: the amplitude goes as $\sqrt{\lambda} \propto 1/\sqrt p$, and $p \propto \sqrt{E - V}$. What is $E - V$ on each side, in units of $V_0$?
+
+</Hint>
+
+<Answer id="p5-e9" label="State with 8 nodes: $E/V_0 =$" value="5.557" tolerance="0.005" calc="p5-e9" />
+
+<Answer id="p5-ratio" label="Read from the wavefunction: $A_L/A_R =$" value="0.960" tolerance="0.5%" calc="p5-ratio" />
+
+<Answer id="p5-pred" label="Predicted from the wavelengths: $A_L/A_R =$" value="0.952" tolerance="0.005" calc="p5-pred" />
+
+<Solution>
+
+**The idea.** Shoot for the ninth level, measure the heights of the two wave trains, and compare with $\sqrt{\lambda_L/\lambda_R}$.
+
+<Step title="The state with 8 nodes">
+
+In the infinite well of the lesson each level has one node more than the level below, and the ground state has none. The same holds here (count the zeros of each solution to see it), so 8 nodes means the ninth level. Shooting upwards past $E_4$, $\psi(2)$ changes sign near $e = 2.084$, $2.800$, $3.561$, $4.535$ and then between $5.55$ and $5.56$:
+
+<Formula label="The ninth level" tex="\frac{E_9}{V_0} = 5.5574" cite="mit" at="Problem 5(b), p. 3 (our own solution)" />
+
+Its wavefunction has 4 zeros left of the step and 4 right of it.
+
+</Step>
+
+<Step title="The amplitudes">
+
+The largest values of $|\psi|$ on the two sides, read from the solution that starts with $\psi'(0) = 1$, are $A_L = 0.06751$ and $A_R = 0.07034$:
+
+<Formula label="The ratio read from the wavefunction" tex="\frac{A_L}{A_R} = \frac{0.06751}{0.07034} = 0.960" cite="mit" at="Problem 5(b), p. 3 (our own solution)" />
+
+<Plot variable="u" domain={[0, 2]} range={[-1.3, 1.3]} xLabel="x / a" yLabel="ψ"
+  curves={[
+    { expr: "u <= 1 ? sin(14.81209*u) : 1.04195*sin(13.41341*(2 - u))" }
+  ]}
+  caption="The state with 8 nodes for z₀ = 2π, computed from sin(ηu) on the left and (A_R/A_L) sin(q(2 − u)) on the right with η = 14.812, q = 13.413 and A_R/A_L = 1.042. The step is at x/a = 1. On the right, above the step, the particle is slower: the waves are a little longer and a little higher." />
+
+</Step>
+
+<Step title="The prediction">
+
+The amplitude goes as $\sqrt{\lambda(x)} \propto 1/\sqrt{p(x)}$ with $p = \sqrt{2m(E - V)}$ (Chapter 12, eqs. (2.3) and (2.8)). On the left $E - V = eV_0$, on the right $(e - 1)V_0$:
+
+<Formula label="The ratio predicted from the local wavelength" tex="\frac{A_L}{A_R} = \sqrt{\frac{\lambda_L}{\lambda_R}} = \sqrt{\frac{p_R}{p_L}} = \left(\frac{e - 1}{e}\right)^{1/4} = \left(\frac{4.5574}{5.5574}\right)^{1/4} = 0.952" cite="reading3" at="p. 4, eq. (2.3), and p. 6, eq. (2.8)" />
+
+The rule is off by less than 1% here, although the potential jumps.
+
+</Step>
+
+<Step title="Check the result">
+
+Exactly, the left piece is $\sin(\eta u)/\eta$ with $\eta = z_0\sqrt e = 14.812$, so $A_L = 1/\eta = 0.06751$, as read off. Continuity at the step gives $A_L\left|\sin\eta\right| = A_R\left|\sin q\right|$ with $q = 13.413$, so $A_L/A_R = \left|\sin q/\sin\eta\right| = 0.960$. The rule does not work this well for every level: for the fourth level both sines are 1 in size and $A_L/A_R = 1$ exactly, while the rule predicts $(0.5625/1.5625)^{1/4} = 0.775$. The rule is good when the energy is far above the step, so that the step changes the wavelength only a little.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="Hydrogen ion using the square well model" points={10} mit="Problem 6">
+
+In Problem Set 5 (its Problem 7) the hydrogen atom was imitated by a square well. The atom has the Bohr radius $a_0$ and the ground state energy $E_0$, in the units that MIT's sheet uses:
+
+<Formula label="Bohr radius and ground state energy of hydrogen" tex="a_0 = \frac{\hbar^2}{me^2}, \qquad E_0 = -\frac{e^2}{2a_0} = -13.6\ \text{eV}" cite="mit" at="Problem 6, p. 3" />
+
+Here $e$ is the charge of the proton. Note that $|E_0| = \hbar^2/(2ma_0^2)$. The square well is $V(x) = -V_0$ for $|x| < a_0$ and zero outside, with the depth chosen so that its ground state lies at $E_0$. MIT quotes the result of that problem: $z_0 = 1.3192$ and
+
+<Formula label="The well that imitates a hydrogen atom" tex="V_0 = z_0^2\left|E_0\right| = 1.7402\left|E_0\right| = 23.67\ \text{eV}" cite="mit" at="Problem 6, p. 3" />
+
+The well stands for the pull of the proton, and its ground state for the electron's energy.
+
+To imitate the hydrogen molecular ion H₂⁺ (two protons, one electron), put two such wells side by side, a small distance $2\gamma a_0$ apart, where $\gamma$ is a small positive number:
+
+<Formula label="The potential of the model ion" tex="V(x) = \begin{cases} 0, & |x| < \gamma a_0 \\ -V_0, & \gamma a_0 < |x| < (2 + \gamma)a_0 \\ 0, & |x| > (2 + \gamma)a_0 \end{cases}" cite="mit" at="Problem 6, p. 4" />
+
+Work with $\gamma = 0.2$.
+
+<Part label="a" points={6}>
+
+Use the shooting method to find the energy of the lowest state: the energy of an electron shared by the two protons. Give it in eV. Plot the wavefunction.
+
+<Hint>
+
+Use $u = x/a_0$ and measure energies in units of $|E_0|$: $\varepsilon = E/|E_0|$. What does the equation become? Remember $|E_0| = \hbar^2/(2ma_0^2)$.
+
+</Hint>
+
+<Hint>
+
+The potential is even and the lowest state has no nodes, so it is even: start with $\psi(0) = 1$, $\psi'(0) = 0$ and integrate outwards to about $u = 8$. A bound state has $-z_0^2 < \varepsilon < 0$. One atom alone has $\varepsilon = -1$: try values a little below that.
+
+</Hint>
+
+<Answer id="p6-e" label="Lowest energy:" value="-17.26" unit="eV" tolerance="1%" calc="p6-e" />
+
+<Solution>
+
+**The idea.** Clean out the units with $a_0$ and $|E_0|$, then shoot for the even state without nodes.
+
+<Step title="The unit-free equation">
+
+With $x = a_0u$, and dividing by $|E_0| = \hbar^2/(2ma_0^2)$:
+
+<Formula label="The model ion, unit-free" tex="-\frac{d^2\psi}{du^2} + \left(v(u) - \varepsilon\right)\psi = 0, \qquad v(u) = \begin{cases} -z_0^2 = -1.7403, & 0.2 < |u| < 2.2 \\ 0, & \text{elsewhere} \end{cases}, \qquad \varepsilon = \frac{E}{\left|E_0\right|}" cite="mit" at="Problem 6(a), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Shoot">
+
+Start with $\psi(0) = 1$, $\psi'(0) = 0$ (Chapter 12, eqs. (4.2)–(4.3)) and integrate to $u = 8$. At $\varepsilon = -1.30$ the solution runs off upwards, at $\varepsilon = -1.20$ downwards. Halving the interval:
+
+<Formula label="The lowest state of the model ion" tex="\varepsilon = -1.2693, \qquad E = -1.2693 \times 13.6\ \text{eV} = -17.26\ \text{eV}" cite="mit" at="Problem 6(a), p. 4 (our own solution)" />
+
+The solution at this energy has no zeros. No state was found below it: for every trial value of $\varepsilon$ between $-1.74$ and $-1.27$ the even solution runs off upwards.
+
+<Plot variable="u" domain={[-6, 6]} range={[-0.2, 1.4]} xLabel="x / a₀" yLabel="ψ"
+  curves={[
+    { expr: "abs(u) < 0.2 ? cosh(1.12663*u) : (abs(u) < 2.2 ? 1.02549*cos(0.68628*(abs(u) - 0.2)) + 0.37304*sin(0.68628*(abs(u) - 0.2)) : 0.56769*exp(-1.12663*(abs(u) - 2.2)))" }
+  ]}
+  caption="The lowest state of the model ion for γ = 0.2, computed from the exact pieces of the solution: cosh(κu) between the wells, a cosine and a sine inside each well, and a decaying exponential outside, with κ = 1.1266 and k = 0.6863 (not normalized). The wells lie between |x|/a₀ = 0.2 and 2.2. The electron is shared: the wavefunction is the same on both sides, with a shallow dip between the wells." />
+
+</Step>
+
+<Step title="Check the result">
+
+The pieces can be matched by hand, as for the finite well. With $\kappa = \sqrt{-\varepsilon}$ and $k = \sqrt{z_0^2 - \kappa^2}$, the even solution is $\cosh\kappa u$ between the wells, a shifted cosine inside a well, and $e^{-\kappa u}$ outside. Continuity of $\psi'/\psi$ at both edges of the well gives
+
+<Formula label="Exact condition for the even states of the two wells" tex="2k = \arctan\frac{\kappa}{k} + \arctan\left(\frac{\kappa}{k}\tanh\kappa\gamma\right), \qquad k^2 + \kappa^2 = z_0^2" cite="mit" at="Problem 6(a), p. 4 (our own solution)" />
+
+whose root for $\gamma = 0.2$ is $\kappa = 1.1266$, $k = 0.6863$: $\varepsilon = -\kappa^2 = -1.2693$, the same. For wells far apart ($\gamma \to \infty$) the condition becomes $k = \arctan(\kappa/k)$, or $\kappa = k\tan k$: one atom alone, with $\varepsilon = -1$. The shared electron lies lower than that, by $0.2693\times 13.6 = 3.66$ eV.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+MIT's sheet says: the binding energy of the ion is found by adding the positive energy of the repulsion between the two protons to the energy of part (a). Take the protons at the centres of the two wells (our reading of the model), so that they are $2(1 + \gamma)a_0 = 2.4\,a_0$ apart. What sum do you get, in eV? Compare with the real ion, and answer the last question (our addition): in this model, is the ion safe against falling apart into a hydrogen atom and a proton far away?
+
+<Hint>
+
+Two protons a distance $R$ apart repel with the energy $e^2/R$. Write $e^2$ with $|E_0|$ and $a_0$.
+
+</Hint>
+
+<Hint>
+
+For the last question compare the sum with the energy of the pieces: a hydrogen atom has $-13.6$ eV, and a proton far away adds nothing.
+
+</Hint>
+
+<Answer id="p6-sum" label="Electron energy plus repulsion:" value="-5.93" unit="eV" tolerance="2%" calc="p6-sum" />
+
+<Answer id="p6-bound" choices={["No: its total energy lies above that of a hydrogen atom with the second proton far away", "Yes: its total energy is negative, and that is enough", "Yes: the shared electron lies lower than in one atom, and that is enough", "It cannot be said without the mass of the proton"]} answer={0} />
+
+<Solution>
+
+**The idea.** Add the repulsion of the protons, then compare with the energy of the separated pieces.
+
+<Step title="The repulsion">
+
+From $E_0 = -e^2/(2a_0)$, $e^2 = 2|E_0|a_0$. With $R = 2.4\,a_0$:
+
+<Formula label="Repulsion of the two protons" tex="\frac{e^2}{R} = \frac{2\left|E_0\right|a_0}{2.4\,a_0} = 0.8333\times 13.6\ \text{eV} = 11.33\ \text{eV}" cite="mit" at="Problem 6(b), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The sum">
+
+<Formula label="Total energy of the model ion" tex="E_\text{total} = -17.26\ \text{eV} + 11.33\ \text{eV} = -5.93\ \text{eV}" cite="mit" at="Problem 6(b), p. 4 (our own solution)" />
+
+This is the energy of the ion measured from two protons and an electron all at rest far apart.
+
+</Step>
+
+<Step title="Compare with the real ion">
+
+The real ion needs about 2.65 eV to fall apart into a hydrogen atom and a proton (a calculated value from NIST's reference data, not on MIT's sheet). Measured from three particles far apart its energy is therefore about $-13.6 - 2.65 = -16.25$ eV. The model's $-5.93$ eV has the right sign but is far too high. Worse, $-5.93$ eV lies above the $-13.6$ eV of a hydrogen atom with a proton far away, by 7.67 eV: in this model the ion would fall apart. Sharing lowers the electron's energy by 3.66 eV (part (a)), but the protons' repulsion costs 11.33 eV.
+
+</Step>
+
+<Step title="Check the result">
+
+The model gets one thing right: an electron shared between two wells lies lower than in one well. It cannot get the number right. In the real ion the pulls of the two protons add up between them and deepen the potential there, while in the model each well keeps its depth $V_0$ and the two do not even overlap. A wavefunction in one dimension is also a poor copy of an electron cloud in three. The lesson on [the Born–Oppenheimer approximation](/courses/8-06/born-oppenheimer-approximation) in 8.06 treats the real ion.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
