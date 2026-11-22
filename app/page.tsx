@@ -8,7 +8,12 @@ import { yearName } from "@/lib/roman";
 export default function Home() {
   const site = getSite();
   const cosmologyCourses = site.courses.filter((c) => c.role === "cosmology");
-  const themes = cosmologyCourses.flatMap((c) => c.themes.map((t) => ({ course: c, theme: t })));
+  // One card per theme title: a later course's theme with a title already shown (8.902's
+  // "Structure formation" after 8.286's) would repeat the same pages.
+  const seenTitles = new Set<string>();
+  const themes = cosmologyCourses
+    .flatMap((c) => c.themes.map((t) => ({ course: c, theme: t })))
+    .filter(({ theme }) => !seenTitles.has(theme.title) && seenTitles.add(theme.title));
   const first = orderedPages(site).find((p) => p.yearNumber >= 1);
   const highSchool = site.years.find((y) => y.number === HIGHSCHOOL_YEAR);
   const yearsBack = [...site.years].reverse();
@@ -69,6 +74,16 @@ export default function Home() {
               ...theme.pages.map((s) => site.pageBySlug.get(s)).filter((p) => p !== undefined),
             ];
             const lectures = course.syllabus.filter((s) => theme.lectures.includes(s.lecture));
+            // A theme whose pages all come from other courses (8.286 "Dark matter") links to the
+            // course most of its pages come from, not to its own course.
+            let target = course;
+            if (lectures.length === 0 && pages.length > 0 && pages.every((p) => p.course !== course.id)) {
+              const counts = new Map<string, number>();
+              for (const p of pages) counts.set(p.course, (counts.get(p.course) ?? 0) + 1);
+              const top = [...counts.entries()].reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+              target = site.courseById.get(top) ?? course;
+            }
+            const targetName = target.kind === "textbook" ? target.title : target.id;
             return (
               <div key={course.id + theme.title} className="theme-card cosmology">
                 <h3>{theme.title}</h3>
@@ -88,8 +103,8 @@ export default function Home() {
                       : "Pages coming"}
                   </p>
                 )}
-                <Link className="small" href={course.href}>
-                  {course.id} overview →
+                <Link className="small" href={target.href}>
+                  {targetName} overview →
                 </Link>
               </div>
             );
