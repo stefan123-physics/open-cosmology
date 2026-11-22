@@ -1,0 +1,697 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# the Schrödinger equation of the double delta well integrated over the whole line (the page matches slopes at one
+# delta function), exact roots against the large-separation formula, the matching conditions of the divided box
+# (the page's energies were also found by a shooting integration, run outside this file), numerical integrals of
+# the oscillator densities with explicit Hermite polynomials (the page uses ladder operators and integration by
+# parts), numerical derivatives of the generating function and of the odd oscillator states, and integrals of the
+# real and imaginary parts of the time-dependent state.
+# In the oscillator entries u = x/a is the unit-free position, and the density of the state n = 0, 1, 2, 3 is picked
+# out of the four explicit densities H_n² e^(−u²)/(√π 2ⁿ n!) by selector polynomials in n (1 at that n, 0 at the others).
+
+page: content/year-2/8.04/8-04-problem-set-7.mdx
+calcs:
+  # ---- Problem 1: two delta wells
+
+  # Integrate psi'' - kappa² psi = -(2mg/hbar²)[delta(x-a) + delta(x+a)] psi over all x for the even state:
+  # kappa² ∫psi dx = (4mg/hbar²) psi(a), so lambda = xi² ∫psi ds / (4 psi(1)) with s = x/a. No slopes are matched.
+  - id: p1-even
+    kind: identity
+    answer: p1-even
+    where: 'Problem 1(a), answer box (even states): the Schrödinger equation integrated over the whole line, with the integral of the even wavefunction done numerically'
+    formula: xi*(1 + tanh(xi))/2
+    equals: xi**2*(integrate('cosh(xi*s)', 's', -1, 1) + 2*integrate('cosh(xi)*exp(-xi*(s-1))', 's', 1, 80))/(4*cosh(xi))
+    samples:
+      xi: [0.3, 0.8, 1.5, 2.2, 3]
+    tolerance: 1e-7
+    shown: ['id="p1-even"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The same with the equation multiplied by x first (the plain integral vanishes for an odd state):
+  # kappa² ∫x psi dx = (4mga/hbar²) psi(a), so lambda = xi² ∫s psi ds / (4 psi(1)).
+  - id: p1-odd
+    kind: identity
+    answer: p1-odd
+    where: 'Problem 1(a), answer box (odd states): the Schrödinger equation times x, integrated over the whole line, with the integral of x times the odd wavefunction done numerically'
+    formula: xi*(1 + 1/tanh(xi))/2
+    equals: xi**2*(integrate('s*sinh(xi*s)', 's', -1, 1) + 2*integrate('s*sinh(xi)*exp(-xi*(s-1))', 's', 1, 80))/(4*sinh(xi))
+    samples:
+      xi: [0.3, 0.8, 1.5, 2.2, 3]
+    tolerance: 1e-7
+    shown: ['id="p1-odd"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-exp-even
+    kind: identity
+    where: 'Problem 1(a): the even condition with exponentials, xi = lambda (1 + e^(-2 xi))'
+    formula: xi/(1 + exp(-2*xi))
+    equals: xi*(1 + tanh(xi))/2
+    samples:
+      xi: [0.3, 0.8, 1.5, 2.2, 3]
+    tolerance: 1e-12
+    shown: ['<Formula label="The same conditions with exponentials"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-exp-odd
+    kind: identity
+    where: 'Problem 1(a): the odd condition with exponentials, xi = lambda (1 - e^(-2 xi))'
+    formula: xi/(1 - exp(-2*xi))
+    equals: xi*(1 + 1/tanh(xi))/2
+    samples:
+      xi: [0.3, 0.8, 1.5, 2.2, 3]
+    tolerance: 1e-12
+    shown: ['$1 + \coth\xi = 2/(1 - e^{-2\xi})$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-threshold
+    answer: p1-threshold
+    where: 'Problem 1(a), answer box: the odd state appears where xi (1 + coth xi)/2 reaches its smallest value, at xi -> 0'
+    formula: 1e-5*(1 + 1/tanh(1e-5))/2
+    expected: '0.5'
+    tolerance: 1e-5
+    shown: ['id="p1-threshold"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-xi-even
+    where: 'Problem 1(a): root of the even condition at lambda = 1'
+    formula: solve('q*(1 + tanh(q)) - 2', 'q', 0.1, 5)
+    expected: '1.109'
+    shown: ['$\xi = 1.109$ (even)']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-xi-odd
+    where: 'Problem 1(a): root of the odd condition at lambda = 1'
+    formula: solve('q*(1 + 1/tanh(q)) - 2', 'q', 0.1, 5)
+    expected: '0.797'
+    shown: ['$\xi = 0.797$ (odd)']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-e-even
+    answer: p1-e-even
+    where: 'Problem 1(a), answer box: energy of the even state at lambda = 1, in units of hbar²/(m a²)'
+    formula: -solve('q*(1 + tanh(q)) - 2', 'q', 0.1, 5)**2/2
+    expected: '-0.615'
+    shown: ['id="p1-e-even"', 'the energies are $-0.615$ and']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-e-odd
+    answer: p1-e-odd
+    where: 'Problem 1(a), answer box: energy of the odd state at lambda = 1, in units of hbar²/(m a²)'
+    formula: -solve('q*(1 + 1/tanh(q)) - 2', 'q', 0.1, 5)**2/2
+    expected: '-0.317'
+    shown: ['id="p1-e-odd"', 'and $-0.317$ in units of']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-single
+    where: 'Problem 1(a): the single-well energy -lambda²/2 at lambda = 1'
+    inputs: {lam: 1}
+    formula: -lam**2/2
+    expected: '-0.5'
+    shown: ['the single-well value $-0.5$']
+    source: {cite: reading2, at: 'notes p. 4, eq. (1.17), in units of hbar²/(m a²)'}
+    origin: page-own
+
+  # The energy of a single well of strength 2g in units of hbar²/(m a²) is -2 lambda²: the even root for small lambda.
+  - id: p1-weak
+    kind: limit
+    where: 'Problem 1(a), features: for weak wells the even energy -xi²/2 approaches -2 lambda², one well of strength 2g'
+    formula: -solve('q*(1 + tanh(q)) - 2*lam', 'q', 1e-9, 5)**2/2
+    limit: -2*lam**2
+    vary: {lam: [0.1, 0.03, 0.01, 0.003, 0.001]}
+    tolerance: 1e-2
+    shown: ['$E \approx -2\lambda^2\,\hbar^2/(ma^2) = -m(2g)^2/(2\hbar^2)$']
+    source: {cite: reading2, at: 'notes p. 4, eq. (1.17), with alpha = 2g'}
+    origin: page-own
+
+  # The exact splitting from the two roots, against the box, as the wells move apart (lambda = a here).
+  - id: p1-split
+    kind: limit
+    answer: p1-split
+    where: 'Problem 1(b), answer box: the exact splitting from the roots of the two conditions approaches the formula as a grows (m = g = hbar = 1, so lambda = a)'
+    inputs: {m: 1, g: 1, hbar: 1}
+    formula: 2*m*g**2/hbar**2*exp(-2*m*a*g/hbar**2)
+    limit: (hbar**2/(2*m*a**2))*(solve('q*(1 + tanh(q)) - 2*m*a*g/hbar**2', 'q', 0.01, 60)**2 - solve('q*(1 + 1/tanh(q)) - 2*m*a*g/hbar**2', 'q', 0.01, 60)**2)
+    vary: {a: [1, 2, 3, 4, 6]}
+    tolerance: 1e-6
+    shown: ['id="p1-split"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-split-2-exact
+    where: 'Problem 1(b), check: exact splitting at lambda = 2, in units of hbar²/(m a²)'
+    formula: (solve('q*(1 + tanh(q)) - 4', 'q', 0.1, 9)**2 - solve('q*(1 + 1/tanh(q)) - 4', 'q', 0.1, 9)**2)/2
+    expected: '0.1475'
+    shown: ['a splitting of $0.1475$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-split-2-formula
+    where: 'Problem 1(b), check: 2 lambda² e^(-2 lambda) at lambda = 2'
+    formula: 2*2**2*exp(-4)
+    expected: '0.1465'
+    shown: ['the formula gives $0.1465$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-split-3-exact
+    where: 'Problem 1(b), check: exact splitting at lambda = 3'
+    formula: (solve('q*(1 + tanh(q)) - 6', 'q', 0.1, 9)**2 - solve('q*(1 + 1/tanh(q)) - 6', 'q', 0.1, 9)**2)/2
+    expected: '0.04463'
+    shown: ['they give $0.04463$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-split-3-formula
+    where: 'Problem 1(b), check: 2 lambda² e^(-2 lambda) at lambda = 3'
+    formula: 2*3**2*exp(-6)
+    expected: '0.04462'
+    shown: ['and $0.04462$. The formula improves']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the divided box (our own problem). Lengths in units of w, energies in units of hbar²/(2 m w²).
+  # Matching psi'/psi at the edge of the barrier: kappa tanh(kappa d/2) sin k + k cos k = 0 (even), coth for odd.
+  # The same energies were found by integrating psi'' = (v - eps) psi from the centre to the wall with SciPy
+  # (solve_ivp, rtol 1e-11) and locating the sign change of psi at the wall: 6.628271 and 7.297198.
+
+  - id: p2-ratio-open
+    answer: p2-ratio-open
+    where: 'Problem 2(c), answer box: no barrier, one box of width 2w; the wavenumbers are the first two roots of sin(2k) = 0'
+    formula: solve('sin(2*q)', 'q', 2.5, 3.5)**2 / solve('sin(2*q)', 'q', 1, 2)**2
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['id="p2-ratio-open"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-ratio-closed
+    answer: p2-ratio-closed
+    where: 'Problem 2(c), answer box: the ratio of the odd and even roots of the matching conditions for a very high barrier (v0 = 1e6, d = w/2)'
+    inputs: {v0: 1e6, dd: 0.5}
+    formula: solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.8695) / solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.8695)
+    expected: '1'
+    tolerance: 1e-6
+    shown: ['id="p2-ratio-closed"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-e1
+    answer: p2-e1
+    where: 'Problem 2(e), answer box: even root of the matching condition for v0 = 30, d = w/2 (shooting gives 6.628271)'
+    inputs: {v0: 30, dd: 0.5}
+    formula: solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '6.63'
+    shown: ['id="p2-e1"', '\varepsilon_1 = 6.63 \ \ (\text{even})']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-e2
+    answer: p2-e2
+    where: 'Problem 2(e), answer box: odd root of the matching condition for v0 = 30, d = w/2 (shooting gives 7.297198)'
+    inputs: {v0: 30, dd: 0.5}
+    formula: solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '7.30'
+    shown: ['id="p2-e2"', '\varepsilon_2 = 7.30 \ \ (\text{odd})']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-e1-fine
+    where: 'Problem 2(e): the even root to four figures'
+    inputs: {v0: 30, dd: 0.5}
+    formula: solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '6.628'
+    shown: ['$\varepsilon_1 = 6.628$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-e2-fine
+    where: 'Problem 2(e): the odd root to four figures'
+    inputs: {v0: 30, dd: 0.5}
+    formula: solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '7.297'
+    shown: ['$\varepsilon_2 = 7.297$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-even-d1
+    where: 'Problem 2(d), check: even energy for d = w'
+    inputs: {v0: 30, dd: 1}
+    formula: solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '6.93'
+    shown: ['are $6.93$, $6.63$ and $5.81$ for the even state']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-even-d025
+    where: 'Problem 2(d), check: even energy for d = w/4'
+    inputs: {v0: 30, dd: 0.25}
+    formula: solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '5.81'
+    shown: ['$6.63$ and $5.81$ for the even']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-odd-d1
+    where: 'Problem 2(d), check: odd energy for d = w'
+    inputs: {v0: 30, dd: 1}
+    formula: solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '6.99'
+    shown: ['and $6.99$, $7.30$ and $8.03$ for the odd state']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-odd-d025
+    where: 'Problem 2(d), check: odd energy for d = w/4'
+    inputs: {v0: 30, dd: 0.25}
+    formula: solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)
+    expected: '8.03'
+    shown: ['$7.30$ and $8.03$ for the odd']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-limit-wide
+    where: 'Problem 2(e), check: pi²/4, the lowest energy of one box of width 2w'
+    formula: pi**2/4
+    expected: '2.47'
+    shown: ['$\pi^2/4 = 2.47$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-limit-narrow
+    where: 'Problem 2(e), check: pi², the lowest energy of one box of width w'
+    formula: pi**2
+    expected: '9.87'
+    shown: ['$\pi^2 = 9.87$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  # The constants of the graph of the two states.
+  - id: p2-plot-k1
+    where: 'Problem 2(b), graph: wavenumber in the wells for the even state, sqrt(eps1)'
+    inputs: {v0: 30, dd: 0.5}
+    formula: sqrt(solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86))
+    expected: '2.5745'
+    shown: ['sin(2.5745*(1.25 - abs(x)))", label: "ground state"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-plot-kappa1
+    where: 'Problem 2(b), graph: decay constant in the barrier for the even state, sqrt(30 - eps1)'
+    inputs: {v0: 30, dd: 0.5}
+    formula: sqrt(30 - solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86))
+    expected: '4.8344'
+    shown: ['cosh(4.8344*x)']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-plot-c1
+    where: 'Problem 2(b), graph: the factor sin(k)/cosh(kappa d/2) that joins the cosh to the sine arc'
+    inputs: {v0: 30, dd: 0.5}
+    formula: sin(sqrt(solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)))/cosh(sqrt(30 - solve('sqrt(v0-q)*tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86))*0.25)
+    expected: '0.2945'
+    shown: ['0.2945*cosh(']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-plot-k2
+    where: 'Problem 2(b), graph: wavenumber in the wells for the odd state, sqrt(eps2)'
+    inputs: {v0: 30, dd: 0.5}
+    formula: sqrt(solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86))
+    expected: '2.7013'
+    shown: ['sign(x)*sin(2.7013*(1.25 - abs(x)))']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-plot-kappa2
+    where: 'Problem 2(b), graph: decay constant in the barrier for the odd state, sqrt(30 - eps2)'
+    inputs: {v0: 30, dd: 0.5}
+    formula: sqrt(30 - solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86))
+    expected: '4.7647'
+    shown: ['sinh(4.7647*x)']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-plot-c2
+    where: 'Problem 2(b), graph: the factor sin(k)/sinh(kappa d/2) that joins the sinh to the sine arc'
+    inputs: {v0: 30, dd: 0.5}
+    formula: sin(sqrt(solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86)))/sinh(sqrt(30 - solve('sqrt(v0-q)/tanh(sqrt(v0-q)*dd/2)*sin(sqrt(q)) + sqrt(q)*cos(sqrt(q))', 'q', 2, 9.86))*0.25)
+    expected: '0.2853'
+    shown: ['0.2853*sinh(']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 3: beyond the turning points. Direct numerical integrals of the densities.
+
+  - id: p3-n0
+    answer: p3-n0
+    where: 'Problem 3(a), answer box: twice the integral of e^(-u²)/sqrt(pi) beyond u = 1'
+    formula: 2*integrate('exp(-u**2)/sqrt(pi)', 'u', 1, 15)
+    expected: '0.157'
+    shown: ['id="p3-n0"', '= \text{erfc}(1) = 0.157"']
+    source: {cite: reading3, at: 'notes p. 3, eq. (1.22) (our own solution)'}
+    origin: page-own
+
+  - id: p3-n1
+    answer: p3-n1
+    where: 'Problem 3(b), answer box: twice the integral of 2u² e^(-u²)/sqrt(pi) beyond u = sqrt(3)'
+    formula: 2*integrate('2*u**2*exp(-u**2)/sqrt(pi)', 'u', sqrt(3), 15)
+    expected: '0.112'
+    shown: ['id="p3-n1"', '= 0.0973 + 0.0143 = 0.112"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-n2
+    answer: p3-n2
+    where: 'Problem 3(c), answer box: twice the integral of (4u² - 2)² e^(-u²)/(8 sqrt(pi)) beyond u = sqrt(5)'
+    formula: 2*integrate('(4*u**2-2)**2*exp(-u**2)/(8*sqrt(pi))', 'u', sqrt(5), 15)
+    expected: '0.0951'
+    shown: ['id="p3-n2"', '= 0.0935 + 0.0016 = 0.0951 \quad']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-erfc1
+    where: 'Problem 3, statement: erfc(1)'
+    formula: erfc(1)
+    expected: '0.1573'
+    shown: ['$\text{erfc}(1) = 0.1573$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-erfc3
+    where: 'Problem 3, statement: erfc(sqrt 3)'
+    formula: erfc(sqrt(3))
+    expected: '0.01431'
+    shown: ['$\text{erfc}(\sqrt3) = 0.01431$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-erfc5
+    where: 'Problem 3, statement: erfc(sqrt 5)'
+    formula: erfc(sqrt(5))
+    expected: '0.001565'
+    shown: ['$\text{erfc}(\sqrt5) = 0.001565$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-n1-first
+    where: 'Problem 3(b): the term 2 sqrt(3) e^(-3)/sqrt(pi)'
+    formula: 2*sqrt(3)*exp(-3)/sqrt(pi)
+    expected: '0.0973'
+    shown: ['\text{erfc}(\sqrt3) = 0.0973 +']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-n1-closed
+    where: 'Problem 3(b): the closed form 2c e^(-c²)/sqrt(pi) + erfc(c) at c = sqrt(3), to four figures'
+    formula: 2*sqrt(3)*exp(-3)/sqrt(pi) + erfc(sqrt(3))
+    expected: '0.1116'
+    shown: ['gives $0.1573$, $0.1116$ and $0.0951$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-n2-first
+    where: 'Problem 3(c): the term (2c³ + c) e^(-c²)/sqrt(pi) at c = sqrt(5)'
+    formula: (2*5**1.5 + sqrt(5))*exp(-5)/sqrt(pi)
+    expected: '0.0935'
+    shown: ['\text{erfc}(c) = 0.0935 +']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-n2-closed
+    where: 'Problem 3(c): the closed form (2c³ + c) e^(-c²)/sqrt(pi) + erfc(c) at c = sqrt(5)'
+    formula: (2*5**1.5 + sqrt(5))*exp(-5)/sqrt(pi) + erfc(sqrt(5))
+    expected: '0.0951'
+    shown: ['$P_2 = 0.0951$: the probability']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-parts
+    kind: identity
+    where: 'Problem 3(b): the integration by parts for u² e^(-u²), against the numerical integral'
+    formula: cc/2*exp(-cc**2) + sqrt(pi)/4*erfc(cc)
+    equals: integrate('u**2*exp(-u**2)', 'u', cc, 15)
+    samples:
+      cc: [0, 0.5, 1, 1.7, 2.5]
+    tolerance: 1e-8
+    shown: ['<Formula label="An integral by parts"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: oscillator computations
+
+  - id: p4-x4
+    kind: identity
+    answer: p4-x4
+    where: 'Problem 4(a), answer box: against the numerical integral of x⁴ |psi_n|² with the explicit Hermite polynomials, n = 0 to 3'
+    formula: 3*hbar**2*(2*n**2 + 2*n + 1)/(4*m**2*omega**2)
+    equals: (hbar/(m*omega))**2*integrate('u**4*((1-n)*(2-n)*(3-n)/6 + n*(2-n)*(3-n)/2*2*u**2 + n*(n-1)*(3-n)/2*(4*u**2-2)**2/8 + n*(n-1)*(n-2)/6*(8*u**3-12*u)**2/48)*exp(-u**2)/sqrt(pi)', 'u', -12, 12)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 2, 1.2]
+      n: [0, 1, 2, 3, 2]
+    tolerance: 1e-8
+    shown: ['id="p4-x4"']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-x4-n0
+    where: 'Problem 4(a), check: the integral of u⁴ |psi_0|², in units of (hbar/m omega)²'
+    formula: integrate('u**4*exp(-u**2)/sqrt(pi)', 'u', -12, 12)
+    expected: '0.75'
+    tolerance: 1e-8
+    shown: ['gives $\frac34$, $\frac{15}{4}$, $\frac{39}{4}$ and $\frac{75}{4}$ times']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-x4-n3
+    where: 'Problem 4(a), check: the integral of u⁴ |psi_3|², in units of (hbar/m omega)²'
+    formula: integrate('u**4*(8*u**3-12*u)**2*exp(-u**2)/(48*sqrt(pi))', 'u', -12, 12)
+    expected: '18.75'
+    tolerance: 1e-8
+    shown: ['$\frac{39}{4}$ and $\frac{75}{4}$ times $(\hbar/m\omega)^2$']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-x4-classical
+    kind: limit
+    where: 'Problem 4(a), check: for large n the result approaches (3/8) A_n⁴ with A_n² = (2n + 1) hbar/(m omega) (units of (hbar/m omega)²)'
+    formula: 3*(2*n**2 + 2*n + 1)/4
+    limit: 3*(2*n + 1)**2/8
+    vary: {n: [1, 10, 100, 1000, 100000]}
+    tolerance: 1e-4
+    shown: ['\frac38A_n^4$']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-dx
+    kind: identity
+    answer: p4-dx
+    where: 'Problem 4(b), answer box: against the numerical integral of x² |psi_n|², n = 0 to 3'
+    formula: sqrt(hbar*(n + 1/2)/(m*omega))
+    equals: sqrt(hbar/(m*omega)*integrate('u**2*((1-n)*(2-n)*(3-n)/6 + n*(2-n)*(3-n)/2*2*u**2 + n*(n-1)*(3-n)/2*(4*u**2-2)**2/8 + n*(n-1)*(n-2)/6*(8*u**3-12*u)**2/48)*exp(-u**2)/sqrt(pi)', 'u', -12, 12))
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 2, 1.2]
+      n: [0, 1, 2, 3, 2]
+    tolerance: 1e-8
+    shown: ['id="p4-dx"']
+    source: {cite: reading3, at: 'notes p. 8, eqs. (2.30)–(2.31)'}
+    origin: page-own
+
+  - id: p4-dp
+    kind: identity
+    answer: p4-dp
+    where: 'Problem 4(b), answer box: against hbar² times the numerical integral of (d psi_n/dx)², n = 0 to 3'
+    formula: sqrt(m*omega*hbar*(n + 1/2))
+    equals: sqrt(hbar*m*omega*integrate('((1-n)*(2-n)*(3-n)/6*u**2 + n*(2-n)*(3-n)/2*(2-2*u**2)**2/2 + n*(n-1)*(3-n)/2*(10*u-4*u**3)**2/8 + n*(n-1)*(n-2)/6*(36*u**2-12-8*u**4)**2/48)*exp(-u**2)/sqrt(pi)', 'u', -12, 12))
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 2, 1.2]
+      n: [0, 1, 2, 3, 2]
+    tolerance: 1e-8
+    shown: ['id="p4-dp"']
+    source: {cite: mit, at: 'Problem 4(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-product
+    kind: identity
+    answer: p4-product
+    where: 'Problem 4(b), answer box: the product of the two numerical integrals, n = 0 to 3'
+    formula: hbar*(n + 1/2)
+    equals: hbar*sqrt(integrate('u**2*((1-n)*(2-n)*(3-n)/6 + n*(2-n)*(3-n)/2*2*u**2 + n*(n-1)*(3-n)/2*(4*u**2-2)**2/8 + n*(n-1)*(n-2)/6*(8*u**3-12*u)**2/48)*exp(-u**2)/sqrt(pi)', 'u', -12, 12))*sqrt(integrate('((1-n)*(2-n)*(3-n)/6*u**2 + n*(2-n)*(3-n)/2*(2-2*u**2)**2/2 + n*(n-1)*(3-n)/2*(10*u-4*u**3)**2/8 + n*(n-1)*(n-2)/6*(36*u**2-12-8*u**4)**2/48)*exp(-u**2)/sqrt(pi)', 'u', -12, 12))
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      n: [0, 1, 2, 3, 2]
+    tolerance: 1e-8
+    shown: ['id="p4-product"']
+    source: {cite: mit, at: 'Problem 4(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # H_2 is the second s-derivative of the generating function at s = 0.
+  - id: p4-hermite-2
+    kind: identity
+    where: 'Problem 4(c), check: the second derivative of e^(-s² + 2 s xi) with respect to s at s = 0 is H_2 = 4 xi² - 2'
+    formula: deriv('exp(-s**2 + 2*s*x0)', 's', 0, 2)
+    equals: 4*x0**2 - 2
+    samples:
+      x0: [-1.3, 0.2, 0.9, 1.5, 2.1]
+    tolerance: 1e-6
+    shown: ['$H_2 = 4\xi^2 - 2$ and $H_3']
+    source: {cite: reading2, at: 'notes p. 12, eqs. (3.67)–(3.68)'}
+    origin: page-own
+
+  # The partial sum of the series up to s³ with the four polynomials, against the generating function for small s.
+  - id: p4-hermite-series
+    kind: limit
+    where: 'Problem 4(c), check: 1 + 2 xi s + (2 xi² - 1) s² + (4 xi³/3 - 2 xi) s³ approaches the generating function as s -> 0 (xi = 1.5; the difference is of order s⁴)'
+    inputs: {x0: 1.5}
+    formula: (1 + 2*x0*sv + (2*x0**2 - 1)*sv**2 + (4*x0**3/3 - 2*x0)*sv**3 - 1 - 2*x0*sv)/sv**2
+    limit: (exp(-sv**2 + 2*sv*x0) - 1 - 2*x0*sv)/sv**2
+    vary: {sv: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-3
+    shown: ['$1 + 2\xi s + \left(2\xi^2 - 1\right)s^2 + \left(\frac43\xi^3 - 2\xi\right)s^3$']
+    source: {cite: mit, at: 'Problem 4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: oscillator with a wall (our own problem)
+
+  # The odd states u e^(-u²/2) (k = 0) and (8u³ - 12u) e^(-u²/2) (k = 1) vanish at the wall. Their energy follows
+  # from the unit-free equation psi'' = (u² - eps) psi with eps = 2E/(hbar omega), by a numerical second derivative.
+  - id: p5-energy
+    kind: identity
+    answer: p5-energy
+    where: 'Problem 5(a), answer box: the energy of the two lowest odd oscillator states from eps = u² - psi''''/psi, by numerical differentiation at a point u0'
+    formula: hbar*omega*(2*k + 3/2)
+    equals: (hbar*omega/2)*(u0**2 - deriv('((1-k)*s + k*(8*s**3-12*s))*exp(-s**2/2)', 's', u0, 2)/(((1-k)*u0 + k*(8*u0**3-12*u0))*exp(-u0**2/2)))
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      omega: [0.5, 1, 1.5, 2, 1.2]
+      k: [0, 1, 0, 1, 1]
+      u0: [0.5, 0.7, 1.3, 2.0, 0.4]
+    tolerance: 1e-6
+    shown: ['id="p5-energy"']
+    source: {cite: reading2, at: 'notes p. 9, eq. (3.38), and p. 12, eq. (3.64)'}
+    origin: page-own
+
+  - id: p5-x
+    kind: identity
+    answer: p5-x
+    where: 'Problem 5(b), answer box: against the numerical integral of x times the density 4u² e^(-u²)/sqrt(pi) on the half line'
+    formula: 2*sqrt(hbar/(pi*m*omega))
+    equals: sqrt(hbar/(m*omega))*integrate('u*4*u**2*exp(-u**2)/sqrt(pi)', 'u', 0, 15)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 2, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p5-x"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-norm
+    where: 'Problem 5(b), check: the norm of the ground state on the half line'
+    formula: integrate('4*u**2*exp(-u**2)/sqrt(pi)', 'u', 0, 15)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['\frac{4}{\sqrt\pi}\times\frac{\sqrt\pi}{4} = 1$. The average']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-x-number
+    where: 'Problem 5(b): 2/sqrt(pi)'
+    formula: 2/sqrt(pi)
+    expected: '1.13'
+    shown: ['\approx 1.13\,a"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-turning
+    where: 'Problem 5(b), check: the turning point sqrt(3) of the state n = 1, in units of a'
+    formula: sqrt(3)
+    expected: '1.73'
+    shown: ['$\sqrt3\,a = 1.73\,a$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 6: the oscillating state
+
+  # |Psi|² = (1/2)[(psi0 + psi1 cos wt)² + (psi1 sin wt)²] from the real and imaginary parts, psi1 = sqrt(2) u psi0.
+  - id: p6-x
+    kind: identity
+    answer: p6-x
+    where: 'Problem 6(b), answer box: against the numerical integral of x |Psi(x, t)|², with the density built from the real and imaginary parts of the state'
+    formula: sqrt(hbar/(2*m*omega))*cos(omega*t)
+    equals: sqrt(hbar/(m*omega))*integrate('u*(1/2)*((1 + sqrt(2)*u*cos(omega*t))**2 + 2*u**2*sin(omega*t)**2)*exp(-u**2)/sqrt(pi)', 'u', -12, 12)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 0.7, 1.2]
+      t: [0.2, 0.9, 1.7, 3.0, 2.4]
+    tolerance: 1e-8
+    shown: ['id="p6-x"']
+    source: {cite: mit, at: 'Problem 6(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # <p> = hbar ∫ (Re Psi d Im Psi/dx - Im Psi d Re Psi/dx) dx, with Re Psi ∝ psi0 + psi1 cos wt and Im Psi ∝ -psi1 sin wt
+  # (the common phase e^(-i w t/2) removed), psi0' = -u psi0 and psi1' = sqrt(2)(1 - u²) psi0.
+  - id: p6-p
+    kind: identity
+    answer: p6-p
+    where: 'Problem 6(c), answer box: against the numerical integral of Re Psi d(Im Psi)/dx - Im Psi d(Re Psi)/dx'
+    formula: -sqrt(m*omega*hbar/2)*sin(omega*t)
+    equals: sqrt(hbar*m*omega)*(1/2)*integrate('((1 + sqrt(2)*u*cos(omega*t))*(-sqrt(2)*(1-u**2)*sin(omega*t)) + sqrt(2)*u*sin(omega*t)*(-u + sqrt(2)*(1-u**2)*cos(omega*t)))*exp(-u**2)/sqrt(pi)', 'u', -12, 12)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 0.7, 1.2]
+      t: [0.2, 0.9, 1.7, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p6-p"']
+    source: {cite: mit, at: 'Problem 6(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-ehrenfest
+    kind: identity
+    where: 'Problem 6(c), check: m times the numerical time derivative of <x>(t) equals <p>(t)'
+    formula: m*deriv('sqrt(hbar/(2*m*omega))*cos(omega*s)', 's', t)
+    equals: -sqrt(m*omega*hbar/2)*sin(omega*t)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      omega: [0.5, 1, 1.5, 0.7, 1.2]
+      t: [0.2, 0.9, 1.7, 1.2, 1.5]
+    tolerance: 1e-7
+    shown: ['$\langle\hat p\rangle = m\,d\langle\hat x\rangle/dt = -m\omega\sqrt{\hbar/(2m\omega)}\,\sin\omega t']
+    source: {cite: mit, at: 'Problem 6(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-x-start
+    where: 'Problem 6(b), check: <x> at t = 0 by direct integration of x (psi0 + psi1)²/2, in units of a: 1/sqrt(2) (1 is added and the result compared with 1 + 1/sqrt 2)'
+    formula: integrate('u*(1/2)*(1 + sqrt(2)*u)**2*exp(-u**2)/sqrt(pi)', 'u', -12, 12) - 1/sqrt(2) + 1
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['which is $a/\sqrt2$, the same.']
+    source: {cite: mit, at: 'Problem 6(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-period
+    where: 'Problem 6(d): the phase factor e^(-i(2n + 1) pi) is -1 for every n; its real part for n = 3'
+    formula: cos((2*3 + 1)*pi)
+    expected: '-1'
+    tolerance: 1e-12
+    shown: ['e^{-2\pi in}\,e^{-i\pi} = -1$']
+    source: {cite: mit, at: 'Problem 6(d), p. 2 (our own solution)'}
+    origin: page-own
