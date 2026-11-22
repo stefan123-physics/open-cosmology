@@ -1,0 +1,794 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 3 integrates the given wavefunction against the spherical harmonics and applies the differential operators
+# L² and Lz to it numerically, instead of reading the averages off the expansion; Problem 4 gets the energies from the
+# kinetic-energy integral and from the energy expectation value of the matched wavefunction; Problem 6 computes the
+# kinetic energy and <1/r> from explicit radial wavefunctions instead of the virial theorem; Problem 7 integrates the
+# radial density numerically. Hydrogen numbers come from SI constants (CODATA 2018): m_e = 9.1093837015e-31 kg,
+# m_p = 1.67262192369e-27 kg, e = 1.602176634e-19 C, eps0 = 8.8541878128e-12 F/m.
+
+page: content/year-2/8.04/8-04-problem-set-10.mdx
+calcs:
+  # ---- How to answer: constants
+
+  - id: intro-constants
+    kind: fact
+    where: 'How to answer: the constants of the set, CODATA 2018 rounded (Bohr radius 5.29177210903e-11 m, Rydberg energy 13.605693123 eV, 1/alpha = 137.035999084, m_p/m_e = 1836.15267343, c = 299792.458 km/s)'
+    shown: ['$a_0 = 0.529177$ Å $= 52{,}917.7$ fm and $E_R = 13.606$ eV', '($m_p/m_e = 1836.15$), $E_R = 13.598$ eV; $\alpha = 1/137.036$ and $c = 299{,}792$ km/s']
+    source: {cite: codata, at: 'Bohr radius, Rydberg constant times hc in eV, inverse fine-structure constant, proton-electron mass ratio, speed of light'}
+    origin: later-data
+
+  - id: intro-a0
+    where: 'How to answer: the Bohr radius from SI constants, with the electron mass'
+    inputs: {me: 9.1093837015e-31 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: 4*pi*eps0*hbar**2/(me*qe**2)
+    expected: 52917.7 fm
+    shown: ['$= 52{,}917.7$ fm and']
+    source: {cite: codata, at: 'Bohr radius'}
+    origin: later-data
+
+  - id: intro-er
+    where: 'How to answer: E_R = e²/(2a0) from SI constants, with the electron mass'
+    inputs: {me: 9.1093837015e-31 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: me*qe**4/(2*(4*pi*eps0)**2*hbar**2)
+    expected: 13.606 eV
+    shown: ['fm and $E_R = 13.606$ eV']
+    source: {cite: codata, at: 'Rydberg constant times hc in eV'}
+    origin: later-data
+
+  - id: intro-er-reduced
+    where: 'How to answer: E_R with the reduced mass of hydrogen'
+    inputs: {me: 9.1093837015e-31 kg, mp: 1.67262192369e-27 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: (me*mp/(me + mp))*qe**4/(2*(4*pi*eps0)**2*hbar**2)
+    expected: 13.598 eV
+    shown: ['($m_p/m_e = 1836.15$), $E_R = 13.598$ eV']
+    source: {cite: codata, at: 'Rydberg constant times hc in eV, proton-electron mass ratio'}
+    origin: later-data
+
+  - id: intro-alpha
+    where: 'How to answer: 1/alpha from SI constants'
+    inputs: {qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: 4*pi*eps0*hbar*c/qe**2
+    expected: '137.036'
+    shown: ['$\alpha = 1/137.036$']
+    source: {cite: codata, at: 'inverse fine-structure constant'}
+    origin: later-data
+
+  - id: intro-er-alpha
+    where: 'How to answer, formula "The Rydberg energy": e²/(2a0) = alpha² m c²/2, from SI constants'
+    inputs: {me: 9.1093837015e-31 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: 0.5*(qe**2/(4*pi*eps0*hbar*c))**2*me*c**2
+    expected: 13.606 eV
+    shown: ['<Formula label="The Rydberg energy"']
+    source: {cite: reading2, at: 'notes p. 4, eq. (2.4)'}
+    origin: page-own
+
+  # ---- Problem 1: the pole of the scattering amplitude
+
+  - id: p1-two-exponentials
+    kind: identity
+    where: 'Problem 1, solution: real part of e^(i delta) sin(kx + delta) against the real part of (−e^(−ikx) + e^(2i delta) e^(ikx))/(2i)'
+    formula: |-
+      cos(d)*sin(k*x + d)
+    equals: |-
+      (sin(k*x + 2*d) + sin(k*x))/2
+    samples:
+      d: [0.3, -0.7, 1.2, 2.5, -1.9]
+      k: [0.5, 1.3, 2.0, 0.8, 3.1]
+      x: [1.0, 2.2, 0.4, 5.0, 1.7]
+    tolerance: 1e-12
+    shown: ['<Formula label="The solution as two exponentials"']
+    source: {cite: reading3, at: 'notes p. 3, eq. (1.8)'}
+    origin: mit
+
+  - id: p1-outgoing-factor
+    kind: identity
+    where: 'Problem 1, solution: real part of 1 + 2i A_s with A_s = e^(i delta) sin delta, against cos 2 delta'
+    formula: |-
+      1 - 2*sin(d)**2
+    equals: |-
+      cos(2*d)
+    samples:
+      d: [0.3, -0.7, 1.2, 2.5, -1.9]
+    tolerance: 1e-12
+    shown: ['<Formula label="The outgoing factor and the scattering amplitude"', 'id="p1-term"']
+    source: {cite: reading3, at: 'notes p. 3, eq. (1.11), rewritten'}
+    origin: page-own
+
+  # ---- Problem 3: the wavefunction (1/4) sqrt(5/pi) sin² θ (1 + sqrt 14 cos θ) cos 2φ f(r)
+  # Its θ part is G(t) = 0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t)); the φ integrals of cos² 2φ and of
+  # e^(−2iφ) cos 2φ are both π.
+
+  - id: p3-norm
+    where: 'Problem 3(a), check: the angular part is normalized, by direct integration over the sphere'
+    formula: |-
+      pi*integrate('sin(t)*(0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t)))**2', 't', 0, pi)
+    expected: '1.0000'
+    shown: ['so the wavefunction is normalized']
+    source: {cite: mit, at: 'Problem 3, p. 1'}
+    origin: page-own
+
+  - id: p3-c22
+    where: 'Problem 3(a): the coefficient of Y_2,2, by integrating Y_2,2* against the wavefunction'
+    formula: |-
+      pi*integrate('sin(t)*0.25*sqrt(15/(2*pi))*sin(t)**2*0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', 0, pi)*sqrt(6)
+    expected: '1.0000'
+    shown: ['= \frac12\sqrt{\frac23} = \frac{1}{\sqrt{6}}$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-c32
+    where: 'Problem 3(a): the coefficient of Y_3,2, by integrating Y_3,2* against the wavefunction'
+    formula: |-
+      pi*integrate('sin(t)*0.25*sqrt(105/(2*pi))*sin(t)**2*cos(t)*0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', 0, pi)*sqrt(3)
+    expected: '1.0000'
+    shown: ['= \frac12\sqrt{\frac43} = \frac{1}{\sqrt{3}}$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-y22-norm
+    where: 'Problem 3, statement: Y_2,2 as given is normalized over the sphere'
+    formula: |-
+      2*pi*integrate('sin(t)*(0.25*sqrt(15/(2*pi))*sin(t)**2)**2', 't', 0, pi)
+    expected: '1.0000'
+    shown: ['<Formula label="Two more spherical harmonics"']
+    source: {cite: reading1, at: 'notes p. 9, eqs. (3.24) and (3.26)'}
+    origin: page-own
+
+  - id: p3-y32-norm
+    where: 'Problem 3, statement: Y_3,2 as given is normalized over the sphere'
+    formula: |-
+      2*pi*integrate('sin(t)*(0.25*sqrt(105/(2*pi))*sin(t)**2*cos(t))**2', 't', 0, pi)
+    expected: '1.0000'
+    shown: ['<Formula label="Two more spherical harmonics"']
+    source: {cite: reading1, at: 'notes p. 9, eqs. (3.24) and (3.26)'}
+    origin: page-own
+
+  # The notes' recipe: Y_lm = sqrt((2l+1)/(4 pi) (l−m)!/(l+m)!) (−1)^m e^(imφ) P_l^m, with P_l^m = (1−x²)^(m/2) d^m P_l/dx^m.
+  # P_2 = (3x² − 1)/2 has second derivative 3; P_3 = (5x³ − 3x)/2 has second derivative 15x.
+  - id: p3-y22-recipe
+    where: 'Problem 3, statement: the constant of Y_2,2 from the notes'' recipe, 3 sqrt(5/(4 pi 4!)), over the constant given'
+    formula: 3*sqrt(5/(4*pi*24))/(0.25*sqrt(15/(2*pi)))
+    expected: '1.0000'
+    shown: ['Y_{2,\pm2}(\theta, \phi) = \frac14\sqrt{\frac{15}{2\pi}}']
+    source: {cite: reading1, at: 'notes p. 9, eqs. (3.24) and (3.26)'}
+    origin: page-own
+
+  - id: p3-y32-recipe
+    where: 'Problem 3, statement: the constant of Y_3,2 from the notes'' recipe, 15 sqrt(7/(4 pi 5!)), over the constant given'
+    formula: 15*sqrt(7/(4*pi*120))/(0.25*sqrt(105/(2*pi)))
+    expected: '1.0000'
+    shown: ['Y_{3,\pm2}(\theta, \phi) = \frac14\sqrt{\frac{105}{2\pi}}']
+    source: {cite: reading1, at: 'notes p. 9, eqs. (3.24) and (3.26)'}
+    origin: page-own
+
+  - id: p3-p12
+    answer: p3-p12
+    where: 'Problem 3(a), answer box: probability of L² = 12 ħ², twice the squared overlap with Y_3,2 (m = 2 and m = −2 weigh the same)'
+    formula: |-
+      2*(pi*integrate('sin(t)*0.25*sqrt(105/(2*pi))*sin(t)**2*cos(t)*0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', 0, pi))**2
+    expected: '0.667'
+    shown: ['id="p3-p12"', '$\frac13 + \frac13 = \frac23$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-pz
+    answer: p3-pz
+    where: 'Problem 3(a), answer box: probability of Lz = 2ħ, the squared overlaps with Y_2,2 and Y_3,2'
+    formula: |-
+      (pi*integrate('sin(t)*0.25*sqrt(15/(2*pi))*sin(t)**2*0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', 0, pi))**2 + (pi*integrate('sin(t)*0.25*sqrt(105/(2*pi))*sin(t)**2*cos(t)*0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', 0, pi))**2
+    expected: '0.5'
+    tolerance: 0.0001
+    shown: ['id="p3-pz"', '| $L_z = 2\hbar$ | $Y_{2,2}$, $Y_{3,2}$ | $\frac16 + \frac13 = \frac12$ |']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # <L²>/ħ² by applying the differential operator: after integrating by parts in θ,
+  # <L²> = π ∫ (sin θ G'² + 4 G²/sin θ) dθ, and G²/sin θ = (5/(16π)) sin³θ (1 + sqrt14 cos θ)².
+  - id: p3-l2
+    answer: p3-l2
+    where: 'Problem 3(b), answer box: <L²>/ħ² from the differential operator L² acting on the wavefunction, integrated numerically'
+    formula: |-
+      pi*integrate("sin(x)*deriv('0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', x)**2 + 4*(5/(16*pi))*sin(x)**3*(1 + sqrt(14)*cos(x))**2", 'x', 0, pi)
+    expected: '10'
+    tolerance: 0.001
+    shown: ['id="p3-l2"', '= 10\,\hbar^2']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-lz
+    answer: p3-lz
+    where: 'Problem 3(b), answer box: <Lz>/ħ is proportional to the integral of cos 2φ times d(cos 2φ)/dφ over a full turn'
+    formula: |-
+      integrate('cos(2*p)*(-2*sin(2*p))', 'p', 0, 2*pi)
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['id="p3-lz"']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # <(L²)²>/ħ⁴ = ∫ |L²ψ|² dΩ, with (L²ψ)/cos 2φ = −G'' − cot θ G' + 4G/sin²θ and 4G/sin²θ = sqrt(5/π)(1 + sqrt14 cos θ).
+  - id: p3-l4
+    where: 'Problem 3(c): <(L²)²>/ħ⁴ as the integral of |L²ψ|², the operator applied numerically'
+    formula: |-
+      pi*integrate("sin(x)*(-deriv('0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', x, 2) - cos(x)/sin(x)*deriv('0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', x) + sqrt(5/pi)*(1 + sqrt(14)*cos(x)))**2", 'x', 0.0001, pi - 0.0001)
+    expected: '108'
+    tolerance: 0.05
+    shown: ['= 108\,\hbar^4']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dl2
+    answer: p3-dl2
+    where: 'Problem 3(c), answer box: Delta L²/ħ² from the numerical <(L²)²> and <L²>'
+    formula: |-
+      sqrt(pi*integrate("sin(x)*(-deriv('0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', x, 2) - cos(x)/sin(x)*deriv('0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', x) + sqrt(5/pi)*(1 + sqrt(14)*cos(x)))**2", 'x', 0.0001, pi - 0.0001) - (pi*integrate("sin(x)*deriv('0.25*sqrt(5/pi)*sin(t)**2*(1 + sqrt(14)*cos(t))', 't', x)**2 + 4*(5/(16*pi))*sin(x)**3*(1 + sqrt(14)*cos(x))**2", 'x', 0, pi))**2)
+    expected: '2.83'
+    tolerance: 0.01
+    shown: ['id="p3-dl2"', '\approx 2.83\,\hbar^2']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dlz
+    answer: p3-dlz
+    where: 'Problem 3(c), answer box: Delta Lz/ħ, the root of the integral of |d(cos 2φ)/dφ|² over that of cos² 2φ (<Lz> = 0)'
+    formula: |-
+      sqrt(integrate('(2*sin(2*p))**2', 'p', 0, 2*pi)/integrate('cos(2*p)**2', 'p', 0, 2*pi))
+    expected: '2'
+    tolerance: 1e-6
+    shown: ['id="p3-dlz"', '\cdot\frac12} = 2\hbar$']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-two-outcomes
+    where: 'Problem 3(c), check: 6 sqrt((1/3)(2/3)) for the uncertainty of L²'
+    formula: 6*sqrt((1/3)*(2/3))
+    expected: '2.83'
+    shown: ['$6\hbar^2\sqrt{\frac13\cdot\frac23} = 2\sqrt{2}\,\hbar^2$']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: spherical wells
+
+  - id: p4-e
+    kind: identity
+    answer: p4-e
+    where: 'Problem 4(a), answer box: the energy as the kinetic-energy integral (ħ²/2m) ∫u′² / ∫u² of u = sin(n pi r/a)'
+    formula: |-
+      n**2*pi**2*hbar**2/(2*m*a**2)
+    equals: |-
+      hbar**2/(2*m)*integrate("deriv('sin(n*pi*s/a)', 's', r)**2", 'r', 0, a)/integrate('sin(n*pi*r/a)**2', 'r', 0, a)
+    samples:
+      n: [1, 2, 3, 4, 2]
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      m: [1, 0.5, 2, 1.5, 0.7]
+      a: [2, 1.5, 1, 0.5, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p4-e"', '<Formula label="Energies of the l = 0 states in the infinite spherical well"']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-u-norm
+    where: 'Problem 4(a): the factor sqrt(2/a) normalizes u (here a = 1.7, n = 3)'
+    formula: |-
+      integrate('(sqrt(2/1.7)*sin(3*pi*r/1.7))**2', 'r', 0, 1.7)
+    expected: '1.0000'
+    shown: ['The factor $\sqrt{2/a}$ normalizes $u$']
+    source: {cite: reading1, at: 'notes p. 11, eq. (4.10)'}
+    origin: page-own
+
+  - id: p4-ratio-1d
+    where: 'Problem 4(a), check: E_1 over the ground-state energy of a one-dimensional well of width 2a'
+    formula: (1/2)/(1/8)
+    expected: '4'
+    shown: ['four times the ground-state energy $\pi^2\hbar^2/(8ma^2)$']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-threshold-1
+    where: 'Problem 4(b): the first threshold, pi/2'
+    formula: pi/2
+    expected: '1.57'
+    shown: ['π/2 ≈ 1.57']
+    source: {cite: mit, at: 'Problem 4(b), p. 2'}
+    origin: page-own
+
+  - id: p4-threshold-2
+    where: 'Problem 4(b): the second threshold, 3 pi/2'
+    formula: 3*pi/2
+    expected: '4.71'
+    shown: ['$\frac{3\pi}{2} = 4.71 < 5', '3π/2 ≈ 4.71']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-threshold-3
+    where: 'Problem 4(b): the third threshold, 5 pi/2'
+    formula: 5*pi/2
+    expected: '7.85'
+    shown: ['\frac{5\pi}{2} = 7.85$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  # A step function made from atan counts the thresholds (n − 1/2) pi below z0 = 5: each term is +1/2 or −1/2.
+  - id: p4-count
+    answer: p4-count
+    where: 'Problem 4(b), answer box: number of thresholds pi/2, 3pi/2, 5pi/2, 7pi/2 below z0 = 5'
+    formula: |-
+      (atan(1e9*(5 - pi/2)) + atan(1e9*(5 - 3*pi/2)) + atan(1e9*(5 - 5*pi/2)) + atan(1e9*(5 - 7*pi/2)))/pi + 2
+    expected: '2'
+    tolerance: 1e-6
+    shown: ['id="p4-count"', 'has two, at']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-xi5-first
+    where: 'Problem 4(b): the first crossing for z0 = 5, solved numerically'
+    formula: |-
+      solve('-s/tan(s) - sqrt(25 - s**2)', 's', 1.6, 3.1)
+    expected: '2.596'
+    shown: ['at $\xi = 2.596$ and $\xi = 4.906$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-xi5-second
+    where: 'Problem 4(b): the second crossing for z0 = 5, solved numerically'
+    formula: |-
+      solve('-s/tan(s) - sqrt(25 - s**2)', 's', 4.72, 4.999)
+    expected: '4.906'
+    shown: ['at $\xi = 2.596$ and $\xi = 4.906$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-xi2
+    where: 'Problem 4(b): the crossing for z0 = 2, solved numerically'
+    formula: |-
+      solve('-s/tan(s) - sqrt(4 - s**2)', 's', 1.6, 1.99)
+    expected: '1.895'
+    shown: ['gives $\xi = 1.895$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-eta2
+    where: 'Problem 4(b): eta for z0 = 2'
+    formula: |-
+      sqrt(4 - solve('-s/tan(s) - sqrt(4 - s**2)', 's', 1.6, 1.99)**2)
+    expected: '0.638'
+    shown: ['so $\eta = 0.638$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-z2
+    answer: p4-z2
+    where: 'Problem 4(b), answer box: E/V0 = −eta²/z0² for z0 = 2'
+    formula: |-
+      -(4 - solve('-s/tan(s) - sqrt(4 - s**2)', 's', 1.6, 1.99)**2)/4
+    expected: '-0.102'
+    shown: ['id="p4-z2"', '\approx -0.102']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  # Independent route: the energy expectation value of the matched wavefunction, u = sin(xi x) inside (x = r/a < 1)
+  # and sin(xi) e^(−eta (x − 1)) outside, with xi = 1.8954943 and eta = 0.6380450. In units of V0:
+  # E/V0 = (∫u′² dx)/(z0² ∫u² dx) − (∫_0^1 u² dx)/(∫u² dx). The outside integrals are done exactly:
+  # ∫_1^∞ u′² = eta sin²(xi)/2 and ∫_1^∞ u² = sin²(xi)/(2 eta).
+  - id: p4-z2-expectation
+    where: 'Problem 4(b), check of the answer box: E/V0 as the energy expectation value of the matched wavefunction'
+    formula: |-
+      (integrate('(1.8954943*cos(1.8954943*x))**2', 'x', 0, 1) + 0.6380450*sin(1.8954943)**2/2)/(4*(integrate('sin(1.8954943*x)**2', 'x', 0, 1) + sin(1.8954943)**2/(2*0.6380450))) - integrate('sin(1.8954943*x)**2', 'x', 0, 1)/(integrate('sin(1.8954943*x)**2', 'x', 0, 1) + sin(1.8954943)**2/(2*0.6380450))
+    expected: '-0.102'
+    shown: ['id="p4-z2"']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-deep
+    where: 'Problem 4(b), check: the lowest crossing for z0 = 200, as a fraction of pi'
+    formula: |-
+      solve('-s/tan(s) - sqrt(200**2 - s**2)', 's', 3.0, 3.14)/pi
+    expected: '0.995'
+    shown: ['$\xi = 0.995\,\pi$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The phase shift from matching, delta = atan(k tan(k′a)/k′) − ka, against the real part of the formula for e^(2i delta).
+  - id: p4-outgoing-factor
+    kind: identity
+    where: 'Problem 4(b), check: cos 2 delta from the matching condition against the real part of e^(−2ika)(k′cot k′a + ik)/(k′cot k′a − ik)'
+    formula: |-
+      cos(2*(atan(k*tan(kp*a)/kp) - k*a))
+    equals: |-
+      (cos(2*k*a)*((kp/tan(kp*a))**2 - k**2) + sin(2*k*a)*2*(kp/tan(kp*a))*k)/((kp/tan(kp*a))**2 + k**2)
+    samples:
+      k: [0.5, 1.3, 2.0, 0.8, 3.1]
+      kp: [1.4, 2.2, 2.9, 3.3, 4.0]
+      a: [1.0, 0.7, 1.2, 0.5, 0.9]
+    tolerance: 1e-9
+    shown: ['<Formula label="The outgoing factor of the spherical well"']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5: a moving hydrogen atom
+
+  - id: p5-given
+    kind: fact
+    where: 'Problem 5, statement: MIT''s probabilities'
+    shown: ['with probability $\frac14$ or $\phi_{2,1,1}(\vec x)$ with probability $\frac34$']
+    source: {cite: mit, at: 'Problem 5, p. 2'}
+    origin: mit
+
+  - id: p5-e
+    kind: identity
+    answer: p5-e
+    where: 'Problem 5(b), answer box: the sum over the four product states of probability times energy'
+    formula: |-
+      p0**2/(2*M) - 7*ER/16
+    equals: |-
+      0.5*0.25*((p0)**2/(2*M) - ER/1**2) + 0.5*0.25*((-p0)**2/(2*M) - ER/1**2) + 0.5*0.75*((p0)**2/(2*M) - ER/2**2) + 0.5*0.75*((-p0)**2/(2*M) - ER/2**2)
+    samples:
+      p0: [0.5, 1.1, 2.0, 2.7, 3.0]
+      M: [3.0, 0.5, 1.4, 2.2, 0.9]
+      ER: [1.0, 2.5, 0.6, 3.0, 1.7]
+    tolerance: 1e-12
+    shown: ['id="p5-e"', '<Formula label="Expectation value of the total energy"']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-int
+    answer: p5-int
+    where: 'Problem 5(b), answer box: the internal energy −(7/16) E_R from SI constants, with the reduced mass'
+    inputs: {me: 9.1093837015e-31 kg, mp: 1.67262192369e-27 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: -(7/16)*(me*mp/(me + mp))*qe**4/(2*(4*pi*eps0)**2*hbar**2)
+    expected: -5.95 eV
+    shown: ['id="p5-int"', '\approx -5.95$ eV']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p5-int-page
+    where: 'Problem 5(b), solution: −(7/16) × 13.598'
+    formula: -(7/16)*13.598
+    expected: '-5.95'
+    shown: ['$-\frac{7}{16}\times13.598 \approx -5.95$ eV']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p5-int-electron-mass
+    where: 'Problem 5(b), check: the same with the electron''s mass, −(7/16) × 13.606'
+    formula: -(7/16)*13.606
+    expected: '-5.95'
+    shown: ['the result is the same to three figures']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 6: virial theorem
+  # Independent of the virial theorem: in units ħ = m = e = 1 the state with l = n − 1 has u = r^n e^(−r/n), and
+  # <v²> = 2<T> = ∫(u′² + l(l+1)u²/r²)/∫u², a speed in units of alpha c.
+
+  - id: p6-v
+    kind: identity
+    answer: p6-v
+    where: 'Problem 6(c), answer box: the root-mean-square speed from the kinetic-energy integral of the states with l = n − 1'
+    formula: |-
+      alpha/n
+    equals: |-
+      alpha*sqrt(integrate("deriv('s**n*exp(-s/n)', 's', r)**2 + n*(n - 1)*r**(2*n - 2)*exp(-2*r/n)", 'r', 0, 80*n)/integrate('r**(2*n)*exp(-2*r/n)', 'r', 0, 80*n))
+    samples:
+      alpha: [0.0073, 0.01, 0.05, 0.1, 0.02]
+      n: [1, 2, 3, 4, 2]
+    tolerance: 1e-5
+    shown: ['id="p6-v"', '<Formula label="Root-mean-square speed of the electron"']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-v-2s
+    where: 'Problem 6(c), check: the 2s state, u = r(2 − r)e^(−r/2), has the same speed alpha c/2 as the 2p state (value in units of alpha c)'
+    formula: |-
+      sqrt(integrate("deriv('s*(2 - s)*exp(-s/2)', 's', r)**2", 'r', 0, 120)/integrate('(r*(2 - r)*exp(-r/2))**2', 'r', 0, 120))
+    expected: '0.5000'
+    shown: ['The result does not depend on $l$ or $m$, only on $n$']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-vz
+    kind: identity
+    answer: p6-vz
+    where: 'Problem 6(c), answer box: the ground state u = r e^(−Zr) of a nucleus with Z protons, kinetic-energy integral'
+    formula: |-
+      Z*alpha
+    equals: |-
+      alpha*sqrt(integrate("deriv('s*exp(-Z*s)', 's', r)**2", 'r', 0, 60/Z)/integrate('r**2*exp(-2*Z*r)', 'r', 0, 60/Z))
+    samples:
+      alpha: [0.0073, 0.01, 0.005, 0.008, 0.006]
+      Z: [1, 2, 26, 92, 10]
+    tolerance: 1e-5
+    shown: ['id="p6-vz"', '<Formula label="Root-mean-square speed of the electron"']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-kms
+    answer: p6-kms
+    where: 'Problem 6(c), answer box: alpha c = e²/(4 pi eps0 ħ) from SI constants'
+    inputs: {qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: qe**2/(4*pi*eps0*hbar)
+    expected: 2188 km/s
+    shown: ['id="p6-kms"']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p6-kms-page
+    where: 'Problem 6(c), solution: 299,792/137.036'
+    formula: 299792/137.036
+    expected: '2188'
+    shown: ['$\alpha c = 299{,}792/137.036 \approx 2188$ km/s']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p6-percent
+    where: 'Problem 6(c), solution: alpha in per cent is below 1'
+    formula: 100/137.036
+    expected: '0.73'
+    shown: ['less than 1% of the speed of light']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-alpha2
+    where: 'Problem 6(c), solution: alpha squared'
+    formula: (1/137.036)**2
+    expected: '5.3e-5'
+    shown: ['\alpha^2 \approx 5.3\times10^{-5}$']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-uranium
+    where: 'Problem 6(c), solution: Z alpha for uranium'
+    formula: 92/137.036
+    expected: '0.67'
+    shown: ['$Z\alpha \approx 0.67$']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-rydberg-check
+    where: 'Problem 6(c), check: alpha² m c²/2 with m c² = 511,000 eV'
+    formula: 0.5*511000/137.036**2
+    expected: '13.6'
+    shown: ['\frac12\times511{,}000\ \text{eV}/137.036^2 \approx 13.6$ eV']
+    source: {cite: reading2, at: 'notes p. 4, eq. (2.4)'}
+    origin: page-own
+
+  - id: p6-r
+    kind: identity
+    answer: p6-r
+    where: 'Problem 6(d), answer box: <1/r> by direct integration for the states with l = n − 1, u = r^n e^(−r/(n a0))'
+    formula: |-
+      1/(n**2*a0)
+    equals: |-
+      integrate('r**(2*n - 1)*exp(-2*r/(n*a0))', 'r', 0, 80*n*a0)/integrate('r**(2*n)*exp(-2*r/(n*a0))', 'r', 0, 80*n*a0)
+    samples:
+      n: [1, 2, 3, 4, 5]
+      a0: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p6-r"', '<Formula label="Average of 1/r in a hydrogen eigenstate"']
+    source: {cite: mit, at: 'Problem 6(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-r-2s
+    where: 'Problem 6(d), check: <1/r> a0 for the 2s state, u = r(2 − r)e^(−r/2), is also 1/n² = 1/4'
+    formula: |-
+      integrate('r*(2 - r)**2*exp(-r)', 'r', 0, 120)/integrate('r**2*(2 - r)**2*exp(-r)', 'r', 0, 120)
+    expected: '0.2500'
+    shown: ['It holds for every $l$ and $m$ of the level.']
+    source: {cite: mit, at: 'Problem 6(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-r-ground
+    where: 'Problem 6(d), check: <1/r> a0 in the ground state by direct integration'
+    formula: |-
+      integrate('4*r*exp(-2*r)', 'r', 0, 60)
+    expected: '1.0000'
+    shown: ['= \frac{4}{a_0^3}\cdot\frac{a_0^2}{4} = \frac{1}{a_0}$']
+    source: {cite: reading2, at: 'notes p. 10, eq. (2.36)'}
+    origin: page-own
+
+  # ---- Problem 7: the ground state, the nucleus, positronium
+
+  - id: p7-given
+    kind: fact
+    where: 'Problem 7(b), statement: MIT''s radius of the nucleus'
+    shown: ['a radius of one femtometre']
+    source: {cite: mit, at: 'Problem 7(b), p. 3'}
+    origin: mit
+
+  - id: p7-r
+    kind: identity
+    answer: p7-r
+    where: 'Problem 7(a), answer box: <r> by numerical integration of the radial density'
+    formula: |-
+      3*a0/2
+    equals: |-
+      integrate('4*r**3*exp(-2*r/a0)/a0**3', 'r', 0, 60*a0)
+    samples:
+      a0: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p7-r"', '<Formula label="Mean distance and mean square distance"']
+    source: {cite: mit, at: 'Problem 7(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-r2
+    kind: identity
+    answer: p7-r2
+    where: 'Problem 7(a), answer box: <r²> by numerical integration of the radial density'
+    formula: |-
+      3*a0**2
+    equals: |-
+      integrate('4*r**4*exp(-2*r/a0)/a0**3', 'r', 0, 60*a0)
+    samples:
+      a0: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p7-r2"', '<Formula label="Mean distance and mean square distance"']
+    source: {cite: mit, at: 'Problem 7(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-rmax
+    kind: identity
+    answer: p7-rmax
+    where: 'Problem 7(a), answer box: the maximum of the radial density, found numerically'
+    formula: |-
+      a0
+    equals: |-
+      solve("deriv('s**2*exp(-2*s/a0)', 's', x)", 'x', 0.3*a0, 3*a0)
+    samples:
+      a0: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p7-rmax"', 'The most probable distance is the Bohr radius.']
+    source: {cite: mit, at: 'Problem 7(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-norm
+    where: 'Problem 7(a), check: the radial density is normalized'
+    formula: |-
+      integrate('4*r**2*exp(-2*r)', 'r', 0, 60)
+    expected: '1.0000'
+    shown: ['the density is normalized']
+    source: {cite: mit, at: 'Problem 7(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-rms
+    where: 'Problem 7(a): the root-mean-square distance in units of a0'
+    formula: sqrt(3)
+    expected: '1.73'
+    shown: ['\sqrt{3}\,a_0 \approx 1.73\,a_0$', '√3 a₀ ≈ 1.73 a₀']
+    source: {cite: mit, at: 'Problem 7(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-spread
+    where: 'Problem 7(a), check: the spread of r in units of a0'
+    formula: sqrt(3 - 9/4)
+    expected: '0.87'
+    shown: ['\frac{\sqrt{3}}{2}a_0 \approx 0.87\,a_0$']
+    source: {cite: mit, at: 'Problem 7(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-p
+    kind: limit
+    answer: p7-p
+    where: 'Problem 7(b), answer box: the leading term approaches the exact integral of the radial density as b/a0 → 0 (a0 = 1)'
+    inputs: {a0: 1}
+    formula: |-
+      4*b**3/(3*a0**3)
+    limit: |-
+      integrate('4*r**2*exp(-2*r/a0)/a0**3', 'r', 0, b)
+    vary:
+      b: [0.1, 0.01, 0.001, 0.0001]
+    tolerance: 2e-4
+    shown: ['id="p7-p"', '<Formula label="Probability to be inside a small nucleus"']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-exact-form
+    kind: identity
+    where: 'Problem 7(b), check: the exact closed form against the numerical integral of the radial density'
+    formula: |-
+      1 - exp(-2*x)*(1 + 2*x + 2*x**2)
+    equals: |-
+      integrate('4*s**2*exp(-2*s)', 's', 0, x)
+    samples:
+      x: [0.3, 0.8, 1.5, 2.5, 4.0]
+    tolerance: 1e-8
+    shown: ['$P = 1 - e^{-2x}\left(1 + 2x + 2x^2\right)$']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-x
+    where: 'Problem 7(b): b/a0 for b = 1 fm'
+    formula: 1/52917.7
+    expected: '1.8897e-5'
+    shown: ['= 1.8897\times10^{-5}$']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-pnum
+    answer: p7-pnum
+    where: 'Problem 7(b), answer box: the exact integral of the radial density up to 1 fm, with a0 from SI constants'
+    inputs: {b: 1 fm, me: 9.1093837015e-31 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      integrate('4*s**2*exp(-2*s)', 's', 0, b*me*qe**2/(4*pi*eps0*hbar**2))
+    expected: '9.0e-15'
+    shown: ['id="p7-pnum"', '\approx 9.0\times10^{-15}']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-pnum-page
+    where: 'Problem 7(b), solution: (4/3)(1.8897e-5)³'
+    formula: (4/3)*(1.8897e-5)**3
+    expected: '9.0e-15'
+    shown: ['P \approx \frac43\left(1.8897\times10^{-5}\right)^3']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-exp-change
+    where: 'Problem 7(b), solution: 2b/a0, the change of the exponential over the nucleus'
+    formula: 2/52917.7
+    expected: '4e-5'
+    shown: ['e^{-2b/a_0} \approx 1 - 4\times10^{-5}$']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-correction
+    where: 'Problem 7(b), check: the first correction (3/2) b/a0'
+    formula: 1.5/52917.7
+    expected: '2.8e-5'
+    shown: ['$\frac32x \approx 2.8\times10^{-5}$']
+    source: {cite: mit, at: 'Problem 7(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-ps
+    kind: identity
+    answer: p7-ps
+    where: 'Problem 7(c), answer box: hydrogen''s energy scaled by the reduced mass of two equal masses over the mass of one'
+    formula: |-
+      -ER/(2*n**2)
+    equals: |-
+      -ER*((mm*mm/(mm + mm))/mm)/n**2
+    samples:
+      ER: [1.0, 2.5, 0.6, 3.0, 1.7]
+      n: [1, 2, 3, 4, 5]
+      mm: [1, 0.5, 2, 1.5, 0.7]
+    tolerance: 1e-12
+    shown: ['id="p7-ps"', '<Formula label="Positronium"']
+    source: {cite: mit, at: 'Problem 7(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-ps1
+    answer: p7-ps1
+    where: 'Problem 7(c), answer box: the ground state of positronium from SI constants, reduced mass m_e/2'
+    inputs: {me: 9.1093837015e-31 kg, qe: 1.602176634e-19 C, eps0: 8.8541878128e-12 F/m}
+    formula: -(me/2)*qe**4/(2*(4*pi*eps0)**2*hbar**2)
+    expected: -6.80 eV
+    shown: ['id="p7-ps1"', '\approx -\frac{6.80\ \text{eV}}{n^2}']
+    source: {cite: mit, at: 'Problem 7(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-ps1-page
+    where: 'Problem 7(c), solution: −13.606/2'
+    formula: -13.606/2
+    expected: '-6.80'
+    shown: ['$-13.606/2 \approx -6.80$ eV']
+    source: {cite: mit, at: 'Problem 7(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-size
+    answer: p7-size
+    where: 'Problem 7(c), answer box: the Bohr radius is inversely proportional to the mass, so the ratio is m_e over m_e/2 (here with m_e = 1.3 in any unit)'
+    formula: (1/(1.3*1.3/(1.3 + 1.3)))/(1/1.3)
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['id="p7-size"', 'a_\text{Ps} = \frac{\hbar^2}{\mu e^2} = 2a_0']
+    source: {cite: mit, at: 'Problem 7(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-size-true
+    where: 'Problem 7(c), check: the ratio with hydrogen''s true reduced mass'
+    formula: 2*1836.15/1837.15
+    expected: '1.999'
+    shown: ['$2\times\frac{1836.15}{1837.15} \approx 1.999$']
+    source: {cite: mit, at: 'Problem 7(c), p. 3 (our own solution)'}
+    origin: page-own
