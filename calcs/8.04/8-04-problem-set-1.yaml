@@ -1,0 +1,1024 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-1.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# the Larmor power times the period built from mass, radius and speed; the spiral time as a numerical integral of
+# (dE/dr)/power in MeV and fm; the classical electron radius from SI constants; the orbit conditions of Problem 2
+# solved numerically; Euler's formula against its Taylor series; the interferometer amplitudes multiplied out in
+# real and imaginary parts for a general input; the bomb fractions counted two ways.
+# Constants: CODATA 2018 (hbar c = 197.3269804 MeV fm, m_e c^2 = 0.51099895 MeV, 1/alpha = 137.035999084).
+
+page: content/year-2/8.04/8-04-problem-set-1.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-constants
+    kind: fact
+    where: 'How to answer: the constants of Problems 1 and 2, CODATA 2018 rounded (197.3269804 MeV fm, 0.51099895 MeV, 137.035999084, 299792458 m/s)'
+    shown: ['$\hbar c = 197.327$ MeV fm, $m_ec^2 = 0.510999$ MeV, $\alpha = 1/137.036$ and $c = 2.998\times 10^{8}$ m/s']
+    source: {cite: codata, at: 'hbar c in MeV fm, electron mass energy equivalent in MeV, inverse fine-structure constant'}
+    origin: later-data
+
+  - id: intro-constants-p3
+    kind: fact
+    where: 'How to answer: MIT''s rounded h and k_B for Problem 3, and our atomic mass unit and electronvolt (CODATA: 1.66053907e-27 kg, 1.602176634e-19 J)'
+    shown: ['$h = 6.6\times 10^{-34}$ J s and $k_B = 1.38\times 10^{-23}$ J/K, and from us the atomic mass unit $1.66\times 10^{-27}$ kg and 1 eV $= 1.602\times 10^{-19}$ J']
+    source: {cite: mit, at: 'Problem 3, p. 2 (h and k_B); the other two are ours'}
+    origin: mit
+
+  # ---- Problem 1: radiative collapse
+
+  # Independent route: build the loss from mass, radius and speed. With v = b cc the force equation gives
+  # e^2 = mm (b cc)^2 rr and a = (b cc)^2 / rr; then Larmor power times period over (1/2) mm v^2.
+  - id: p1-ratio
+    kind: identity
+    answer: p1-ratio
+    where: 'Problem 1(a), answer box: against Larmor power times period over kinetic energy, built from mass, radius and speed'
+    formula: (8*pi/3)*b**3
+    equals: (2*(mm*(b*cc)**2*rr)*((b*cc)**2/rr)**2/(3*cc**3))*(2*pi*rr/(b*cc))/(0.5*mm*(b*cc)**2)
+    samples:
+      b: [0.01, 0.05, 0.1, 0.2, 0.3]
+      mm: [1, 2, 0.5, 3, 1.5]
+      rr: [1, 0.3, 5, 2, 0.7]
+      cc: [1, 3, 10, 2, 5]
+    tolerance: 1e-9
+    shown: ['id="p1-ratio"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1'}
+    origin: page-own
+
+  - id: p1-ratio-example
+    where: 'Problem 1(a), check: the ratio for beta = 0.01'
+    formula: (8*pi/3)*0.01**3
+    expected: '8.4e-6'
+    shown: ['it is $8.4\times 10^{-6}$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-re
+    where: 'Problem 1(b), formula: the classical electron radius in fm'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: hc/(ainv*me)
+    expected: '2.818'
+    shown: ['= 2.818\ \text{fm}"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the same length from SI constants, hbar/(m_e c) times alpha, with m_e = 9.1093837e-31 kg.
+  - id: p1-re-si
+    where: 'Problem 1(c), solution: the classical electron radius in metres, from SI constants'
+    inputs: {mkg: 9.1093837e-31 kg, ainv: 137.036}
+    formula: hbar/(ainv*mkg*c)
+    expected: 2.818e-15 m
+    shown: ['$r_e = 2.818\times 10^{-15}$ m']
+    source: {cite: codata, at: 'electron mass in kg, reduced Planck constant, inverse fine-structure constant'}
+    origin: page-own
+
+  - id: p1-beta-50pm
+    answer: p1-b50
+    where: 'Problem 1(b), answer box: v/c at 50 pm = 50,000 fm'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: sqrt(hc/(ainv*me)/50000)
+    expected: '0.00751'
+    shown: ['id="p1-b50"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1'}
+    origin: page-own
+
+  - id: p1-beta-1pm
+    answer: p1-b1pm
+    where: 'Problem 1(b), answer box: v/c at 1 pm = 1000 fm'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: sqrt(hc/(ainv*me)/1000)
+    expected: '0.0531'
+    shown: ['id="p1-b1pm"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1'}
+    origin: page-own
+
+  - id: p1-beta-1fm
+    answer: p1-b1fm
+    where: 'Problem 1(b), answer box: v/c at 1 fm (above 1: the model has failed)'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: sqrt(hc/(ainv*me)/1)
+    expected: '1.68'
+    shown: ['id="p1-b1fm"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1'}
+    origin: page-own
+
+  # Independent route for the speed at 50 pm: SI constants, v^2 = alpha hbar c / (m_e r).
+  - id: p1-beta-50pm-si
+    where: 'Problem 1(b), formula: v/c at 50 pm from SI constants'
+    inputs: {mkg: 9.1093837e-31 kg, ainv: 137.036, rr: 50e-12 m}
+    formula: sqrt(hbar/(ainv*mkg*c*rr))
+    expected: '0.00751'
+    shown: ['= 0.00751\ \text{(50 pm)}']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-loss-50pm
+    where: 'Problem 1(b), solution: the loss per revolution over K at 50 pm'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: (8*pi/3)*sqrt(hc/(ainv*me)/50000)**3
+    expected: '3.5e-6'
+    shown: ['= 3.5\times 10^{-6}$ of the kinetic energy']
+    source: {cite: mit, at: 'Problem 1(a) and (b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-loss-1pm
+    where: 'Problem 1(b), solution: the loss per revolution over K at 1 pm'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: (8*pi/3)*sqrt(hc/(ainv*me)/1000)**3
+    expected: '1.3e-3'
+    shown: ['at 1 pm it is $1.3\times 10^{-3}$']
+    source: {cite: mit, at: 'Problem 1(a) and (b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-time
+    answer: p1-time
+    where: 'Problem 1(c), answer box: the time from 50 pm to 1 pm, in seconds, from t = (ri^3 - rf^3)/(4 re^2 c)'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036, ri: 5.0e-11, rf: 1.0e-12, cl: 2.998e8}
+    formula: (ri**3 - rf**3)/(4*(hc/(ainv*me)*1e-15)**2*cl)
+    expected: '1.31e-11'
+    shown: ['id="p1-time"']
+    source: {cite: mit, at: 'Problem 1(c), p. 1'}
+    origin: page-own
+
+  # Independent route: integrate dt = (dE/dr) dr / (Larmor power) numerically, in MeV and fm, without the formula
+  # for t and without r_e. dE/dr = alpha hc/(2 s^2); power = (2/3) alpha hc (a/c^2)^2 c with a/c^2 = alpha hc/(me s^2).
+  - id: p1-time-integral
+    where: 'Problem 1(c), check: the same time as a numerical integral of (dE/dr)/(Larmor power) from 1000 fm to 50,000 fm'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036, cf: 2.998e23}
+    formula: integrate('(hc/ainv/(2*s**2))/((2/3)*(hc/ainv)*(hc/ainv/(me*s**2))**2*cf)', 's', 1000, 50000)
+    expected: '1.31e-11'
+    shown: ['$t = 1.31\times 10^{-11}$ s, about 13 picoseconds']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-beta-squared
+    where: 'Problem 1(c), solution: the size of relativistic corrections at 1 pm, beta^2 in percent'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: 100*hc/(ainv*me)/1000
+    expected: '0.3'
+    shown: ['which is at most 0.3% here']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-last-fraction
+    where: 'Problem 1(c), solution and choice box: the fraction of the time spent below 1 pm'
+    formula: (1/50)**3
+    expected: '8e-6'
+    shown: ['$(1\ \text{pm}/50\ \text{pm})^3 = 8\times 10^{-6}$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-last-stage
+    where: 'Problem 1(c), solution: the time from 1 pm to the centre, in seconds'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036, rf: 1.0e-12, cl: 2.998e8}
+    formula: rf**3/(4*(hc/(ainv*me)*1e-15)**2*cl)
+    expected: '1e-16'
+    shown: ['the stretch below 1 pm takes about $10^{-16}$ s']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-light-time
+    where: 'Problem 1(c), check: the time light takes to cross 50 pm'
+    inputs: {ri: 5.0e-11 m, cl: 2.998e8 m/s}
+    formula: ri/cl
+    expected: 1.7e-19 s
+    shown: ['Light crosses $r_i$ in $1.7\times 10^{-19}$ s']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-size-ratio
+    where: 'Problem 1(c), check: (ri/re)^2/4'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: (50000/(hc/(ainv*me)))**2/4
+    expected: '7.9e7'
+    shown: ['$(r_i/r_e)^2/4 = 7.9\times 10^{7}$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: quantized energies
+
+  # Independent route for (a): for a given E, solve K + V = E for the radius of the circular orbit numerically
+  # (K = e2/(2 s), V = -e2/s), then read off K and V at that radius.
+  - id: p2-k
+    kind: identity
+    answer: p2-k
+    where: 'Problem 2(a), answer box K: against the kinetic energy at the radius where K + V = E'
+    formula: -E
+    equals: e2/(2*solve('e2/(2*s) - e2/s - E', 's', 0.001, 1000))
+    samples:
+      E: [-5, -3, -1, -0.5, -2]
+      e2: [1, 2, 0.5, 3, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p2-k"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2'}
+    origin: page-own
+
+  - id: p2-v
+    kind: identity
+    answer: p2-v
+    where: 'Problem 2(a), answer box V: against the potential energy at the radius where K + V = E'
+    formula: 2*E
+    equals: -e2/solve('e2/(2*s) - e2/s - E', 's', 0.001, 1000)
+    samples:
+      E: [-5, -3, -1, -0.5, -2]
+      e2: [1, 2, 0.5, 3, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p2-v"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2'}
+    origin: page-own
+
+  # Independent route for (b), in units hbar = c = 1 (mass = Ee, e^2 = alpha, L = n): put v = n/(Ee s) into the
+  # force equation Ee v^2 = alpha/s and solve for the radius s numerically; then E = K + V at that radius.
+  - id: p2-en
+    kind: identity
+    answer: p2-en
+    where: 'Problem 2(b), answer box E_n: against K + V at the numerically solved radius, in units hbar = c = 1'
+    formula: -alpha**2*Ee/(2*n**2)
+    equals: 0.5*Ee*(n/(Ee*solve('n**2/(Ee*s**2) - alpha/s', 's', 1, 1e7)))**2 - alpha/solve('n**2/(Ee*s**2) - alpha/s', 's', 1, 1e7)
+    samples:
+      alpha: [0.005, 0.0073, 0.01, 0.006, 0.009]
+      Ee: [0.4, 0.511, 0.6, 0.45, 0.55]
+      n: [1, 2, 3, 4, 5]
+    tolerance: 1e-9
+    shown: ['id="p2-en"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2'}
+    origin: page-own
+
+  - id: p2-rn
+    kind: identity
+    answer: p2-rn
+    where: 'Problem 2(b), answer box r_n: against the numerically solved radius (mass = 1/lam in units hbar = c = 1)'
+    formula: n**2*lam/alpha
+    equals: solve('n**2*lam/s**2 - alpha/s', 's', 1, 1e7)
+    samples:
+      alpha: [0.005, 0.0073, 0.01, 0.006, 0.009]
+      lam: [0.5, 1, 2, 1.5, 0.8]
+      n: [1, 2, 3, 4, 5]
+    tolerance: 1e-9
+    shown: ['id="p2-rn"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2'}
+    origin: page-own
+
+  - id: p2-lambda-e
+    where: 'Problem 2(b), check: hbar c / (m_e c^2) in fm'
+    inputs: {hc: 197.327, me: 0.510999}
+    formula: hc/me
+    expected: '386.16'
+    shown: ['= 386.16$ fm']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-r1
+    where: 'Problem 2(b), check: the radius for n = 1, in units of 1e-10 m (1 fm = 1e-5 of that)'
+    inputs: {hc: 197.327, me: 0.510999, ainv: 137.036}
+    formula: ainv*hc/me*1e-5
+    expected: '0.5292'
+    shown: ['= 0.5292\times 10^{-10}$ m']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the Bohr radius from SI constants, hbar/(alpha m_e c).
+  - id: p2-r1-si
+    kind: identity
+    where: 'Problem 2(b), check: the n = 1 radius from MeV fm values against hbar/(alpha m_e c) from SI constants (both in fm)'
+    formula: ainv*197.327/0.510999
+    equals: ainv*1.054571817e-34/(9.1093837e-31*299792458)*1e15
+    samples:
+      ainv: [137.036]
+    tolerance: 1e-5
+    shown: ['$r_1 = 137.036 \times 386.16\ \text{fm}']
+    source: {cite: codata, at: 'electron mass in kg, reduced Planck constant'}
+    origin: page-own
+
+  - id: p2-e1
+    where: 'Problem 2(b), check: the energy for n = 1, in eV'
+    inputs: {meev: 510999, ainv: 137.036}
+    formula: -meev/(2*ainv**2)
+    expected: '-13.606'
+    shown: ['= -13.606$ eV']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: de Broglie wavelengths and photons
+
+  - id: p3-given
+    kind: fact
+    where: 'Problem 3, statement: MIT''s data'
+    shown: ['A car of mass 2000 kg moving at 22 m/s (50 miles per hour).', 'A marble of mass 10 g moving at 10 cm/s.', 'a diameter of 100 nm and a mass of 1 fg', 'Visible light has wavelengths from 400 nm to 700 nm.', 'works at about 2.5 GHz with a power of at most 300 W', '(10 mW at 633 nm) and for a mobile phone (0.25 W at 850 MHz)', '200 ml of water by 10 °C']
+    source: {cite: mit, at: 'Problem 3, p. 2'}
+    origin: mit
+
+  - id: p3-car-momentum
+    where: 'Problem 3(a), solution: the momentum of the car'
+    inputs: {mcar: 2000 kg, vcar: 22 m/s}
+    formula: mcar*vcar
+    expected: 4.4e4 kg*m/s
+    shown: ['$2000 \times 22 = 4.4\times 10^{4}$ kg m/s']
+    source: {cite: mit, at: 'Problem 3(a), p. 2'}
+    origin: page-own
+
+  - id: p3-car
+    answer: p3-car
+    where: 'Problem 3(a), answer box: the de Broglie wavelength of the car'
+    inputs: {hh: 6.6e-34 J*s, mcar: 2000 kg, vcar: 22 m/s}
+    formula: hh/(mcar*vcar)
+    expected: 1.5e-38 m
+    shown: ['id="p3-car"']
+    source: {cite: reading3, at: 'notes p. 6, eq. (3.23)'}
+    origin: page-own
+
+  - id: p3-marble
+    answer: p3-marble
+    where: 'Problem 3(a), answer box: the de Broglie wavelength of the marble'
+    inputs: {hh: 6.6e-34 J*s, mmar: 10 g, vmar: 10 cm/s}
+    formula: hh/(mmar*vmar)
+    expected: 6.6e-31 m
+    shown: ['id="p3-marble"']
+    source: {cite: reading3, at: 'notes p. 6, eq. (3.23)'}
+    origin: page-own
+
+  - id: p3-smoke-energy
+    where: 'Problem 3(a), solution: the thermal kinetic energy at 300 K'
+    inputs: {kk: 1.38e-23 J/K, temp: 300 K}
+    formula: 1.5*kk*temp
+    expected: 6.21e-21 J
+    shown: ['$K = 6.21\times 10^{-21}$ J']
+    source: {cite: mit, at: 'Problem 3(a), p. 2'}
+    origin: page-own
+
+  - id: p3-smoke-momentum
+    where: 'Problem 3(a), solution: the momentum of the smoke particle'
+    inputs: {kk: 1.38e-23 J/K, temp: 300 K, msm: 1e-18 kg}
+    formula: sqrt(3*msm*kk*temp)
+    expected: 1.11e-19 kg*m/s
+    shown: ['$p = 1.11\times 10^{-19}$ kg m/s']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-smoke
+    answer: p3-smoke
+    where: 'Problem 3(a), answer box: the de Broglie wavelength of the smoke particle'
+    inputs: {hh: 6.6e-34 J*s, kk: 1.38e-23 J/K, temp: 300 K, msm: 1e-18 kg}
+    formula: hh/sqrt(3*msm*kk*temp)
+    expected: 5.92e-15 m
+    shown: ['id="p3-smoke"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2'}
+    origin: page-own
+
+  # Independent route: speed first (from K = m v^2 / 2), then h/(m v).
+  - id: p3-smoke-via-speed
+    where: 'Problem 3(a), solution: the same wavelength through the speed, sqrt(2K/m)'
+    inputs: {hh: 6.6e-34 J*s, kin: 6.21e-21 J, msm: 1e-18 kg}
+    formula: hh/(msm*sqrt(2*kin/msm))
+    expected: 5.92e-15 m
+    shown: ['so $\lambda = 5.92\times 10^{-15}$ m']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rb-mass
+    where: 'Problem 3(a), solution: the mass of a rubidium-87 atom'
+    inputs: {amu: 1.66e-27 kg}
+    formula: 87*amu
+    expected: 1.444e-25 kg
+    shown: ['= 1.444\times 10^{-25}$ kg']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (the atomic mass unit is ours)'}
+    origin: page-own
+
+  - id: p3-rb-energy
+    where: 'Problem 3(a), solution: the thermal kinetic energy at 100 microkelvin'
+    inputs: {kk: 1.38e-23 J/K, temp: 1.0e-4 K}
+    formula: 1.5*kk*temp
+    expected: 2.07e-27 J
+    shown: ['$K = 2.07\times 10^{-27}$ J']
+    source: {cite: mit, at: 'Problem 3(a), p. 2'}
+    origin: page-own
+
+  - id: p3-rb-momentum
+    where: 'Problem 3(a), solution: the momentum of the atom'
+    inputs: {kk: 1.38e-23 J/K, temp: 1.0e-4 K, amu: 1.66e-27 kg}
+    formula: sqrt(3*87*amu*kk*temp)
+    expected: 2.45e-26 kg*m/s
+    shown: ['$p = 2.45\times 10^{-26}$ kg m/s']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rb
+    answer: p3-rb
+    where: 'Problem 3(a), answer box: the de Broglie wavelength of the rubidium atom'
+    inputs: {hh: 6.6e-34 J*s, kk: 1.38e-23 J/K, temp: 1.0e-4 K, amu: 1.66e-27 kg}
+    formula: hh/sqrt(3*87*amu*kk*temp)
+    expected: 2.70e-8 m
+    shown: ['id="p3-rb"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2'}
+    origin: page-own
+
+  - id: p3-rb-via-speed
+    where: 'Problem 3(a), solution: the same wavelength through the speed, sqrt(2K/m)'
+    inputs: {hh: 6.6e-34 J*s, kin: 2.07e-27 J, mrb: 1.4442e-25 kg}
+    formula: hh/(mrb*sqrt(2*kin/mrb))
+    expected: 2.70e-8 m
+    shown: ['so $\lambda = 2.70\times 10^{-8}$ m, or 27 nm']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-smoke-speed
+    where: 'Problem 3(a), check: the speed of the smoke particle'
+    inputs: {kin: 6.21e-21 J, msm: 1e-18 kg}
+    formula: sqrt(2*kin/msm)
+    expected: 0.11 m/s
+    shown: ['0.11 m/s for the smoke particle']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rb-speed
+    where: 'Problem 3(a), check: the speed of the atom'
+    inputs: {kin: 2.07e-27 J, mrb: 1.4442e-25 kg}
+    formula: sqrt(2*kin/mrb)
+    expected: 0.17 m/s
+    shown: ['0.17 m/s for the atom']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-smoke-size-ratio
+    where: 'Problem 3(a), solution: the diameter of the smoke particle over its wavelength (order of magnitude)'
+    formula: 1e-7/5.92e-15
+    expected: '1e7'
+    tolerance: 100%
+    shown: ['some $10^{7}$ times smaller than its own diameter']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-e400
+    answer: p3-e400
+    where: 'Problem 3(b), answer box: the energy of a 400 nm photon in eV'
+    inputs: {hh: 6.6e-34, cl: 2.998e8, ev: 1.602e-19}
+    formula: hh*cl/400e-9/ev
+    expected: '3.09'
+    shown: ['id="p3-e400"']
+    source: {cite: reading1, at: 'notes p. 6, eq. (3.1)'}
+    origin: page-own
+
+  - id: p3-e700
+    answer: p3-e700
+    where: 'Problem 3(b), answer box: the energy of a 700 nm photon in eV'
+    inputs: {hh: 6.6e-34, cl: 2.998e8, ev: 1.602e-19}
+    formula: hh*cl/700e-9/ev
+    expected: '1.76'
+    shown: ['id="p3-e700"']
+    source: {cite: reading1, at: 'notes p. 6, eq. (3.1)'}
+    origin: page-own
+
+  - id: p3-nu400
+    where: 'Problem 3(b), solution: the frequency of 400 nm light'
+    inputs: {lam: 400 nm, cl: 2.998e8 m/s}
+    formula: cl/lam
+    expected: 7.5e14 Hz
+    shown: ['$\nu = 7.5\times 10^{14}$ Hz']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-j400
+    where: 'Problem 3(b), solution: the energy of a 400 nm photon in joules, and in eV'
+    inputs: {hh: 6.6e-34 J*s, lam: 400 nm, cl: 2.998e8 m/s}
+    formula: hh*cl/lam
+    expected: 4.95e-19 J
+    shown: ['$E = 4.95\times 10^{-19}$ J, which is 3.09 eV']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-nu700
+    where: 'Problem 3(b), solution: the frequency of 700 nm light'
+    inputs: {lam: 700 nm, cl: 2.998e8 m/s}
+    formula: cl/lam
+    expected: 4.3e14 Hz
+    shown: ['$\nu = 4.3\times 10^{14}$ Hz']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-j700
+    where: 'Problem 3(b), solution: the energy of a 700 nm photon in joules, and in eV'
+    inputs: {hh: 6.6e-34 J*s, lam: 700 nm, cl: 2.998e8 m/s}
+    formula: hh*cl/lam
+    expected: 2.83e-19 J
+    shown: ['$E = 2.83\times 10^{-19}$ J, which is 1.76 eV']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-oven-photon
+    where: 'Problem 3(b), solution: the energy of one 2.5 GHz photon'
+    inputs: {hh: 6.6e-34 J*s, freq: 2.5e9 Hz}
+    formula: hh*freq
+    expected: 1.65e-24 J
+    shown: ['2.5\times 10^{9} = 1.65\times 10^{-24}$ J']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-oven
+    answer: p3-oven
+    where: 'Problem 3(b), answer box: photons per second from the oven'
+    inputs: {hh: 6.6e-34, freq: 2.5e9, power: 300}
+    formula: power/(hh*freq)
+    expected: '1.82e26'
+    shown: ['id="p3-oven"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-laser-photon
+    where: 'Problem 3(b), solution: the energy of one 633 nm photon'
+    inputs: {hh: 6.6e-34 J*s, lam: 633 nm, cl: 2.998e8 m/s}
+    formula: hh*cl/lam
+    expected: 3.13e-19 J
+    shown: ['$hc/\lambda = 3.13\times 10^{-19}$ J']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-laser
+    answer: p3-laser
+    where: 'Problem 3(b), answer box: photons per second from the laser'
+    inputs: {hh: 6.6e-34, cl: 2.998e8, power: 0.010}
+    formula: power/(hh*cl/633e-9)
+    expected: '3.20e16'
+    shown: ['id="p3-laser"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-phone-photon
+    where: 'Problem 3(b), solution: the energy of one 850 MHz photon'
+    inputs: {hh: 6.6e-34 J*s, freq: 850e6 Hz}
+    formula: hh*freq
+    expected: 5.61e-25 J
+    shown: ['one photon has $5.61\times 10^{-25}$ J']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-phone
+    answer: p3-phone
+    where: 'Problem 3(b), answer box: photons per second from the phone'
+    inputs: {hh: 6.6e-34, freq: 850e6, power: 0.25}
+    formula: power/(hh*freq)
+    expected: '4.46e23'
+    shown: ['id="p3-phone"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-heat
+    where: 'Problem 3(b), solution: the heat that warms 200 g of water by 10 K'
+    inputs: {mass: 200 g, heatcap: 4 J/(g*K), dtemp: 10 K}
+    formula: mass*heatcap*dtemp
+    expected: 8000 J
+    tolerance: 1 J
+    shown: ['$200 \times 4 \times 10 = 8000$ J']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-water
+    answer: p3-water
+    where: 'Problem 3(b), answer box: microwave photons that warm the water'
+    inputs: {hh: 6.6e-34, freq: 2.5e9, heat: 8000}
+    formula: heat/(hh*freq)
+    expected: '4.85e27'
+    shown: ['id="p3-water"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-water-time
+    where: 'Problem 3(b), solution: the time the oven needs at 300 W'
+    inputs: {heat: 8000 J, power: 300 W}
+    formula: heat/power
+    expected: 27 s
+    shown: ['in about 27 s']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-photon-ratio
+    where: 'Problem 3(b), check: photons per second of the phone over those of the laser (order of magnitude)'
+    formula: 4.46e23/3.20e16
+    expected: '1e7'
+    tolerance: 50%
+    shown: ['ten million times fewer photons per second']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-power-ratio
+    where: 'Problem 3(b), check: power of the phone over that of the laser'
+    formula: 0.25/0.010
+    expected: '25'
+    shown: ['only 25 times smaller']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: complex numbers
+
+  # Independent route: Euler's formula from the Taylor series of part (a), summed to the term theta^10 (theta^11).
+  - id: p4-a
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(b), answer box a: against the real part of the exponential series'
+    formula: r*cos(theta)
+    equals: r*(1 - theta**2/2 + theta**4/24 - theta**6/720 + theta**8/40320 - theta**10/3628800)
+    samples:
+      r: [0.5, 1, 2, 3, 1.5]
+      theta: [0.2, 0.5, 0.8, 1.1, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p4-a"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3'}
+    origin: page-own
+
+  - id: p4-b
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box b: against the imaginary part of the exponential series'
+    formula: r*sin(theta)
+    equals: r*(theta - theta**3/6 + theta**5/120 - theta**7/5040 + theta**9/362880 - theta**11/39916800)
+    samples:
+      r: [0.5, 1, 2, 3, 1.5]
+      theta: [0.2, 0.5, 0.8, 1.1, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p4-b"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3'}
+    origin: page-own
+
+  # Independent route: the magnitude is the number s that makes (a/s, b/s) a point of the unit circle.
+  - id: p4-r
+    kind: identity
+    answer: p4-r
+    where: 'Problem 4(b), answer box r: against the numerical solution of (a/s)^2 + (b/s)^2 = 1'
+    formula: sqrt(a**2 + b**2)
+    equals: solve('(a/s)**2 + (b/s)**2 - 1', 's', 0.1, 100)
+    samples:
+      a: [0.5, 1, 2, 3, 1.5]
+      b: [3, 0.5, 1, 2, 2.5]
+    tolerance: 1e-9
+    shown: ['id="p4-r"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3'}
+    origin: page-own
+
+  - id: p4-check-example
+    where: 'Problem 4(b), check: z = 1 + i has r cos(theta) = 1'
+    formula: sqrt(2)*cos(pi/4)
+    expected: '1.000'
+    shown: ['$\sqrt2\cos(\pi/4) = 1 = \sqrt2\sin(\pi/4)$']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the real part of a product (p + iq)(a + ib) is p a - q b; for i, p = 0 and q = 1.
+  # A second route: the real part of r e^(i(theta + pi/2)) with r and theta such that a = r cos, b = r sin.
+  - id: p4-reiz
+    kind: identity
+    answer: p4-reiz
+    where: 'Problem 4(c), answer box: against the product rule for real parts with the factor 0 + 1i'
+    formula: -b
+    equals: 0*a - 1*b
+    samples:
+      a: [0.5, 1, 2, 3, 1.5]
+      b: [3, 0.5, 1, 2, 2.5]
+    tolerance: 1e-12
+    shown: ['id="p4-reiz"']
+    source: {cite: mit, at: 'Problem 4(c), p. 3'}
+    origin: page-own
+
+  - id: p4-rotation
+    kind: identity
+    where: 'Problem 4(c), check: with a = r cos(theta) and b = r sin(theta), the real part of r e^(i(theta + pi/2)) is -b and the imaginary part is a'
+    formula: rr*cos(th + pi/2) + 7*rr*sin(th + pi/2)
+    equals: -rr*sin(th) + 7*rr*cos(th)
+    samples:
+      rr: [0.5, 1, 2, 3, 1.5]
+      th: [0.2, 0.9, 1.7, 2.6, 4.0]
+    tolerance: 1e-9
+    shown: ['<Formula label="iz in Cartesian form"']
+    source: {cite: mit, at: 'Problem 4(c), p. 3'}
+    origin: page-own
+
+  # Independent route: the real part of (a + ib)(p + iq) is a p - b q, with p = a and q = -b for the conjugate;
+  # the imaginary part a q + b p must vanish.
+  - id: p4-zz
+    kind: identity
+    answer: p4-zz
+    where: 'Problem 4(d), answer box: against the product rule, real part a p - b q plus the imaginary part a q + b p (zero), with p = a, q = -b'
+    formula: a**2 + b**2
+    equals: (a*a - b*(-b)) + (a*(-b) + b*a)
+    samples:
+      a: [0.5, 1, 2, 3, 1.5]
+      b: [3, 0.5, 1, 2, 2.5]
+    tolerance: 1e-12
+    shown: ['id="p4-zz"']
+    source: {cite: mit, at: 'Problem 4(d), p. 3'}
+    origin: page-own
+
+  - id: p4-double-cos
+    kind: identity
+    where: 'Problem 4(e): cos 2 theta'
+    formula: cos(2*th)
+    equals: cos(th)**2 - sin(th)**2
+    samples:
+      th: [0.2, 0.9, 1.7, 2.6, 4.0]
+    tolerance: 1e-9
+    shown: ['So $\cos2\theta = \cos^2\theta - \sin^2\theta$']
+    source: {cite: mit, at: 'Problem 4(e), p. 3'}
+    origin: page-own
+
+  - id: p4-double-sin
+    kind: identity
+    where: 'Problem 4(e): sin 2 theta'
+    formula: sin(2*th)
+    equals: 2*sin(th)*cos(th)
+    samples:
+      th: [0.2, 0.9, 1.7, 2.6, 4.0]
+    tolerance: 1e-9
+    shown: ['$\sin2\theta = 2\sin\theta\cos\theta$']
+    source: {cite: mit, at: 'Problem 4(e), p. 3'}
+    origin: page-own
+
+  - id: p4-triple-cos
+    kind: identity
+    where: 'Problem 4(e): cos 3 theta'
+    formula: cos(3*th)
+    equals: cos(th)**3 - 3*cos(th)*sin(th)**2
+    samples:
+      th: [0.2, 0.9, 1.7, 2.6, 4.0]
+    tolerance: 1e-9
+    shown: ['So $\cos3\theta = \cos^3\theta - 3\cos\theta\sin^2\theta$']
+    source: {cite: mit, at: 'Problem 4(e), p. 3'}
+    origin: page-own
+
+  - id: p4-triple-sin
+    kind: identity
+    where: 'Problem 4(e): sin 3 theta'
+    formula: sin(3*th)
+    equals: 3*cos(th)**2*sin(th) - sin(th)**3
+    samples:
+      th: [0.2, 0.9, 1.7, 2.6, 4.0]
+    tolerance: 1e-9
+    shown: ['$\sin3\theta = 3\cos^2\theta\sin\theta - \sin^3\theta$']
+    source: {cite: mit, at: 'Problem 4(e), p. 3'}
+    origin: page-own
+
+  - id: p4-sum-cos
+    kind: identity
+    where: 'Problem 4(e): cos(A + B)'
+    formula: cos(aa + bb)
+    equals: cos(aa)*cos(bb) - sin(aa)*sin(bb)
+    samples:
+      aa: [0.2, 0.9, 1.7, 2.6, 4.0]
+      bb: [1.1, 3.0, 0.4, 5.2, 2.2]
+    tolerance: 1e-9
+    shown: ['<Formula label="Addition formulas"']
+    source: {cite: mit, at: 'Problem 4(e), p. 3'}
+    origin: page-own
+
+  - id: p4-sum-sin
+    kind: identity
+    where: 'Problem 4(e): sin(A + B)'
+    formula: sin(aa + bb)
+    equals: sin(aa)*cos(bb) + cos(aa)*sin(bb)
+    samples:
+      aa: [0.2, 0.9, 1.7, 2.6, 4.0]
+      bb: [1.1, 3.0, 0.4, 5.2, 2.2]
+    tolerance: 1e-9
+    shown: ['<Formula label="Product of two phases"']
+    source: {cite: mit, at: 'Problem 4(e), p. 3'}
+    origin: page-own
+
+  - id: p4-triple-example
+    where: 'Problem 4(e), check: the triple-angle formula at 60 degrees'
+    formula: 1/8 - 3*(1/2)*(3/4)
+    expected: '-1.000'
+    shown: ['the formula gives $\frac18 - 3\cdot\frac12\cdot\frac34 = -1$']
+    source: {cite: mit, at: 'Problem 4(e), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: absorption
+
+  - id: p5-condition
+    kind: identity
+    where: 'Problem 5, solution: (E_gamma + m c^2)^2 - E_gamma^2 - (m c^2)^2 = 2 E_gamma m c^2'
+    formula: (eg + mc2)**2 - eg**2 - mc2**2
+    equals: 2*eg*mc2
+    samples:
+      eg: [0.001, 0.1, 0.511, 2, 50]
+      mc2: [0.511, 0.511, 0.511, 0.511, 0.511]
+    tolerance: 1e-9
+    shown: ['<Formula label="The condition for absorption"']
+    source: {cite: reading3, at: 'notes p. 3, eq. (2.13), and p. 5 (the statement that the photon cannot be absorbed)'}
+    origin: page-own
+
+  # ---- Problem 6: Mach-Zehnder interferometer
+  # The general formulas are checked against the amplitudes multiplied out in real and imaginary parts, for an
+  # input alpha = ar + i ai, beta = br + i bi of any size (both sides divided by the norm).
+
+  - id: p6-general-lower
+    kind: identity
+    where: 'Problem 6(a), formula for P0: against |(beta - alpha) + e^(i dl)(beta + alpha)|^2 / 4, real and imaginary parts written out'
+    formula: 0.5 + 0.5*(((br**2 + bi**2) - (ar**2 + ai**2))*cos(dl) - 2*(ai*br - ar*bi)*sin(dl))/(ar**2 + ai**2 + br**2 + bi**2)
+    equals: 0.25*(((br - ar) + cos(dl)*(br + ar) - sin(dl)*(bi + ai))**2 + ((bi - ai) + sin(dl)*(br + ar) + cos(dl)*(bi + ai))**2)/(ar**2 + ai**2 + br**2 + bi**2)
+    samples:
+      ar: [0.6, 0.3, -0.5, 1.0, 0.2]
+      ai: [0.0, 0.4, 0.7, -0.3, 0.9]
+      br: [0.0, 0.8, 0.1, 0.5, -0.6]
+      bi: [0.8, -0.2, 0.6, 0.4, 0.3]
+      dl: [1.0471976, 0.3, 2.0, 4.0, 5.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Detection probabilities with a shifter in the lower leg"']
+    source: {cite: reading2, at: 'notes p. 4, eqs. (1.17)–(1.18)'}
+    origin: page-own
+
+  - id: p6-general-upper
+    kind: identity
+    where: 'Problem 6(b), formula for P0: against |e^(i du)(beta - alpha) + (beta + alpha)|^2 / 4'
+    formula: 0.5 + 0.5*(((br**2 + bi**2) - (ar**2 + ai**2))*cos(du) + 2*(ai*br - ar*bi)*sin(du))/(ar**2 + ai**2 + br**2 + bi**2)
+    equals: 0.25*((cos(du)*(br - ar) - sin(du)*(bi - ai) + (br + ar))**2 + (sin(du)*(br - ar) + cos(du)*(bi - ai) + (bi + ai))**2)/(ar**2 + ai**2 + br**2 + bi**2)
+    samples:
+      ar: [0.6, 0.3, -0.5, 1.0, 0.2]
+      ai: [0.0, 0.4, 0.7, -0.3, 0.9]
+      br: [0.0, 0.8, 0.1, 0.5, -0.6]
+      bi: [0.8, -0.2, 0.6, 0.4, 0.3]
+      du: [1.0471976, 0.3, 2.0, 4.0, 5.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Detection probabilities with a shifter in the upper leg"']
+    source: {cite: reading2, at: 'notes p. 4, eqs. (1.17)–(1.18)'}
+    origin: page-own
+
+  - id: p6-general-both
+    kind: identity
+    where: 'Problem 6(c), formula for P0: against |e^(i du)(beta - alpha) + e^(i dl)(beta + alpha)|^2 / 4'
+    formula: 0.5 + 0.5*(((br**2 + bi**2) - (ar**2 + ai**2))*cos(dl - du) - 2*(ai*br - ar*bi)*sin(dl - du))/(ar**2 + ai**2 + br**2 + bi**2)
+    equals: 0.25*((cos(du)*(br - ar) - sin(du)*(bi - ai) + cos(dl)*(br + ar) - sin(dl)*(bi + ai))**2 + (sin(du)*(br - ar) + cos(du)*(bi - ai) + sin(dl)*(br + ar) + cos(dl)*(bi + ai))**2)/(ar**2 + ai**2 + br**2 + bi**2)
+    samples:
+      ar: [0.6, 0.3, -0.5, 1.0, 0.2]
+      ai: [0.0, 0.4, 0.7, -0.3, 0.9]
+      br: [0.0, 0.8, 0.1, 0.5, -0.6]
+      bi: [0.8, -0.2, 0.6, 0.4, 0.3]
+      dl: [1.0471976, 0.3, 2.0, 4.0, 5.5]
+      du: [1.0471976, 1.3, 0.5, 2.5, 6.0]
+    tolerance: 1e-9
+    shown: ['<Formula label="Detection probabilities with both shifters"']
+    source: {cite: reading2, at: 'notes p. 4, eqs. (1.17)–(1.18)'}
+    origin: page-own
+
+  # The probability at D1 for a general input, multiplied out, plus that at D0, is 1.
+  - id: p6-total
+    kind: identity
+    where: 'Problem 6(a): P0 + P1 = 1, from the two output amplitudes multiplied out'
+    formula: 0.25*(((br - ar) + cos(dl)*(br + ar) - sin(dl)*(bi + ai))**2 + ((bi - ai) + sin(dl)*(br + ar) + cos(dl)*(bi + ai))**2 + ((br - ar) - cos(dl)*(br + ar) + sin(dl)*(bi + ai))**2 + ((bi - ai) - sin(dl)*(br + ar) - cos(dl)*(bi + ai))**2)/(ar**2 + ai**2 + br**2 + bi**2)
+    equals: 1 + 0*dl
+    samples:
+      ar: [0.6, 0.3, -0.5, 1.0, 0.2]
+      ai: [0.0, 0.4, 0.7, -0.3, 0.9]
+      br: [0.0, 0.8, 0.1, 0.5, -0.6]
+      bi: [0.8, -0.2, 0.6, 0.4, 0.3]
+      dl: [1.0471976, 0.3, 2.0, 4.0, 5.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Output amplitudes with a shifter in the lower leg"']
+    source: {cite: reading2, at: 'notes p. 4, eqs. (1.17)–(1.18)'}
+    origin: page-own
+
+  - id: p6-a
+    answer: p6-a
+    where: 'Problem 6(a), answer box: P0 for alpha = 0.6, beta = 0.8i, lower phase pi/3, from the amplitude at D0 (real part -0.6 + 0.6 cos - 0.8 sin, imaginary part 0.8 + 0.6 sin + 0.8 cos)'
+    formula: 0.25*((-0.6 + 0.6*cos(pi/3) - 0.8*sin(pi/3))**2 + (0.8 + 0.6*sin(pi/3) + 0.8*cos(pi/3))**2)
+    expected: '0.986'
+    shown: ['id="p6-a"']
+    source: {cite: mit, at: 'Problem 6(a), p. 3 (the input is ours)'}
+    origin: page-own
+
+  - id: p6-a-formula
+    where: 'Problem 6(a), solution: the same number from the general formula'
+    formula: 0.5 + 0.5*(0.28*0.5 + 0.96*sin(pi/3))
+    expected: '0.986'
+    shown: ['0.28 \times 0.5 + 0.96 \times 0.866\right] = 0.986$']
+    source: {cite: mit, at: 'Problem 6(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-a-p1
+    where: 'Problem 6(a), solution: P1 from the amplitude at D1'
+    formula: 0.25*((-0.6 - 0.6*cos(pi/3) + 0.8*sin(pi/3))**2 + (0.8 - 0.6*sin(pi/3) - 0.8*cos(pi/3))**2)
+    expected: '0.014'
+    shown: ['$P_1 = 0.014$']
+    source: {cite: mit, at: 'Problem 6(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-input-numbers
+    where: 'Problem 6(a), solution: |beta|^2 - |alpha|^2 for the input'
+    formula: 0.8**2 - 0.6**2
+    expected: '0.28'
+    shown: ['$\left|\beta\right|^2 - \left|\alpha\right|^2 = 0.28$']
+    source: {cite: mit, at: 'Problem 6(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-input-im
+    where: 'Problem 6(a), solution: Im(alpha beta*) = ai br - ar bi for alpha = 0.6, beta = 0.8i'
+    formula: 0*0 - 0.6*0.8
+    expected: '-0.48'
+    shown: ['$\text{Im}\left(\alpha\beta^*\right) = -0.48$']
+    source: {cite: mit, at: 'Problem 6(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-b
+    answer: p6-b
+    where: 'Problem 6(b), answer box: P0 with the phase pi/3 in the upper leg, from the amplitude at D0 (real part 0.6 - 0.6 cos - 0.8 sin, imaginary part 0.8 - 0.6 sin + 0.8 cos)'
+    formula: 0.25*((0.6 - 0.6*cos(pi/3) - 0.8*sin(pi/3))**2 + (0.8 - 0.6*sin(pi/3) + 0.8*cos(pi/3))**2)
+    expected: '0.154'
+    shown: ['id="p6-b"']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (the input is ours)'}
+    origin: page-own
+
+  - id: p6-b-formula
+    where: 'Problem 6(b), solution: the same number from the general formula'
+    formula: 0.5 + 0.5*(0.14 - 0.96*sin(pi/3))
+    expected: '0.154'
+    shown: ['\left[0.14 - 0.831\right] = 0.154$']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-p1
+    where: 'Problem 6(b), solution: P1 from the amplitude at D1'
+    formula: 0.25*((-0.6*cos(pi/3) - 0.8*sin(pi/3) - 0.6)**2 + (-0.6*sin(pi/3) + 0.8*cos(pi/3) - 0.8)**2)
+    expected: '0.846'
+    shown: ['and $P_1 = 0.846$']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-c
+    answer: p6-c
+    where: 'Problem 6(c), answer box: P0 with pi/3 in both legs, from the amplitude at D0 multiplied out'
+    formula: 0.25*((cos(pi/3)*(-0.6) - sin(pi/3)*0.8 + cos(pi/3)*0.6 - sin(pi/3)*0.8)**2 + (sin(pi/3)*(-0.6) + cos(pi/3)*0.8 + sin(pi/3)*0.6 + cos(pi/3)*0.8)**2)
+    expected: '0.64'
+    shown: ['id="p6-c"']
+    source: {cite: mit, at: 'Problem 6(c), p. 4 (the input is ours)'}
+    origin: page-own
+
+  - id: p6-c-formula
+    where: 'Problem 6(c), solution: the same number from the general formula with zero phase difference'
+    formula: 0.5 + 0.5*0.28
+    expected: '0.64'
+    shown: ['$P_0 = \frac12 + \frac12 \times 0.28 = 0.64 = \left|\beta\right|^2$']
+    source: {cite: mit, at: 'Problem 6(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 7: Elitzur-Vaidman bombs
+
+  - id: p7-given
+    kind: fact
+    where: 'Problem 7, statement: the outcomes for a working bomb, from the lesson'
+    shown: ['sets it off with probability $\frac12$, reaches D0 with probability $\frac14$ and reaches D1 with probability $\frac14$']
+    source: {cite: reading2, at: 'notes p. 7, table (2.25)'}
+    origin: mit
+
+  - id: p7-a
+    answer: p7-a
+    where: 'Problem 7(a), answer box: the geometric series (1/4)/(1 - 1/4)'
+    formula: (1/4)/(1 - 1/4)
+    expected: '0.333'
+    shown: ['id="p7-a"']
+    source: {cite: mit, at: 'Problem 7(a), p. 4'}
+    origin: page-own
+
+  # Independent routes: the first forty terms of the series added up, and the ratio of the two outcomes that end the test.
+  - id: p7-a-partial-sum
+    where: 'Problem 7(a), check: the series summed term by term (forty terms, written as a finite geometric sum)'
+    formula: 0.25*(1 - 0.25**40)/0.75
+    expected: '0.333'
+    shown: ['<Formula label="Fraction of working bombs certified"']
+    source: {cite: mit, at: 'Problem 7(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p7-a-ratio
+    where: 'Problem 7(a), check: D1 against the two outcomes that end the test'
+    formula: (1/4)/(1/4 + 1/2)
+    expected: '0.333'
+    shown: ['The lesson''s worked example finds the same number']
+    source: {cite: reading2, at: 'notes p. 7, table (2.25)'}
+    origin: page-own
+
+  - id: p7-a-explode
+    where: 'Problem 7(a), solution: the fraction of working bombs that explode'
+    formula: (1/2)/(1 - 1/4)
+    expected: '0.667'
+    shown: ['a fraction $\frac{1/2}{1 - 1/4} = \frac23$ of the working bombs explodes']
+    source: {cite: mit, at: 'Problem 7(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p7-given-b
+    kind: fact
+    where: 'Problem 7(b), statement: MIT''s share of defective bombs'
+    shown: ['Of the bombs in your store, 80% are defective.']
+    source: {cite: mit, at: 'Problem 7(b), p. 4'}
+    origin: mit
+
+  - id: p7-b
+    answer: p7-b
+    where: 'Problem 7(b), answer box: Bayes'' rule'
+    formula: 0.80*1/(0.80*1 + 0.20*0.25)
+    expected: '0.941'
+    shown: ['id="p7-b"']
+    source: {cite: mit, at: 'Problem 7(b), p. 4'}
+    origin: page-own
+
+  - id: p7-b-count
+    where: 'Problem 7(b), check: counting 100 bombs, 80 defective at D0 and 5 working at D0'
+    formula: 80/(80 + 20/4)
+    expected: '0.941'
+    shown: ['So 85 tests end at D0, and in 80 of those the bomb is defective']
+    source: {cite: mit, at: 'Problem 7(b), p. 4 (our own solution)'}
+    origin: page-own

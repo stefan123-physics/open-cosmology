@@ -1,0 +1,350 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# commutators by letting the operators act on a test function (x-space for powers of x, p-space with x = iħ d/dp for
+# powers of p) with numerical derivatives; the Gaussian packets by numerical integration over k; the Galilean phase
+# from the kinematics of a plane wave (p' = p − mv, E' = p'²/2m) and from the two conditions on f by numerical
+# derivatives; the currents from J = (ħ/m)(Re Ψ · Im Ψ' − Im Ψ · Re Ψ') with numerical derivatives of the real and
+# imaginary parts.
+
+page: content/year-2/8.04/8-04-problem-set-3.mdx
+calcs:
+  # ---- Introduction
+
+  - id: intro-points
+    where: 'Introduction: the points of the six problems'
+    inputs: {}
+    formula: 10 + 10 + 15 + 10 + 10 + 10
+    expected: '65'
+    shown: ['The six problems count for 65 points, as on MIT''s sheet.']
+    source: {cite: mit, at: 'pp. 1–3 (points per problem)'}
+    origin: mit
+
+  # ---- Problem 1: commutators
+
+  # [x^n, p] φ = (ħ/i)(x^n φ' − (x^n φ)') = iħ ((x^n φ)' − x^n φ'), with the test function φ = e^(a x).
+  - id: p1-xn
+    kind: identity
+    answer: p1-xn
+    where: 'Problem 1(d), answer box: [x^n, p] / (iħ) acting on the test function e^(a x), by numerical derivatives'
+    formula: n*x**(n-1)
+    equals: (deriv('s**n*exp(a*s)', 's', x) - x**n*deriv('exp(a*s)', 's', x))/exp(a*x)
+    samples:
+      n: [1, 2, 3, 4, 6]
+      x: [0.7, 1.3, 0.5, 1.9, 1.1]
+      a: [0.4, -0.8, 1.2, 0.3, -0.5]
+    tolerance: 1e-7
+    shown: ['id="p1-xn"', '<Formula label="Commutator of a power of x with p"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1'}
+    origin: page-own
+
+  # In momentum space x = iħ d/dp: [x, p^n] g = iħ ((p^n g)' − p^n g'), with the test function g = e^(a p).
+  - id: p1-pn
+    kind: identity
+    answer: p1-pn
+    where: 'Problem 1(d), answer box: [x, p^n] / (iħ) in momentum space (x = iħ d/dp) on the test function e^(a p)'
+    formula: n*p**(n-1)
+    equals: (deriv('s**n*exp(a*s)', 's', p) - p**n*deriv('exp(a*s)', 's', p))/exp(a*p)
+    samples:
+      n: [1, 2, 3, 4, 6]
+      p: [0.7, 1.3, 0.5, 1.9, 1.1]
+      a: [0.4, -0.8, 1.2, 0.3, -0.5]
+    tolerance: 1e-7
+    shown: ['id="p1-pn"', '<Formula label="Commutator of x with a power of p"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1'}
+    origin: page-own
+
+  # [xp, x²] φ = (ħ/i)(x (x² φ)' − x³ φ'), so divided by iħ it is −(x (x² φ)' − x³ φ').
+  - id: p1-xpx2
+    kind: identity
+    answer: p1-xpx2
+    where: 'Problem 1(e), answer box: [xp, x²] / (iħ) acting on the test function e^(a x)'
+    formula: -2*x**2
+    equals: -(x*deriv('s**2*exp(a*s)', 's', x) - x**3*deriv('exp(a*s)', 's', x))/exp(a*x)
+    samples:
+      x: [0.7, 1.3, 0.5, 1.9, 1.1]
+      a: [0.4, -0.8, 1.2, 0.3, -0.5]
+    tolerance: 1e-7
+    shown: ['id="p1-xpx2"', '<Formula label="Commutator of xp with x squared"']
+    source: {cite: mit, at: 'Problem 1(e), p. 1'}
+    origin: page-own
+
+  # In momentum space: [xp, p²] g = iħ ((p³ g)' − p² (p g)').
+  - id: p1-xpp2
+    kind: identity
+    answer: p1-xpp2
+    where: 'Problem 1(e), answer box: [xp, p²] / (iħ) in momentum space (x = iħ d/dp) on the test function e^(a p)'
+    formula: 2*p**2
+    equals: (deriv('s**3*exp(a*s)', 's', p) - p**2*deriv('s*exp(a*s)', 's', p))/exp(a*p)
+    samples:
+      p: [0.7, 1.3, 0.5, 1.9, 1.1]
+      a: [0.4, -0.8, 1.2, 0.3, -0.5]
+    tolerance: 1e-7
+    shown: ['id="p1-xpp2"', '<Formula label="Commutator of xp with p squared"']
+    source: {cite: mit, at: 'Problem 1(e), p. 1'}
+    origin: page-own
+
+  # ---- Problem 2: Gaussian packets
+
+  # Ψ e^(−i k0 x) = ∫ dq e^(−L² q²) cos(q x): the sine part is odd and vanishes.
+  - id: p2-a-abs
+    kind: identity
+    answer: p2-a-abs
+    where: 'Problem 2(a), answer box: against the numerical integral over k'
+    formula: sqrt(pi)/L*exp(-x**2/(4*L**2))
+    equals: integrate('exp(-L**2*s**2)*cos(s*x)', 's', -12/L, 12/L)
+    samples:
+      L: [0.5, 1.0, 1.5, 2.0, 0.8]
+      x: [0.3, 1.2, 2.5, 3.0, 0.0]
+    tolerance: 1e-7
+    shown: ['id="p2-a-abs"', '<Formula label="Size of the packet of part (a)"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1'}
+    origin: page-own
+
+  # With k0 kept: |Ψ| = sqrt((∫ Φ cos)² + (∫ Φ sin)²), the integrals over k itself.
+  - id: p2-b-abs
+    kind: identity
+    answer: p2-b-abs
+    where: 'Problem 2(b), answer box: against the numerical real and imaginary parts of the integral over k, with k0 not zero'
+    formula: sqrt(pi)/L*exp(-(x-x0)**2/(4*L**2))
+    equals: sqrt(integrate('exp(-L**2*(s-k0)**2)*cos(s*(x-x0))', 's', k0-12/L, k0+12/L)**2 + integrate('exp(-L**2*(s-k0)**2)*sin(s*(x-x0))', 's', k0-12/L, k0+12/L)**2)
+    samples:
+      L: [0.5, 1.0, 1.5, 2.0, 0.8]
+      x: [0.3, 1.2, 2.5, 3.0, 1.0]
+      x0: [0.5, 2.5, 1.0, 2.0, 1.0]
+      k0: [3.0, 5.0, 2.0, 4.0, 6.0]
+    tolerance: 1e-7
+    shown: ['id="p2-b-abs"', '<Formula label="Size of the packet of part (b)"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1'}
+    origin: page-own
+
+  # The peak of part (b): the numerical |Ψ|² has zero slope at x = x0 (and part (a) is the case x0 = 0).
+  - id: p2-b-peak
+    kind: identity
+    answer: p2-b-peak
+    where: 'Problem 2(b), answer box: the maximum of the exact size, solved numerically from d|Ψ|/dx = 0'
+    formula: x0
+    equals: solve('deriv("exp(-(u-x0)**2/(4*L**2))", "u", s)', 's', x0 - L, x0 + 1.5*L)
+    samples:
+      x0: [0.5, 2.5, 1.0, 2.0, 3.0]
+      L: [0.5, 1.0, 1.5, 2.0, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p2-b-peak"']
+    source: {cite: reading1, at: 'notes p. 4, eqs. (2.23)–(2.24)'}
+    origin: page-own
+
+  - id: p2-width
+    kind: identity
+    where: 'Problem 2(a), check: the size falls to 1/e at x = ±2L and the profile at k − k0 = ±1/L'
+    formula: exp(-(2*L)**2/(4*L**2)) + exp(-L**2*(1/L)**2)
+    equals: 2*exp(-1)
+    samples:
+      L: [0.5, 1.0, 1.5, 2.0, 0.8]
+    tolerance: 1e-12
+    shown: ['The size falls to $1/e$ of its peak at $x = \pm 2L$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: Galilean invariance
+
+  # Independent route: the phase a plane wave of momentum ħk must have for the moving observer (momentum ħk − mv,
+  # energy (ħk − mv)²/2m, coordinates x' = x − vt) minus the phase it has for the first observer. It must not
+  # depend on k.
+  - id: p3-theta
+    kind: identity
+    answer: p3-theta
+    where: 'Problem 3(a), answer box: against the difference of the plane-wave phases in the two frames, from Galilean kinematics'
+    formula: -(m*v*x - m*v**2*t/2)/hbar
+    equals: ((hbar*k - m*v)/hbar)*(x - v*t) - ((hbar*k - m*v)**2/(2*m*hbar))*t - (k*x - hbar*k**2/(2*m)*t)
+    samples:
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      v: [0.3, 1.5, 0.7, 1.1, 0.9]
+      x: [0.5, 3.0, 1.2, 2.2, 1.7]
+      t: [0.5, 1.0, 3.0, 2.0, 1.4]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      k: [1.0, -2.0, 3.0, 0.4, 5.0]
+    tolerance: 1e-9
+    shown: ['id="p3-theta"', '<Formula label="The Galilean phase factor"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2'}
+    origin: page-own
+
+  # The first condition on f = e^(iθ): ∂θ/∂x = −mv/ħ, by a numerical derivative.
+  - id: p3-condition-1
+    kind: identity
+    where: 'Problem 3(a), first condition: ∂f/∂x = −(imv/ħ) f, as a condition on the phase'
+    formula: deriv('-(m*v*s - m*v**2*t/2)/hbar', 's', x)
+    equals: -m*v/hbar
+    samples:
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      v: [0.3, 1.5, 0.7, 1.1, 0.9]
+      x: [0.5, 3.0, 1.2, 2.2, 1.7]
+      t: [0.5, 1.0, 3.0, 2.0, 1.4]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+    tolerance: 1e-7
+    shown: ['<Formula label="Conditions on f"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The second condition for f = e^(iθ) with θ linear in x: −ħ(∂θ/∂t + v ∂θ/∂x) = (ħ²/2m)(∂θ/∂x)².
+  - id: p3-condition-2
+    kind: identity
+    where: 'Problem 3(a), second condition, as a condition on the phase (θ is linear in x, so its second derivative is zero)'
+    formula: -hbar*(deriv('-(m*v*x - m*v**2*s/2)/hbar', 's', t) + v*deriv('-(m*v*s - m*v**2*t/2)/hbar', 's', x))
+    equals: hbar**2/(2*m)*deriv('-(m*v*s - m*v**2*t/2)/hbar', 's', x)**2
+    samples:
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      v: [0.3, 1.5, 0.7, 1.1, 0.9]
+      x: [0.5, 3.0, 1.2, 2.2, 1.7]
+      t: [0.5, 1.0, 3.0, 2.0, 1.4]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+    tolerance: 1e-6
+    shown: ['<Formula label="The equation for the time factor"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # k' is the x' derivative of the whole phase θ + kx − ωt at fixed t', with x = x' + v t'.
+  - id: p3-kprime
+    kind: identity
+    answer: p3-kprime
+    where: 'Problem 3(b), answer box: the numerical x′ derivative of the transformed phase'
+    formula: k - m*v/hbar
+    equals: deriv('-(m*v*(s + v*t) - m*v**2*t/2)/hbar + k*(s + v*t) - omega*t', 's', xp)
+    samples:
+      k: [1.0, 2.0, 3.0, 1.4, 2.6]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      v: [0.3, 1.5, 0.7, 1.1, 0.9]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      omega: [1.0, 5.0, 2.0, 3.0, 4.0]
+      t: [0.5, 1.0, 3.0, 2.0, 1.4]
+      xp: [0.5, 3.0, 1.2, 2.2, 1.7]
+    tolerance: 1e-7
+    shown: ['id="p3-kprime"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  # ω' is minus the t' derivative of the whole phase at fixed x'.
+  - id: p3-omegaprime
+    kind: identity
+    answer: p3-omegaprime
+    where: 'Problem 3(b), answer box: minus the numerical t′ derivative of the transformed phase'
+    formula: omega - k*v + m*v**2/(2*hbar)
+    equals: -deriv('-(m*v*(xp + v*s) - m*v**2*s/2)/hbar + k*(xp + v*s) - omega*s', 's', t)
+    samples:
+      k: [1.0, 2.0, 3.0, 1.4, 2.6]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      v: [0.3, 1.5, 0.7, 1.1, 0.9]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      omega: [1.0, 5.0, 2.0, 3.0, 4.0]
+      t: [0.5, 1.0, 3.0, 2.0, 1.4]
+      xp: [0.5, 3.0, 1.2, 2.2, 1.7]
+    tolerance: 1e-7
+    shown: ['id="p3-omegaprime"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  - id: p3-energy
+    kind: identity
+    where: 'Problem 3(b): ħω′ is the kinetic energy of the momentum ħk′ when ħω = (ħk)²/2m'
+    formula: hbar*(hbar*k**2/(2*m) - k*v + m*v**2/(2*hbar))
+    equals: (hbar*(k - m*v/hbar))**2/(2*m)
+    samples:
+      k: [1.0, 2.0, 3.0, 1.4, 2.6]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      v: [0.3, 1.5, 0.7, 1.1, 0.9]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+    tolerance: 1e-9
+    shown: ['<Formula label="Momentum and energy in the primed frame"']
+    source: {cite: reading1, at: 'notes p. 2, eq. (1.6), and p. 4, eq. (1.21)'}
+    origin: page-own
+
+  # ---- Problem 4: the current of a plane wave in three dimensions, along one axis
+
+  - id: p4-plane-wave
+    kind: identity
+    where: 'Problem 4, check: a plane wave has J = |A|² ħk/m (one component, from the real and imaginary parts)'
+    formula: A**2*hbar*k/m
+    equals: (hbar/m)*(A*cos(k*x + al)*deriv('A*sin(k*s + al)', 's', x) - A*sin(k*x + al)*deriv('A*cos(k*s + al)', 's', x))
+    samples:
+      A: [0.5, 1.0, 2.0, 1.3, 0.8]
+      k: [1.0, 2.0, 3.0, 1.4, 2.6]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      x: [0.5, 3.0, 1.2, 2.2, 1.7]
+      al: [0.0, 0.7, 2.0, -1.0, 3.0]
+    tolerance: 1e-7
+    shown: ['$\vec J = |A|^2\,\hbar\vec k/m$']
+    source: {cite: reading3, at: 'notes p. 7, eq. (4.1)'}
+    origin: page-own
+
+  # ---- Problem 6: currents. Independent route for all three: J = (ħ/m)(Re Ψ · (Im Ψ)' − Im Ψ · (Re Ψ)').
+
+  # Ψ = A e^(i al) e^(g x): real part A cos(al) e^(g x), imaginary part A sin(al) e^(g x).
+  # Their slopes are g times themselves (written out, not by a numerical derivative: the test compares with zero).
+  - id: p6-a
+    kind: identity
+    answer: p6-a
+    where: 'Problem 6(a), answer box: the current of A e^(γx) with a complex A, from its real and imaginary parts'
+    formula: '0'
+    equals: (hbar/m)*(A*cos(al)*exp(g*x)*(g*A*sin(al)*exp(g*x)) - A*sin(al)*exp(g*x)*(g*A*cos(al)*exp(g*x)))
+    samples:
+      A: [0.5, 1.0, 2.0, 1.3, 0.8]
+      g: [0.3, 1.5, -0.7, 1.1, 0.9]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      x: [0.2, 2.0, 1.2, 0.6, 1.7]
+      al: [0.3, 0.7, 2.0, -1.0, 3.0]
+    tolerance: 1e-7
+    shown: ['id="p6-a"', '<Formula label="Current of a real exponential"']
+    source: {cite: reading3, at: 'notes p. 5, eq. (3.6)'}
+    origin: page-own
+
+  # Around the point u: N(s) = N + q (s − u), S(s) = S0 + Sp (s − u) + r (s − u)², so N(u) = N and S'(u) = Sp.
+  - id: p6-b
+    kind: identity
+    answer: p6-b
+    where: 'Problem 6(b), answer box: the current of N e^(iS/ħ) from its real and imaginary parts, for a sample N(x) and S(x)'
+    formula: N**2*Sp/m
+    equals: (hbar/m)*(N*cos(S0/hbar)*deriv('(N + q*(s - u))*sin((S0 + Sp*(s - u) + r*(s - u)**2)/hbar)', 's', u) - N*sin(S0/hbar)*deriv('(N + q*(s - u))*cos((S0 + Sp*(s - u) + r*(s - u)**2)/hbar)', 's', u))
+    samples:
+      N: [0.5, 1.0, 2.0, 1.3, 0.8]
+      Sp: [0.5, 3.0, 1.2, 2.2, 1.7]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      S0: [0.4, 1.0, 2.5, -1.0, 0.2]
+      q: [0.3, -0.5, 1.0, 0.7, -0.2]
+      r: [0.2, 0.6, -0.4, 1.0, 0.5]
+      u: [0.5, 3.0, 1.2, 2.2, 1.7]
+    tolerance: 1e-7
+    shown: ['id="p6-b"', '<Formula label="Current of a size and a phase"']
+    source: {cite: reading3, at: 'notes p. 5, eq. (3.6)'}
+    origin: page-own
+
+  # Ψ = A e^(i al) e^(ikx) + B e^(i be) e^(−ikx), with A and B the sizes of the two constants.
+  - id: p6-c
+    kind: identity
+    answer: p6-c
+    where: 'Problem 6(c), answer box: the current of two opposite waves with complex amplitudes, from the real and imaginary parts'
+    formula: hbar*k*(A**2 - B**2)/m
+    equals: (hbar/m)*((A*cos(k*x + al) + B*cos(be - k*x))*deriv('A*sin(k*s + al) + B*sin(be - k*s)', 's', x) - (A*sin(k*x + al) + B*sin(be - k*x))*deriv('A*cos(k*s + al) + B*cos(be - k*s)', 's', x))
+    samples:
+      A: [1.2, 2.5, 2.0, 1.3, 1.8]
+      B: [0.3, 1.0, 2.0, 0.6, 0.9]
+      k: [0.5, 3.0, 1.0, 1.4, 2.6]
+      m: [0.5, 1.0, 2.0, 1.3, 0.8]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      x: [0.5, 3.0, 1.2, 2.2, 1.7]
+      al: [0.0, 0.7, 2.0, -1.0, 3.0]
+      be: [1.0, -0.4, 0.3, 2.2, 0.0]
+    tolerance: 1e-7
+    shown: ['id="p6-c"', '<Formula label="Current of two opposite waves"']
+    source: {cite: reading3, at: 'notes p. 5, eq. (3.6)'}
+    origin: page-own
+
+  - id: p6-c-example
+    where: 'Problem 6(c), check: |A| = 2 and |B| = 1 give 3ħk/m, three quarters of the right-moving wave alone'
+    inputs: {a_size: 2, b_size: 1}
+    formula: (a_size**2 - b_size**2) / a_size**2
+    expected: '0.75'
+    shown: ['With $|A| = 2$ and $|B| = 1$ the current is $3\hbar k/m$, three quarters of what the right-moving wave carries by itself.']
+    source: {cite: mit, at: 'Problem 6(c), p. 3 (our own check)'}
+    origin: page-own

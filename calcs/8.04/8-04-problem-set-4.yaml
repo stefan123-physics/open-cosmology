@@ -1,0 +1,475 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# numerical derivatives of the full scattering wavefunction for the three parts of the current, numerical Fourier
+# integrals for the Gaussian packet and its evolution, the Heisenberg-picture growth of <x^2> for the width,
+# numerical radial integrals for the hydrogen constants and the momentum probability, a numerical 3D Fourier
+# transform of the hydrogen ground state, and numerical derivatives of the boost phase.
+
+page: content/year-2/8.04/8-04-problem-set-4.mdx
+calcs:
+  # ---- Introduction
+
+  - id: constants
+    kind: fact
+    where: 'Introduction: CODATA 2018 values of ħ and the proton mass'
+    shown: ['$\hbar = 1.054572\times 10^{-34}$ J s', '$m_p = 1.67262\times 10^{-27}$ kg']
+    source: {ref: 'CODATA 2018 recommended values (NIST): ħ = 1.054571817e-34 J s, m_p = 1.67262192369e-27 kg'}
+    origin: later-data
+
+  # ---- Problem 1: packets changing shape
+
+  - id: p1-atom
+    answer: p1-atom
+    where: 'Problem 1(a), answer box: m (Δx)²/ħ for a proton with Δx = 1e-10 m'
+    inputs: {mp: 1.67262e-27 kg, dx: 1e-10 m, hb: 1.054572e-34 J*s}
+    formula: mp * dx**2 / hb
+    expected: 1.59e-13 s
+    shown: ['id="p1-atom"', '= 1.59\times 10^{-13}\ \text{s}"']
+    source: {cite: reading2, at: 'notes p. 5, eq. (2.25)'}
+    origin: page-own
+
+  - id: p1-cm
+    answer: p1-cm
+    where: 'Problem 1(a), answer box: the same for Δx = 1 cm'
+    inputs: {mp: 1.67262e-27 kg, dx: 1e-2 m, hb: 1.054572e-34 J*s}
+    formula: mp * dx**2 / hb
+    expected: 1590 s
+    tolerance: 5 s
+    shown: ['id="p1-cm"', '= 1.59\times 10^{3}\ \text{s}"']
+    source: {cite: reading2, at: 'notes p. 5, eq. (2.25)'}
+    origin: page-own
+
+  - id: p1-factor
+    where: 'Problem 1(a): the width grows by 1e8, the time by its square'
+    formula: (1e-2 / 1e-10)**2
+    expected: '1e16'
+    shown: ['a factor $10^{16}$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-minutes
+    where: 'Problem 1(a): 1590 s in minutes'
+    formula: 1590 / 60
+    expected: '26'
+    tolerance: 0.6
+    shown: ['That is about 26 minutes.']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-mass-ratio
+    where: 'Problem 1(a), check: proton mass over electron mass (CODATA 2018 m_e = 9.10938e-31 kg)'
+    formula: 1.67262e-27 / 9.10938e-31
+    expected: '1836'
+    shown: ['The proton is 1836 times heavier']
+    source: {ref: 'CODATA 2018 recommended values (NIST): m_p/m_e = 1836.15267343'}
+    origin: later-data
+
+  - id: p1-electron
+    where: 'Problem 1(a), check: the electron time m_e (Δx)²/ħ of the notes for Δx = 1e-10 m'
+    formula: 9.10938e-31 * 1e-20 / 1.054572e-34
+    expected: '8.6e-17'
+    shown: ['$8.6\times 10^{-17}\ \text{s} \times 1836']
+    source: {cite: reading2, at: 'notes p. 6, eq. (2.28)'}
+    origin: page-own
+
+  # Independent route to the first box: the electron's time scaled by the mass ratio.
+  - id: p1-electron-scaled
+    where: 'Problem 1(a), check: the electron time times the mass ratio gives the proton time again'
+    formula: 8.6e-17 * 1836
+    expected: '1.6e-13'
+    shown: ['\times 1836 = 1.6\times 10^{-13}$ s']
+    source: {cite: reading2, at: 'notes p. 6, eq. (2.28) (our own check)'}
+    origin: page-own
+
+  # The ratio of the two times, built from the times themselves with ħ = Δx Δp.
+  - id: p1-ratio
+    kind: identity
+    answer: p1-ratio
+    where: 'Problem 1(b), answer box: (m Δx / p) over (m Δx² / ħ) with ħ = Δx Δp'
+    formula: dp/p
+    equals: (mm * dx / p) / (mm * dx**2 / (dx * dp))
+    samples:
+      dp: [0.1, 0.3, 0.5, 0.8, 1.0]
+      p: [2, 4, 5, 7, 9]
+      mm: [1, 2, 0.5, 3, 1.5]
+      dx: [0.2, 1, 2, 0.7, 3]
+    tolerance: 1e-12
+    shown: ['id="p1-ratio"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: probability current of e^{ikz} + f e^{ikr}/r
+
+  # Im(psi* d psi/dz) for psi = cos(kz) + i sin(kz), by numerical derivatives: u v' - v u'.
+  - id: p2-j1
+    kind: identity
+    answer: p2-j1
+    where: 'Problem 2(a), answer box: (ħ/m) Im(ψ₁* ∂ψ₁/∂z) with numerical derivatives of cos kz and sin kz'
+    formula: hbar*k/m
+    equals: (hbar/m) * (cos(k*z0) * deriv('sin(k*z)', 'z', z0) - sin(k*z0) * deriv('cos(k*z)', 'z', z0))
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.5, 2, 2.5, 3]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      z0: [0.3, -1.2, 2.0, 0.9, -0.4]
+    tolerance: 1e-7
+    shown: ['id="p2-j1"', '<Formula label="Current of the plane wave"']
+    source: {cite: reading1, at: 'notes p. 7, eq. (4.1)'}
+    origin: page-own
+
+  - id: p2-flux1
+    where: 'Problem 2(a): the angular integral of cos θ sin θ over the sphere vanishes (1 is added so that the check has a scale)'
+    formula: 1 + integrate('cos(s)*sin(s)', 's', 0, pi)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['<Formula label="Flux of the plane-wave current through the sphere"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Radial current of the spherical wave alone, f = fr + i fi: u = (fr cos kr - fi sin kr)/r, v = (fr sin kr + fi cos kr)/r.
+  - id: p2-j2
+    kind: identity
+    answer: p2-j2
+    where: 'Problem 2(b), answer box: (ħ/m) Im(ψ₂* ∂ψ₂/∂r) by numerical derivatives, with F = fr² + fi² (here fr = sqrt(F) cos 0.7, fi = sqrt(F) sin 0.7)'
+    formula: hbar*k*F/(m*r**2)
+    equals: (hbar/m) * (((sqrt(F)*cos(0.7)*cos(k*r) - sqrt(F)*sin(0.7)*sin(k*r))/r) * deriv('(sqrt(F)*cos(0.7)*sin(k*s) + sqrt(F)*sin(0.7)*cos(k*s))/s', 's', r) - ((sqrt(F)*cos(0.7)*sin(k*r) + sqrt(F)*sin(0.7)*cos(k*r))/r) * deriv('(sqrt(F)*cos(0.7)*cos(k*s) - sqrt(F)*sin(0.7)*sin(k*s))/s', 's', r))
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.5, 2, 2.5, 3]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      F: [0.5, 1, 1.5, 2, 0.9]
+      r: [2, 3, 4, 5, 2.5]
+    tolerance: 1e-7
+    shown: ['id="p2-j2"', '<Formula label="Radial current of the scattered wave"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The flux for constant |f|: integrate the radial current over the sphere of radius R.
+  - id: p2-flux2
+    kind: identity
+    answer: p2-flux2
+    where: 'Problem 2(b), second answer box: the radial current integrated over a sphere of radius R, for constant |f| = f0'
+    formula: 4*pi*hbar*k*f0**2/m
+    equals: 2*pi*R**2 * integrate('(hbar*k*f0**2/(m*R**2))*sin(s)', 's', 0, pi)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.5, 2, 2.5, 3]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      f0: [0.5, 1, 1.5, 2, 0.9]
+      R: [2, 3, 4, 5, 2.5]
+    tolerance: 1e-9
+    shown: ['id="p2-flux2"', 'the flux is $4\pi\hbar k f_0^2/m$']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The whole radial current of psi = e^{ikr cos th} + f e^{ikr}/r by numerical derivatives (real f = f0), minus the
+  # plane-wave part k cos th, the spherical part k f0²/r² and the dropped 1/r² interference term, leaves the box.
+  - id: p2-j12
+    kind: identity
+    answer: p2-j12
+    where: 'Problem 2(c), answer box (real f = f0): the full radial current by numerical derivatives, minus J1, J2 and the dropped 1/r² term'
+    formula: hbar*k*f0*(1 + cos(th))*cos(k*r*(1 - cos(th)))/(m*r)
+    equals: (hbar/m) * ((cos(k*r*cos(th)) + f0*cos(k*r)/r) * deriv('sin(k*s*cos(th)) + f0*sin(k*s)/s', 's', r) - (sin(k*r*cos(th)) + f0*sin(k*r)/r) * deriv('cos(k*s*cos(th)) + f0*cos(k*s)/s', 's', r) - k*cos(th) - k*f0**2/r**2 + f0*sin(k*r*(1 - cos(th)))/r**2)
+    samples:
+      hbar: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.2, 1.5, 1.8, 2]
+      m: [0.5, 1, 1.5, 2, 0.7]
+      f0: [0.5, 1, 1.5, 2, 0.9]
+      r: [3, 4, 5, 6, 3.5]
+      th: [0.4, 1.0, 1.6, 2.2, 2.7]
+    tolerance: 1e-6
+    shown: ['id="p2-j12"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The same with a complex f = fr + i fi, against the simplified general form (ħ = m = 1):
+  # k cos th + k |f|²/r² + (k/r)(1 + cos th) Re(f e^{i al}) - Im(f e^{i al})/r², al = k r (1 - cos th).
+  - id: p2-j12-complex
+    kind: identity
+    where: 'Problem 2(c), general formula with complex f: the full radial current by numerical derivatives against J1 + J2 + the simplified J12 + the dropped 1/r² term'
+    formula: (cos(kw*r0*ct) + (fr*cos(kw*r0) - fi*sin(kw*r0))/r0) * deriv('sin(kw*s*ct) + (fr*sin(kw*s) + fi*cos(kw*s))/s', 's', r0) - (sin(kw*r0*ct) + (fr*sin(kw*r0) + fi*cos(kw*r0))/r0) * deriv('cos(kw*s*ct) + (fr*cos(kw*s) - fi*sin(kw*s))/s', 's', r0)
+    equals: kw*ct + kw*(fr**2 + fi**2)/r0**2 + (kw/r0)*(1 + ct)*(fr*cos(kw*r0*(1 - ct)) - fi*sin(kw*r0*(1 - ct))) - (fr*sin(kw*r0*(1 - ct)) + fi*cos(kw*r0*(1 - ct)))/r0**2
+    samples:
+      kw: [1, 1.2, 1.5, 1.8, 2]
+      r0: [3, 4, 5, 6, 3.5]
+      ct: [0.9, 0.5, 0.0, -0.6, -0.9]
+      fr: [0.5, -1, 1.5, 0.3, 0.9]
+      fi: [0.8, 0.4, -1.1, 1.7, 0.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="Radial interference current, simplified"', 'The dropped term is']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution; ħ = m = 1 in this check)'}
+    origin: page-own
+
+  # ---- Problem 3: the Gaussian packet
+
+  - id: p3-norm
+    where: 'Problem 3(a): the norm of the packet at time zero (a = 0.7)'
+    inputs: {aw: 0.7}
+    formula: (1/(sqrt(2*pi)*aw)) * integrate('exp(-x**2/(2*aw**2))', 'x', -20, 20)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['<Formula label="Normalization of the Gaussian packet"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The Fourier transform by a numerical integral (the packet is even, so only the cosine part survives).
+  - id: p3-phi
+    kind: identity
+    answer: p3-phi
+    where: 'Problem 3(b), answer box: against the numerical Fourier integral of the packet'
+    formula: (2*a**2/pi)**(1/4)*exp(-a**2*k**2)
+    equals: (1/sqrt(2*pi)) * (1/((2*pi)**0.25*sqrt(a))) * integrate('exp(-x**2/(4*a**2))*cos(k*x)', 'x', -40, 40)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.2, 1.5]
+      k: [0.2, 0.5, 0.9, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p3-phi"', '<Formula label="The packet in k space"']
+    source: {cite: reading2, at: 'notes p. 1, eq. (1.2)'}
+    origin: page-own
+
+  - id: p3-phi-norm
+    where: 'Problem 3(b), check: Parseval, the norm of Φ_a in k space (a = 0.7)'
+    inputs: {aw: 0.7}
+    formula: sqrt(2*aw**2/pi) * integrate('exp(-2*aw**2*k**2)', 'k', -30, 30)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['whose integral is $\sqrt{2a^2/\pi}\times\sqrt{\pi/(2a^2)} = 1$']
+    source: {cite: reading3, at: 'notes p. 2, eq. (1.9)'}
+    origin: page-own
+
+  - id: p3-delta-k
+    where: 'Problem 3(b), check: the standard deviation of |Φ_a|² in k, times 2a, is 1 (a = 0.7)'
+    inputs: {aw: 0.7}
+    formula: sqrt(sqrt(2*aw**2/pi) * integrate('k**2*exp(-2*aw**2*k**2)', 'k', -30, 30)) * 2 * aw
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['standard deviation $\Delta k = 1/(2a)$']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The real part of the evolved packet at x = a, t = tau (a = 1): the k integral done numerically.
+  - id: p3-re-numeric
+    where: 'Problem 3(c), check: Re Ψ_a(a, τ) from the numerical k integral, a = 1 (ħt/2m = a² t/τ = 1)'
+    formula: (1/sqrt(2*pi)) * (2/pi)**0.25 * integrate('exp(-k**2)*cos(k)*cos(k**2)', 'k', -8, 8)
+    expected: '0.4520'
+    shown: ['this gives $0.4520$, and so does the $k$ integral done numerically']
+    source: {cite: reading2, at: 'notes p. 6, eq. (3.3)'}
+    origin: page-own
+
+  - id: p3-re-closed
+    where: 'Problem 3(c), check: the closed form of the real part at the same point'
+    formula: 2**(-0.25) / (2*pi)**0.25 * exp(-1/8) * cos(1/8 - atan(1)/2)
+    expected: '0.4520'
+    shown: ['<Formula label="Real part of the evolved packet"']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The closed form of the real part against the numerical k integral at several points (units with a = 1, T = t/tau).
+  - id: p3-re-identity
+    kind: identity
+    where: 'Problem 3(c): the closed form of Re Ψ_a(x, t) against the numerical k integral, a = 1, T = t/τ'
+    formula: (1 + T**2)**(-0.25) / (2*pi)**0.25 * exp(-xx**2/(4*(1 + T**2))) * cos(xx**2*T/(4*(1 + T**2)) - atan(T)/2)
+    equals: (1/sqrt(2*pi)) * (2/pi)**0.25 * integrate('exp(-k**2)*cos(k*xx)*cos(T*k**2)', 'k', -8, 8)
+    samples:
+      xx: [0.0, 0.5, 1.0, 2.0, 3.0]
+      T: [0.3, 2.0, 1.0, 0.7, 1.5]
+    tolerance: 1e-8
+    shown: ['<Formula label="The Gaussian packet at time t"']
+    source: {cite: reading2, at: 'notes p. 6, eq. (3.3)'}
+    origin: page-own
+
+  # The width from a route that does not use the wavefunction: for a free particle <x²>(t) = <x²>(0) + <p²> t²/m²
+  # when the cross term vanishes (real packet), with <x²>(0) = a², <p²> = ħ²/(4a²), and ħ/m = 2a²/τ.
+  - id: p3-width
+    kind: identity
+    answer: p3-width
+    where: 'Problem 3(d), answer box: against sqrt(<x²>(0) + <p²> t²/m²) with <p²> = ħ²/(4a²) and ħ/m = 2a²/τ'
+    formula: a*sqrt(1 + t**2/tau**2)
+    equals: sqrt(a**2 + ((2*a**2/tau)/(2*a))**2 * t**2)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+      t: [0.5, 1.0, 2.0, 3.0, 1.5]
+      tau: [0.5, 2.0, 1.0, 1.5, 0.8]
+    tolerance: 1e-12
+    shown: ['id="p3-width"']
+    source: {cite: reading2, at: 'notes p. 7, eq. (3.8)'}
+    origin: page-own
+
+  # The density G(x; a(t)) against the squared modulus of the numerical k integral (a = 1, T = t/tau).
+  - id: p3-density-identity
+    kind: identity
+    where: 'Problem 3(d): G(x; a sqrt(1 + T²)) against |numerical k integral|², a = 1'
+    formula: exp(-xx**2/(2*(1 + T**2))) / (sqrt(2*pi)*sqrt(1 + T**2))
+    equals: (1/(2*pi)) * sqrt(2/pi) * (integrate('exp(-k**2)*cos(k*xx)*cos(T*k**2)', 'k', -8, 8)**2 + integrate('exp(-k**2)*cos(k*xx)*sin(T*k**2)', 'k', -8, 8)**2)
+    samples:
+      xx: [0.0, 0.5, 1.0, 2.0, 3.0]
+      T: [0.3, 2.0, 1.0, 0.7, 1.5]
+    tolerance: 1e-8
+    shown: ['<Formula label="Probability density at time t"']
+    source: {cite: reading2, at: 'notes p. 7, eq. (3.8)'}
+    origin: page-own
+
+  - id: p3-density-number
+    where: 'Problem 3(d), check: the density at x = a, t = τ, a = 1'
+    formula: exp(-1/4) / (sqrt(2*pi)*sqrt(2))
+    expected: '0.2197'
+    shown: ['the formula gives $0.2197$']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: hydrogen ground state in momentum space
+
+  - id: p4-n
+    kind: identity
+    answer: p4-n
+    where: 'Problem 4(b), answer box N: against the numerical radial integral of e^(-2r/a0)'
+    formula: 1/sqrt(pi*a0**3)
+    equals: 1/sqrt(4*pi*integrate('s**2*exp(-2*s/a0)', 's', 0, 40*a0))
+    samples:
+      a0: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-9
+    shown: ['id="p4-n"', '<Formula label="Normalization in position space"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-np
+    kind: identity
+    answer: p4-np
+    where: 'Problem 4(b), answer box N′: against the numerical radial integral in momentum space (Parseval)'
+    formula: 2*sqrt(2)*(a0/hbar)**(3/2)/pi
+    equals: 1/sqrt(4*pi*integrate('s**2/(1 + a0**2*s**2/hbar**2)**4', 's', 0, 2000*hbar/a0))
+    samples:
+      a0: [0.5, 0.8, 1.0, 1.5, 2.0]
+      hbar: [0.5, 2.0, 1.0, 0.7, 1.3]
+    tolerance: 1e-8
+    shown: ['id="p4-np"', '<Formula label="The constant of the momentum wavefunction"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-pi32
+    where: 'Problem 4(b): the pure number ∫ u² du/(1 + u²)⁴ from 0 to ∞, divided by π/32'
+    formula: integrate('u**2/(1 + u**2)**4', 'u', 0, 2000) * 32 / pi
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['<Formula label="Normalization in momentum space"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent test of the given form of the transform and of N′ together: the 3D Fourier integral of N e^(-r/a0)
+  # at p = ħ/a0 (a0 = ħ = 1), reduced to a radial integral with sin(pr)/(pr).
+  - id: p4-transform
+    where: 'Problem 4(b), check: the numerical Fourier transform of the ground state at p = ħ/a0, a0 = ħ = 1'
+    formula: (2*pi)**(-1.5) * 4*pi * integrate('s*exp(-s)*sin(s)', 's', 0, 60) / sqrt(pi)
+    expected: '0.2251'
+    shown: ['both the integral and the formula give $0.2251$']
+    source: {cite: mit, at: 'Problem 4(b), p. 3'}
+    origin: page-own
+
+  - id: p4-transform-formula
+    where: 'Problem 4(b), check: N′/(1 + 1)² at the same point'
+    formula: 2*sqrt(2)/pi / 4
+    expected: '0.2251'
+    shown: ['<Formula label="Hydrogen ground state in momentum space"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3'}
+    origin: page-own
+
+  - id: p4-prob
+    answer: p4-prob
+    where: 'Problem 4(b), answer box: the probability of p > ħ/a0 by numerical integration'
+    formula: (32/pi) * integrate('u**2/(1 + u**2)**4', 'u', 1, 2000)
+    expected: '0.288'
+    shown: ['id="p4-prob"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-prob-closed
+    where: 'Problem 4(b): the closed form 1/2 - 2/(3π), written as (32/π)(π/64 - 1/48)'
+    formula: (32/pi) * (pi/64 - 1/48)
+    expected: '0.288'
+    shown: ['= \frac12 - \frac{2}{3\pi} = 0.288"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6: the product of the uncertainties of the Gaussian
+
+  - id: p6-product
+    kind: identity
+    where: 'Problem 6, check: Δx Δp of the Gaussian, a(t) times ħ/(2a), in units of ħ/2'
+    formula: (aw*sqrt(1 + T**2)) * (1/(2*aw)) * 2
+    equals: sqrt(1 + T**2)
+    samples:
+      aw: [0.5, 1.0, 2.0]
+      T: [0.0, 1.0, 3.0]
+    tolerance: 1e-12
+    shown: ['\frac{\hbar}{2}\sqrt{1 + t^2/\tau^2}$']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 7: the boost
+
+  # A Gaussian test state centred on x0 with phase e^{i p0 x/ħ}: its position average after the boost.
+  - id: p7-x
+    kind: identity
+    answer: p7-x
+    where: 'Problem 7(a), answer box: the position average of a boosted Gaussian test state, by numerical integration of x |ψ|²'
+    formula: x0
+    equals: integrate('s*((exp(-(s - x0)**2/4)*cos((p0 + q)*s/hbar))**2 + (exp(-(s - x0)**2/4)*sin((p0 + q)*s/hbar))**2)', 's', x0 - 30, x0 + 30) / sqrt(2*pi)
+    samples:
+      x0: [1, 1.5, 2, 2.5, 3]
+      p0: [1, 3, 2, 1.5, 2.5]
+      q: [0.5, 1, 2, 1.5, 0.8]
+      hbar: [0.5, 1, 2, 1.5, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p7-x"']
+    source: {cite: reading3, at: 'notes p. 4, eq. (2.20)'}
+    origin: page-own
+
+  # The same test state: <p> = ħ ∫ (u v' - v u') dx with u, v the real and imaginary parts of the boosted state,
+  # u = g cos(Kx), v = g sin(Kx), g' = -(x - x0) g/2, K = (p0 + q)/ħ, derivatives written out term by term.
+  - id: p7-p
+    kind: identity
+    answer: p7-p
+    where: 'Problem 7(b), answer box: the momentum average of the boosted Gaussian test state, ħ ∫ Im(ψ* ψ′) dx'
+    formula: p0 + q
+    equals: hbar * integrate('exp(-(s - x0)**2/2)*(cos((p0 + q)*s/hbar)*(-(s - x0)/2*sin((p0 + q)*s/hbar) + ((p0 + q)/hbar)*cos((p0 + q)*s/hbar)) - sin((p0 + q)*s/hbar)*(-(s - x0)/2*cos((p0 + q)*s/hbar) - ((p0 + q)/hbar)*sin((p0 + q)*s/hbar)))', 's', x0 - 30, x0 + 30) / sqrt(2*pi)
+    samples:
+      x0: [1, 1.5, 2, 2.5, 3]
+      p0: [1, 3, 2, 1.5, 2.5]
+      q: [0.5, 1, 2, 1.5, 0.8]
+      hbar: [0.5, 1, 2, 1.5, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p7-p"']
+    source: {cite: reading3, at: 'notes p. 5, eqs. (2.26)–(2.27)'}
+    origin: page-own
+
+  # [p, B] φ / (B φ) = (ħ/i) (e^{iqx/ħ})′ / e^{iqx/ħ} = ħ (c s′ - s c′), with c, s the cosine and sine of qx/ħ.
+  - id: p7-comm-p
+    kind: identity
+    answer: p7-comm-p
+    where: 'Problem 7(d), answer box: (ħ/i) times the logarithmic derivative of the boost phase, by numerical derivatives'
+    formula: q
+    equals: hbar * (cos(q*x1/hbar) * deriv('sin(q*s/hbar)', 's', x1) - sin(q*x1/hbar) * deriv('cos(q*s/hbar)', 's', x1))
+    samples:
+      q: [0.5, 1, 2, 1.5, 0.8]
+      hbar: [0.5, 1, 2, 1.5, 0.8]
+      x1: [0.3, -1.2, 2.0, 0.9, -0.4]
+    tolerance: 1e-7
+    shown: ['id="p7-comm-p"', '<Formula label="Commutator of the momentum with the boost"']
+    source: {cite: mit, at: 'Problem 7(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p7-comm-x
+    kind: identity
+    answer: p7-comm-x
+    where: 'Problem 7(d), answer box: x times the phase minus the phase times x (real part), at sample points'
+    formula: '0'
+    equals: x1*cos(q*x1/hbar) - cos(q*x1/hbar)*x1
+    samples:
+      q: [0.5, 1, 2, 1.5, 0.8]
+      hbar: [0.5, 1, 2, 1.5, 0.8]
+      x1: [0.3, -1.2, 2.0, 0.9, -0.4]
+    tolerance: 1e-12
+    shown: ['id="p7-comm-x"', '<Formula label="Commutator of the position with the boost"']
+    source: {cite: mit, at: 'Problem 7(d), p. 4 (our own solution)'}
+    origin: page-own
