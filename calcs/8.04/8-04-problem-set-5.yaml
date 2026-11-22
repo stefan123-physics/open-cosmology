@@ -1,0 +1,707 @@
+# Calculations on content/year-2/8.04/8-04-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route that the page's own
+# solution does not take: numerical integrals of the densities for the Gaussian uncertainties, the unfolded form
+# -ħ² ψ* ψ'' of <p²> where the page folds one p onto ψ*, numerical Fourier integrals (real and imaginary parts apart)
+# for the transforms, the k-space density of the packet of Problem Set 4, numerical integrals over the box,
+# numerical derivatives for the Schrödinger equation and the matching conditions, and root finding for the wells.
+
+page: content/year-2/8.04/8-04-problem-set-5.mdx
+calcs:
+  # ---- Problem 1: the real Gaussian psi = N exp(-x²/(2a²))
+
+  - id: p1-dx
+    kind: identity
+    answer: p1-dx
+    where: 'Problem 1(a), answer box: Δx from numerical integrals of x²|ψ|² and |ψ|²'
+    formula: a/sqrt(2)
+    equals: sqrt(integrate('x**2*exp(-x**2/a**2)', 'x', -30, 30) / integrate('exp(-x**2/a**2)', 'x', -30, 30))
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p1-dx"', '<Formula label="Mean square position of the Gaussian"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The page folds one p onto psi* (integral of |psi'|²). Here the unfolded form: -psi'' = (1/a² - x²/a⁴) psi.
+  - id: p1-dp
+    kind: identity
+    answer: p1-dp
+    where: 'Problem 1(a), answer box: Δp from <p²> = -ħ² ∫ψ ψ″ dx / ∫ψ² dx, done numerically'
+    formula: hbar/(a*sqrt(2))
+    equals: hbar*sqrt(integrate('(1/a**2 - x**2/a**4)*exp(-x**2/a**2)', 'x', -30, 30) / integrate('exp(-x**2/a**2)', 'x', -30, 30))
+    samples:
+      hbar: [0.5, 1.0, 1.5, 2.0, 0.8]
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p1-dp"', '<Formula label="Mean square momentum of the Gaussian"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-product
+    where: 'Problem 1(a): Δx Δp in units of ħ for a = 0.7, both factors from numerical integrals (position space, folded form)'
+    inputs: {aw: 0.7}
+    formula: sqrt(integrate('x**2*exp(-x**2/aw**2)', 'x', -20, 20) * integrate('(x/aw**2)**2*exp(-x**2/aw**2)', 'x', -20, 20)) / integrate('exp(-x**2/aw**2)', 'x', -20, 20)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['<Formula label="Uncertainty product of the real Gaussian"']
+    source: {cite: reading1, at: 'notes p. 3, eq. (1.15)'}
+    origin: page-own
+
+  # The Fourier transform by a numerical integral (psi is even, so only the cosine part survives).
+  - id: p1-phi
+    kind: identity
+    answer: p1-phi
+    where: 'Problem 1(b), answer box: Φ̃(p)/N against the numerical Fourier integral'
+    formula: a/sqrt(hbar)*exp(-a**2*p**2/(2*hbar**2))
+    equals: (1/sqrt(2*pi*hbar)) * integrate('exp(-x**2/(2*a**2))*cos(p*x/hbar)', 'x', -40, 40)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.2, 1.5]
+      p: [0.2, 0.5, 0.9, 1.2, 1.5]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p1-phi"', '<Formula label="The real Gaussian in momentum space"']
+    source: {cite: reading2, at: 'notes p. 2, eq. (1.11)'}
+    origin: page-own
+
+  - id: p1-parseval
+    kind: identity
+    where: 'Problem 1(b): Parseval, ∫|Φ̃|²dp against ∫|ψ|²dx (both divided by N²), numerically'
+    formula: (a**2/hbar) * integrate('exp(-a**2*q**2/hbar**2)', 'q', -60, 60)
+    equals: integrate('exp(-x**2/a**2)', 'x', -30, 30)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.2, 1.5]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['<Formula label="Parseval''s theorem for the Gaussian"']
+    source: {cite: reading2, at: 'notes p. 3, eq. (1.12)'}
+    origin: page-own
+
+  - id: p1-dp-momentum
+    kind: identity
+    where: 'Problem 1(b): Δp from the momentum-space density, numerically'
+    formula: hbar/(a*sqrt(2))
+    equals: sqrt(integrate('q**2*exp(-a**2*q**2/hbar**2)', 'q', -60, 60) / integrate('exp(-a**2*q**2/hbar**2)', 'q', -60, 60))
+    samples:
+      a: [0.5, 0.8, 1.0, 1.2, 1.5]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['<Formula label="Momentum uncertainty from momentum space"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the complex Gaussian. D = |Δ|, R = Re(Δ²), S = Im(Δ²) = sqrt(D⁴ - R²).
+  # 1/Δ² = (R - iS)/D⁴ by complex division, so psi/N = exp(-x² R/(2D⁴)) [cos(x² S/(2D⁴)) + i sin(x² S/(2D⁴))].
+
+  # |psi|² built from the real and imaginary parts of psi.
+  - id: p2-dx
+    kind: identity
+    answer: p2-dx
+    where: 'Problem 2(a), answer box: Δx from numerical integrals of (Re ψ)² + (Im ψ)²'
+    formula: D**2/sqrt(2*R)
+    equals: sqrt(integrate('x**2*((exp(-x**2*R/(2*D**4))*cos(x**2*sqrt(D**4 - R**2)/(2*D**4)))**2 + (exp(-x**2*R/(2*D**4))*sin(x**2*sqrt(D**4 - R**2)/(2*D**4)))**2)', 'x', -25, 25) / integrate('(exp(-x**2*R/(2*D**4))*cos(x**2*sqrt(D**4 - R**2)/(2*D**4)))**2 + (exp(-x**2*R/(2*D**4))*sin(x**2*sqrt(D**4 - R**2)/(2*D**4)))**2', 'x', -25, 25))
+    samples:
+      D: [1.0, 1.1, 1.2, 1.3, 1.4]
+      R: [0.5, 0.6, 0.9, 0.8, 0.7]
+    tolerance: 1e-7
+    shown: ['id="p2-dx"', '<Formula label="Position uncertainty of the complex Gaussian"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The page folds p onto psi*. Here the unfolded form: <p²> = ħ² ∫ Re(1/Δ² - x²/Δ⁴) |psi|² dx / ∫|psi|² dx,
+  # with Re(1/Δ²) = R/D⁴ and Re(1/Δ⁴) = (R² - S²)/D⁸ = (2R² - D⁴)/D⁸.
+  - id: p2-dp
+    kind: identity
+    answer: p2-dp
+    where: 'Problem 2(a), answer box: Δp from the real part of -ħ² ∫ψ* ψ″ dx, done numerically'
+    formula: hbar/sqrt(2*R)
+    equals: hbar*sqrt(integrate('(R/D**4 - x**2*(2*R**2 - D**4)/D**8)*exp(-x**2*R/D**4)', 'x', -40, 40) / integrate('exp(-x**2*R/D**4)', 'x', -40, 40))
+    samples:
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      D: [1.0, 1.1, 1.2, 1.3, 1.4]
+      R: [0.5, 0.6, 0.9, 0.8, 0.7]
+    tolerance: 1e-8
+    shown: ['id="p2-dp"', '<Formula label="Momentum uncertainty of the complex Gaussian"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # |Φ̃|²/N² from the numerical Fourier integral: the real and the imaginary part of psi are both even in x,
+  # so each needs only its cosine transform.
+  - id: p2-phi2
+    kind: identity
+    answer: p2-phi2
+    where: 'Problem 2(b), answer box: |Φ̃(p)|²/N² against the squared modulus of the numerical Fourier integral'
+    formula: D**2/hbar*exp(-R*p**2/hbar**2)
+    equals: (1/(2*pi*hbar)) * (integrate('exp(-x**2*R/(2*D**4))*cos(x**2*sqrt(D**4 - R**2)/(2*D**4))*cos(p*x/hbar)', 'x', -25, 25)**2 + integrate('exp(-x**2*R/(2*D**4))*sin(x**2*sqrt(D**4 - R**2)/(2*D**4))*cos(p*x/hbar)', 'x', -25, 25)**2)
+    samples:
+      D: [1.0, 1.1, 1.2, 1.3, 1.4]
+      R: [0.5, 0.6, 0.9, 0.8, 0.7]
+      p: [0.2, 0.5, 0.9, 1.2, 1.5]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p2-phi2"', '<Formula label="Momentum density of the complex Gaussian"']
+    source: {cite: reading2, at: 'notes p. 2, eq. (1.11)'}
+    origin: page-own
+
+  - id: p2-dp-momentum
+    kind: identity
+    where: 'Problem 2(b): Δp from the momentum-space density exp(-R p²/ħ²), numerically'
+    formula: hbar/sqrt(2*R)
+    equals: sqrt(integrate('q**2*exp(-R*q**2/hbar**2)', 'q', -80, 80) / integrate('exp(-R*q**2/hbar**2)', 'q', -80, 80))
+    samples:
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      R: [0.5, 0.6, 0.9, 0.8, 0.7]
+    tolerance: 1e-8
+    shown: ['<Formula label="Momentum uncertainty of the complex Gaussian from momentum space"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The product for |Δ| = 1, Δ² = cos 2φ + i sin 2φ: Δx from the density exp(-x² cos 2φ), Δp from the unfolded
+  # form with Re(1/Δ²) = cos 2φ and Re(1/Δ⁴) = cos 4φ.
+  - id: p2-prod
+    kind: identity
+    answer: p2-prod
+    where: 'Problem 2(c), answer box: Δx Δp from numerical integrals, with |Δ| = 1'
+    formula: hbar/(2*cos(2*phi))
+    equals: hbar*sqrt(integrate('x**2*exp(-x**2*cos(2*phi))', 'x', -40, 40) * integrate('(cos(2*phi) - x**2*cos(4*phi))*exp(-x**2*cos(2*phi))', 'x', -40, 40)) / integrate('exp(-x**2*cos(2*phi))', 'x', -40, 40)
+    samples:
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      phi: [0.05, 0.2, 0.35, 0.5, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p2-prod"', '<Formula label="Uncertainty product of the complex Gaussian"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Δp of the packet of Problem Set 4 from its k-space density |Φ_a(k)|² = sqrt(2a²/π) exp(-2a²k²), which a free
+  # evolution does not change.
+  - id: p2-dp0
+    kind: identity
+    answer: p2-dp0
+    where: 'Problem 2(d), answer box: Δp = ħ Δk from the k-space density of the packet, numerically'
+    formula: hbar/(2*a)
+    equals: hbar*sqrt(sqrt(2*a**2/pi) * integrate('q**2*exp(-2*a**2*q**2)', 'q', -40, 40))
+    samples:
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p2-dp0"', '<Formula label="Momentum uncertainty of the packet at time zero"']
+    source: {cite: reading1, at: 'notes p. 6, eq. (3.4)'}
+    origin: page-own
+
+  # Re(Δ²) = ħ²/(2 Δp²), with Δp from the k-space density (the same at every time).
+  - id: p2-re
+    kind: identity
+    answer: p2-re
+    where: 'Problem 2(d), answer box: Re(Δ²) = 1/(2 Δk²) with Δk from the k-space density of the packet'
+    formula: 2*a**2
+    equals: 1/(2*sqrt(2*a**2/pi) * integrate('q**2*exp(-2*a**2*q**2)', 'q', -40, 40))
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p2-re"', '<Formula label="Complex width of the evolved packet"']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The same from the position side: the density of the evolved packet is exp(-x²/(2a(t)²)), so
+  # Re(1/Δ²) = 1/(2a²(1 + t²/τ²)), and |Δ²|² = 4a⁴(1 + t²/τ²); Re(Δ²) = Re(1/Δ²) |Δ²|².
+  - id: p2-re-position
+    kind: identity
+    where: 'Problem 2(d): Re(Δ²) from the width a(t) of Problem Set 4 and the modulus of Δ²'
+    formula: 2*a**2
+    equals: (1/(2*a**2*(1 + (t/tau)**2))) * 4*a**4*(1 + (t/tau)**2)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+      t: [0.5, 1.0, 2.0, 3.0, 1.5]
+      tau: [0.5, 2.0, 1.0, 1.5, 0.8]
+    tolerance: 1e-12
+    shown: ['$\Delta x = a\sqrt{1 + t^2/\tau^2}$']
+    source: {cite: reading1, at: 'notes p. 7, eq. (3.8)'}
+    origin: page-own
+
+  # ---- Problem 3: the box
+
+  # The Schrödinger equation: ħ dφ/dt = -(ħ²/2m) ψ″/ψ, with ψ″ as a numerical derivative of ψ′.
+  - id: p3-phase
+    kind: identity
+    answer: p3-phase
+    where: 'Problem 3(a), answer box: the phase from -(ħ/2m) ψ″/ψ times t, with a numerical derivative'
+    formula: n**2*pi**2*hbar*t/(2*m*a**2)
+    equals: t*(-hbar/(2*m)) * deriv('(n*pi/a)*cos(n*pi*x/a)', 'x', x0) / sin(n*pi*x0/a)
+    samples:
+      n: [1, 2, 3, 4, 2]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      t: [0.5, 1.0, 2.0, 1.5, 0.7]
+      m: [0.5, 1.0, 1.5, 2.0, 0.7]
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+      x0: [0.2, 0.3, 0.45, 0.2, 0.6]
+    tolerance: 1e-6
+    shown: ['id="p3-phase"', '<Formula label="Phase of a state of the box"']
+    source: {cite: reading4, at: 'notes p. 3, eq. (1.11)'}
+    origin: page-own
+
+  - id: p3-norm
+    kind: identity
+    answer: p3-norm
+    where: 'Problem 3(a), answer box: N from the numerical integral of sin² over the box (n = 3)'
+    formula: sqrt(2/a)
+    equals: 1/sqrt(integrate('sin(3*pi*x/a)**2', 'x', 0, a))
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-9
+    shown: ['id="p3-norm"', '<Formula label="Normalizing a state of the box"']
+    source: {cite: reading4, at: 'notes p. 3, eq. (1.10)'}
+    origin: page-own
+
+  - id: p3-x
+    kind: identity
+    answer: p3-x
+    where: 'Problem 3(b), answer box: <x> by a numerical integral'
+    formula: a/2
+    equals: (2/a) * integrate('x*sin(n*pi*x/a)**2', 'x', 0, a)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+      n: [1, 2, 3, 4, 2]
+    tolerance: 1e-9
+    shown: ['id="p3-x"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-x2
+    kind: identity
+    answer: p3-x2
+    where: 'Problem 3(b), answer box: <x²> by a numerical integral'
+    formula: a**2*(1/3 - 1/(2*n**2*pi**2))
+    equals: (2/a) * integrate('x**2*sin(n*pi*x/a)**2', 'x', 0, a)
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+      n: [1, 2, 3, 4, 2]
+    tolerance: 1e-9
+    shown: ['id="p3-x2"', '<Formula label="Mean square position in the box"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dx
+    kind: identity
+    answer: p3-dx
+    where: 'Problem 3(b), answer box: Δx as the root of the numerical integral of (x - a/2)²|ψ|²'
+    formula: a*sqrt(1/12 - 1/(2*n**2*pi**2))
+    equals: sqrt((2/a) * integrate('(x - a/2)**2*sin(n*pi*x/a)**2', 'x', 0, a))
+    samples:
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+      n: [1, 2, 3, 4, 2]
+    tolerance: 1e-9
+    shown: ['id="p3-dx"', '<Formula label="Position uncertainty in the box"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dx-classical
+    where: 'Problem 3(b), check: 1/sqrt(12)'
+    formula: 1/sqrt(12)
+    expected: '0.289'
+    shown: ['$\Delta x \to a/\sqrt{12} = 0.289a$']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dx-ground
+    where: 'Problem 3(b), check: Δx/a for n = 1, from the numerical integral with a = 1'
+    formula: sqrt(2 * integrate('(x - 0.5)**2*sin(pi*x)**2', 'x', 0, 1))
+    expected: '0.181'
+    shown: ['$\Delta x = 0.181a$']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # <p> = (ħ/i) ∫ψ ψ′ dx: the integral itself must vanish.
+  - id: p3-p
+    kind: identity
+    answer: p3-p
+    where: 'Problem 3(c), answer box: ħ ∫ψ ψ′ dx over the box, numerically (it is zero)'
+    formula: '0'
+    equals: hbar*(2/a)*(n*pi/a) * integrate('sin(n*pi*x/a)*cos(n*pi*x/a)', 'x', 0, a)
+    samples:
+      n: [1, 2, 3, 4, 2]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-9
+    shown: ['id="p3-p"']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The page uses the eigenvalue of -ħ² d²/dx². Here the folded form ħ² ∫|ψ′|² dx.
+  - id: p3-p2
+    kind: identity
+    answer: p3-p2
+    where: 'Problem 3(c), answer box: <p²> = ħ² ∫|ψ′|² dx, numerically'
+    formula: (n*pi*hbar/a)**2
+    equals: hbar**2*(2/a) * integrate('((n*pi/a)*cos(n*pi*x/a))**2', 'x', 0, a)
+    samples:
+      n: [1, 2, 3, 4, 2]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-9
+    shown: ['id="p3-p2"', '<Formula label="Momentum uncertainty in the box"']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dp
+    kind: identity
+    answer: p3-dp
+    where: 'Problem 3(c), answer box: Δp as the root of ħ² ∫|ψ′|² dx, numerically'
+    formula: n*pi*hbar/a
+    equals: hbar*sqrt((2/a) * integrate('((n*pi/a)*cos(n*pi*x/a))**2', 'x', 0, a))
+    samples:
+      n: [1, 2, 3, 4, 2]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      a: [0.5, 0.8, 1.0, 1.5, 2.0]
+    tolerance: 1e-9
+    shown: ['id="p3-dp"']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The product for n = 1 in units of ħ, both factors from numerical integrals (a = 1).
+  - id: p3-prod
+    answer: p3-prod
+    where: 'Problem 3(d), answer box: Δx Δp/ħ for n = 1 from numerical integrals over the box'
+    formula: sqrt(2 * integrate('(x - 0.5)**2*sin(pi*x)**2', 'x', 0, 1)) * sqrt(2 * integrate('(pi*cos(pi*x))**2', 'x', 0, 1))
+    expected: '0.568'
+    shown: ['id="p3-prod"', '$\Delta x\,\Delta p = 0.568\,\hbar$']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-prod-closed
+    where: 'Problem 3(d): the closed form (1/2) sqrt(π²/3 - 2) for n = 1'
+    formula: 0.5*sqrt(pi**2/3 - 2)
+    expected: '0.568'
+    shown: ['<Formula label="Uncertainty product in the box"']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-root-arg
+    where: 'Problem 3(d): π²/3 - 2'
+    formula: pi**2/3 - 2
+    expected: '1.290'
+    shown: ['$\sqrt{1.290} = 1.136$']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-root
+    where: 'Problem 3(d): the square root for n = 1'
+    formula: sqrt(pi**2/3 - 2)
+    expected: '1.136'
+    shown: ['$\sqrt{1.290} = 1.136$']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-prod-n2
+    where: 'Problem 3(d): the product for n = 2 in units of ħ'
+    formula: 0.5*sqrt(4*pi**2/3 - 2)
+    expected: '1.67'
+    shown: ['already $1.67\,\hbar$']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-above-bound
+    where: 'Problem 3(d), check: how far the n = 1 product lies above ħ/2, in percent'
+    formula: (0.5*sqrt(pi**2/3 - 2)/0.5 - 1)*100
+    expected: '14'
+    tolerance: 0.5
+    shown: ['within 14% of the bound']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the hard wall
+
+  - id: p4-energy
+    kind: identity
+    answer: p4-energy
+    where: 'Problem 4, answer box: E = -(ħ²/2m) ψ″/ψ for ψ = sin kx, with a numerical derivative of ψ′'
+    formula: hbar**2*k**2/(2*m)
+    equals: -(hbar**2/(2*m)) * deriv('k*cos(k*x)', 'x', x0) / sin(k*x0)
+    samples:
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+      k: [0.5, 1.0, 1.5, 2.0, 0.8]
+      m: [0.5, 1.0, 1.5, 2.0, 0.7]
+      x0: [0.4, 0.9, 1.3, 0.5, 2.5]
+    tolerance: 1e-6
+    shown: ['id="p4-energy"', '<Formula label="Stationary states of the hard wall"']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the step
+
+  # κ as the root of the energy relation E = V0 - ħ²κ²/(2m) on the right of the step.
+  - id: p5-kappa
+    kind: identity
+    answer: p5-kappa
+    where: 'Problem 5(a), answer box: κ as the numerical root of V0 - ħ²q²/(2m) = E'
+    formula: sqrt(2*m*(V0 - E))/hbar
+    equals: solve('V0 - hbar**2*q**2/(2*m) - E', 'q', 0, 50)
+    samples:
+      m: [0.5, 1.0, 1.5, 2.0, 0.7]
+      V0: [3.0, 3.5, 4.0, 4.5, 5.0]
+      E: [0.5, 1.0, 2.5, 2.0, 1.5]
+      hbar: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p5-kappa"', '<Formula label="Wavenumber and decay constant at the step"']
+    source: {cite: reading3, at: 'notes p. 4, eq. (2.22)'}
+    origin: page-own
+
+  # B/A = ψ′(0)/(k ψ(0)), with the slope of the right-hand solution exp(-κx) taken numerically at x = 0.
+  - id: p5-ratio
+    kind: identity
+    answer: p5-ratio
+    where: 'Problem 5(b), answer box: B/A from the numerical slope of exp(-κx) at the step'
+    formula: -kappa/k
+    equals: deriv('exp(-kappa*x)', 'x', 0) / k
+    samples:
+      kappa: [0.5, 1.0, 1.5, 2.0, 0.8]
+      k: [0.5, 2.0, 1.0, 1.5, 1.2]
+    tolerance: 1e-7
+    shown: ['id="p5-ratio"', '<Formula label="Matching at the step"']
+    source: {cite: reading3, at: 'notes p. 5, eq. (2.23)'}
+    origin: page-own
+
+  # The shifted cosine against the sum of cosine and sine, at several points on the left of the step.
+  - id: p5-shifted
+    kind: identity
+    where: 'Problem 5(c): cos(kx + δ)/cos δ with tan δ = κ/k against cos kx - (κ/k) sin kx'
+    formula: cos(k*xx + atan(kappa/k)) / cos(atan(kappa/k))
+    equals: cos(k*xx) - (kappa/k)*sin(k*xx)
+    samples:
+      kappa: [0.5, 1.0, 1.5, 2.0, 0.8]
+      k: [0.5, 2.0, 1.0, 1.5, 1.2]
+      xx: [-0.3, -1.0, -2.2, -3.5, -5.0]
+    tolerance: 1e-10
+    shown: ['<Formula label="Phase of the standing wave at the step"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  # δ for E = V0/4 from cos δ = sqrt(E/V0).
+  - id: p5-delta
+    answer: p5-delta
+    where: 'Problem 5(c), answer box: δ in degrees for E/V0 = 1/4, from cos δ = sqrt(E/V0)'
+    formula: acos(sqrt(1/4)) * 180/pi
+    expected: '60'
+    tolerance: 1e-9
+    shown: ['id="p5-delta"', 'so $\delta = 60^\circ$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-delta-tan
+    where: 'Problem 5(c): the same from tan δ = sqrt((V0 - E)/E) = sqrt(3)'
+    formula: atan(sqrt((1 - 1/4)/(1/4))) * 180/pi
+    expected: '60'
+    tolerance: 1e-9
+    shown: ['$\tan\delta = \sqrt3$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6: the half well
+
+  # η = -a ψ′(a)/ψ(a) for ψ = sin kx inside (a = 1, ξ = k): the logarithmic derivative, taken numerically.
+  - id: p6-cond
+    kind: identity
+    answer: p6-cond
+    where: 'Problem 6(a), answer box: η from the numerical logarithmic derivative of sin(ξx) at x = 1'
+    formula: -xi/tan(xi)
+    equals: -deriv('sin(xi*x)', 'x', 1) / sin(xi)
+    samples:
+      xi: [1.7, 2.0, 2.4, 2.8, 3.0]
+    tolerance: 1e-6
+    shown: ['id="p6-cond"', '<Formula label="Bound-state condition of the half well"']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  - id: p6-z1
+    answer: p6-z1
+    where: 'Problem 6(b), answer box: the foot of the first branch, the root of -ξ cot ξ between 1 and 2'
+    formula: solve('-q/tan(q)', 'q', 1, 2)
+    expected: '1.571'
+    shown: ['id="p6-z1"', 'z_0 > \frac{\pi}{2} = 1.571']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  - id: p6-z3
+    answer: p6-z3
+    where: 'Problem 6(c), answer box: the foot of the third branch, the root of -ξ cot ξ between 7 and 8.5'
+    formula: solve('-q/tan(q)', 'q', 7, 8.5)
+    expected: '7.854'
+    shown: ['id="p6-z3"', 'z_0 > \frac{5\pi}{2} = 7.854']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  - id: p6-z2
+    where: 'Problem 6(c): 3π/2, the foot of the second branch'
+    formula: solve('-q/tan(q)', 'q', 4, 5.5)
+    expected: '4.712'
+    shown: ['$3\pi/2 = 4.712$']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  # |E|/V0 = 1 - ξ²/z0² with ξ from sin ξ = ξ/z0 (z0 = 3).
+  - id: p6-e3
+    answer: p6-e3
+    where: 'Problem 6(c), answer box: |E|/V0 for z0 = 3, with ξ the root of sin ξ = ξ/3 between π/2 and π'
+    formula: 1 - solve('sin(q) - q/3', 'q', 1.6, 3)**2/9
+    expected: '0.423'
+    shown: ['id="p6-e3"', '<Formula label="Binding energy of the half well with z₀ = 3"']
+    source: {cite: reading4, at: 'notes p. 7, eq. (2.29)'}
+    origin: page-own
+
+  # The same without the sin ξ = ξ/z0 shortcut: the circle and the cotangent curve solved together.
+  - id: p6-e3-direct
+    where: 'Problem 6(c): |E|/V0 = η²/z0² with ξ the root of -ξ cot ξ = sqrt(9 - ξ²)'
+    formula: (9 - solve('-q/tan(q) - sqrt(9 - q**2)', 'q', 1.6, 2.99)**2)/9
+    expected: '0.423'
+    shown: ['= 0.423"']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  - id: p6-xi3
+    where: 'Problem 6(c): ξ for z0 = 3'
+    formula: solve('-q/tan(q) - sqrt(9 - q**2)', 'q', 1.6, 2.99)
+    expected: '2.279'
+    shown: ['gives $\xi = 2.279$']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  - id: p6-eta3
+    where: 'Problem 6(c): η = sqrt(9 - ξ²) for z0 = 3'
+    formula: sqrt(9 - solve('sin(q) - q/3', 'q', 1.6, 3)**2)
+    expected: '1.951'
+    shown: ['$\eta = \sqrt{9 - \xi^2} = 1.951$']
+    source: {cite: reading4, at: 'notes p. 7, eq. (2.27)'}
+    origin: page-own
+
+  - id: p6-eta3-check
+    where: 'Problem 6(c), check: -ξ cot ξ at ξ = 2.279'
+    formula: -2.279/tan(2.279)
+    expected: '1.951'
+    tolerance: 0.002
+    shown: ['$-\xi\cot\xi = 1.951$']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.36)'}
+    origin: page-own
+
+  # ---- Problem 7: the well that imitates hydrogen
+
+  - id: p7-bohr
+    kind: fact
+    where: 'Problem 7: the Bohr radius and the ground-state energy of hydrogen as MIT''s sheet quotes them'
+    shown: ['a_0 = \frac{\hbar^2}{me^2} \simeq 0.529\times 10^{-10}\ \text{m}', 'E_0 = -\frac{e^2}{2a_0} = -13.6\ \text{eV}']
+    source: {cite: mit, at: 'Problem 7, p. 3'}
+    origin: mit
+
+  - id: p7-codata
+    kind: fact
+    where: 'Problem 7, check: CODATA 2018 values'
+    shown: ['$\hbar c = 197.327$ MeV fm', '$mc^2 = 0.510999$ MeV', '$a_0 = 0.529177$ Å']
+    source: {ref: 'CODATA 2018 recommended values (NIST): ħc = 197.3269804 MeV fm, m_e c² = 0.51099895 MeV, a₀ = 0.529177210903e-10 m'}
+    origin: later-data
+
+  - id: p7-unit-codata
+    where: 'Problem 7, check: ħ²/(2 m a0²) = (ħc)²/(2 mc² a0²) in eV, with ħc in eV Å'
+    formula: 1973.27**2 / (2 * 0.510999e6 * 0.529177**2)
+    expected: '13.606'
+    shown: ['is $13.606$ eV']
+    source: {ref: 'CODATA 2018 recommended values (NIST): ħc = 197.3269804 MeV fm, m_e c² = 0.51099895 MeV, a₀ = 0.529177210903e-10 m'}
+    origin: later-data
+
+  - id: p7-unit-shift
+    where: 'Problem 7, check: the change of the energy unit from 13.6 to 13.606 eV, in percent'
+    formula: (13.606/13.6 - 1)*100
+    expected: '0.04'
+    tolerance: 0.06
+    shown: ['by less than 0.1%']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-xi
+    answer: p7-xi
+    where: 'Problem 7, answer box: the root of ξ tan ξ = 1 between 0 and π/2'
+    formula: solve('q*tan(q) - 1', 'q', 0.1, 1.5)
+    expected: '0.860'
+    shown: ['id="p7-xi"', '\xi = 0.860']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.34)'}
+    origin: page-own
+
+  - id: p7-trial-low
+    where: 'Problem 7: ξ tan ξ at ξ = 0.8'
+    formula: 0.8*tan(0.8)
+    expected: '0.82'
+    shown: ['$\xi = 0.8$ gives $0.82$']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.34)'}
+    origin: page-own
+
+  - id: p7-trial-high
+    where: 'Problem 7: ξ tan ξ at ξ = 0.9'
+    formula: 0.9*tan(0.9)
+    expected: '1.13'
+    shown: ['$\xi = 0.9$ gives $1.13$']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.34)'}
+    origin: page-own
+
+  - id: p7-xi2
+    where: 'Problem 7: ξ²'
+    formula: solve('q*tan(q) - 1', 'q', 0.1, 1.5)**2
+    expected: '0.740'
+    shown: ['0.740 + 1 = 1.740']
+    source: {cite: reading4, at: 'notes p. 7, eq. (2.27)'}
+    origin: page-own
+
+  - id: p7-z02
+    where: 'Problem 7: z0² = ξ² + 1'
+    formula: solve('q*tan(q) - 1', 'q', 0.1, 1.5)**2 + 1
+    expected: '1.740'
+    shown: ['0.740 + 1 = 1.740']
+    source: {cite: reading4, at: 'notes p. 7, eq. (2.27)'}
+    origin: page-own
+
+  - id: p7-v0
+    answer: p7-v0
+    where: 'Problem 7, answer box: V0 = (ξ² + 1) × 13.6 eV'
+    inputs: {Ry: 13.6 eV}
+    formula: (solve('q*tan(q) - 1', 'q', 0.1, 1.5)**2 + 1) * Ry
+    expected: 23.7 eV
+    shown: ['id="p7-v0"', '1.740 \times 13.6\ \text{eV} = 23.7\ \text{eV}']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  # The same without ξ and z0: solve the matching condition for V0 itself, with k a0 = sqrt((V0 - 13.6)/13.6).
+  - id: p7-v0-direct
+    where: 'Problem 7, check: V0 in eV as the root of sqrt((V0-13.6)/13.6) tan(sqrt((V0-13.6)/13.6)) = 1'
+    formula: solve('sqrt((q - 13.6)/13.6)*tan(sqrt((q - 13.6)/13.6)) - 1', 'q', 14, 40)
+    expected: '23.7'
+    shown: ['<Formula label="Depth of the well that imitates hydrogen"']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.34)'}
+    origin: page-own
+
+  - id: p7-level
+    where: 'Problem 7, check: the level above the bottom of the well, ξ² × 13.6 eV'
+    formula: solve('q*tan(q) - 1', 'q', 0.1, 1.5)**2 * 13.6
+    expected: '10.1'
+    shown: ['$\xi^2 \times 13.6 = 10.1$ eV']
+    source: {cite: reading4, at: 'notes p. 8, eq. (2.31)'}
+    origin: page-own
+
+  - id: p7-level-below-top
+    where: 'Problem 7, check: 23.7 - 10.1'
+    formula: 23.7 - 10.1
+    expected: '13.6'
+    shown: ['$23.7 - 10.1 = 13.6$ eV']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-infinite
+    where: 'Problem 7, check: ground state of a box of width 2a0, (π²/4) × 13.6 eV'
+    formula: pi**2/4 * 13.6
+    expected: '33.6'
+    shown: ['$\frac{\pi^2}{4} \times 13.6 = 33.6$ eV']
+    source: {cite: reading4, at: 'notes p. 3, eq. (1.11)'}
+    origin: page-own
+
+  - id: p7-z0
+    where: 'Problem 7, check: z0 of the well'
+    formula: sqrt(solve('q*tan(q) - 1', 'q', 0.1, 1.5)**2 + 1)
+    expected: '1.32'
+    shown: ['with $z_0 = 1.32$']
+    source: {cite: reading4, at: 'notes p. 7, eq. (2.26)'}
+    origin: page-own
