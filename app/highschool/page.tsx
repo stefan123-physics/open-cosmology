@@ -4,7 +4,7 @@ import { getSite, HIGHSCHOOL_YEAR, isLesson, orderedPages, yearHref } from "@/li
 import { shareMetadata } from "@/lib/share";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { ProgressTick } from "@/components/progress/ProgressTick";
-import { NewtonHero } from "@/components/NewtonHero";
+import { HeroImage } from "@/components/HeroImage";
 
 const title = "High School Physics";
 const description =
@@ -52,7 +52,13 @@ export default function HighSchool() {
             </Link>
           </div>
         </div>
-        <NewtonHero />
+        <HeroImage
+          name="star-field"
+          alt="A dense field of stars on a black sky, white, blue and orange, the brightest with four-pointed spikes"
+          title="A slice of Sagittarius"
+          source="https://esahubble.org/images/potw1703a/"
+          credit="ESA/Hubble & NASA"
+        />
       </section>
 
       {ordered.length > 0 && (

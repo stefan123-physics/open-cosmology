@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getSite, HIGHSCHOOL_YEAR, isLesson, orderedPages, yearHref } from "@/lib/content";
 import { LinkBar } from "@/components/LinkBar";
-import { ExpansionHero } from "@/components/ExpansionHero";
+import { HeroImage } from "@/components/HeroImage";
 import { ContinueCard } from "@/components/progress/ContinueCard";
 import { yearName } from "@/lib/roman";
 
@@ -43,7 +43,13 @@ export default function Home() {
             )}
           </div>
         </div>
-        <ExpansionHero />
+        <HeroImage
+          name="deep-field"
+          alt="The Hubble eXtreme Deep Field: thousands of distant galaxies, spirals and faint red smudges, scattered across a black sky"
+          title="The Hubble eXtreme Deep Field"
+          source="https://esahubble.org/images/heic1214a/"
+          credit="NASA, ESA, G. Illingworth, D. Magee, and P. Oesch (University of California, Santa Cruz), R. Bouwens (Leiden University), and the HUDF09 Team"
+        />
       </section>
 
       {highSchool && (

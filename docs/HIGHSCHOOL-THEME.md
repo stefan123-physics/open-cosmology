@@ -17,7 +17,7 @@ Each selector in `theme-highschool.css` wraps the site attribute in `:where()`, 
 
 Components must use the variables (`var(--accent)` etc.), never a hex value, so they follow whichever palette is active. The only fixed colours are the "space" drawings in lessons (night-sky diagrams) and the yellow "highlight links" marker, which are the same on both sites.
 
-The homepage animation (Newton's cannon, `components/NewtonHero.tsx`) is a night sky on the university site. Here `theme-highschool.css` redraws it on a notebook page in light mode (white paper, light-blue ruling, a red margin line, a blue-ink Earth and a red-pen path) and on a plum notebook page in dark mode (faint lilac ruling, a rose margin line, lilac-white stars, a light-blue Earth and a mint path). The ruling lines have no stroke of their own, so without the high-school theme they are invisible and the night sky is unchanged. The path is at least 5.2:1 on its background (11.5:1 in dark mode), and the Earth's outline at least 6.9:1.
+The homepage shows a photograph (`components/HeroImage.tsx`, files in `public/images/hero/`, originals in `brand/photos/`): the Hubble eXtreme Deep Field on the university site, a Hubble star field on the High School page. Photographs keep their own colours in both themes.
 
 ## The palette
 
