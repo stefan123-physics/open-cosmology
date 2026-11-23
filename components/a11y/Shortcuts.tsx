@@ -95,6 +95,8 @@ export function Shortcuts() {
             Close
           </button>
         </div>
+        {/* Scrolls on its own when the list is taller than the window; focusable so arrow keys can scroll it. */}
+        <div className="shortcuts-body" tabIndex={0} role="region" aria-label="List of shortcuts">
         <table className="shortcuts-table">
           <tbody>
             {SHORTCUTS.map(([k, v]) => (
@@ -111,6 +113,7 @@ export function Shortcuts() {
           The one-key shortcuts (<kbd>?</kbd> <kbd>/</kbd> <kbd>n</kbd> <kbd>p</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>w</kbd>) can be switched off
           in Reading options (the &ldquo;Aa&rdquo; button), for example if they clash with a screen reader.
         </p>
+        </div>
       </div>
     </div>
   );
