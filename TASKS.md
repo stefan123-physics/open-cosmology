@@ -9,6 +9,7 @@
 5. **Stop at 85% of your 5-hour usage** (or of the weekly limit, whichever comes first). Before stopping, write a "Resume here" note at the end of your section (what is done, what is half done, branch and commit), commit and push.
 6. AGENTS.md and docs/PROBLEM-SETS-RUN.md still apply in full: blind review on a different model from the writer, `npx tsx scripts/check-content.ts`, `npm run test:answers` and `npm run calc:test` before every commit, never skip the commit checks, no em dashes, no OpenStax.
 7. Only Account A merges into `main`, at the end (see "Bringing the work together").
+8. **Run at most 3 agents (writers and reviewers together) at the same time.** Four writers at once used 37% of the 5-hour limit in 20 minutes; at that pace the 85% limit comes after about 1.5 hours.
 
 ## Files that both accounts touch, and how
 
