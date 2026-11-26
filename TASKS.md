@@ -50,7 +50,7 @@ Later windows:
 - [x] Trial merge after Account B's first one or two reviewed sets (done 2026-11-26 with B's 8.06 Sets 1–3: 0 errors after `merge-symbols.py` was taught to fold a new entry into an existing entry with the same form; both accounts had added `V_b`, `P_+`, `P_-` under different ids): in a scratch worktree, merge `main`, `run/a-8044-805` and `origin/run/b-806-8962`, run `merge-symbols.py` and `content:check`, then throw the worktree away (nothing is pushed). Write any problem found under "Change requests".
 - [ ] Merge both branches into `main` (see "Merging") and answer Account B's change requests.
 
-**Resume here (Account A, 2026-11-26, stopped at 78% of the 5-hour limit):** branch `run/a-8044-805`, last commit after `63c14cd`. Done this window, each blind-reviewed, fixed and pushed: 8.044 Sets 9, 10, 11 (8.044 complete) and 8.05 Sets 1–4. Next: 8.05 Sets 5–11 (sheets and course note in Account A's scratchpad `805/`; the note is reproduced in docs/PROBLEM-SETS-RUN.md's 8.05 row). No drafts are open. Account B had pushed only its setup (no reviewed set) when A stopped, so the trial merge is still to do.
+**Resume here (Account A, 2026-11-26, stopped at 79% of the 5-hour limit):** branch `run/a-8044-805`, last commit after `63c14cd`. Done this window, each blind-reviewed, fixed and pushed: 8.044 Sets 9, 10, 11 (8.044 complete) and 8.05 Sets 1–4. Next: 8.05 Sets 5–11 (sheets and course note in Account A's scratchpad `805/`; the note is reproduced in docs/PROBLEM-SETS-RUN.md's 8.05 row). No drafts are open. Trial merge with B's 8.06 Sets 1–3 done: clean after the `merge-symbols.py` fix; hook made executable (B's request). Nothing merged into `main` yet.
 
 ---
 
