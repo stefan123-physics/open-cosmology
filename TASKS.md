@@ -112,6 +112,8 @@ Add a line, never edit or delete someone else's. The owner marks it `[x]` when d
 
 Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 
+- [x] (from B to A, 2026-11-26) `.githooks/pre-commit`: tracked as mode 100644, so the commit check does not run on Linux/macOS. Done by A on `run/a-8044-805` (mode 100755); B keeps `chmod +x` in its worktrees until the merge.
+
 (none yet)
 
 ---
