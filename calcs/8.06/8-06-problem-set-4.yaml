@@ -1,0 +1,978 @@
+# Calculations on content/year-3/8.06/8-06-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 differentiates a real WKB wavefunction numerically for a chosen p(x) (the page works with symbols);
+# Problem 2 evaluates the Airy integral on a turned path, finds its zeros with a root finder and tests Airy's equation
+# on it; Problem 3 solves the quantization condition with a numerical integral and a root finder (the page uses the
+# closed form); Problem 4 does the same for the quartic potential and reads the power and the offset off the solved
+# energies; Problem 5 finds the phase for which the two forms of the wavefunction agree with a root finder, tests the
+# splitting on two harmonic wells and does the integrals of the straight-line well numerically; Problem 6 compares the
+# perturbative splitting with the exact eigenvalues for two, three and four hops.
+
+page: content/year-3/8.06/8-06-problem-set-4.mdx
+calcs:
+  # ---- Given data
+
+  - id: given-mit
+    kind: fact
+    where: 'Problems 2, 3 and 4, statements: numbers printed on MIT''s sheet'
+    shown: ['MIT gives a number to test your integral with: $\text{Ai}(1) = 0.135292$', 'mass 1 gram from rest from a height of 1 metre', '$e_0 = 0.667986$, $e_1 = 2.39364$, $e_2 = 4.69680$, $e_3 = 7.33573$, $e_4 = 10.2443$ and $e_5 = 13.3793$', '\approx 0.874019" cite="mit" at="Problem 4(c), p. 4" />']
+    source: {cite: mit, at: 'Problem 2(b), p. 2; Problem 3(c), p. 3; Problem 4, pp. 3 and 4'}
+    origin: mit
+
+  - id: given-codata
+    kind: fact
+    where: 'Problem 3(b), statement: CODATA 2018 values, rounded (1.67492749804e-27 kg, 1.054571817e-34 J s, 1.602176634e-19 J), our addition'
+    shown: ['$m_n = 1.67493\times 10^{-27}$ kg, $\hbar = 1.054572\times 10^{-34}$ J s and $1\ \text{eV} = 1.602177\times 10^{-19}$ J']
+    source: {cite: codata, at: 'neutron mass, reduced Planck constant, electron volt'}
+    origin: later-data
+
+  - id: given-g
+    kind: fact
+    where: 'Problem 3(b), statement: the acceleration of gravity used on this page, our choice (MIT gives none)'
+    shown: ['Take $g = 9.81\ \text{m/s}^2$ and']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: given-zeros
+    kind: fact
+    where: 'Problem 2(c), solution: the first two zeros of Ai from NIST''s table (recomputed below in p2-e1 and p2-e2)'
+    shown: ['$z_1 = 2.33811$ and $z_2 = 4.08795$']
+    source: {cite: dlmf, at: 'Table 9.9.1'}
+    origin: later-data
+
+  # ---- Problem 1: the equation that the WKB wavefunction obeys
+
+  # Independent route: take p(x) = 1 + x²/2, whose integral is x + x³/6, and the real WKB solution
+  # ψ = p^(-1/2) cos((x + x³/6)/ħ). Its second derivative is taken numerically; −ħ²ψ''/ψ − p² must equal X.
+  # The samples give p, p' = x and p'' = 1 at each x.
+  - id: p1-x
+    kind: identity
+    answer: p1-x
+    where: 'Problem 1(a), answer box: −ħ²ψ″/ψ − p² for the real WKB solution with p = 1 + x²/2, second derivative taken numerically'
+    formula: |-
+      hbar**2*(p2/(2*p) - 3*p1**2/(4*p**2))
+    equals: |-
+      -hbar**2*deriv('(1 + y**2/2)**(-0.5)*cos((y + y**3/6)/hbar)', 'y', x, 2)/((1 + x**2/2)**(-0.5)*cos((x + x**3/6)/hbar)) - (1 + x**2/2)**2
+    samples:
+      x: [0.3, 0.7, 1.1, 1.6, 2.0]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      p: [1.045, 1.245, 1.605, 2.28, 3.0]
+      p1: [0.3, 0.7, 1.1, 1.6, 2.0]
+      p2: [1, 1, 1, 1, 1]
+    tolerance: 1e-5
+    shown: ['id="p1-x"', '<Formula label="Exact equation for the WKB solution"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The same test function; λ = 2πħ/p, λ' = −2πħp'/p² and λ'' = −2πħp''/p² + 4πħp'²/p³ are given as numbers.
+  - id: p1-ratio
+    kind: identity
+    answer: p1-ratio
+    where: 'Problem 1(b), answer box: −ħ²ψ″/(p²ψ) − 1 for the real WKB solution with p = 1 + x²/2, against the formula in λ, λ′, λ″'
+    formula: |-
+      (l1**2 - 2*lam*l2)/(16*pi**2)
+    equals: |-
+      -hbar**2*deriv('(1 + y**2/2)**(-0.5)*cos((y + y**3/6)/hbar)', 'y', x, 2)/((1 + x**2/2)**(-0.5)*cos((x + x**3/6)/hbar))/(1 + x**2/2)**2 - 1
+    samples:
+      x: [0.3, 0.7, 1.1, 1.6, 2.0]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      lam: [6.012617518832, 4.037388149192, 4.697708640882, 2.480204726518, 3.14159265359]
+      l1: [-1.726110292488, -2.27001743328, -3.219613398735, -1.740494544925, -2.094395102393]
+      l2: [-4.76263286444, -0.6902520020876, 1.486255972795, 1.35499027072, 1.745329251994]
+    tolerance: 1e-5
+    shown: ['id="p1-ratio"', '<Formula label="The extra terms in units of p squared"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-steady
+    where: 'Problem 1(b), check: 1/(16π²), the ratio X/p² for a wavelength that grows at the steady rate c = 1'
+    formula: 1/(16*pi**2)
+    expected: '0.0063'
+    shown: ['$1/(16\pi^2) = 0.0063$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-158
+    where: 'Problem 1(b), check: 16π²'
+    formula: 16*pi**2
+    expected: '158'
+    shown: ['$16\pi^2 \approx 158$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ψ = (2mgs)^(-1/4) cos((2/3) sqrt(2mg) s^(3/2)/ħ) is the real WKB solution for p² = 2mgs.
+  - id: p1-lin
+    kind: identity
+    answer: p1-lin
+    where: 'Problem 1(c), answer box: −ħ²ψ″/(p²ψ) − 1 for the real WKB solution of the linear potential, second derivative taken numerically'
+    formula: |-
+      -5*hbar**2/(32*m*g*s**3)
+    equals: |-
+      -hbar**2*deriv('(2*m*g*y)**(-0.25)*cos((2/3)*sqrt(2*m*g)*y**1.5/hbar)', 'y', s, 2)/((2*m*g*s)**(-0.25)*cos((2/3)*sqrt(2*m*g)*s**1.5/hbar))/(2*m*g*s) - 1
+    samples:
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      m: [1, 0.5, 2, 1.5, 0.7]
+      g: [1, 2, 0.5, 1.3, 0.8]
+      s: [1, 0.8, 1.5, 0.6, 2]
+    tolerance: 1e-5
+    shown: ['id="p1-lin"', '<Formula label="Extra terms near a turning point"']
+    source: {cite: mit, at: 'Problem 1 (our own addition and solution)'}
+    origin: page-own
+
+  - id: p1-dist
+    answer: p1-dist
+    where: 'Problem 1(c), answer box: the distance s/L at which (5/16)(L/s)³ = 0.01, found with a root finder'
+    formula: solve('5/(16*y**3) - 0.01', 'y', 1, 10)
+    expected: '3.15'
+    shown: ['id="p1-dist"', '$s/L = 31.25^{1/3} = 3.15$']
+    source: {cite: mit, at: 'Problem 1 (our own addition and solution)'}
+    origin: page-own
+
+  # ---- Problem 2: Airy functions
+
+  # The scaled equation must come out as ψ'' = uψ: (gx − E) divided by the number in front of ψ'', ħ²/(2mL²).
+  # L is given as a number for each sample: L = (ħ²/2mg)^(1/3).
+  - id: p2-u
+    kind: identity
+    answer: p2-u
+    where: 'Problem 2(a), answer box: (gx − E) over the coefficient ħ²/(2mL²) of the second derivative, with L = (ħ²/2mg)^(1/3) as numbers'
+    formula: |-
+      x/L - E/(g*L)
+    equals: |-
+      (g*x - E)/(hbar**2/(2*m*L**2))
+    samples:
+      hbar: [1, 1, 1, 2, 2]
+      m: [0.5, 0.5, 0.5, 0.5, 2]
+      g: [1, 8, 0.125, 4, 8]
+      L: [1, 0.5, 2, 1, 0.5]
+      x: [0.5, 1.2, 2, 0.8, 1.5]
+      E: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-12
+    shown: ['id="p2-u"', '<Formula label="The pure-number coordinate"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-arg
+    kind: identity
+    answer: p2-arg
+    where: 'Problem 2(b), answer box: the phase of ψ̃, the numerical integral of k² from 0 to k, plus the phase ku of the inverse transform'
+    formula: |-
+      k**3/3 + k*u
+    equals: |-
+      integrate('q**2', 'q', 0, k) + k*u
+    samples:
+      k: [0.5, 1, 1.5, 2, 0.8]
+      u: [2, 1.5, 1, 0.5, -1.2]
+    tolerance: 1e-9
+    shown: ['id="p2-arg"', '<Formula label="Integral for the Airy function"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The function built from the phase k³/3 + ku must solve ψ'' = uψ (this is what the choice box p2-ode leads to):
+  # tested on the turned path, where the integral converges.
+  - id: p2-airy-equation
+    kind: identity
+    where: 'Problem 2(b), choice box and check: the second derivative of the integral on the turned path equals u times the integral'
+    formula: |-
+      deriv('integrate("exp(-t**3/3 - v*t/2)*cos(sqrt(3)*v*t/2 + pi/6)", "t", 0, 12)/pi', 'v', u0, 2)
+    equals: |-
+      u0*integrate('exp(-t**3/3 - u0*t/2)*cos(sqrt(3)*u0*t/2 + pi/6)', 't', 0, 12)/pi
+    samples:
+      u0: [1.5, 0.5, -1.0]
+    tolerance: 1e-5
+    shown: ['id="p2-ode"', 'the second derivative of this integral at $u = 1.5$ equals 1.5 times the integral']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution and addition)'}
+    origin: page-own
+
+  - id: p2-ai1
+    where: 'Problem 2(b), check: Ai(1) from the integral on the turned path'
+    formula: integrate('exp(-t**3/3 - t/2)*cos(sqrt(3)*t/2 + pi/6)', 't', 0, 12)/pi
+    expected: '0.135292'
+    shown: ['For $u = 1$ it gives 0.135292']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-e1
+    answer: p2-e1
+    where: 'Problem 2(c), answer box: minus the first zero of the Airy integral on the turned path, found with a root finder'
+    formula: -solve('integrate("exp(-t**3/3 - v*t/2)*cos(sqrt(3)*v*t/2 + pi/6)", "t", 0, 12)', 'v', -3, -2)
+    expected: '2.338'
+    shown: ['id="p2-e1"', '\qquad E = 2.338\left(']
+    source: {cite: dlmf, at: 'Table 9.9.1'}
+    origin: page-own
+
+  - id: p2-e2
+    answer: p2-e2
+    where: 'Problem 2(c), answer box: minus the second zero of the Airy integral on the turned path, found with a root finder'
+    formula: -solve('integrate("exp(-t**3/3 - v*t/2)*cos(sqrt(3)*v*t/2 + pi/6)", "t", 0, 12)', 'v', -4.5, -3.5)
+    expected: '4.088'
+    shown: ['id="p2-e2"', '\qquad E = 4.088\left(']
+    source: {cite: dlmf, at: 'Table 9.9.1'}
+    origin: page-own
+
+  - id: p2-wkb-0
+    where: 'Problem 2(c), check: the WKB number for n = 0'
+    formula: (1.5*pi*0.75)**(2/3)
+    expected: '2.320'
+    shown: ['= 2.320$ and $4.082$ for $n = 0$ and 1']
+    source: {cite: reading1, at: 'notes eq. (3.3.6)'}
+    origin: page-own
+
+  - id: p2-wkb-1
+    where: 'Problem 2(c), check: the WKB number for n = 1'
+    formula: (1.5*pi*1.75)**(2/3)
+    expected: '4.082'
+    shown: ['= 2.320$ and $4.082$ for $n = 0$ and 1']
+    source: {cite: reading1, at: 'notes eq. (3.3.6)'}
+    origin: page-own
+
+  - id: p2-wkb-err-0
+    where: 'Problem 2(c), check: how far the WKB number lies below the first zero, in per cent'
+    formula: 100*(2.33811 - (1.5*pi*0.75)**(2/3))/2.33811
+    expected: '0.8'
+    shown: ['within 0.8% and 0.15% of the exact ones']
+    source: {cite: reading1, at: 'notes eq. (3.3.6)'}
+    origin: page-own
+
+  - id: p2-wkb-err-1
+    where: 'Problem 2(c), check: how far the WKB number lies below the second zero, in per cent'
+    formula: 100*(4.08795 - (1.5*pi*1.75)**(2/3))/4.08795
+    expected: '0.15'
+    shown: ['within 0.8% and 0.15% of the exact ones']
+    source: {cite: reading1, at: 'notes eq. (3.3.6)'}
+    origin: page-own
+
+  # ---- Problem 3: the bouncing ball
+
+  # The quantization condition solved numerically: the phase integral by quadrature, the energy by a root finder.
+  - id: p3-en
+    kind: identity
+    answer: p3-en
+    where: 'Problem 3(a), answer box: the energy at which the numerically integrated phase equals (n + 3/4)π'
+    formula: |-
+      (9*pi**2*m*g**2*hbar**2*(n + 3/4)**2/8)**(1/3)
+    equals: |-
+      solve('integrate("sqrt(2*m*abs(En - m*g*y))", "y", 0, En/(m*g))/hbar - (n + 0.75)*pi', 'En', 0.01, 200)
+    samples:
+      m: [1, 0.5, 2, 1.5, 0.7]
+      g: [1, 2, 0.5, 1.3, 0.8]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      n: [0, 1, 2, 3, 5]
+    tolerance: 1e-8
+    shown: ['id="p3-en"', '<Formula label="Semiclassical energies of the bouncing ball"']
+    source: {cite: reading1, at: 'notes eq. (3.3.6)'}
+    origin: page-own
+
+  - id: p3-scale-j
+    where: 'Problem 3(b), solution: the energy scale (ħ² m_n g²/2)^(1/3) in joules'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: (hbar**2*mn*g**2/2)**(1/3)
+    expected: '9.642e-32 J'
+    shown: ['= 9.642\times 10^{-32}\ \text{J} = 6.018\times 10^{-13}\ \text{eV}"']
+    source: {cite: codata, at: 'neutron mass, reduced Planck constant'}
+    origin: page-own
+
+  - id: p3-scale-ev
+    where: 'Problem 3(b), solution: the energy scale in electron volts'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: (hbar**2*mn*g**2/2)**(1/3)
+    expected: '6.018e-13 eV'
+    shown: ['= 9.642\times 10^{-32}\ \text{J} = 6.018\times 10^{-13}\ \text{eV}"']
+    source: {cite: codata, at: 'neutron mass, reduced Planck constant, electron volt'}
+    origin: page-own
+
+  - id: p3-front
+    where: 'Problem 3(b), solution: the number in front for n = 0, from the quantization condition solved numerically in scaled units'
+    formula: solve('integrate("sqrt(abs(z - y))", "y", 0, z) - 0.75*pi', 'z', 1, 4)
+    expected: '2.3203'
+    shown: ['\cdot\frac34\right]^{2/3} = 2.3203$']
+    source: {cite: reading1, at: 'notes eq. (3.3.6)'}
+    origin: page-own
+
+  - id: p3-e0-shown
+    where: 'Problem 3(b), solution: the semiclassical zero-point energy of the neutron'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: (1.5*pi*0.75)**(2/3)*(hbar**2*mn*g**2/2)**(1/3)
+    expected: '1.396e-12 eV'
+    shown: ['= 1.396\times 10^{-12}\ \text{eV}"']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-e0
+    answer: p3-e0
+    where: 'Problem 3(b), answer box: the zero-point energy in units of 1e-12 eV, with the number in front from the numerically solved quantization condition'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: 1e12*solve('integrate("sqrt(abs(z - y))", "y", 0, z) - 0.75*pi', 'z', 1, 4)*(hbar**2*mn*g**2/2)**(1/3)
+    expected: '1.40 eV'
+    shown: ['id="p3-e0"']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-height
+    answer: p3-height
+    where: 'Problem 3(b), answer box (our addition): the height E0/(m_n g) of the turning point in micrometres'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: solve('integrate("sqrt(abs(z - y))", "y", 0, z) - 0.75*pi', 'z', 1, 4)*(hbar**2*mn*g**2/2)**(1/3)/(mn*g)
+    expected: '13.6 um'
+    shown: ['id="p3-height"', '$E_0/(m_ng) = 13.6$ micrometres']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3-exact-ev
+    where: 'Problem 3(b), check: the exact ground state energy, with the first zero of the Airy function'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: 2.33811*(hbar**2*mn*g**2/2)**(1/3)
+    expected: '1.407e-12 eV'
+    shown: ['$1.407\times 10^{-12}$ eV and a height of 13.7 micrometres']
+    source: {cite: dlmf, at: 'Table 9.9.1'}
+    origin: page-own
+
+  - id: p3-exact-height
+    where: 'Problem 3(b), check: the exact height of the turning point'
+    inputs: {mn: '1.67492749804e-27 kg', g: '9.81 m/s**2'}
+    formula: 2.33811*(hbar**2*mn*g**2/2)**(1/3)/(mn*g)
+    expected: '13.7 um'
+    shown: ['$1.407\times 10^{-12}$ eV and a height of 13.7 micrometres']
+    source: {cite: dlmf, at: 'Table 9.9.1'}
+    origin: page-own
+
+  - id: p3-low
+    where: 'Problem 3(b), check: the semiclassical estimate is 0.8% low'
+    formula: 100*(2.33811 - (1.5*pi*0.75)**(2/3))/2.33811
+    expected: '0.8'
+    shown: ['the semiclassical estimate is 0.8% low']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-energy
+    where: 'Problem 3(c), solution: the classical energy mgh of the ball'
+    inputs: {m: '1e-3 kg', g: '9.81 m/s**2', h: '1 m'}
+    formula: m*g*h
+    expected: '9.81e-3 J'
+    shown: ['= 9.81\times 10^{-3}$ J']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-speed
+    where: 'Problem 3(c), solution: the speed of the ball at the floor'
+    inputs: {g: '9.81 m/s**2', h: '1 m'}
+    formula: sqrt(2*g*h)
+    expected: '4.429 m/s'
+    shown: ['$\sqrt{2gh} = 4.429$ m/s']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent of the closed form: the phase integral over the height by quadrature, in SI numbers.
+  - id: p3-n
+    answer: p3-n
+    where: 'Problem 3(c), answer box: the phase integral over the height (numerical), divided by πħ, in units of 1e30'
+    formula: integrate('sqrt(2*0.001*0.001*9.81*(1 - y))', 'y', 0, 1)/(1.054571817e-34*pi)/1e30
+    expected: '8.91'
+    shown: ['id="p3-n"', '\times 1.054572\times 10^{-34}} = 8.91\times 10^{30}"']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-spacing
+    where: 'Problem 3(c), check: the level spacing (2/3)E/n'
+    formula: (2/3)*9.81e-3/(integrate('sqrt(2*0.001*0.001*9.81*(1 - y))', 'y', 0, 1)/(1.054571817e-34*pi))
+    expected: '7.34e-34'
+    shown: ['$dE/dn = \frac23E/n = 7.34\times 10^{-34}$ J']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3-period
+    where: 'Problem 3(c), check: the classical time of one bounce, 2 sqrt(2h/g)'
+    inputs: {g: '9.81 m/s**2', h: '1 m'}
+    formula: 2*sqrt(2*h/g)
+    expected: '0.903 s'
+    shown: ['$2\sqrt{2h/g} = 0.903$ s']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3-h-over-t
+    where: 'Problem 3(c), check: Planck''s constant 2πħ over the time of one bounce'
+    inputs: {g: '9.81 m/s**2', h: '1 m'}
+    formula: 2*pi*hbar/(2*sqrt(2*h/g))
+    expected: '7.34e-34 J'
+    shown: ['Planck''s constant divided by it is $7.34\times 10^{-34}$ J as well']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4: the quartic potential
+
+  - id: p4-e
+    kind: identity
+    answer: p4-e
+    where: 'Problem 4(a), answer box: the work done against the force 4αx³ from 0 to x0, integrated numerically'
+    formula: |-
+      alpha*x0**4
+    equals: |-
+      integrate('4*alpha*y**3', 'y', 0, x0)
+    samples:
+      alpha: [0.5, 1, 1.5, 2, 0.8]
+      x0: [2, 1.5, 1, 0.5, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p4-e"', '<Formula label="Energy and turning point"']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-integral
+    where: 'Problem 4(c): MIT''s integral, done numerically'
+    formula: integrate('sqrt(1 - t**4)', 't', 0, 1)
+    expected: '0.874019'
+    shown: ['\qquad I = 0.874019"']
+    source: {cite: mit, at: 'Problem 4(c), p. 4'}
+    origin: mit
+
+  # Γ(1/4) = 4 ∫ exp(−s⁴) ds and Γ(7/4) = 4 ∫ s⁶ exp(−s⁴) ds (substitution t = s⁴ in the gamma integral).
+  - id: p4-gamma
+    where: 'Problem 4(c): MIT''s closed form sqrt(π) Γ(1/4)/(8 Γ(7/4)), with the gamma functions as numerical integrals'
+    formula: sqrt(pi)*integrate('exp(-s**4)', 's', 0, 6)/(8*integrate('s**6*exp(-s**4)', 's', 0, 6))
+    expected: '0.874019'
+    shown: ['\qquad I = 0.874019"']
+    source: {cite: mit, at: 'Problem 4(c), p. 4'}
+    origin: mit
+
+  - id: p4-beta
+    answer: p4-beta
+    where: 'Problem 4(c), answer box: β = (π/(2 sqrt2 I))^(4/3) with the integral done numerically'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)
+    expected: '1.3765'
+    shown: ['id="p4-beta"', '\right)^{4/3} = 1.3765, \qquad']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  # Independent of the page's scaling argument: in units ħ = m = α = 1 (so γ = 1) the quantization condition is solved
+  # numerically for single levels, and the power and the offset are read off the solved energies.
+  - id: p4-eps
+    answer: p4-eps
+    where: 'Problem 4(c), answer box: the power, from the numerically solved energies of n = 0 and n = 5: ln(E5/E0)/ln(5.5/0.5)'
+    formula: log(solve('2*integrate("sqrt(2*abs(En - y**4))", "y", 0, En**0.25) - 5.5*pi', 'En', 5, 30)/solve('2*integrate("sqrt(2*abs(En - y**4))", "y", 0, En**0.25) - 0.5*pi', 'En', 0.1, 2))/log(11)
+    expected: '1.333'
+    shown: ['id="p4-eps"', '\epsilon = \frac43" cite="mit"']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-delta
+    answer: p4-delta
+    where: 'Problem 4(c), answer box: the offset, from the numerically solved energies of n = 0 and n = 1: δ = 1/((E1/E0)^(3/4) − 1)'
+    formula: 1/((solve('2*integrate("sqrt(2*abs(En - y**4))", "y", 0, En**0.25) - 1.5*pi', 'En', 1, 5)/solve('2*integrate("sqrt(2*abs(En - y**4))", "y", 0, En**0.25) - 0.5*pi', 'En', 0.1, 2))**0.75 - 1)
+    expected: '0.5'
+    tolerance: '0.0001'
+    shown: ['id="p4-delta"', '\delta = \frac12, \qquad']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-e0
+    answer: p4-e0
+    where: 'Problem 4(c), answer box: the WKB ground state energy in units of γ, from the numerically solved quantization condition'
+    formula: solve('2*integrate("sqrt(2*abs(En - y**4))", "y", 0, En**0.25) - 0.5*pi', 'En', 0.1, 2)
+    expected: '0.546'
+    shown: ['id="p4-e0"']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t0
+    where: 'Problem 4(c), table: WKB energy for n = 0'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*0.5**(4/3)
+    expected: '0.5463'
+    shown: ['| 0 | 0.5463 | 0.667986 | −18.2% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t1
+    where: 'Problem 4(c), table: WKB energy for n = 1'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*1.5**(4/3)
+    expected: '2.3636'
+    shown: ['| 1 | 2.3636 | 2.39364 | −1.26% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t2
+    where: 'Problem 4(c), table: WKB energy for n = 2'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*2.5**(4/3)
+    expected: '4.6705'
+    shown: ['| 2 | 4.6705 | 4.69680 | −0.56% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t3
+    where: 'Problem 4(c), table: WKB energy for n = 3'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*3.5**(4/3)
+    expected: '7.3148'
+    shown: ['| 3 | 7.3148 | 7.33573 | −0.29% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t4
+    where: 'Problem 4(c), table: WKB energy for n = 4'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*4.5**(4/3)
+    expected: '10.2265'
+    shown: ['| 4 | 10.2265 | 10.2443 | −0.17% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t5
+    where: 'Problem 4(c), table: WKB energy for n = 5'
+    formula: (pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*5.5**(4/3)
+    expected: '13.3638'
+    shown: ['| 5 | 13.3638 | 13.3793 | −0.12% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-err0
+    answer: p4-err0
+    where: 'Problem 4(c), answer box: relative error for n = 0 in per cent, against MIT''s exact value'
+    formula: 100*((pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*0.5**(4/3) - 0.667986)/0.667986
+    expected: '-18.2'
+    shown: ['id="p4-err0"', '| 0 | 0.5463 | 0.667986 | −18.2% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-err1
+    where: 'Problem 4(c), table (our addition): relative error for n = 1 in per cent'
+    formula: 100*((pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*1.5**(4/3) - 2.39364)/2.39364
+    expected: '-1.26'
+    shown: ['| 1 | 2.3636 | 2.39364 | −1.26% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4-err2
+    where: 'Problem 4(c), table: relative error for n = 2 in per cent'
+    formula: 100*((pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*2.5**(4/3) - 4.69680)/4.69680
+    expected: '-0.56'
+    shown: ['| 2 | 4.6705 | 4.69680 | −0.56% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-err3
+    where: 'Problem 4(c), table (our addition): relative error for n = 3 in per cent'
+    formula: 100*((pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*3.5**(4/3) - 7.33573)/7.33573
+    expected: '-0.29'
+    shown: ['| 3 | 7.3148 | 7.33573 | −0.29% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4-err4
+    where: 'Problem 4(c), table (our addition): relative error for n = 4 in per cent'
+    formula: 100*((pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*4.5**(4/3) - 10.2443)/10.2443
+    expected: '-0.17'
+    shown: ['| 4 | 10.2265 | 10.2443 | −0.17% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4-err5
+    answer: p4-err5
+    where: 'Problem 4(c), answer box: relative error for n = 5 in per cent, against MIT''s exact value'
+    formula: 100*((pi/(2*sqrt(2)*integrate('sqrt(1 - t**4)', 't', 0, 1)))**(4/3)*5.5**(4/3) - 13.3793)/13.3793
+    expected: '-0.12'
+    shown: ['id="p4-err5"', '| 5 | 13.3638 | 13.3793 | −0.12% |']
+    source: {cite: mit, at: 'Problem 4(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  # The oscillator in Problem 4(b)'s check: the phase integral is πE/(ħω).
+  - id: p4-oscillator
+    kind: identity
+    where: 'Problem 4(b), check: the phase integral of the harmonic oscillator, done numerically, is πE/(ħω)'
+    formula: |-
+      pi*E/(hbar*omega)
+    equals: |-
+      2*integrate('sqrt(2*m*abs(E - 0.5*m*omega**2*y**2))', 'y', 0, sqrt(2*E/(m*omega**2)))/hbar
+    samples:
+      m: [1, 0.5, 2, 1.5, 0.7]
+      omega: [1, 2, 0.5, 1.3, 0.8]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      E: [0.5, 1.2, 2, 0.8, 1.5]
+    tolerance: 1e-8
+    shown: ['For the harmonic oscillator the integral is $\pi E/(\hbar\omega)$']
+    source: {cite: mit, at: 'Problem 4(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the double well (our own problem)
+
+  # With c = χ − π/4, part (a) reads cos(θ − π/2 − c). The two forms of the wavefunction in region (ii) are
+  # proportional when their ratio is the same at two angles c1 and c2: the θ at which that happens is found with a
+  # root finder, and its tangent must be 2e^φ (even) or −2e^φ (odd).
+  - id: p5-ii
+    kind: identity
+    where: 'Problem 5(a), choice box: the phase ∫ from x to x2 of k, with k = 1 + y on [x1, x2] = [0.5, 2], against θ − χ, each integrated numerically'
+    formula: |-
+      integrate('1 + y', 'y', x, 2)
+    equals: |-
+      integrate('1 + y', 'y', 0.5, 2) - integrate('1 + y', 'y', 0.5, x)
+    samples:
+      x: [0.6, 0.9, 1.2, 1.5, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p5-ii"', '<Formula label="Region (ii), seen from region (i)"']
+    source: {cite: reading1, at: 'notes eq. (3.3.1)'}
+    origin: page-own
+
+  - id: p5-even
+    kind: identity
+    answer: p5-even
+    where: 'Problem 5(b), answer box: the tangent of the phase θ at which the two forms of the even wavefunction have the same ratio at two angles'
+    formula: |-
+      2*exp(phi)
+    equals: |-
+      tan(solve('(exp(phi/2)*cos(c1) - 0.5*exp(-phi/2)*sin(c1))*cos(th - pi/2 - c2) - (exp(phi/2)*cos(c2) - 0.5*exp(-phi/2)*sin(c2))*cos(th - pi/2 - c1)', 'th', 0.1, 1.5707))
+    samples:
+      phi: [0.5, 1, 1.5, 2, 3]
+      c1: [0.3, 0.2, 1.0, 0.7, 0.4]
+      c2: [1.1, 2.0, 2.5, 1.9, 1.3]
+    tolerance: 1e-7
+    shown: ['id="p5-even"', '<Formula label="Quantization condition of the double well"']
+    source: {cite: reading1, at: 'notes eqs. (3.4.44) to (3.4.46)'}
+    origin: page-own
+
+  - id: p5-odd
+    kind: identity
+    where: 'Problem 5(b), choice box: the same for the odd wavefunction, where the growing exponential has a minus sign'
+    formula: |-
+      -2*exp(phi)
+    equals: |-
+      tan(solve('(exp(phi/2)*cos(c1) + 0.5*exp(-phi/2)*sin(c1))*cos(th - pi/2 - c2) - (exp(phi/2)*cos(c2) + 0.5*exp(-phi/2)*sin(c2))*cos(th - pi/2 - c1)', 'th', 1.5709, 3.0))
+    samples:
+      phi: [0.5, 1, 1.5, 2, 3]
+      c1: [0.3, 0.2, 1.0, 0.7, 0.4]
+      c2: [1.1, 2.0, 2.5, 1.9, 1.3]
+    tolerance: 1e-7
+    shown: ['id="p5-odd"', '<Formula label="Quantization condition of the double well"']
+    source: {cite: reading1, at: 'notes eqs. (3.4.44) to (3.4.46)'}
+    origin: page-own
+
+  - id: p5-dtheta
+    kind: identity
+    where: 'Problem 5(c): dθ/dE = π/(ħω), tested on a harmonic well: the numerical derivative of the numerically integrated phase'
+    formula: |-
+      pi/(hbar*omega)
+    equals: |-
+      deriv('2*integrate("sqrt(2*m*abs(En - 0.5*m*omega**2*y**2))", "y", 0, sqrt(2*En/(m*omega**2)))/hbar', 'En', E)
+    samples:
+      m: [1, 0.5, 2, 1.5, 0.7]
+      omega: [1, 2, 0.5, 1.3, 0.8]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      E: [0.5, 1.2, 2, 0.8, 1.5]
+    tolerance: 1e-6
+    shown: ['<Formula label="How the phase changes with the energy"']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own solution)'}
+    origin: page-own
+
+  # Two harmonic wells: θ = πE/(ħω) exactly, so the energies are ħω/π times the roots of tan θ = ±2e^φ, found
+  # numerically on each side of π/2. The formula drops terms of relative size e^(−2φ)/12.
+  - id: p5-split
+    kind: identity
+    answer: p5-split
+    where: 'Problem 5(c), answer box: the difference of the numerically solved odd and even energies of two harmonic wells, for φ from 4 to 8'
+    formula: |-
+      hbar*omega*exp(-phi)/pi
+    equals: |-
+      hbar*omega/pi*(solve('sin(th) + 2*exp(phi)*cos(th)', 'th', 1.5, 3.0) - solve('sin(th) - 2*exp(phi)*cos(th)', 'th', 0.1, 1.6))
+    samples:
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      omega: [1, 2, 0.5, 1.3, 0.8]
+      phi: [4, 5, 6, 7, 8]
+    tolerance: 1e-4
+    shown: ['id="p5-split"', '<Formula label="Tunnelling splitting of the double well"']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-check-solved
+    where: 'Problem 5(c), check: the splitting of two harmonic wells for φ = 4, in units of ħω, from the two roots'
+    formula: (solve('sin(th) + 2*exp(4)*cos(th)', 'th', 1.5, 3.0) - solve('sin(th) - 2*exp(4)*cos(th)', 'th', 0.1, 1.6))/pi
+    expected: '0.00583'
+    shown: ['two energies that differ by $0.00583\,\hbar\omega$']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-check-formula
+    where: 'Problem 5(c), check: e^(−4)/π'
+    formula: exp(-4)/pi
+    expected: '0.00583'
+    shown: ['$e^{-4}/\pi = 0.00583$']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own solution)'}
+    origin: page-own
+
+  # The particle is back when the relative phase Δt/ħ = ω e^(−φ) t/π reaches 2π: the first zero of sin(Δt/2ħ) after 0.
+  - id: p5-tau
+    kind: identity
+    answer: p5-tau
+    where: 'Problem 5(d), answer box: the first time after 0 at which sin(Δt/2ħ) vanishes, with Δ = ħω e^(−φ)/π, found with a root finder'
+    formula: |-
+      2*pi**2*exp(phi)/omega
+    equals: |-
+      solve('sin(omega*exp(-phi)*t/(2*pi))', 't', 15*exp(phi)/omega, 25*exp(phi)/omega)
+    samples:
+      omega: [1, 1.2, 0.8, 1.5, 2]
+      phi: [1, 1.5, 2, 0.5, 3]
+    tolerance: 1e-9
+    shown: ['id="p5-tau"', '<Formula label="Round-trip time in the double well"']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-bounces
+    where: 'Problem 5(d), check: π e^φ for φ = 10, the number of classical periods per round trip'
+    formula: pi*exp(10)
+    expected: '69000'
+    shown: ['about 69,000 bounces']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-phi
+    kind: identity
+    answer: p5-phi
+    where: 'Problem 5(e), answer box: the integral of κ across the barrier of the straight-line double well, done numerically'
+    formula: |-
+      (4*sqrt(2*m)/(3*hbar*F))*(F*a - E)**(3/2)
+    equals: |-
+      2*integrate('sqrt(2*m*abs(F*(a - y) - E))', 'y', 0, a - E/F)/hbar
+    samples:
+      m: [1, 0.5, 2, 1.5, 0.7]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      F: [1, 2, 1.5, 1.3, 1.8]
+      a: [2, 3, 2.5, 2.2, 2.8]
+      E: [0.5, 1, 0.2, 0.8, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p5-phi"', '<Formula label="Barrier integral of the straight-line double well"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-theta
+    kind: identity
+    where: 'Problem 5(e), solution: the integral of k across one well of the straight-line double well, done numerically (two slopes)'
+    formula: |-
+      (4*sqrt(2*m)/(3*hbar*F))*E**(3/2)
+    equals: |-
+      2*integrate('sqrt(2*m*abs(E - F*(y - a)))', 'y', a, a + E/F)/hbar
+    samples:
+      m: [1, 0.5, 2, 1.5, 0.7]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      F: [1, 2, 1.5, 1.3, 1.8]
+      a: [2, 3, 2.5, 2.2, 2.8]
+      E: [0.5, 1, 0.2, 0.8, 0.6]
+    tolerance: 1e-8
+    shown: ['<Formula label="Well integral of the straight-line double well"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  # In units of E_F and L: θ(z) = 2 ∫ sqrt(z − w) dw from 0 to z, φ = 2 ∫ sqrt(4 − z − w) dw from 0 to 4 − z.
+  - id: p5-level
+    where: 'Problem 5(e), solution and graph: the lowest level in units of E_F, where the numerically integrated θ equals π/2'
+    formula: solve('2*integrate("sqrt(abs(z - w))", "w", 0, z) - pi/2', 'z', 0.5, 2)
+    expected: '1.1155'
+    shown: ['$E/E_F = \left(3\pi/8\right)^{2/3} = 1.1155$', 'E = 1.1155 E_F, inside the two wells']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-hw
+    where: 'Problem 5(e), solution: ħω in units of E_F, π over the numerical derivative of θ at the level'
+    formula: pi/deriv('2*integrate("sqrt(abs(z - w))", "w", 0, z)', 'z', 1.1155)
+    expected: '1.487'
+    shown: ['\left(2\sqrt{1.1155}\right) = 1.487\,E_F$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-phi-num
+    where: 'Problem 5(e), solution: φ for a barrier 4 E_F high at the level 1.1155 E_F, integrated numerically'
+    formula: 2*integrate('sqrt(abs(4 - 1.1155 - w))', 'w', 0, 4 - 1.1155)
+    expected: '6.532'
+    shown: ['\left(4 - 1.1155\right)^{3/2} = 6.532$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-exp
+    where: 'Problem 5(e), solution: e^(−φ)'
+    formula: exp(-6.532)
+    expected: '1.456e-3'
+    shown: ['$e^{-\phi} = 1.456\times 10^{-3}$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-num
+    answer: p5-num
+    where: 'Problem 5(e), answer box: the splitting e^(−φ)/(dθ/dE) in units of 1e-4 E_F, all integrals and the derivative numerical'
+    formula: 1e4*exp(-2*integrate('sqrt(abs(4 - 1.1155 - w))', 'w', 0, 4 - 1.1155))/deriv('2*integrate("sqrt(abs(z - w))", "w", 0, z)', 'z', 1.1155)
+    expected: '6.9'
+    shown: ['id="p5-num"', '\,E_F = 6.9\times 10^{-4}\,E_F"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-ratio
+    where: 'Problem 5(e), check: the level over the splitting, 1.1155/6.9e-4 (well over a thousand)'
+    formula: 1.1155/6.9e-4
+    expected: '1600'
+    shown: ['well over a thousand times smaller']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-sensitive
+    where: 'Problem 5(e), check: a change of φ by 0.1 changes e^(−φ) by about 10 per cent'
+    formula: 100*(exp(0.1) - 1)
+    expected: '10'
+    shown: ['a change of $\phi$ by 0.1 changes $\Delta$ by 10%']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  # ---- Problem 6: tunnelling from perturbation theory
+
+  # N = 3, exactly: the even states (|0⟩+|3⟩)/√2, (|1⟩+|2⟩)/√2 see the matrix [[0, −λ], [−λ, V0 − λ]], the odd ones
+  # [[0, −λ], [−λ, V0 + λ]]. The difference of the two lowest eigenvalues is the splitting; the formula drops terms
+  # of relative size (λ/V0)².
+  - id: p6-split
+    kind: identity
+    answer: p6-split
+    where: 'Problem 6(a), answer box: for N = 3, the difference of the exact lowest odd and even eigenvalues, for λ/V0 near 0.001'
+    formula: |-
+      2*lam**N/V0**(N-1)
+    equals: |-
+      ((V0 + lam) - sqrt((V0 + lam)**2 + 4*lam**2))/2 - ((V0 - lam) - sqrt((V0 - lam)**2 + 4*lam**2))/2
+    samples:
+      N: [3, 3, 3, 3, 3]
+      lam: [0.001, 0.002, 0.0015, 0.001, 0.003]
+      V0: [1, 2, 1.5, 0.8, 2.5]
+    tolerance: 1e-4
+    shown: ['id="p6-split"', '<Formula label="Splitting of the two ground states"']
+    source: {cite: mit, at: 'Problem 6(a), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-n2
+    kind: identity
+    where: 'Problem 6(a), check: for N = 2 the odd state stays at 0 and the even one is the lower eigenvalue of [[0, −√2 λ], [−√2 λ, V0]]'
+    formula: |-
+      2*lam**2/V0
+    equals: |-
+      0 - (V0 - sqrt(V0**2 + 8*lam**2))/2
+    samples:
+      lam: [0.001, 0.002, 0.0015, 0.001, 0.003]
+      V0: [1, 2, 1.5, 0.8, 2.5]
+    tolerance: 1e-4
+    shown: ['\approx -2\lambda^2/V_0$: the splitting is $2\lambda^2/V_0$']
+    source: {cite: mit, at: 'Problem 6(a), p. 6 (our own addition)'}
+    origin: page-own
+
+  # N = 4, exactly: the odd states see [[0, −λ], [−λ, V0]]; the even states see a three by three matrix with the
+  # characteristic polynomial −x[(V0 − x)² − 2λ²] − λ²(V0 − x), whose lowest root is found numerically.
+  # The first order at which the two differ is 4 = N: the difference is 2λ⁴/V0³ up to terms of relative size (λ/V0)².
+  - id: p6-k
+    kind: identity
+    where: 'Problem 6(a), choice box: for N = 4 the exact splitting is 2λ⁴/V0³, of fourth order in λ, for λ/V0 = 0.02'
+    formula: |-
+      2*lam**4/V0**3
+    equals: |-
+      (V0 - sqrt(V0**2 + 4*lam**2))/2 - solve('-y*((V0 - y)**2 - 2*lam**2) - lam**2*(V0 - y)', 'y', -0.1*V0, 0)
+    samples:
+      lam: [0.02, 0.04, 0.03, 0.016, 0.05]
+      V0: [1, 2, 1.5, 0.8, 2.5]
+    tolerance: 5e-3
+    shown: ['id="p6-k"', 'the first order at which the two energies differ is $k = N$']
+    source: {cite: mit, at: 'Problem 6(a), p. 6 (our own solution)'}
+    origin: page-own
+
+  # A plane wave on the lattice has the kinetic energy 2λ(1 − cos qℓ); for small qℓ it must be ħ²q²/2m.
+  - id: p6-lam
+    kind: identity
+    answer: p6-lam
+    where: 'Problem 6(b), answer box: the hopping strength that gives a slow plane wave on the lattice the energy ħ²q²/2m (qℓ = 0.001)'
+    formula: |-
+      hbar**2/(2*m*l**2)
+    equals: |-
+      hbar**2*q**2/(2*m)/(2*(1 - cos(q*l)))
+    samples:
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+      m: [1, 0.5, 2, 1.5, 0.7]
+      l: [1, 2, 0.5, 1.25, 0.8]
+      q: [0.001, 0.0005, 0.002, 0.0008, 0.00125]
+    tolerance: 1e-6
+    shown: ['id="p6-lam"', '<Formula label="Kinetic energy on the lattice"']
+    source: {cite: mit, at: 'Problem 6(b), p. 6 (our own solution)'}
+    origin: page-own
+
+  # The step ℓ is found numerically from λ(ℓ) = εV0; then N = W/ℓ and the splitting is 2V0 ε^N.
+  - id: p6-splitb
+    kind: identity
+    answer: p6-splitb
+    where: 'Problem 6(b), answer box: 2V0 ε^(W/ℓ) with the step ℓ solved numerically from ħ²/(2mℓ²) = εV0'
+    formula: |-
+      2*V0*eps**(W*sqrt(2*m*eps*V0)/hbar)
+    equals: |-
+      2*V0*eps**(W/solve('hbar**2/(2*m*y**2) - eps*V0', 'y', 0.05, 50))
+    samples:
+      V0: [1, 2, 1.5, 1.2, 1.8]
+      eps: [0.1, 0.2, 0.3, 0.4, 0.5]
+      W: [1, 1.5, 2, 1.2, 1.8]
+      m: [1, 0.5, 2, 1.5, 0.7]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p6-splitb"', '<Formula label="The lattice step"']
+    source: {cite: mit, at: 'Problem 6(b), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-exp-form
+    kind: identity
+    where: 'Problem 6(b), solution: the splitting written as an exponential'
+    formula: |-
+      2*V0*exp(-sqrt(eps)*log(1/eps)*W*sqrt(2*m*V0)/hbar)
+    equals: |-
+      2*V0*eps**(W*sqrt(2*m*eps*V0)/hbar)
+    samples:
+      V0: [1, 2, 1.5, 1.2, 1.8]
+      eps: [0.1, 0.2, 0.3, 0.4, 0.5]
+      W: [1, 1.5, 2, 1.2, 1.8]
+      m: [1, 0.5, 2, 1.5, 0.7]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Splitting without the lattice step"']
+    source: {cite: mit, at: 'Problem 6(b), p. 6 (our own solution)'}
+    origin: page-own
+
+  # The amplitude to be found on site 0 is cos(Δt/2ħ) up to a phase; the particle is on site N for certain when it
+  # first vanishes.
+  - id: p6-t
+    kind: identity
+    answer: p6-t
+    where: 'Problem 6(c), answer box: the first time at which the amplitude cos(Δt/2ħ) to be on site 0 vanishes, found with a root finder'
+    formula: |-
+      pi*hbar/Delta
+    equals: |-
+      solve('cos(Delta*t/(2*hbar))', 't', 2, 4.5)
+    samples:
+      hbar: [1, 1.1, 0.9, 1.2, 1]
+      Delta: [1, 0.9, 1.1, 1, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p6-t"', '<Formula label="Time to cross"']
+    source: {cite: mit, at: 'Problem 6(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-prob
+    kind: identity
+    where: 'Problem 6(c), solution: the squared modulus of (e^(−iE₊t/ħ) − e^(−iE₋t/ħ))/2, from its real and imaginary parts, is sin²(Δt/2ħ)'
+    formula: |-
+      sin((Em - Ep)*t/(2*hbar))**2
+    equals: |-
+      ((cos(Ep*t/hbar) - cos(Em*t/hbar))**2 + (sin(Ep*t/hbar) - sin(Em*t/hbar))**2)/4
+    samples:
+      Ep: [0.2, -0.5, 1, 0.3, 0]
+      Em: [0.9, 0.4, 1.6, 2, 1.1]
+      t: [0.5, 1.3, 2.1, 0.8, 3]
+      hbar: [1, 0.8, 1.2, 0.9, 1.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Probability to be on the far site"']
+    source: {cite: mit, at: 'Problem 6(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-eps-max
+    where: 'Problem 6(c), solution (our addition): the ε at which sqrt(ε) ln(1/ε) is largest, from the zero of its numerical derivative'
+    formula: solve('deriv("sqrt(y)*log(1/y)", "y", x)', 'x', 0.05, 0.5)
+    expected: '0.135'
+    shown: ['$\epsilon = e^{-2} = 0.135$']
+    source: {cite: mit, at: 'Problem 6(c) (our own addition)'}
+    origin: page-own
+
+  - id: p6-c
+    answer: p6-c
+    where: 'Problem 6(c), answer box (our addition): the largest value of sqrt(ε) ln(1/ε), at the numerically found maximum'
+    formula: sqrt(solve('deriv("sqrt(y)*log(1/y)", "y", x)', 'x', 0.05, 0.5))*log(1/solve('deriv("sqrt(y)*log(1/y)", "y", x)', 'x', 0.05, 0.5))
+    expected: '0.736'
+    shown: ['id="p6-c"', '$c = 2/e = 0.736$']
+    source: {cite: mit, at: 'Problem 6(c) (our own addition)'}
+    origin: page-own
