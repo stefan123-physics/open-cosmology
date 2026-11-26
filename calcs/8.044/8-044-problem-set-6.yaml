@@ -1,0 +1,481 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for this set and the page follows them; every answer is checked here by a route that is
+# independent of the algebra on the page. Problem 1: an explicit entropy function of the solid and numerical
+# derivatives along its adiabat. Problem 2: an explicit free energy of the film, differentiated numerically, and a
+# numerical integral. Problem 3: numerical derivatives of the given pressure and numerical integrals of the given heat
+# capacity along a path from T = 0. Problem 4: numerical derivatives of the field H(T, M) and numerical integrals over M.
+# In every formula the letters are plain numbers given in `samples` or `inputs` (c here is the page's constant, not the
+# speed of light; e is never used as a name).
+
+page: content/year-3/8.044/8-044-problem-set-6.mdx
+calcs:
+  # ---- Problem 1: V = V0 (1 + alpha T - kappa P), adiabatic sound wave.
+
+  - id: p1-dpdt
+    kind: identity
+    answer: p1-dpdt
+    where: 'Problem 1(a), answer box: the slope of P against T at fixed V, from the equation of state solved for P (r = V/V0) and differentiated numerically'
+    formula: |-
+      alpha/kappa
+    equals: |-
+      deriv('(1 + alpha*u - r)/kappa', 'u', T)
+    samples:
+      alpha: [0.5, 0.8, 1.1, 1.6, 2.0]
+      kappa: [0.6, 1.9, 1.2, 0.5, 1.4]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      r: [1.1, 0.9, 1.3, 1.0, 1.2]
+    shown: ['id="p1-dpdt"', '<Formula label="Pressure against temperature at fixed volume"']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-ratio
+    kind: identity
+    answer: p1-ratio
+    where: 'Problem 1(b), answer box: the adiabatic slope of T against P. Independent route: the entropy per V0 of this solid is s(T, P) = c log(T) + alpha (1 + alpha T - kappa P)/kappa (from ds = c dT/T + (alpha/kappa) dV/V0, with c = C_V/V0 taken constant), and along s = constant dT/dP = -(ds/dP)/(ds/dT), both derivatives numerical'
+    formula: |-
+      alpha*T/(c + alpha**2*T/kappa)
+    equals: |-
+      -deriv('c*log(T) + alpha*(1 + alpha*T - kappa*u)/kappa', 'u', P)/deriv('c*log(u) + alpha*(1 + alpha*u - kappa*P)/kappa', 'u', T)
+    samples:
+      alpha: [0.5, 0.8, 1.1, 1.2, 0.6]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      kappa: [1.0, 1.9, 1.2, 1.5, 1.4]
+      c: [3.0, 4.5, 6.0, 3.7, 5.2]
+      P: [0.2, 0.1, 0.3, 0.15, 0.25]
+    shown: ['id="p1-ratio"', '<Formula label="Temperature swing over pressure swing"']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-ratio-cp
+    kind: identity
+    where: 'Problem 1(b), second check (ours): the same ratio as alpha T V0/C_P, with C_P from the lesson''s C_P - C_V = T V alpha_l^2/kappa_l, where alpha_l = alpha V0/V and kappa_l = kappa V0/V are the lesson''s coefficients (defined with V) and r = V/V0'
+    formula: |-
+      alpha*T/(c + alpha**2*T/kappa)
+    equals: |-
+      alpha*T/(c + T*r*(alpha/r)**2/(kappa/r))
+    samples:
+      alpha: [0.5, 0.8, 1.1, 1.2, 0.6]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      kappa: [1.0, 1.9, 1.2, 1.5, 1.4]
+      c: [3.0, 4.5, 6.0, 3.7, 5.2]
+      r: [1.1, 0.9, 1.3, 1.0, 1.2]
+    shown: ['so $\Delta T/\Delta P = \alpha T V_0/C_P$']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-phase
+    kind: value
+    where: 'Problem 1(b), choice box: the sign of the ratio for a positive alpha (the ratio divided by its size)'
+    inputs: {alpha: 0.7, T: 1.3, kappa: 1.6, c: 4.0}
+    formula: |-
+      alpha*T/(c + alpha**2*T/kappa)/abs(alpha*T/(c + alpha**2*T/kappa))
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['id="p1-phase"']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (the question is our addition)'}
+    origin: page-own
+
+  - id: p1-term2
+    kind: value
+    where: 'Problem 1(c): the expansion term alpha^2 T/kappa_T of the denominator, in J m^-3 K^-1'
+    formula: |-
+      (5.0e-5)**2*300/8.0e-12
+    expected: '9.4e4'
+    shown: ['= 9.4 \times 10^{4}\ \text{J m}']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-term2-share
+    kind: value
+    where: 'Problem 1(c): the expansion term as a percentage of C_V/V0, which is also (C_P - C_V)/C_V'
+    formula: |-
+      100*(5.0e-5)**2*300/8.0e-12/3.0e6
+    expected: '3.1'
+    shown: ['It is 3.1% of the first term', '$C_P$ is 3.1% larger than $C_V$']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-ratio-num
+    kind: value
+    where: 'Problem 1(c): the ratio of the amplitudes in K/Pa'
+    formula: |-
+      5.0e-5*300/(3.0e6 + (5.0e-5)**2*300/8.0e-12)
+    expected: '4.85e-9'
+    shown: ['= 4.85 \times 10^{-9}\ \text{K Pa}']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-dt
+    kind: value
+    answer: p1-dt
+    where: 'Problem 1(c), answer box (our addition): the temperature amplitude in mK for a pressure amplitude of 1.0e5 Pa'
+    formula: |-
+      5.0e-5*300/(3.0e6 + (5.0e-5)**2*300/8.0e-12)*1.0e5*1000
+    expected: '0.485'
+    shown: ['id="p1-dt"', '\Delta T = 4.85 \times 10^{-4}\ \text{K} = 0.485\ \text{mK}']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-dt-rough
+    kind: value
+    where: 'Problem 1(c), check: the temperature amplitude in mK without the expansion term'
+    formula: |-
+      5.0e-5*300/3.0e6*1.0e5*1000
+    expected: '0.500'
+    shown: ['would give 0.500 mK']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: surface tension -N k T/(A - b). The explicit free energy F(T, A) = -N k T log(A - b) + (any
+  # function of T) has dF = -S dT + (tension) dA with this tension; the checks differentiate it numerically.
+
+  - id: p2-tension
+    kind: identity
+    where: 'Problem 2: the free energy used in these checks gives the surface tension of the sheet, as its numerical derivative with respect to A'
+    formula: |-
+      -N*k*T/(A - b)
+    equals: |-
+      deriv('-N*k*T*log(u - b)', 'u', A)
+    samples:
+      N: [1.0, 1.5, 2.0, 2.5, 3.0]
+      k: [0.5, 2.0, 1.0, 1.4, 0.8]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      A: [3.0, 4.0, 5.0, 6.0, 3.5]
+      b: [0.5, 2.0, 1.0, 1.5, 0.8]
+    shown: ['<Formula label="Surface tension of the film"']
+    source: {cite: mit, at: 'Problem 2, p. 2'}
+    origin: mit
+
+  - id: p2-dsda
+    kind: identity
+    answer: p2-dsda
+    where: 'Problem 2(a), answer box: the slope of S against A, as the numerical mixed derivative of that free energy (S = -dF/dT, then d/dA)'
+    formula: |-
+      N*k/(A - b)
+    equals: |-
+      deriv('deriv("N*k*w*log(u - b)", "w", T)', 'u', A)
+    samples:
+      N: [1.0, 1.5, 2.0, 2.5, 3.0]
+      k: [0.5, 2.0, 1.0, 1.4, 0.8]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      A: [3.0, 4.0, 5.0, 6.0, 3.5]
+      b: [0.5, 2.0, 1.0, 1.5, 0.8]
+    shown: ['id="p2-dsda"', '<Formula label="Maxwell relation for the film"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-dcda
+    kind: value
+    where: 'Problem 2(a): the slope of C_A against A, as -T times the numerical second derivative of the surface tension with respect to T'
+    inputs: {N: 2.0, k: 1.3, T: 1.7, A: 4.0, b: 0.9}
+    formula: |-
+      -T*deriv('-N*k*u/(A - b)', 'u', T, 2)
+    expected: '0'
+    tolerance: 1e-6
+    shown: ['<Formula label="The heat capacity does not depend on the area"', 'times the second derivative of $\mathcal{S}$ with respect to $T$ at fixed area']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-dEdA
+    kind: value
+    where: 'Problem 2(b) and its choice box: the slope of E against A, T (dS/dA) plus the tension, with dS/dA from the numerical derivative of the tension'
+    inputs: {N: 2.0, k: 1.3, T: 1.7, A: 4.0, b: 0.9}
+    formula: |-
+      T*(-deriv('-N*k*u/(A - b)', 'u', T)) + (-N*k*T/(A - b))
+    expected: '0'
+    tolerance: 1e-8
+    shown: ['<Formula label="Energy against area at fixed temperature"', 'id="p2-stretch"']
+    source: {cite: reading1, at: 'Problem 2(b), p. 3'}
+    origin: mit
+
+  - id: p2-ds
+    kind: identity
+    answer: p2-ds
+    where: 'Problem 2(c), answer box (our addition): the entropy change in an isothermal stretch, as the numerical integral of the slope of S'
+    formula: |-
+      N*k*log((A2 - b)/(A1 - b))
+    equals: |-
+      integrate('N*k/(u - b)', 'u', A1, A2)
+    samples:
+      N: [1.0, 1.5, 2.0, 2.5, 3.0]
+      k: [0.5, 2.0, 1.0, 1.4, 0.8]
+      A1: [3.0, 4.0, 5.0, 3.6, 4.4]
+      A2: [6.0, 9.0, 7.0, 8.0, 6.5]
+      b: [0.5, 2.0, 1.0, 1.5, 0.8]
+    shown: ['id="p2-ds"', '<Formula label="Entropy change of the film in an isothermal stretch"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2 (the integral is our addition)'}
+    origin: page-own
+
+  - id: p2-heat-work
+    kind: identity
+    where: 'Problem 2(c), check: the heat T times the entropy change equals the work done by the film, minus the numerical integral of the tension over A'
+    formula: |-
+      T*N*k*log((A2 - b)/(A1 - b))
+    equals: |-
+      -integrate('-N*k*T/(u - b)', 'u', A1, A2)
+    samples:
+      N: [1.0, 1.5, 2.0, 2.5, 3.0]
+      k: [0.5, 2.0, 1.0, 1.4, 0.8]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      A1: [3.0, 4.0, 5.0, 3.6, 4.4]
+      A2: [6.0, 9.0, 7.0, 8.0, 6.5]
+      b: [0.5, 2.0, 1.0, 1.5, 0.8]
+    shown: ['as part (b) requires']
+    source: {cite: reading1, at: 'Problem 2(b), p. 3 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: P = a T^(5/2) + b T^3 + c/V^2, C_V = d T^(3/2) V + e T^2 V + f T^(1/2).
+
+  - id: p3-dedv
+    kind: identity
+    answer: p3-dedv
+    where: 'Problem 3(a), answer box: the slope of E against V, as T times the numerical derivative of the pressure minus the pressure'
+    formula: |-
+      1.5*a*T**2.5 + 2*b*T**3 - c/V**2
+    equals: |-
+      T*deriv('a*u**2.5 + b*u**3 + c/V**2', 'u', T) - (a*T**2.5 + b*T**3 + c/V**2)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+      b: [1.2, 0.5, 2.0, 0.9, 1.5]
+      c: [0.7, 1.9, 1.2, 0.5, 1.4]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      V: [0.6, 1.3, 2.0, 0.9, 1.6]
+    shown: ['id="p3-dedv"', '<Formula label="Energy against volume for the Bose gas"']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-d
+    kind: identity
+    answer: p3-d
+    where: 'Problem 3(b), answer box: d, as the numerical derivative with respect to T of the a-term of T (dP/dT) - P (itself with a numerical derivative), divided by T^(3/2)'
+    formula: |-
+      15*a/4
+    equals: |-
+      deriv('u*deriv("a*w**2.5", "w", u) - a*u**2.5', 'u', T)/T**1.5
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+    shown: ['id="p3-d"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 4'}
+    origin: mit
+
+  - id: p3-e
+    kind: identity
+    answer: p3-e
+    where: 'Problem 3(b), answer box: the constant e of the heat capacity, as the numerical derivative with respect to T of the b-term of T (dP/dT) - P, divided by T^2'
+    formula: |-
+      6*b
+    equals: |-
+      deriv('u*deriv("b*w**3", "w", u) - b*u**3', 'u', T)/T**2
+    samples:
+      b: [1.2, 0.5, 2.0, 0.9, 1.5]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+    shown: ['id="p3-e"', '<Formula label="Relations between the constants"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 4'}
+    origin: mit
+
+  - id: p3-free
+    kind: value
+    where: 'Problem 3(b), choice box (our addition): with d = 15a/4 and e = 6b the two cross derivatives of E agree for arbitrary a, b, c and f (their difference, both sides numerical)'
+    inputs: {a: 0.9, b: 1.7, c: 0.6, f: 1.3, T: 1.4, V: 0.8}
+    formula: |-
+      deriv('3.75*a*T**1.5*u + 6*b*T**2*u + f*T**0.5', 'u', V) - deriv('u*deriv("a*w**2.5 + b*w**3 + c/V**2", "w", u) - (a*u**2.5 + b*u**3 + c/V**2)', 'u', T)
+    expected: '0'
+    tolerance: 1e-6
+    shown: ['id="p3-free"', '<Formula label="Cross derivatives of the energy"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 4 (the question is our addition)'}
+    origin: page-own
+
+  - id: p3-fifteen-quarters
+    kind: value
+    where: 'Problem 3(b), check: 5/2 times 3/2'
+    formula: |-
+      2.5*1.5
+    expected: '3.75'
+    tolerance: 1e-12
+    shown: ['$\frac{5}{2} \times \frac{3}{2} = \frac{15}{4}$']
+    source: {cite: reading1, at: 'Problem 3(b), p. 4'}
+    origin: page-own
+
+  - id: p3-e-tv
+    kind: identity
+    answer: p3-e-tv
+    where: 'Problem 3(c), answer box: E(T, V) with K_E = 0, by numerical integration along a path: at T = 0 from infinite volume in to V (slope -c/V^2, written with w = 1/V as the integral of c from 0 to 1/V), then at fixed V from 0 to T (the given C_V with d = 15a/4, e = 6b)'
+    formula: |-
+      1.5*a*T**2.5*V + 2*b*T**3*V + 2*f*T**1.5/3 + c/V
+    equals: |-
+      integrate('3.75*a*u**1.5*V + 6*b*u**2*V + f*u**0.5', 'u', 0, T) + integrate('c + 0*u', 'u', 0, 1/V)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+      b: [1.2, 0.5, 2.0, 0.9, 1.5]
+      c: [0.7, 1.9, 1.2, 0.5, 1.4]
+      f: [1.5, 0.6, 0.9, 2.0, 1.1]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      V: [0.6, 1.3, 2.0, 0.9, 1.6]
+    shown: ['id="p3-e-tv"', '<Formula label="Energy of the Bose gas"']
+    source: {cite: reading1, at: 'Problem 3(c), p. 4'}
+    origin: mit
+
+  - id: p3-e-tv-dv
+    kind: identity
+    where: 'Problem 3(c), check: the numerical derivative of the energy with respect to V equals T (dP/dT) - P with a numerical derivative of the pressure'
+    formula: |-
+      deriv('1.5*a*T**2.5*u + 2*b*T**3*u + 2*f*T**1.5/3 + c/u', 'u', V)
+    equals: |-
+      T*deriv('a*u**2.5 + b*u**3 + c/V**2', 'u', T) - (a*T**2.5 + b*T**3 + c/V**2)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+      b: [1.2, 0.5, 2.0, 0.9, 1.5]
+      c: [0.7, 1.9, 1.2, 0.5, 1.4]
+      f: [1.5, 0.6, 0.9, 2.0, 1.1]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      V: [0.6, 1.3, 2.0, 0.9, 1.6]
+    shown: ['Differentiate back.']
+    source: {cite: reading1, at: 'Problem 3(c), p. 4'}
+    origin: page-own
+
+  - id: p3-s
+    kind: identity
+    answer: p3-s
+    where: 'Problem 3(d), answer box: S(T, V) with K_S = 0, as the numerical integral of C_V/T at fixed V from T = 0 (where dS/dV = dP/dT = 0, so S(0, V) is the same constant for every V)'
+    formula: |-
+      2.5*a*V*T**1.5 + 3*b*V*T**2 + 2*f*T**0.5
+    equals: |-
+      integrate('(3.75*a*u**1.5*V + 6*b*u**2*V + f*u**0.5)/u', 'u', 0, T)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+      b: [1.2, 0.5, 2.0, 0.9, 1.5]
+      f: [1.5, 0.6, 0.9, 2.0, 1.1]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      V: [0.6, 1.3, 2.0, 0.9, 1.6]
+    shown: ['id="p3-s"', '<Formula label="Entropy of the Bose gas"']
+    source: {cite: reading1, at: 'Problem 3(d), p. 5'}
+    origin: mit
+
+  - id: p3-s-dv
+    kind: identity
+    where: 'Problem 3(d), check: the numerical derivative of the entropy with respect to V equals the numerical derivative of the pressure with respect to T (the Maxwell relation)'
+    formula: |-
+      deriv('2.5*a*u*T**1.5 + 3*b*u*T**2 + 2*f*T**0.5', 'u', V)
+    equals: |-
+      deriv('a*u**2.5 + b*u**3 + c/V**2', 'u', T)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+      b: [1.2, 0.5, 2.0, 0.9, 1.5]
+      c: [0.7, 1.9, 1.2, 0.5, 1.4]
+      f: [1.5, 0.6, 0.9, 2.0, 1.1]
+      T: [1.0, 0.7, 1.5, 2.0, 0.9]
+      V: [0.6, 1.3, 2.0, 0.9, 1.6]
+    shown: ['<Formula label="Slope of the pressure of the Bose gas"', 'they are what makes the two routes to the terms with $V$ agree']
+    source: {cite: reading1, at: 'Problem 3(d), pp. 4 to 5'}
+    origin: mit
+
+  - id: p3-five-halves
+    kind: value
+    where: 'Problem 3(d): 2/3 times 15/4'
+    formula: |-
+      (2/3)*(15/4)
+    expected: '2.5'
+    tolerance: 1e-12
+    shown: ['\frac{2}{3} \times \frac{15}{4}a = \frac{5}{2}a']
+    source: {cite: reading1, at: 'Problem 3(d), p. 5'}
+    origin: mit
+
+  # ---- Problem 4: M = A H/(T - T0), so H(T, M) = M (T - T0)/A.
+
+  - id: p4-dsdm
+    kind: identity
+    answer: p4-dsdm
+    where: 'Problem 4(a), answer box: the slope of S against M, as minus the numerical derivative of the field with respect to T at fixed M'
+    formula: |-
+      -M/A
+    equals: |-
+      -deriv('M*(u - T0)/A', 'u', T)
+    samples:
+      M: [0.5, 0.8, 1.1, 1.6, 2.0]
+      A: [1.2, 0.5, 2.0, 0.9, 1.5]
+      T0: [0.7, 1.9, 1.2, 0.5, 1.4]
+      T: [1.5, 2.6, 2.0, 1.1, 3.0]
+    shown: ['id="p4-dsdm"', '<Formula label="Maxwell relation for the paramagnet"']
+    source: {cite: reading1, at: 'Problem 4(a), p. 5'}
+    origin: mit
+
+  - id: p4-dcdm
+    kind: value
+    where: 'Problem 4(a): the slope of C_M against M, as -T times the numerical second derivative of the field with respect to T'
+    inputs: {M: 1.3, A: 0.8, T0: 0.9, T: 1.7}
+    formula: |-
+      -T*deriv('M*(u - T0)/A', 'u', T, 2)
+    expected: '0'
+    tolerance: 1e-6
+    shown: ['<Formula label="The heat capacity does not depend on the magnetization"']
+    source: {cite: reading1, at: 'Problem 4(a), p. 6'}
+    origin: mit
+
+  - id: p4-dedm
+    kind: identity
+    answer: p4-dedm
+    where: 'Problem 4(b), answer box: the slope of E against M, T (dS/dM) + H with dS/dM from the numerical derivative of the field'
+    formula: |-
+      -M*T0/A
+    equals: |-
+      T*(-deriv('M*(u - T0)/A', 'u', T)) + M*(T - T0)/A
+    samples:
+      M: [0.5, 0.8, 1.1, 1.6, 2.0]
+      A: [1.2, 0.5, 2.0, 0.9, 1.5]
+      T0: [0.7, 1.9, 1.2, 0.5, 1.4]
+      T: [1.5, 2.6, 2.0, 1.1, 3.0]
+    shown: ['id="p4-dedm"', '<Formula label="Energy against magnetization at fixed temperature"']
+    source: {cite: reading1, at: 'Problem 4(b), p. 6'}
+    origin: mit
+
+  - id: p4-em
+    kind: identity
+    answer: p4-em
+    where: 'Problem 4(b), answer box: the M-dependent part of E, as the numerical integral over M (from 0) of T (dS/dM) + H, with dS/dM from a numerical derivative of the field'
+    formula: |-
+      -M**2*T0/(2*A)
+    equals: |-
+      integrate('T*(-deriv("u*(w - T0)/A", "w", T)) + u*(T - T0)/A', 'u', 0, M)
+    samples:
+      M: [0.5, 0.8, 1.1, 1.6, 2.0]
+      A: [1.2, 0.5, 2.0, 0.9, 1.5]
+      T0: [0.7, 1.9, 1.2, 0.5, 1.4]
+      T: [1.5, 2.6, 2.0, 1.1, 3.0]
+    shown: ['id="p4-em"', '<Formula label="Energy of the paramagnet"']
+    source: {cite: reading1, at: 'Problem 4(b), p. 6'}
+    origin: mit
+
+  - id: p4-sm
+    kind: identity
+    answer: p4-sm
+    where: 'Problem 4(c), answer box: the M-dependent part of S, as the numerical integral over M (from 0) of minus the numerical derivative of the field with respect to T'
+    formula: |-
+      -M**2/(2*A)
+    equals: |-
+      integrate('-deriv("u*(w - T0)/A", "w", T)', 'u', 0, M)
+    samples:
+      M: [0.5, 0.8, 1.1, 1.6, 2.0]
+      A: [1.2, 0.5, 2.0, 0.9, 1.5]
+      T0: [0.7, 1.9, 1.2, 0.5, 1.4]
+      T: [1.5, 2.6, 2.0, 1.1, 3.0]
+    shown: ['id="p4-sm"', '<Formula label="Entropy of the paramagnet"']
+    source: {cite: reading1, at: 'Problem 4(c), pp. 6 to 7'}
+    origin: mit
+
+  - id: p4-free-energy
+    kind: identity
+    where: 'Problem 4(c), check (ours): the numerical derivative with respect to M of the M-dependent part of F = E - TS gives back the field of the equation of state'
+    formula: |-
+      M*(T - T0)/A
+    equals: |-
+      deriv('-u**2*T0/(2*A) - T*(-u**2/(2*A))', 'u', M)
+    samples:
+      M: [0.5, 0.8, 1.1, 1.6, 2.0]
+      A: [1.2, 0.5, 2.0, 0.9, 1.5]
+      T0: [0.7, 1.9, 1.2, 0.5, 1.4]
+      T: [1.5, 2.6, 2.0, 1.1, 3.0]
+    shown: ['the equation of state comes back']
+    source: {cite: reading1, at: 'Problem 4(c), pp. 6 to 7 (our own check)'}
+    origin: page-own
