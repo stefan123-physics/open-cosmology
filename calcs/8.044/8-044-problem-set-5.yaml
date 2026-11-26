@@ -1,0 +1,428 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for this set and the page follows them; every answer is checked here by a route that is
+# independent of the algebra on the page. The entropies are recomputed straight from the phase-space volume
+# Phi(E, V, N) of MIT's sheet (as k log of the product, for small N so that the powers stay finite), without
+# first splitting the logarithm as the page does. Stirling's approximation N ln N - N is checked as the integral
+# of ln u from 0 to N. The exact factorials of the last check are replaced by Wallis's integral:
+# C(N, N/2)/2^N = (2/pi) * integral of cos(u)^N from 0 to pi/2.
+
+page: content/year-3/8.044/8-044-problem-set-5.mdx
+calcs:
+  # ---- Part (a): the old entropy is not extensive
+
+  - id: p1-bracket
+    kind: identity
+    where: 'Problem 1(a): with E = (3/2) N k T the bracket 4 pi e m E/(3N) becomes 2 pi e m k T'
+    formula: |-
+      4*pi*e*m*(1.5*N*k*T)/(3*N)
+    equals: |-
+      2*pi*e*m*k*T
+    samples:
+      N: [1, 2, 3, 4, 6]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+      m: [0.7, 1.0, 1.4, 0.5, 0.9]
+      T: [1.5, 0.6, 1.0, 2.0, 0.8]
+    tolerance: 1e-12
+    shown: ['$4\pi emE/3N = 2\pi emkT$']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1'}
+    origin: mit
+
+  - id: p1-s-old
+    kind: identity
+    where: 'Problem 1(a), formula "Entropy found so far": the split logarithm against k log of the whole phase-space volume of the sheet'
+    formula: |-
+      N*k*log(V) + 1.5*N*k*log(2*pi*e*m*k*T)
+    equals: |-
+      k*log(V**N*(4*pi*e*m*(1.5*N*k*T)/(3*N))**(1.5*N))
+    samples:
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+      m: [0.7, 1.0, 1.4, 0.5, 0.9]
+      T: [1.5, 0.6, 1.0, 2.0, 0.8]
+    tolerance: 1e-10
+    shown: ['<Formula label="Entropy found so far, as a function of N, V and T"']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1'}
+    origin: mit
+
+  - id: p1-scale
+    kind: identity
+    answer: p1-scale
+    where: 'Problem 1(a), answer box (our addition): S(lam N, lam V, T) - lam S(N, V, T), each entropy taken as k log of the phase-space volume of the sheet with E = (3/2) N k T'
+    formula: |-
+      lam*N*k*log(lam)
+    equals: |-
+      k*log((lam*V)**(lam*N)*(4*pi*e*m*(1.5*lam*N*k*T)/(3*lam*N))**(1.5*lam*N)) - lam*k*log(V**N*(4*pi*e*m*(1.5*N*k*T)/(3*N))**(1.5*N))
+    samples:
+      lam: [2.0, 0.5, 3.0, 1.0, 1.5]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+      m: [0.7, 1.0, 1.4, 0.5, 0.9]
+      T: [1.5, 0.6, 1.0, 2.0, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p1-scale"', '<Formula label="Amount by which the old entropy fails the test"']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (the difference is our addition)'}
+    origin: page-own
+
+  - id: p1-mole
+    kind: value
+    where: 'Problem 1(a), solution: N k for one mole'
+    inputs: {kB: 1.380649e-23 J/K, NA: 6.02214e23}
+    formula: |-
+      NA*kB
+    expected: '8.314 J/K'
+    shown: ['J/K $= 8.314$ J/K']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-double
+    kind: value
+    answer: p1-double
+    where: 'Problem 1(a), answer box (our addition): old entropy of two moles in 2V minus twice that of one mole in V, as lam N k ln(lam) with lam = 2'
+    inputs: {kB: 1.380649e-23 J/K, NA: 6.02214e23, lam: 2}
+    formula: |-
+      lam*NA*kB*log(lam)
+    expected: '11.53 J/K'
+    shown: ['id="p1-double"', 'the excess is $2 \times 8.314 \times \ln 2 = 11.53$ J/K']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Part (b): the entropy of mixing
+
+  - id: p1-n1
+    kind: identity
+    where: 'Problem 1(b), formula "Atoms on each side": with N1 = alpha N and N2 = (1 - alpha) N the two pressures are equal'
+    formula: |-
+      alpha*N*k*T/(alpha*V)
+    equals: |-
+      (1 - alpha)*N*k*T/((1 - alpha)*V)
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+      T: [1.5, 0.6, 1.0, 2.0, 0.8]
+    tolerance: 1e-12
+    shown: ['<Formula label="Atoms on each side"']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  - id: p1-n1-sum
+    kind: identity
+    where: 'Problem 1(b): N = N1 (1 + (1 - alpha)/alpha) = N1/alpha'
+    formula: |-
+      1 + (1 - alpha)/alpha
+    equals: |-
+      1/alpha
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+    tolerance: 1e-12
+    shown: ['N_1\left(1 + \frac{1 - \alpha}{\alpha}\right) = N_1/\alpha']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  - id: p1-ds1
+    kind: identity
+    where: 'Problem 1(b): the entropy change of gas 1, as k log of the ratio of its phase-space volumes after and before (the temperature factor cancels)'
+    formula: |-
+      alpha*N*k*log(1/alpha)
+    equals: |-
+      k*log(V**(alpha*N)/(alpha*V)**(alpha*N))
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-10
+    shown: ['<Formula label="Entropy changes of the two gases"', '<Formula label="Entropy of mixing to be shown"']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2'}
+    origin: mit
+
+  - id: p1-ds2
+    kind: identity
+    answer: p1-ds2
+    where: 'Problem 1(b), answer box (our addition): the entropy change of gas 2, as k log of the ratio of its phase-space volumes after and before'
+    formula: |-
+      (1 - alpha)*N*k*log(1/(1 - alpha))
+    equals: |-
+      k*log(V**((1 - alpha)*N)/((1 - alpha)*V)**((1 - alpha)*N))
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-10
+    shown: ['id="p1-ds2"', '<Formula label="Entropy changes of the two gases"']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2'}
+    origin: mit
+
+  - id: p1-mix-formula
+    kind: identity
+    where: 'Problem 1(b), formula "Entropy of mixing": the bracket times N k against k log of the ratio of the joint phase-space volumes after and before'
+    formula: |-
+      N*k*(alpha*log(1/alpha) + (1 - alpha)*log(1/(1 - alpha)))
+    equals: |-
+      k*log(V**N/((alpha*V)**(alpha*N)*((1 - alpha)*V)**((1 - alpha)*N)))
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-10
+    shown: ['<Formula label="Entropy of mixing"']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2'}
+    origin: mit
+
+  - id: p1-mix-bracket
+    kind: value
+    where: 'Problem 1(b), solution and graph: the bracket for alpha = 0.25'
+    inputs: {alpha: 0.25}
+    formula: |-
+      alpha*log(1/alpha) + (1 - alpha)*log(1/(1 - alpha))
+    expected: '0.5623'
+    shown: ['$0.25\ln 4 + 0.75\ln\frac{4}{3} = 0.5623$', 'y: 0.5623', 'label: "0.5623"']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-mix
+    kind: value
+    answer: p1-mix
+    where: 'Problem 1(b), answer box (our addition): the entropy of mixing for one mole in all and alpha = 0.25'
+    inputs: {kB: 1.380649e-23 J/K, NA: 6.02214e23, alpha: 0.25}
+    formula: |-
+      NA*kB*(alpha*log(1/alpha) + (1 - alpha)*log(1/(1 - alpha)))
+    expected: '4.676 J/K'
+    shown: ['id="p1-mix"', '$\Delta S_T = 8.314 \times 0.5623 = 4.676$ J/K']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-mix-max
+    kind: value
+    where: 'Problem 1(b), graph and check: the bracket at alpha = 1/2 is ln 2'
+    inputs: {alpha: 0.5}
+    formula: |-
+      alpha*log(1/alpha) + (1 - alpha)*log(1/(1 - alpha))
+    expected: '0.6931'
+    shown: ['y: 0.6931', 'ln 2 = 0.6931']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-mix-max-place
+    kind: value
+    where: 'Problem 1(b), graph: the bracket is largest at alpha = 1/2 (its derivative ln((1 - alpha)/alpha) vanishes there)'
+    formula: |-
+      solve('log((1 - a)/a)', 'a', 0.1, 0.9)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['largest, ln 2 = 0.6931, when the two sides are equal']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own remark)'}
+    origin: page-own
+
+  - id: p1-mix-two-moles
+    kind: value
+    where: 'Problem 1(b), check: two moles in all with alpha = 1/2 give the excess of part (a)'
+    inputs: {kB: 1.380649e-23 J/K, NA: 6.02214e23, alpha: 0.5}
+    formula: |-
+      2*NA*kB*(alpha*log(1/alpha) + (1 - alpha)*log(1/(1 - alpha)))
+    expected: '11.53 J/K'
+    shown: ['that is $2 \times 8.314 \times \ln 2 = 11.53$ J/K']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Part (c): correct Boltzmann counting
+
+  - id: p1-new
+    kind: identity
+    answer: p1-new
+    where: 'Problem 1(c), answer box (our addition): the volume term of the new entropy, with ln N! replaced by Stirling''s N ln N - N computed as the integral of ln u from 0 to N, and the term kN dropped as MIT does'
+    formula: |-
+      N*k*log(V/N)
+    equals: |-
+      k*log(V**N) - k*integrate('log(u)', 'u', 0, N) - k*N
+    samples:
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-7
+    shown: ['id="p1-new"', '<Formula label="Entropy with correct Boltzmann counting"']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2'}
+    origin: mit
+
+  - id: p1-new-scale
+    kind: identity
+    where: 'Problem 1(c), formula "Scaling the new entropy": S(lam N, lam V, T) = lam S(N, V, T) for the new entropy'
+    formula: |-
+      lam*N*k*log(lam*V/(lam*N)) + 1.5*lam*N*k*log(2*pi*e*m*k*T)
+    equals: |-
+      lam*(N*k*log(V/N) + 1.5*N*k*log(2*pi*e*m*k*T))
+    samples:
+      lam: [2.0, 0.5, 3.0, 1.0, 1.5]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+      m: [0.7, 1.0, 1.4, 0.5, 0.9]
+      T: [1.5, 0.6, 1.0, 2.0, 0.8]
+    tolerance: 1e-10
+    shown: ['<Formula label="Scaling the new entropy"']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2'}
+    origin: mit
+
+  - id: p1-table-old
+    kind: identity
+    where: 'Problem 1(c), table, old counting with the partition: the two volume terms written with ln V taken out'
+    formula: |-
+      alpha*N*k*log(alpha*V) + (1 - alpha)*N*k*log((1 - alpha)*V)
+    equals: |-
+      N*k*(alpha*log(alpha) + (1 - alpha)*log(1 - alpha) + log(V))
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-10
+    shown: ['which is $Nk\left[\alpha\ln\alpha + (1 - \alpha)\ln(1 - \alpha) + \ln V\right]$']
+    source: {cite: reading1, at: 'Problem 1(c), table, p. 3'}
+    origin: mit
+
+  - id: p1-table-new
+    kind: identity
+    where: 'Problem 1(c), table, new counting: the two samples together have the volume term of the single sample'
+    formula: |-
+      alpha*N*k*log(alpha*V/(alpha*N)) + (1 - alpha)*N*k*log((1 - alpha)*V/((1 - alpha)*N))
+    equals: |-
+      N*k*log(V/N)
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-10
+    shown: ['which is $Nk\ln\dfrac{V}{N}$']
+    source: {cite: reading1, at: 'Problem 1(c), table, p. 3'}
+    origin: mit
+
+  - id: p1-table-sign
+    kind: value
+    where: 'Problem 1(c), slip in MIT''s table: alpha ln alpha + (1 - alpha) ln(1 - alpha) is negative (here for alpha = 0.25), not positive as the brace says'
+    inputs: {alpha: 0.25}
+    formula: |-
+      alpha*log(alpha) + (1 - alpha)*log(1 - alpha)
+    expected: '-0.5623'
+    shown: ['both logarithms are negative and so is the sum']
+    source: {cite: reading1, at: 'Problem 1(c), table, p. 3'}
+    origin: slip
+
+  - id: p1-table-slips
+    kind: fact
+    where: 'Problem 1(c): MIT''s table marks the sum of the two logarithm terms with a plus sign, and prints the second term of the first "new S" line without N k'
+    shown: ['Two slips in MIT''s table, p. 3']
+    source: {cite: reading1, at: 'Problem 1(c), table, p. 3'}
+    origin: slip
+
+  - id: p1-diff-gases
+    kind: identity
+    where: 'Problem 1(c), formula "Mixing of two different gases with correct counting" (our addition): with N1 = alpha N and V1 = alpha V the change for gas 1 is that of part (b)'
+    formula: |-
+      alpha*N*k*log(V/(alpha*N)) - alpha*N*k*log(alpha*V/(alpha*N))
+    equals: |-
+      alpha*N*k*log(1/alpha)
+    samples:
+      alpha: [0.1, 0.25, 0.5, 0.7, 0.9]
+      N: [1, 2, 3, 4, 6]
+      V: [2.0, 0.5, 3.0, 1.2, 1.7]
+      k: [0.5, 0.8, 1.0, 1.3, 2.0]
+    tolerance: 1e-10
+    shown: ['<Formula label="Mixing of two different gases with correct counting"', 'id="p1-diff"']
+    source: {cite: reading1, at: 'Problem 1(b) and (c), p. 2 (our addition)'}
+    origin: page-own
+
+  - id: p1-exact-ratio
+    kind: value
+    where: 'Problem 1(c), check with exact factorials (our addition): 2^N [(N/2)!]^2 / N! for N = 100, through Wallis''s integral'
+    formula: |-
+      1/((2/pi)*integrate('cos(u)**100', 'u', 0, pi/2))
+    expected: '12.56'
+    shown: ['$\ln 12.56 = 2.531$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1-exact
+    kind: value
+    where: 'Problem 1(c), check with exact factorials (our addition): its logarithm, the entropy change in units of k for N = 100'
+    formula: |-
+      -log((2/pi)*integrate('cos(u)**100', 'u', 0, pi/2))
+    expected: '2.531'
+    shown: ['$\ln 12.56 = 2.531$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1-exact-approx
+    kind: value
+    where: 'Problem 1(c), check: the approximation (1/2) ln(pi N/2) for N = 100'
+    inputs: {N: 100}
+    formula: |-
+      0.5*log(pi*N/2)
+    expected: '2.528'
+    shown: ['the approximation gives $2.528$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1-exact-approx-limit
+    kind: identity
+    where: 'Problem 1(c), formula "Same gas, equal halves, exact factorials": the exact logarithm (Wallis''s integral) against (1/2) ln(pi N/2) for large even N'
+    formula: |-
+      -log((2/pi)*integrate('cos(u)**N', 'u', 0, pi/2))
+    equals: |-
+      0.5*log(pi*N/2)
+    samples:
+      N: [400, 1000, 2000]
+    tolerance: 1e-3
+    shown: ['<Formula label="Same gas, equal halves, exact factorials"']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1-exact-old
+    kind: value
+    where: 'Problem 1(c), check: the old counting gives N ln 2 for N = 100'
+    inputs: {N: 100}
+    formula: |-
+      N*log(2)
+    expected: '69.31'
+    shown: ['$N\ln 2 = 69.31$']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-exact-mole
+    kind: value
+    where: 'Problem 1(c), check: the remainder (1/2) ln(pi N/2) for one mole, in units of k'
+    inputs: {NA: 6.02214e23}
+    formula: |-
+      0.5*log(pi*NA/2)
+    expected: '27.6'
+    shown: ['$\frac{1}{2}\ln(\pi N/2) = 27.6$ in units of $k$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1-exact-mole-si
+    kind: value
+    where: 'Problem 1(c), check: the same remainder in J/K'
+    inputs: {kB: 1.380649e-23 J/K, NA: 6.02214e23}
+    formula: |-
+      0.5*log(pi*NA/2)*kB
+    expected: '3.8e-22 J/K'
+    shown: ['$3.8 \times 10^{-22}$ J/K']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1-old-mole
+    kind: value
+    where: 'Problem 1(c), check: N k ln 2 for one mole, the old counting'
+    inputs: {kB: 1.380649e-23 J/K, NA: 6.02214e23}
+    formula: |-
+      NA*kB*log(2)
+    expected: '5.763 J/K'
+    shown: ['$5.763$ J/K']
+    source: {cite: reading1, at: 'Problem 1(b), p. 2 (our own numbers)'}
+    origin: page-own
