@@ -1,0 +1,575 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions to this set. Every formula answer is checked here by a route that does not use MIT's
+# algebra: a numerical derivative of the equation of state and a numerical integral over the volume (Problem 1), a
+# numerical root of the entropy balance and a numerical integral of the work of the small cycles (Problem 2),
+# numerical integrals of the heat capacities (Problem 3), numerical averages over the Boltzmann factor (Problem 4).
+# In Problem 3 temperatures are plain numbers of kelvin, a and b in units of 10^4 erg K^-4 and 10^4 erg K.
+
+page: content/year-3/8.044/8-044-problem-set-7.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-dedv-from-pressure
+    kind: identity
+    answer: p1-dedv
+    where: 'Problem 1(b), first answer box and formula "How the energy of the gas changes": T (dP/dT)_V - P, with the derivative of the equation of state taken numerically'
+    formula: a*N**2/V**2
+    equals: >-
+      T*deriv('N*k*t/(V - b*N) - a*N**2/V**2', 't', T) - (N*k*T/(V - b*N) - a*N**2/V**2)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.5, 1.3]
+      b: [0.1, 0.3, 0.2, 0.25, 0.15]
+      N: [1, 1.4, 2, 1.7, 1.2]
+      k: [0.5, 1, 1.5, 1.2, 0.8]
+      T: [3, 4, 5, 3.5, 4.5]
+      V: [3, 6, 4, 5, 3.5]
+    tolerance: 1e-6
+    shown: ['\left(\frac{\partial E}{\partial V}\right)_T = T\left(\frac{\partial P}{\partial T}\right)_V - P = a\left(\frac NV\right)^2']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  # The final temperature without the energy function of the page: the energy gained on the way from V0/3 to V0 at
+  # fixed temperature is the numerical integral of T (dP/dT)_V - P over the volume (the integrand does not depend on
+  # T), and the heat capacity (3/2)Nk turns it into a drop of temperature.
+  - id: p1-tf-by-integration
+    kind: identity
+    answer: p1-tf
+    where: 'Problem 1(b), second answer box and formula "Final temperature of the gas": against a numerical integral of T (dP/dT)_V - P from V0/3 to V0, divided by (3/2)Nk'
+    formula: Ti - 4*a*N/(3*k*V0)
+    equals: >-
+      Ti - integrate("Ti*deriv('N*k*t/(v - b*N) - a*N**2/v**2', 't', Ti) - (N*k*Ti/(v - b*N) - a*N**2/v**2)", "v", V0/3, V0)/(1.5*N*k)
+    samples:
+      Ti: [3, 4, 5, 3.5, 4.5]
+      a: [0.5, 0.8, 1.1, 1.5, 1.3]
+      b: [0.1, 0.3, 0.2, 0.25, 0.15]
+      N: [1, 1.4, 2, 1.7, 1.2]
+      k: [0.5, 1, 1.5, 1.2, 0.8]
+      V0: [3, 6, 4, 5, 3.5]
+    tolerance: 1e-6
+    shown: ['T_{\text{end}} = T_i - \frac43\,\frac ak\,\frac{N}{V_0}']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  - id: p1-energy-is-conserved
+    kind: identity
+    where: 'Problem 1(b), formula "Energy balance of the free expansion": the energy function at (T_end, V0) equals that at (Ti, V0/3)'
+    formula: 1.5*N*k*(Ti - 4*a*N/(3*k*V0)) - a*N**2/V0
+    equals: 1.5*N*k*Ti - a*N**2/(V0/3)
+    samples:
+      Ti: [3, 4, 5, 3.5, 4.5]
+      a: [0.5, 0.8, 1.1, 1.5, 1.3]
+      N: [1, 1.4, 2, 1.7, 1.2]
+      k: [0.5, 1, 1.5, 1.2, 0.8]
+      V0: [3, 6, 4, 5, 3.5]
+    tolerance: 1e-12
+    shown: ['\frac32NkT_i - \frac{aN^2}{V_0/3} = \frac32NkT_{\text{end}} - \frac{aN^2}{V_0}']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  - id: p1-potential-energy-rise
+    kind: identity
+    where: 'Problem 1(b), step "Before and after": the rise of the potential energy'
+    formula: 2*a*N**2/V0
+    equals: (-a*N**2/V0) - (-a*N**2/(V0/3))
+    samples:
+      a: [0.5, 0.8, 1.1, 1.5, 1.3]
+      N: [1, 1.4, 2, 1.7, 1.2]
+      V0: [3, 6, 4, 5, 3.5]
+    tolerance: 1e-12
+    shown: ['the potential energy rises by $2aN^2/V_0$']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  # ---- Problem 2
+
+  - id: p2-tf-entropy-balance
+    kind: identity
+    answer: p2-tf
+    where: 'Problem 2(a), answer box and formula "Common final temperature": the temperature at which the entropy changes of the two bodies add up to zero, as a numerical root'
+    formula: sqrt(TH*TC)
+    equals: >-
+      solve("log(q/TH) + log(q/TC)", "q", TC, TH)
+    samples:
+      TH: [300, 400, 600, 450, 520]
+      TC: [100, 250, 150, 200, 120]
+    tolerance: 1e-8
+    shown: ['\Longrightarrow\quad T_F = \sqrt{T_HT_C}']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  # The work cycle by cycle: when the hot body is at t the cold body is at TH*TC/t (their entropies add up to a
+  # constant), the hot body gives up C0 dt, and a Carnot cycle turns the fraction 1 - (TH*TC/t)/t of it into work.
+  - id: p2-work-cycle-by-cycle
+    kind: identity
+    answer: p2-w
+    where: 'Problem 2(b), answer box and formula "Total work in terms of the starting temperatures": against the Carnot efficiency of each small cycle, integrated numerically over the temperature of the hot body'
+    formula: C0*(sqrt(TH) - sqrt(TC))**2
+    equals: >-
+      integrate('C0*(1 - TH*TC/t**2)', 't', sqrt(TH*TC), TH)
+    samples:
+      C0: [1, 2, 3, 1.5, 2.5]
+      TH: [300, 400, 600, 450, 520]
+      TC: [100, 250, 150, 200, 120]
+    tolerance: 1e-8
+    shown: ['W_{\text{out}} = C_0\left(T_H - 2\sqrt{T_HT_C} + T_C\right) = C_0\left(\sqrt{T_H} - \sqrt{T_C}\right)^2 > 0']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-example-tf
+    where: 'Problem 2(a), check: bodies at 400 K and 100 K'
+    inputs: {}
+    formula: sqrt(400*100)
+    expected: '200'
+    tolerance: 1e-9
+    shown: ['$\sqrt{400 \times 100}$ K $= 200$ K']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-contact
+    where: 'Problem 2(a), check: the same bodies put in contact with no engine (energy conserved, equal heat capacities)'
+    inputs: {}
+    formula: (400 + 100)/2
+    expected: '250'
+    tolerance: 1e-9
+    shown: ['they would end at the ordinary mean, 250 K']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2 (our own comparison)'}
+    origin: page-own
+
+  - id: p2-example-work
+    where: 'Problem 2(b), check: the work for 400 K and 100 K, in units of C0 times 1 K'
+    inputs: {}
+    formula: (sqrt(400) - sqrt(100))**2
+    expected: '100'
+    tolerance: 1e-9
+    shown: ['$C_0\,(20 - 10)^2$ K $= 100\ \text{K} \times C_0$']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-example-missing-energy
+    where: 'Problem 2(b), check: the energy missing from the two bodies, compared with contact, in units of C0 times 1 K'
+    inputs: {}
+    formula: 2*(250 - 200)
+    expected: '100'
+    tolerance: 1e-9
+    shown: ['$2C_0\,(250 - 200)$ K $= 100\ \text{K} \times C_0$']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2 (our own comparison)'}
+    origin: page-own
+
+  # ---- Problem 3 (a = 128 and b = 15, in units of 10^4 erg K^-4 and 10^4 erg K)
+
+  - id: p3-constants
+    kind: fact
+    where: 'Problem 3, statement: MIT''s constants of the two heat capacities'
+    shown: ['$a = 128 \times 10^4$ erg K⁻⁴', '$b = 15 \times 10^4$ erg K']
+    source: {cite: mit, at: 'Problem 3, p. 2'}
+    origin: mit
+
+  - id: p3-t0
+    answer: p3-t0
+    where: 'Problem 3(a), answer box: the starting temperature of the salt, as the numerical root of the heat balance with both heats integrated numerically'
+    inputs: {}
+    formula: >-
+      solve("integrate('15/t**2', 't', q, 0.5) + integrate('128*t**3', 't', 1, 0.5)", "q", 0.1, 0.45)
+    expected: '0.25'
+    tolerance: 1e-6
+    shown: ['T_0 = 0.25\ \text{K}']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-inverse-t0
+    where: 'Problem 3(a), formula "Starting temperature of the salt": 1/T0'
+    inputs: {}
+    formula: 2 + 15/64*128/15
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['2 + \frac{15}{64} \times \frac{128}{15} = 4']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-heat-from-helium
+    where: 'Problem 3(a), check: the heat the helium gives up between 1 K and 0.5 K, in units of 10^4 erg, by numerical integration'
+    inputs: {}
+    formula: integrate('128*t**3', 't', 0.5, 1)
+    expected: '30'
+    tolerance: 1e-6
+    shown: ['the helium gives up $\frac{15}{64}a = 30 \times 10^4$ erg']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3 (the number is ours)'}
+    origin: page-own
+
+  - id: p3-heat-into-salt
+    where: 'Problem 3(a), check: the heat the salt takes in between 0.25 K and 0.5 K, in units of 10^4 erg, by numerical integration'
+    inputs: {}
+    formula: integrate('15/t**2', 't', 0.25, 0.5)
+    expected: '30'
+    tolerance: 1e-6
+    shown: ['takes in $b\,(4 - 2) = 30 \times 10^4$ erg', 'The same heat, $30 \times 10^4$ erg']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3 (the number is ours)'}
+    origin: page-own
+
+  - id: p3-heat-joule
+    where: 'Problem 3(a), check: the heat in joules (1 erg = 1e-7 J)'
+    inputs: {}
+    formula: 30e4*1e-7
+    expected: '0.030'
+    shown: ['That is 0.030 J.', '1 erg $= 10^{-7}$ J']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3 (the number is ours)'}
+    origin: page-own
+
+  - id: p3-entropy-by-integration
+    kind: identity
+    answer: p3-ds
+    where: 'Problem 3(b), first answer box and formula "Net entropy change": against numerical integrals of C/T for the salt (0.25 K to 0.5 K) and the helium (1 K to 0.5 K)'
+    formula: 6*b - 7*a/24
+    equals: >-
+      integrate('b/t**3', 't', 0.25, 0.5) + integrate('a*t**2', 't', 1, 0.5)
+    samples:
+      a: [50, 128, 200, 90, 160]
+      b: [10, 15, 30, 22, 12]
+    tolerance: 1e-8
+    shown: ['\Delta S = 6b - \frac{7}{24}\,a']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-ds-num
+    answer: p3-ds-num
+    where: 'Problem 3(b), second answer box (our addition): the entropy change in units of 10^4 erg/K, by numerical integration'
+    inputs: {}
+    formula: integrate('15/t**3', 't', 0.25, 0.5) + integrate('128*t**2', 't', 1, 0.5)
+    expected: '52.7'
+    shown: ['52.7 \times 10^4 \quad \text{(in erg/K)}']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3 (MIT stops at the formula; the number is ours)'}
+    origin: page-own
+
+  - id: p3-ds-salt
+    where: 'Problem 3(b), step "The number": the entropy gained by the salt, in units of 10^4 erg/K'
+    inputs: {}
+    formula: 6*15
+    expected: '90'
+    tolerance: 1e-9
+    shown: ['$6b = 90 \times 10^4$ erg/K']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3 (the number is ours)'}
+    origin: page-own
+
+  - id: p3-ds-helium
+    where: 'Problem 3(b), step "The number": the entropy lost by the helium, in units of 10^4 erg/K'
+    inputs: {}
+    formula: 7/24*128
+    expected: '37.3'
+    shown: ['$\frac{7}{24}a = 37.3 \times 10^4$ erg/K']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3 (the number is ours)'}
+    origin: page-own
+
+  - id: p3-ds-joule
+    where: 'Problem 3(b), step "The number": the entropy change in J/K (1 erg = 1e-7 J)'
+    inputs: {}
+    formula: (6*15 - 7/24*128)*1e4*1e-7
+    expected: '0.0527'
+    shown: ['which is 0.0527 J/K']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3 (the number is ours)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # The rms angle as a numerical average over the Boltzmann factor of the potential energy (x = theta - theta0),
+  # taken to 12 standard deviations, where the integrand is below 1e-30.
+  - id: p4-rms-by-integration
+    kind: identity
+    answer: p4-rms
+    where: 'Problem 4(a), first answer box and formula "Thermal uncertainty of the angle": the root of the numerical average of (theta - theta0)^2 over exp(-V/kT)'
+    formula: sqrt(k*T/K)
+    equals: >-
+      sqrt(integrate('x**2*exp(-K*x**2/(2*k*T))', 'x', -12*sqrt(k*T/K), 12*sqrt(k*T/K))/integrate('exp(-K*x**2/(2*k*T))', 'x', -12*sqrt(k*T/K), 12*sqrt(k*T/K)))
+    samples:
+      k: [0.5, 1, 2, 1.3, 0.8]
+      T: [0.5, 2, 1, 1.6, 0.7]
+      K: [0.5, 1, 2, 0.9, 1.7]
+    tolerance: 1e-8
+    shown: ['\left\langle\left(\theta - \theta_0\right)^2\right\rangle^{1/2} = \sqrt{\frac{kT}{K}}']
+    source: {cite: reading1, at: 'Problem 4(a), p. 4'}
+    origin: mit
+
+  - id: p4-rms-num
+    answer: p4-rms-num
+    where: 'Problem 4(a), second answer box (our addition): the rms angle in microradians for K = 4.0e-9 N m/rad at 300 K'
+    inputs: {}
+    formula: sqrt(1.381e-23*300/4.0e-9)*1e6
+    expected: '1.02'
+    shown: ['= 1.02 \times 10^{-6}\ \text{rad}', '$K = 4.0 \times 10^{-9}$ N m per radian at $T = 300$ K', '$k = 1.381 \times 10^{-23}$ J/K']
+    source: {cite: reading1, at: 'Problem 4(a), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-boltzmann-constant
+    where: 'Problem 4(a), statement: Boltzmann''s constant to four figures (exact SI value 1.380649e-23 J/K)'
+    inputs: {}
+    formula: k_B
+    expected: 1.381e-23 J/K
+    shown: ['$k = 1.381 \times 10^{-23}$ J/K']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own number; SI 2019: k = 1.380649e-23 J/K, exact)'}
+    origin: page-own
+
+  - id: p4-mean-potential-energy
+    kind: identity
+    where: 'Problem 4(a), check: the mean potential energy is kT/2, by numerical average over the Boltzmann factor'
+    formula: k*T/2
+    equals: >-
+      integrate('0.5*K*x**2*exp(-K*x**2/(2*k*T))', 'x', -12*sqrt(k*T/K), 12*sqrt(k*T/K))/integrate('exp(-K*x**2/(2*k*T))', 'x', -12*sqrt(k*T/K), 12*sqrt(k*T/K))
+    samples:
+      k: [0.5, 1, 2, 1.3, 0.8]
+      T: [0.5, 2, 1, 1.6, 0.7]
+      K: [0.5, 1, 2, 0.9, 1.7]
+    tolerance: 1e-8
+    shown: ['\frac12K\left\langle\left(\theta - \theta_0\right)^2\right\rangle = \frac12kT']
+    source: {cite: reading1, at: 'Problem 4(a), p. 4 (the check is ours)'}
+    origin: page-own
+
+  # <theta theta-dot> as a double numerical integral over the canonical density, for a pendulum whose rest angle is
+  # not zero (theta0 = q = 0.7, kT = kt = 1.3, K = 0.9, I = 1.7): x is the angle, w the angular velocity.
+  - id: p4-mean-product
+    where: 'Problem 4(b), choice box and formula "Mean of the product": the average of theta times theta-dot over exp(-H/kT), by a double numerical integral, divided by the rms product'
+    inputs: {q: 0.7, kt: 1.3, K: 0.9, I: 1.7}
+    formula: >-
+      integrate("integrate('x*w*exp(-I*w**2/(2*kt))*exp(-K*(x - q)**2/(2*kt))', 'w', -12*sqrt(kt/I), 12*sqrt(kt/I))", "x", q - 12*sqrt(kt/K), q + 12*sqrt(kt/K))/(kt/sqrt(I*K))
+    expected: '0'
+    tolerance: 1e-8
+    shown: ['= \theta_0 \times 0 = 0']
+    source: {cite: reading1, at: 'Problem 4(b), p. 4'}
+    origin: mit
+
+  - id: p4-rms-product
+    kind: identity
+    where: 'Problem 4(b), check: the product of the rms angle and the rms angular velocity'
+    formula: k*T/sqrt(I*K)
+    equals: sqrt(k*T/K)*sqrt(k*T/I)
+    samples:
+      k: [0.5, 1, 2, 1.3, 0.8]
+      T: [0.5, 2, 1, 1.6, 0.7]
+      K: [0.5, 1, 2, 0.9, 1.7]
+      I: [1.2, 0.6, 2, 1.7, 0.9]
+    tolerance: 1e-12
+    shown: ['a product of rms size at least $kT/\sqrt{IK}$']
+    source: {cite: reading1, at: 'Problem 4(b), p. 4 (the remark is ours)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-binding-energy
+    kind: fact
+    where: 'Problem 5, statement: MIT''s value of A'
+    shown: ['A = 13.6\ \text{eV}']
+    source: {cite: mit, at: 'Problem 5, p. 3'}
+    origin: mit
+
+  - id: p5-boltzmann-ev
+    where: 'Problem 5(a), statement: Boltzmann''s constant in eV/K to four figures (k = 1.380649e-23 J/K, e = 1.602176634e-19 C, both exact)'
+    inputs: {}
+    formula: 1.380649e-23/1.602176634e-19
+    expected: '8.617e-5'
+    shown: ['$k = 8.617 \times 10^{-5}$ eV/K']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own number; SI 2019: k = 1.380649e-23 J/K and e = 1.602176634e-19 C, exact)'}
+    origin: page-own
+
+  # The ratio from the states themselves: four states of energy -A/4 (one with l = 0, three with l = 1) against one
+  # state of energy -A, each with its own Boltzmann factor.
+  - id: p5-ratio-state-by-state
+    kind: identity
+    answer: p5-ratio
+    where: 'Problem 5(a), first answer box and formula "Ratio of the populations of the two lowest levels": the Boltzmann factors of the four n = 2 states added one by one, over that of the n = 1 state'
+    formula: 4*exp(-3*A/(4*k*T))
+    equals: (exp(A/(2**2*k*T)) + exp(A/(2**2*k*T)) + exp(A/(2**2*k*T)) + exp(A/(2**2*k*T)))/exp(A/(1**2*k*T))
+    samples:
+      A: [1, 2, 3, 1.5, 2.5]
+      k: [0.5, 1, 1.5, 1.2, 0.8]
+      T: [0.5, 2, 1, 1.6, 0.7]
+    tolerance: 1e-10
+    shown: ['4\exp\left[-\frac34\,\frac{A}{kT}\right]']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5'}
+    origin: mit
+
+  - id: p5-a-over-k
+    where: 'Problem 5(a), step "The numbers": A/k in kelvin'
+    inputs: {}
+    formula: 13.6/8.617e-5
+    expected: '1.578e5'
+    shown: ['= 1.578 \times 10^5$ K']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (MIT quotes 1.58e5 K)'}
+    origin: page-own
+
+  - id: p5-exponent-300
+    where: 'Problem 5(a), step "The numbers": 3A/4kT at 300 K'
+    inputs: {}
+    formula: 0.75*13.6/(8.617e-5*300)
+    expected: '394.6'
+    shown: ['\times 10^5/300 = 394.6$', '4e^{-394.6}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (our own number)'}
+    origin: page-own
+
+  - id: p5-exponent-1000
+    where: 'Problem 5(a), step "The numbers": 3A/4kT at 1000 K'
+    inputs: {}
+    formula: 0.75*13.6/(8.617e-5*1000)
+    expected: '118.4'
+    shown: ['at 1000 K it is $118.4$', '4e^{-118.4}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (our own number)'}
+    origin: page-own
+
+  - id: p5-x300
+    answer: p5-x300
+    where: 'Problem 5(a), second answer box: x in ratio = 10^(-x) at 300 K'
+    inputs: {}
+    formula: 0.75*13.6/(8.617e-5*300)/log(10) - log10(4)
+    expected: '170.76'
+    tolerance: 0.01
+    shown: ['10^{-170.76}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (MIT prints 4.8e-170, a slip: see p5-mit-slip)'}
+    origin: page-own
+
+  - id: p5-x1000
+    answer: p5-x1000
+    where: 'Problem 5(a), third answer box: x in ratio = 10^(-x) at 1000 K'
+    inputs: {}
+    formula: 0.75*13.6/(8.617e-5*1000)/log(10) - log10(4)
+    expected: '50.81'
+    tolerance: 0.01
+    shown: ['10^{-50.81}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (MIT prints 1.6e-51)'}
+    origin: mit
+
+  - id: p5-ratio-300
+    where: 'Problem 5(a), formula "The ratio at the two temperatures": the ratio at 300 K, times 1e171'
+    inputs: {}
+    formula: 4*exp(-0.75*13.6/(8.617e-5*300))*1e171
+    expected: '1.75'
+    shown: ['\approx 1.75 \times 10^{-171}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (our own number; MIT prints 4.8e-170)'}
+    origin: page-own
+
+  - id: p5-ratio-1000
+    where: 'Problem 5(a), formula "The ratio at the two temperatures": the ratio at 1000 K, times 1e51'
+    inputs: {}
+    formula: 4*exp(-0.75*13.6/(8.617e-5*1000))*1e51
+    expected: '1.6'
+    shown: ['\approx 1.6 \times 10^{-51}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5'}
+    origin: mit
+
+  - id: p5-mit-printed
+    kind: fact
+    where: 'Problem 5(a), note in brackets: the value MIT''s solutions print at 300 K, and MIT''s conversion factor'
+    shown: ['MIT''s solutions print $4.8 \times 10^{-170}$ at 300 K', '1 meV for 11.6 K']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5'}
+    origin: mit
+
+  - id: p5-mit-conversion
+    where: 'Problem 5(a), note in brackets: the ratio at 300 K with MIT''s conversion 1 meV = 11.6 K (A/k = 13.6e3 * 11.6 K), times 1e171'
+    inputs: {}
+    formula: 4*exp(-0.75*13.6e3*11.6/300)*1e171
+    expected: '2.1'
+    shown: ['the formula gives $2.1 \times 10^{-171}$']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (recomputed)'}
+    origin: slip
+
+  - id: p5-mit-slip
+    where: 'Problem 5(a), note in brackets: MIT''s printed value divided by the recomputed one'
+    inputs: {}
+    formula: 4.8e-170/(4*exp(-0.75*13.6e3*11.6/300))
+    expected: '23'
+    shown: ['about 23 times smaller']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (recomputed)'}
+    origin: slip
+
+  - id: p5-mit-1000
+    where: 'Problem 5(a), note in brackets: the ratio at 1000 K with MIT''s conversion, times 1e51, against MIT''s printed 1.6e-51'
+    inputs: {}
+    formula: 4*exp(-0.75*13.6e3*11.6/1000)*1e51
+    expected: '1.6'
+    shown: ['The value at 1000 K agrees with MIT''s.']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5'}
+    origin: mit
+
+  - id: p5-gap
+    where: 'Problem 5(a), check: the gap between the two lowest levels, in eV'
+    inputs: {}
+    formula: 13.6 - 13.6/4
+    expected: '10.2'
+    shown: ['the gap of 10.2 eV']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (our own number)'}
+    origin: page-own
+
+  - id: p5-gap-over-kt
+    where: 'Problem 5(a), check: the gap divided by kT at 1000 K, the smaller of the two ratios (at 300 K it is 395)'
+    inputs: {}
+    formula: 10.2/(8.617e-5*1000)
+    expected: '118'
+    shown: ['$kT$ is more than a hundred times smaller than the gap']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (our own number)'}
+    origin: page-own
+
+  - id: p5-rounding
+    where: 'Problem 5(a), check: the share by which the ratio at 300 K falls when A/k is rounded to 1.58e5 K'
+    inputs: {}
+    formula: 1 - exp(-0.75*(1.58e5 - 13.6/8.617e-5)/300)
+    expected: '0.35'
+    shown: ['makes the ratio at 300 K smaller by about a third']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5 (our own remark)'}
+    origin: page-own
+
+  # The number of states by the arithmetic series: the sum of 2l over l = 0 … n-1 is n(n-1), and there are n terms.
+  - id: p5-states-per-level
+    kind: identity
+    answer: p5-g
+    where: 'Problem 5(b), answer box (our addition) and formula "Number of states in level n": against the arithmetic series'
+    formula: n**2
+    equals: n*(n - 1) + n
+    samples:
+      n: [1, 2, 3, 5, 7]
+    tolerance: 1e-12
+    shown: ['1 + 3 + 5 + \dots + \left(2n - 1\right) = n^2']
+    source: {cite: reading1, at: 'Problem 5(b), p. 5'}
+    origin: mit
+
+  - id: p5-states-n4
+    where: 'Problem 5(b), formula "Number of states in level n": the sum written out for n = 4'
+    inputs: {}
+    formula: 1 + 3 + 5 + 7
+    expected: '16'
+    tolerance: 1e-9
+    shown: ['1 + 3 + 5 + \dots + \left(2n - 1\right) = n^2']
+    source: {cite: reading1, at: 'Problem 5(b), p. 5'}
+    origin: mit
+
+  - id: p5-alpha-300
+    where: 'Problem 5(c), our estimate: alpha = A/kT at 300 K'
+    inputs: {}
+    formula: 13.6/(8.617e-5*300)
+    expected: '526'
+    shown: ['$\alpha = A/kT \approx 526$', 'e^{526}']
+    source: {cite: reading1, at: 'Problem 5(c), p. 5 (our own estimate)'}
+    origin: page-own
+
+  - id: p5-nmax
+    where: 'Problem 5(c), our estimate: log10 of the cut-off at which n^3/3 equals e^alpha'
+    inputs: {}
+    formula: (13.6/(8.617e-5*300)/log(10) + log10(3))/3
+    expected: '76'
+    shown: ['of about $10^{76}$']
+    source: {cite: reading1, at: 'Problem 5(c), p. 5 (our own estimate)'}
+    origin: page-own
+
+  - id: p5-size
+    where: 'Problem 5(c), our estimate: log10 of n^2 times the Bohr radius in metres, at that cut-off'
+    inputs: {}
+    formula: 2*(13.6/(8.617e-5*300)/log(10) + log10(3))/3 + log10(0.529e-10)
+    expected: '142'
+    shown: ['about $10^{142}$ m across']
+    source: {cite: reading1, at: 'Problem 5(c), p. 5 (our own estimate)'}
+    origin: page-own
+
+  - id: p5-bohr-radius
+    inputs: {}
+    formula: 5.29177210903e-11*1e10
+    expected: '0.529'
+    where: 'Problem 5(c), our estimate: the Bohr radius, as quoted in the 8.04 lesson on the hydrogen atom (0.529 Å)'
+    shown: ['$0.529 \times 10^{-10}$ m']
+    source: {cite: reading1, at: 'Problem 5(c), p. 5 (our own estimate; CODATA 2018: Bohr radius 5.29177210903e-11 m)'}
+    origin: page-own
