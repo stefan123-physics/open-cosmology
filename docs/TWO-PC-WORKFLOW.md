@@ -1,5 +1,7 @@
 # Writing the High School on two PCs
 
+> **Finished (record only).** The High School is complete and every `hs-block-*` branch is merged into `main`. Do not follow this file or its prompts for new work, and do not reuse the names "PC 1" and "PC 2": the current work on two computers (Account A and Account B, from 2026-11-26) follows [TASKS.md](../TASKS.md).
+
 The High School (113 lessons in nine blocks, `content/year-0/hs-0` … `hs-8`) is written on two PCs at the same time, each with its own Claude Code account (owner decision 2026-11-20). This file is the shared instruction for both. Read [AGENTS.md](../AGENTS.md) and [docs/HIGHSCHOOL-PLAN.md](HIGHSCHOOL-PLAN.md) too: they hold the writing rules, the lesson list (§4) and the sources (§2.0).
 
 ## The split

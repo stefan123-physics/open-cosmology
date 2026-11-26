@@ -2,6 +2,10 @@
 
 Two Claude Code accounts work on this repository at the same time, on two different computers: **Account A** and **Account B**. They cannot see or talk to each other; they coordinate only through Git and this file.
 
+**Not the earlier two-PC work.** Account A and Account B are not "PC 1" and "PC 2" of docs/TWO-PC-WORKFLOW.md: that High School work is finished and its file is only a record. Old branches on GitHub (`hs-block-*`, `ps-*`, `problem-sets*`, `pc1/*`) are finished history: never check them out, build on them or push to them. Start only from the latest `main`. If this computer still has old local branches or uncommitted changes from earlier work, leave them alone and tell the owner.
+
+**Committing in this run.** AGENTS.md says "commit only when asked": for this run the owner asks both accounts to commit and push as rule 4 says.
+
 ## Rules
 
 1. **Always pull the latest changes before starting work** (`git pull` on your branch, and `git fetch origin` to see the other branch and `main`).
