@@ -41,7 +41,7 @@ Status marks: `- [ ]` to do, `- [~]` in progress, `- [x]` done.
 This window:
 - [x] 8.044 Set 9: blind review of the draft on branch `ps-8044-9` (worktree `.claude/worktrees/ps-8044-9` on Account A's computer), fix, bring onto `run/a-8044-805`.
 - [x] 8.044 Sets 10 and 11 (MIT `resources/mit8_044s13_psN/`, solutions `…_pssN/`, `solutions: mit`).
-- [~] 8.05 (Fall 2013): 11 sets, `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
+- [~] 8.05 (Fall 2013): 11 sets (Sets 1–4 done 2026-11-26), `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
 
 Later windows:
 - [ ] 8.07 (Fall 2012): 10 sets, `resources/mit8_07f12_pset01/` …
@@ -49,6 +49,8 @@ Later windows:
 - [ ] Glossary: review the "First explained in" links that may be passing mentions (`npm run glossary:intro`).
 - [ ] Trial merge after Account B's first one or two reviewed sets: in a scratch worktree, merge `main`, `run/a-8044-805` and `origin/run/b-806-8962`, run `merge-symbols.py` and `content:check`, then throw the worktree away (nothing is pushed). Write any problem found under "Change requests".
 - [ ] Merge both branches into `main` (see "Merging") and answer Account B's change requests.
+
+**Resume here (Account A, 2026-11-26, stopped at 78% of the 5-hour limit):** branch `run/a-8044-805`, last commit after `63c14cd`. Done this window, each blind-reviewed, fixed and pushed: 8.044 Sets 9, 10, 11 (8.044 complete) and 8.05 Sets 1–4. Next: 8.05 Sets 5–11 (sheets and course note in Account A's scratchpad `805/`; the note is reproduced in docs/PROBLEM-SETS-RUN.md's 8.05 row). No drafts are open. Account B had pushed only its setup (no reviewed set) when A stopped, so the trial merge is still to do.
 
 ---
 
