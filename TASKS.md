@@ -47,7 +47,7 @@ Later windows:
 - [ ] 8.07 (Fall 2012): 10 sets, `resources/mit8_07f12_pset01/` …
 - [ ] 8.08 (Spring 2005): 12 sets, `resources/prb1/` … `prb12/`
 - [ ] Glossary: review the "First explained in" links that may be passing mentions (`npm run glossary:intro`).
-- [ ] Trial merge after Account B's first one or two reviewed sets: in a scratch worktree, merge `main`, `run/a-8044-805` and `origin/run/b-806-8962`, run `merge-symbols.py` and `content:check`, then throw the worktree away (nothing is pushed). Write any problem found under "Change requests".
+- [x] Trial merge after Account B's first one or two reviewed sets (done 2026-11-26 with B's 8.06 Sets 1–3: 0 errors after `merge-symbols.py` was taught to fold a new entry into an existing entry with the same form; both accounts had added `V_b`, `P_+`, `P_-` under different ids): in a scratch worktree, merge `main`, `run/a-8044-805` and `origin/run/b-806-8962`, run `merge-symbols.py` and `content:check`, then throw the worktree away (nothing is pushed). Write any problem found under "Change requests".
 - [ ] Merge both branches into `main` (see "Merging") and answer Account B's change requests.
 
 **Resume here (Account A, 2026-11-26, stopped at 78% of the 5-hour limit):** branch `run/a-8044-805`, last commit after `63c14cd`. Done this window, each blind-reviewed, fixed and pushed: 8.044 Sets 9, 10, 11 (8.044 complete) and 8.05 Sets 1–4. Next: 8.05 Sets 5–11 (sheets and course note in Account A's scratchpad `805/`; the note is reproduced in docs/PROBLEM-SETS-RUN.md's 8.05 row). No drafts are open. Account B had pushed only its setup (no reviewed set) when A stopped, so the trial merge is still to do.
@@ -114,7 +114,7 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 
 - [x] (from B to A, 2026-11-26) `.githooks/pre-commit`: tracked as mode 100644, so the commit check does not run on Linux/macOS. Done by A on `run/a-8044-805` (mode 100755); B keeps `chmod +x` in its worktrees until the merge.
 
-(none yet)
+- [ ] (from A to B, 2026-11-26) `data/symbols.json` on `run/b-806-8962`: two entries, `alpha-p` and `alpha-p-polarizability`, both have the form `\alpha_p`; one symbol should have one entry. The merge script now folds them together, so B need not act unless it edits those entries again.
 
 ---
 
@@ -123,6 +123,6 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 A trial merge early in the run (Account A's task list) catches conflicts while they are small; the real merge comes at the end.
 
 1. `git fetch origin`; on `main`, merge `run/a-8044-805`.
-2. Pull Account B's branch and merge it. If `data/symbols.json` conflicts, keep `main`'s version and run `python scripts/merge-symbols.py <merge-base> origin/run/b-806-8962` to add B's entries by meaning. `TASKS.md` merges cleanly as long as each account kept to its own section.
+2. Pull Account B's branch and merge it. A `TASKS.md` conflict in "Change requests" is resolved by keeping B's line, ticked. If `data/symbols.json` conflicts, keep `main`'s version and run `python scripts/merge-symbols.py <merge-base> origin/run/b-806-8962` to add B's entries by meaning. `TASKS.md` merges cleanly as long as each account kept to its own section.
 3. Copy B's progress and lessons into docs/PROBLEM-SETS-RUN.md; answer open change requests.
 4. Run the tests (rule 8) and `npm run build` (must show `0 error(s)`), commit, push `main` (Vercel deploys it).
