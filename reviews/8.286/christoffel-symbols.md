@@ -73,3 +73,7 @@ All values were recomputed with a Python script.
 - Info ("saddle" vs Guth's wording): the spacetime section now reads "maxima or other stationary points", as Guth says on p. 17.
 - Info (`leadsTo` pointing to Lecture 14 itself): kept on purpose. It links to the next page of the same lecture, the black-hole infall.
 - Info (PS6 as a reference): not added. The callout already names the homework without citing it.
+
+## Update (2026-11-26, attribution check)
+
+- "Most books instead give a formula for d²xⁱ/ds²" is now attributed to Guth, who says "most general relativity books" and calls his own form the best one for finding geodesics (transcript p. 9).

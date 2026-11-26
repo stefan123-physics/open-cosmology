@@ -64,3 +64,7 @@ verdict: pass-with-notes
 
 ## Status
 - Marked `reviewed` on 2026-11-14: the owner decided that review against MIT's notes, slides and transcripts (with all findings resolved) is sufficient; the lecture videos are not compared.
+
+## Update (2026-11-26, attribution check)
+
+- The two normalisation conventions now say who claims what: both statements are Guth's (transcript p. 16). Ryden's textbook is named as the course textbook that uses a = 1 today, "Guth thinks … more common in textbooks" became "among the books he has read, the second convention is the more common, though both are in use", and both carry the transcript page. Prompted by an outside reading that found it unclear who was cited for what; checked against the Lecture 7 transcript.

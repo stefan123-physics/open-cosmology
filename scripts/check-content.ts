@@ -8,7 +8,7 @@ import path from "node:path";
 import { comparePages, HIGHSCHOOL_YEAR, loadSite, type Problem } from "../lib/content";
 import { resolveCiteKeys } from "./cite-keys";
 import { loadSymbols, meaningFor, usesSymbol } from "../lib/symbols";
-import { buildMatcher, loadGlossary, proseOf } from "../lib/glossary";
+import { buildMatcher, loadGlossary, proseOf, termMeaningFor } from "../lib/glossary";
 import { pageNotation, pageTex } from "../lib/tex-scan";
 import { groupingLost, pageCapitals, speechGaps, symbolReadAsUnit, texToSpeech } from "../lib/speech";
 import { checkAllPlots } from "../lib/plot-check";
@@ -252,6 +252,11 @@ for (const page of site.pages) {
       if (m.introducedIn) {
         if (!site.pageBySlug.has(m.introducedIn)) err(e.file, `${e.id}: introducedIn "${m.introducedIn}" is not a page`);
         else if (!usedOn.get(e.id)?.has(m.introducedIn)) err(e.file, `${e.id}: introducedIn "${m.introducedIn}" does not use the word`);
+        // The link says "First explained in": the lesson must use the word in this meaning. (An introducedIn that is
+        // later than the default, the first lesson writing the word in bold, is allowed: it is set by hand where that
+        // bold is only a passing mention. npm run glossary:intro lists them for review.)
+        else if (termMeaningFor(e, site.pageBySlug.get(m.introducedIn)!) !== m)
+          err(e.file, `${e.id}: introducedIn "${m.introducedIn}" uses the word in another meaning`);
       }
     }
     for (const slug of e.skipPages)

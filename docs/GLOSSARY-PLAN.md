@@ -207,6 +207,8 @@ Difficult words on Open Cosmology, explained in plain English.
 
 Rules shared with symbols: a meaning without `pages` or `courses` is general; scoped meanings win on their pages; a word's sense is never widened to fit a new page, a new sense is added instead.
 
+**"First explained in" (changed 2026-11-26).** The link is chosen **per meaning**, never per word, so it cannot lead to a lesson where the word means something else (High School "radiation" as heat transfer is not the cosmologist's radiation). It is the meaning's `introducedIn`, else, among the lessons where that meaning applies, in programme order: the first lesson named after the word or writing it in **bold**; else the first with a bold phrase of the word plus one more word ("**comoving coordinates**"). Bold words inside a `<Callout kind="cosmology">` do not count, because such callouts look ahead. A meaning that no lesson names or writes in bold gets no link. Set `introducedIn` only where the default is a passing mention; `content:check` fails when an `introducedIn` lesson uses the word in another meaning, and `npm run glossary:intro` lists every `introducedIn` that is later than an earlier bold, for review (for example after new High School lessons).
+
 ### Writing standard (the style guide for definitions)
 
 1. **Short meaning ≤ 25 words**, one sentence if possible, genus then difference ("A distance that grows with the universe, measured in…").

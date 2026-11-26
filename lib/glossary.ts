@@ -47,7 +47,10 @@ const Meaning = z.object({
   pages: z.array(z.string()).optional(),
   /** Applies in these courses (ids such as "8.286") */
   courses: z.array(z.string()).optional(),
-  /** The lesson that explains this idea (slug). Default: the first page in programme order that writes the word in bold. */
+  /**
+   * The lesson that explains this meaning (slug); it must use the word in this meaning. Default: the first lesson in
+   * programme order, among those where this meaning applies, that writes the word in bold (defaultIntroductions).
+   */
   introducedIn: z.string().optional(),
 });
 
@@ -245,28 +248,71 @@ export function boldTermsOf(page: Pick<Page, "body">): string[] {
   return [...proseOf(page).matchAll(/\*\*([^*\n]{2,80})\*\*/g)].map((m) => m[1].trim().replace(/[.:,;]+$/, "").toLowerCase());
 }
 
+/** Key of one meaning of one word: "<id>#<index in entry.meanings>". */
+export const senseKey = (entry: Pick<TermEntry, "id" | "meanings">, meaning: TermMeaning) => `${entry.id}#${entry.meanings.indexOf(meaning)}`;
+
+/** A cosmology callout, which looks ahead to later lessons. */
+const LOOK_AHEAD = /<Callout\b[^>]*kind="cosmology"[^>]*>[\s\S]*?<\/Callout>/g;
+const words = (s: string) => s.trim().split(/\s+/).length;
+
 let introCache: Map<string, string> | null = null;
 /**
- * The lesson that introduces each word, when the data does not say: the first lesson in programme order whose
- * bold text is one of the word's forms. Academic words have none (no lesson teaches them).
+ * The lesson that introduces each meaning of each word (key: senseKey), when the data does not say. Worked out per
+ * meaning, so that a link never leads to a lesson where the word means something else (High School "radiation" as
+ * heat transfer is not the cosmologist's radiation). Among the lessons where the meaning applies, in programme order:
+ *   1. the first that is named after the word (its title contains it: "Taylor series") or whose bold text is one of
+ *      the word's forms ("**pressure**");
+ *   2. else the first with a bold phrase of the word and one more word that is not a glossary word of its own
+ *      ("**comoving coordinates**" introduces "comoving").
+ * Bold words in a cosmology callout do not count: such a callout looks ahead ("in the theory of **inflation** …")
+ * and does not explain the word. A meaning that no lesson names or writes in bold gets no link. Academic words have
+ * none (no lesson teaches them).
  */
 export function defaultIntroductions(site: Site, entries: TermEntry[]): Map<string, string> {
   if (introCache) return introCache;
   const byForm = new Map<string, TermEntry>();
   for (const e of entries) if (e.kind !== "academic") for (const f of e.allForms) byForm.set(f.toLowerCase(), e);
-  const intro = new Map<string, string>();
-  for (const page of orderedPages(site).filter(isLesson))
-    for (const b of boldTermsOf(page)) {
-      const e = byForm.get(b);
-      if (e && !intro.has(e.id)) intro.set(e.id, page.slug);
+  const exact = new Map<string, string>();
+  const inPhrase = new Map<string, string>();
+  const matcher = siteMatcher();
+  for (const page of orderedPages(site).filter(isLesson)) {
+    for (const { entry: e } of matcher.find(page.title)) {
+      const m = e.kind === "academic" ? undefined : termMeaningFor(e, page);
+      if (m && !exact.has(senseKey(e, m))) exact.set(senseKey(e, m), page.slug);
     }
+    for (const b of boldTermsOf({ body: page.body.replace(LOOK_AHEAD, " ") })) {
+      const whole = byForm.get(b);
+      // A phrase counts only when it is the word plus one more ("Big Bang theory", not "380 000 years after the Big Bang").
+      const found = whole
+        ? [whole]
+        : matcher
+            .find(b)
+            .filter((x) => words(b) <= words(x.entry.term) + 1)
+            .map((x) => x.entry)
+            .filter((e) => e.kind !== "academic");
+      for (const e of found) {
+        const m = termMeaningFor(e, page);
+        if (!m) continue;
+        const key = senseKey(e, m);
+        const map = whole ? exact : inPhrase;
+        if (!map.has(key)) map.set(key, page.slug);
+      }
+    }
+  }
+  const intro = new Map(inPhrase);
+  for (const [k, v] of exact) intro.set(k, v);
   introCache = intro;
   return intro;
 }
 
-/** The lesson that explains this meaning on this page, or undefined. */
+/**
+ * The lesson that explains this meaning, or undefined: the meaning's own introducedIn when that lesson uses the word
+ * in this meaning (content:check fails otherwise), else the default above.
+ */
 export function introductionOf(site: Site, entry: TermEntry, meaning: TermMeaning): Page | undefined {
-  const slug = meaning.introducedIn ?? defaultIntroductions(site, loadGlossary().entries).get(entry.id);
+  const own = meaning.introducedIn ? site.pageBySlug.get(meaning.introducedIn) : undefined;
+  if (own && termMeaningFor(entry, own) === meaning) return own;
+  const slug = defaultIntroductions(site, loadGlossary().entries).get(senseKey(entry, meaning));
   return slug ? site.pageBySlug.get(slug) : undefined;
 }
 

@@ -77,3 +77,7 @@ All formula citations were checked:
 - Info: added Guth's point that isotropy about the origin plus homogeneity gives isotropy everywhere.
 - Info (Tweedledee/Tweedledum labels in the plot): left as is; harmless.
 - Not changed: the special-relativity interval review (slide 5, pp. 6–8) stays on the prerequisite page `spacetime-interval`.
+
+## Update (2026-11-26, attribution check)
+
+- The remark that Ryden's textbook discusses the Einstein elevator is now attributed to Guth (transcript p. 11).

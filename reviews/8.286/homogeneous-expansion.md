@@ -60,3 +60,7 @@ verdict: pass-with-notes
 
 ## Status
 - Marked `reviewed` on 2026-11-14: the owner decided that review against MIT's notes, slides and transcripts (with all findings resolved) is sufficient; the lecture videos are not compared.
+
+## Update (2026-11-26, attribution check)
+
+- "Most textbooks instead make a a pure number equal to 1 today" was the page's own claim and went beyond the lecture. Guth says he thinks most books measure both distances in metres, so that a is dimensionless (transcript p. 21); he says nothing here about a = 1 today, and in Lecture 7 he calls the k = ±1 convention the more common one, so the old sentence contradicted the friedmann-equation page. Now attributed to Guth, with the page and a link to the Friedmann equation lesson.
