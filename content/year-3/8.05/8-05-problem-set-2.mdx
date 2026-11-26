@@ -1,0 +1,996 @@
+---
+title: "Problem Set 2: A barrier in a well, nodes, and the variational principle at work"
+slug: 8-05-problem-set-2
+course: "8.05"
+kind: problems
+set: 2
+lecture: 4
+order: 90
+covers: [2, 4]
+solutions: own
+summary: "Six problems. An infinite well split by a strong delta-function barrier, whose two lowest levels move together; a proof that the next eigenstate has a zero between every two zeros of the one below; the variational principle for the first excited state, and why every eigenstate is a stationary point of the energy functional; a proof that every attractive potential in one dimension binds a state; the potential x⁴ by numerical integration and by a trial wavefunction; and the exponential of a matrix whose square is the identity."
+prerequisites: [one-d-spectrum-variational, spin-one-half-states-operators]
+source:
+  title: "MIT 8.05 Problem Set 2 (Fall 2013)"
+  url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/assignment-2/
+  readings:
+    - title: "Zwiebach, Wave Mechanics (8.05 lecture notes, chapter 1)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-1/
+    - title: "Zwiebach, Spin One-half, Bras, Kets, and Operators (8.05 lecture notes, chapter 2)"
+      url: https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/resources/lecture-notes-2/
+license: CC BY-NC-SA 4.0
+references: {}
+status: reviewed
+---
+
+This set practises two lessons: [the one-dimensional spectrum and the variational principle](/courses/8-05/one-d-spectrum-variational) (Problems 1 to 5) and [spin one-half states and operators](/courses/8-05/spin-one-half-states-operators) (Problem 6, which works with one of the Pauli matrices). The problems follow MIT's Problem Set 2, in our own words. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+A few things differ from MIT's sheet. Its reading assignment is left out. MIT notes that Problem 4 is based on an exercise in Shankar's textbook (5.2.2, part (b)). The textbook is not used on this site: the problem follows MIT's own statement, which is complete. Problem 5 asks for "an algebraic manipulator that can handle differential equations": any tool that integrates a differential equation numerically will do (Python, Mathematica, a spreadsheet with small steps). In Problem 5(c) MIT leaves the trial wavefunction to you. Here one trial wavefunction is suggested, so that a box can check the result. In Problem 4 MIT calls the simplified potential $\tilde V$; here it is $V_b$, because the tilde already marks the rescaled energy and potential of Problem 2. The parts (a) to (c) of Problems 1 and 4 are our division of MIT's single question. Some boxes are our additions, each marked as such: the quantization condition in Problem 1(a), the number in Problem 2(a), the choice boxes of Problems 2(b), 3(a), 4(b) and 5(d), the truncated form of the answer in Problem 3(b), and the small-$\alpha$ form in Problem 4(b). The sheet's pages are numbered: "p. 1" to "p. 4" below are the printed page numbers.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it. A formula box takes plain typing, for example `hbar^2*alpha/(4*m)`, and accepts every correct way of writing the answer with the letters of that box. It treats those letters as independent, so each problem says which letters to use. Write the symbols exactly as the box names them: `hbar` stands for $\hbar$, `pi` for $\pi$, `gam` for $\gamma$, `E1`, `E2`, `E3` for $E_1$, $E_2$, $E_3$, `eps1`, `eps2`, `eps3` for $\epsilon_1$, $\epsilon_2$, $\epsilon_3$, `alpha` for $\alpha$, `v0` for $v_0$, `Delta` for $\Delta$, `en` for the unit-free energy $e$ of Problem 5, and `theta` for $\theta$.
+
+MIT gives the points per problem. The splits between parts are ours. Parts that ask you to show something have no box, or only a small one: open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The notation is that of the lessons: a prime is a derivative with respect to the position, bound states are numbered $\psi_1, \psi_2, \dots$ with energies $E_1 < E_2 < \dots$, and a tilde marks an energy or a potential multiplied by $2m/\hbar^2$ (Problem 2). The letter $\alpha$ is MIT's in two places: the width parameter of a Gaussian in Problem 4 and the strength of the potential in Problem 5. The letter $e$ is Euler's number in every exponential, and in Problem 5 also MIT's name for a unit-free energy. No constants of nature are needed: every answer is a formula, a pure number or a choice. Where a solution says "notes" it means Zwiebach's notes *Wave Mechanics* of this course.
+
+## Problem 1
+
+<Exercise id="p1" title="Square well with a delta function" points={10} mit="Problem 1">
+
+A particle of mass $m$ is in the infinite square well $0 \le x \le a$. In the middle of the well stands a repulsive delta function:
+
+<Formula label="The barrier in the middle of the well" tex="V(x) = V_0\,a\,\delta\left(x - \frac{a}{2}\right), \qquad V_0 > 0, \qquad \gamma \equiv \frac{V_0}{\hbar^2/(ma^2)} \gg 1" cite="mit" at="Problem 1, p. 1, eqs. (1) and (2)" />
+
+Here $V_0$ is an energy, and it is large compared with the natural energy $\hbar^2/(ma^2)$ of the well: the pure number $\gamma$ is large. The delta function is a barrier between the left half and the right half. As $V_0$ grows without limit, something singular can happen.
+
+<Part label="a" points={3}>
+
+Inside each half the particle is free, so write $\psi = A\sin kx$ on the left, with $E = \hbar^2k^2/(2m)$. Show that the energy eigenstates are of two kinds: those that vanish at the middle, which do not feel the barrier at all, and those that do not vanish there, for which $k$ obeys a condition of the form $\tan\frac{ka}{2} = \dots$ Find the right side (our box). Use the letters `k`, `a` and `gam`.
+
+<Hint>
+
+On the right write $\psi = B\sin k(a - x)$, which vanishes at the wall $x = a$. The wavefunction is continuous at $x = a/2$. What does that say about $A$ and $B$?
+
+</Hint>
+
+<Hint>
+
+The slope is not continuous. Integrate the Schrödinger equation from just left of $a/2$ to just right of it: the delta function leaves $\psi'(a/2^+) - \psi'(a/2^-) = \frac{2mV_0a}{\hbar^2}\psi(a/2)$. Write the factor with $\gamma$.
+
+</Hint>
+
+<Answer id="p1-cond" label="$\tan\dfrac{ka}{2} =$" expr="-k*a/gam"
+  vars={{ k: [0.5, 3], a: [0.5, 2], gam: [5, 60] }}
+  names={{ gam: "\\gamma" }}
+  mistakes={[
+    { expr: "k*a/gam", hint: "This is the condition for an attractive delta function, with −V₀ in the place of V₀. At a repulsive one the slope jumps the other way." },
+    { expr: "-k*a/(2*gam)", hint: "This is what follows if the slope changes by k cos(ka/2). It changes from +k cos(ka/2) to −k cos(ka/2): twice as much." },
+    { expr: "-2*k*a/gam", hint: "This follows from a jump of the slope of (γ/a)ψ. Integrating the Schrödinger equation across the delta function gives (2γ/a)ψ." }
+  ]} />
+
+<Solution>
+
+**The idea.** Away from the middle the particle is free. The delta function only fixes how the two halves are joined: $\psi$ is continuous, and its slope jumps by an amount set by $\psi(a/2)$.
+
+<Step title="The two halves">
+
+With $k = \sqrt{2mE}/\hbar$, the solutions that vanish at the walls are
+
+<Formula label="The wavefunction in the two halves" tex="\psi(x) = A\sin kx \quad \left(0 \le x \le \tfrac{a}{2}\right), \qquad \psi(x) = B\sin k(a - x) \quad \left(\tfrac{a}{2} \le x \le a\right)" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+Continuity at the middle demands $(A - B)\sin\frac{ka}{2} = 0$. So either $\sin\frac{ka}{2} = 0$ or $A = B$.
+
+</Step>
+
+<Step title="The jump of the slope">
+
+Integrate $-\frac{\hbar^2}{2m}\psi'' + V_0a\,\delta\left(x - \frac{a}{2}\right)\psi = E\psi$ over a small interval around $a/2$. The right side gives nothing as the interval shrinks, because $\psi$ is bounded, and
+
+<Formula label="Jump of the slope at the barrier" tex="\psi'\left(\tfrac{a}{2}^+\right) - \psi'\left(\tfrac{a}{2}^-\right) = \frac{2mV_0a}{\hbar^2}\,\psi\left(\tfrac{a}{2}\right) = \frac{2\gamma}{a}\,\psi\left(\tfrac{a}{2}\right)" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+This is the rule of the lesson: at a delta function the slope may jump (notes eq. (4.2)).
+
+</Step>
+
+<Step title="States that vanish at the middle">
+
+If $\sin\frac{ka}{2} = 0$, then $\psi(a/2) = 0$ and the slope does not jump: $Ak\cos\frac{ka}{2} = -Bk\cos\frac{ka}{2}$, so $B = -A$ and $\psi = A\sin kx$ in the whole well, with $ka = 2\pi, 4\pi, \dots$ These are the states of the plain well with a node at the middle. A delta function at a node does nothing, whatever its strength.
+
+</Step>
+
+<Step title="States that do not vanish at the middle">
+
+If $A = B$, the wavefunction is symmetric about the middle. Its slope is $Ak\cos\frac{ka}{2}$ just left of the middle and $-Ak\cos\frac{ka}{2}$ just right of it, so the jump condition reads $-2Ak\cos\frac{ka}{2} = \frac{2\gamma}{a}A\sin\frac{ka}{2}$, or
+
+<Formula label="Condition for the states that feel the barrier" tex="\tan\frac{ka}{2} = -\frac{ka}{\gamma}" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Without a barrier ($\gamma \to 0$) the right side is infinite in size, so $\frac{ka}{2} = \frac{\pi}{2}, \frac{3\pi}{2}, \dots$: the symmetric states $\sin\frac{\pi x}{a}, \sin\frac{3\pi x}{a}, \dots$ of the plain well. With a barrier that cannot be crossed ($\gamma \to \infty$) the right side vanishes, so $\frac{ka}{2} = \pi, 2\pi, \dots$: each half holds the states of a well of width $a/2$. Both limits are as they must be. The division into two kinds of state is the lesson's theorem for an even potential, with the middle of the well as the origin.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Find the energy $E_1$ of the ground state for large $\gamma$: keep the correction of order $1/\gamma$ and drop higher orders. Type it as a multiple of $\frac{\hbar^2}{ma^2}$ times a bracket of the form $(1 + \text{number}/\gamma)$, with the letters `hbar`, `m`, `a` and `gam`.
+
+<Hint>
+
+The ground state has no node, so it is one of the states that do not vanish at the middle: the one with the smallest $k$. Where does the first solution of the condition of part (a) lie when the right side is small and negative?
+
+</Hint>
+
+<Hint>
+
+Write $\frac{ka}{2} = \pi - s$ with $s$ small. Then $\tan\frac{ka}{2} = -\tan s \approx -s$. Solve for $s$ to first order in $1/\gamma$, then square $k$.
+
+</Hint>
+
+<Answer id="p1-gs" label="$E_1 \approx$" expr="2*pi^2*hbar^2/(m*a^2)*(1 - 4/gam)"
+  vars={{ hbar: [0.5, 2], m: [0.5, 2], a: [0.5, 2], gam: [20, 200] }}
+  names={{ hbar: "\\hbar", gam: "\\gamma" }}
+  mistakes={[
+    { expr: "2*pi^2*hbar^2/(m*a^2)*(1 - 2/gam)", hint: "The factor (1 − 2/γ) is the change of k. The energy goes as k squared." },
+    { expr: "2*pi^2*hbar^2/(m*a^2)*(1 + 4/gam)", hint: "This lies above the energy of a well of width a/2. A barrier that lets the wavefunction leak a little into the other half gives the particle more room, which lowers the energy." },
+    { expr: "pi^2*hbar^2/(2*m*a^2)", hint: "That is the ground state of the well without a barrier. A strong barrier pushes the wavefunction out of the middle: the state is close to the lowest state of a well of width a/2." },
+    { expr: "2*pi^2*hbar^2/(m*a^2)", hint: "That is the limit of an infinite barrier. Keep the first correction, of order 1/γ." }
+  ]} />
+
+<Solution>
+
+**The idea.** For large $\gamma$ the right side of the condition is small, so $\frac{ka}{2}$ sits just below a zero of the tangent. The lowest such state is the ground state.
+
+<Step title="Which solution is the ground state">
+
+Write $\xi \equiv \frac{ka}{2}$, so that the condition is $\tan\xi = -2\xi/\gamma$. The right side is negative. The tangent is positive for $0 < \xi < \frac{\pi}{2}$ and negative for $\frac{\pi}{2} < \xi < \pi$, so the first solution lies between $\frac{\pi}{2}$ and $\pi$. It is below the first state of the other kind, which has $\xi = \pi$. It is the ground state, and it has no node, as the node theorem demands.
+
+</Step>
+
+<Step title="Expand near the zero of the tangent">
+
+Put $\xi = \pi - s$ with $s$ small. Then $\tan\xi = -\tan s = -s + \dots$, and the condition becomes $s = 2(\pi - s)/\gamma$. To first order in $1/\gamma$ this is $s = 2\pi/\gamma$:
+
+<Formula label="Wavenumber of the ground state" tex="\frac{ka}{2} = \pi\left(1 - \frac{2}{\gamma}\right) + \dots" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="The energy">
+
+<Formula label="Ground-state energy for a strong barrier" tex="E_1 = \frac{\hbar^2k^2}{2m} = \frac{2\pi^2\hbar^2}{ma^2}\left(1 - \frac{2}{\gamma}\right)^2 + \dots = \frac{2\pi^2\hbar^2}{ma^2}\left(1 - \frac{4}{\gamma}\right) + \dots" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result with numbers">
+
+Take $\gamma = 50$ (our choice). Solving $\tan\frac{ka}{2} = -\frac{ka}{50}$ numerically gives $ka = 6.0426$, so the exact energy is $18.257\,\frac{\hbar^2}{ma^2}$. The formula gives $2\pi^2(1 - 4/50) = 18.160$ in the same unit: the two differ by half a percent, a difference of order $1/\gamma^2$. Both lie below the limit $2\pi^2 = 19.739$ of a well of width $a/2$, and far above the $\frac{\pi^2}{2} = 4.935$ of the well without a barrier.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Find the energy $E_2$ of the first excited state, and the difference $E_2 - E_1$ to the lowest order in $1/\gamma$ (letters `hbar`, `m`, `a`, `gam`). What happens to the difference as the barrier becomes infinitely strong?
+
+<Hint>
+
+The first excited state has one node. By the symmetry of the well the node is at the middle. What does part (a) say about such states?
+
+</Hint>
+
+<Answer id="p1-e2" label="$E_2 =$" expr="2*pi^2*hbar^2/(m*a^2)"
+  vars={{ hbar: [0.5, 2], m: [0.5, 2], a: [0.5, 2] }}
+  names={{ hbar: "\\hbar" }}
+  mistakes={[
+    { expr: "pi^2*hbar^2/(2*m*a^2)", hint: "That is the lowest level of the plain well, whose wavefunction sin(πx/a) is largest at the middle. The first excited state vanishes there." },
+    { expr: "9*pi^2*hbar^2/(2*m*a^2)", hint: "That is the third level of the plain well. Its wavefunction sin(3πx/a) does not vanish at the middle, so the barrier moves it." }
+  ]} />
+
+<Answer id="p1-de" label="$E_2 - E_1 \approx$" expr="8*pi^2*hbar^2/(gam*m*a^2)"
+  vars={{ hbar: [0.5, 2], m: [0.5, 2], a: [0.5, 2], gam: [20, 200] }}
+  names={{ hbar: "\\hbar", gam: "\\gamma" }}
+  mistakes={[
+    { expr: "4*pi^2*hbar^2/(gam*m*a^2)", hint: "This is the difference if the energy changed by the factor (1 − 2/γ). That factor belongs to k, and the energy goes as k squared." },
+    { expr: "-8*pi^2*hbar^2/(gam*m*a^2)", hint: "This is E₁ − E₂. The first excited state lies above the ground state." }
+  ]} />
+
+<Answer id="p1-limit" label="As $\gamma \to \infty$ the difference" choices={["stays fixed, while both energies grow without limit", "shrinks as 1/γ, but the two levels can never meet, even for an infinite barrier, because bound states in one dimension are never degenerate under any circumstances", "shrinks as 1/γ and vanishes for an infinite barrier: the well is then two separate wells, and the theorem on degeneracy does not apply", "grows as γ, because the barrier raises the ground state and leaves the first excited state alone"]} answer={2} />
+
+<Solution>
+
+**The idea.** The first excited state has a node at the barrier and does not feel it. The ground state is pushed up towards it from below.
+
+<Step title="The first excited state">
+
+The lowest state of the first kind in part (a) has $ka = 2\pi$: it is $\sin\frac{2\pi x}{a}$, the second level of the plain well, with one node. No state of the second kind lies between the ground state and it, because the second solution of $\tan\xi = -2\xi/\gamma$ lies between $\frac{3\pi}{2}$ and $2\pi$. So
+
+<Formula label="Energy of the first excited state" tex="E_2 = \frac{\hbar^2}{2m}\left(\frac{2\pi}{a}\right)^2 = \frac{2\pi^2\hbar^2}{ma^2}" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+exactly, for every $\gamma$.
+
+</Step>
+
+<Step title="The difference">
+
+<Formula label="Splitting of the two lowest levels" tex="E_2 - E_1 = \frac{2\pi^2\hbar^2}{ma^2}\cdot\frac{4}{\gamma} + \dots = \frac{8\pi^2\hbar^2}{\gamma\,ma^2} + \dots = \frac{8\pi^2\hbar^4}{m^2a^4\,V_0} + \dots" cite="mit" at="Problem 1, p. 1 (our own solution)" />
+
+It falls as $1/\gamma$ and vanishes for an infinite barrier: the two lowest levels become degenerate.
+
+</Step>
+
+<Step title="Why this does not contradict the theorem">
+
+The lesson's Theorem 1 says that bound states in one dimension are not degenerate. Its proof shows that two states of the same energy obey $\psi_1\psi_2' - \psi_2\psi_1' = 0$, and concludes that they are proportional. That last step divides by the wavefunctions. With an infinite barrier both wavefunctions vanish at the middle, and the constant of proportionality can differ on the two sides: in the limit the two states are equal in the left half and opposite in the right half. Physically the well has become two wells of width $a/2$ with no connection, each with its own state of energy $\frac{2\pi^2\hbar^2}{ma^2}$. This is the singular situation that the problem announces.
+
+</Step>
+
+<Step title="Check the result with a graph">
+
+For $\gamma = 50$ the two wavefunctions are drawn below. On the left half they are almost equal. On the right half they are almost opposite. The ground state has a kink at the barrier and no node. The first excited state passes through zero there.
+
+<Plot variable="x" domain={[0, 1]} range={[-1.25, 1.25]} xLabel="x / a" yLabel="ψ"
+  curves={[
+    { expr: "sin(6.0426*(x < 0.5 ? x : 1 - x))", label: "ground" },
+    { expr: "sin(2*pi*x)", label: "first excited", dash: true }
+  ]}
+  caption="Computed from the solutions of part (a) for γ = 50: sin(kx) on the left and sin(k(a − x)) on the right with ka = 6.0426 for the ground state, and sin(2πx/a) for the first excited state. Neither is normalized. At the barrier (x = a/2) the ground state is small but not zero, and its slope jumps." />
+
+The sum and the difference of the two are states that sit almost entirely in one half. With a finite barrier they are not energy eigenstates: a particle put in the left half moves to the right half and back, at a rate set by $E_2 - E_1$, which goes to zero as the barrier closes.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Nodes in wavefunctions" points={10} mit="Problem 2">
+
+Write the time-independent Schrödinger equation as in the lesson, with the energy and the potential multiplied by $2m/\hbar^2$:
+
+<Formula label="The rescaled Schrödinger equation" tex="\psi'' + \left(\tilde E - \tilde V(x)\right)\psi = 0" cite="mit" at="Problem 2, p. 1" />
+
+(MIT's sheet writes a script E and $U(x)$ for the lesson's $\tilde E$ and $\tilde V(x)$.) Let $\psi_k$ be the real energy eigenstate with energy $\tilde E_k$, and $\psi_{k+1}$ the real eigenstate with the next energy, $\tilde E_{k+1} > \tilde E_k$.
+
+<Part label="a" points={4}>
+
+Show that for any two points $a$ and $b$
+
+<Formula label="The identity to be shown" tex="\left[\psi_{k+1}\,\psi_k' - \psi_k\,\psi_{k+1}'\right]_a^b = \left(\tilde E_{k+1} - \tilde E_k\right)\int_a^b\psi_k\,\psi_{k+1}\,dx" cite="mit" at="Problem 2(a), p. 2, eq. (1)" />
+
+Then test it (our addition). Take the infinite well $0 \le x \le 1$ with $\tilde V = 0$ inside, the states $\psi_k = \sin\pi x$ and $\psi_{k+1} = \sin 2\pi x$ with $\tilde E_k = \pi^2$ and $\tilde E_{k+1} = 4\pi^2$, and the points $a = 0$, $b = \frac12$. What is the common value of the two sides?
+
+<Hint>
+
+Differentiate the bracket on the left. Two of the four terms cancel.
+
+</Hint>
+
+<Hint>
+
+Replace each second derivative by means of the Schrödinger equation, $\psi_k'' = \left(\tilde V - \tilde E_k\right)\psi_k$, and integrate the result from $a$ to $b$.
+
+</Hint>
+
+<Answer id="p2-test" label="Both sides $=$" value="6.283" tolerance="0.5%" calc="p2-test" />
+
+<Solution>
+
+**The idea.** The derivative of the bracket contains only second derivatives, and the Schrödinger equation turns those into the wavefunctions themselves. The potential drops out.
+
+<Step title="Differentiate the bracket">
+
+<Formula label="Derivative of the bracket" tex="\frac{d}{dx}\left(\psi_{k+1}\,\psi_k' - \psi_k\,\psi_{k+1}'\right) = \psi_{k+1}\,\psi_k'' - \psi_k\,\psi_{k+1}''" cite="mit" at="Problem 2(a), p. 2 (our own solution)" />
+
+The two terms $\psi_{k+1}'\psi_k'$ cancel.
+
+</Step>
+
+<Step title="Use the Schrödinger equation">
+
+With $\psi_k'' = \left(\tilde V - \tilde E_k\right)\psi_k$ and $\psi_{k+1}'' = \left(\tilde V - \tilde E_{k+1}\right)\psi_{k+1}$:
+
+<Formula label="The potential drops out" tex="\psi_{k+1}\,\psi_k'' - \psi_k\,\psi_{k+1}'' = \left(\tilde V - \tilde E_k\right)\psi_k\psi_{k+1} - \left(\tilde V - \tilde E_{k+1}\right)\psi_k\psi_{k+1} = \left(\tilde E_{k+1} - \tilde E_k\right)\psi_k\,\psi_{k+1}" cite="mit" at="Problem 2(a), p. 2 (our own solution)" />
+
+Integrating from $a$ to $b$ gives the identity. The same steps with equal energies give the lesson's proof that bound states are not degenerate.
+
+</Step>
+
+<Step title="Check the result on the square well">
+
+On the left, the bracket is $\pi\sin 2\pi x\cos\pi x - 2\pi\sin\pi x\cos 2\pi x$. At $x = \frac12$ it is $0 - 2\pi\cdot 1\cdot(-1) = 2\pi$, and at $x = 0$ it is zero: the left side is $2\pi$. On the right, $\sin\pi x\sin 2\pi x = 2\sin^2\pi x\cos\pi x$ integrates to $\frac{2}{3\pi}\sin^3\pi x$, which is $\frac{2}{3\pi}$ between $0$ and $\frac12$. Times $4\pi^2 - \pi^2 = 3\pi^2$ this is $2\pi$ again. Both sides are $2\pi = 6.283$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Now let $a < b$ be two successive zeros of $\psi_k$, and choose the sign of $\psi_k$ so that $\psi_k(x) > 0$ for $a < x < b$. Use the identity to show that $\psi_{k+1}$ must change sign in the interval $(a, b)$: it has at least one zero between each pair of zeros of $\psi_k$. MIT's hint: suppose that $\psi_{k+1}$ does not change sign in $(a, b)$, and look at the sign of each side. The box (ours) asks for those signs.
+
+<Hint>
+
+At $a$ and $b$ the terms with $\psi_k$ vanish. What is left on the left side holds the slopes $\psi_k'(a)$ and $\psi_k'(b)$. What are their signs, given that $\psi_k$ is positive in between?
+
+</Hint>
+
+<Hint>
+
+Can $\psi_k'(a)$ be zero? Remember from the lesson of Lecture 1 what follows when a solution and its slope both vanish at one point.
+
+</Hint>
+
+<Answer id="p2-signs" label="If $\psi_{k+1} > 0$ throughout $(a, b)$, then" choices={["the left side is negative or zero and the right side is positive", "the left side is positive and the right side is negative or zero", "both sides are positive, so more information on the potential is needed before any conclusion can be drawn", "both sides vanish"]} answer={0} />
+
+<Solution>
+
+**The idea.** With $\psi_k$ positive between its zeros, its slope is positive at the left zero and negative at the right one. If $\psi_{k+1}$ kept one sign, the two sides of the identity would have opposite signs.
+
+<Step title="The slopes of the lower state at its zeros">
+
+Because $\psi_k > 0$ just right of $a$ and $\psi_k(a) = 0$, the slope there cannot be negative: $\psi_k'(a) \ge 0$. It cannot be zero either. A solution of the Schrödinger equation with $\psi = 0$ and $\psi' = 0$ at one point vanishes everywhere (the lesson of Lecture 1). So $\psi_k'(a) > 0$, and in the same way $\psi_k'(b) < 0$.
+
+</Step>
+
+<Step title="The left side">
+
+At $a$ and $b$ the terms with $\psi_k$ vanish:
+
+<Formula label="The left side at two zeros of the lower state" tex="\left[\psi_{k+1}\,\psi_k' - \psi_k\,\psi_{k+1}'\right]_a^b = \psi_{k+1}(b)\,\psi_k'(b) - \psi_{k+1}(a)\,\psi_k'(a)" cite="mit" at="Problem 2(b), p. 2 (our own solution)" />
+
+Suppose $\psi_{k+1}$ does not change sign in $(a, b)$, and say it is positive there. Then $\psi_{k+1}(a) \ge 0$ and $\psi_{k+1}(b) \ge 0$ by continuity. The first term is a number that is not negative times a negative slope, and the second is subtracted and is a number that is not negative times a positive slope. The left side is negative or zero.
+
+</Step>
+
+<Step title="The right side">
+
+The factor $\tilde E_{k+1} - \tilde E_k$ is positive, and the integrand $\psi_k\psi_{k+1}$ is positive throughout the interval. The right side is positive. This contradicts the left side. If $\psi_{k+1}$ is negative throughout instead, both sides change sign and the contradiction is the same. So $\psi_{k+1}$ changes sign in $(a, b)$, and being continuous it has a zero there.
+
+</Step>
+
+<Step title="Check the result, and count">
+
+In the test of part (a) the lower state $\sin\pi x$ has the successive zeros $0$ and $1$, and $\sin 2\pi x$ indeed has a zero between them, at $\frac12$. The argument also works when $a$ or $b$ is at infinity for a bound state, or at a hard wall: the terms at that end vanish because the wavefunctions do. A bound state $\psi_k$ with $j$ nodes cuts the line into $j + 1$ intervals, and $\psi_{k+1}$ has a zero inside each: at least $j + 1$ nodes, one more than $\psi_k$. This is the partial result that the lesson quotes on the way to the node theorem.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Developing the variational principle" points={10} mit="Problem 3">
+
+The lesson's variational principle bounds the ground-state energy $E_1$ from above by the expectation value of $\hat H$ in any trial wavefunction. This problem takes it two steps further. The energy eigenstates $\psi_n$, with $\hat H\psi_n = E_n\psi_n$ and $E_1 < E_2 < E_3 < \dots$, are taken orthonormal.
+
+<Part label="a" points={4}>
+
+Take a normalized trial wavefunction $\psi(x)$ that is orthogonal to the ground state, $\int\psi_1^*(x)\,\psi(x)\,dx = 0$. Show that it bounds the energy of the first excited state:
+
+<Formula label="Bound on the first excited energy" tex="E_2 \le \int\psi^*(x)\,\hat H\,\psi(x)\,dx" cite="mit" at="Problem 3(a), p. 2" />
+
+MIT adds that the result generalizes (no proof asked): a trial wavefunction orthogonal to the lowest $n$ energy eigenstates gives an upper bound for the energy of state $n + 1$. The box (ours) asks when the bound can be used without knowing $\psi_1$.
+
+<Hint>
+
+Expand the trial wavefunction in the energy eigenstates, $\psi = \sum_n b_n\psi_n$, as the lesson does in its proof for the ground state. What does orthogonality to $\psi_1$ say about $b_1$?
+
+</Hint>
+
+<Hint>
+
+The expectation value is $\sum_n|b_n|^2E_n$ and the norm is $\sum_n|b_n|^2 = 1$. Replace every energy in the sum by the smallest one that still appears.
+
+</Hint>
+
+<Answer id="p3-odd" label="For a potential with $V(-x) = V(x)$, a bound on $E_2$ follows from" choices={["any normalized even trial function, because the first excited state is even", "any normalized odd trial function: the ground state is even, so the two are orthogonal", "any normalized trial function with exactly one node, whatever its symmetry, because the first excited state has exactly one node", "no trial function, unless the ground state is known exactly"]} answer={1} />
+
+<Solution>
+
+**The idea.** The proof for the ground state replaces every $E_n$ by the lowest energy in the sum. Without $\psi_1$ in the trial wavefunction, the lowest energy in the sum is $E_2$.
+
+<Step title="Expand in energy eigenstates">
+
+Write $\psi = \sum_n b_n\psi_n$ with $b_n = \int\psi_n^*\psi\,dx$. The condition of the problem is $b_1 = 0$, and the normalization is $\sum_{n\ge2}|b_n|^2 = 1$.
+
+</Step>
+
+<Step title="Bound the expectation value">
+
+<Formula label="Proof of the bound" tex="\int\psi^*\hat H\psi\,dx = \sum_{n\ge2}|b_n|^2E_n \ge E_2\sum_{n\ge2}|b_n|^2 = E_2" cite="reading1" at="eq. (5.13), adapted to a trial wavefunction with no ground-state part" />
+
+because $E_n \ge E_2$ for every $n \ge 2$. With $b_1 = \dots = b_n = 0$ the same line gives MIT's generalization.
+
+</Step>
+
+<Step title="Check the result, and when it is useful">
+
+Equality holds only when $|b_2| = 1$, that is when the trial wavefunction is $\psi_2$ itself. In general the exact $\psi_1$ is not known, and then orthogonality cannot be arranged, with one important exception. For an even potential the ground state is even (it has no node, and a bound state of an even potential is even or odd). The product of an even and an odd function integrates to zero, so every odd trial function is orthogonal to $\psi_1$, whatever $\psi_1$ is. Problem 5(c) uses this. A trial function with one node but no definite symmetry need not be orthogonal to $\psi_1$, and gives no bound on $E_2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Assume real wavefunctions and consider the lesson's energy functional
+
+<Formula label="The energy functional" tex="F[\psi] = \frac{\int\psi(x)\,\hat H\,\psi(x)\,dx}{\int\psi(x)\,\psi(x)\,dx}" cite="mit" at="Problem 3(b), p. 2" />
+
+It is stationary at every energy eigenstate. Confirm this near the first excited state, with the trial wavefunction
+
+<Formula label="The first excited state with small additions" tex="\psi(x) = \psi_2(x) + \sum_{n=1}^{\infty}\epsilon_n\,\psi_n(x)" cite="mit" at="Problem 3(b), p. 2, eq. (3)" />
+
+where all the numbers $\epsilon_n$ are small. Evaluate $F$ keeping terms up to the squares of the $\epsilon_n$ and dropping cubes and higher. Do the terms linear in the $\epsilon_n$ cancel? Does any $\epsilon_n$ drop out to this order? What kind of critical point is $\psi_2$: a maximum, a minimum, a saddle, and are there flat directions?
+
+For the formula box (the truncation is ours), let only $\epsilon_1$, $\epsilon_2$ and $\epsilon_3$ differ from zero, and type $F$ as a polynomial in them up to the squares, with the letters `E1`, `E2`, `E3`, `eps1`, `eps2`, `eps3`.
+
+<Hint>
+
+Orthonormality gives the denominator exactly: the coefficient of $\psi_2$ is $1 + \epsilon_2$, and the others are $\epsilon_n$. The numerator is the same sum with each square multiplied by its energy.
+
+</Hint>
+
+<Hint>
+
+Subtract $E_2$ from $F$ before expanding: $F - E_2$ is a single fraction whose numerator is already of second order.
+
+</Hint>
+
+<Answer id="p3-f" label="$F \approx$" expr="E2 + eps1^2*(E1 - E2) + eps3^2*(E3 - E2)"
+  vars={{ E1: [1, 2], E2: [3, 4], E3: [5, 7], eps1: [0.1, 0.5], eps2: [0.1, 0.5], eps3: [0.1, 0.5] }}
+  names={{ E1: "E_1", E2: "E_2", E3: "E_3", eps1: "\\epsilon_1", eps2: "\\epsilon_2", eps3: "\\epsilon_3" }}
+  mistakes={[
+    { expr: "E2*(1 + eps2)^2 + eps1^2*E1 + eps3^2*E3", hint: "That is the numerator alone. The trial wavefunction is not normalized: divide by the integral of ψ², which is (1 + ε₂)² + ε₁² + ε₃²." },
+    { expr: "E2 + eps1^2*E1 + eps3^2*E3", hint: "Here the ε₂ terms were dropped and the denominator taken to be 1. To this order it is 1 + 2ε₂ + ε₁² + ε₂² + ε₃², and dividing by it turns each Eₙ into Eₙ − E₂." },
+    { expr: "E2 + eps1^2*(E2 - E1) + eps3^2*(E2 - E3)", hint: "The signs are reversed: with this formula, adding a little of the higher state ψ₃ would lower F." },
+    { expr: "E2 + 2*eps2*E2 + eps1^2*(E1 - E2) + eps3^2*(E3 - E2)", hint: "A term linear in ε₂ is left. Changing ε₂ only changes the size of ψ₂ in the trial wavefunction, and F does not depend on the size of ψ." }
+  ]} />
+
+<Answer id="p3-drop" label="To this order, $F$ does not depend on" choices={["ε₁, because the ground state is orthogonal to ψ₂", "any of the εₙ: all of them cancel", "ε₂, because it only changes the size of the ψ₂ already present", "the εₙ with n above 2, because those states have a higher energy than ψ₂"]} answer={2} />
+
+<Answer id="p3-kind" label="At $\psi_2$ the functional has" choices={["a minimum: F rises in every direction", "a maximum: F falls in every direction", "a saddle: F rises along ε₁, falls along ε₃, ε₄ and so on, and is flat along ε₂, because states of higher energy pull the value down", "a saddle: F falls along ε₁, rises along ε₃, ε₄ and so on, and is flat along ε₂"]} answer={3} />
+
+<Solution>
+
+**The idea.** In the basis of energy eigenstates both integrals are sums of squares, so $F$ can be written exactly. Its difference from $E_2$ is of second order in the small numbers.
+
+<Step title="The two integrals">
+
+The coefficient of $\psi_2$ in the trial wavefunction is $1 + \epsilon_2$, and the coefficient of every other $\psi_n$ is $\epsilon_n$. With $\int\psi_m\psi_n\,dx = \delta_{mn}$ and $\int\psi_m\hat H\psi_n\,dx = E_n\delta_{mn}$:
+
+<Formula label="The functional, exactly" tex="F = \frac{(1 + \epsilon_2)^2E_2 + \sum_{n\ne2}\epsilon_n^2E_n}{(1 + \epsilon_2)^2 + \sum_{n\ne2}\epsilon_n^2}" cite="mit" at="Problem 3(b), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Subtract the energy of the first excited state">
+
+<Formula label="Distance from the stationary value" tex="F - E_2 = \frac{\sum_{n\ne2}\epsilon_n^2\left(E_n - E_2\right)}{(1 + \epsilon_2)^2 + \sum_{n\ne2}\epsilon_n^2}" cite="mit" at="Problem 3(b), p. 2 (our own solution)" />
+
+The numerator is already of second order, so to this order the denominator may be replaced by 1:
+
+<Formula label="The functional to second order" tex="F = E_2 + \sum_{n\ne2}\epsilon_n^2\left(E_n - E_2\right) + \dots = E_2 - \epsilon_1^2\left(E_2 - E_1\right) + \epsilon_3^2\left(E_3 - E_2\right) + \epsilon_4^2\left(E_4 - E_2\right) + \dots" cite="mit" at="Problem 3(b), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Read off the answers">
+
+There is no term linear in any $\epsilon_n$: the functional is stationary at $\psi_2$. The number $\epsilon_2$ drops out. It only rescales the $\psi_2$ that is already there, and $F$ does not change when $\psi$ is multiplied by a constant: this is a flat direction, and it is flat to all orders when the other $\epsilon_n$ vanish. Along $\epsilon_1$ the functional falls, because $E_1 < E_2$. Along every $\epsilon_n$ with $n \ge 3$ it rises. The critical point is a saddle with one downhill direction, as the lesson announced for this homework.
+
+</Step>
+
+<Step title="Check the result">
+
+Two checks. First, part (a): a trial wavefunction orthogonal to $\psi_1$ has $\epsilon_1 = 0$, and then $F \ge E_2$, as it must be. Second, the same computation around $\psi_1$ gives $F = E_1 + \sum_{n\ge2}\epsilon_n^2(E_n - E_1)$, where every term is positive: the ground state is a minimum, which is the variational principle. Around the state $\psi_k$ there are $k - 1$ downhill directions.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="One-dimensional attractive potentials have a bound state" points={10} mit="Problem 4">
+
+Use the variational principle to prove that every attractive potential in one dimension has at least one bound state. An attractive potential here means: $V(x)$ goes to zero at plus and minus infinity, is piecewise continuous, is never positive, and is not zero everywhere. So $V(x) = -|V(x)|$. MIT proposes the Gaussian trial wavefunction
+
+<Formula label="The trial wavefunction" tex="\psi_\alpha(x) = \left(\frac{\alpha}{\pi}\right)^{1/4}e^{-\alpha x^2/2}" cite="mit" at="Problem 4, p. 3" />
+
+which is normalized for every $\alpha > 0$, and asks you to show that the expectation value of the energy
+
+<Formula label="The energy of the trial wavefunction" tex="E(\alpha) = \int\psi_\alpha(x)\,\hat H\,\psi_\alpha(x)\,dx, \qquad \hat H = -\frac{\hbar^2}{2m}\frac{d^2}{dx^2} - |V(x)|" cite="mit" at="Problem 4, p. 3" />
+
+can be made negative by a suitable choice of $\alpha$.
+
+<Part label="a" points={3}>
+
+Find the kinetic part of $E(\alpha)$. Use the letters `hbar`, `alpha` and `m`.
+
+<Hint>
+
+Integrate by parts once: the kinetic part is $\frac{\hbar^2}{2m}\int\left(\psi_\alpha'\right)^2dx$.
+
+</Hint>
+
+<Hint>
+
+$\psi_\alpha' = -\alpha x\,\psi_\alpha$, so the integral is $\alpha^2$ times the mean of $x^2$ in the Gaussian probability density $\sqrt{\alpha/\pi}\,e^{-\alpha x^2}$.
+
+</Hint>
+
+<Answer id="p4-kin" label="Kinetic part $=$" expr="hbar^2*alpha/(4*m)"
+  vars={{ hbar: [0.5, 2], alpha: [0.3, 3], m: [0.5, 2] }}
+  names={{ hbar: "\\hbar", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "hbar^2*alpha/(2*m)", hint: "This would follow if the mean of x² were 1/α. For the density √(α/π) e^(−αx²) it is 1/(2α)." },
+    { expr: "-hbar^2*alpha/(4*m)", hint: "A kinetic energy cannot be negative: after integrating by parts it is the integral of a square." },
+    { expr: "hbar^2*alpha^2/(4*m)", hint: "Check the units: α is one over a length squared, so ħ²α²/m is an energy divided by a length squared." }
+  ]} />
+
+<Solution>
+
+**The idea.** Integrating by parts turns the second derivative into the square of the first, and the first derivative of a Gaussian is $x$ times the Gaussian.
+
+<Step title="Integrate by parts">
+
+The boundary terms vanish because the Gaussian does, so with $\psi_\alpha' = -\alpha x\,\psi_\alpha$
+
+<Formula label="Kinetic part of the energy" tex="-\frac{\hbar^2}{2m}\int\psi_\alpha\,\psi_\alpha''\,dx = \frac{\hbar^2}{2m}\int\left(\psi_\alpha'\right)^2dx = \frac{\hbar^2\alpha^2}{2m}\int x^2\,\psi_\alpha^2\,dx = \frac{\hbar^2\alpha^2}{2m}\cdot\frac{1}{2\alpha} = \frac{\hbar^2\alpha}{4m}" cite="mit" at="Problem 4, p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The units are right: $\alpha$ is one over a length squared, and $\hbar^2/(m\,\text{length}^2)$ is an energy. The result agrees with the lesson's Gaussian for the delta-function well, whose kinetic part is $\beta^2\hbar^2/(4m)$ with $\beta^2$ in the place of $\alpha$ (notes eq. (5.24)). A wide Gaussian (small $\alpha$) costs little kinetic energy, and the cost goes to zero in proportion to $\alpha$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+The potential part of $E(\alpha)$ cannot be computed for a general $V(x)$, but a bound is enough. Choose a point $x_0$ where the potential is continuous and negative (there must be one), and write $|V(x_0)| = 2v_0 > 0$. By continuity there is a finite interval $[x_1, x_2]$ around $x_0$, of width $\Delta \equiv x_2 - x_1$, on which $|V(x)| \ge v_0$. Define the simpler potential $V_b(x)$ (MIT's $\tilde V$): it equals $-v_0$ for $x_1 \le x \le x_2$ and zero elsewhere.
+
+Explain how replacing $V$ by $V_b$ bounds the potential part. Then find (our addition) what the potential part with $V_b$ becomes for small $\alpha$, to the lowest order in $\alpha$, with the letters `v0`, `Delta`, `alpha`.
+
+<Hint>
+
+Compare $|V(x)|$ with $|V_b(x)|$ at every point: inside the interval, and outside it.
+
+</Hint>
+
+<Hint>
+
+For small $\alpha$ the Gaussian is so wide that the probability density hardly changes across the interval: it is close to its value at the origin, $\sqrt{\alpha/\pi}$.
+
+</Hint>
+
+<Answer id="p4-why" label="Replacing $V$ by $V_b$" choices={["cannot lower the potential part, because |V(x)| is at least |V_b(x)| at every point", "leaves the potential part unchanged, because only the interval around x₀ matters to a Gaussian", "cannot raise the potential part, because V_b is deeper than V inside the interval, so that the true potential part lies at or above the one with V_b", "gives the potential part exactly in the limit of small α, and says nothing for other values of α"]} answer={0} />
+
+<Answer id="p4-pot" label="Potential part with $V_b$, small $\alpha$: $\approx$" expr="-v0*Delta*sqrt(alpha/pi)"
+  vars={{ v0: [0.5, 3], Delta: [0.5, 3], alpha: [0.3, 3] }}
+  names={{ v0: "v_0", Delta: "\\Delta", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "-v0*Delta*(alpha/pi)^(1/4)", hint: "The factor (α/π)^(1/4) belongs to the wavefunction. The potential is weighted with the probability density, the square of the wavefunction." },
+    { expr: "-v0*sqrt(alpha/pi)", hint: "Check the units: √α is one over a length, so this is an energy divided by a length. The width of the interval is missing." },
+    { expr: "v0*Delta*sqrt(alpha/pi)", hint: "This is positive. An attractive potential gives a negative potential energy." },
+    { expr: "-v0", hint: "That is the potential part when the whole Gaussian sits inside the interval. For small α the Gaussian is far wider than the interval, and only a small part of the probability is inside." }
+  ]} />
+
+<Solution>
+
+**The idea.** The trial wavefunction weighs the potential with a positive density. A potential that is nowhere deeper than the true one gives a potential part that is nowhere lower.
+
+<Step title="Compare the two potentials">
+
+Inside the interval $|V(x)| \ge v_0 = |V_b(x)|$. Outside it $|V(x)| \ge 0 = |V_b(x)|$. So $|V(x)| \ge |V_b(x)|$ everywhere, and since $\psi_\alpha^2$ is positive
+
+<Formula label="Bound on the potential part" tex="-\int|V(x)|\,\psi_\alpha^2\,dx \le -\int|V_b(x)|\,\psi_\alpha^2\,dx = -v_0\int_{x_1}^{x_2}\sqrt{\frac{\alpha}{\pi}}\,e^{-\alpha x^2}\,dx" cite="mit" at="Problem 4, p. 3 (our own solution)" />
+
+The true potential part is at or below the one computed with $V_b$. That is the direction needed: if the energy with $V_b$ is negative, the true $E(\alpha)$ is negative too.
+
+</Step>
+
+<Step title="A wide Gaussian">
+
+Let $L$ be the larger of $|x_1|$ and $|x_2|$. On the interval $e^{-\alpha x^2}$ lies between $e^{-\alpha L^2}$ and 1, so
+
+<Formula label="The potential part for a wide Gaussian" tex="-v_0\,\Delta\sqrt{\frac{\alpha}{\pi}} \le -v_0\int_{x_1}^{x_2}\sqrt{\frac{\alpha}{\pi}}\,e^{-\alpha x^2}\,dx \le -v_0\,\Delta\sqrt{\frac{\alpha}{\pi}}\,e^{-\alpha L^2}" cite="mit" at="Problem 4, p. 3 (our own solution)" />
+
+For $\alpha L^2 \ll 1$ the two ends agree: the potential part with $V_b$ is $-v_0\Delta\sqrt{\alpha/\pi}$ to the lowest order. It goes to zero as $\sqrt\alpha$.
+
+</Step>
+
+<Step title="Check the result">
+
+The units are right, because $\Delta\sqrt\alpha$ is a pure number. The size is right too: $\Delta\sqrt{\alpha/\pi}$ is the probability of finding the particle in the interval when the density is flat across it, and each bit of that probability contributes $-v_0$. The lesson's delta-function well $-g\,\delta(x)$ (the lesson calls the strength $\alpha$) is the limit of a narrow, deep interval at the origin with $v_0\Delta = g$, and its potential part $-\beta g/\sqrt\pi$ with $\beta = \sqrt\alpha$ has exactly this form (notes eq. (5.24)).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Complete the proof: show that $E(\alpha) < 0$ for a suitable $\alpha$, and explain why this means that a bound state exists.
+
+<Hint>
+
+Compare how fast the kinetic part and the bound on the potential part go to zero as $\alpha \to 0$.
+
+</Hint>
+
+<Hint>
+
+The variational principle says $E_1 \le E(\alpha)$. What kind of state has a negative energy in a potential that vanishes far away?
+
+</Hint>
+
+<Solution>
+
+**The idea.** For a wide Gaussian the kinetic cost falls as $\alpha$ and the potential gain only as $\sqrt\alpha$. For small enough $\alpha$ the gain wins.
+
+<Step title="An upper bound on the energy">
+
+Parts (a) and (b) give
+
+<Formula label="Upper bound on the energy of the trial wavefunction" tex="E(\alpha) \le \frac{\hbar^2\alpha}{4m} - v_0\,\Delta\sqrt{\frac{\alpha}{\pi}}\,e^{-\alpha L^2} = \sqrt\alpha\left(\frac{\hbar^2\sqrt\alpha}{4m} - \frac{v_0\,\Delta}{\sqrt\pi}\,e^{-\alpha L^2}\right)" cite="mit" at="Problem 4, p. 3 (our own solution)" />
+
+As $\alpha \to 0$ the first term in the bracket goes to zero and the second goes to the fixed negative number $-v_0\Delta/\sqrt\pi$. So the bracket is negative for small enough $\alpha$. To be explicit: for $\alpha \le 1/L^2$ the exponential is at least $1/e$, and then the bracket is negative whenever $\sqrt\alpha < \frac{4m\,v_0\,\Delta}{e\sqrt\pi\,\hbar^2}$. Any $\alpha$ below both limits gives $E(\alpha) < 0$.
+
+</Step>
+
+<Step title="From a negative energy to a bound state">
+
+By the variational principle the lowest energy of the system is at or below $E(\alpha)$, so it is negative. Far away the potential vanishes, and a solution of the Schrödinger equation with $E < 0$ behaves there as $e^{\pm\kappa x}$ with $\kappa = \sqrt{2m|E|}/\hbar$: a physical state must decay on both sides. States that reach infinity, the scattering states, all have $E \ge 0$. So the state of lowest energy decays at both ends: it is a bound state. (The lesson's proof of the variational principle assumed a discrete spectrum to keep the notation simple. With a continuous part the statement is the same: no normalized wavefunction has an energy below the bottom of the spectrum. A spectrum that starts below zero must start with a bound state, because the continuous part starts at zero.)
+
+</Step>
+
+<Step title="Check the result">
+
+The argument used nothing about the depth or the width of the potential: however small $v_0$ and $\Delta$ are, a small enough $\alpha$ exists. Problem Set 1 showed the same for a shallow square well, which always keeps one bound state. The proof rests on the power $\sqrt\alpha$ of the potential part, which is special to one dimension: there the normalization of a wide wavefunction makes its density at the well fall only as one over its width.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Variational analysis of the potential V(x) = αx⁴" points={20} mit="Problem 5">
+
+A particle of mass $m$ moves in a quartic potential. Its energy eigenstates obey
+
+<Formula label="Schrödinger equation with a quartic potential" tex="-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + \alpha\,x^4\,\psi = E\,\psi" cite="mit" at="Problem 5, p. 3" />
+
+Here $\alpha > 0$ is a constant with units of energy over length to the fourth power (not the $\alpha$ of Problem 4).
+
+<Part label="a" points={4}>
+
+Change the coordinate to a unit-free one, $x = \beta u$, and choose the constant $\beta$ so that the equation becomes
+
+<Formula label="The unit-free equation" tex="-\frac12\frac{d^2\psi}{du^2} + \left(u^4 - e\right)\psi = 0" cite="mit" at="Problem 5(a), p. 3" />
+
+Find $\beta$, and find $E$ in terms of the unit-free constant $e$. Use the letters `hbar`, `m`, `alpha`, and `en` for $e$.
+
+<Hint>
+
+Substitute $x = \beta u$, so that $\frac{d^2}{dx^2} = \frac{1}{\beta^2}\frac{d^2}{du^2}$, and divide the equation by the coefficient of $u^4\psi$.
+
+</Hint>
+
+<Hint>
+
+After dividing, the coefficient of the second derivative must be $-\frac12$. That fixes $\beta^6$.
+
+</Hint>
+
+<Answer id="p5-beta" label="$\beta =$" expr="(hbar^2/(m*alpha))^(1/6)"
+  vars={{ hbar: [0.5, 2], m: [0.5, 2], alpha: [0.3, 3] }}
+  names={{ hbar: "\\hbar", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "(hbar^2/(2*m*alpha))^(1/6)", hint: "With this β the equation becomes −ψ″ + (u⁴ − e)ψ = 0. MIT's form keeps the factor ½ in front of the second derivative." },
+    { expr: "(hbar^2/(m*alpha))^(1/4)", hint: "Check the units: α is an energy over a length to the fourth power, so ħ²/(mα) is a length to the sixth power." },
+    { expr: "(m*alpha/hbar^2)^(1/6)", hint: "This is one over a length. The coordinate x = βu needs a β that is a length." }
+  ]} />
+
+<Answer id="p5-e" label="$E =$" expr="en*(hbar^4*alpha/m^2)^(1/3)"
+  vars={{ en: [0.5, 3], hbar: [0.5, 2], m: [0.5, 2], alpha: [0.3, 3] }}
+  names={{ en: "e", hbar: "\\hbar", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "en*(hbar^2*alpha/m)^(1/3)", hint: "Check the units: ħ²α/m is an energy squared over a length squared, so its cube root is not an energy." },
+    { expr: "en*(hbar^4*alpha/(4*m^2))^(1/3)", hint: "This belongs to the equation −ψ″ + (u⁴ − e)ψ = 0, without the factor ½ in front of the second derivative." },
+    { expr: "en*alpha", hint: "Check the units: α is an energy over a length to the fourth power. The factor β⁴ is missing." }
+  ]} />
+
+<Solution>
+
+**The idea.** The three constants $\hbar$, $m$ and $\alpha$ combine into exactly one length and one energy. Measuring $x$ and $E$ in those units leaves an equation without constants.
+
+<Step title="Substitute and divide">
+
+With $x = \beta u$ the equation is $-\frac{\hbar^2}{2m\beta^2}\frac{d^2\psi}{du^2} + \alpha\beta^4u^4\psi = E\psi$. Divide by $\alpha\beta^4$:
+
+<Formula label="The equation in the new coordinate" tex="-\frac{\hbar^2}{2m\,\alpha\,\beta^6}\frac{d^2\psi}{du^2} + u^4\,\psi = \frac{E}{\alpha\,\beta^4}\,\psi" cite="mit" at="Problem 5(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Read off the constants">
+
+The coefficient of the second derivative is $-\frac12$ when $\hbar^2/(m\alpha\beta^6) = 1$, and then $e$ is $E/(\alpha\beta^4)$:
+
+<Formula label="The length and the energy of the quartic potential" tex="\beta = \left(\frac{\hbar^2}{m\,\alpha}\right)^{1/6}, \qquad E = e\,\alpha\,\beta^4 = e\left(\frac{\hbar^4\alpha}{m^2}\right)^{1/3}" cite="mit" at="Problem 5(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Units: $\hbar^2/m$ is an energy times a length squared and $\alpha$ is an energy over a length to the fourth, so $\hbar^2/(m\alpha)$ is a length to the sixth and $\beta$ is a length. Then $\alpha\beta^4$ is an energy, and so is $\frac{\hbar^2}{m\beta^2}$: the two are equal by the choice of $\beta$. Since the unit-free equation holds no constants, the energies are pure numbers $e$ times $\left(\hbar^4\alpha/m^2\right)^{1/3}$: they grow only as the cube root of the strength $\alpha$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Find the value of $e$ for the ground state to six digits, by integrating the unit-free equation numerically. MIT's recipe: start at $u = 0$ with $\psi(0) = 1$ and $\psi'(0) = 0$ and integrate towards large $u$. Only for special values of $e$ does the solution not blow up. The lowest of them, near 0.67, is the one wanted. Why is the slope zero at the origin?
+
+<Hint>
+
+The potential $u^4$ is even. What does the lesson say about the bound states of an even potential, and about the nodes of the ground state?
+
+</Hint>
+
+<Hint>
+
+For large $u$ a solution of the equation either grows or decays very fast. Try $e = 0.66$ and $e = 0.67$ and watch the sign of $\psi$ where it blows up, at $u$ near 3 or 4. If the signs differ, the wanted value lies in between: halve the interval again and again.
+
+</Hint>
+
+<Answer id="p5-even" label="$\psi'(0) = 0$ because" choices={["the potential has its minimum at u = 0, and the slope of every solution vanishes where the potential is lowest", "the wavefunction is normalized, which fixes both its value and its slope at the origin", "the ground state has no node, so it is even, and an even function with a continuous slope is flat at u = 0", "the equation is of second order, so one of the two starting values may always be set to zero"]} answer={2} />
+
+<Answer id="p5-e0" label="Ground state: $e =$" value="0.667986" tolerance="0.000002" calc="p5-e0" />
+
+<Solution>
+
+**The idea.** The equation fixes a solution once $\psi$ and $\psi'$ are given at one point. Symmetry gives those two numbers at the origin, up to the size of $\psi$. Then $e$ is the only unknown, and the demand that $\psi$ stays finite picks its values.
+
+<Step title="The starting values">
+
+The potential $u^4$ is even, so each bound state is even or odd (the lesson's Theorem 3 with its corollary). The ground state has no node. An odd function vanishes at the origin, so the ground state is even. The derivative of an even function is odd, and the slope is continuous here, so $\psi'(0) = 0$. The size of $\psi$ is free, because the equation is linear: $\psi(0) = 1$ is as good as any other choice. A solution with these starting values is even, so integrating towards positive $u$ is enough.
+
+</Step>
+
+<Step title="Shooting">
+
+Write the equation as $\psi'' = 2\left(u^4 - e\right)\psi$. For $u^4 > e$ the wavefunction curves away from the axis, and a general solution runs off to plus or minus infinity. Integrating with a standard method of high accuracy up to $u = 4$ shows this: for $e = 0.66$ the solution runs off to plus infinity, and for $e = 0.67$ to minus infinity. In between there is a value for which it does neither and decays: an energy eigenstate. Halving the interval, each time keeping the half over which the sign changes, gives
+
+<Formula label="Unit-free ground-state energy of the quartic potential" tex="e_1 = 0.667986, \qquad E_1 = 0.667986\left(\frac{\hbar^4\alpha}{m^2}\right)^{1/3}" cite="mit" at="Problem 5(b), p. 4 (our own computation)" />
+
+(the value does not change in its first nine digits, 0.667986259, when the end point is moved from $u = 4$ to $u = 5$). Values of $e$ below this one give solutions that never cross the axis and grow: there is no eigenstate below, so this is the ground state.
+
+</Step>
+
+<Step title="Check the result with the variational principle">
+
+A check of our own, by the lesson's method. The Gaussian $e^{-bu^2/2}$ has, in the unit-free equation, the kinetic part $\frac{b}{4}$ (Problem 4(a) with $\hbar = m = 1$) and the potential part $\frac{3}{4b^2}$, the mean of $u^4$. The sum $\frac{b}{4} + \frac{3}{4b^2}$ is smallest at $b^3 = 6$, where it is $0.6814$. This upper bound lies 2% above $0.667986$, as an upper bound from a rough trial wavefunction should. A trial wavefunction with more freedom, the same Gaussian times a polynomial of even powers up to $u^{22}$, brings the bound down to $0.6679863$: the first six digits of the result of the shooting.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={6}>
+
+Write a trial wavefunction for the first excited state and find an upper bound for its unit-free energy. So that the boxes can check your work, use the trial wavefunction $\psi(u) = u\,e^{-bu^2/2}$ with a free width parameter $b > 0$ (our suggestion: MIT leaves the choice to you). First find the value $F(b)$ of the energy functional for the unit-free equation, then its smallest value.
+
+<Hint>
+
+Why is this trial wavefunction allowed? Look at the box of Problem 3(a).
+
+</Hint>
+
+<Hint>
+
+$F(b) = \dfrac{\int\left(\frac12(\psi')^2 + u^4\psi^2\right)du}{\int\psi^2\,du}$. All integrals are of the form $\int u^{2n}e^{-bu^2}du$: $\frac{\sqrt\pi}{2}b^{-3/2}$ for $n = 1$, $\frac{3\sqrt\pi}{4}b^{-5/2}$ for $n = 2$ and $\frac{15\sqrt\pi}{8}b^{-7/2}$ for $n = 3$.
+
+</Hint>
+
+<Answer id="p5-fb" label="$F(b) =$" expr="3*b/4 + 15/(4*b^2)"
+  vars={{ b: [0.8, 4] }}
+  mistakes={[
+    { expr: "b/4 + 3/(4*b^2)", hint: "That is the result for the Gaussian without the factor u. It is an even function: it bounds the ground state, not the first excited state." },
+    { expr: "3*b/2 + 15/(4*b^2)", hint: "The first term is the whole energy 3b/2 of this state in a harmonic oscillator of frequency b. Only half of that is kinetic." },
+    { expr: "3*b/4 + 15/(8*b^2)", hint: "Here the potential is u⁴/2. In the unit-free equation the factor ½ stands only in front of the second derivative." }
+  ]} />
+
+<Answer id="p5-bound" label="First excited state: $e \le$" value="2.424" tolerance="0.003" calc="p5-bound" />
+
+<Solution>
+
+**The idea.** The potential is even, so the ground state is even, and an odd trial wavefunction is orthogonal to it. By Problem 3(a) its energy is then an upper bound for the first excited state.
+
+<Step title="The integrals">
+
+With $\psi = u\,e^{-bu^2/2}$ and $\psi' = \left(1 - bu^2\right)e^{-bu^2/2}$:
+
+<Formula label="Norm, kinetic and potential integrals of the trial wavefunction" tex="\int\psi^2du = \frac{\sqrt\pi}{2\,b^{3/2}}, \qquad \frac12\int\left(\psi'\right)^2du = \frac12\sqrt{\frac{\pi}{b}}\left(1 - 1 + \frac34\right) = \frac{3\sqrt\pi}{8\,b^{1/2}}, \qquad \int u^4\psi^2du = \frac{15\sqrt\pi}{8\,b^{7/2}}" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The functional and its minimum">
+
+<Formula label="The energy functional for the odd trial wavefunction" tex="F(b) = \frac{3b}{4} + \frac{15}{4b^2}, \qquad \frac{dF}{db} = \frac34 - \frac{15}{2b^3} = 0 \;\Longrightarrow\; b^3 = 10" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+At $b = 10^{1/3} = 2.154$ the functional is $\frac{3b^3 + 15}{4b^2} = \frac{45}{4\cdot10^{2/3}}$:
+
+<Formula label="Upper bound for the first excited state" tex="e_2 \le 2.424, \qquad E_2 \le 2.424\left(\frac{\hbar^4\alpha}{m^2}\right)^{1/3}" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The kinetic term $\frac{3b}{4}$ is half of $\frac{3b}{2}$, the energy of this wavefunction in a harmonic oscillator $\frac12b^2u^2$, whose first excited state it is: right, because in an oscillator state half the energy is kinetic. For small $b$ the potential term wins and for large $b$ the kinetic term, so a minimum in between must exist. Any other odd trial wavefunction gives a valid bound too. A different choice gives a different number, and the lowest one is the best.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+Find the next-to-lowest value of $e$ numerically, to three digits, and compare it with the bound of part (c).
+
+<Hint>
+
+The first excited state is odd. Which starting values at $u = 0$ belong to an odd solution?
+
+</Hint>
+
+<Answer id="p5-e1" label="First excited state: $e =$" value="2.394" tolerance="0.005" calc="p5-e1" />
+
+<Answer id="p5-cmp" label="The bound of part (c) is" choices={["about 1% below the numerical value", "about 1% above the numerical value", "about 10% above the numerical value, because a trial wavefunction with a single free parameter can never do better than that", "equal to it in the first three digits"]} answer={1} />
+
+<Solution>
+
+**The idea.** The first excited state has one node and is odd, so it starts at the origin with value zero and a slope that may be set to 1.
+
+<Step title="Shooting for the odd state">
+
+Integrate $\psi'' = 2\left(u^4 - e\right)\psi$ from $\psi(0) = 0$, $\psi'(0) = 1$. For $e = 2.3$ the solution runs off to plus infinity and for $e = 2.5$ to minus infinity. Halving the interval gives
+
+<Formula label="Unit-free energy of the first excited state" tex="e_2 = 2.39" cite="mit" at="Problem 5(d), p. 4 (our own computation)" />
+
+to three digits (2.393644 to seven). An odd solution with a lower $e$ does not exist, and the next even one lies higher, at 4.70, so this is the next-to-lowest level.
+
+</Step>
+
+<Step title="Compare">
+
+The bound 2.424 lies above the numerical value, as Problem 3(a) demands, by 1.3%. One free parameter and a guess with the right symmetry and one node come this close. The order of the levels fits the node theorem: 0.668 (no node), 2.394 (one node), 4.70 (two nodes).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="A property of matrices" points={5} mit="Problem 6">
+
+A function of a matrix is defined by its power series: if $f(z) = \sum_{n=0}^{\infty}f_nz^n$, then $f(\mathbf{M}) \equiv \sum_{n=0}^{\infty}f_n\mathbf{M}^n$. Let $\mathbf{M}$ be the matrix
+
+<Formula label="The matrix of Problem 6" tex="\mathbf{M} = \begin{pmatrix}0 & -i\\ i & 0\end{pmatrix}" cite="mit" at="Problem 6, p. 4" />
+
+(the lesson's Pauli matrix $\sigma_2$). Show that, for a real number $\theta$,
+
+<Formula label="The form of the exponential" tex="e^{i\mathbf{M}\theta} = A(\theta)\,\mathbf{1} + B(\theta)\,\mathbf{M}" cite="mit" at="Problem 6, p. 4, eq. (4)" />
+
+where $\mathbf{1}$ is the $2 \times 2$ identity matrix, and find the functions $A$ and $B$. Which algebraic property of a matrix $\mathbf{M}$ of any size leads to this result? In the second box type $B$ without its factor $i$. Use the letter `theta`.
+
+<Hint>
+
+Compute $\mathbf{M}^2$. Then what are $\mathbf{M}^3$, $\mathbf{M}^4$, and every higher power?
+
+</Hint>
+
+<Hint>
+
+Split the series of $e^{i\mathbf{M}\theta}$ into its even and its odd powers. Each part is a series you know.
+
+</Hint>
+
+<Answer id="p6-a" label="$A(\theta) =$" expr="cos(theta)"
+  vars={{ theta: [0.2, 3] }}
+  names={{ theta: "\\theta" }}
+  mistakes={[
+    { expr: "cosh(theta)", hint: "That is the even part of the series of e^(Mθ), without the i in the exponent. With the i, the even powers alternate in sign." },
+    { expr: "1", hint: "That is only the first term of the series. Every even power of M is the identity and adds to A." }
+  ]} />
+
+<Answer id="p6-b" label="$B(\theta)/i =$" expr="sin(theta)"
+  vars={{ theta: [0.2, 3] }}
+  names={{ theta: "\\theta" }}
+  mistakes={[
+    { expr: "-sin(theta)", hint: "That is the result for e^(−iMθ), with the opposite sign in the exponent." },
+    { expr: "theta", hint: "That is only the first odd term of the series. Every odd power of M is M itself and adds to B." },
+    { expr: "sinh(theta)", hint: "That is the odd part of the series of e^(Mθ), without the i in the exponent. With the i, the odd powers alternate in sign." }
+  ]} />
+
+<Answer id="p6-prop" label="The property that is needed:" choices={["M is Hermitian", "M has trace zero", "M is antisymmetric and purely imaginary, so that the result holds only for matrices built exactly like this one and for no others", "M squared is the identity matrix"]} answer={3} />
+
+<Solution>
+
+**The idea.** The square of this matrix is the identity, so its powers take only two values: the identity and the matrix itself. The series then splits into two ordinary series.
+
+<Step title="The powers of the matrix">
+
+<Formula label="The square of the matrix" tex="\mathbf{M}^2 = \begin{pmatrix}0 & -i\\ i & 0\end{pmatrix}\begin{pmatrix}0 & -i\\ i & 0\end{pmatrix} = \begin{pmatrix}(-i)(i) & 0\\ 0 & (i)(-i)\end{pmatrix} = \begin{pmatrix}1 & 0\\ 0 & 1\end{pmatrix} = \mathbf{1}" cite="reading2" at="eqs. (2.29), (2.30): the matrix is the Pauli matrix with index 2" />
+
+So $\mathbf{M}^{2n} = \mathbf{1}$ and $\mathbf{M}^{2n+1} = \mathbf{M}$ for every whole number $n \ge 0$.
+
+</Step>
+
+<Step title="Split the series">
+
+<Formula label="The exponential, summed" tex="e^{i\mathbf{M}\theta} = \sum_{n=0}^{\infty}\frac{(i\theta)^{2n}}{(2n)!}\,\mathbf{1} + \sum_{n=0}^{\infty}\frac{(i\theta)^{2n+1}}{(2n+1)!}\,\mathbf{M} = \cos\theta\;\mathbf{1} + i\sin\theta\;\mathbf{M}" cite="mit" at="Problem 6, p. 4 (our own solution)" />
+
+because $(i\theta)^{2n} = (-1)^n\theta^{2n}$ and $(i\theta)^{2n+1} = i\,(-1)^n\theta^{2n+1}$. So $A(\theta) = \cos\theta$ and $B(\theta) = i\sin\theta$.
+
+</Step>
+
+<Step title="The property">
+
+Only $\mathbf{M}^2 = \mathbf{1}$ was used. Any square matrix of any size whose square is the identity obeys the same formula. It is Euler's formula $e^{i\theta} = \cos\theta + i\sin\theta$ with $\mathbf{M}$ in the place of the number 1. All three Pauli matrices have this property, and so does every combination $n_x\sigma_1 + n_y\sigma_2 + n_z\sigma_3$ with a unit vector $(n_x, n_y, n_z)$, which is why this formula returns later in the course for the rotation of spin states.
+
+</Step>
+
+<Step title="Check the result">
+
+Written out for this matrix,
+
+<Formula label="The exponential as a matrix" tex="e^{i\mathbf{M}\theta} = \begin{pmatrix}\cos\theta & \sin\theta\\ -\sin\theta & \cos\theta\end{pmatrix}" cite="mit" at="Problem 6, p. 4 (our own solution)" />
+
+a rotation of the plane by the angle $\theta$. It is the identity at $\theta = 0$, as $e^0$ must be. Its determinant is $\cos^2\theta + \sin^2\theta = 1$, and its derivative at $\theta = 0$ is $i\mathbf{M}$, as the series demands. Two such rotations multiply to a rotation by the sum of the angles, as exponentials of the same matrix must.
+
+</Step>
+
+</Solution>
+
+</Exercise>
