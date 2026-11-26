@@ -63,7 +63,7 @@ Later windows:
 - your own new lines in `data/symbols.json` (see the rule for that file below).
 
 This window:
-- [ ] Set up: `git pull`; create branch `run/b-806-8962` and **push it at once** (`git push -u origin run/b-806-8962`): if that push fails, stop and tell the owner, because no work can be saved; `npm ci`; `python -m venv .venv` and install `requirements-dev.txt` (`.venv/Scripts/pip` on Windows, `.venv/bin/pip` on Linux/macOS); check `pdftotext` exists; download every MIT PDF for 8.06 and 8.962 to a folder outside the repository. If ocw.mit.edu cannot be reached, stop and tell the owner.
+- [~] Set up: `git pull`; create branch `run/b-806-8962` and **push it at once** (`git push -u origin run/b-806-8962`): if that push fails, stop and tell the owner, because no work can be saved; `npm ci`; `python -m venv .venv` and install `requirements-dev.txt` (`.venv/Scripts/pip` on Windows, `.venv/bin/pip` on Linux/macOS); check `pdftotext` exists; download every MIT PDF for 8.06 and 8.962 to a folder outside the repository. If ocw.mit.edu cannot be reached, stop and tell the owner.
 - [ ] 8.06 (Spring 2018): 9 sets, `resources/problem-set-1/` … `problem-set-9/`. First check every PDF for rights notices and whether solutions are on OCW.
 - [ ] 8.962 (Spring 2020): 11 sets, `resources/mit8_962s20_pset01/` … `pset11/` (some sets have a separate `_hint` PDF; `resources/ps10/` may be a second copy of Set 10: check).
 
