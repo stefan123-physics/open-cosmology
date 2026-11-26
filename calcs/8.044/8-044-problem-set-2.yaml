@@ -1,0 +1,544 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions to this set. Every formula answer is checked here by a route that does not use MIT's
+# algebra: a numerical integral of the joint density, or a numerical derivative of the cumulative distribution.
+# Integrals over the whole line are taken to 12 widths of the Gaussian, where the integrand is below 1e-60.
+
+page: content/year-3/8.044/8-044-problem-set-2.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-joint-is-the-square
+    kind: identity
+    answer: p1-joint
+    where: 'Problem 1(a), answer box and formula "Joint density of the two positions": the square of the wavefunction of the problem'
+    formula: (x1 - x2)**2/(pi*x0**4)*exp(-(x1**2 + x2**2)/x0**2)
+    equals: ((x2 - x1)/(sqrt(pi)*x0**2)*exp(-(x1**2 + x2**2)/(2*x0**2)))**2
+    samples:
+      x1: [-1.5, 0.3, 1.2, 0.7, -0.4]
+      x2: [0.5, -1.1, 1.2, 0.2, -2.0]
+      x0: [0.7, 1, 1.5, 1.3, 0.9]
+    tolerance: 1e-12
+    shown: ['\frac{1}{\pi x_0^2}\left(\frac{x_1 - x_2}{x_0}\right)^2\exp\left(-\frac{x_1^2 + x_2^2}{x_0^2}\right)']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1'}
+    origin: mit
+
+  - id: p1-joint-normalized
+    where: 'Problem 1(a), check: the joint density integrated over the plane, by a double numerical integral (x0 = 1.3)'
+    inputs: {x0: 1.3}
+    formula: >-
+      integrate("integrate('(x - y)**2/(pi*x0**4)*exp(-(x**2 + y**2)/x0**2)', 'y', -12*x0, 12*x0)", "x", -12*x0, 12*x0)
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['Integrated over the whole plane it gives 1']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (the check is ours)'}
+    origin: page-own
+
+  - id: p1-max
+    answer: p1-max
+    where: 'Problem 1(a), answer box: the maxima on the line x2 = −x1, in units of x0, as the zero of the numerical derivative of the density along that line'
+    inputs: {}
+    formula: >-
+      solve("deriv('4*y**2/pi*exp(-2*y**2)', 'y', q)", "q", 0.3, 1.5)
+    expected: '0.707'
+    shown: ['so $c = 1/\sqrt2 = 0.707$']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (MIT gives the sketch; the number is ours)'}
+    origin: page-own
+
+  - id: p1-max-plot
+    where: 'Problem 1(a), graph: the coordinates of the two marked maxima'
+    inputs: {}
+    formula: 1/sqrt(2)
+    expected: '0.7071'
+    shown: ['points={[{ x: 0.7071, y: -0.7071, label: "max", offCurve: true }, { x: -0.7071, y: 0.7071, label: "max", offCurve: true }]}']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (our own graph)'}
+    origin: page-own
+
+  # The closed curves of the graph: with u = (x1 − x2)/√2 and w = (x1 + x2)/√2 (in units of x0) the density is
+  # (2u²/π) exp(−u² − w²), its maximum 2/(πe), and half of that is reached where w² = ln(2u²) + 1 − u².
+  - id: p1-half-height-curve
+    kind: identity
+    where: 'Problem 1(a), graph: on the plotted curves the density is half its greatest value'
+    formula: 2*u**2/pi*exp(-u**2 - (log(2*u**2) + 1 - u**2))
+    equals: 0.5 * 2/(pi*e)
+    samples: {u: [0.5, 0.7, 1, 1.3, 1.6]}
+    tolerance: 1e-12
+    shown: ['The two closed curves are where the density has half its greatest value.']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1 (our own graph)'}
+    origin: page-own
+
+  - id: p1-marginal-by-integration
+    kind: identity
+    answer: p1-marg
+    where: 'Problem 1(b), answer box and formula "Density of the position of one particle": against a numerical integral of the joint density over the other position'
+    formula: (x**2/x0**2 + 1/2)/(sqrt(pi)*x0)*exp(-x**2/x0**2)
+    equals: >-
+      integrate('(x - y)**2/(pi*x0**4)*exp(-(x**2 + y**2)/x0**2)', 'y', -12*x0, 12*x0)
+    samples:
+      x: [-1.5, 0, 0.4, 1.1, 2.5]
+      x0: [0.7, 1, 1.5, 1.3, 0.9]
+    tolerance: 1e-8
+    shown: ['p(x_1) = \frac{1}{\sqrt\pi\,x_0}\left(\frac{x_1^2}{x_0^2} + \frac12\right)\exp\left(-\frac{x_1^2}{x_0^2}\right)']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  - id: p1-marginal-normalized
+    where: 'Problem 1(b), check: the single density integrated over the line (x0 = 1.3)'
+    inputs: {x0: 1.3}
+    formula: >-
+      integrate('(x**2/x0**2 + 1/2)/(sqrt(pi)*x0)*exp(-x**2/x0**2)', 'x', -12*x0, 12*x0)
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['The single density integrates to 1']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1 (the check is ours)'}
+    origin: page-own
+
+  - id: p1-marginal-mistake
+    where: 'Problem 1(b), answer box, hint of the second listed mistake: (x²/x0² + 1) in place of (x²/x0² + 1/2) integrates to 3/2'
+    inputs: {x0: 1.3}
+    formula: >-
+      integrate('(x**2/x0**2 + 1)/(sqrt(pi)*x0)*exp(-x**2/x0**2)', 'x', -12*x0, 12*x0)
+    expected: '1.5'
+    tolerance: 1e-8
+    shown: ['As it stands your density integrates to 3/2, not 1.']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1 (our own hint)'}
+    origin: page-own
+
+  - id: p1-conditional-by-division
+    kind: identity
+    answer: p1-cond
+    where: 'Problem 1(c), answer box and formula "Conditional density of the position of particle 1": the joint density divided by a numerical integral of it over x1'
+    formula: 2*(x1 - x2)**2/(sqrt(pi)*x0**3*(1 + 2*x2**2/x0**2))*exp(-x1**2/x0**2)
+    equals: >-
+      (x1 - x2)**2/(pi*x0**4)*exp(-(x1**2 + x2**2)/x0**2)
+      / integrate('(y - x2)**2/(pi*x0**4)*exp(-(y**2 + x2**2)/x0**2)', 'y', -12*x0, 12*x0)
+    samples:
+      x1: [-1.5, 0.3, 1.2, 0.7, -0.4]
+      x2: [0.5, -1.1, 1.0, 0, -2.0]
+      x0: [0.7, 1, 1.5, 1.3, 0.9]
+    tolerance: 1e-8
+    shown: ['= \frac{2}{\sqrt\pi\,x_0}\;\frac{1}{1 + 2\left(x_2/x_0\right)^2}\left(\frac{x_1 - x_2}{x_0}\right)^2\exp\left(-\frac{x_1^2}{x_0^2}\right)']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2'}
+    origin: mit
+
+  - id: p1-conditional-normalized
+    where: 'Problem 1(c), check: the conditional density integrated over x1 (x0 = 1.3, x2 = 0.8)'
+    inputs: {x0: 1.3, x2: 0.8}
+    formula: >-
+      integrate('2*(x - x2)**2/(sqrt(pi)*x0**3*(1 + 2*x2**2/x0**2))*exp(-x**2/x0**2)', 'x', -12*x0, 12*x0)
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['The conditional density integrates to 1 over $x_1$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (the check is ours)'}
+    origin: page-own
+
+  - id: p1-conditional-mean
+    kind: identity
+    answer: p1-mean
+    where: 'Problem 1(c), answer box and formula "Mean position of particle 1 when particle 2 is known": against a numerical integral of x1 times the conditional density'
+    formula: -2*x2*x0**2/(x0**2 + 2*x2**2)
+    equals: >-
+      integrate('x*2*(x - x2)**2/(sqrt(pi)*x0**3*(1 + 2*x2**2/x0**2))*exp(-x**2/x0**2)', 'x', -12*x0, 12*x0)
+    samples:
+      x2: [0.3, 1.5, -1.0, 0.8, 2.5]
+      x0: [0.7, 1, 1.5, 1.3, 0.9]
+    tolerance: 1e-8
+    shown: ['= -\frac{2x_2\,x_0^2}{x_0^2 + 2x_2^2}']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (the density is MIT''s; the mean is our addition)'}
+    origin: page-own
+
+  - id: p1-conditional-mean-far
+    kind: limit
+    where: 'Problem 1(c), the mean position: its form when particle 2 is far away (x0 = 1)'
+    inputs: {x0: 1}
+    formula: -2*x2*x0**2/(x0**2 + 2*x2**2)
+    limit: -x0**2/x2
+    vary: {x2: [10, 100, 1000, 10000]}
+    tolerance: 1e-6
+    shown: ['it tends to $-x_0^2/x_2$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (our addition)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-marginal-by-integration
+    kind: identity
+    answer: p2-px
+    where: 'Problem 2(a), answer box and formula "Density of x alone for the pyramid": against a numerical integral over y'
+    formula: 3*(1 - x)**2
+    equals: integrate('6*(1 - x - y)', 'y', 0, 1 - x)
+    samples: {x: [0.05, 0.25, 0.5, 0.8, 0.95]}
+    tolerance: 1e-9
+    shown: ['= 3\left(1 - x\right)^2, \qquad 0 \le x \le 1']
+    source: {cite: reading1, at: 'Problem 2(a), p. 3'}
+    origin: mit
+
+  - id: p2-marginal-normalized
+    where: 'Problem 2(a), check: the density of x integrated from 0 to 1'
+    inputs: {}
+    formula: integrate('3*(1 - x)**2', 'x', 0, 1)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$\int_0^13\left(1 - x\right)^2dx = 1$']
+    source: {cite: reading1, at: 'Problem 2(a), p. 3 (the check is ours)'}
+    origin: page-own
+
+  - id: p2-marginal-at-zero
+    where: 'Problem 2(a), graph caption: the value of p(x) at x = 0'
+    inputs: {x: 0}
+    formula: integrate('6*(1 - x - y)', 'y', 0, 1 - x)
+    expected: '3'
+    tolerance: 1e-9
+    shown: ['a parabola that falls from 3 at x = 0 to zero']
+    source: {cite: reading1, at: 'Problem 2(a), p. 3 (sketch)'}
+    origin: mit
+
+  - id: p2-conditional-by-division
+    kind: identity
+    answer: p2-cond
+    where: 'Problem 2(b), answer box and formula "Conditional density of y for the pyramid": the joint density divided by a numerical integral of it over y'
+    formula: 2*(1 - x - y)/(1 - x)**2
+    equals: 6*(1 - x - y) / integrate('6*(1 - x - q)', 'q', 0, 1 - x)
+    samples:
+      x: [0.05, 0.25, 0.5, 0.3, 0.8]
+      y: [0.05, 0.45, 0.2, 0.69, 0.1]
+    tolerance: 1e-9
+    shown: ['= \frac{2}{\left(1 - x\right)^2}\left(1 - x - y\right), \qquad 0 \le y \le 1 - x']
+    source: {cite: reading1, at: 'Problem 2(b), p. 3'}
+    origin: mit
+
+  - id: p2-conditional-normalized
+    where: 'Problem 2(b), check: the conditional density integrated over y (x = 0.3)'
+    inputs: {x: 0.3}
+    formula: integrate('2*(1 - x - y)/(1 - x)**2', 'y', 0, 1 - x)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$\frac12\cdot(1 - x)\cdot\frac{2}{1 - x} = 1$']
+    source: {cite: reading1, at: 'Problem 2(b), p. 3 (the check is ours)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-nearest-star-from-cumulative
+    kind: identity
+    answer: p3-pr
+    where: 'Problem 3(a), answer box and formula "Density of the distance to the nearest star": the numerical derivative of the probability that the sphere is not empty'
+    formula: 4*pi*rho*r**2*exp(-4*pi*rho*r**3/3)
+    equals: deriv('1 - exp(-4*pi*rho*x**3/3)', 'x', r)
+    samples:
+      rho: [0.05, 0.3, 0.1, 0.004, 1]
+      r: [0.3, 1.5, 1, 3.4, 0.7]
+    tolerance: 1e-7
+    shown: ['\quad\Longrightarrow\quad p_r(r) = 4\pi\rho\,r^2\exp\left(-\frac43\pi\rho r^3\right)']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4'}
+    origin: mit
+
+  - id: p3-nearest-star-normalized
+    where: 'Problem 3(a), check: the density integrated over all distances (ρ = 0.004 per cubic light year, to 40 light years)'
+    inputs: {rho: 0.004}
+    formula: integrate('4*pi*rho*x**2*exp(-4*pi*rho*x**3/3)', 'x', 0, 40)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['It rises from 0 to 1, so $p_r$ is normalized']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4 (the check is ours)'}
+    origin: page-own
+
+  - id: p3-peak
+    answer: p3-peak
+    where: 'Problem 3(a), answer box: the most likely distance in light years for ρ = 0.004 per cubic light year, as the zero of the numerical derivative of the density'
+    inputs: {rho: 0.004}
+    formula: >-
+      solve("deriv('4*pi*rho*y**2*exp(-4*pi*rho*y**3/3)', 'y', q)", "q", 1, 8)
+    expected: '3.41'
+    shown: ['^{-1/3} = 3.41$ light years']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4 (the density is MIT''s; the example number is ours)'}
+    origin: page-own
+
+  - id: p3-peak-two-pi-rho
+    where: 'Problem 3(a), step "The most likely distance": 2πρ for ρ = 0.004'
+    inputs: {rho: 0.004}
+    formula: 2*pi*rho
+    expected: '0.02513'
+    shown: ['this is $\left(0.02513\right)']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4 (our own number)'}
+    origin: page-own
+
+  - id: p3-relation-by-derivative
+    kind: identity
+    answer: p3-rel
+    where: 'Problem 3(b), answer box and formula "Density of the acceleration from the density of the distance": the factor in front of p_r is minus the numerical derivative of √(GM/a)'
+    formula: sqrt(G*M/a)/(2*a)*pr
+    equals: -deriv('sqrt(G*M/x)', 'x', a) * pr
+    samples:
+      G: [0.5, 2, 1, 1.3, 0.8]
+      M: [0.5, 2, 1, 0.7, 1.9]
+      a: [0.5, 3, 1, 2.2, 0.9]
+      pr: [0.2, 2, 1, 0.6, 1.4]
+    tolerance: 1e-7
+    shown: ['= \frac{1}{2a}\sqrt{\frac{GM}{a}}\;p_r\left(\sqrt{\frac{GM}{a}}\right)']
+    source: {cite: reading1, at: 'Problem 3(b), p. 5'}
+    origin: mit
+
+  - id: p3-acceleration-from-cumulative
+    kind: identity
+    answer: p3-pa
+    where: 'Problem 3(c), answer box and formula "Density of the acceleration by the nearest star": the numerical derivative of the probability that no star is nearer than √(GM/a)'
+    formula: 2*pi*rho*(G*M)**(3/2)*a**(-5/2)*exp(-(4*pi*rho/3)*(G*M/a)**(3/2))
+    equals: deriv('exp(-(4*pi*rho/3)*(G*M/x)**(3/2))', 'x', a)
+    samples:
+      rho: [0.05, 0.3, 0.1, 0.2, 0.15]
+      G: [0.5, 2, 1, 1.3, 0.8]
+      M: [0.5, 2, 1, 0.7, 1.9]
+      a: [0.5, 3, 1, 2.2, 0.9]
+    tolerance: 1e-7
+    shown: ['p_a(a) = \frac{2\pi\rho}{GM}\left(\frac{GM}{a}\right)^{5/2}']
+    source: {cite: reading1, at: 'Problem 3(c), p. 5'}
+    origin: mit
+
+  # In units of a1 = GM ρ^(2/3). Below 0.01 the integrand is smaller than exp(−4000); above 1e6 the tail holds 4e-9.
+  - id: p3-acceleration-normalized
+    where: 'Problem 3(c), check: the density of the acceleration integrated over all accelerations, in the units of the graph'
+    inputs: {}
+    formula: integrate('2*pi*x**(-5/2)*exp(-(4*pi/3)*x**(-3/2))', 'x', 0.01, 1e6)
+    expected: '1'
+    tolerance: 1e-7
+    shown: ['so $p_a$ is normalized']
+    source: {cite: reading1, at: 'Problem 3(c), p. 5 (the check is ours)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-energy-3d-from-cumulative
+    kind: identity
+    answer: p4-3d
+    where: 'Problem 4(a), answer box and formula "Density of the energy in three dimensions": the numerical derivative of the numerical integral of the velocity density over a sphere, with σ² = kT/m'
+    formula: 2/sqrt(pi)*sqrt(E)/(k*T)**(3/2)*exp(-E/(k*T))
+    equals: >-
+      deriv("4*pi/(2*pi*k*T/m)**(3/2)*integrate('v**2*exp(-v**2*m/(2*k*T))', 'v', 0, sqrt(2*x/m))", "x", E)
+    samples:
+      E: [0.2, 3, 1, 0.6, 1.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.5, 2, 1, 0.7, 1.9]
+      m: [0.5, 2, 1, 1.6, 0.6]
+    tolerance: 1e-6
+    shown: ['= \frac{2}{\sqrt\pi}\,\frac{1}{kT}\sqrt{\frac{E}{kT}}\;e^{-E/kT} \quad\text{for } E \ge 0']
+    source: {cite: reading1, at: 'Problem 4(a), p. 6'}
+    origin: mit
+
+  - id: p4-mean-3d
+    where: 'Problem 4(a), check: the mean energy in units of kT, by numerical integration'
+    inputs: {}
+    formula: integrate('x*2/sqrt(pi)*sqrt(x)*exp(-x)', 'x', 0, 80)
+    expected: '1.5'
+    tolerance: 1e-8
+    shown: ['= \frac32kT$ (MIT''s solutions p. 6)']
+    source: {cite: reading1, at: 'Problem 4(a), p. 6'}
+    origin: mit
+
+  - id: p4-peak-3d
+    where: 'Problem 4(b), graph caption: the peak of the three-dimensional density, in units of kT'
+    inputs: {}
+    formula: >-
+      solve("deriv('2/sqrt(pi)*sqrt(y)*exp(-y)', 'y', q)", "q", 0.1, 2)
+    expected: '0.5'
+    tolerance: 1e-6
+    shown: ['has its peak at half of kT']
+    source: {cite: reading1, at: 'Problem 4(a), p. 6 (sketch; the position of the peak is ours)'}
+    origin: page-own
+
+  - id: p4-energy-2d-from-cumulative
+    kind: identity
+    answer: p4-2d
+    where: 'Problem 4(b), answer box and formula "Density of the energy in two dimensions": the numerical derivative of the numerical integral of the velocity density over a disk, with σ² = kT/m'
+    formula: exp(-E/(k*T))/(k*T)
+    equals: >-
+      deriv("m/(k*T)*integrate('v*exp(-v**2*m/(2*k*T))', 'v', 0, sqrt(2*x/m))", "x", E)
+    samples:
+      E: [0.2, 3, 1, 0.6, 1.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.5, 2, 1, 0.7, 1.9]
+      m: [0.5, 2, 1, 1.6, 0.6]
+    tolerance: 1e-6
+    shown: ['tex="p(E) = \frac{1}{kT}\,e^{-E/kT} \quad\text{for } E \ge 0']
+    source: {cite: reading1, at: 'Problem 4(b), p. 7'}
+    origin: mit
+
+  - id: p4-mean-2d
+    where: 'Problem 4(b), check: the mean energy in units of kT, by numerical integration'
+    inputs: {}
+    formula: integrate('x*exp(-x)', 'x', 0, 80)
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['The mean is $\langle E\rangle = kT$ (MIT''s solutions p. 7)']
+    source: {cite: reading1, at: 'Problem 4(b), p. 7'}
+    origin: mit
+
+  - id: p4-energy-1d-from-cumulative
+    kind: identity
+    where: 'Problem 4(b), remark and formula "Density of the energy in one dimension": the numerical derivative of the numerical integral of the velocity density over a stretch of the line, with σ² = kT/m'
+    formula: 1/sqrt(pi*k*T*E)*exp(-E/(k*T))
+    equals: >-
+      deriv("1/sqrt(2*pi*k*T/m)*integrate('exp(-v**2*m/(2*k*T))', 'v', -sqrt(2*x/m), sqrt(2*x/m))", "x", E)
+    samples:
+      E: [0.2, 3, 1, 0.6, 1.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.5, 2, 1, 0.7, 1.9]
+      m: [0.5, 2, 1, 1.6, 0.6]
+    tolerance: 1e-6
+    shown: ['p(E) = \frac{1}{\sqrt{\pi kT\,E}}\;e^{-E/kT}']
+    source: {cite: reading1, at: 'Problem 4(c), p. 8'}
+    origin: mit
+
+  # The integrand is 1/√x at the lower limit: integrable.
+  - id: p4-mean-1d
+    where: 'Problem 4(b), remark: the mean energy in one dimension in units of kT, by numerical integration'
+    inputs: {}
+    formula: integrate('x/sqrt(pi*x)*exp(-x)', 'x', 0, 80)
+    expected: '0.5'
+    tolerance: 1e-8
+    shown: ['with mean $\frac12kT$']
+    source: {cite: reading1, at: 'Problem 4(c), p. 8'}
+    origin: mit
+
+  # ---- Problem 5
+
+  # The upper limit of the integral is held fixed (any value does): only the lower limit A/η² depends on η.
+  - id: p5-speed-from-cumulative
+    kind: identity
+    answer: p5-pv
+    where: 'Problem 5, answer box and formula "Density of the speed at the source": the numerical derivative of the numerical integral of the measured density from A/η² upwards'
+    formula: 2*eta**2/(sqrt(2*pi)*sigma**3)*exp(-eta**2/(2*sigma**2))
+    equals: >-
+      deriv("integrate('A**(3/2)/(sigma**2*sqrt(2*pi*sigma**2))*z**(-5/2)*exp(-A/(2*sigma**2*z))', 'z', A/x**2, 50*A/sigma**2)", "x", eta)
+    samples:
+      eta: [0.3, 3, 1, 1.4, 2.2]
+      sigma: [0.5, 2, 1, 1.3, 0.8]
+      A: [0.5, 2, 1, 0.7, 1.9]
+    tolerance: 1e-6
+    shown: ['= \frac{2\eta^2}{\sigma^2\sqrt{2\pi\sigma^2}}\;e^{-\eta^2/2\sigma^2}, \qquad \eta \ge 0']
+    source: {cite: reading1, at: 'Problem 5, p. 9'}
+    origin: mit
+
+  - id: p5-speed-normalized
+    where: 'Problem 5, check: the density of the speed integrated over all speeds (σ = 1.3)'
+    inputs: {sigma: 1.3}
+    formula: integrate('2*x**2/(sqrt(2*pi)*sigma**3)*exp(-x**2/(2*sigma**2))', 'x', 0, 40)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$p_{v_x}$ integrates to 1']
+    source: {cite: reading1, at: 'Problem 5, p. 9 (the check is ours)'}
+    origin: page-own
+
+  - id: p5-speed-mistake
+    where: 'Problem 5, answer box, hint of the second listed mistake: without the factor 2 the density integrates to one half (σ = 1.3)'
+    inputs: {sigma: 1.3}
+    formula: integrate('x**2/(sqrt(2*pi)*sigma**3)*exp(-x**2/(2*sigma**2))', 'x', 0, 40)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['As it stands your density integrates to one half.']
+    source: {cite: reading1, at: 'Problem 5, p. 9 (our own hint)'}
+    origin: page-own
+
+  - id: p5-speed-peak
+    kind: identity
+    answer: p5-vpeak
+    where: 'Problem 5, answer box: the most likely speed, as the zero of the numerical derivative of the density of the speed'
+    formula: sqrt(2)*sigma
+    equals: >-
+      solve("deriv('2*y**2/(sqrt(2*pi)*sigma**3)*exp(-y**2/(2*sigma**2))', 'y', q)", "q", 0.5*sigma, 3*sigma)
+    samples: {sigma: [0.5, 2, 1, 1.3, 0.8]}
+    tolerance: 1e-6
+    shown: ['is zero at $\eta = \sqrt2\,\sigma$']
+    source: {cite: reading1, at: 'Problem 5, p. 9 (the density is MIT''s; the peak is our addition)'}
+    origin: page-own
+
+  - id: p5-position-peak
+    kind: identity
+    answer: p5-speak
+    where: 'Problem 5, answer box: the most likely position on the target, as the zero of the numerical derivative of the measured density'
+    formula: A/(5*sigma**2)
+    equals: >-
+      solve("deriv('y**(-5/2)*exp(-A/(2*sigma**2*y))', 'y', q)", "q", 0.05*A/sigma**2, A/sigma**2)
+    samples:
+      sigma: [0.5, 2, 1, 1.3, 0.8]
+      A: [0.5, 2, 1, 0.7, 1.9]
+    tolerance: 1e-6
+    shown: ['is zero at $\zeta = A/(5\sigma^2)$']
+    source: {cite: mit, at: 'Problem 5, p. 4 (the density is MIT''s; the peak is our addition)'}
+    origin: page-own
+
+  - id: p5-fall-at-likely-speed
+    kind: identity
+    where: 'Problem 5, step "The two peaks": the fall of an atom with the most likely speed √2 σ'
+    formula: A/(2*sigma**2)
+    equals: A/(sqrt(2)*sigma)**2
+    samples:
+      sigma: [0.5, 2, 1, 1.3, 0.8]
+      A: [0.5, 2, 1, 0.7, 1.9]
+    tolerance: 1e-12
+    shown: ['An atom with the most likely speed falls $A/(2\sigma^2)$']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our addition)'}
+    origin: page-own
+
+  - id: p5-measured-peak
+    kind: fact
+    where: 'Problem 5, check: where the measured curve on MIT''s sheet peaks (read off the graph, which is not reproduced)'
+    shown: ['whose peak is near $s = 0.1$ mm']
+    source: {cite: mit, at: 'Problem 5, p. 4 (graph of ion current against s)'}
+    origin: mit
+
+  # ---- Problem 6
+
+  - id: p6-density-from-caps
+    kind: identity
+    answer: p6-pr
+    where: 'Problem 6, answer box and formula "Density of the perpendicular distance for a shell": the numerical derivative of the area of the two caps, integrated numerically, over the area of the sphere'
+    formula: r/(R*sqrt(R**2 - r**2))
+    equals: >-
+      deriv("0.5*(integrate('sin(t)', 't', 0, asin(x/R)) + integrate('sin(t)', 't', pi - asin(x/R), pi))", "x", r)
+    samples:
+      r: [0.1, 0.9, 0.5, 1.2, 1.7]
+      R: [1, 1, 2, 1.5, 1.9]
+    tolerance: 1e-6
+    shown: ['= \frac{r_\perp}{R\sqrt{R^2 - r_\perp^2}} \quad\text{for } 0 \le r_\perp \le R']
+    source: {cite: reading1, at: 'Problem 6, p. 10'}
+    origin: mit
+
+  - id: p6-rim
+    answer: p6-rim
+    where: 'Problem 6, answer box: the fraction of the atoms at more than 0.9 R from the line of sight, from the areas of the two caps'
+    inputs: {q: 0.9}
+    formula: 1 - 0.5*(integrate('sin(t)', 't', 0, asin(q)) + integrate('sin(t)', 't', pi - asin(q), pi))
+    expected: '0.436'
+    shown: ['= \sqrt{1 - 0.81} = 0.436$']
+    source: {cite: reading1, at: 'Problem 6, p. 10 (the cumulative distribution is MIT''s; the number is ours)'}
+    origin: page-own
+
+  - id: p6-rim-disk
+    where: 'Problem 6, step "The rim": the same fraction for a disk filled uniformly on the sky'
+    inputs: {q: 0.9}
+    formula: integrate('2*x', 'x', q, 1)
+    expected: '0.19'
+    shown: ['it would be $1 - 0.81 = 0.19$']
+    source: {cite: reading1, at: 'Problem 6, p. 10 (our own comparison)'}
+    origin: page-own
+
+  - id: p6-rim-ratio
+    where: 'Problem 6, step "The rim": the shell''s share of the rim over the disk''s'
+    inputs: {q: 0.9}
+    formula: sqrt(1 - q**2) / (1 - q**2)
+    expected: '2.3'
+    shown: ['the shell puts more than twice as much in its outer rim']
+    source: {cite: reading1, at: 'Problem 6, p. 10 (our own comparison)'}
+    origin: page-own
+
+  # MIT's solutions print the second cap as running from asin(r/R) to π. With that limit the two integrals add to 2.
+  - id: p6-printed-limit
+    where: 'Problem 6, step "The cumulative distribution": the bracket with the limit as printed in MIT''s solutions (r/R = 0.37)'
+    inputs: {q: 0.37}
+    formula: integrate('sin(t)', 't', 0, asin(q)) + integrate('sin(t)', 't', asin(q), pi)
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['With that limit the bracket would give 2 for every $r_\perp$']
+    source: {cite: reading1, at: 'Problem 6, p. 10'}
+    origin: slip
