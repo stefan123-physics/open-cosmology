@@ -39,9 +39,9 @@ Status marks: `- [ ]` to do, `- [~]` in progress, `- [x]` done.
 - every shared file marked "A" below.
 
 This window:
-- [~] 8.044 Set 9: blind review of the draft on branch `ps-8044-9` (worktree `.claude/worktrees/ps-8044-9` on Account A's computer), fix, bring onto `run/a-8044-805`.
-- [ ] 8.044 Sets 10 and 11 (MIT `resources/mit8_044s13_psN/`, solutions `…_pssN/`, `solutions: mit`).
-- [ ] 8.05 (Fall 2013): 11 sets, `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
+- [x] 8.044 Set 9: blind review of the draft on branch `ps-8044-9` (worktree `.claude/worktrees/ps-8044-9` on Account A's computer), fix, bring onto `run/a-8044-805`.
+- [~] 8.044 Sets 10 and 11 (MIT `resources/mit8_044s13_psN/`, solutions `…_pssN/`, `solutions: mit`).
+- [~] 8.05 (Fall 2013): 11 sets, `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
 
 Later windows:
 - [ ] 8.07 (Fall 2012): 10 sets, `resources/mit8_07f12_pset01/` …

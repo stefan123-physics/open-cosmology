@@ -1,0 +1,638 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions to this set and the page follows them. Every answer is checked here by a route that does
+# not use the algebra of the page: numerical derivatives of the free energy and of the oscillator energy, numerical
+# Gaussian integrals for the circuit densities, a numerical integral over the phonon modes, numerical roots for the
+# standing waves, and the integral over the noise spectrum done numerically after the substitution ω = tan(q)/RC.
+# Numbers use k = 1.381e-23 J/K, as the page states.
+
+page: content/year-3/8.044/8-044-problem-set-9.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-s
+    kind: identity
+    answer: p1-s
+    where: 'Problem 1(a), answer box and formula "Entropy of thermal radiation": minus the numerical temperature derivative of the free energy given on MIT''s sheet'
+    formula: >-
+      4*pi**2*k**4*T**3*V/(45*hbar**3*c**3)
+    equals: >-
+      -deriv('-pi**2*(k*x)**4*V/(45*(hbar*c)**3)', 'x', T)
+    samples:
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      V: [0.5, 2, 1, 1.4, 0.7]
+      hbar: [0.7, 1.9, 1, 0.6, 1.5]
+      c: [0.5, 0.6, 1, 1.7, 1.9]
+    tolerance: 1e-7
+    shown: ['S = -\left(\frac{\partial F}{\partial T}\right)_V = \frac{4\pi^2}{45}\,\frac{k^4T^3}{c^3\hbar^3}\,V']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-volume
+    answer: p1-volume
+    where: 'Problem 1(b), first answer box: the volume ratio for 3000 K and 3 K, as the numerical root of T³V = constant'
+    inputs: {}
+    formula: >-
+      solve('3**3*x - 3000**3', 'x', 1e8, 1e10)
+    expected: '1e9'
+    tolerance: 1e3
+    shown: ['\frac{V(3\ \text{K})}{V(3000\ \text{K})} = \frac{3000^3}{3^3} = 10^9']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-length
+    answer: p1-length
+    where: 'Problem 1(b), third answer box (our addition): the ratio of the temperatures, 3000 K over 2.725 K, which is the factor for lengths'
+    inputs: {}
+    formula: 3000/2.725
+    expected: '1101'
+    shown: ['the ratio of the temperatures is $3000/2.725 = 1101$']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (T³V constant is MIT''s; the numbers with 2.725 K are ours)'}
+    origin: page-own
+
+  - id: p1-volume-cmb
+    answer: p1-volume-cmb
+    where: 'Problem 1(b), second answer box (our addition): the volume ratio for 3000 K and 2.725 K, as the numerical root of T³V = constant'
+    inputs: {}
+    formula: >-
+      solve('2.725**3*x - 3000**3', 'x', 1e8, 1e10)
+    expected: '1.334e9'
+    shown: ['and volumes by its cube, $1.334 \times 10^9$']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (T³V constant is MIT''s; the numbers with 2.725 K are ours)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-classical
+    kind: identity
+    answer: p2-classical
+    where: 'Problem 2(a), answer box and formula "Classical heat capacity of a lattice": 3JN oscillators, each with two quadratic terms whose mean is found by a numerical Gaussian integral; the energy is linear in T, so C = E/T'
+    formula: >-
+      3*J*N*k
+    equals: >-
+      3*J*N*2*(integrate('0.5*x**2*exp(-x**2/(2*k*T))', 'x', -12*sqrt(k*T), 12*sqrt(k*T))/integrate('exp(-x**2/(2*k*T))', 'x', -12*sqrt(k*T), 12*sqrt(k*T)))/T
+    samples:
+      J: [1, 2, 3, 5, 4]
+      N: [1, 5, 2, 3, 4]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+    tolerance: 1e-8
+    shown: ['tex="C_V = 3JNk" cite="reading1" at="Problem 2(a), p. 1"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 1'}
+    origin: mit
+
+  - id: p2-dulong-petit
+    where: 'Problem 2(a), check (our remark): three times the gas constant, 3 N_A k, in J/K'
+    inputs: {}
+    formula: 3*6.02214076e23*1.380649e-23
+    expected: '25'
+    shown: ['this is three times the gas constant, about 25 J/K']
+    source: {cite: reading1, at: 'Problem 2(a), p. 1 (the remark is ours)'}
+    origin: page-own
+
+  - id: p2-einstein
+    kind: identity
+    answer: p2-einstein
+    where: 'Problem 2(b), answer box and formula "Heat capacity of the Einstein model": 3JN times the numerical temperature derivative of the mean energy of one oscillator (ħω = 1, so T = 1/kx)'
+    formula: >-
+      3*J*N*k*x**2*exp(x)/(exp(x) - 1)**2
+    equals: >-
+      3*J*N*deriv('1/(exp(1/(k*t)) - 1) + 0.5', 't', 1/(k*x))
+    samples:
+      J: [1, 2, 3, 5, 4]
+      N: [1, 5, 2, 3, 4]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      x: [0.3, 1, 2, 3.5, 5]
+    tolerance: 1e-7
+    shown: ['= 3JNk\left(\frac{\hbar\omega}{kT}\right)^2\frac{e^{\hbar\omega/kT}}{\left(e^{\hbar\omega/kT} - 1\right)^2}']
+    source: {cite: reading1, at: 'Problem 2(b), pp. 1 and 2'}
+    origin: mit
+
+  - id: p2-einstein-low
+    kind: limit
+    answer: p2-einstein-low
+    where: 'Problem 2(b), second answer box and formula "Limits of the Einstein heat capacity": approaches the numerical temperature derivative of the oscillator energy as x = ħω/kT grows (J = 2, N = 3, k = 1)'
+    inputs: {J: 2, N: 3, k: 1}
+    formula: >-
+      3*J*N*k*x**2*exp(-x)
+    limit: >-
+      3*J*N*deriv('1/(exp(1/(k*t)) - 1) + 0.5', 't', 1/(k*x))
+    vary: {x: [3, 5, 7, 9]}
+    tolerance: 1e-3
+    shown: ['C_V \approx 3JNk\left(\frac{\hbar\omega}{kT}\right)^2e^{-\hbar\omega/kT};']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-einstein-high
+    kind: limit
+    where: 'Problem 2(b), formula "Limits of the Einstein heat capacity", high temperature: the full heat capacity approaches 3JNk as x falls (J = 2, N = 3, k = 1)'
+    inputs: {J: 2, N: 3, k: 1}
+    formula: >-
+      3*J*N*k
+    limit: >-
+      3*J*N*deriv('1/(exp(1/(k*t)) - 1) + 0.5', 't', 1/(k*x))
+    vary: {x: [1, 0.3, 0.1, 0.03]}
+    tolerance: 1e-3
+    shown: ['kT \gg \hbar\omega:\quad C_V \to 3JNk']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-einstein-one
+    answer: p2-einstein-one
+    where: 'Problem 2(b), third answer box (our addition): C_V/3JNk at kT = ħω, as the numerical temperature derivative of the oscillator energy (k = ħω = 1)'
+    inputs: {}
+    formula: >-
+      deriv('1/(exp(1/t) - 1) + 0.5', 't', 1)
+    expected: '0.921'
+    shown: ['$C_V/3JNk = e/(e - 1)^2 = 0.921$']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2 (the number is ours)'}
+    origin: page-own
+
+  - id: p2-einstein-one-percent
+    where: 'Problem 2(b), check: how far the Einstein heat capacity at kT = ħω lies below the classical value, in percent'
+    inputs: {}
+    formula: >-
+      100*(1 - exp(1)/(exp(1) - 1)**2)
+    expected: '8'
+    shown: ['the crystal is already within 8% of its classical heat capacity']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2 (the number is ours)'}
+    origin: page-own
+
+  # The high-temperature limit is checked with one example of a density of modes: D(ω) = 9JN ω²/ω_max³ up to
+  # ω_max (it integrates to 3JN), with ħ = ω_max = k = 1 and J = 2, N = 3.
+  - id: p2-high
+    kind: limit
+    answer: p2-high
+    where: 'Problem 2(c), answer box and formula "Energy and heat capacity of the phonons at high temperature": the full integral over an example density of modes approaches 3JNkT as T grows'
+    inputs: {J: 2, N: 3, k: 1}
+    formula: >-
+      3*J*N*k*T
+    limit: >-
+      integrate('9*J*N*w**3*(1/(exp(w/(k*T)) - 1) + 0.5)', 'w', 0, 1)
+    vary: {T: [1, 4, 16, 64]}
+    tolerance: 1e-4
+    shown: ['E(T) \approx kT\int_0^\infty D(\omega)\,d\omega = 3JNkT']
+    source: {cite: reading1, at: 'Problem 2(c)(i), p. 2'}
+    origin: mit
+
+  - id: p2-high-correction
+    where: 'Problem 2(c), check (our remark): the mean energy of an oscillator over kT at x = ħω/kT = 0.5'
+    inputs: {}
+    formula: >-
+      0.5/(exp(0.5) - 1) + 0.5/2
+    expected: '1.021'
+    shown: ['At $x = 0.5$ the mean energy is 1.021 times $kT$']
+    source: {cite: reading1, at: 'Problem 2(c)(i), p. 2 (the remark is ours)'}
+    origin: page-own
+
+  - id: p2-high-series
+    kind: limit
+    where: 'Problem 2(c), check (our remark): x/(eˣ − 1) + x/2 approaches 1 + x²/12 as x falls'
+    inputs: {}
+    formula: >-
+      (1 + x**2/12 - 1)
+    limit: >-
+      (x/(exp(x) - 1) + x/2 - 1)
+    vary: {x: [1, 0.3, 0.1, 0.03]}
+    tolerance: 1e-3
+    shown: ['= kT\left(1 + x^2/12 - \dots\right)$']
+    source: {cite: reading1, at: 'Problem 2(c)(i), p. 2 (the remark is ours)'}
+    origin: page-own
+
+  - id: p2-integral
+    where: 'Problem 2(d), statement: the integral of x³/(eˣ − 1) from 0 to infinity (done numerically to x = 100) over π⁴/15'
+    inputs: {}
+    formula: >-
+      integrate('x**3/(exp(x) - 1)', 'x', 0, 100)/(pi**4/15)
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['\int_0^\infty\frac{x^3}{e^x - 1}\,dx = \frac{\pi^4}{15}" cite="mit"']
+    source: {cite: mit, at: 'Problem 2(c)(ii), p. 3'}
+    origin: mit
+
+  - id: p2-thermal-energy
+    kind: identity
+    where: 'Problem 2(d), formula "Thermal energy of the phonons at low temperature": the integral over the quadratic density of modes done numerically (to ħω = 100 kT)'
+    formula: >-
+      pi**2*V*(k*T/(hbar*v))**3*k*T/10
+    equals: >-
+      integrate('3*V*w**2/(2*pi**2*v**3)*hbar*w/(exp(hbar*w/(k*T)) - 1)', 'w', 0, 100*k*T/hbar)
+    samples:
+      V: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.7, 1.9, 1, 0.6, 1.5]
+      v: [0.5, 0.6, 1, 1.7, 1.9]
+    tolerance: 1e-8
+    shown: ['= E_0 + \frac{\pi^2}{10}\,V\left(\frac{kT}{\hbar\langle v\rangle}\right)^3kT']
+    source: {cite: reading1, at: 'Problem 2(c)(ii), p. 2'}
+    origin: mit
+
+  - id: p2-debye
+    kind: identity
+    answer: p2-debye
+    where: 'Problem 2(d), answer box and formula "Lattice heat capacity at low temperature": the heat capacity of each mode (the Einstein formula of part (b)) integrated numerically over the quadratic density of modes'
+    formula: >-
+      2*pi**2*V*k*(k*T/(hbar*v))**3/5
+    equals: >-
+      integrate('3*V*w**2/(2*pi**2*v**3)*k*(hbar*w/(k*T))**2*exp(hbar*w/(k*T))/(exp(hbar*w/(k*T)) - 1)**2', 'w', 0, 100*k*T/hbar)
+    samples:
+      V: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.7, 1.9, 1, 0.6, 1.5]
+      v: [0.5, 0.6, 1, 1.7, 1.9]
+    tolerance: 1e-8
+    shown: ['C_V = \frac{2\pi^2}{5}\,Vk\left(\frac{kT}{\hbar\langle v\rangle}\right)^3 \propto T^3']
+    source: {cite: reading1, at: 'Problem 2(c)(ii), p. 2'}
+    origin: mit
+
+  - id: p2-photon-check
+    kind: identity
+    where: 'Problem 2(d), check (ours): 3/2 times the heat capacity of black-body radiation, the temperature derivative of (π²/15)V(kT)⁴/(ħc)³ taken numerically, with the sound velocity in place of c'
+    formula: >-
+      2*pi**2*V*k*(k*T/(hbar*v))**3/5
+    equals: >-
+      1.5*deriv('pi**2*V*(k*x)**4/(15*(hbar*v)**3)', 'x', T)
+    samples:
+      V: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.7, 1.9, 1, 0.6, 1.5]
+      v: [0.5, 0.6, 1, 1.7, 1.9]
+    tolerance: 1e-7
+    shown: ['gives $\frac{2\pi^2}{5}Vk(kT/\hbar\langle v\rangle)^3$, the result above']
+    source: {cite: reading1, at: 'Problem 2(c)(ii), p. 2 (the check is ours)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-pv
+    kind: identity
+    answer: p3-pv
+    where: 'Problem 3(a), answer box and formula "Probability density of the voltage on a capacitor": the Boltzmann factor divided by its numerical integral over all voltages'
+    formula: >-
+      sqrt(C/(2*pi*k*T))*exp(-C*v**2/(2*k*T))
+    equals: >-
+      exp(-C*v**2/(2*k*T))/integrate('exp(-C*x**2/(2*k*T))', 'x', -12*sqrt(k*T/C), 12*sqrt(k*T/C))
+    samples:
+      C: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      v: [-1.5, 0.3, 1.2, 0.7, -0.4]
+    tolerance: 1e-8
+    shown: ['p(v) = \frac{1}{\sqrt{2\pi kT/C}}\,\exp\left[-\frac{v^2}{2(kT/C)}\right]']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-vrms
+    kind: identity
+    answer: p3-vrms
+    where: 'Problem 3(a), second answer box and formula "Root mean square noise voltage on a capacitor": the mean of v² over the Boltzmann factor, by numerical integrals'
+    formula: >-
+      sqrt(k*T/C)
+    equals: >-
+      sqrt(integrate('x**2*exp(-C*x**2/(2*k*T))', 'x', -12*sqrt(k*T/C), 12*sqrt(k*T/C))/integrate('exp(-C*x**2/(2*k*T))', 'x', -12*sqrt(k*T/C), 12*sqrt(k*T/C)))
+    samples:
+      C: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+    tolerance: 1e-8
+    shown: ['\langle v^2\rangle = \frac{kT}{C}, \qquad \sqrt{\langle v^2\rangle} = \sqrt{\frac{kT}{C}}']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-boltzmann-constant
+    where: 'How to answer: Boltzmann''s constant to four figures (exact SI value 1.380649e-23 J/K)'
+    inputs: {}
+    formula: k_B
+    expected: 1.381e-23 J/K
+    shown: ['For numbers use $k = 1.381 \times 10^{-23}$ J/K']
+    source: {cite: mit, at: 'Problem 3, p. 3 (our own number; SI 2019: k = 1.380649e-23 J/K, exact)'}
+    origin: page-own
+
+  - id: p3-kt
+    where: 'Problem 3(a), solution: kT at 300 K in joules'
+    inputs: {}
+    formula: 1.381e-23*300
+    expected: '4.14e-21'
+    shown: ['For $T = 300$ K, $kT = 4.14 \times 10^{-21}$ J']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3 (MIT rounds k to 1.4e-23 J/K and gets 4.2e-21 J)'}
+    origin: page-own
+
+  - id: p3-v2
+    where: 'Problem 3(a), solution: the mean square voltage kT/C for 100 pF at 300 K, in V²'
+    inputs: {}
+    formula: 1.381e-23*300/100e-12
+    expected: '4.14e-11'
+    shown: ['$\langle v^2\rangle = 4.14 \times 10^{-11}$ V²']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3 (MIT: 42e-12 with its rounded k)'}
+    origin: page-own
+
+  - id: p3-vnum
+    answer: p3-vnum
+    where: 'Problem 3(a), third answer box: the root mean square voltage in microvolts for 100 pF at 300 K'
+    inputs: {}
+    formula: sqrt(1.381e-23*300/100e-12)*1e6
+    expected: '6.44'
+    shown: ['the root mean square voltage is $6.44 \times 10^{-6}$ V, or 6.44 μV']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3 (MIT: 6.5 μV with its rounded k)'}
+    origin: mit
+
+  - id: p3-v-mit
+    kind: fact
+    where: 'Problem 3(a): MIT''s rounded constant and result, quoted'
+    shown: ['(MIT''s solutions round $k$ to $1.4 \times 10^{-23}$ J/K and get 6.5 μV.)']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-v-mit-recomputed
+    where: 'Problem 3(a): MIT''s 6.5 μV recomputed with its k = 1.4e-23 J/K'
+    inputs: {}
+    formula: sqrt(1.4e-23*300/100e-12)*1e6
+    expected: '6.5'
+    shown: ['J/K and get 6.5 μV']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-irms
+    kind: identity
+    answer: p3-irms
+    where: 'Problem 3(b), answer box and formula "Probability density of the current through an inductor": the mean of i² over the Boltzmann factor, by numerical integrals'
+    formula: >-
+      sqrt(k*T/L)
+    equals: >-
+      sqrt(integrate('x**2*exp(-L*x**2/(2*k*T))', 'x', -12*sqrt(k*T/L), 12*sqrt(k*T/L))/integrate('exp(-L*x**2/(2*k*T))', 'x', -12*sqrt(k*T/L), 12*sqrt(k*T/L)))
+    samples:
+      L: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+    tolerance: 1e-8
+    shown: ['\qquad \sqrt{\langle i^2\rangle} = \sqrt{\frac{kT}{L}}']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-i2
+    where: 'Problem 3(b), solution: the mean square current kT/L for 1 mH at 300 K, in A²'
+    inputs: {}
+    formula: 1.381e-23*300/1e-3
+    expected: '4.14e-18'
+    shown: ['$\langle i^2\rangle = 4.14 \times 10^{-18}$ A²']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3 (MIT: 4.2e-18 with its rounded k)'}
+    origin: page-own
+
+  - id: p3-inum
+    answer: p3-inum
+    where: 'Problem 3(b), second answer box: the root mean square current in nanoamperes for 1 mH at 300 K'
+    inputs: {}
+    formula: sqrt(1.381e-23*300/1e-3)*1e9
+    expected: '2.04'
+    shown: ['the root mean square current is $2.04 \times 10^{-9}$ A, or 2.04 nA']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3 (MIT: 2 nA)'}
+    origin: mit
+
+  - id: p3-i-mit
+    kind: fact
+    where: 'Problem 3(b): MIT''s rounded result, quoted'
+    shown: ['(MIT''s solutions: 2 nA)']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  # ---- Problem 4
+
+  - id: p4-kn
+    kind: identity
+    answer: p4-kn
+    where: 'Problem 4(a), answer box and formula "Allowed wavevectors on a shorted transmission line": the n-th positive root of sin(kL) = 0, found numerically'
+    formula: >-
+      n*pi/L
+    equals: >-
+      solve('sin(x*L)', 'x', (n - 0.5)*pi/L, (n + 0.5)*pi/L)
+    samples:
+      n: [1, 2, 3, 5, 6]
+      L: [0.5, 2, 1, 1.4, 3]
+    tolerance: 1e-8
+    shown: ['k_n = \frac{n\pi}{L}, \qquad n = 1, 2, 3, \dots']
+    source: {cite: reading1, at: 'Problem 4(a), p. 4'}
+    origin: mit
+
+  - id: p4-d
+    kind: identity
+    answer: p4-d
+    where: 'Problem 4(b), answer box and formula "Density of modes on a transmission line": the modes between two frequencies (k spacing π/L, ω = ck), divided by the width of the interval'
+    formula: >-
+      L/(pi*c)
+    equals: >-
+      (((omega + d)/c)/(pi/L) - (omega/c)/(pi/L))/d
+    samples:
+      L: [0.5, 2, 1, 1.4, 3]
+      c: [0.5, 3, 1, 1.7, 2.2]
+      omega: [1, 4, 2, 7, 3]
+      d: [0.5, 1, 2, 0.3, 1.5]
+    tolerance: 1e-9
+    shown: ['D(\omega) = \frac{L}{\pi c}" cite="reading1"']
+    source: {cite: reading1, at: 'Problem 4(b), p. 4'}
+    origin: mit
+
+  - id: p4-u
+    kind: identity
+    answer: p4-u
+    where: 'Problem 4(c), answer box and formula "Energy density on a transmission line in equilibrium": 1/πc modes per unit length and frequency, each with the mean energy −∂ln Z/∂β of an oscillator, the derivative taken numerically'
+    formula: >-
+      hbar*omega/(pi*c)*(1/(exp(hbar*omega/(k*T)) - 1) + 1/2)
+    equals: >-
+      -deriv('log(exp(-b*hbar*omega/2)/(1 - exp(-b*hbar*omega)))', 'b', 1/(k*T))/(pi*c)
+    samples:
+      hbar: [0.7, 1.9, 1, 0.6, 1.5]
+      omega: [0.5, 2, 1, 1.4, 0.7]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      c: [0.5, 3, 1, 1.7, 2.2]
+    tolerance: 1e-7
+    shown: ['= \frac{\hbar\omega}{\pi c}\left(\frac{1}{e^{\hbar\omega/kT} - 1} + \frac12\right)']
+    source: {cite: reading1, at: 'Problem 4(c), p. 4'}
+    origin: mit
+
+  - id: p4-uclass
+    kind: limit
+    answer: p4-uclass
+    where: 'Problem 4(d), answer box and formula "Classical energy density on a transmission line": the full energy density approaches kT/πc as T grows (ħ = ω = k = 1, c = 2)'
+    inputs: {hbar: 1, omega: 1, k: 1, c: 2}
+    formula: >-
+      k*T/(pi*c)
+    limit: >-
+      hbar*omega/(pi*c)*(1/(exp(hbar*omega/(k*T)) - 1) + 1/2)
+    vary: {T: [1, 10, 100, 1000]}
+    tolerance: 1e-6
+    shown: ['u_1(\omega, T) \approx \frac{L}{\pi c}\,\frac{1}{L}\,kT = \frac{kT}{\pi c}']
+    source: {cite: reading1, at: 'Problem 4(d), p. 4'}
+    origin: mit
+
+  - id: p4-thermal-frequency
+    where: 'Problem 4(d), check (our number): kT/ħ at 300 K in rad/s (ħ = 1.054572e-34 J s)'
+    inputs: {}
+    formula: 1.381e-23*300/1.054572e-34
+    expected: '3.9e13'
+    shown: ['$kT/\hbar = 3.9 \times 10^{13}$ rad/s']
+    source: {cite: reading1, at: 'Problem 4(d), p. 4 (the number is ours)'}
+    origin: page-own
+
+  - id: p4-thermal-frequency-thz
+    where: 'Problem 4(d), check (our number): the same as a real frequency in THz'
+    inputs: {}
+    formula: 1.381e-23*300/1.054572e-34/(2*pi)/1e12
+    expected: '6'
+    shown: ['a frequency of about 6 THz']
+    source: {cite: reading1, at: 'Problem 4(d), p. 4 (the number is ours)'}
+    origin: page-own
+
+  - id: p4-p
+    kind: identity
+    answer: p4-p
+    where: 'Problem 4(e), answer box and formula "Johnson noise power of a resistor": half of the classical energy density (1/πc modes per length and frequency, kT each) moving at the velocity c'
+    formula: >-
+      k*T/(2*pi)
+    equals: >-
+      (c/2)*(L/(pi*c))*k*T/L
+    samples:
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      c: [0.5, 3, 1, 1.7, 2.2]
+      L: [0.5, 2, 1, 1.4, 3]
+    tolerance: 1e-9
+    shown: ['tex="P(\omega) = \frac{kT}{2\pi}" cite="reading1"']
+    source: {cite: reading1, at: 'Problem 4(e), p. 5'}
+    origin: mit
+
+  - id: p4-power
+    answer: p4-power
+    where: 'Problem 4(f), first answer box and formula "Johnson noise power in a 10 MHz band at 300 K": kT/2π times 2π × 10⁷ rad/s, in units of 1e-14 W'
+    inputs: {}
+    formula: 1.381e-23*300/(2*pi)*(2*pi*1e7)*1e14
+    expected: '4.14'
+    shown: ['= kT \times 10^7\ \text{s}^{-1} = 4.14 \times 10^{-14}\ \text{W}']
+    source: {cite: reading1, at: 'Problem 4(f), p. 5'}
+    origin: mit
+
+  - id: p4-power-mit
+    kind: fact
+    where: 'Problem 4(f): MIT''s result as printed (it uses k = 1.38e-16 erg/K)'
+    shown: ['(MIT''s solutions work in ergs and print $4.1 \times 10^{-14}$ W.)']
+    source: {cite: reading1, at: 'Problem 4(f), p. 5'}
+    origin: mit
+
+  - id: p4-hertz
+    answer: p4-hertz
+    where: 'Problem 4(f), second answer box (our addition): the noise power kT in a band of 1 Hz at 300 K, in units of 1e-21 W'
+    inputs: {}
+    formula: 1.381e-23*300/(2*pi)*(2*pi*1)*1e21
+    expected: '4.14'
+    shown: ['In 1 Hz at 300 K that is $4.14 \times 10^{-21}$ W']
+    source: {cite: reading1, at: 'Problem 4(f), p. 5 (the number is ours)'}
+    origin: page-own
+
+  - id: p4-radian-mistake
+    where: 'Problem 4(f), check: the result if 10 MHz were taken as a radian frequency, in units of 1e-14 W'
+    inputs: {}
+    formula: 1.381e-23*300/(2*pi)*1e7*1e14
+    expected: '0.66'
+    shown: ['smaller by $2\pi$: $0.66 \times 10^{-14}$ W']
+    source: {cite: reading1, at: 'Problem 4(f), p. 5 (the check is ours)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-power
+    kind: identity
+    answer: p5-power
+    where: 'Problem 5(a), answer box and formula "Power dissipated in the matched line by the noise source": the mean square current through two resistors R in series, times R'
+    formula: >-
+      vN2/(4*R)
+    equals: >-
+      (vN2/(R + R)**2)*R
+    samples:
+      vN2: [0.5, 3, 1, 1.7, 2.2]
+      R: [0.5, 2, 1, 1.4, 3]
+    tolerance: 1e-9
+    shown: ['= \frac{\langle v_{\text{line}}^2\rangle}{R} = \frac{1}{4R}\,\langle v_N^2(\omega)\rangle']
+    source: {cite: reading1, at: 'Problem 5(a), p. 5'}
+    origin: mit
+
+  - id: p5-source
+    kind: identity
+    where: 'Problem 5(b), formula "Matching the noise source to the Johnson noise power": the source spectrum 2RkT/π put back into the power of part (a) gives kT/2π'
+    formula: >-
+      k*T/(2*pi)
+    equals: >-
+      (2*R*k*T/pi)/(R + R)**2*R
+    samples:
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      R: [0.5, 2, 1, 1.4, 3]
+    tolerance: 1e-9
+    shown: ['\quad\Longrightarrow\quad \langle v_N^2(\omega)\rangle = \frac{2RkT}{\pi}']
+    source: {cite: reading1, at: 'Problem 5(b), p. 5'}
+    origin: mit
+
+  - id: p5-per-hertz
+    kind: identity
+    where: 'Problem 5(b), check (our remark): 2π times the spectrum per unit of radian frequency is 4RkT per hertz'
+    formula: >-
+      4*R*k*T
+    equals: >-
+      2*pi*(2*R*k*T/pi)
+    samples:
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      R: [0.5, 2, 1, 1.4, 3]
+    tolerance: 1e-9
+    shown: ['$4RkT$ per hertz']
+    source: {cite: reading1, at: 'Problem 5(b), p. 5 (the remark is ours)'}
+    origin: page-own
+
+  - id: p5-spectrum
+    kind: identity
+    answer: p5-spectrum
+    where: 'Problem 5(c), answer box and formula "Noise spectrum of the voltage on the capacitor": the source spectrum times the divider ratio of the impedance sizes, (1/ωC)² over R² + (1/ωC)²'
+    formula: >-
+      2*R*k*T/(pi*(1 + (omega*R*C)**2))
+    equals: >-
+      (2*R*k*T/pi)*(1/(omega*C))**2/(R**2 + (1/(omega*C))**2)
+    samples:
+      R: [0.5, 2, 1, 1.4, 0.7]
+      C: [0.6, 1.9, 1, 0.7, 1.4]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      omega: [0.2, 3, 1, 1.6, 0.5]
+    tolerance: 1e-9
+    shown: ['= \frac{2kT}{\pi}\,\frac{R}{1 + (\omega RC)^2}" cite="reading1"']
+    source: {cite: reading1, at: 'Problem 5(c), p. 6'}
+    origin: mit
+
+  - id: p5-total
+    kind: identity
+    answer: p5-total
+    where: 'Problem 5(c), second answer box and formula "Mean square noise voltage on the capacitor from the spectrum": the integral of the spectrum over all ω, done numerically after the substitution ω = tan(q)/RC'
+    formula: >-
+      k*T/C
+    equals: >-
+      integrate('2*R*k*T/(pi*(1 + tan(q)**2))/(cos(q)**2*R*C)', 'q', 0, pi/2)
+    samples:
+      R: [0.5, 2, 1, 1.4, 0.7]
+      C: [0.6, 1.9, 1, 0.7, 1.4]
+      k: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+    tolerance: 1e-8
+    shown: ['= \frac{2}{\pi}\,\frac{kT}{C}\,\frac{\pi}{2} = \frac{kT}{C}']
+    source: {cite: reading1, at: 'Problem 5(c), p. 6'}
+    origin: mit
+
+  - id: p5-half
+    where: 'Problem 5(c), sketch: the spectrum at ω = 1/RC over its value at ω = 0'
+    inputs: {}
+    formula: 1/(1 + 1**2)
+    expected: '0.5'
+    shown: ['points={[{ x: 1, y: 0.5, label: "half, at ω = 1/RC" }]}']
+    source: {cite: reading1, at: 'Problem 5(c), p. 6 (the graph is ours)'}
+    origin: page-own
