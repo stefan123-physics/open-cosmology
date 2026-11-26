@@ -1,0 +1,1271 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for this set and the page follows them; every answer is checked here by a route that is
+# independent of the algebra on the page. Problem 2: heats as the change of U plus the numerical integral of P dV, and
+# heat capacities as numerical derivatives of the heat along the path. Problem 3: the general relations are tested on a
+# model magnet that is NOT the Curie law paramagnet (U = T² + T M², M = H/T), with every derivative taken numerically;
+# the Curie law results are rebuilt from the general relations, from U = bT²/2, and from the entropy bT − M²/(2a).
+# Problem 4: the equation of state by solving H/T = −∂S/∂M numerically, the density by the exact ratio at large N.
+# Problem 5: Stirling's sum as an integral, the tension as a numerical derivative of S, the length by solving for n₊.
+# Problem 6: the area of the ellipse of one oscillator, Stirling's sum as an integral, T by solving 1/T = ∂S/∂E, and
+# the density as the exact microcanonical ratio at very large N.
+
+page: content/year-3/8.044/8-044-problem-set-4.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-ideal
+    kind: identity
+    where: 'Problem 1, check: for a monatomic ideal gas (dU/dT)_P + alpha V P equals the numerical derivative of U + PV at fixed P, and is (5/2)Nk'
+    formula: |-
+      3/2*N*k + (1/T)*(N*k*T/P)*P
+    equals: |-
+      deriv('3/2*N*k*t + P*(N*k*t/P)', 't', T)
+    samples:
+      N: [1, 2, 3.5, 5, 8]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      P: [0.7, 1, 1.3, 2, 2.4]
+    tolerance: 1e-8
+    shown: ['$\alpha VP = Nk$, so the formula gives $C_P = \frac52Nk$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: P1 V1 = N k T1; b is at (2 P1, 2 V1).
+
+  - id: p2-cp
+    kind: identity
+    answer: p2-cp
+    where: 'Problem 2(a), answer box (our addition): C_P as the numerical derivative of the heat taken up at fixed pressure, U(t) + P [V(t) − V]'
+    formula: |-
+      7/2*N*k
+    equals: |-
+      deriv("5/2*N*k*t + integrate('P + 0*v', 'v', V, N*k*t/P)", 't', T)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      P: [0.7, 1, 1.3, 2, 2.4]
+      V: [0.5, 1, 1, 2, 0.3]
+    tolerance: 1e-7
+    shown: ['id="p2-cp"', '<Formula label="Heat capacity at constant pressure of this gas"']
+    source: {cite: reading1, at: 'Problem 2, pp. 1–2'}
+    origin: mit
+
+  - id: p2-tb
+    kind: identity
+    where: 'Problem 2(a): the temperature at b, from PV = NkT with twice the pressure and twice the volume'
+    formula: |-
+      (2*N*k*T1/V1)*(2*V1)/(N*k)
+    equals: |-
+      4*T1
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+      V1: [0.5, 1, 1.4, 2, 0.3]
+    tolerance: 1e-12
+    shown: ['and $4T_1$ at $b$ (twice both)', 'expr: "4/x"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-acb
+    kind: identity
+    answer: p2-acb
+    where: 'Problem 2(a), answer box: heat along acb as the change of U plus the numerical integral of P dV at the pressure 2 P1'
+    formula: |-
+      19/2*N*k*T1
+    equals: |-
+      5/2*N*k*(4*T1 - T1) + integrate('2*N*k*T1/V1 + 0*v', 'v', V1, 2*V1)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+      V1: [0.5, 1, 1.4, 2, 0.3]
+    tolerance: 1e-9
+    shown: ['id="p2-acb"', '<Formula label="Heat along the paths through c and through d"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-adb
+    kind: identity
+    answer: p2-adb
+    where: 'Problem 2(a), answer box: heat along adb as the change of U plus the numerical integral of P dV at the pressure P1'
+    formula: |-
+      17/2*N*k*T1
+    equals: |-
+      5/2*N*k*(4*T1 - T1) + integrate('N*k*T1/V1 + 0*v', 'v', V1, 2*V1)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+      V1: [0.5, 1, 1.4, 2, 0.3]
+    tolerance: 1e-9
+    shown: ['id="p2-adb"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-du
+    kind: identity
+    where: 'Problem 2(a): the change of U from Q(adb) + W(adb), against C_V times the rise of temperature'
+    formula: |-
+      17/2*N*k*T1 - N*k*T1
+    equals: |-
+      5/2*N*k*(4*T1 - T1)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-12
+    shown: ['<Formula label="Change of the internal energy from a to b"', '$\frac52Nk \times 3T_1 = \frac{15}{2}NkT_1$, as found']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-wab
+    kind: identity
+    where: 'Problem 2(a): the work done on the gas along the straight line, by numerical integration of P = (P1/V1) V'
+    formula: |-
+      -3/2*N*k*T1
+    equals: |-
+      -integrate('N*k*T1/V1**2*v', 'v', V1, 2*V1)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+      V1: [0.5, 1, 1.4, 2, 0.3]
+    tolerance: 1e-9
+    shown: ['<Formula label="Work and heat along the straight line"']
+    source: {cite: reading1, at: 'Problem 2(a), pp. 2–3'}
+    origin: mit
+
+  - id: p2-ab
+    kind: identity
+    answer: p2-ab
+    where: 'Problem 2(a), answer box: heat along the straight line as the change of U plus the numerical integral of P dV'
+    formula: |-
+      9*N*k*T1
+    equals: |-
+      5/2*N*k*(4*T1 - T1) + integrate('N*k*T1/V1**2*v', 'v', V1, 2*V1)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+      V1: [0.5, 1, 1.4, 2, 0.3]
+    tolerance: 1e-9
+    shown: ['id="p2-ab"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 3'}
+    origin: mit
+
+  - id: p2-cab
+    kind: identity
+    answer: p2-cab
+    where: 'Problem 2(b), answer box: the heat capacity along ab as the numerical derivative, with respect to the temperature reached, of U plus the numerical integral of P dV along the line (V = V1 sqrt(t/T1) on it)'
+    formula: |-
+      3*N*k
+    equals: |-
+      deriv("5/2*N*k*t + integrate('N*k*T1/V1**2*v', 'v', V1, V1*sqrt(t/T1))", 't', Tm)
+    samples:
+      N: [1, 2, 3.5, 5, 4]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T1: [1, 1.5, 2, 2.5, 3]
+      V1: [0.5, 1, 1.4, 2, 0.3]
+      Tm: [1.5, 3, 7, 5, 10]
+    tolerance: 1e-7
+    shown: ['id="p2-cab"', '<Formula label="Heat capacity along the path ab"']
+    source: {cite: reading1, at: 'Problem 2(b), p. 3'}
+    origin: mit
+
+  - id: p2-cab-check
+    kind: value
+    where: 'Problem 2(b), check: C_ab times the rise of temperature, in units of N k T1'
+    formula: |-
+      3*(4 - 1)
+    expected: '9'
+    tolerance: 1e-9
+    shown: ['$C_{ab}\left(4T_1 - T_1\right) = 9NkT_1$']
+    source: {cite: reading1, at: 'Problem 2(b), p. 3'}
+    origin: mit
+
+  - id: p2-mono-cp
+    kind: value
+    where: 'Problem 2(b), MIT comment: C_P of a monatomic gas in units of N k'
+    formula: |-
+      3/2 + 1
+    expected: '2.5'
+    tolerance: 1e-9
+    shown: ['the same steps give $C_P = \frac52Nk$']
+    source: {cite: reading1, at: 'Problem 2, comment, p. 3'}
+    origin: mit
+
+  - id: p2-mono-acb
+    kind: value
+    where: 'Problem 2(b), MIT comment: Q(acb) for a monatomic gas in units of N k T1 (13/2)'
+    formula: |-
+      3/2*(2 - 1) + 5/2*(4 - 2)
+    expected: '6.5'
+    tolerance: 1e-9
+    shown: ['$Q(acb) = \frac{13}{2}NkT_1$']
+    source: {cite: reading1, at: 'Problem 2, comment, p. 3'}
+    origin: mit
+
+  - id: p2-mono-adb
+    kind: value
+    where: 'Problem 2(b), MIT comment: Q(adb) for a monatomic gas in units of N k T1 (11/2)'
+    formula: |-
+      5/2*(2 - 1) + 3/2*(4 - 2)
+    expected: '5.5'
+    tolerance: 1e-9
+    shown: ['$Q(adb) = \frac{11}{2}NkT_1$']
+    source: {cite: reading1, at: 'Problem 2, comment, p. 3'}
+    origin: mit
+
+  - id: p2-mono-du
+    kind: value
+    where: 'Problem 2(b), MIT comment: change of U for a monatomic gas in units of N k T1 (9/2)'
+    formula: |-
+      3/2*(4 - 1)
+    expected: '4.5'
+    tolerance: 1e-9
+    shown: ['$\Delta U = \frac92NkT_1$']
+    source: {cite: reading1, at: 'Problem 2, comment, p. 3'}
+    origin: mit
+
+  - id: p2-mono-ab
+    kind: value
+    where: 'Problem 2(b), MIT comment: Q(ab) for a monatomic gas in units of N k T1'
+    formula: |-
+      3/2*(4 - 1) + 3/2
+    expected: '6'
+    tolerance: 1e-9
+    shown: ['$Q(ab) = 6NkT_1$']
+    source: {cite: reading1, at: 'Problem 2, comment, p. 3'}
+    origin: mit
+
+  - id: p2-mono-cab
+    kind: value
+    where: 'Problem 2(b), MIT comment: C_ab for a monatomic gas in units of N k'
+    formula: |-
+      3/2 + 1/2
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['$C_{ab} = 2Nk$']
+    source: {cite: reading1, at: 'Problem 2, comment, p. 3'}
+    origin: mit
+
+  # ---- Problem 3, general parts: a model magnet that is not the Curie law paramagnet,
+  # U(T, M) = T² + T M² and M = H/T (so chi_T = 1/T and (dM/dT)_H = −H/T²). Three states:
+  #   T = 2,   H = 3:   M = 1.5, UM = 2TM = 6,   MT = −0.75,   CM = 2T + M² = 6.25, chi = 0.5,   CH = 4.0
+  #   T = 1.6, H = 0.8: M = 0.5, UM = 1.6,       MT = −0.3125, CM = 3.45,           chi = 0.625, CH = 3.2
+  #   T = 2.5, H = 5:   M = 2,   UM = 10,        MT = −0.8,    CM = 9,              chi = 0.4,   CH = 5.0
+  # (Mv stands for M.) The values of CH were found by the direct numerical route of p3-diff.
+
+  - id: p3-diff
+    kind: identity
+    answer: p3-diff
+    where: 'Problem 3(a), answer box: for the model magnet, C_H − C_M taken directly as numerical derivatives of the heat at fixed H and at fixed M'
+    formula: |-
+      (UM - H)*MT
+    equals: |-
+      deriv('t**2 + t*(H/t)**2', 't', T) - H*deriv('H/t', 't', T) - deriv('t**2 + t*Mv**2', 't', T)
+    samples:
+      UM: [6, 1.6, 10]
+      H: [3, 0.8, 5]
+      MT: [-0.75, -0.3125, -0.8]
+      T: [2, 1.6, 2.5]
+      Mv: [1.5, 0.5, 2]
+    tolerance: 1e-7
+    shown: ['id="p3-diff"', '<Formula label="Difference of the heat capacities"']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4'}
+    origin: mit
+
+  - id: p3-dudm
+    kind: identity
+    answer: p3-dudm
+    where: 'Problem 3(a), answer box: for the model magnet, the dM coefficient built from the heat capacities against the numerical derivative of U with respect to M at fixed T'
+    formula: |-
+      (CH - CM)/MT + H
+    equals: |-
+      deriv('T**2 + T*x**2', 'x', Mv)
+    samples:
+      CH: [4.0, 3.2, 5.0]
+      CM: [6.25, 3.45, 9]
+      MT: [-0.75, -0.3125, -0.8]
+      H: [3, 0.8, 5]
+      T: [2, 1.6, 2.5]
+      Mv: [1.5, 0.5, 2]
+    tolerance: 1e-7
+    shown: ['id="p3-dudm"', '<Formula label="Energy differential in T and M"']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4'}
+    origin: mit
+
+  - id: p3-ch
+    kind: identity
+    answer: p3-ch
+    where: 'Problem 3(b), answer box: C_H of the Curie law paramagnet taken directly, dU/dT − H dM/dT at fixed H, by numerical derivatives (H = MT/a)'
+    formula: |-
+      b*T + M**2/a
+    equals: |-
+      deriv('b*t**2/2', 't', T) - (M*T/a)*deriv('a*(M*T/a)/t', 't', T)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      M: [0.5, 2, 1.2, 0.8, 1.6]
+      a: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-7
+    shown: ['id="p3-ch"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 5'}
+    origin: mit
+
+  - id: p3-ch-diff
+    kind: identity
+    where: 'Problem 3(b): a H²/T² written with M (H = MT/a)'
+    formula: |-
+      a*(M*T/a)**2/T**2
+    equals: |-
+      M**2/a
+    samples:
+      T: [1, 1.5, 2, 2.5, 3]
+      M: [0.5, 2, 1.2, 0.8, 1.6]
+      a: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-12
+    shown: ['<Formula label="Heat capacity at constant field"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 5'}
+    origin: mit
+
+  - id: p3-u
+    kind: identity
+    answer: p3-u
+    where: 'Problem 3(b), answer box: U as the numerical integral of C_M = bT from zero temperature'
+    formula: |-
+      b*T**2/2
+    equals: |-
+      integrate('b*t', 't', 0, T)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-9
+    shown: ['id="p3-u"', '<Formula label="Internal energy of the Curie law paramagnet"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 5'}
+    origin: mit
+
+  - id: p3-duh
+    kind: identity
+    answer: p3-duh
+    where: 'Problem 3(c), answer box: for the model magnet, U(H, M) = H²/M² + H M; its numerical derivative with respect to H at fixed M'
+    formula: |-
+      -CM*chi/MT
+    equals: |-
+      deriv('h**2/Mv**2 + h*Mv', 'h', H)
+    samples:
+      CM: [6.25, 3.45, 9]
+      chi: [0.5, 0.625, 0.4]
+      MT: [-0.75, -0.3125, -0.8]
+      H: [3, 0.8, 5]
+      Mv: [1.5, 0.5, 2]
+    tolerance: 1e-7
+    shown: ['id="p3-duh"', '<Formula label="Coefficient of dH"']
+    source: {cite: reading1, at: 'Problem 3(c), p. 6'}
+    origin: mit
+
+  - id: p3-dum2
+    kind: identity
+    answer: p3-dum2
+    where: 'Problem 3(c), answer box: for the model magnet, the numerical derivative of U(H, M) = H²/M² + H M with respect to M at fixed H'
+    formula: |-
+      CH/MT + H
+    equals: |-
+      deriv('H**2/x**2 + H*x', 'x', Mv)
+    samples:
+      CH: [4.0, 3.2, 5.0]
+      MT: [-0.75, -0.3125, -0.8]
+      H: [3, 0.8, 5]
+      Mv: [1.5, 0.5, 2]
+    tolerance: 1e-7
+    shown: ['id="p3-dum2"', '<Formula label="Coefficient of dM"']
+    source: {cite: reading1, at: 'Problem 3(c), p. 6'}
+    origin: mit
+
+  - id: p3-coefh
+    kind: identity
+    answer: p3-coefh
+    where: 'Problem 3(d), answer box: the general dH coefficient of part (c) with the Curie law quantities, T replaced by aH/M'
+    formula: |-
+      b*a**2*H/M**2
+    equals: |-
+      -(b*(a*H/M))*(a/(a*H/M))/(-a*H/(a*H/M)**2)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+    tolerance: 1e-10
+    shown: ['id="p3-coefh"', '<Formula label="Coefficients for the Curie law paramagnet"']
+    source: {cite: reading1, at: 'Problem 3(d), p. 7'}
+    origin: mit
+
+  - id: p3-coefm
+    kind: identity
+    answer: p3-coefm
+    where: 'Problem 3(d), answer box: the general dM coefficient of part (c) with the Curie law quantities, T replaced by aH/M'
+    formula: |-
+      -b*a**2*H**2/M**3
+    equals: |-
+      (b*(a*H/M) + M**2/a)/(-a*H/(a*H/M)**2) + H
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+    tolerance: 1e-10
+    shown: ['id="p3-coefm"', '<Formula label="Energy differential of the Curie law paramagnet in H and M"']
+    source: {cite: reading1, at: 'Problem 3(d), p. 7'}
+    origin: mit
+
+  - id: p3-uhm
+    kind: identity
+    answer: p3-uhm
+    where: 'Problem 3(d), answer box: U(H, M) against the result of part (b), b T²/2, with T = aH/M'
+    formula: |-
+      b*a**2*H**2/(2*M**2)
+    equals: |-
+      b*(a*H/M)**2/2
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+    tolerance: 1e-12
+    shown: ['id="p3-uhm"', '<Formula label="Internal energy in H and M"']
+    source: {cite: reading1, at: 'Problem 3(d), p. 7'}
+    origin: mit
+
+  - id: p3-uhm-derivs
+    kind: identity
+    where: 'Problem 3(d): the two coefficients are the numerical derivatives of U(H, M); here the one with respect to M'
+    formula: |-
+      -b*a**2*H**2/M**3
+    equals: |-
+      deriv('b*a**2*H**2/(2*x**2)', 'x', M)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+    tolerance: 1e-7
+    shown: ['the second coefficient shows that $f''(M) = 0$']
+    source: {cite: reading1, at: 'Problem 3(d), p. 7'}
+    origin: mit
+
+  - id: p3-exact
+    kind: identity
+    where: 'Problem 3(d), check (ours): the differential is exact; both cross derivatives, numerically'
+    formula: |-
+      deriv('b*a**2*H/x**2', 'x', M)
+    equals: |-
+      deriv('-b*a**2*h**2/M**3', 'h', H)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+    tolerance: 1e-6
+    shown: ['are both $-2ba^2H/M^3$']
+    source: {cite: mit, at: 'Problem 3(d), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-adgen
+    kind: identity
+    answer: p3-adgen
+    where: 'Problem 3(e), answer box: for the model magnet, the slope s = dT/dM along which the heat dU − H dM vanishes, found by a numerical root of a numerical derivative'
+    formula: |-
+      -(UM - H)/CM
+    equals: |-
+      solve("deriv('(T + s*x)**2 + (T + s*x)*(Mv + x)**2', 'x', 0) - H", 's', -5, 5)
+    samples:
+      UM: [6, 1.6, 10]
+      H: [3, 0.8, 5]
+      CM: [6.25, 3.45, 9]
+      T: [2, 1.6, 2.5]
+      Mv: [1.5, 0.5, 2]
+    tolerance: 1e-6
+    shown: ['id="p3-adgen"', '<Formula label="Slope of an adiabat for any magnet"']
+    source: {cite: reading1, at: 'Problem 3(e), p. 8'}
+    origin: mit
+
+  - id: p3-adslope
+    kind: identity
+    answer: p3-adslope
+    where: 'Problem 3(f), answer box: the slope of a curve of constant entropy S = bT − M²/(2a), from numerical derivatives of S'
+    formula: |-
+      M/(a*b)
+    equals: |-
+      -deriv('b*T - x**2/(2*a)', 'x', M)/deriv('b*t - M**2/(2*a)', 't', T)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-7
+    shown: ['id="p3-adslope"', '<Formula label="Slope of an adiabat of the Curie law paramagnet"']
+    source: {cite: reading1, at: 'Problem 3(f), p. 8'}
+    origin: mit
+
+  - id: p3-adpath
+    kind: identity
+    answer: p3-adpath
+    where: 'Problem 3(f), answer box: the temperature at which the entropy bT − M²/(2a) has the value it has at (T0, M0), by a numerical root'
+    formula: |-
+      T0 + (M**2 - M0**2)/(2*a*b)
+    equals: |-
+      solve('b*t - M**2/(2*a) - (b*T0 - M0**2/(2*a))', 't', 0, 60)
+    samples:
+      T0: [1, 1.5, 2, 2.5, 3]
+      M: [1.5, 1.1, 2, 1.3, 1.9]
+      M0: [0.3, 0.9, 0.5, 0.7, 0.4]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      b: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p3-adpath"', '<Formula label="Adiabat through a given point"']
+    source: {cite: reading1, at: 'Problem 3(f), p. 8'}
+    origin: mit
+
+  - id: p3-entropy-t
+    kind: identity
+    where: 'Problem 3(f), second check (ours): the derivative of S = bT − M²/(2a) with respect to T at fixed M is C_M/T'
+    formula: |-
+      deriv('b*t - M**2/(2*a)', 't', T)
+    equals: |-
+      (b*T)/T
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-7
+    shown: ['so $S = bT - M^2/(2a)$ up to a constant']
+    source: {cite: mit, at: 'Problem 3(f), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-entropy-m
+    kind: identity
+    where: 'Problem 3(f), second check (ours): the derivative of S with respect to M at fixed T is −H/T = −M/a'
+    formula: |-
+      deriv('b*T - x**2/(2*a)', 'x', M)
+    equals: |-
+      -(M*T/a)/T
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-7
+    shown: ['$dS = \delta Q/T = b\,dT - (M/a)\,dM$']
+    source: {cite: mit, at: 'Problem 3(f), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-slope
+    kind: identity
+    answer: p3-slope
+    where: 'Problem 3(g), answer box: one over the numerical derivative of H along the adiabat through (T, M), H(x) = x [T + (x² − M²)/(2ab)]/a'
+    formula: |-
+      (a/T)/(1 + M**2/(a*b*T))
+    equals: |-
+      1/deriv('x*(T + (x**2 - M**2)/(2*a*b))/a', 'x', M)
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-7
+    shown: ['id="p3-slope"', '<Formula label="Slope of the adiabat"']
+    source: {cite: reading1, at: 'Problem 3(g), p. 9'}
+    origin: mit
+
+  - id: p3-slope-dh
+    kind: identity
+    where: 'Problem 3(g): the two forms of the bracket in dH (H/M = T/a)'
+    formula: |-
+      M**2/(a**2*b) + (M*T/a)/M
+    equals: |-
+      (T/a)*(1 + M**2/(a*b*T))
+    samples:
+      b: [0.5, 1, 1.5, 2, 0.8]
+      a: [2, 0.5, 1, 1.5, 0.7]
+      M: [1.5, 0.6, 2, 1.1, 0.9]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-12
+    shown: ['<Formula label="Adiabatic change in H and M"']
+    source: {cite: reading1, at: 'Problem 3(g), p. 9'}
+    origin: mit
+
+  - id: p3-plot-slope
+    kind: value
+    where: 'Problem 3(g), graph and check: the adiabatic slope at a = b = T = M = 1'
+    formula: |-
+      (1/1)/(1 + 1**2/(1*1*1))
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['the adiabat slope 0.5', '$1/(1 + 1) = 0.5$']
+    source: {cite: mit, at: 'Problem 3(g), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-plot-adiabat
+    kind: identity
+    where: 'Problem 3(g), graph: the adiabat through H = M = T = 1 for a = b = 1, H = M T/a with T = 1 + (M² − 1)/2'
+    formula: |-
+      s*(s**2 + 1)/2
+    equals: |-
+      s*(1 + (s**2 - 1)/2)/1
+    samples:
+      s: [0.2, 0.6, 1, 1.3, 1.5]
+    tolerance: 1e-12
+    shown: ['x: "s*(s^2 + 1)/2"']
+    source: {cite: mit, at: 'Problem 3(g), p. 3 (our own graph)'}
+    origin: page-own
+
+  - id: p3-blarge
+    kind: limit
+    where: 'Problem 3(g), check: for a very large b the adiabatic slope tends to the isothermal one'
+    inputs: {a: 1.3, T: 2, M: 1.7}
+    formula: |-
+      (a/T)/(1 + M**2/(a*b*T))
+    limit: |-
+      a/T
+    vary: {b: [1, 10, 100, 1000, 10000]}
+    tolerance: 0.001
+    shown: ['When $b$ is very large the heat capacity is huge']
+    source: {cite: mit, at: 'Problem 3(g), p. 3 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-mmax
+    kind: identity
+    answer: p4-mmax
+    where: 'Problem 4(a), answer box: N moments, each with its z component at the largest value mu cos 0'
+    formula: |-
+      N*mu
+    equals: |-
+      N*(mu*cos(0))
+    samples:
+      N: [5, 10, 20, 35, 50]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-12
+    shown: ['id="p4-mmax"']
+    source: {cite: reading1, at: 'Problem 4(a), p. 10'}
+    origin: mit
+
+  - id: p4-emax
+    kind: identity
+    answer: p4-emax
+    where: 'Problem 4(a), answer box: E = −MH at the most negative M'
+    formula: |-
+      N*mu*H
+    equals: |-
+      -(-N*mu)*H
+    samples:
+      N: [5, 10, 20, 35, 50]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+    tolerance: 1e-12
+    shown: ['id="p4-emax"', '<Formula label="Allowed ranges"']
+    source: {cite: reading1, at: 'Problem 4(a), p. 10'}
+    origin: mit
+
+  - id: p4-nvar
+    kind: identity
+    answer: p4-nvar
+    where: 'Problem 4(b), answer box: three components per moment less one condition (the fixed length) per moment'
+    formula: |-
+      2*N
+    equals: |-
+      3*N - N
+    samples:
+      N: [5, 10, 20, 35, 50]
+    tolerance: 1e-12
+    shown: ['id="p4-nvar"']
+    source: {cite: reading1, at: 'Problem 4(b), p. 10'}
+    origin: mit
+
+  - id: p4-eos
+    kind: identity
+    answer: p4-eos
+    where: 'Problem 4(c), answer box: the M at which H/T = −dS/dM, with the derivative of S = k ln Omega taken numerically and the equation solved numerically'
+    formula: |-
+      N*mu**2*H/(3*k*T)
+    equals: |-
+      solve("H/T + k*deriv('N*log(2*mu) - 3*x**2/(2*N*mu**2)', 'x', y)", 'y', 0.001, 1000)
+    samples:
+      N: [5, 10, 20, 35, 50]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      k: [2, 0.5, 1, 1.5, 0.7]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-6
+    shown: ['id="p4-eos"', '<Formula label="Curie''s law from counting"']
+    source: {cite: reading1, at: 'Problem 4(c), p. 10'}
+    origin: mit
+
+  - id: p4-eos-slip
+    kind: fact
+    where: 'Problem 4(c): MIT''s solutions print "using S = −k ln Omega" beside the step; the lines that follow use S = +k ln Omega'
+    shown: ['print the note "using $S = -k\ln\Omega$" beside this step']
+    source: {cite: reading1, at: 'Problem 4(c), p. 10, margin note'}
+    origin: slip
+
+  - id: p4-condition
+    kind: identity
+    where: 'Problem 4(d): M of part (c) as a fraction of its largest value N mu'
+    formula: |-
+      N*mu**2*H/(3*k*T)/(N*mu)
+    equals: |-
+      mu*H/(3*k*T)
+    samples:
+      N: [5, 10, 20, 35, 50]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+      H: [0.5, 2, 1.2, 0.8, 1.6]
+      k: [2, 0.5, 1, 1.5, 0.7]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-12
+    shown: ['<Formula label="Condition for the approximation"']
+    source: {cite: reading1, at: 'Problem 4(d), p. 10'}
+    origin: mit
+
+  - id: p4-variance
+    kind: identity
+    where: 'Problem 4(d), our remark: the variance of a z component spread evenly between −mu and mu, by numerical integration'
+    formula: |-
+      integrate('x**2/(2*mu)', 'x', -mu, mu)
+    equals: |-
+      mu**2/3
+    samples:
+      mu: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-9
+    shown: ['with variance $\mu^2/3$']
+    source: {cite: mit, at: 'Problem 4, p. 4 (our own remark)'}
+    origin: page-own
+
+  - id: p4-gauss
+    kind: identity
+    where: 'Problem 4(d), our remark: the exponent of a Gaussian of variance N mu²/3 is the exponent of MIT''s Omega'
+    formula: |-
+      M**2/(2*(N*mu**2/3))
+    equals: |-
+      M**2/(2/3*N*mu**2)
+    samples:
+      N: [5, 10, 20, 35, 50]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+      M: [1, 3, 2, 5, 4]
+    tolerance: 1e-12
+    shown: ['with variance $N\mu^2/3$']
+    source: {cite: mit, at: 'Problem 4, p. 4 (our own remark)'}
+    origin: page-own
+
+  - id: p4-omp
+    kind: identity
+    answer: p4-omp
+    where: 'Problem 4(e), answer box: against the central-limit form for N − 1 moments whose z components add up to M − m (volume (2 mu)^(N−1), variance (N − 1) mu²/3)'
+    formula: |-
+      (2*mu)**(N - 1)*exp(-3*(M - m)**2/(2*(N - 1)*mu**2))
+    equals: |-
+      exp((N - 1)*log(2*mu) - (M - m)**2/(2*((N - 1)*mu**2/3)))
+    samples:
+      N: [5, 10, 20, 12, 8]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+      M: [1, 3, 2, 2.5, 1.5]
+      m: [0.2, 0.5, 0.3, 0.4, 0.25]
+    tolerance: 1e-10
+    shown: ['id="p4-omp"', '<Formula label="Volume consistent with one moment at m"']
+    source: {cite: reading1, at: 'Problem 4(e), p. 10'}
+    origin: mit
+
+  - id: p4-sheet-slip
+    kind: fact
+    where: 'Problem 4(e): MIT''s sheet writes p(M) where the density p(m) of a single moment is meant'
+    shown: ['writes "$p(M)$" in the statement of this part']
+    source: {cite: mit, at: 'Problem 4(e), p. 4'}
+    origin: slip
+
+  - id: p4-pm
+    kind: identity
+    answer: p4-pm
+    where: 'Problem 4(f), answer box: against the exact ratio Omega′/Omega for a million moments and M far below N mu (the terms dropped on the page are below the tolerance; the term kept is about a thousand times larger)'
+    formula: |-
+      (1 + 3*M*m/(N*mu**2))/(2*mu)
+    equals: |-
+      exp(-3*(M - m)**2/(2*(N - 1)*mu**2) + 3*M**2/(2*N*mu**2))/(2*mu)
+    samples:
+      N: [1000000, 1000000, 2000000, 5000000, 1000000]
+      mu: [1, 2, 1.5, 0.5, 0.8]
+      M: [1000, 1500, 2000, 800, -600]
+      m: [0.5, -1.2, 1.0, 0.3, 0.6]
+    tolerance: 1e-5
+    shown: ['id="p4-pm"', '<Formula label="Density of the z component of one moment"']
+    source: {cite: reading1, at: 'Problem 4(f), p. 11'}
+    origin: mit
+
+  - id: p4-pm-limit
+    kind: limit
+    where: 'Problem 4(f): with M = g N mu and N = 1/g³, the exact ratio 2 mu Omega′/Omega minus 1 tends to the term kept, 3 g m/mu, as g shrinks'
+    inputs: {mu: 1.3, m: 0.9}
+    formula: |-
+      exp(-3*(g*g**(-3)*mu - m)**2/(2*(g**(-3) - 1)*mu**2) + 3*(g*g**(-3)*mu)**2/(2*g**(-3)*mu**2)) - 1
+    limit: |-
+      3*g*m/mu
+    vary: {g: [0.1, 0.03, 0.01, 0.003]}
+    tolerance: 0.02
+    shown: ['<Formula label="Ratio of the two volumes"']
+    source: {cite: reading1, at: 'Problem 4(f), p. 11'}
+    origin: mit
+
+  - id: p4-dropped
+    kind: identity
+    where: 'Problem 4(f): the term with m² in the exponent, at its largest (m = mu), for large N'
+    formula: |-
+      3*mu**2/(2*N*mu**2)
+    equals: |-
+      3/(2*N)
+    samples:
+      N: [50, 100, 200, 1000, 5000]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-12
+    shown: ['is at most $3/(2N)$']
+    source: {cite: mit, at: 'Problem 4(f), p. 4 (our own estimate)'}
+    origin: page-own
+
+  - id: p4-norm
+    kind: identity
+    where: 'Problem 4(f): the density integrates to 1, numerically'
+    formula: |-
+      integrate('(1 + 3*M*x/(N*mu**2))/(2*mu)', 'x', -mu, mu)
+    equals: |-
+      1
+    samples:
+      N: [50, 100, 200, 150, 80]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+      M: [2, 10, 5, 8, 3]
+    tolerance: 1e-9
+    shown: ['<Formula label="Normalization of the density"']
+    source: {cite: reading1, at: 'Problem 4(f), p. 11'}
+    origin: mit
+
+  - id: p4-plot-slope
+    kind: value
+    where: 'Problem 4(f), graph: the tilt 3M/(N mu) for M = 0.1 N mu'
+    formula: |-
+      3*0.1
+    expected: '0.3'
+    tolerance: 1e-9
+    shown: ['expr: "abs(x) <= 1 ? 0.5*(1 + 0.3*x) : 0"', 'computed from the formula for M = 0.1 Nμ']
+    source: {cite: mit, at: 'Problem 4(f), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-plot-low
+    kind: value
+    where: 'Problem 4(f), graph: mu p(m) at m = −mu for M = 0.1 N mu'
+    formula: |-
+      0.5*(1 - 3*0.1)
+    expected: '0.35'
+    tolerance: 1e-9
+    shown: ['0.35/μ at m = −μ']
+    source: {cite: mit, at: 'Problem 4(f), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-plot-high
+    kind: value
+    where: 'Problem 4(f), graph: mu p(m) at m = mu for M = 0.1 N mu'
+    formula: |-
+      0.5*(1 + 3*0.1)
+    expected: '0.65'
+    tolerance: 1e-9
+    shown: ['to 0.65/μ at m = μ']
+    source: {cite: mit, at: 'Problem 4(f), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-mean
+    kind: identity
+    answer: p4-mean
+    where: 'Problem 4(g), answer box: the mean of m over the density of part (f), by numerical integration'
+    formula: |-
+      M/N
+    equals: |-
+      integrate('x*(1 + 3*M*x/(N*mu**2))/(2*mu)', 'x', -mu, mu)
+    samples:
+      N: [50, 100, 200, 150, 80]
+      M: [2, 10, 5, 8, 3]
+      mu: [0.5, 1, 1.5, 2, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p4-mean"', '<Formula label="Mean z component of one moment"']
+    source: {cite: reading1, at: 'Problem 4(g), p. 11'}
+    origin: mit
+
+  # ---- Problem 5 (n stands for n₊)
+
+  - id: p5-s
+    kind: identity
+    answer: p5-s
+    where: 'Problem 5(a), answer box: ln of the binomial coefficient is the sum of ln((N − n + j)/j) for j = 1 to n; Stirling''s approximation replaces that sum by its integral, taken here numerically'
+    formula: |-
+      k*(N*log(N) - (N - n)*log(N - n) - n*log(n))
+    equals: |-
+      k*integrate('log((N - n + x)/x)', 'x', 0, n)
+    samples:
+      k: [0.5, 1, 1.5, 2, 0.8]
+      N: [50, 60, 75, 90, 100]
+      n: [10, 40, 25, 30, 15]
+    tolerance: 1e-7
+    shown: ['id="p5-s"', '<Formula label="Entropy of the chain"']
+    source: {cite: reading1, at: 'Problem 5(a), p. 12'}
+    origin: mit
+
+  - id: p5-s-stirling
+    kind: value
+    where: 'Problem 5(a), check (our numbers): S/k from the formula for N = 1000, n₊ = 300'
+    formula: |-
+      1000*log(1000) - 700*log(700) - 300*log(300)
+    expected: '610.9'
+    shown: ['the formula gives $S = 610.9\,k$']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-s-exact
+    kind: value
+    where: 'Problem 5(a), check (our numbers): the exact ln[1000!/(700! 300!)], each ln n! from Stirling''s series with its next two terms, n ln n − n + ln(2 pi n)/2 + 1/(12 n)'
+    formula: |-
+      (1000*log(1000) - 1000 + log(2*pi*1000)/2 + 1/12000) - (700*log(700) - 700 + log(2*pi*700)/2 + 1/8400) - (300*log(300) - 300 + log(2*pi*300)/2 + 1/3600)
+    expected: '607.3'
+    shown: ['the exact count gives $607.3\,k$']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-s-error
+    kind: value
+    where: 'Problem 5(a), check (our numbers): the relative error of the approximation, in per cent'
+    formula: |-
+      (610.8643 - 607.2715)/607.2715*100
+    expected: '0.6'
+    shown: ['a difference of 0.6%']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-smax
+    kind: identity
+    where: 'Problem 5(a), check: the entropy at n₊ = N/2, in units of k'
+    formula: |-
+      N*log(N) - (N - N/2)*log(N - N/2) - N/2*log(N/2)
+    equals: |-
+      N*log(2)
+    samples:
+      N: [50, 60, 75, 90, 100]
+    tolerance: 1e-10
+    shown: ['where it equals $Nk\ln 2$']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-f
+    kind: identity
+    answer: p5-f
+    where: 'Problem 5(b), answer box: −T times the numerical derivative of S with respect to L, with n₊ = (L/l + N)/2 inside S'
+    formula: |-
+      -k*T/(2*l)*log((N - n)/n)
+    equals: |-
+      -T*deriv('k*(N*log(N) - (N - (x/l + N)/2)*log(N - (x/l + N)/2) - (x/l + N)/2*log((x/l + N)/2))', 'x', l*(2*n - N))
+    samples:
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      l: [0.5, 2, 1.2, 0.8, 1.6]
+      N: [50, 60, 75, 90, 100]
+      n: [10, 40, 25, 60, 15]
+    tolerance: 1e-6
+    shown: ['id="p5-f"', '<Formula label="Tension in the chain"']
+    source: {cite: reading1, at: 'Problem 5(b), p. 12'}
+    origin: mit
+
+  - id: p5-l
+    kind: identity
+    answer: p5-l
+    where: 'Problem 5(c), answer box: l (2 n₊ − N) with n₊ found by solving the tension formula of part (b) numerically'
+    formula: |-
+      N*l*tanh(l*F/(k*T))
+    equals: |-
+      l*(2*solve('F + k*T/(2*l)*log((N - x)/x)', 'x', N/2, N - 0.000001) - N)
+    samples:
+      N: [50, 60, 75, 90, 100]
+      l: [0.5, 2, 1.2, 0.8, 1.6]
+      F: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.5, 0.9, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+    tolerance: 1e-8
+    shown: ['id="p5-l"', '<Formula label="Length of the chain"']
+    source: {cite: reading1, at: 'Problem 5(c), p. 13'}
+    origin: mit
+
+  - id: p5-hooke
+    kind: limit
+    where: 'Problem 5(c): at high temperature the length tends to N l² F/(kT)'
+    inputs: {N: 80, l: 1.2, F: 0.7, k: 1.5}
+    formula: |-
+      N*l*tanh(l*F/(k*T))
+    limit: |-
+      N*l**2*F/(k*T)
+    vary: {T: [1, 10, 100, 1000]}
+    tolerance: 0.0001
+    shown: ['<Formula label="Hooke''s law at high temperature"']
+    source: {cite: reading1, at: 'Problem 5(c), p. 13'}
+    origin: mit
+
+  - id: p5-alpha
+    kind: identity
+    answer: p5-alpha
+    where: 'Problem 5(d), answer box: the numerical derivative of the high-temperature length with respect to T, divided by the length'
+    formula: |-
+      -1/T
+    equals: |-
+      deriv('N*l**2*F/(k*t)', 't', T)/(N*l**2*F/(k*T))
+    samples:
+      T: [1, 1.5, 2, 2.5, 3]
+      N: [50, 60, 75, 90, 100]
+      l: [0.5, 2, 1.2, 0.8, 1.6]
+      F: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.5, 0.9, 2, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p5-alpha"', '<Formula label="Thermal expansion coefficient of the chain"']
+    source: {cite: reading1, at: 'Problem 5(d), p. 13'}
+    origin: mit
+
+  - id: p5-alpha-full
+    kind: identity
+    where: 'Problem 5(d), our remark: the expansion coefficient at any temperature, against the numerical derivative of the full length N l tanh(lF/kT)'
+    formula: |-
+      -(1/T)*2*(l*F/(k*T))/sinh(2*l*F/(k*T))
+    equals: |-
+      deriv('N*l*tanh(l*F/(k*t))', 't', T)/(N*l*tanh(l*F/(k*T)))
+    samples:
+      T: [1, 1.5, 2, 2.5, 3]
+      N: [50, 60, 75, 90, 100]
+      l: [0.5, 2, 1.2, 0.8, 1.6]
+      F: [0.5, 1, 1.5, 2, 0.8]
+      k: [1, 1.5, 0.9, 2, 0.8]
+    tolerance: 1e-6
+    shown: ['$\alpha = -\frac1T\,\frac{2x}{\sinh 2x}$']
+    source: {cite: mit, at: 'Problem 5(d), p. 5 (our own remark)'}
+    origin: page-own
+
+  - id: p5-alpha-limit
+    kind: limit
+    where: 'Problem 5(d), our remark: the full coefficient times −T tends to 1 when x = lF/(kT) is small'
+    formula: |-
+      2*x/sinh(2*x)
+    limit: |-
+      1
+    vary: {x: [1, 0.3, 0.1, 0.03, 0.01]}
+    tolerance: 0.001
+    shown: ['it tends to $-1/T$ when $x$ is small']
+    source: {cite: mit, at: 'Problem 5(d), p. 5 (our own remark)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6-jac
+    kind: identity
+    answer: p6-jac
+    where: 'Problem 6(a), answer box (our way of asking): the product of the two scale factors, sqrt(2m) for the momentum and sqrt(2/(m omega²)) for the position'
+    formula: |-
+      2/omega
+    equals: |-
+      sqrt(2*m)*sqrt(2/(m*omega**2))
+    samples:
+      omega: [0.5, 1, 1.5, 2, 3]
+      m: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-12
+    shown: ['id="p6-jac"']
+    source: {cite: reading1, at: 'Problem 6(a), p. 14'}
+    origin: mit
+
+  - id: p6-c
+    kind: identity
+    answer: p6-c
+    where: 'Problem 6(a), answer box: for one oscillator, the area inside the ellipse p²/2m + m omega² q²/2 = E by numerical integration (q = q_max sin u), divided by E'
+    formula: |-
+      2*pi/omega
+    equals: |-
+      integrate('2*sqrt(2*m*E)*cos(u)*sqrt(2*E/(m*omega**2))*cos(u)', 'u', -pi/2, pi/2)/E
+    samples:
+      omega: [0.5, 1, 1.5, 2, 3]
+      m: [2, 0.5, 1, 1.5, 0.7]
+      E: [1, 3, 0.5, 2, 4]
+    tolerance: 1e-9
+    shown: ['id="p6-c"', '<Formula label="Phase-space volume of the oscillators"', 'Its area is $\pi$ times their product, $2\pi E/\omega$']
+    source: {cite: reading1, at: 'Problem 6(a), p. 14'}
+    origin: mit
+
+  - id: p6-sphere
+    kind: identity
+    where: 'Problem 6(a): the sphere formula pi^n R^(2n)/n! for n = 1 (a circle), against the area by numerical integration'
+    formula: |-
+      pi**1*R**2/1
+    equals: |-
+      integrate('2*sqrt(R**2 - x**2)', 'x', -R, R)
+    samples:
+      R: [0.5, 1, 1.5, 2, 3]
+    tolerance: 1e-8
+    shown: ['By the lesson''s formula with $n = N$']
+    source: {cite: reading1, at: 'Problem 6(a), p. 14'}
+    origin: mit
+
+  - id: p6-s
+    kind: identity
+    answer: p6-s
+    where: 'Problem 6(b), answer box: k ln Phi with ln N! replaced by the integral of ln x from 0 to N (Stirling''s approximation), taken numerically'
+    formula: |-
+      N*k*(log(2*pi*E/(omega*N)) + 1)
+    equals: |-
+      k*(N*log(2*pi*E/omega) - integrate('log(x)', 'x', 0, N))
+    samples:
+      N: [50, 60, 75, 90, 100]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      E: [100, 400, 250, 180, 320]
+      omega: [0.5, 1, 1.5, 2, 3]
+    tolerance: 1e-7
+    shown: ['id="p6-s"', '<Formula label="Entropy of the oscillators"']
+    source: {cite: reading1, at: 'Problem 6(b), p. 14'}
+    origin: mit
+
+  - id: p6-e
+    kind: identity
+    answer: p6-e
+    where: 'Problem 6(c), answer box: the energy at which 1/T equals the numerical derivative of S with respect to E, solved numerically'
+    formula: |-
+      N*k*T
+    equals: |-
+      solve("1/T - deriv('N*k*(log(2*pi*x/(omega*N)) + 1)', 'x', y)", 'y', 0.01, 100000)
+    samples:
+      N: [50, 60, 75, 90, 100]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      omega: [0.5, 1, 1.5, 2, 3]
+    tolerance: 1e-6
+    shown: ['id="p6-e"', '<Formula label="Temperature of the oscillators"']
+    source: {cite: reading1, at: 'Problem 6(c), p. 14'}
+    origin: mit
+
+  - id: p6-pq
+    kind: identity
+    answer: p6-pq
+    where: 'Problem 6(d), answer box: against the exact microcanonical density of one oscillator among Nn = 10^8, (omega/2 pi)(Nn − 1)/E (1 − eps/E)^(Nn − 2) with E = Nn k T'
+    formula: |-
+      omega/(2*pi*k*T)*exp(-p**2/(2*m*k*T) - m*omega**2*q**2/(2*k*T))
+    equals: |-
+      omega/(2*pi)*(Nn - 1)/(Nn*k*T)*(1 - (p**2/(2*m) + m*omega**2*q**2/2)/(Nn*k*T))**(Nn - 2)
+    samples:
+      omega: [0.5, 1, 1.5, 2, 0.8]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      m: [2, 0.5, 1, 1.5, 0.7]
+      p: [0.3, -1.5, 0.9, 1.2, 0.6]
+      q: [1.5, 0.3, -0.8, 0.5, 1.1]
+      Nn: [100000000, 100000000, 100000000, 100000000, 100000000]
+    tolerance: 1e-6
+    shown: ['id="p6-pq"', '<Formula label="Joint density of the momentum and position of one oscillator"']
+    source: {cite: reading1, at: 'Problem 6(d), p. 15'}
+    origin: mit
+
+  - id: p6-ratio
+    kind: limit
+    where: 'Problem 6(d): MIT''s ratio Phi′/Phi with E = N k T tends to (omega/2 pi kT) exp(−eps/kT) as N grows'
+    inputs: {omega: 1.3, k: 0.8, T: 2, eps: 2.5}
+    formula: |-
+      omega/(2*pi)*N/(N*k*T)*(1 - eps/(N*k*T))**(N - 1)
+    limit: |-
+      omega/(2*pi*k*T)*exp(-eps/(k*T))
+    vary: {N: [10, 100, 10000, 1000000]}
+    tolerance: 0.0001
+    shown: ['<Formula label="Density as a ratio of volumes"']
+    source: {cite: reading1, at: 'Problem 6(d), p. 15'}
+    origin: mit
+
+  - id: p6-product
+    kind: identity
+    where: 'Problem 6(d): the prefactors of the two Gaussians multiply to omega/(2 pi kT)'
+    formula: |-
+      1/(sqrt(2*pi*m*k*T)*sqrt(2*pi*k*T/(m*omega**2)))
+    equals: |-
+      omega/(2*pi*k*T)
+    samples:
+      omega: [0.5, 1, 1.5, 2, 0.8]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      m: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-12
+    shown: ['<Formula label="The density as a product"']
+    source: {cite: reading1, at: 'Problem 6(d), p. 15'}
+    origin: mit
+
+  - id: p6-norm
+    kind: identity
+    where: 'Problem 6(d), check: the joint density integrates to 1 (the product of the two Gaussian integrals, numerically, over 12 standard deviations each way)'
+    formula: |-
+      integrate('exp(-x**2/(2*m*k*T))/sqrt(2*pi*m*k*T)', 'x', -12*sqrt(m*k*T), 12*sqrt(m*k*T))*integrate('exp(-x**2/(2*k*T/(m*omega**2)))/sqrt(2*pi*k*T/(m*omega**2))', 'x', -12*sqrt(k*T/(m*omega**2)), 12*sqrt(k*T/(m*omega**2)))
+    equals: |-
+      1
+    samples:
+      omega: [0.5, 1, 1.5, 2, 0.8]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      m: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-8
+    shown: ['each Gaussian factor integrates to 1']
+    source: {cite: reading1, at: 'Problem 6(d), p. 15'}
+    origin: mit
+
+  - id: p6-mean-energy
+    kind: identity
+    where: 'Problem 6(d), check: the mean energy of one oscillator from the two Gaussians, by numerical integration'
+    formula: |-
+      integrate('x**2*exp(-x**2/(2*m*k*T))/sqrt(2*pi*m*k*T)', 'x', -12*sqrt(m*k*T), 12*sqrt(m*k*T))/(2*m) + m*omega**2/2*integrate('x**2*exp(-x**2/(2*k*T/(m*omega**2)))/sqrt(2*pi*k*T/(m*omega**2))', 'x', -12*sqrt(k*T/(m*omega**2)), 12*sqrt(k*T/(m*omega**2)))
+    equals: |-
+      k*T
+    samples:
+      omega: [0.5, 1, 1.5, 2, 0.8]
+      k: [0.5, 1, 1.5, 2, 0.8]
+      T: [1, 1.5, 2, 2.5, 3]
+      m: [2, 0.5, 1, 1.5, 0.7]
+    tolerance: 1e-8
+    shown: ['\frac12kT + \frac12kT = kT$, in agreement with part (c)']
+    source: {cite: mit, at: 'Problem 6(d), p. 5 (our own check)'}
+    origin: page-own
+
+  - id: p6-exact-norm
+    kind: identity
+    where: 'Problem 6(d), our remark: the density built from the shell volume is normalized for every N; the area element is (2 pi/omega) d eps, so the integral over eps of (N − 1)/E (1 − eps/E)^(N − 2) must be 1'
+    formula: |-
+      integrate('(Nn - 1)/E*(1 - x/E)**(Nn - 2)', 'x', 0, E)
+    equals: |-
+      1
+    samples:
+      Nn: [2, 3, 10, 50, 200]
+      E: [1, 3, 0.5, 20, 400]
+    tolerance: 1e-8
+    shown: ['which is normalized exactly for every $N$']
+    source: {cite: mit, at: 'Problem 6(d), p. 5 (our own remark)'}
+    origin: page-own
+
+  - id: p6-contour-inner
+    kind: value
+    where: 'Problem 6(d), graph: the density one standard deviation out, as a fraction of its peak'
+    formula: |-
+      exp(-1/2)
+    expected: '0.61'
+    shown: ['label: "0.61 of peak"', 'the density is 0.61 of its peak value']
+    source: {cite: mit, at: 'Problem 6(d), p. 5 (our own graph)'}
+    origin: page-own
+
+  - id: p6-contour-outer
+    kind: value
+    where: 'Problem 6(d), graph: the density two standard deviations out, as a fraction of its peak'
+    formula: |-
+      exp(-2**2/2)
+    expected: '0.14'
+    shown: ['label: "0.14 of peak"', 'on the outer one 0.14']
+    source: {cite: mit, at: 'Problem 6(d), p. 5 (our own graph)'}
+    origin: page-own
