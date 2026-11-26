@@ -47,6 +47,7 @@ Later windows:
 - [ ] 8.07 (Fall 2012): 10 sets, `resources/mit8_07f12_pset01/` …
 - [ ] 8.08 (Spring 2005): 12 sets, `resources/prb1/` … `prb12/`
 - [ ] Glossary: review the "First explained in" links that may be passing mentions (`npm run glossary:intro`).
+- [ ] Trial merge after Account B's first one or two reviewed sets: in a scratch worktree, merge `main`, `run/a-8044-805` and `origin/run/b-806-8962`, run `merge-symbols.py` and `content:check`, then throw the worktree away (nothing is pushed). Write any problem found under "Change requests".
 - [ ] Merge both branches into `main` (see "Merging") and answer Account B's change requests.
 
 ---
@@ -62,7 +63,7 @@ Later windows:
 - your own new lines in `data/symbols.json` (see the rule for that file below).
 
 This window:
-- [ ] Set up: `git pull`; `npm ci`; `python -m venv .venv` and install `requirements-dev.txt` (`.venv/Scripts/pip` on Windows, `.venv/bin/pip` on Linux/macOS); check `pdftotext` exists; download every MIT PDF for 8.06 and 8.962 to a folder outside the repository. If ocw.mit.edu cannot be reached, stop and tell the owner.
+- [ ] Set up: `git pull`; create branch `run/b-806-8962` and **push it at once** (`git push -u origin run/b-806-8962`): if that push fails, stop and tell the owner, because no work can be saved; `npm ci`; `python -m venv .venv` and install `requirements-dev.txt` (`.venv/Scripts/pip` on Windows, `.venv/bin/pip` on Linux/macOS); check `pdftotext` exists; download every MIT PDF for 8.06 and 8.962 to a folder outside the repository. If ocw.mit.edu cannot be reached, stop and tell the owner.
 - [ ] 8.06 (Spring 2018): 9 sets, `resources/problem-set-1/` … `problem-set-9/`. First check every PDF for rights notices and whether solutions are on OCW.
 - [ ] 8.962 (Spring 2020): 11 sets, `resources/mit8_962s20_pset01/` … `pset11/` (some sets have a separate `_hint` PDF; `resources/ps10/` may be a second copy of Set 10: check).
 
@@ -92,9 +93,10 @@ Only the owner edits these. The other account asks under "Change requests".
 | `lib/` (shared types and utilities: schema, content, glossary, answers, symbols, speech) | A | |
 | `components/`, `app/` | A | |
 | `scripts/` | A | Including `merge-symbols.py`, `strip-solutions.py`, `check-content.ts`. |
-| `calcs/values.yaml`, `calcs/constants.yaml` | A | A new H₀, age, T_CMB, Ω, n_s or σ₈ value, or a new constant, is a change request. |
+| `calcs/values.yaml` | **both, add-only** | A set that quotes an H₀, age, T_CMB, Ω, n_s or σ₈ value the file does not have may **add** it, with its role (AGENTS.md Writing rule 7), in its own commit; **never change or delete an existing value**. Prefer a value already listed. A resolves any conflict at the merge (keep both additions). |
+| `calcs/constants.yaml` | A | A new constant is a change request. |
 | `data/glossary/*.json` | A | |
-| `data/symbols.json` | **both, add-only** | Each adds entries and page-scoped meanings for its own pages on its own branch; **never reword or delete an existing meaning**. A merges by meaning with `scripts/merge-symbols.py`. |
+| `data/symbols.json` | **both, add-only** | Each adds entries and page-scoped meanings for its own pages on its own branch. Adding your own page to an existing meaning's `pages` list is also fine (and better than a duplicate meaning with the same text). **Never reword or delete an existing meaning**, and never remove a page from a list. A merges by meaning with `scripts/merge-symbols.py`. |
 | Lessons (`content/**/*.mdx` that are not problem sets), `_course.json`, `_year.json` | A | Not edited during this run; a slip found in a lesson is a change request. |
 | `AGENTS.md`, `OWNER-TODO.md`, `README.md`, `ROADMAP.md`, `docs/` | A | B's progress goes in its own section above. |
 | `TASKS.md` | both | Each edits only its own task section; both may add to "Change requests". |
@@ -112,6 +114,8 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 ---
 
 ## Merging (Account A, at the end of a window or when the owner asks)
+
+A trial merge early in the run (Account A's task list) catches conflicts while they are small; the real merge comes at the end.
 
 1. `git fetch origin`; on `main`, merge `run/a-8044-805`.
 2. Pull Account B's branch and merge it. If `data/symbols.json` conflicts, keep `main`'s version and run `python scripts/merge-symbols.py <merge-base> origin/run/b-806-8962` to add B's entries by meaning. `TASKS.md` merges cleanly as long as each account kept to its own section.
