@@ -63,8 +63,8 @@ Later windows:
 - your own new lines in `data/symbols.json` (see the rule for that file below).
 
 This window:
-- [~] Set up: `git pull`; create branch `run/b-806-8962` and **push it at once** (`git push -u origin run/b-806-8962`): if that push fails, stop and tell the owner, because no work can be saved; `npm ci`; `python -m venv .venv` and install `requirements-dev.txt` (`.venv/Scripts/pip` on Windows, `.venv/bin/pip` on Linux/macOS); check `pdftotext` exists; download every MIT PDF for 8.06 and 8.962 to a folder outside the repository. If ocw.mit.edu cannot be reached, stop and tell the owner.
-- [ ] 8.06 (Spring 2018): 9 sets, `resources/problem-set-1/` … `problem-set-9/`. First check every PDF for rights notices and whether solutions are on OCW.
+- [x] Set up: `git pull`; create branch `run/b-806-8962` and **push it at once** (`git push -u origin run/b-806-8962`): if that push fails, stop and tell the owner, because no work can be saved; `npm ci`; `python -m venv .venv` and install `requirements-dev.txt` (`.venv/Scripts/pip` on Windows, `.venv/bin/pip` on Linux/macOS); check `pdftotext` exists; download every MIT PDF for 8.06 and 8.962 to a folder outside the repository. If ocw.mit.edu cannot be reached, stop and tell the owner.
+- [~] 8.06 (Spring 2018): 9 sets, `resources/problem-set-1/` … `problem-set-9/`. First check every PDF for rights notices and whether solutions are on OCW.
 - [ ] 8.962 (Spring 2020): 11 sets, `resources/mit8_962s20_pset01/` … `pset11/` (some sets have a separate `_hint` PDF; `resources/ps10/` may be a second copy of Set 10: check).
 
 Later windows:
@@ -74,7 +74,7 @@ Later windows:
 How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own git worktree under `.claude/worktrees/` (link `node_modules` and `.venv`: junctions on Windows, `ln -s` on Linux/macOS), given `docs/problem-sets-run/WRITER-BRIEF.md`; strip the page with `scripts/strip-solutions.py`; blind review by the `mit-lecture-reviewer` agent with `docs/problem-sets-run/REVIEW-BRIEF.md`. Tell writers to vary the position of the right choice in choice boxes, to add page-scoped symbol meanings for letters that also have a cosmology meaning (T₀, Ω, H), and that a calcs `shown:` entry must match the page text.
 
 ### Progress and lessons (Account B writes here; Account A copies them into docs/PROBLEM-SETS-RUN.md when merging)
-(none yet)
+- 2026-11-26 setup (Linux PC, 2 agents at a time: one writer on Fable, one blind reviewer on Opus). All 9 8.06 sheets and all 15 8.962 PDFs (11 sheets, 4 hint sheets for Sets 1, 3, 4, 7) downloaded: no "rights reserved", "courtesy", "Image by" or "excluded" notice in any of them. 8.06: no solutions on OCW (`solutions: own`); due dates put Set 1 at L3, 2 at L5, 3 at L7, 4 at L9, 5 at L11, 6 at L15, 7 at L18, 8 at L22, Set 9 not in the calendar (writers confirm covers). 8.962 `resources/ps10/` is not a second copy of Set 10: it is MIT's Mathematica notebook `PS10.nb` for Set 10.
 
 ---
 
