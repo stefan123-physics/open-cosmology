@@ -75,6 +75,8 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 
 ### Progress and lessons (Account B writes here; Account A copies them into docs/PROBLEM-SETS-RUN.md when merging)
 - 2026-11-26 setup (Linux PC, 2 agents at a time: one writer on Fable, one blind reviewer on Opus). All 9 8.06 sheets and all 15 8.962 PDFs (11 sheets, 4 hint sheets for Sets 1, 3, 4, 7) downloaded: no "rights reserved", "courtesy", "Image by" or "excluded" notice in any of them. 8.06: no solutions on OCW (`solutions: own`); due dates put Set 1 at L3, 2 at L5, 3 at L7, 4 at L9, 5 at L11, 6 at L15, 7 at L18, 8 at L22, Set 9 not in the calendar (writers confirm covers). 8.962 `resources/ps10/` is not a second copy of Set 10: it is MIT's Mathematica notebook `PS10.nb` for Set 10.
+- 8.06 Set 1 (covers 1–3, 80 points) reviewed blind: 0 errors, 3 warnings, fixed (commit 706d111). Set 2 (covers 1–5, 80 points) reviewed blind: 0 errors, 2 warnings, fixed (ef53514). MIT slip on Set 2's sheet: "polarizability α corresponds to energy −αE²" (it is −½αE²), noted on the page.
+- Lessons: (1) On Linux, Git checks `.githooks/pre-commit` out in a new worktree without the executable bit (tracked as 100644), so the commit check silently does not run there: `chmod +x .githooks/pre-commit` in every new worktree (see Change requests). (2) The NIST Constants home page now shows CODATA 2022: cite `https://physics.nist.gov/cuu/Constants/archive2018.html` for 2018 values. (3) A formula not printed on MIT's sheet is cited to the notes (`reading1`, equation number), not `cite="mit"`. (4) A new compound symbol entry added by one set (`alpha-p`, form `\alpha_p`) makes `content:check` fail on an earlier set that uses the same form: after `merge-symbols.py`, run `content:check` and add a page-scoped meaning for the earlier page. (5) `data/symbols.json` has one entry per line, so `git diff` shows every touched entry as removed and added: check add-only by meaning with a script, not by the diff. (6) Usage: one set (Fable writer about 250–285k tokens, Opus reviewer 135–165k) took about 25–28 minutes to write and 6–8 minutes to review.
 
 ---
 
@@ -110,7 +112,7 @@ Add a line, never edit or delete someone else's. The owner marks it `[x]` when d
 
 Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 
-(none yet)
+- [ ] (from B to A, 2026-11-26) `.githooks/pre-commit`: it is tracked as mode 100644, so on Linux and macOS a fresh checkout or worktree does not run it and commits there skip the checks without a warning. Please run `git update-index --chmod=+x .githooks/pre-commit` and commit. Until then Account B does `chmod +x` in each worktree.
 
 ---
 
