@@ -89,6 +89,7 @@ Only the owner edits these. The other account asks under "Change requests".
 | `next.config.ts` (security headers, CSP), `tsconfig.json`, `.gitignore`, `.gitattributes` | A | |
 | `.githooks/`, `.github/workflows/` | A | Commit check and GitHub checks. |
 | `.claude/agents/`, `.claude/launch.json`, `.cursor/` | A | Reviewer agents and tool settings. |
+| `vercel.json` | A | Turns off Vercel preview builds for `run/**` and `ps-*` branches, so pushes during the run do not queue builds; `main` still deploys. |
 | `.env*` (none exist), `.vercel/` | nobody | Never committed (rule 7). |
 | `lib/` (shared types and utilities: schema, content, glossary, answers, symbols, speech) | A | |
 | `components/`, `app/` | A | |
