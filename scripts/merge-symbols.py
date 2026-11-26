@@ -3,7 +3,8 @@
 usage: python scripts/merge-symbols.py <base-commit> <branch>
 (base-commit = the commit the branch started from; written 2026-11-21 for parallel writers in worktrees)
 Run from the repository root. Only additive changes are carried over: new entries,
-new meanings, pages/courses added to a meaning, new forms/tex. Prints what it did.
+new meanings, pages/courses added to a meaning, new forms/tex. A new entry whose form or TeX
+command another entry already has is folded into that entry. Prints what it did.
 """
 import json, subprocess, sys
 sys.stdout.reconfigure(encoding="utf-8")  # the log names symbols such as √; a Windows console is cp1252
@@ -33,8 +34,18 @@ for e in br:
         continue
     t = tidx.get(e["id"])
     if t is None:
-        target.append(e); tidx[e["id"]] = e
-        log.append(f"new entry {e['id']}")
+        # A new entry whose form or TeX command already belongs to another entry (both branches added the same
+        # symbol under different ids, 2026-11-26): fold its meanings into that entry, so one symbol has one entry.
+        keys = set(e.get("forms") or []) | set(e.get("tex") or [])
+        owner = next((x for x in target if keys & (set(x.get("forms") or []) | set(x.get("tex") or []))), None) if b0 is None else None
+        if owner is None:
+            target.append(e); tidx[e["id"]] = e
+            log.append(f"new entry {e['id']}")
+            continue
+        for m in e.get("meanings", []):
+            if m not in owner["meanings"]:
+                owner["meanings"].append(m)
+        log.append(f"folded new entry {e['id']} into {owner['id']} (same form or TeX)")
         continue
     for k in ("forms", "tex"):
         if e.get(k) and e.get(k) != (b0 or {}).get(k):
