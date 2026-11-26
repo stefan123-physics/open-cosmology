@@ -85,6 +85,8 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 
 **Resume here (2026-11-26, Account B, end of first window, stopped near 80% of the 5-hour limit):** branch `run/b-806-8962`, last set commit 0d2bad7. Done: 8.06 Sets 1–5 written, blind-reviewed (Fable writers, Opus reviewers), fixed and committed, all pushed. Half done: nothing (no open worktrees or drafts). Next: 8.06 Sets 6–9 (resource pages `problem-set-6/` … `problem-set-9/`; due dates put Set 6 at L15, 7 at L18, 8 at L22, Set 9 not in the calendar; decide `covers` from the topics), then 8.962 Sets 1–11 (hint PDFs for Sets 1, 3, 4, 7; `ps10/` is MIT's Mathematica notebook PS10.nb for Set 10; calendar due dates: Set 1 at L4, 2 at L7, 3 at L9, 4 at L12, 5 at L14, 6 at L16, 7 at L18, 8 at L20, 9 at L22, 10 and 11 at L24). MIT's PDFs were in the session scratchpad: download them again (each resource page's first .pdf link). Bring a set onto the run branch with `python scripts/merge-symbols.py <worktree base commit> ps-806-N`, then `content:check` (a new compound symbol may need a meaning on an earlier set). Base each new worktree on the latest run-branch commit and `chmod +x .githooks/pre-commit` in it.
 
+**Merge status (Account B, 2026-11-26): merge now.** No set in progress (no open writer, review or worktree), everything pushed (last commit before this line: 257bc50). Account B starts no new set until Account A has merged `run/b-806-8962` into `main`; after the merge B starts its next window from the new `main`.
+
 ---
 
 ## Shared files and their owner
