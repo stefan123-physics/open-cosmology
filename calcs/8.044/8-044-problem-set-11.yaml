@@ -1,0 +1,765 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-11.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions to this set and the page follows them. Every answer is checked here by a route that does
+# not use the algebra of the page: numerical derivatives of the number of states for the densities of states,
+# numerical integrals of the energy for the heat capacity and the Fermi energies, numerical roots of the count of
+# the electrons for the chemical potential and the quadratic of Problem 3, and a numerical root of the filling
+# integral for the polarizing field.
+# Problems 4 and 5 are in the units of MIT's sheet (g, cm, erg, gauss), entered as plain numbers.
+# hbar = 1.0546e-27 erg s (CODATA 2018, rounded as the page gives it); Problem 5 uses MIT's round numbers.
+
+page: content/year-3/8.044/8-044-problem-set-11.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-dk
+    kind: identity
+    answer: p1-dk
+    where: 'Problem 1(a), answer box and formula "Density of allowed wavevectors on a surface": one over the area of the k-plane per grid point, with the two spacings 2π/Lx and 2π/Ly (Ly = A/Lx)'
+    formula: >-
+      A/(2*pi)**2
+    equals: >-
+      1/((2*pi/Lx)*(2*pi/(A/Lx)))
+    samples:
+      A: [1, 10, 4, 2.5, 7]
+      Lx: [0.5, 2, 1, 1.3, 0.8]
+    tolerance: 1e-12
+    shown: ['D(\vec k) = \frac{L_xL_y}{(2\pi)^2} = \frac{A}{(2\pi)^2}']
+    source: {cite: reading1, at: 'Problem 1(a), p. 1'}
+    origin: mit
+
+  - id: p1-de
+    kind: identity
+    answer: p1-de
+    where: 'Problem 1(b), answer box and formula "Density of states of ripplons": the numerical derivative of the number of wavevectors inside the circle of radius (ε/b)^(2/3)'
+    formula: >-
+      A*E**(1/3)/(3*pi*b**(4/3))
+    equals: >-
+      deriv('pi*((x/b)**(2/3))**2*A/(2*pi)**2', 'x', E)
+    samples:
+      A: [1, 10, 4, 2.5, 7]
+      E: [0.5, 2, 1, 1.3, 0.8]
+      b: [0.7, 1.9, 1, 0.6, 1.5]
+    tolerance: 1e-7
+    shown: ['= \frac{A}{3\pi b^{4/3}}\,\epsilon^{1/3}"']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: mit
+
+  - id: p1-count
+    kind: identity
+    where: 'Problem 1(b), check: the density of states integrated up to ε gives back the number of wavevectors in the circle, A k²/4π with k = (ε/b)^(2/3)'
+    formula: >-
+      integrate('A*u**(1/3)/(3*pi*b**(4/3))', 'u', 0, E)
+    equals: >-
+      A*((E/b)**(2/3))**2/(4*pi)
+    samples:
+      A: [1, 10, 4, 2.5, 7]
+      E: [0.5, 2, 1, 1.3, 0.8]
+      b: [0.7, 1.9, 1, 0.6, 1.5]
+    tolerance: 1e-6
+    shown: ['gives back the number of wavevectors in the circle, $Ak^2/4\pi$']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1 (the check is ours)'}
+    origin: page-own
+
+  - id: p1-c
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box and formula "Heat capacity of ripplons at constant area": the numerical temperature derivative of the thermal energy, itself a numerical integral over the density of states; the letter I is tied to its numerical value'
+    formula: >-
+      A*kB*(kB*T)**(4/3)*I/(3*pi*b**(4/3))
+    equals: >-
+      I/integrate('x**(7/3)*exp(x)/(exp(x) - 1)**2', 'x', 1e-9, 60)*deriv("integrate('u/(exp(u/(kB*y)) - 1)*A*u**(1/3)/(3*pi*b**(4/3))', 'u', 1e-9, 60*kB*y)", 'y', T)
+    samples:
+      A: [1, 10, 4, 2.5, 7]
+      kB: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      b: [0.7, 1.9, 1, 0.6, 1.5]
+      I: [1, 5, 3.93, 2, 4]
+    tolerance: 1e-5
+    shown: ['= \frac{Ak_B}{3\pi b^{4/3}}\left(k_BT\right)^{4/3}I']
+    source: {cite: reading1, at: 'Problem 1(c), p. 1'}
+    origin: mit
+
+  - id: p1-power
+    answer: p1-power
+    where: 'Problem 1(c), answer box (our addition): the power of T in the heat capacity, from the numerical heat capacity at two temperatures a factor 2 apart (units with k_B = 1 and the constant in front left out)'
+    inputs: {}
+    formula: >-
+      log(deriv("integrate('u**(4/3)/(exp(u/y) - 1)', 'u', 1e-9, 60*y)", 'y', 2)/deriv("integrate('u**(4/3)/(exp(u/y) - 1)', 'u', 1e-9, 60*y)", 'y', 1))/log(2)
+    expected: '1.333'
+    shown: ['The power is $\frac43 = 1.333$.']
+    source: {cite: reading1, at: 'Problem 1(c), p. 1 (MIT gives the power 4/3; the box is ours)'}
+    origin: mit
+
+  - id: p1-int
+    answer: p1-int
+    where: 'Problem 1(c), answer box (our addition): the dimensionless integral I, by numerical integration'
+    inputs: {}
+    formula: >-
+      integrate('x**(7/3)*exp(x)/(exp(x) - 1)**2', 'x', 1e-9, 60)
+    expected: '3.93'
+    shown: ['A numerical integration gives $I = 3.93$']
+    source: {cite: reading1, at: 'Problem 1(c), p. 1 (MIT leaves the integral; the number is ours)'}
+    origin: page-own
+
+  - id: p1-int2
+    where: 'Problem 1(c): the integral of the second form, x^(4/3)/(e^x − 1), by numerical integration'
+    inputs: {}
+    formula: >-
+      integrate('x**(4/3)/(exp(x) - 1)', 'x', 1e-9, 60)
+    expected: '1.685'
+    shown: ['the second integral is 1.685']
+    source: {cite: reading1, at: 'Problem 1(c), p. 2 (MIT leaves the integral; the number is ours)'}
+    origin: page-own
+
+  - id: p1-int-parts
+    where: 'Problem 1(c): the two forms agree, I = (7/3) times the second integral (integration by parts)'
+    inputs: {}
+    formula: >-
+      7/3*integrate('x**(4/3)/(exp(x) - 1)', 'x', 1e-9, 60)
+    expected: '3.93'
+    shown: ['$\frac73 \times 1.685 = 3.93$']
+    source: {cite: reading1, at: 'Problem 1(c), pp. 1 and 2 (the comparison is ours)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-spacing
+    kind: identity
+    answer: p2-spacing
+    where: 'Problem 2(a), answer box: the smallest positive k with e^(ikL) = 1, found as the first positive root of sin(kL/2)'
+    formula: >-
+      2*pi/L
+    equals: >-
+      solve('sin(u*L/2)', 'u', pi/L, 3*pi/L)
+    samples:
+      L: [1, 10, 4, 2.5, 7]
+    tolerance: 1e-8
+    shown: ['k_x = \frac{2\pi}{L}\,n_x']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-dk
+    kind: identity
+    answer: p2-dk
+    where: 'Problem 2(b), answer box and formula "Density of allowed wavevectors in the two-dimensional metal": one over the square of the spacing found numerically in part (a)'
+    formula: >-
+      L**2/(2*pi)**2
+    equals: >-
+      1/solve('sin(u*L/2)', 'u', pi/L, 3*pi/L)**2
+    samples:
+      L: [1, 10, 4, 2.5, 7]
+    tolerance: 1e-8
+    shown: ['D(\vec k) = \left(\frac{L}{2\pi}\right)^2']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-de
+    kind: identity
+    answer: p2-de
+    where: 'Problem 2(c), answer box and formula "Density of states of the two-dimensional metal": the numerical derivative of the number of states inside the square contour, whose area is found as four integrals over k_x of the allowed range of k_y'
+    formula: >-
+      4*L**2*E/(pi**2*g**2)
+    equals: >-
+      deriv("2*(L/(2*pi))**2*4*integrate('x/g + 0*u', 'u', 0, x/g)", 'x', E)
+    samples:
+      L: [1, 10, 4, 2.5, 7]
+      E: [0.5, 2, 1, 1.3, 0.8]
+      g: [0.7, 1.9, 1, 0.6, 1.5]
+    tolerance: 1e-6
+    shown: ['= 4\left(\frac{L}{\pi\gamma}\right)^2\epsilon"']
+    source: {cite: reading1, at: 'Problem 2(c), p. 2'}
+    origin: mit
+
+  - id: p2-ef
+    kind: identity
+    answer: p2-ef
+    where: 'Problem 2(d), answer box and formula "Fermi energy of the two-dimensional metal": the numerical root of (integral of the density of states up to ε_F) = N'
+    formula: >-
+      pi*g*sqrt(N/2)/L
+    equals: >-
+      solve("integrate('4*L**2*v/(pi**2*g**2)', 'v', 0, u) - N", 'u', 0, 1000)
+    samples:
+      g: [0.7, 1.9, 1, 0.6, 1.5]
+      N: [10, 1000, 100, 40, 500]
+      L: [1, 10, 4, 2.5, 7]
+    tolerance: 1e-6
+    shown: ['\epsilon_F = \left(\frac12\pi^2\gamma^2\,\frac{N}{A}\right)^{1/2}']
+    source: {cite: reading1, at: 'Problem 2(d), p. 3'}
+    origin: mit
+
+  - id: p2-u
+    kind: identity
+    answer: p2-u
+    where: 'Problem 2(e), answer box and formula "Number and energy of the electrons of the two-dimensional metal at T = 0": the numerical integral of ε D(ε) with D = aε and a = 2N/ε_F² fixed by the number of electrons'
+    formula: >-
+      2*N*EF/3
+    equals: >-
+      integrate('v*(2*N/EF**2)*v', 'v', 0, EF)
+    samples:
+      N: [10, 1000, 100, 40, 500]
+      EF: [0.5, 5, 1, 2.3, 3.8]
+    tolerance: 1e-8
+    shown: ['= \frac a3\,\epsilon_F^3 = \frac23N\epsilon_F']
+    source: {cite: reading1, at: 'Problem 2(e), p. 3'}
+    origin: mit
+
+  - id: p2-s
+    kind: identity
+    answer: p2-s
+    where: 'Problem 2(g), answer box and formula "Surface tension of the two-dimensional electron gas at T = 0": the numerical derivative of U = (2/3) N ε_F with respect to the area, with ε_F falling as one over the square root of the area'
+    formula: >-
+      -N*EF/(3*A)
+    equals: >-
+      deriv('2*N*EF*sqrt(A/x)/3', 'x', A)
+    samples:
+      N: [10, 1000, 100, 40, 500]
+      EF: [0.5, 5, 1, 2.3, 3.8]
+      A: [1, 10, 4, 2.5, 7]
+    tolerance: 1e-7
+    shown: ['= -\frac13\,\frac NA\,\epsilon_F']
+    source: {cite: reading1, at: 'Problem 2(g), p. 3'}
+    origin: mit
+
+  # ---- Problem 3
+
+  - id: p3-alpha
+    kind: identity
+    answer: p3-alpha
+    where: 'Problem 3(a), answer box and formula "The parameter α of the donor model": the numerical integral of the Boltzmann tail over the density of states of the band, with the factor e^(−(Δ−μ)/k_BT) taken out'
+    formula: >-
+      (V/4)*(2*m*kB*T/(pi*hbar**2))**(3/2)
+    equals: >-
+      integrate('V/(2*pi**2)*(2*m/hbar**2)**(3/2)*sqrt(u)*exp(-u/(kB*T))', 'u', 0, 60*kB*T)
+    samples:
+      V: [1, 10, 4, 2.5, 7]
+      m: [0.5, 2, 1, 1.3, 0.8]
+      kB: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.5, 2, 1, 1.4, 0.7]
+    tolerance: 1e-6
+    shown: ['\alpha(T) = \frac V4\left(\frac{2m_ek_BT}{\pi\hbar^2}\right)^{3/2}"']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4'}
+    origin: mit
+
+  - id: p3-alpha-lambda
+    kind: identity
+    where: 'Problem 3(a), check: α is 2V over the cube of the thermal de Broglie wavelength h/√(2π m k_B T), with h = 2πħ'
+    formula: >-
+      (V/4)*(2*m*kB*T/(pi*hbar**2))**(3/2)
+    equals: >-
+      2*V/(2*pi*hbar/sqrt(2*pi*m*kB*T))**3
+    samples:
+      V: [1, 10, 4, 2.5, 7]
+      m: [0.5, 2, 1, 1.3, 0.8]
+      kB: [0.5, 2, 1, 1.3, 0.8]
+      T: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.5, 2, 1, 1.4, 0.7]
+    tolerance: 1e-12
+    shown: ['$\alpha$ is $2V$ divided by the cube of that wavelength']
+    source: {cite: reading1, at: 'Problem 3(a), p. 4 (the check is ours)'}
+    origin: page-own
+
+  - id: p3-half
+    answer: p3-half
+    where: 'Problem 3(b), answer box: with μ = 0 the exact Fermi function leaves the fraction 1 − 1/(e⁰ + 1) of the donors empty, and by part (a) that fraction N_C/N_D is (α/N_D) e^(−Δ/k_BT) e⁰'
+    inputs: {}
+    formula: >-
+      1 - 1/(exp(0) + 1)
+    expected: '0.5'
+    shown: ['So $\left(\alpha/N_D\right)e^{-\Delta/k_BT} = 0.5$.']
+    source: {cite: reading1, at: 'Problem 3(b), p. 4'}
+    origin: mit
+
+  - id: p3-half-quadratic
+    where: 'Problem 3(d), check with part (b): the value of a for which x = 1/2 solves x² + ax − a = 0, as a numerical root'
+    inputs: {}
+    formula: >-
+      solve('0.25 + 0.5*u - u', 'u', 0, 2)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['gives $a = \frac12$']
+    source: {cite: reading1, at: 'Problem 3(d), p. 6'}
+    origin: mit
+
+  - id: p3-mu
+    kind: identity
+    answer: p3-mu
+    where: 'Problem 3(c), answer box and formula "Chemical potential of the donor model at low temperature": the numerical root of the balance, electrons missing from the donors = electrons in the band'
+    formula: >-
+      D/2 + (kB*T/2)*log(ND/alpha)
+    equals: >-
+      solve('ND*exp(-u/(kB*T)) - alpha*exp(-D/(kB*T))*exp(u/(kB*T))', 'u', -20, 30)
+    samples:
+      D: [2, 6, 4, 3, 5]
+      kB: [0.5, 1, 0.8, 0.6, 0.9]
+      T: [0.6, 1, 0.8, 0.5, 0.9]
+      ND: [1, 10, 4, 2.5, 7]
+      alpha: [10, 1, 3, 8, 7]
+    tolerance: 1e-8
+    shown: ['\mu = \frac{\Delta}{2} + \frac{k_BT}{2}\ln\frac{N_D}{\alpha(T)}']
+    source: {cite: reading1, at: 'Problem 3(c), p. 5'}
+    origin: mit
+
+  - id: p3-quadratic
+    kind: identity
+    where: 'Problem 3(d), formula "Count of the electrons of the donor model": the numerical root of the count x/(a + x) + x = 1 is the positive root of the quadratic x² + ax − a = 0'
+    formula: >-
+      solve('u/(a + u) + u - 1', 'u', 0, 1)
+    equals: >-
+      (-a + sqrt(a**2 + 4*a))/2
+    samples:
+      a: [0.01, 0.5, 2, 10, 100]
+    tolerance: 1e-8
+    shown: ['x^2 + ax - a = 0"']
+    source: {cite: reading1, at: 'Problem 3(d), p. 6'}
+    origin: mit
+
+  - id: p3-x2
+    answer: p3-x2
+    where: 'Problem 3(d), answer box (our addition): N_C/N_D for a = 2, from the count of the electrons with the exact occupation of the donors, solved numerically for z = e^(μ/k_BT) (then N_C/N_D = a z)'
+    inputs: {}
+    formula: >-
+      2*solve('u/(1 + u) + 2*u - 1', 'u', 0, 1)
+    expected: '0.732'
+    shown: ['with the positive root $x = \sqrt3 - 1 = 0.732$']
+    source: {cite: reading1, at: 'Problem 3(d), p. 6 (MIT''s quadratic; the number is ours)'}
+    origin: page-own
+
+  - id: p3-x2-root
+    where: 'Problem 3(d): the same number from the formula for the root of the quadratic'
+    inputs: {}
+    formula: >-
+      (-2 + sqrt(2**2 + 4*2))/2
+    expected: '0.732'
+    shown: ['value="0.732"']
+    source: {cite: reading1, at: 'Problem 3(d), p. 6 (MIT''s quadratic; the number is ours)'}
+    origin: page-own
+
+  - id: p3-low
+    kind: limit
+    answer: p3-low
+    where: 'Problem 3(d), answer box and formula "Number of conduction electrons of the donor model at low temperature" (our addition): approaches N_D times the positive root of the quadratic as T falls (α = 3, N_D = 2, Δ = k_B = 1)'
+    inputs: {alpha: 3, ND: 2, D: 1, kB: 1}
+    formula: >-
+      sqrt(alpha*ND)*exp(-D/(2*kB*T))
+    limit: >-
+      ND*(-(alpha/ND*exp(-D/(kB*T))) + sqrt((alpha/ND*exp(-D/(kB*T)))**2 + 4*alpha/ND*exp(-D/(kB*T))))/2
+    vary: {T: [0.2, 0.1, 0.05, 0.03]}
+    tolerance: 1e-4
+    shown: ['N_C \approx N_D\sqrt a = \sqrt{\alpha(T)\,N_D}\;e^{-\Delta/2k_BT}']
+    source: {cite: reading1, at: 'Problem 3(d), p. 6 (the limit is ours, from MIT''s quadratic)'}
+    origin: page-own
+
+  - id: p3-low-consistent
+    kind: identity
+    where: 'Problem 3(d), check: the μ of part (c) put into the N_C of part (a) gives the low temperature form'
+    formula: >-
+      alpha*exp(-D/(kB*T))*exp((D/2 + (kB*T/2)*log(ND/alpha))/(kB*T))
+    equals: >-
+      sqrt(alpha*ND)*exp(-D/(2*kB*T))
+    samples:
+      D: [2, 6, 4, 3, 5]
+      kB: [0.5, 1, 0.8, 0.6, 0.9]
+      T: [0.6, 1, 0.8, 0.5, 0.9]
+      ND: [1, 10, 4, 2.5, 7]
+      alpha: [10, 1, 3, 8, 7]
+    tolerance: 1e-12
+    shown: ['putting the $\mu$ of part (c) into part (a) gives the same expression']
+    source: {cite: reading1, at: 'Problem 3, pp. 4 to 6 (the check is ours)'}
+    origin: page-own
+
+  - id: p3-plot-half
+    where: 'Problem 3(d), graph (our example, α/N_D = 1000 (k_BT/Δ)^(3/2)): the value of k_BT/Δ at which a = 1/2, where half of the donors are empty'
+    inputs: {}
+    formula: >-
+      solve('1000*u**1.5*exp(-1/u) - 0.5', 'u', 0.1, 0.3)
+    expected: '0.194'
+    shown: ['half of the donors are empty at $k_BT = 0.194\Delta$']
+    source: {cite: reading1, at: 'Problem 3(b), p. 4 (the example is ours)'}
+    origin: page-own
+
+  # ---- Problem 4 (units of MIT's sheet: g, cm, erg, gauss; hbar = 1.0546e-27 erg s)
+
+  - id: p4-dplus
+    kind: identity
+    answer: p4-dplus
+    where: 'Problem 4(a), answer box and formula "Densities of states of the two spin states in a field": the numerical derivative of the number of wavevectors, one state each, with ħ²k²/2m − μ₀H below ε'
+    formula: >-
+      (V/(4*pi**2))*(2*m/hbar**2)**(3/2)*sqrt(E + mu0*H)
+    equals: >-
+      deriv('V/(2*pi)**3*4/3*pi*(sqrt(2*m*(x + mu0*H))/hbar)**3', 'x', E)
+    samples:
+      V: [1, 10, 4, 2.5, 7]
+      m: [0.5, 2, 1, 1.3, 0.8]
+      hbar: [0.5, 2, 1, 1.4, 0.7]
+      E: [1.5, 3, 2, 2.6, 1.8]
+      mu0: [0.5, 1, 0.8, 0.6, 0.9]
+      H: [0.6, 1, 0.8, 0.5, 0.9]
+    tolerance: 1e-7
+    shown: ['D_+(\epsilon) = \frac12D_0\left(\epsilon + \mu_0H\right)']
+    source: {cite: reading1, at: 'Problem 4(a), p. 7'}
+    origin: mit
+
+  - id: p4-h0
+    kind: identity
+    answer: p4-h0
+    where: 'Problem 4(b), answer box and formula "Smallest field for complete spin polarization": the numerical root of (states of spin +½ between −μ₀H and +μ₀H, integrated numerically) = N'
+    formula: >-
+      hbar**2*(6*pi**2*N/V)**(2/3)/(4*m*mu0)
+    equals: >-
+      solve("integrate('(V/(4*pi**2))*(2*m/hbar**2)**(3/2)*sqrt(v + mu0*u)', 'v', -mu0*u, mu0*u) - N", 'u', 0.0001, 1000)
+    samples:
+      hbar: [0.5, 2, 1, 1.4, 0.7]
+      N: [1, 10, 4, 2.5, 7]
+      V: [10, 1, 4, 7, 2.5]
+      m: [0.5, 2, 1, 1.3, 0.8]
+      mu0: [0.5, 2, 1, 1.3, 0.8]
+    tolerance: 1e-5
+    shown: ['H_0 = \frac{1}{\mu_0}\,\frac{\hbar^2}{4m}\left(6\pi^2\,\frac NV\right)^{2/3}']
+    source: {cite: reading1, at: 'Problem 4(b), p. 8'}
+    origin: mit
+
+  - id: p4-width
+    where: 'Problem 4(b), check: the Zeeman splitting at H0 over the Fermi energy without a field, (6π²)^(2/3)/(3π²)^(2/3)'
+    inputs: {}
+    formula: >-
+      (6*pi**2)**(2/3)/(3*pi**2)**(2/3)
+    expected: '1.59'
+    shown: ['$2^{2/3} = 1.59$ times the Fermi energy']
+    source: {cite: reading1, at: 'Problem 4(b), p. 8 (the check is ours)'}
+    origin: page-own
+
+  - id: p3-mu-turn
+    where: 'Problem 3(c), remark of ours: mu - Delta/2 = (kT/2) ln(N_D/alpha) is largest where ln(N_D/alpha) = 3/2, so alpha = e^(-3/2) N_D'
+    inputs: {}
+    formula: >-
+      exp(-1.5)
+    expected: '0.22'
+    shown: ['$0.22\,N_D$']
+    source: {cite: reading1, at: 'Problem 3(c), p. 5 (the remark is ours)'}
+    origin: page-own
+
+  - id: p4-coefficient
+    where: 'Problem 4(c): the constant ħ²(6π²)^(2/3)/4 in units of 1e-54 (cgs)'
+    inputs: {}
+    formula: >-
+      1.0546e-27**2*(6*pi**2)**(2/3)/4/1e-54
+    expected: '4.224'
+    shown: ['$\hbar^2\left(6\pi^2\right)^{2/3}/4 = 4.224 \times 10^{-54}$']
+    source: {cite: reading1, at: 'Problem 4(c), p. 8'}
+    origin: mit
+
+  - id: p4-cu
+    answer: p4-cu
+    where: 'Problem 4(c), answer box and formula "Polarizing field for the electrons in copper", in units of 1e4 tesla (1e8 gauss): by the route of the Fermi wavevector, 2|μ₀|H0 = ħ²k_F²/2m with k_F = (6π²n)^(1/3)'
+    inputs: {}
+    formula: >-
+      (1.0546e-27*(6*pi**2*8.45e22)**(1/3))**2/(2*9.11e-28)/(2*9.27e-21)/1e8
+    expected: '9.63'
+    shown: ['= 9.63 \times 10^8\ \text{gauss} = 9.63 \times 10^4\ \text{tesla}']
+    source: {cite: reading1, at: 'Problem 4(c), p. 8 (MIT prints 9.6 × 10⁸ gauss)'}
+    origin: mit
+
+  - id: p4-cu-mit
+    where: 'Problem 4(c): MIT''s rounded value, in units of 1e4 tesla, from MIT''s formula with the constant 4.22e-54'
+    inputs: {}
+    formula: >-
+      4.22e-54*8.45e22**(2/3)/(9.27e-21*9.11e-28)/1e8
+    expected: '9.6'
+    shown: ['MIT''s solutions round this to $9.6 \times 10^4$ tesla.']
+    source: {cite: reading1, at: 'Problem 4(c), p. 8'}
+    origin: mit
+
+  - id: p4-he
+    answer: p4-he
+    where: 'Problem 4(d), answer box and formula "Polarizing field for liquid helium-3", in units of 1e3 tesla (1e7 gauss): by the route of the Fermi wavevector'
+    inputs: {}
+    formula: >-
+      (1.0546e-27*(6*pi**2*1.64e22)**(1/3))**2/(2*5.01e-24)/(2*1.075e-23)/1e7
+    expected: '5.06'
+    shown: ['= 5.06 \times 10^7\ \text{gauss} = 5.06 \times 10^3\ \text{tesla}']
+    source: {cite: reading1, at: 'Problem 4(d), p. 8 (MIT prints 5.1 × 10⁷ gauss)'}
+    origin: mit
+
+  - id: p4-he-mit
+    where: 'Problem 4(d): MIT''s rounded value, in units of 1e3 tesla, from MIT''s formula with the constant 4.22e-54'
+    inputs: {}
+    formula: >-
+      4.22e-54*1.64e22**(2/3)/(1.075e-23*5.01e-24)/1e7
+    expected: '5.1'
+    shown: ['MIT''s solutions round this to $5.1 \times 10^3$ tesla.']
+    source: {cite: reading1, at: 'Problem 4(d), p. 8'}
+    origin: mit
+
+  - id: p4-mass-ratio
+    where: 'Problem 4(d), check: the mass of a helium-3 atom over that of the electron'
+    inputs: {}
+    formula: >-
+      5.01e-24/9.11e-28
+    expected: '5.5e3'
+    shown: ['about 5500 times heavier']
+    source: {cite: mit, at: 'Problem 4(c) and (d), p. 5 (the ratio is ours)'}
+    origin: page-own
+
+  - id: p4-energy-ratio
+    where: 'Problem 4(d), check: ħ²(6π²n)^(2/3)/2m of the electrons in copper over that of helium-3'
+    inputs: {}
+    formula: >-
+      (5.01e-24/9.11e-28)*(8.45e22/1.64e22)**(2/3)
+    expected: '1.6e4'
+    shown: ['about 16000 times smaller']
+    source: {cite: mit, at: 'Problem 4(c) and (d), p. 5 (the ratio is ours)'}
+    origin: page-own
+
+  - id: p4-moment-ratio
+    where: 'Problem 4(d), check: the moment of the electron over that of the helium-3 nucleus'
+    inputs: {}
+    formula: >-
+      9.27e-21/1.075e-23
+    expected: '8.6e2'
+    shown: ['about 860 times smaller']
+    source: {cite: mit, at: 'Problem 4(c) and (d), p. 5 (the ratio is ours)'}
+    origin: page-own
+
+  - id: p4-field-ratio
+    where: 'Problem 4(d), check: the field for copper over the field for helium-3'
+    inputs: {}
+    formula: >-
+      (5.01e-24/9.11e-28)*(8.45e22/1.64e22)**(2/3)/(9.27e-21/1.075e-23)
+    expected: '19'
+    shown: ['only 19 times smaller than for copper']
+    source: {cite: reading1, at: 'Problem 4(c) and (d), p. 8 (the ratio is ours)'}
+    origin: page-own
+
+  - id: p4-short-he
+    where: 'Problem 4, closing remark: the field for helium-3 over a pulsed field of 100 tesla'
+    inputs: {}
+    formula: >-
+      (1.0546e-27*(6*pi**2*1.64e22)**(1/3))**2/(2*5.01e-24)/(2*1.075e-23)/1e4/100
+    expected: '51'
+    shown: ['about 51 for helium-3']
+    source: {cite: mit, at: 'Problem 4, p. 5 (the 100 tesla is MIT''s; the ratio is ours)'}
+    origin: page-own
+
+  - id: p4-short-cu
+    where: 'Problem 4, closing remark: the field for copper over a pulsed field of 100 tesla'
+    inputs: {}
+    formula: >-
+      (1.0546e-27*(6*pi**2*8.45e22)**(1/3))**2/(2*9.11e-28)/(2*9.27e-21)/1e4/100
+    expected: '9.6e2'
+    shown: ['about 960 for copper']
+    source: {cite: mit, at: 'Problem 4, p. 5 (the 100 tesla is MIT''s; the ratio is ours)'}
+    origin: page-own
+
+  - id: p4-lab-fields
+    kind: fact
+    where: 'Problem 4, closing remark: the laboratory fields quoted on MIT''s sheet (2013)'
+    shown: ['up to about 15 tesla', 'steady fields up to 45 tesla and pulsed fields up to 100 tesla']
+    source: {cite: mit, at: 'Problem 4, p. 5'}
+    origin: mit
+
+  # ---- Problem 5 (MIT's round numbers: hbar = 1e-27 erg s, k_B = 1e-16 erg/K, m* = 1e-23 g, W/k_B = 0.5 K, n4 = 2e22 cm^-3)
+
+  - id: p5-n
+    kind: identity
+    answer: p5-n
+    where: 'Problem 5(a), answer box and formula "Largest density of helium-3 dissolved in helium-4 at T = 0": the number of states per volume, two for each wavevector, inside the sphere of radius √(2m*W)/ħ'
+    formula: >-
+      (2*m*W/hbar**2)**(3/2)/(3*pi**2)
+    equals: >-
+      2/(2*pi)**3*4/3*pi*(sqrt(2*m*W)/hbar)**3
+    samples:
+      m: [0.5, 2, 1, 1.3, 0.8]
+      W: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.5, 2, 1, 1.4, 0.7]
+    tolerance: 1e-12
+    shown: ['n_3 = \frac{1}{3\pi^2}\left(\frac{2m^*W}{\hbar^2}\right)^{3/2}"']
+    source: {cite: reading1, at: 'Problem 5(a), p. 8'}
+    origin: mit
+
+  - id: p5-n-fermi
+    kind: identity
+    where: 'Problem 5(a), check: at that density the Fermi energy of the dissolved atoms is W (numerical root)'
+    formula: >-
+      (2*m*W/hbar**2)**(3/2)/(3*pi**2)
+    equals: >-
+      solve('hbar**2*(3*pi**2*u)**(2/3)/(2*m) - W', 'u', 0, 1000)
+    samples:
+      m: [0.5, 2, 1, 1.3, 0.8]
+      W: [0.6, 1.9, 1, 0.7, 1.4]
+      hbar: [0.5, 2, 1, 1.4, 0.7]
+    tolerance: 1e-7
+    shown: ['W = \frac{\hbar^2}{2m^*}\left(3\pi^2n_3\right)^{2/3}']
+    source: {cite: reading1, at: 'Problem 5(a), p. 8'}
+    origin: mit
+
+  - id: p5-k2
+    where: 'Problem 5(b): 2m*W/ħ² in units of 1e15 per cm²'
+    inputs: {}
+    formula: >-
+      2*1e-23*0.5*1e-16/(1e-27)**2/1e15
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['= 2 \times 10^{-23} \times 0.5 \times 10^{-16}/10^{-54} = 10^{15}$ cm⁻²']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9'}
+    origin: mit
+
+  - id: p5-pow
+    where: 'Problem 5(b): (1e15)^(3/2) in units of 1e22'
+    inputs: {}
+    formula: >-
+      (1e15)**1.5/1e22
+    expected: '3.16'
+    shown: ['\frac{3.16 \times 10^{22}}{29.6}']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9'}
+    origin: mit
+
+  - id: p5-3pi2
+    where: 'Problem 5(b): 3π²'
+    inputs: {}
+    formula: >-
+      3*pi**2
+    expected: '29.6'
+    shown: ['\frac{3.16 \times 10^{22}}{29.6}']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9'}
+    origin: mit
+
+  - id: p5-n21
+    answer: p5-n21
+    where: 'Problem 5(b), answer box (our addition) and formula "Estimate of the largest density of dissolved helium-3", in units of 1e21 per cm³: counted as two states for each wavevector inside the Fermi sphere'
+    inputs: {}
+    formula: >-
+      2/(2*pi)**3*4/3*pi*(sqrt(2*1e-23*0.5*1e-16)/1e-27)**3/1e21
+    expected: '1.07'
+    shown: ['= 1.07 \times 10^{21}\ \text{cm}^{-3}"']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9 (MIT rounds to 1e21)'}
+    origin: mit
+
+  - id: p5-sum
+    where: 'Problem 5(b): n3 + n4 in units of 1e22 per cm³'
+    inputs: {}
+    formula: >-
+      (1.07e21 + 2e22)/1e22
+    expected: '2.107'
+    shown: ['\left(2.107 \times 10^{22}\right)']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9 (MIT rounds the sum to 2e22)'}
+    origin: page-own
+
+  - id: p5-xc
+    answer: p5-xc
+    where: 'Problem 5(b), answer box: the critical concentration in percent, n3/(n3 + n4)'
+    inputs: {}
+    formula: >-
+      100*((2*1e-23*0.5*1e-16/(1e-27)**2)**1.5/(3*pi**2))/((2*1e-23*0.5*1e-16/(1e-27)**2)**1.5/(3*pi**2) + 2e22)
+    expected: '5.07'
+    shown: ['which is 5.07 percent']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9 (MIT gets 5% with rounded numbers)'}
+    origin: mit
+
+  - id: p5-xc-fraction
+    where: 'Problem 5(b): the same as a fraction'
+    inputs: {}
+    formula: >-
+      ((2*1e-23*0.5*1e-16/(1e-27)**2)**1.5/(3*pi**2))/((2*1e-23*0.5*1e-16/(1e-27)**2)**1.5/(3*pi**2) + 2e22)
+    expected: '0.0507'
+    shown: ['= 0.0507$']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9'}
+    origin: mit
+
+  - id: p5-xc-mit
+    where: 'Problem 5(b): MIT''s rounded estimate in percent, 1e21/2e22'
+    inputs: {}
+    formula: >-
+      100*1e21/2e22
+    expected: '5'
+    tolerance: 1e-9
+    shown: ['and get 5 percent']
+    source: {cite: reading1, at: 'Problem 5(b), p. 9'}
+    origin: mit
+
+  - id: p5-figure
+    kind: fact
+    where: 'Problem 5: what the phase diagram on MIT''s sheet shows (described in words on the page)'
+    shown: ['from 0 to about 0.5 K', 'is marked well below 0.2 on the axis']
+    source: {cite: mit, at: 'Problem 5, p. 6 (figure)'}
+    origin: mit
+
+  # ---- Problem 6
+
+  - id: p6-solid
+    kind: identity
+    answer: p6-solid
+    where: 'Problem 6(b), answer box and formula "Entropy of the solid helium-3 in region II": N times the entropy −k_B Σ p ln p of one spin with two equally likely states'
+    formula: >-
+      N*kB*log(2)
+    equals: >-
+      -N*kB*(0.5*log(0.5) + 0.5*log(0.5))
+    samples:
+      N: [1, 10, 4, 3, 7]
+      kB: [0.5, 2, 1, 1.3, 0.8]
+    tolerance: 1e-12
+    shown: ['S = k_B\ln 2^N = Nk_B\ln 2']
+    source: {cite: reading1, at: 'Problem 6(b), p. 9'}
+    origin: mit
+
+  - id: p6-slope
+    kind: identity
+    answer: p6-slope
+    where: 'Problem 6(d), answer box and formula "Slope of the melting curve of helium-3 in region II": (entropy of the liquid, zero, minus that of the solid) over the volume difference N v0'
+    formula: >-
+      -kB*log(2)/v0
+    equals: >-
+      (0 - (-N*kB*(0.5*log(0.5) + 0.5*log(0.5))))/(N*v0)
+    samples:
+      N: [2, 10, 4, 3, 7]
+      kB: [0.5, 2, 1, 1.3, 0.8]
+      v0: [0.7, 1.9, 1, 0.6, 1.5]
+    tolerance: 1e-12
+    shown: ['= -\frac{k_B\ln 2}{v_0}']
+    source: {cite: reading1, at: 'Problem 6(d), p. 9'}
+    origin: mit
+
+  - id: p6-figure
+    kind: fact
+    where: 'Problem 6: the numbers on MIT''s sheet and in its phase diagram (described in words on the page)'
+    shown: ['of the order of 30 atmospheres', 'and III above about 0.3 K']
+    source: {cite: mit, at: 'Problem 6, p. 7'}
+    origin: mit
+
+  # ---- slips in MIT's solutions that the page mentions
+
+  - id: p1-slip-m
+    kind: fact
+    where: 'Problem 1(b): MIT''s solutions print a stray letter m in the middle expression for D(ε)'
+    shown: ['MIT''s solutions print a stray letter $m$ in the middle expression']
+    source: {cite: reading1, at: 'Problem 1(b), p. 1'}
+    origin: slip
+
+  - id: p1-slip-half
+    kind: fact
+    where: 'Problem 1(c): MIT''s solutions keep the +1/2 of the zero-point energy inside the temperature derivative'
+    shown: ['MIT''s solutions keep the $\frac12$ inside the derivative in the middle expression']
+    source: {cite: reading1, at: 'Problem 1(c), p. 1'}
+    origin: slip
+
+  - id: p2-slip-zero
+    kind: fact
+    where: 'Problem 2(a): MIT''s solutions list the integers as ±1, ±2, … and leave out 0'
+    shown: ['MIT''s solutions list the integers as $\pm1, \pm2, \dots$']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: slip
+
+  - id: p2-slip-square
+    kind: fact
+    where: 'Problem 2(d): MIT''s solutions print N = #(ε_F) = 8L²/(2π)² (ε/γ) without the square on the last bracket'
+    shown: ['MIT''s solutions print the first equation without the square on the last bracket']
+    source: {cite: reading1, at: 'Problem 2(d), p. 3'}
+    origin: slip
+
+  - id: p3-slip-valence
+    kind: fact
+    where: 'Problem 3: MIT''s sheet says the electrons of the impurity states are first promoted "into the valance band"; the conduction band is meant'
+    shown: ['MIT''s sheet says "valance band" for the first of these two steps as well']
+    source: {cite: mit, at: 'Problem 3, p. 3'}
+    origin: slip
