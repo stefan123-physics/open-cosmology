@@ -1,0 +1,925 @@
+# Calculations on content/year-3/8.044/8-044-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes solutions for this set and the page follows them; every answer is checked here by a route that is
+# independent of the algebra on the page. Problem 1: the moments of one step by numerical integration. Problem 2:
+# numerical integrals over the density of the energy. Problem 3: MIT's two equilibrium conditions solved numerically.
+# Problems 4 and 5: the work as a numerical integral of -P dV along each path. Practice problem: S as a numerical
+# line integral from the origin, and numerical cross derivatives. Problem 6: numerical derivatives and integrals of
+# the two model expressions.
+
+page: content/year-3/8.044/8-044-problem-set-3.mdx
+calcs:
+  # ---- Problem 1: p(x) = (1/3) delta(x) + (2/(3a)) exp(-x/a). The delta function sits at x = 0 and adds nothing
+  # to the mean or the mean square, so every moment is an integral over the exponential part alone.
+
+  - id: p1-step-mean
+    kind: value
+    where: 'Problem 1, solution: the mean of one step in units of a, by numerical integration'
+    formula: |-
+      integrate('u*2/3*exp(-u)', 'u', 0, 60)
+    expected: '0.6667'
+    shown: ['= \frac23\,a, \qquad']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-step-meansq
+    kind: value
+    where: 'Problem 1, solution: the mean square of one step in units of a^2, by numerical integration'
+    formula: |-
+      integrate('u**2*2/3*exp(-u)', 'u', 0, 60)
+    expected: '1.3333'
+    shown: ['= \frac43\,a^2"']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-step-var
+    kind: value
+    where: 'Problem 1, solution: the variance of one step in units of a^2, as the numerical average of (x - mean)^2 including the delta function at x = 0 with weight 1/3'
+    formula: |-
+      (0 - 2/3)**2/3 + integrate('(u - 2/3)**2*2/3*exp(-u)', 'u', 0, 60)
+    expected: '0.8889'
+    shown: ['\left(\frac43 - \frac49\right)a^2 = \frac89\,a^2']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-mean
+    kind: identity
+    answer: p1-mean
+    where: 'Problem 1, answer box (our addition): the mean of the total distance as 36 times the numerical mean of one step'
+    formula: |-
+      24*a
+    equals: |-
+      36*integrate('u*2/(3*a)*exp(-u/a)', 'u', 0, 60*a)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p1-mean"', '<Formula label="Mean and variance of the total distance"']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-var
+    kind: identity
+    answer: p1-var
+    where: 'Problem 1, answer box (our addition): the variance of the total distance as 36 times the numerical variance of one step'
+    formula: |-
+      32*a**2
+    equals: |-
+      36*(integrate('u**2*2/(3*a)*exp(-u/a)', 'u', 0, 60*a) - integrate('u*2/(3*a)*exp(-u/a)', 'u', 0, 60*a)**2)
+    samples:
+      a: [0.5, 0.8, 1.1, 1.6, 2.0]
+    tolerance: 1e-7
+    shown: ['id="p1-var"', '<Formula label="Mean and variance of the total distance"']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-density
+    kind: identity
+    answer: p1-density
+    where: 'Problem 1, answer box: the Gaussian of the central limit theorem built from the numerically computed mean and variance of one step'
+    formula: |-
+      exp(-(d - 24*a)**2/(64*a**2))/(8*a*sqrt(pi))
+    equals: |-
+      exp(-(d - 36*integrate('u*2/(3*a)*exp(-u/a)', 'u', 0, 60*a))**2/(2*36*(integrate('u**2*2/(3*a)*exp(-u/a)', 'u', 0, 60*a) - integrate('u*2/(3*a)*exp(-u/a)', 'u', 0, 60*a)**2)))/sqrt(2*pi*36*(integrate('u**2*2/(3*a)*exp(-u/a)', 'u', 0, 60*a) - integrate('u*2/(3*a)*exp(-u/a)', 'u', 0, 60*a)**2))
+    samples:
+      a: [0.9, 1.0, 1.1, 1.2, 1.0]
+      d: [15, 24, 30, 33, 20]
+    tolerance: 1e-6
+    shown: ['id="p1-density"', '<Formula label="Approximate density of the total distance"']
+    source: {cite: reading1, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p1-density-norm
+    kind: value
+    where: 'Problem 1, graph: the Gaussian (in units of a) encloses the area 1'
+    formula: |-
+      integrate('exp(-(u - 24)**2/64)/(8*sqrt(pi))', 'u', -40, 90)
+    expected: '1.0000'
+    shown: ['expr: "exp(-(d - 24)^2/64)/(8*sqrt(pi))"']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-peak
+    kind: value
+    where: 'Problem 1, graph caption and check: the peak height in units of 1/a'
+    formula: |-
+      1/sqrt(2*pi*32)
+    expected: '0.0705'
+    shown: ['the height 0.0705/a', '= 0.0705/a$']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (MIT''s sketch; the number is ours)'}
+    origin: page-own
+
+  - id: p1-sd
+    kind: value
+    where: 'Problem 1, check: the standard deviation of the total distance in units of a'
+    formula: |-
+      sqrt(32)
+    expected: '5.66'
+    shown: ['\sqrt{32}\,a = 5.66\,a']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-sigmas
+    kind: value
+    where: 'Problem 1, check: how many standard deviations d = 0 lies below the mean'
+    formula: |-
+      24/sqrt(32)
+    expected: '4.24'
+    shown: ['24/\sqrt{32} = 4.24$ standard deviations']
+    source: {cite: reading1, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-mistake-meansq
+    kind: value
+    where: 'Problem 1, variance box, first listed mistake: 36 times the mean square of one step'
+    formula: |-
+      36*4/3
+    expected: '48'
+    shown: ['expr: "48*a^2"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own listed mistake)'}
+    origin: page-own
+
+  - id: p1-mistake-square
+    kind: value
+    where: 'Problem 1, variance box, third listed mistake: 36 squared times the variance of one step'
+    formula: |-
+      36**2*8/9
+    expected: '1152'
+    shown: ['expr: "1152*a^2"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own listed mistake)'}
+    origin: page-own
+
+  - id: p1-mistake-mean
+    kind: value
+    where: 'Problem 1, mean box, second listed mistake: 36 steps of mean a each'
+    formula: |-
+      36*1
+    expected: '36'
+    shown: ['expr: "36*a"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own listed mistake)'}
+    origin: page-own
+
+  # ---- Problem 2: p(E) = (2/sqrt(pi)) sqrt(E) exp(-E) in units of kT.
+
+  - id: p2-gamma52
+    kind: value
+    where: 'Problem 2(a), second hint and solution: the integral of u^(3/2) e^(-u), in units of sqrt(pi)'
+    formula: |-
+      integrate('u**1.5*exp(-u)', 'u', 0, 80)/sqrt(pi)
+    expected: '0.7500'
+    shown: ['\int_0^\infty u^{3/2}e^{-u}\,du = \frac34\sqrt\pi']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-gamma72
+    kind: value
+    where: 'Problem 2(a), second hint and solution: the integral of u^(5/2) e^(-u), in units of sqrt(pi)'
+    formula: |-
+      integrate('u**2.5*exp(-u)', 'u', 0, 80)/sqrt(pi)
+    expected: '1.8750'
+    shown: ['\int_0^\infty u^{5/2}e^{-u}\,du = \frac{15}{8}\sqrt\pi']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-mean
+    kind: value
+    where: 'Problem 2(a), solution: the mean energy of one atom in units of kT, by numerical integration'
+    formula: |-
+      integrate('2/sqrt(pi)*u**1.5*exp(-u)', 'u', 0, 80)
+    expected: '1.5000'
+    shown: ['<Formula label="Mean kinetic energy of one atom"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-meansq
+    kind: value
+    where: 'Problem 2(a), solution: the mean square energy of one atom in units of (kT)^2, by numerical integration'
+    formula: |-
+      integrate('2/sqrt(pi)*u**2.5*exp(-u)', 'u', 0, 80)
+    expected: '3.7500'
+    shown: ['<Formula label="Mean square of the kinetic energy of one atom"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-var
+    kind: value
+    where: 'Problem 2(a), solution: the variance of the energy of one atom in units of (kT)^2, as the numerical average of (E - 3/2)^2'
+    formula: |-
+      integrate('2/sqrt(pi)*(u - 1.5)**2*sqrt(u)*exp(-u)', 'u', 0, 80)
+    expected: '1.5000'
+    shown: ['\left(\frac{15}{4} - \frac94\right)\left(kT\right)^2 = \frac32\left(kT\right)^2']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-norm
+    kind: value
+    where: 'Problem 2(a), statement: the density of the energy (in units of kT) encloses the area 1'
+    formula: |-
+      integrate('2/sqrt(pi)*sqrt(u)*exp(-u)', 'u', 0, 80)
+    expected: '1.000'
+    tolerance: 0.001
+    shown: ['<Formula label="Density of the kinetic energy of one atom"']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-single
+    kind: value
+    answer: p2-single
+    where: 'Problem 2(a), answer box: standard deviation over mean for one atom, both by numerical integration'
+    formula: |-
+      sqrt(integrate('2/sqrt(pi)*u**2.5*exp(-u)', 'u', 0, 80) - integrate('2/sqrt(pi)*u**1.5*exp(-u)', 'u', 0, 80)**2)/integrate('2/sqrt(pi)*u**1.5*exp(-u)', 'u', 0, 80)
+    expected: '0.816'
+    shown: ['id="p2-single"', '\sqrt{\frac23} = 0.816']
+    source: {cite: reading1, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-number
+    kind: value
+    where: 'Problem 2(b), solution: the number of atoms in one cubic centimetre'
+    formula: |-
+      2.69e25*1e-6
+    expected: '2.69e19'
+    shown: ['N = 2.69 \times 10^{25} \times 10^{-6} = 2.69 \times 10^{19}']
+    source: {cite: mit, at: 'Problem 2, p. 1'}
+    origin: mit
+
+  - id: p2-gas
+    kind: value
+    answer: p2-gas
+    where: 'Problem 2(b), answer box: standard deviation over mean for the gas, from the numerically integrated moments of one atom and N = 2.69e19'
+    formula: |-
+      sqrt(2.69e19*(integrate('2/sqrt(pi)*u**2.5*exp(-u)', 'u', 0, 80) - integrate('2/sqrt(pi)*u**1.5*exp(-u)', 'u', 0, 80)**2))/(2.69e19*integrate('2/sqrt(pi)*u**1.5*exp(-u)', 'u', 0, 80))
+    expected: '1.57e-10'
+    shown: ['id="p2-gas"', '= 1.57 \times 10^{-10}"']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-gas-mit
+    kind: value
+    where: 'Problem 2(b), solution: MIT''s rounded value, which the answer box must accept'
+    formula: |-
+      sqrt(2/3)/sqrt(2.69e19)
+    expected: '1.6e-10'
+    shown: ['MIT''s solutions round this to $1.6 \times 10^{-10}$']
+    source: {cite: reading1, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-loschmidt
+    kind: value
+    where: 'Problem 2(b), check: P/kT at 101325 Pa and 273.15 K with the CODATA 2018 Boltzmann constant, per cubic metre'
+    formula: |-
+      101325/(1.380649e-23*273.15)
+    expected: '2.687e25'
+    shown: ['is $2.687 \times 10^{25}$ per cubic metre']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: MIT's two equilibrium conditions solved numerically for s = PV/(nR), and for the magnetization
+  # once PV = nRT.
+
+  - id: p3-ha
+    kind: identity
+    answer: p3-ha
+    where: 'Problem 3(a), answer box: the first equilibrium condition solved numerically for PV/(nR)'
+    formula: |-
+      C*H/M
+    equals: |-
+      solve('nn*RR*C*H - M*s*nn*RR', 's', 0.001, 1000)
+    samples:
+      C: [0.5, 0.9, 1.3, 1.7, 2.0]
+      H: [2.0, 0.6, 1.1, 1.5, 0.5]
+      M: [0.7, 1.9, 0.5, 1.2, 1.6]
+      nn: [1.0, 2.5, 0.3, 4.0, 1.7]
+      RR: [8.314, 8.314, 8.314, 8.314, 8.314]
+    tolerance: 1e-8
+    shown: ['id="p3-ha"', '<Formula label="The three functions that are equal in equilibrium"']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-hb
+    kind: identity
+    answer: p3-hb
+    where: 'Problem 3(a), answer box: the second equilibrium condition solved numerically for PV/(nR)'
+    formula: |-
+      Theta + Cp*Hp/Mp
+    equals: |-
+      solve('nn*RR*Theta*Mp + nn*RR*Cp*Hp - Mp*s*nn*RR', 's', 0.001, 1000)
+    samples:
+      Theta: [0.5, 0.9, 1.3, 1.7, 2.0]
+      Cp: [1.4, 0.5, 2.0, 0.8, 1.1]
+      Hp: [2.0, 0.6, 1.1, 1.5, 0.5]
+      Mp: [0.7, 1.9, 0.5, 1.2, 1.6]
+      nn: [1.0, 2.5, 0.3, 4.0, 1.7]
+      RR: [8.314, 8.314, 8.314, 8.314, 8.314]
+    tolerance: 1e-8
+    shown: ['id="p3-hb"', '<Formula label="The three functions that are equal in equilibrium"']
+    source: {cite: reading1, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-ma
+    kind: identity
+    answer: p3-ma
+    where: 'Problem 3(b), answer box: the first equilibrium condition with PV = nRT, solved numerically for M'
+    formula: |-
+      C*H/T
+    equals: |-
+      solve('nn*RR*C*H - s*nn*RR*T', 's', 0.001, 1000)
+    samples:
+      C: [0.5, 0.9, 1.3, 1.7, 2.0]
+      H: [2.0, 0.6, 1.1, 1.5, 0.5]
+      T: [0.7, 1.9, 0.5, 1.2, 1.6]
+      nn: [1.0, 2.5, 0.3, 4.0, 1.7]
+      RR: [8.314, 8.314, 8.314, 8.314, 8.314]
+    tolerance: 1e-8
+    shown: ['id="p3-ma"', '<Formula label="Equations of state of the gas and the two salts"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-mb
+    kind: identity
+    answer: p3-mb
+    where: 'Problem 3(b), answer box: the second equilibrium condition with PV = nRT, solved numerically for M'''
+    formula: |-
+      Cp*Hp/(T - Theta)
+    equals: |-
+      solve('nn*RR*Theta*s + nn*RR*Cp*Hp - s*nn*RR*T', 's', 0.001, 1000)
+    samples:
+      Theta: [0.5, 0.9, 1.3, 1.7, 2.0]
+      Cp: [1.4, 0.5, 2.0, 0.8, 1.1]
+      Hp: [2.0, 0.6, 1.1, 1.5, 0.5]
+      T: [3.0, 4.2, 3.6, 5.0, 4.5]
+      nn: [1.0, 2.5, 0.3, 4.0, 1.7]
+      RR: [8.314, 8.314, 8.314, 8.314, 8.314]
+    tolerance: 1e-8
+    shown: ['id="p3-mb"', '<Formula label="Equations of state of the gas and the two salts"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-name
+    kind: value
+    where: 'Problem 3(b), choice box: with M = CH/T, doubling the temperature at a fixed field halves the magnetization (M falls as 1/T)'
+    inputs: {C: 1.3, H: 0.8, T: 1.7}
+    formula: |-
+      (C*H/(2*T))/(C*H/T)
+    expected: '0.5'
+    tolerance: 1e-12
+    shown: ['id="p3-name"']
+    source: {cite: reading1, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-curie-limit
+    kind: limit
+    where: 'Problem 3(b), check: for Theta -> 0 the law of salt B becomes the Curie law'
+    inputs: {Cp: 1.3, Hp: 0.8, T: 3.0}
+    formula: |-
+      Cp*Hp/(T - Theta)
+    limit: |-
+      Cp*Hp/T
+    vary: {Theta: [1, 0.1, 0.01, 0.001]}
+    tolerance: 0.001
+    shown: ['Setting $\Theta = 0$ gives back the Curie law of salt A']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: delta W = -P dV = kappa P V1 dP - alpha P V1 dT, integrated numerically along each path.
+
+  - id: p4-a
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box: the work along path a as two numerical integrals (heating at P1, then compression at T2)'
+    formula: |-
+      kappa*V1*(P2**2 - P1**2)/2 - alpha*V1*P1*(T2 - T1)
+    equals: |-
+      integrate('-alpha*P1*V1 + 0*u', 'u', T1, T2) + integrate('kappa*u*V1', 'u', P1, P2)
+    samples:
+      kappa: [0.5, 0.8, 1.1, 1.4, 1.5]
+      alpha: [1.5, 0.6, 0.9, 1.2, 0.5]
+      V1: [0.5, 1.5, 1.0, 0.8, 1.3]
+      P1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      P2: [3.0, 3.9, 3.3, 4.0, 3.6]
+      T1: [1.9, 1.0, 1.4, 1.7, 1.2]
+      T2: [3.1, 3.8, 3.4, 4.0, 3.0]
+    tolerance: 1e-9
+    shown: ['id="p4-a"', '<Formula label="Work on the solid along path a"']
+    source: {cite: reading1, at: 'Problem 4, p. 3'}
+    origin: mit
+
+  - id: p4-b
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box: the work along path b as two numerical integrals (compression at T1, then heating at P2)'
+    formula: |-
+      kappa*V1*(P2**2 - P1**2)/2 - alpha*V1*P2*(T2 - T1)
+    equals: |-
+      integrate('kappa*u*V1', 'u', P1, P2) + integrate('-alpha*P2*V1 + 0*u', 'u', T1, T2)
+    samples:
+      kappa: [0.5, 0.8, 1.1, 1.4, 1.5]
+      alpha: [1.5, 0.6, 0.9, 1.2, 0.5]
+      V1: [0.5, 1.5, 1.0, 0.8, 1.3]
+      P1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      P2: [3.0, 3.9, 3.3, 4.0, 3.6]
+      T1: [1.9, 1.0, 1.4, 1.7, 1.2]
+      T2: [3.1, 3.8, 3.4, 4.0, 3.0]
+    tolerance: 1e-9
+    shown: ['id="p4-b"', '<Formula label="Work on the solid along path b"']
+    source: {cite: reading1, at: 'Problem 4, p. 4'}
+    origin: mit
+
+  - id: p4-c
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box: the work along the straight path, with P = P1 + u (P2 - P1) and T = T1 + u (T2 - T1) for u from 0 to 1, as one numerical integral'
+    formula: |-
+      kappa*V1*(P2**2 - P1**2)/2 - alpha*V1*(P1 + P2)*(T2 - T1)/2
+    equals: |-
+      integrate('(P1 + u*(P2 - P1))*V1*(kappa*(P2 - P1) - alpha*(T2 - T1))', 'u', 0, 1)
+    samples:
+      kappa: [0.5, 0.8, 1.1, 1.4, 1.5]
+      alpha: [1.5, 0.6, 0.9, 1.2, 0.5]
+      V1: [0.5, 1.5, 1.0, 0.8, 1.3]
+      P1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      P2: [3.0, 3.9, 3.3, 4.0, 3.6]
+      T1: [1.9, 1.0, 1.4, 1.7, 1.2]
+      T2: [3.1, 3.8, 3.4, 4.0, 3.0]
+    tolerance: 1e-9
+    shown: ['id="p4-c"', '<Formula label="Work on the solid along path c"']
+    source: {cite: reading1, at: 'Problem 4, p. 4'}
+    origin: mit
+
+  - id: p4-difference
+    kind: identity
+    where: 'Problem 4(b), check, and the choice box of part (c): numerical work along path a minus numerical work along path b, which is positive for alpha > 0, P2 > P1, T2 > T1'
+    formula: |-
+      alpha*V1*(P2 - P1)*(T2 - T1)
+    equals: |-
+      integrate('-alpha*P1*V1 + 0*u', 'u', T1, T2) - integrate('-alpha*P2*V1 + 0*u', 'u', T1, T2)
+    samples:
+      alpha: [1.5, 0.6, 0.9, 1.2, 0.5]
+      V1: [0.5, 1.5, 1.0, 0.8, 1.3]
+      P1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      P2: [3.0, 3.9, 3.3, 4.0, 3.6]
+      T1: [1.9, 1.0, 1.4, 1.7, 1.2]
+      T2: [3.1, 3.8, 3.4, 4.0, 3.0]
+    tolerance: 1e-9
+    shown: ['id="p4-least"', 'is larger than the work along path b by $\alpha V_1\left(P_2 - P_1\right)\left(T_2 - T_1\right)$']
+    source: {cite: reading1, at: 'Problem 4, p. 4 (the difference is our own check)'}
+    origin: page-own
+
+  - id: p4-average
+    kind: identity
+    where: 'Problem 4(c), check: the numerical work along path c is the average of the answers for paths a and b'
+    formula: |-
+      (kappa*V1*(P2**2 - P1**2)/2 - alpha*V1*P1*(T2 - T1) + kappa*V1*(P2**2 - P1**2)/2 - alpha*V1*P2*(T2 - T1))/2
+    equals: |-
+      integrate('(P1 + u*(P2 - P1))*V1*(kappa*(P2 - P1) - alpha*(T2 - T1))', 'u', 0, 1)
+    samples:
+      kappa: [0.5, 0.8, 1.1, 1.4, 1.5]
+      alpha: [1.5, 0.6, 0.9, 1.2, 0.5]
+      V1: [0.5, 1.5, 1.0, 0.8, 1.3]
+      P1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      P2: [3.0, 3.9, 3.3, 4.0, 3.6]
+      T1: [1.9, 1.0, 1.4, 1.7, 1.2]
+      T2: [3.1, 3.8, 3.4, 4.0, 3.0]
+    tolerance: 1e-9
+    shown: ['The work along path c is exactly the average of the work along paths a and b']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p4-alpha-zero
+    kind: limit
+    where: 'Problem 4(c), check: for alpha -> 0 the work along path b tends to the compression term alone (as do paths a and c)'
+    inputs: {kappa: 1.1, V1: 0.9, P1: 1.4, P2: 3.5, T1: 1.2, T2: 3.3}
+    formula: |-
+      kappa*V1*(P2**2 - P1**2)/2 - alpha*V1*P2*(T2 - T1)
+    limit: |-
+      kappa*V1*(P2**2 - P1**2)/2
+    vary: {alpha: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 0.001
+    shown: ['If $\alpha$ were zero, all three paths would give the same work']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: P = sigma T^4/3, work = -integral of P dV.
+
+  - id: p5-a
+    kind: identity
+    answer: p5-a
+    where: 'Problem 5(a), answer box: -P dV integrated numerically at the constant temperature T1 (the leg at constant volume adds nothing)'
+    formula: |-
+      sigma*T1**4*(V1 - V2)/3
+    equals: |-
+      -integrate('sigma*T1**4/3 + 0*u', 'u', V1, V2)
+    samples:
+      sigma: [0.5, 0.8, 1.1, 1.4, 1.5]
+      T1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      V1: [2.0, 2.9, 2.3, 3.0, 2.6]
+      V2: [0.5, 1.5, 1.0, 0.8, 1.3]
+    tolerance: 1e-9
+    shown: ['id="p5-a"', '<Formula label="Work on the radiation along path a"']
+    source: {cite: reading1, at: 'Problem 5, p. 5'}
+    origin: mit
+
+  - id: p5-b
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box: -P dV integrated numerically along V T^3 = V1 T1^3, with T found from the curve at each volume'
+    formula: |-
+      sigma*T1**4*V1*((V1/V2)**(1/3) - 1)
+    equals: |-
+      -integrate('sigma/3*(T1*(V1/u)**(1/3))**4', 'u', V1, V2)
+    samples:
+      sigma: [0.5, 0.8, 1.1, 1.4, 1.5]
+      T1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      V1: [2.0, 2.9, 2.3, 3.0, 2.6]
+      V2: [0.5, 1.5, 1.0, 0.8, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p5-b"', '<Formula label="Work on the radiation along path b"']
+    source: {cite: reading1, at: 'Problem 5, p. 5'}
+    origin: mit
+
+  - id: p5-b-with-t2
+    kind: identity
+    where: 'Problem 5(b), check: the form sigma V1 T1^3 (T2 - T1), with T2 from the curve, against the numerical integral'
+    formula: |-
+      sigma*V1*T1**3*(T1*(V1/V2)**(1/3) - T1)
+    equals: |-
+      -integrate('sigma/3*(T1*(V1/u)**(1/3))**4', 'u', V1, V2)
+    samples:
+      sigma: [0.5, 0.8, 1.1, 1.4, 1.5]
+      T1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      V1: [2.0, 2.9, 2.3, 3.0, 2.6]
+      V2: [0.5, 1.5, 1.0, 0.8, 1.3]
+    tolerance: 1e-6
+    shown: ['W = \sigma V_1T_1^3\left(T_2 - T_1\right)$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p5-mistake-a-is-b
+    kind: identity
+    where: 'Problem 5(a), third listed mistake: it is the answer of path b written out'
+    formula: |-
+      sigma*T1**4*V1**(4/3)*V2**(-1/3) - sigma*T1**4*V1
+    equals: |-
+      sigma*T1**4*V1*((V1/V2)**(1/3) - 1)
+    samples:
+      sigma: [0.5, 0.8, 1.1, 1.4, 1.5]
+      T1: [1.0, 1.3, 1.6, 1.9, 2.0]
+      V1: [2.0, 2.9, 2.3, 3.0, 2.6]
+      V2: [0.5, 1.5, 1.0, 0.8, 1.3]
+    tolerance: 1e-12
+    shown: ['expr: "sigma*T1^4*V1^(4/3)*V2^(-1/3) - sigma*T1^4*V1"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own listed mistake)'}
+    origin: page-own
+
+  - id: p5-example-t2
+    kind: value
+    where: 'Problem 5, graph and example (our addition): T2/T1 for V2 = V1/8'
+    formula: |-
+      8**(1/3)
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['the temperature doubles, $T_2 = 2T_1$', 'which makes T₂ = 2T₁']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-a
+    kind: value
+    where: 'Problem 5, example (our addition): work along path a for V2 = V1/8, in units of sigma T1^4 V1'
+    formula: |-
+      (1 - 1/8)/3
+    expected: '0.292'
+    shown: ['\frac{7}{24}\,\sigma T_1^4V_1 = 0.292\,\sigma T_1^4V_1']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-a-fraction
+    kind: value
+    where: 'Problem 5, example (our addition): 7/24 is (1 - 1/8)/3'
+    formula: |-
+      7/24 - (1 - 1/8)/3
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['\frac{7}{24}']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-b
+    kind: value
+    where: 'Problem 5, example (our addition): work along path b for V2 = V1/8, in units of sigma T1^4 V1, by numerical integration'
+    formula: |-
+      -integrate('u**(-4/3)/3', 'u', 1, 0.125)
+    expected: '1.000'
+    tolerance: 0.001
+    shown: ['path b takes $W = \sigma T_1^4V_1$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-ratio
+    kind: value
+    where: 'Problem 5, example (our addition): work along path b over work along path a for V2 = V1/8'
+    formula: |-
+      1/((1 - 1/8)/3)
+    expected: '3.43'
+    shown: ['more than three times the work of path a']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-example-pressure
+    kind: value
+    where: 'Problem 5, example (our addition): the pressure rises as T^4 when the temperature doubles'
+    formula: |-
+      2**4
+    expected: '16'
+    shown: ['climbs to 16 times its starting value']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-graph-drop
+    kind: value
+    where: 'Problem 5, graph: the vertical leg of path a runs from V/V1 = 1 down by 0.875 to 0.125'
+    formula: |-
+      1 - 0.875
+    expected: '0.125'
+    shown: ['y: "1 - 0.875*s"', 'y: "0.125"', 'y: 0.125']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own numbers)'}
+    origin: page-own
+
+  # ---- Practice problem: S(x, y) as the numerical line integral of A dx + B dy from the origin, first along the
+  # x axis (y = 0) and then parallel to the y axis. This also fixes S(0, 0) = 0.
+
+  - id: pp-a
+    kind: identity
+    answer: pp-a
+    where: 'Practice problem (a), answer box: S as a numerical line integral from the origin'
+    formula: |-
+      (2*x**5 + 5*x**2*y**3 + 3*y**5)/5
+    equals: |-
+      integrate('2*u*(u**3 + 0)', 'u', 0, x) + integrate('3*v**2*(x**2 + v**2)', 'v', 0, y)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-8
+    shown: ['id="pp-a"', '<Formula label="State function of practice differential (a)"']
+    source: {cite: mit, at: 'Practice Problem (a), p. 3 (MIT prints the answer; the check is ours)'}
+    origin: mit
+
+  - id: pp-a-cross
+    kind: identity
+    where: 'Practice problem (a), solution: the two cross derivatives, taken numerically, are equal'
+    formula: |-
+      deriv('2*x*(x**3 + v**3)', 'v', y)
+    equals: |-
+      deriv('3*y**2*(u**2 + y**2)', 'u', x)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-6
+    shown: ['Both cross derivatives are $6xy^2$']
+    source: {cite: mit, at: 'Practice Problem (a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: pp-a-cross-value
+    kind: identity
+    where: 'Practice problem (a), solution: the cross derivative is 6 x y^2'
+    formula: |-
+      6*x*y**2
+    equals: |-
+      deriv('2*x*(x**3 + v**3)', 'v', y)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-6
+    shown: ['Both cross derivatives are $6xy^2$']
+    source: {cite: mit, at: 'Practice Problem (a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: pp-b
+    kind: identity
+    where: 'Practice problem (b), choice box: the numerical cross derivatives differ by 1'
+    formula: |-
+      deriv('u*(exp(y) + 1)', 'u', x) - deriv('exp(v) + 0*x', 'v', y)
+    equals: |-
+      1 + 0*x*y
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-6
+    shown: ['id="pp-b"', 'They differ by 1']
+    source: {cite: mit, at: 'Practice Problem (b), p. 3 (MIT prints the answer; the check is ours)'}
+    origin: mit
+
+  - id: pp-c
+    kind: identity
+    answer: pp-c
+    where: 'Practice problem (c), answer box: S as a numerical line integral from the origin'
+    formula: |-
+      y + (1 + y - x)*exp(x) - 1
+    equals: |-
+      integrate('(0 - u)*exp(u)', 'u', 0, x) + integrate('1 + exp(x) + 0*v', 'v', 0, y)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-8
+    shown: ['id="pp-c"', '<Formula label="State function of practice differential (c)"']
+    source: {cite: mit, at: 'Practice Problem (c), p. 3 (MIT prints the answer; the check is ours)'}
+    origin: mit
+
+  - id: pp-c-cross
+    kind: identity
+    where: 'Practice problem (c), solution: the two cross derivatives, taken numerically, are equal'
+    formula: |-
+      deriv('(v - x)*exp(x)', 'v', y)
+    equals: |-
+      deriv('1 + exp(u) + 0*y', 'u', x)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-6
+    shown: ['They agree: the differential is exact']
+    source: {cite: mit, at: 'Practice Problem (c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: pp-c-origin
+    kind: value
+    where: 'Practice problem (c): MIT''s printed form with C = 0 has the value 1 at the origin, so S(0, 0) = 0 needs C = -1'
+    formula: |-
+      0 + (1 + 0 - 0)*exp(0)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['it has S(0, 0) = 1', 'needs $C = -1$']
+    source: {cite: mit, at: 'Practice Problem (c), p. 3'}
+    origin: mit
+
+  - id: pp-c-parts
+    kind: identity
+    where: 'Practice problem (c), second hint: the derivative of (x - 1) e^x is x e^x'
+    formula: |-
+      x*exp(x)
+    equals: |-
+      deriv('(u - 1)*exp(u)', 'u', x)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+    tolerance: 1e-6
+    shown: ['\int xe^x\,dx = \left(x - 1\right)e^x']
+    source: {cite: mit, at: 'Practice Problem (c), p. 3 (our own hint)'}
+    origin: page-own
+
+  - id: pp-b-tempting
+    kind: identity
+    where: 'Practice problem (b), check: S = x e^y + x y has the right dy coefficient but e^y + y for dx'
+    formula: |-
+      exp(y) + y
+    equals: |-
+      deriv('u*exp(y) + u*y', 'u', x)
+    samples:
+      x: [0.5, 0.8, 1.1, 1.4, 1.5]
+      y: [1.5, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-6
+    shown: ['gives $e^y + y$ for $dx$']
+    source: {cite: mit, at: 'Practice Problem (b), p. 3 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: chi_T = a/(1 - T/Tc) + 3 b H^2 and dM/dT = f(H)/(Tc (1 - T/Tc)^2) - M0/(2 Tc sqrt(1 - T/Tc)).
+
+  - id: p6-f
+    kind: identity
+    answer: p6-f
+    where: 'Problem 6(a), answer box: f(H) as the numerical integral over the field of Tc (1 - T/Tc)^2 times the numerical temperature derivative of the given susceptibility, starting from f(0) = 0'
+    formula: |-
+      a*H
+    equals: |-
+      integrate('Tc*(1 - T/Tc)**2*deriv("a/(1 - u/Tc) + 3*b*v**2", "u", T)', 'v', 0, H)
+    samples:
+      a: [0.5, 0.9, 1.3, 1.7, 2.0]
+      b: [2.0, 0.6, 1.1, 1.5, 0.5]
+      H: [0.7, 1.9, 0.5, 1.2, 1.6]
+      T: [0.5, 0.6, 0.7, 0.8, 0.9]
+      Tc: [1.0, 1.5, 1.2, 1.1, 1.4]
+    tolerance: 1e-5
+    shown: ['id="p6-f"', '<Formula label="The function f of the ferromagnet model"']
+    source: {cite: reading1, at: 'Problem 6(a), p. 6'}
+    origin: mit
+
+  - id: p6-m
+    kind: identity
+    answer: p6-m
+    where: 'Problem 6(b), answer box: M built by numerical integration, first of the temperature coefficient at H = 0 from Tc (where M = 0) down to T, then of the susceptibility from 0 to H at that T'
+    formula: |-
+      M0*sqrt(1 - T/Tc) + a*H/(1 - T/Tc) + b*H**3
+    equals: |-
+      integrate('-M0/(2*Tc*sqrt(1 - (Tc - w**2)/Tc))*(-2*w)', 'w', 1e-9, sqrt(Tc - T)) + integrate('a/(1 - T/Tc) + 3*b*v**2', 'v', 0, H)
+    samples:
+      M0: [1.2, 0.5, 2.0, 0.8, 1.6]
+      a: [0.5, 0.9, 1.3, 1.7, 2.0]
+      b: [2.0, 0.6, 1.1, 1.5, 0.5]
+      H: [0.7, 1.9, 0.5, 1.2, 1.6]
+      T: [0.5, 0.6, 0.7, 0.8, 0.9]
+      Tc: [1.0, 1.5, 1.2, 1.1, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p6-m"', '<Formula label="Equation of state of the model ferromagnet"']
+    source: {cite: reading1, at: 'Problem 6(b), p. 6'}
+    origin: mit
+
+  - id: p6-m-dT
+    kind: identity
+    where: 'Problem 6(b), check: the numerical temperature derivative of the answer gives back the model expression with f = a H'
+    formula: |-
+      a*H/(Tc*(1 - T/Tc)**2) - M0/(2*Tc*sqrt(1 - T/Tc))
+    equals: |-
+      deriv('M0*sqrt(1 - u/Tc) + a*H/(1 - u/Tc) + b*H**3', 'u', T)
+    samples:
+      M0: [1.2, 0.5, 2.0, 0.8, 1.6]
+      a: [0.5, 0.9, 1.3, 1.7, 2.0]
+      b: [2.0, 0.6, 1.1, 1.5, 0.5]
+      H: [0.7, 1.9, 0.5, 1.2, 1.6]
+      T: [0.5, 0.6, 0.7, 0.8, 0.9]
+      Tc: [1.0, 1.5, 1.2, 1.1, 1.4]
+    tolerance: 1e-5
+    shown: ['Differentiating gives back both model expressions']
+    source: {cite: reading1, at: 'Problem 6(b), p. 6 (our own check)'}
+    origin: page-own
+
+  - id: p6-m-dH
+    kind: identity
+    where: 'Problem 6(b), check: the numerical field derivative of the answer gives back the model susceptibility'
+    formula: |-
+      a/(1 - T/Tc) + 3*b*H**2
+    equals: |-
+      deriv('M0*sqrt(1 - T/Tc) + a*v/(1 - T/Tc) + b*v**3', 'v', H)
+    samples:
+      M0: [1.2, 0.5, 2.0, 0.8, 1.6]
+      a: [0.5, 0.9, 1.3, 1.7, 2.0]
+      b: [2.0, 0.6, 1.1, 1.5, 0.5]
+      H: [0.7, 1.9, 0.5, 1.2, 1.6]
+      T: [0.5, 0.6, 0.7, 0.8, 0.9]
+      Tc: [1.0, 1.5, 1.2, 1.1, 1.4]
+    tolerance: 1e-5
+    shown: ['Differentiating gives back both model expressions']
+    source: {cite: reading1, at: 'Problem 6(b), p. 6 (our own check)'}
+    origin: page-own
+
+  - id: p6-hint-integral-1
+    kind: identity
+    where: 'Problem 6(b), third hint: the derivative of 1/(1 - T/Tc) is (1/Tc)/(1 - T/Tc)^2'
+    formula: |-
+      1/(Tc*(1 - T/Tc)**2)
+    equals: |-
+      deriv('1/(1 - u/Tc)', 'u', T)
+    samples:
+      T: [0.5, 0.6, 0.7, 0.8, 0.9]
+      Tc: [1.0, 1.5, 1.2, 1.1, 1.4]
+    tolerance: 1e-5
+    shown: ['the integral of $\frac{1}{T_c}\left(1 - T/T_c\right)^{-2}$ is $\left(1 - T/T_c\right)^{-1}$']
+    source: {cite: reading1, at: 'Problem 6(b), p. 6'}
+    origin: mit
+
+  - id: p6-hint-integral-2
+    kind: identity
+    where: 'Problem 6(b), third hint: the derivative of sqrt(1 - T/Tc) is -(1/(2 Tc))/sqrt(1 - T/Tc)'
+    formula: |-
+      -1/(2*Tc*sqrt(1 - T/Tc))
+    equals: |-
+      deriv('sqrt(1 - u/Tc)', 'u', T)
+    samples:
+      T: [0.5, 0.6, 0.7, 0.8, 0.9]
+      Tc: [1.0, 1.5, 1.2, 1.1, 1.4]
+    tolerance: 1e-5
+    shown: ['the integral of $-\frac{1}{2T_c}\left(1 - T/T_c\right)^{-1/2}$ is $\left(1 - T/T_c\right)^{1/2}$']
+    source: {cite: reading1, at: 'Problem 6(b), p. 6'}
+    origin: mit
+
+  - id: p6-spontaneous-zero
+    kind: limit
+    where: 'Problem 6(b): at H = 0 the answer tends to zero as T -> Tc, which is what fixes K = 0'
+    inputs: {M0: 1.3, a: 0.9, b: 1.1, Tc: 1.2, H: 0}
+    formula: |-
+      M0*sqrt(1 - T/Tc) + a*H/(1 - T/Tc) + b*H**3
+    limit: |-
+      0
+    vary: {T: [1.19, 1.1999, 1.199999, 1.19999999]}
+    tolerance: 0.001
+    shown: ['so $K = 0$']
+    source: {cite: reading1, at: 'Problem 6(b), p. 6'}
+    origin: mit
+
+  # ---- Given figures
+
+  - id: p1-sweeps
+    kind: fact
+    where: 'Problem 1, statement: the number of sweeps, and the weights 1/3 and 2/3 of the two parts of the density, as given by MIT'
+    shown: ['along the wire after 36 sweeps', '<Formula label="Density of the step in one sweep"']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: p2-loschmidt-given
+    kind: fact
+    where: 'Problem 2, statement: Loschmidt''s number as MIT''s sheet gives it'
+    shown: ['holds $2.69 \times 10^{25}$ atoms or molecules']
+    source: {cite: mit, at: 'Problem 2, p. 1'}
+    origin: mit
+
+  - id: p2-standard-conditions
+    kind: fact
+    where: 'Problem 2(b), check: 0 °C and one standard atmosphere in SI units'
+    shown: ['$101\,325$ Pa and $273.15$ K']
+    source: {cite: mit, at: 'Problem 2, p. 1 (the SI values are our addition)'}
+    origin: page-own
