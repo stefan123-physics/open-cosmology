@@ -1,0 +1,795 @@
+# Calculations on content/year-3/8.05/8-05-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 differentiates the exact overlap of a two-level system twice; Problem 2 uses the variance of a projector
+# and CODATA's hbar; Problem 3 uses the angle between spin directions, the spread of two equally likely energies and
+# a numerical root of the overlap; Problem 4 integrates the square-well matrix element and differentiates the
+# potential; Problem 5 integrates oscillator wavefunctions (units hbar = m = omega = 1) and takes the time average of
+# the classical motion; Problem 6 rewrites the energies in the other set of quantum numbers and reads the angular
+# momentum from the dependence of the wavefunction on the polar angle.
+
+page: content/year-3/8.05/8-05-problem-set-6.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points, 10 for each of Problems 1 to 5 and 15 for Problem 6'
+    formula: |-
+      10 + 10 + 10 + 10 + 10 + 15
+    expected: '65'
+    shown: ['65 points in all']
+    source: {cite: mit, at: 'Problems 1 to 6, pp. 1–5'}
+    origin: mit
+
+  - id: hbar-ev
+    where: 'How to answer and Problem 2: hbar in eV s (CODATA: 6.582119569e-16 eV s)'
+    formula: |-
+      hbar
+    expected: '6.582e-16 eV*s'
+    shown: ['in Problem 2: $\hbar = 6.582\times 10^{-16}$ eV s', 'with $\hbar = 6.582\times 10^{-16}$ eV s:']
+    source: {cite: codata, at: 'reduced Planck constant in eV s'}
+    origin: page-own
+
+  # ---- Problem 1: the overlap for short times
+
+  - id: p1-series
+    kind: identity
+    answer: p1-series
+    where: 'Problem 1(b), answer box: 1 + (t²/2) times the second time derivative at 0 of the exact overlap cos²(ΔH s/ħ) of an equal mix of two energy eigenstates'
+    formula: |-
+      1 - (dH*t/hbar)**2
+    equals: |-
+      1 + t**2/2*deriv('cos(dH*s/hbar)**2', 's', 0, 2)
+    samples:
+      dH: [0.5, 0.9, 1.3, 1.7, 2.0]
+      t: [0.2, 0.4, 0.6, 0.8, 0.9]
+      hbar: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-5
+    shown: ['id="p1-series"', '<Formula label="The overlap for short times"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-unequal
+    kind: identity
+    where: 'Problem 1(b): the same for an unequal mix (probabilities w and 1 − w, energies 0 and E2): ΔH² = w(1 − w)E2², exact overlap w² + (1 − w)² + 2w(1 − w)cos(E2 s/ħ)'
+    formula: |-
+      1 - w*(1 - w)*(E2*t/hbar)**2
+    equals: |-
+      1 + t**2/2*deriv('w**2 + (1 - w)**2 + 2*w*(1 - w)*cos(E2*s/hbar)', 's', 0, 2)
+    samples:
+      w: [0.1, 0.3, 0.5, 0.7, 0.85]
+      E2: [0.5, 0.9, 1.3, 1.7, 2.0]
+      t: [0.2, 0.4, 0.6, 0.8, 0.9]
+      hbar: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-5
+    shown: ['at a rate set by the energy uncertainty alone']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-third-order
+    kind: identity
+    where: 'Problem 1(b), check: the exact two-level overlap is even in time, cos²(−x) = cos²(x), so it has no t³ term'
+    formula: |-
+      cos(-dH*t/hbar)**2
+    equals: |-
+      cos(dH*t/hbar)**2
+    samples:
+      dH: [0.5, 0.9, 1.3, 1.7, 2.0]
+      t: [0.2, 0.4, 0.6, 0.8, 0.9]
+      hbar: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['the term in $t^3$ is in fact absent as well']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the projector onto the starting state
+
+  - id: p2-dq
+    kind: identity
+    answer: p2-dq
+    where: 'Problem 2(a), answer box: ΔQ from the variance of a projector, ⟨Q⟩ − ⟨Q⟩² with ⟨Q⟩ = cos²φ'
+    formula: |-
+      sin(phi)*cos(phi)
+    equals: |-
+      sqrt(cos(phi)**2 - cos(phi)**4)
+    samples:
+      phi: [0.2, 0.5, 0.8, 1.1, 1.3]
+    tolerance: 1e-10
+    shown: ['id="p2-dq"', '<Formula label="The uncertainty of the projector"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-rate
+    kind: identity
+    where: 'Problem 2(a): the derivative of cos²φ with respect to φ is −2 sin φ cos φ (numerical derivative)'
+    formula: |-
+      -2*sin(phi)*cos(phi)
+    equals: |-
+      deriv('cos(u)**2', 'u', phi)
+    samples:
+      phi: [0.2, 0.5, 0.8, 1.1, 1.3]
+    tolerance: 1e-7
+    shown: ['$\frac{d\langle Q\rangle}{dt} = -2\sin\phi\,\cos\phi\,\frac{d\phi}{dt}$']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-time
+    answer: p2-time
+    where: 'Problem 2(a), answer box: the shortest time to an orthogonal state, πħ/(2ΔH), for ΔH = 1.00 eV'
+    inputs: {dH: 1.00 eV}
+    formula: |-
+      pi*hbar/(2*dH)
+    expected: '1.03 fs'
+    shown: ['id="p2-time"', '= 1.03\times 10^{-15}\ \text{s} = 1.03\ \text{fs}']
+    source: {cite: mit, at: 'Problem 2(a), eq. (6), p. 2 (the number is our own addition)'}
+    origin: page-own
+
+  - id: p2-h4
+    kind: identity
+    where: 'Problem 2(a): πħ/2 is h/4 with h = 2πħ'
+    formula: |-
+      pi*hbar/2
+    equals: |-
+      2*pi*hbar/4
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+    tolerance: 1e-12
+    shown: ['\ge \frac{\pi\hbar}{2} = \frac{h}{4}$']
+    source: {cite: mit, at: 'Problem 2(a), eq. (6), p. 2'}
+    origin: page-own
+
+  - id: p2-angle
+    where: 'Problem 2(b): the largest angle ΔH t/ħ for ΔH = 1.00 eV and t = 0.500 fs, in radians'
+    inputs: {dH: 1.00 eV, t: 0.500 fs}
+    formula: |-
+      dH*t/hbar
+    expected: '0.7596'
+    shown: ['= 0.7596$ radians']
+    source: {cite: mit, at: 'Problem 2(b), eq. (7), p. 2 (the number is our own addition)'}
+    origin: page-own
+
+  - id: p2-bound
+    answer: p2-bound
+    where: 'Problem 2(b), answer box: the lower bound cos²(ΔH t/ħ) for ΔH = 1.00 eV and t = 0.500 fs'
+    inputs: {dH: 1.00 eV, t: 0.500 fs}
+    formula: |-
+      cos(dH*t/hbar)**2
+    expected: '0.526'
+    shown: ['id="p2-bound"', '$\cos^2(0.7596) = 0.526$']
+    source: {cite: mit, at: 'Problem 2(b), eq. (7), p. 2 (the number is our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3: a spin turning about the field
+
+  - id: p3-overlap
+    kind: identity
+    answer: p3-overlap
+    where: 'Problem 3(a), answer box: the probability (1 + cos θ)/2 for two spin directions an angle θ = γBt apart'
+    formula: |-
+      cos(g*B*t/2)**2
+    equals: |-
+      (1 + cos(g*B*t))/2
+    samples:
+      g: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 1.6, 1.2, 0.8, 0.5]
+      t: [0.1, 0.3, 0.5, 0.8, 1.0]
+    tolerance: 1e-12
+    shown: ['id="p3-overlap"', '<Formula label="The overlap for the spin"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dh
+    kind: identity
+    answer: p3-dh
+    where: 'Problem 3(b), answer box: the spread of the two energies ±ħγB/2, each with probability one half'
+    formula: |-
+      hbar*g*B/2
+    equals: |-
+      sqrt(0.5*(g*B*hbar/2)**2 + 0.5*(-g*B*hbar/2)**2 - (0.5*(g*B*hbar/2) + 0.5*(-g*B*hbar/2))**2)
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      g: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['id="p3-dh"', '<Formula label="The energy uncertainty of the spin"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-time
+    kind: identity
+    answer: p3-time
+    where: 'Problem 3(b), answer box: the first zero of the amplitude cos(γBs/2), found numerically'
+    formula: |-
+      pi/(g*B)
+    equals: |-
+      solve('cos(g*B*s/2)', 's', 0.1/(g*B), 1.9*pi/(g*B))
+    samples:
+      g: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p3-time"', '<Formula label="The time to the orthogonal state"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-saturated
+    kind: identity
+    where: 'Problem 3(b): the product ΔH Δt⊥ equals h/4 = 2πħ/4'
+    formula: |-
+      hbar*g*B/2*pi/(g*B)
+    equals: |-
+      2*pi*hbar/4
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      g: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['<Formula label="The inequality is saturated"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-quarter
+    where: 'Problem 3(a) and the hint of box p3-time: after a quarter turn (γBt = π/2) the overlap is one half'
+    formula: |-
+      cos(pi/4)**2
+    expected: '0.5'
+    tolerance: 1e-12
+    shown: ['the overlap is one half']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: sum rules. Square well of width 1: wavefunctions sqrt(2) sin(kπy), energies k²π² in units ħ²/(2m).
+
+  - id: p4-x12
+    kind: identity
+    where: 'Problem 4(a), hint: the matrix element ⟨1|x|2⟩ of the square well, in units of L, by numerical integration'
+    formula: |-
+      -16/(9*pi**2)
+    equals: |-
+      integrate('2*y*sin(pi*y)*sin(2*pi*y)', 'y', 0, 1)
+    samples:
+      dummy: [1]
+    tolerance: 1e-8
+    shown: ['$\langle 1|\hat x|2\rangle = -\frac{16L}{9\pi^2}$']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-trk
+    answer: p4-trk
+    where: 'Problem 4(a), answer box: |⟨1|x|2⟩|² (E2 − E1) over ħ²/(2m), with the matrix element integrated numerically and E2 − E1 = 3π² in units ħ²/(2mL²)'
+    formula: |-
+      integrate('2*y*sin(pi*y)*sin(2*pi*y)', 'y', 0, 1)**2*3*pi**2
+    expected: '0.961'
+    shown: ['id="p4-trk"', '= \frac{256}{27\pi^2}\cdot\frac{\hbar^2}{2m} = 0.961\,\frac{\hbar^2}{2m}']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-trk-closed
+    where: 'Problem 4(a): the closed form 256/(27π²) of the same fraction'
+    formula: |-
+      256/(27*pi**2)
+    expected: '0.961'
+    shown: ['One transition carries 96% of the sum.']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-x14
+    kind: identity
+    where: 'Problem 4(a), check: the general term 64k²/(π²(k² − 1)³) against the integrated matrix element, for k = 4 (energy difference 15π²)'
+    formula: |-
+      64*16/(pi**2*15**3)
+    equals: |-
+      integrate('2*y*sin(pi*y)*sin(4*pi*y)', 'y', 0, 1)**2*15*pi**2
+    samples:
+      dummy: [1]
+    tolerance: 1e-7
+    shown: ['$\frac{64k^2}{\pi^2(k^2 - 1)^3}$']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-odd
+    where: 'Problem 4(a), check: the matrix element ⟨1|x|3⟩ vanishes (numerical integration)'
+    formula: |-
+      integrate('2*y*sin(pi*y)*sin(3*pi*y)', 'y', 0, 1)
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['the terms with odd $a''$ vanish']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-three
+    where: 'Problem 4(a), check: the terms k = 2, 4, 6 of the sum, in units of ħ²/(2m)'
+    formula: |-
+      64*4/(pi**2*3**3) + 64*16/(pi**2*15**3) + 64*36/(pi**2*35**3)
+    expected: '0.997'
+    shown: ['add up to 0.997']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-full
+    where: 'Problem 4(a), check: the terms k = 2 to 20 of the sum come to 1 within 0.0002'
+    formula: |-
+      64/pi**2*(4/3**3 + 16/15**3 + 36/35**3 + 64/63**3 + 100/99**3 + 144/143**3 + 196/195**3 + 256/255**3 + 324/323**3 + 400/399**3)
+    expected: '1.000'
+    tolerance: 2e-4
+    shown: ['the rest of the series brings the sum to 1']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-osc
+    kind: identity
+    where: 'Problem 4(a), check: for the oscillator ground state the single term |⟨0|x|1⟩|² ħω is ħ²/(2m)'
+    formula: |-
+      hbar/(2*mm*w)*hbar*w
+    equals: |-
+      hbar**2/(2*mm)
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      mm: [0.7, 1.1, 1.5, 0.9, 2.0]
+      w: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['and the product is $\frac{\hbar^2}{2m}$ at once']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-osc
+    kind: identity
+    where: 'Problem 4(b), check: for the oscillator ground state, (ħ/2mω)(ħω)² equals (ħ²/m²)(mħω/2)'
+    formula: |-
+      hbar/(2*mm*w)*(hbar*w)**2
+    equals: |-
+      hbar**2/mm**2*(mm*hbar*w/2)
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      mm: [0.7, 1.1, 1.5, 0.9, 2.0]
+      w: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['$\frac{\hbar}{2m\omega}(\hbar\omega)^2 = \frac{\hbar^3\omega}{2m}$']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-virial
+    kind: identity
+    answer: p4-virial
+    where: 'Problem 4(c), answer box: x V′(x)/(2V) for V = αxⁿ, with a numerical derivative'
+    formula: |-
+      n/2
+    equals: |-
+      x0*deriv('al*y**n', 'y', x0)/(2*al*x0**n)
+    samples:
+      n: [1, 2, 3, 4, 6]
+      al: [0.5, 0.8, 1.2, 1.6, 2.0]
+      x0: [0.6, 0.9, 1.2, 1.5, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p4-virial"', '<Formula label="The virial theorem for a power law"']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-quartic
+    answer: p4-quartic
+    where: 'Problem 4(c), answer box: ⟨T⟩/E = (n/2)/(n/2 + 1) for n = 4'
+    formula: |-
+      (4/2)/(4/2 + 1)
+    expected: '0.667'
+    shown: ['id="p4-quartic"', 'the kinetic part is $\frac{2}{3}$ of the energy, 0.667']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5: oscillator matrices. Wavefunctions with ħ = m = ω = 1:
+  # ψ0 = π^(-1/4) e^(-y²/2), ψ1 = sqrt(2) y ψ0, ψ2 = (2y² − 1)/sqrt(2) ψ0, ψ3 = (2y³ − 3y)/sqrt(3) ψ0.
+
+  - id: p5-xmn
+    kind: identity
+    answer: p5-xmn
+    where: 'Problem 5(c), answer box: from ⟨n|x²|n⟩ = |x(n+1,n)|² + |x(n−1,n)|², that is (2n + 1) = (n + 1) + n in units ħ/(2mω)'
+    formula: |-
+      sqrt(n + 1)
+    equals: |-
+      sqrt((2*n + 1) - n)
+    samples:
+      n: [0, 1, 2, 4, 6]
+    tolerance: 1e-12
+    shown: ['id="p5-xmn"', '<Formula label="Matrix elements of position and momentum"']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x10
+    where: 'Problem 5(c): ⟨1|x|0⟩ by integrating the wavefunctions; in units sqrt(ħ/mω) it is sqrt(1/2) times sqrt(0 + 1)'
+    formula: |-
+      integrate('sqrt(2)*y*y*exp(-y**2)/sqrt(pi)', 'y', -12, 12)*sqrt(2)
+    expected: '1'
+    tolerance: 1e-8
+    shown: ['The element $\langle n + 1|\hat x|n\rangle$ is $\sqrt{n + 1}$ in units of $\sqrt{\hbar/(2m\omega)}$.']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x21
+    where: 'Problem 5(c): ⟨2|x|1⟩ by integrating the wavefunctions, in units sqrt(ħ/2mω): sqrt(1 + 1)'
+    formula: |-
+      integrate('(2*y**2 - 1)/sqrt(2)*y*sqrt(2)*y*exp(-y**2)/sqrt(pi)', 'y', -12, 12)*sqrt(2)
+    expected: '1.41421'
+    shown: ['\hat x = \sqrt{\frac{\hbar}{2m\omega}}\begin{pmatrix}0 & 1 & 0 & 0\\ 1 & 0 & \sqrt2 & 0']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x2
+    answer: p5-x2
+    where: 'Problem 5(c), answer box: ⟨1|x²|3⟩ by integrating the wavefunctions, in units ħ/(mω)'
+    formula: |-
+      integrate('sqrt(2)*y*y**2*(2*y**3 - 3*y)/sqrt(3)*exp(-y**2)/sqrt(pi)', 'y', -12, 12)
+    expected: '1.225'
+    shown: ['id="p5-x2"', '= \frac{\sqrt6}{2}\,\frac{\hbar}{m\omega} = 1.225\,\frac{\hbar}{m\omega}$']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x2-closed
+    where: 'Problem 5(c): the closed form sqrt(6)/2 of the same element'
+    formula: |-
+      sqrt(6)/2
+    expected: '1.225'
+    shown: ['$\frac{\hbar}{2m\omega}\sqrt{3\cdot 2}']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x2-diag
+    where: 'Problem 5(c): the diagonal entry ⟨3|x²|3⟩ = 7 in units ħ/(2mω), by integrating ψ3² y² (times 2)'
+    formula: |-
+      2*integrate('((2*y**3 - 3*y)/sqrt(3))**2*y**2*exp(-y**2)/sqrt(pi)', 'y', -12, 12)
+    expected: '7'
+    tolerance: 1e-7
+    shown: ['which comes out as 3 in the place of 7']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x2-cut
+    where: 'Problem 5(c), check: the last diagonal entry of the squared 4 × 4 matrix of x, in units ħ/(2mω): only the step through n = 2 is there'
+    formula: |-
+      sqrt(3)*sqrt(3)
+    expected: '3'
+    tolerance: 1e-12
+    shown: ['which comes out as 3 in the place of 7']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-energy
+    kind: identity
+    where: 'Problem 5(c), check: (p²)nn/2m + mω²(x²)nn/2 = ħω(n + 1/2)'
+    formula: |-
+      hbar*w*(n + 1/2)
+    equals: |-
+      mm*w*hbar/2*(2*n + 1)/(2*mm) + mm*w**2/2*hbar/(2*mm*w)*(2*n + 1)
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      mm: [0.7, 1.1, 1.5, 0.9, 2.0]
+      w: [2.0, 1.6, 1.2, 0.8, 0.5]
+      n: [0, 1, 2, 3, 5]
+    tolerance: 1e-12
+    shown: ['= \hbar\omega\left(n + \frac{1}{2}\right)$. One warning']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-comm
+    answer: p5-comm
+    where: 'Problem 5(d), answer box: (xp − px)₃₃/(iħ) from the 4 × 4 matrices: x₃₂p₂₃ − p₃₂x₂₃ with x₃₂ = x₂₃ = sqrt(3), p₂₃ = −i sqrt(3), p₃₂ = i sqrt(3), prefactor ħ/2; the factors of i taken out'
+    formula: |-
+      (sqrt(3)*(-sqrt(3)) - sqrt(3)*sqrt(3))/2
+    expected: '-3'
+    tolerance: 1e-12
+    shown: ['id="p5-comm"', 'the last entry is $-3\,i\hbar$']
+    source: {cite: mit, at: 'Problem 5(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-comm-first
+    where: 'Problem 5(d): the first diagonal entry of the same commutator over iħ: x₀₁p₁₀ − p₀₁x₁₀ with p₁₀ = i, p₀₁ = −i'
+    formula: |-
+      (1*1 - (-1)*1)/2
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['<Formula label="The commutator of the cut-off matrices"']
+    source: {cite: mit, at: 'Problem 5(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-trace
+    where: 'Problem 5(d): the trace of the cut-off commutator, in units of iħ'
+    formula: |-
+      1 + 1 + 1 - 3
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['$1 + 1 + 1 - 3 = 0$']
+    source: {cite: mit, at: 'Problem 5(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-prod
+    kind: identity
+    answer: p5-prod
+    where: 'Problem 5(e), answer box: the product of the square roots of the two expectation values MIT gives (mass 1.3, frequency 0.7)'
+    formula: |-
+      hbar*(n + 1/2)
+    equals: |-
+      sqrt(hbar/(1.3*0.7)*(n + 1/2))*sqrt(1.3*hbar*0.7*(n + 1/2))
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      n: [0, 1, 2, 3, 5]
+    tolerance: 1e-12
+    shown: ['id="p5-prod"', '<Formula label="The uncertainties in a number state"']
+    source: {cite: mit, at: 'Problem 5(e), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-amp
+    answer: p5-amp
+    where: 'Problem 5(e), answer box: Δx/A, checked as the root-mean-square of cos over one period of the classical motion'
+    formula: |-
+      sqrt(integrate('cos(s)**2', 's', 0, 2*pi)/(2*pi))
+    expected: '0.707'
+    shown: ['id="p5-amp"', '\Delta x = \frac{A}{\sqrt2} = 0.707\,A']
+    source: {cite: mit, at: 'Problem 5(e), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-amp-energy
+    kind: identity
+    where: 'Problem 5(e): A² from mω²A²/2 = ħω(n + 1/2) is twice (Δx)²'
+    formula: |-
+      2*hbar*w*(n + 1/2)/(mm*w**2)
+    equals: |-
+      2*(hbar/(mm*w)*(n + 1/2))
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      mm: [0.7, 1.1, 1.5, 0.9, 2.0]
+      w: [2.0, 1.6, 1.2, 0.8, 0.5]
+      n: [0, 1, 2, 3, 5]
+    tolerance: 1e-12
+    shown: ['<Formula label="The classical amplitude at the same energy"']
+    source: {cite: mit, at: 'Problem 5(e), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6: two frequencies
+
+  - id: p6-e
+    kind: identity
+    answer: p6-e
+    where: 'Problem 6(a), answer box: the same energy written with N = nx + ny and n = nx − ny'
+    formula: |-
+      hbar*(wx*(nx + 1/2) + wy*(ny + 1/2))
+    equals: |-
+      hbar*((wx + wy)*((nx + ny) + 1) + (wx - wy)*(nx - ny))/2
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      wx: [1.1, 1.3, 1.5, 1.8, 2.0]
+      wy: [0.9, 0.4, 0.6, 0.8, 0.5]
+      nx: [0, 1, 2, 3, 4]
+      ny: [4, 0, 1, 3, 2]
+    tolerance: 1e-12
+    shown: ['id="p6-e"', '<Formula label="The energy eigenvalues"']
+    source: {cite: mit, at: 'Problem 6(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-count
+    kind: identity
+    answer: p6-count
+    where: 'Problem 6(b), answer box: the states with nx + ny ≤ N number (N + 1)(N + 2)/2; the group N is the difference with N − 1'
+    formula: |-
+      N + 1
+    equals: |-
+      (N + 1)*(N + 2)/2 - N*(N + 1)/2
+    samples:
+      N: [0, 1, 2, 5, 8]
+    tolerance: 1e-12
+    shown: ['id="p6-count"', 'there are $N + 1$ of them']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own addition)'}
+    origin: page-own
+
+  - id: p6-split
+    kind: identity
+    where: 'Problem 6(b): the energy split into a part with nx + ny and a part with the difference of the frequencies'
+    formula: |-
+      hbar*(wx*(nx + 1/2) + wy*(ny + 1/2))
+    equals: |-
+      hbar*wy*(nx + ny + 1) + hbar*(wx - wy)*(nx + 1/2)
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      wx: [1.1, 1.3, 1.5, 1.8, 2.0]
+      wy: [0.9, 0.4, 0.6, 0.8, 0.5]
+      nx: [0, 1, 2, 3, 4]
+      ny: [4, 0, 1, 3, 2]
+    tolerance: 1e-12
+    shown: ['$E = \hbar\omega_y\,(n_x + n_y + 1) + \hbar\left(\omega_x - \omega_y\right)\left(n_x + \frac{1}{2}\right)$']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p6-t00
+    where: 'Problem 6(b), table: ωx = 1.1 ωy, state (0, 0), energy in units ħωy'
+    formula: |-
+      1.1*(0 + 1/2) + (0 + 1/2)
+    expected: '1.05'
+    tolerance: 1e-9
+    shown: ['| first | $(0, 0)$ | 1.05 |']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-t01
+    where: 'Problem 6(b), table: state (0, 1)'
+    formula: |-
+      1.1*(0 + 1/2) + (1 + 1/2)
+    expected: '2.05'
+    tolerance: 1e-9
+    shown: ['| second | $(0, 1)$ | 2.05 |']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-t10
+    where: 'Problem 6(b), table: state (1, 0)'
+    formula: |-
+      1.1*(1 + 1/2) + (0 + 1/2)
+    expected: '2.15'
+    tolerance: 1e-9
+    shown: ['| second | $(1, 0)$ | 2.15 |']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-t02
+    where: 'Problem 6(b), table: state (0, 2)'
+    formula: |-
+      1.1*(0 + 1/2) + (2 + 1/2)
+    expected: '3.05'
+    tolerance: 1e-9
+    shown: ['| third | $(0, 2)$ | 3.05 |']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-t11
+    where: 'Problem 6(b), table: state (1, 1)'
+    formula: |-
+      1.1*(1 + 1/2) + (1 + 1/2)
+    expected: '3.15'
+    tolerance: 1e-9
+    shown: ['| third | $(1, 1)$ | 3.15 |']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-t20
+    where: 'Problem 6(b), table: state (2, 0)'
+    formula: |-
+      1.1*(2 + 1/2) + (0 + 1/2)
+    expected: '3.25'
+    tolerance: 1e-9
+    shown: ['| third | $(2, 0)$ | 3.25 |']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-tstep
+    where: 'Problem 6(b), check: the spacing inside a group for ωx = 1.1 ωy, in units ħωy'
+    formula: |-
+      1.1 - 1
+    expected: '0.1'
+    tolerance: 1e-9
+    shown: ['The spacing inside a group, $0.1\,\hbar\omega_y$']
+    source: {cite: mit, at: 'Problem 6(b), p. 4 (our own example)'}
+    origin: page-own
+
+  - id: p6-enn
+    kind: identity
+    answer: p6-enn
+    where: 'Problem 6(c), answer box: the energy of part (a) with nx = (N + n)/2 and ny = (N − n)/2'
+    formula: |-
+      hbar*((wx + wy)*(N + 1) + (wx - wy)*n)/2
+    equals: |-
+      hbar*(wx*((N + n)/2 + 1/2) + wy*((N - n)/2 + 1/2))
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      wx: [1.1, 1.3, 1.5, 1.8, 2.0]
+      wy: [0.9, 0.4, 0.6, 0.8, 0.5]
+      N: [1, 2, 3, 4, 6]
+      n: [-1, 2, 1, -4, 0]
+    tolerance: 1e-12
+    shown: ['id="p6-enn"', '<Formula label="The energy in terms of N and n"']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-eq
+    answer: p6-eq
+    where: 'Problem 6(c), answer box: for equal frequencies the complete sets among {N}, {N, n}, {Nx, Ny}, {H}: 0 + 1 + 1 + 0'
+    formula: |-
+      0 + 1 + 1 + 0
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['id="p6-eq"', 'Two of the four.']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-low
+    answer: p6-low
+    where: 'Problem 6(c), answer box: ωx = 2ωy, the energy of the state (1, 0) in units ħωy'
+    formula: |-
+      2*(1 + 1/2) + (0 + 1/2)
+    expected: '3.5'
+    tolerance: 1e-12
+    shown: ['id="p6-low"', 'The next is $3.5$, shared by $(1, 0)$ and $(0, 2)$']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own addition)'}
+    origin: page-own
+
+  - id: p6-low-other
+    where: 'Problem 6(c): ωx = 2ωy, the energy of the state (0, 2) in units ħωy: the same'
+    formula: |-
+      2*(0 + 1/2) + (2 + 1/2)
+    expected: '3.5'
+    tolerance: 1e-12
+    shown: ['The next is $3.5$, shared by $(1, 0)$ and $(0, 2)$']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own addition)'}
+    origin: page-own
+
+  - id: p6-low-00
+    where: 'Problem 6(c): ωx = 2ωy, the ground state energy in units ħωy'
+    formula: |-
+      2*(0 + 1/2) + (0 + 1/2)
+    expected: '1.5'
+    tolerance: 1e-12
+    shown: ['$1.5$ for $(0, 0)$ and $2.5$ for $(0, 1)$']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own addition)'}
+    origin: page-own
+
+  - id: p6-low-01
+    where: 'Problem 6(c): ωx = 2ωy, the energy of the state (0, 1) in units ħωy'
+    formula: |-
+      2*(0 + 1/2) + (1 + 1/2)
+    expected: '2.5'
+    tolerance: 1e-12
+    shown: ['$1.5$ for $(0, 0)$ and $2.5$ for $(0, 1)$']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own addition)'}
+    origin: page-own
+
+  - id: p6-check10
+    kind: identity
+    where: 'Problem 6(c), check: E(N = 1, n = 1) is 3ħωx/2 + ħωy/2'
+    formula: |-
+      hbar*(wx + wy) + hbar/2*(wx - wy)
+    equals: |-
+      3/2*hbar*wx + hbar*wy/2
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      wx: [1.1, 1.3, 1.5, 1.8, 2.0]
+      wy: [0.9, 0.4, 0.6, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['= \frac{3}{2}\hbar\omega_x + \frac{1}{2}\hbar\omega_y$']
+    source: {cite: mit, at: 'Problem 6(c), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-lz
+    kind: identity
+    answer: p6-lz
+    where: 'Problem 6(e), answer box: the wavefunction of |nL, nR⟩ depends on the polar angle as exp(i(nR − nL)θ); (ħ/i) d/dθ on it, from its real and imaginary parts'
+    formula: |-
+      hbar*(nR - nL)
+    equals: |-
+      hbar*deriv('sin((nR - nL)*u)', 'u', 0.3)/cos((nR - nL)*0.3)
+    samples:
+      hbar: [0.5, 0.8, 1.2, 1.6, 2.0]
+      nR: [0, 1, 3, 5, 2]
+      nL: [1, 0, 1, 2, 5]
+    tolerance: 1e-6
+    shown: ['id="p6-lz"', '<Formula label="Hamiltonian and angular momentum in the new numbers"']
+    source: {cite: mit, at: 'Problem 6(e), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-one-quantum
+    kind: identity
+    where: 'Problem 6(e), check: (x ∂/∂y − y ∂/∂x) on the real part x g of (x + iy) g gives minus the imaginary part y g, with g = exp(−(x² + y²)/2): the eigenvalue of ℓ is +ħ'
+    formula: |-
+      -y0*exp(-(x0**2 + y0**2)/2)
+    equals: |-
+      x0*deriv('x0*exp(-(x0**2 + v**2)/2)', 'v', y0) - y0*deriv('u*exp(-(u**2 + y0**2)/2)', 'u', x0)
+    samples:
+      x0: [0.3, -0.7, 1.1, 0.5, -1.2]
+      y0: [0.8, 0.4, -0.6, 1.3, -0.5]
+    tolerance: 1e-6
+    shown: ['$\frac{\hbar}{i}(ix - y) = \hbar\,(x + iy)$']
+    source: {cite: mit, at: 'Problem 6(e), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-m3
+    where: 'Problem 6(e), choice box: the level N = 3 has N + 1 = 4 values of the angular momentum'
+    formula: |-
+      3 + 1
+    expected: '4'
+    tolerance: 1e-12
+    shown: ['id="p6-m"', 'For $N = 3$: $m_\ell = -3, -1, 1, 3$.']
+    source: {cite: mit, at: 'Problem 6(e), p. 5 (our own solution)'}
+    origin: page-own
