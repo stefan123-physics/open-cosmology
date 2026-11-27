@@ -1,0 +1,898 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# a numerical integral of Stokes' drag (1(a)), numerical derivatives of the Lagrangian and of the dissipation
+# function (1(b)), the equation of motion checked on the solution ż(z) (2(a)), the torque as ż dL_z/dz with a
+# numerical derivative (2(a)), the energy (3(c)), root finding (3(d), 4(c), 5(d)), numerical integrals (5(d), 5(g)),
+# and the conservation of energy along the equation of motion after the wall (5(e)).
+# Outside this file, while writing (SciPy solve_ivp, rtol 1e-11, atol 1e-12): the ladder of Problem 5(g), with the
+# switch of equations where 3 sin θ = 2 sin θ0. It gave the time of leaving 0.562970 s at 35.2644°, the landing at
+# 0.840346 s with θ̇ = −2.79065 rad/s, the smallest floor push after the wall 2.00196 m/s² × M (0.204 Mg), and the top
+# end 0.12898 m from the wall at landing. The quadratures here (p5d-time, p5g-land, p5g-thd) agree to 1e-9 or better.
+# Short names in the samples: th θ, thd θ̇, phd φ̇, l ℓ, eta η, v0 v₀, th0 θ₀, Lz0 L_z(0), D the 1 + b² + a²b²z² of
+# Problem 2, q the variable of a numerical derivative, integral or root.
+
+page: content/year-4/8.09/8-09-problem-set-2.mdx
+calcs:
+  # ---- Problem 1(a): the dissipation function, against the integral of Stokes' drag 6πηa v' from 0 to the speed
+  # v = ℓ √(θ̇² + sin²θ φ̇²)
+
+  - id: p1a-diss
+    kind: identity
+    answer: p1a-diss
+    where: 'Problem 1(a), answer box: 3πηa ℓ²(θ̇² + sin²θ φ̇²) against ∫₀^v 6πηa v′ dv′'
+    formula: 3*pi*eta*a*l**2*(thd**2 + sin(th)**2*phd**2)
+    equals: integrate('6*pi*eta*a*q', 'q', 0, l*sqrt(thd**2 + sin(th)**2*phd**2))
+    samples:
+      eta: [1.0, 0.6, 1.8]
+      a: [0.02, 0.01, 0.045]
+      l: [1.0, 0.7, 1.9]
+      th: [0.5, 1.1, 0.35]
+      thd: [0.4, 1.3, 0.25]
+      phd: [1.2, 0.6, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p1a-diss"', '\mathcal{F} = 3\pi\eta a\,\ell^2\left(\dot\theta^2 + \sin^2\theta\,\dot\phi^2\right)']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(b): θ̈ from (∂L/∂θ − ∂𝓕/∂θ̇)/(mℓ²), both derivatives numerical
+
+  - id: p1b-thdd
+    kind: identity
+    answer: p1b-thdd
+    where: 'Problem 1(b), answer box: θ̈ against (∂L/∂θ − ∂𝓕/∂θ̇)/(mℓ²) with numerical derivatives'
+    formula: sin(th)*cos(th)*phd**2 - g/l*sin(th) - 6*pi*eta*a/m*thd
+    equals: (deriv('m*l**2/2*(thd**2 + sin(q)**2*phd**2) + m*g*l*cos(q)', 'q', th, 1) - deriv('3*pi*eta*a*l**2*(q**2 + sin(th)**2*phd**2)', 'q', thd, 1))/(m*l**2)
+    samples:
+      g: [9.81, 6, 14]
+      l: [1.0, 0.7, 1.9]
+      m: [0.5, 0.2, 0.9]
+      eta: [1.0, 0.6, 1.8]
+      a: [0.02, 0.01, 0.045]
+      th: [0.5, 1.1, 0.35]
+      thd: [0.4, 1.3, 0.25]
+      phd: [1.2, 0.6, 1.9]
+    tolerance: 1e-7
+    shown: ['id="p1b-thdd"', '\ddot\theta = \sin\theta\cos\theta\,\dot\phi^2 - \frac{g}{\ell}\sin\theta - \frac{6\pi\eta a}{m}\dot\theta']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-torque
+    kind: identity
+    where: 'Problem 1(b), solution: the friction torque −∂𝓕/∂φ̇ (numerical derivative) equals −(6πηa/m) L_z with L_z = mℓ² sin²θ φ̇'
+    formula: -deriv('3*pi*eta*a*l**2*(thd**2 + sin(th)**2*q**2)', 'q', phd, 1)
+    equals: -(6*pi*eta*a/m)*m*l**2*sin(th)**2*phd
+    samples:
+      l: [1.0, 0.7, 1.9]
+      m: [0.5, 0.2, 0.9]
+      eta: [1.0, 0.6, 1.8]
+      a: [0.02, 0.01, 0.045]
+      th: [0.5, 1.1, 0.35]
+      thd: [0.4, 1.3, 0.25]
+      phd: [1.2, 0.6, 1.9]
+    tolerance: 1e-7
+    shown: ['\frac{dL_z}{dt} = -\frac{6\pi\eta a}{m}\,L_z']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-lz
+    kind: identity
+    answer: p1b-lz
+    where: 'Problem 1(b), answer box: L_z(0) exp(−6πηa t/m) against L_z(0) exp(∫₀ᵗ d ln L_z), with d ln L_z/dt = −6πηa/m integrated numerically'
+    formula: Lz0*exp(-6*pi*eta*a*t/m)
+    equals: Lz0*exp(-integrate('6*pi*eta*a/m + 0*q', 'q', 0, t))
+    samples:
+      Lz0: [1.0, 0.6, 1.7]
+      eta: [1.0, 0.6, 1.8]
+      a: [0.02, 0.01, 0.045]
+      m: [0.5, 0.2, 0.9]
+      t: [1.0, 2.5, 0.7]
+    tolerance: 1e-7
+    shown: ['id="p1b-lz"', 'L_z(t) = L_z(0)\,e^{-6\pi\eta a\,t/m}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-lz-ode
+    kind: identity
+    where: 'Problem 1(b), solution: L_z(0) exp(−6πηa t/m) solves dL_z/dt = −(6πηa/m) L_z (numerical derivative)'
+    formula: deriv('Lz0*exp(-6*pi*eta*a*q/m)', 'q', t, 1)
+    equals: -(6*pi*eta*a/m)*Lz0*exp(-6*pi*eta*a*t/m)
+    samples:
+      Lz0: [1.0, 0.6, 1.7]
+      eta: [1.0, 0.6, 1.8]
+      a: [0.02, 0.01, 0.045]
+      m: [0.5, 0.2, 0.9]
+      t: [1.0, 2.5, 0.7]
+    tolerance: 1e-7
+    shown: ['\Rightarrow\quad L_z(t) = L_z(0)']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-energy
+    kind: identity
+    where: 'Problem 1(b), solution: Σ q̇ ∂𝓕/∂q̇ = 2𝓕 for the quadratic dissipation function (numerical derivatives)'
+    formula: thd*deriv('3*pi*eta*a*l**2*(q**2 + sin(th)**2*phd**2)', 'q', thd, 1) + phd*deriv('3*pi*eta*a*l**2*(thd**2 + sin(th)**2*q**2)', 'q', phd, 1)
+    equals: 2*3*pi*eta*a*l**2*(thd**2 + sin(th)**2*phd**2)
+    samples:
+      l: [1.0, 0.7, 1.9]
+      eta: [1.0, 0.6, 1.8]
+      a: [0.02, 0.01, 0.045]
+      th: [0.5, 1.1, 0.35]
+      thd: [0.4, 1.3, 0.25]
+      phd: [1.2, 0.6, 1.9]
+    tolerance: 1e-7
+    shown: ['$dE/dt = -2\mathcal{F} = -6\pi\eta a\,v^2$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2(a): ż(z) checked on the equation of motion D z̈ + a²b² z ż² = 0, with z̈ = ż dż/dz (numerical)
+
+  - id: p2a-zdot
+    kind: identity
+    answer: p2a-zdot
+    where: 'Problem 2(a), answer box: ż(z) against the sheet''s route, ln ż − ln v0 = ∫ z̈/ż dt = −∫ₕᶻ a²b²q/(1 + b² + a²b²q²) dq (numerical integral)'
+    formula: v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2))
+    equals: v0*exp(-integrate('a**2*b**2*q/(1 + b**2 + a**2*b**2*q**2)', 'q', h, z))
+    samples:
+      a: [1.0, 0.6, 1.8]
+      b: [0.5, 1.2, 0.35]
+      z: [3.0, 2.2, 3.7]
+      h: [1.0, 0.6, 1.4]
+      v0: [1.0, 1.7, 0.6]
+    tolerance: 1e-9
+    shown: ['id="p2a-zdot"', '\dot z = v_0\sqrt{\frac{1 + b^2 + a^2b^2h^2}{1 + b^2 + a^2b^2z^2}}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-zdot-eom
+    kind: identity
+    where: 'Problem 2(a), solution: ż(z) satisfies (1 + b² + a²b²z²) ż dż/dz + a²b² z ż² = 0 (numerical derivative), and ż(h) = v0 (entry p2a-zdot-start)'
+    formula: (1 + b**2 + a**2*b**2*z**2)*v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2))*deriv('v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*q**2))', 'q', z, 1)
+    equals: -a**2*b**2*z*v0**2*(1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2)
+    samples:
+      a: [1.0, 0.6, 1.8]
+      b: [0.5, 1.2, 0.35]
+      z: [3.0, 2.2, 3.7]
+      h: [1.0, 0.6, 1.4]
+      v0: [1.0, 1.7, 0.6]
+    tolerance: 1e-7
+    shown: ['\dot z = v_0\sqrt{\frac{1 + b^2 + a^2b^2h^2}{1 + b^2 + a^2b^2z^2}}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-zdot-start
+    kind: identity
+    where: 'Problem 2(a): the formula for ż gives v0 at z = h'
+    formula: v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*h**2))
+    equals: v0
+    samples:
+      a: [1.0, 0.6]
+      b: [0.5, 1.2]
+      h: [1.0, 0.6]
+      v0: [1.0, 1.7]
+    tolerance: 1e-12
+    shown: ['the starting values $\dot z = v_0$ at $z = h$']
+    source: {cite: mit, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  # ---- Problem 2(a): the torque, against ż dL_z/dz with L_z(z) = m a b² z² ż(z) differentiated numerically
+
+  - id: p2a-torque
+    kind: identity
+    answer: p2a-torque
+    where: 'Problem 2(a), answer box: Z_θ against ż(z) times the numerical z derivative of L_z(z) = m a b² z² ż(z)'
+    formula: m*a*b**2*v0**2*z*(1 + b**2 + a**2*b**2*h**2)*(2 + 2*b**2 + a**2*b**2*z**2)/(1 + b**2 + a**2*b**2*z**2)**2
+    equals: v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2))*deriv('m*a*b**2*q**2*v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*q**2))', 'q', z, 1)
+    samples:
+      a: [1.0, 0.6, 1.8]
+      b: [0.5, 1.2, 0.35]
+      m: [1.0, 0.7, 1.6]
+      z: [3.0, 2.2, 3.7]
+      h: [1.0, 0.6, 1.4]
+      v0: [1.0, 1.7, 0.6]
+    tolerance: 1e-7
+    shown: ['id="p2a-torque"', 'Z_\theta = \frac{mab^2v_0^2\,z\left(1 + b^2 + a^2b^2h^2\right)\left(2 + 2b^2 + a^2b^2z^2\right)}{\left(1 + b^2 + a^2b^2z^2\right)^2}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-lz
+    kind: identity
+    answer: p2b-lz
+    where: 'Problem 2(b), answer box: L_z = m r² θ̇ with r = bz and θ̇ = a ż, ż from p2a-zdot'
+    formula: m*a*b**2*z**2*v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2))
+    equals: m*(b*z)**2*(a*v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2)))
+    samples:
+      a: [1.0, 0.6, 1.8]
+      b: [0.5, 1.2, 0.35]
+      m: [1.0, 0.7, 1.6]
+      z: [3.0, 2.2, 3.7]
+      h: [1.0, 0.6, 1.4]
+      v0: [1.0, 1.7, 0.6]
+    tolerance: 1e-12
+    shown: ['id="p2b-lz"', 'L_z = mab^2v_0\,z^2\sqrt{\frac{1 + b^2 + a^2b^2h^2}{1 + b^2 + a^2b^2z^2}}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-dlz
+    kind: identity
+    where: 'Problem 2(b), solution: the z derivative of L_z (numerical) against the formula on the page'
+    formula: deriv('m*a*b**2*q**2*v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*q**2))', 'q', z, 1)
+    equals: m*a*b**2*v0*sqrt(1 + b**2 + a**2*b**2*h**2)*z*(2 + 2*b**2 + a**2*b**2*z**2)/(1 + b**2 + a**2*b**2*z**2)**1.5
+    samples:
+      a: [1.0, 0.6, 1.8]
+      b: [0.5, 1.2, 0.35]
+      m: [1.0, 0.7, 1.6]
+      z: [3.0, 2.2, 3.7]
+      h: [1.0, 0.6, 1.4]
+      v0: [1.0, 1.7, 0.6]
+    tolerance: 1e-7
+    shown: ['Its $z$ derivative is $mab^2v_0\sqrt{1 + b^2 + a^2b^2h^2}\;z\left(2 + 2b^2 + a^2b^2z^2\right)/D^{3/2}$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-energy
+    kind: identity
+    where: 'Problem 2(b), solution: T = ½ m (ṙ² + r²θ̇² + ż²) with ṙ = bż, θ̇ = aż and ż(z) is ½ m v0² (1 + b² + a²b²h²) at every z'
+    formula: m/2*((b**2 + a**2*b**2*z**2 + 1)*v0**2*(1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*z**2))
+    equals: m/2*v0**2*(1 + b**2 + a**2*b**2*h**2)
+    samples:
+      a: [1.0, 0.6, 1.8]
+      b: [0.5, 1.2, 0.35]
+      m: [1.0, 0.7, 1.6]
+      z: [3.0, 2.2, 3.7]
+      h: [1.0, 0.6, 1.4]
+      v0: [1.0, 1.7, 0.6]
+    tolerance: 1e-12
+    shown: ['$T = \frac m2 D\dot z^2 = \frac m2 v_0^2\left(1 + b^2 + a^2b^2h^2\right)$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-large-z
+    kind: identity
+    where: 'Problem 2(b), check: for large z, L_z / z tends to m b v0 √(1 + b² + a²b²h²) (taken at z = 1e6)'
+    formula: m*a*b**2*1e6*v0*sqrt((1 + b**2 + a**2*b**2*h**2)/(1 + b**2 + a**2*b**2*1e12))
+    equals: m*b*v0*sqrt(1 + b**2 + a**2*b**2*h**2)
+    samples:
+      a: [1.0, 0.6]
+      b: [0.5, 1.2]
+      m: [1.0, 0.7]
+      h: [1.0, 0.6]
+      v0: [1.0, 1.7]
+    tolerance: 1e-9
+    shown: ['for large $z$ it tends to $mbv_0\sqrt{1 + b^2 + a^2b^2h^2}\;z$']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3 (our own problem): rolling, the angular acceleration, the forces, the angles
+
+  - id: p3a-roll
+    kind: identity
+    answer: p3a-roll
+    where: 'Problem 3(a), answer box: φ̇ = (R + r) θ̇ / r makes the contact point at rest: (R + r) θ̇ − r φ̇ = 0'
+    formula: (R + r)/r*thd
+    equals: solve('(R + r)*thd - r*q', 'q', 0, 100)
+    samples:
+      R: [2, 1.2, 2.8]
+      r: [0.5, 0.3, 0.7]
+      thd: [1, 0.4, 1.8]
+    tolerance: 1e-12
+    shown: ['id="p3a-roll"', 'So $\dot\phi = (R + r)\dot\theta/r$.']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3a-coin
+    where: 'Problem 3(a), check: with R = r, φ = 2θ, so one trip round (θ = 2π) turns the coin through 4π, two turns'
+    formula: (1 + 1)/1*2*pi/(2*pi)
+    expected: '2'
+    shown: ['$\phi = 2\theta$, and $\theta = 2\pi$ gives $\phi = 4\pi$']
+    source: {cite: mit, at: 'Problem 3 (our own check)'}
+    origin: page-own
+
+  - id: p3b-thdd
+    kind: identity
+    answer: p3b-thdd
+    where: 'Problem 3(b), answer box: θ̈ against the numerical θ derivative of ½θ̇² with (R + r)θ̇² = g(1 − cos θ) from energy conservation (p3c-energy)'
+    formula: g*sin(th)/(2*(R + r))
+    equals: deriv('g*(1 - cos(q))/(R + r)/2', 'q', th, 1)
+    samples:
+      g: [9.81, 6, 14]
+      R: [2, 1.2, 2.8]
+      r: [0.5, 0.3, 0.7]
+      th: [0.5, 0.25, 0.9]
+    tolerance: 1e-7
+    shown: ['id="p3b-thdd"', '\ddot\theta = \frac{g\sin\theta}{2(R + r)}, \qquad \lambda_2 = -\frac12\,mg\sin\theta']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3b-friction
+    kind: identity
+    answer: p3b-friction
+    where: 'Problem 3(b), answer box: the friction is m r φ̈ (from the φ equation), with r φ̈ = (R + r) θ̈ and θ̈ from p3b-thdd'
+    formula: m*g*sin(th)/2
+    equals: m*(R + r)*g*sin(th)/(2*(R + r))
+    samples:
+      g: [9.81, 6, 14]
+      m: [1, 0.6, 1.8]
+      R: [2, 1.2, 2.8]
+      r: [0.5, 0.3, 0.7]
+      th: [0.5, 0.25, 0.9]
+    tolerance: 1e-12
+    shown: ['id="p3b-friction"', 'the friction has size $\frac12 mg\sin\theta$']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-energy
+    kind: identity
+    where: 'Problem 3(c): the kinetic energy ½m(R + r)²θ̇² + ½mr²φ̇² with φ̇ = (R + r)θ̇/r equals the drop mg(R + r)(1 − cos θ) when (R + r)θ̇² = g(1 − cos θ)'
+    formula: m/2*(R + r)**2*(g*(1 - cos(th))/(R + r)) + m/2*r**2*((R + r)/r)**2*(g*(1 - cos(th))/(R + r))
+    equals: m*g*(R + r)*(1 - cos(th))
+    samples:
+      g: [9.81, 6]
+      m: [1, 0.6]
+      R: [2, 1.2]
+      r: [0.5, 0.3]
+      th: [0.5, 0.9]
+    tolerance: 1e-8
+    shown: ['$(R + r)\dot\theta^2 = g(1 - \cos\theta)$']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-normal
+    kind: identity
+    answer: p3c-normal
+    where: 'Problem 3(c), answer box: λ1 = −m(R + r)θ̇² + mg cos θ with (R + r)θ̇² = g(1 − cos θ)'
+    formula: m*g*(2*cos(th) - 1)
+    equals: -m*g*(1 - cos(th)) + m*g*cos(th)
+    samples:
+      g: [9.81, 6, 14]
+      m: [1, 0.6, 1.8]
+      th: [0.5, 0.25, 0.9]
+    tolerance: 1e-12
+    shown: ['id="p3c-normal"', '\lambda_1 = mg\left(2\cos\theta - 1\right)']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-angle
+    answer: p3c-angle
+    where: 'Problem 3(c), answer box: the root of 2 cos θ − 1, in degrees'
+    formula: solve('2*cos(q) - 1', 'q', 0.5, 1.5)*180/pi
+    expected: '60.0'
+    shown: ['id="p3c-angle"', 'the hoop leaves the cylinder at $\theta = 60.0^\circ$']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-particle
+    where: 'Problem 3(c), check: a particle sliding off leaves at cos θ = 2/3'
+    formula: acos(2/3)*180/pi
+    expected: '48.2'
+    shown: ['at $\cos\theta = \frac23$ ($48.2^\circ$)']
+    source: {cite: reading1, at: 'Section 1.5, eq. (1.94), p. 25'}
+    origin: page-own
+
+  - id: p3d-slip
+    answer: p3d-slip
+    where: 'Problem 3(d), answer box: the root of ½ sin θ − 0.50 (2 cos θ − 1), in degrees'
+    formula: solve('sin(q)/2 - 0.5*(2*cos(q) - 1)', 'q', 0.1, 1.0)*180/pi
+    expected: '36.9'
+    shown: ['id="p3d-slip"', '\cos\theta = \frac45, \qquad \theta = 36.9^\circ']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3d-cos
+    where: 'Problem 3(d), solution: the root of the squared condition 5c² = 4c'
+    formula: solve('5*q**2 - 4*q', 'q', 0.5, 1)
+    expected: '0.8'
+    shown: ['$c = \frac45$', 'At $\cos\theta = 0.8$, $\sin\theta = 0.6$ and $2\cos\theta - 1 = 0.6$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4: the catenary
+
+  - id: p4a-hanging
+    kind: identity
+    where: 'Problem 4(a), solution: the energy of a vertical piece hanging from height y_i to the ground, ∫₀^yi σ g y dy'
+    formula: integrate('sigma*g*q', 'q', 0, yi)
+    equals: sigma*g*yi**2/2
+    samples:
+      sigma: [1, 0.4]
+      g: [9.81, 6]
+      yi: [5, 2.5]
+    tolerance: 1e-9
+    shown: ['$\int_0^{y_i}\sigma g\,y\,dy = \frac12\sigma g\,y_i^2$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-curve
+    kind: identity
+    answer: p4b-curve
+    where: 'Problem 4(b), answer box: y = c cosh((x − x0)/c) against the root y of c arccosh(y/c) = |x − x0|, the separated first integral'
+    formula: c*cosh((x - x0)/c)
+    equals: solve('c*acosh(q/c) - abs(x - x0)', 'q', c*1.0000001, 100)
+    samples:
+      c: [2, 1.3, 2.8]
+      x: [1.5, -1.2, 0.4]
+      x0: [0.3, -0.6, 0.9]
+    tolerance: 1e-8
+    shown: ['id="p4b-curve"', 'y(x) = c\cosh\left(\frac{x - x_0}{c}\right)']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-first-integral
+    kind: identity
+    where: 'Problem 4(b), solution: y = c cosh((x − x0)/c) satisfies the first integral y/√(1 + y′²) = c, with y′ a numerical derivative'
+    formula: c*cosh((x - x0)/c)/sqrt(1 + deriv('c*cosh((q - x0)/c)', 'q', x, 1)**2)
+    equals: c
+    samples:
+      c: [2, 1.3, 2.8]
+      x: [1.5, -1.2, 0.4]
+      x0: [0.3, -0.6, 0.9]
+    tolerance: 1e-8
+    shown: ['so $y/\sqrt{1 + y''^2} = c$, a constant']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-el
+    kind: identity
+    where: 'Problem 4(b): the catenary also satisfies the second-order Euler–Lagrange equation of f = y√(1 + y′²), y y″ = 1 + y′² (numerical derivatives)'
+    formula: c*cosh((x - x0)/c)*deriv('c*cosh((q - x0)/c)', 'q', x, 2)
+    equals: 1 + deriv('c*cosh((q - x0)/c)', 'q', x, 1)**2
+    samples:
+      c: [2, 1.3, 2.8]
+      x: [1.5, -1.2, 0.4]
+      x0: [0.3, -0.6, 0.9]
+    tolerance: 1e-6
+    shown: ['a catenary, with its lowest point at $(x_0, c)$']
+    source: {cite: reading1, at: 'Section 1.5, eq. (1.78), p. 22'}
+    origin: page-own
+
+  - id: p4c-c
+    answer: p4c-c
+    where: 'Problem 4(c), answer box: the larger root of c cosh(2.0/c) = 5.0 (metres)'
+    formula: solve('q*cosh(2/q) - 5', 'q', 3, 5)
+    expected: '4.55'
+    shown: ['id="p4c-c"', 'with its lowest point at $c = 4.55$ m']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-c-digits
+    where: 'Problem 4(c), solution: the larger root to four figures'
+    formula: solve('q*cosh(2/q) - 5', 'q', 3, 5)
+    expected: '4.554'
+    shown: ['two roots, $c = 4.554$ m and $c = 0.790$ m', '$4.554\cosh(2.0/4.554) = 4.554 \times 1.098 = 5.00$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-deep
+    where: 'Problem 4(c), solution: the smaller root of c cosh(2.0/c) = 5.0'
+    formula: solve('q*cosh(2/q) - 5', 'q', 0.5, 1.5)
+    expected: '0.790'
+    shown: ['$c = 0.790$ m']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-cosh
+    where: 'Problem 4(c), check: cosh(2.0/4.554)'
+    formula: cosh(2/4.554)
+    expected: '1.098'
+    shown: ['4.554 \times 1.098 = 5.00']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-check
+    where: 'Problem 4(c), check: 4.554 cosh(2.0/4.554)'
+    formula: 4.554*cosh(2/4.554)
+    expected: '5.00'
+    shown: ['= 5.00$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-sag
+    where: 'Problem 4(c), solution: the sag 5.0 − c'
+    formula: 5 - solve('q*cosh(2/q) - 5', 'q', 3, 5)
+    expected: '0.45'
+    shown: ['a sag of $0.45$ m']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-energy-formula
+    kind: identity
+    where: 'Problem 4(c), solution: ∫ y ds over the symmetric span equals ½ c [d + c sinh(d/c)] (numerical integral)'
+    formula: integrate('c*cosh(q/c)**2', 'q', -d/2, d/2)
+    equals: c/2*(d + c*sinh(d/c))
+    samples:
+      c: [4.554, 0.79, 2]
+      d: [4, 4, 3]
+    tolerance: 1e-9
+    shown: ['$\sigma g\int y\,ds = \frac12\sigma g\,c\left[d + c\sinh(d/c)\right]$']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-energy-shallow
+    where: 'Problem 4(c), solution: the energy of the shallow catenary, in units of σg times m²'
+    formula: solve('q*cosh(2/q) - 5', 'q', 3, 5)/2*(4 + solve('q*cosh(2/q) - 5', 'q', 3, 5)*sinh(4/solve('q*cosh(2/q) - 5', 'q', 3, 5)))
+    expected: '19.4'
+    shown: ['is $19.4\,\sigma g$ (in m²) for the shallow curve']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-energy-deep
+    where: 'Problem 4(c), solution: the energy of the deep catenary, in units of σg times m²'
+    formula: solve('q*cosh(2/q) - 5', 'q', 0.5, 1.5)/2*(4 + solve('q*cosh(2/q) - 5', 'q', 0.5, 1.5)*sinh(4/solve('q*cosh(2/q) - 5', 'q', 0.5, 1.5)))
+    expected: '26.3'
+    shown: ['$26.3\,\sigma g$ for the deep one']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-energy-drop
+    where: 'Problem 4(c), solution: a rope dropped straight down from both pulleys, 2 × ½ × 5.0², in units of σg times m²'
+    formula: 2*5**2/2
+    expected: '25.0'
+    shown: ['the $25.0\,\sigma g$ of a rope dropped straight down']
+    source: {cite: mit, at: 'Problem 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-umin
+    where: 'Problem 4(c), check: where cosh u / u is smallest, the root of its derivative u sinh u − cosh u'
+    formula: solve('q*sinh(q) - cosh(q)', 'q', 0.5, 2)
+    expected: '1.200'
+    shown: ['at $u = 1.200$']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4c-coshmin
+    where: 'Problem 4(c), check: the smallest value of cosh u / u'
+    formula: cosh(solve('q*sinh(q) - cosh(q)', 'q', 0.5, 2))/solve('q*sinh(q) - cosh(q)', 'q', 0.5, 2)
+    expected: '1.509'
+    shown: ['$Y \ge 1.509 \times d/2$']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  - id: p4c-dmax
+    where: 'Problem 4(c), check: the largest separation for pulleys at 5.0 m, 2 × 5.0 / 1.509'
+    formula: 2*5/(cosh(solve('q*sinh(q) - cosh(q)', 'q', 0.5, 2))/solve('q*sinh(q) - cosh(q)', 'q', 0.5, 2))
+    expected: '6.6'
+    shown: ['a separation of up to $6.6$ m']
+    source: {cite: mit, at: 'Problem 4 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: the ladder (ℓ = l in the formulas)
+
+  - id: p5a-inertia
+    kind: identity
+    answer: p5a-inertia
+    where: 'Problem 5(a), answer box: Mℓ²/12 against the numerical integral of (M/ℓ) s² from −ℓ/2 to ℓ/2'
+    formula: M*l**2/12
+    equals: integrate('M/l*q**2', 'q', -l/2, l/2)
+    samples:
+      M: [10, 3, 17]
+      l: [3, 1.5, 4.5]
+    tolerance: 1e-9
+    shown: ['id="p5a-inertia"', '$I_{\text{cm}} = \int_{-\ell/2}^{\ell/2}\frac{M}{\ell}s^2\,ds = \frac{M\ell^2}{12}$']
+    source: {cite: mit, at: 'Problem 5(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5a-parallel
+    kind: identity
+    where: 'Problem 5(a), check: Mℓ²/24 + (M/2)(ℓ²/4) = Mℓ²/6 = ½ (Mℓ²/3)'
+    formula: M*l**2/24 + M/2*l**2/4
+    equals: M*l**2/3/2
+    samples:
+      M: [10, 3]
+      l: [3, 1.5]
+    tolerance: 1e-12
+    shown: ['= \frac{M\ell^2}{6}\dot\theta^2$, the same']
+    source: {cite: mit, at: 'Problem 5(a) (our own check)'}
+    origin: page-own
+
+  - id: p5c-thd2
+    kind: identity
+    answer: p5c-thd2
+    where: 'Problem 5(c), answer box: θ̇² against 2 ∫ θ̈ dθ from θ0 with θ̈ = −(3g/2ℓ) cos θ (entry p5c-multipliers), integrated numerically'
+    formula: 3*g/l*(sin(th0) - sin(th))
+    equals: 2*integrate('3*g/(2*l)*cos(q)', 'q', th, th0)
+    samples:
+      g: [9.81, 6, 14]
+      l: [3, 1.5, 4.5]
+      th0: [1.0472, 1.3, 0.95]
+      th: [0.7, 0.9, 0.3]
+    tolerance: 1e-9
+    shown: ['id="p5c-thd2"', '\dot\theta^2 = \frac{3g}{\ell}\left(\sin\theta_0 - \sin\theta\right)']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-multipliers
+    kind: identity
+    where: 'Problem 5(c), check: θ̈ = −(3g/2ℓ) cos θ satisfies the θ equation of 5(b), (ℓ²/12)θ̈ = (ℓ/2) sin θ ẍ − (ℓ/2) cos θ (ÿ + g), with x, y on the constraints and any θ̇'
+    formula: l**2/12*(-3*g/(2*l)*cos(th))
+    equals: l/2*sin(th)*(-l/2*(sin(th)*(-3*g/(2*l)*cos(th)) + cos(th)*thd**2)) - l/2*cos(th)*(l/2*(cos(th)*(-3*g/(2*l)*cos(th)) - sin(th)*thd**2) + g)
+    samples:
+      g: [9.81, 6, 14]
+      l: [3, 1.5, 4.5]
+      th: [0.7, 0.9, 0.3]
+      thd: [-1, -2.5, 0.4]
+    tolerance: 1e-12
+    shown: ['\frac{M\ell^2}{3}\ddot\theta = -\frac{Mg\ell}{2}\cos\theta']
+    source: {cite: mit, at: 'Problem 5(c) (our own check)'}
+    origin: page-own
+
+  - id: p5d-lambda1
+    kind: identity
+    where: 'Problem 5(d), solution: λ1 = Mẍ = −M(ℓ/2)(sin θ θ̈ + cos θ θ̇²) with θ̈ = −(3g/2ℓ) cos θ and θ̇² from 5(c)'
+    formula: 3*M*g/4*cos(th)*(3*sin(th) - 2*sin(th0))
+    equals: -M*l/2*(sin(th)*(-3*g/(2*l)*cos(th)) + cos(th)*3*g/l*(sin(th0) - sin(th)))
+    samples:
+      M: [10, 3, 17]
+      g: [9.81, 6, 14]
+      l: [3, 1.5, 4.5]
+      th0: [1.0472, 1.3, 0.95]
+      th: [0.7, 0.9, 0.3]
+    tolerance: 1e-12
+    shown: ['\lambda_1 = M\ddot x = \frac{3Mg}{4}\cos\theta\left(3\sin\theta - 2\sin\theta_0\right)']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-lambda2
+    kind: identity
+    where: 'Problem 5(d), solution: λ2 = M(ÿ + g) = M[(ℓ/2)(cos θ θ̈ − sin θ θ̇²) + g], and its two forms on the page'
+    formula: M*(l/2*(cos(th)*(-3*g/(2*l)*cos(th)) - sin(th)*3*g/l*(sin(th0) - sin(th))) + g)
+    equals: M*g/4*((3*sin(th) - sin(th0))**2 + cos(th0)**2)
+    samples:
+      M: [10, 3, 17]
+      g: [9.81, 6, 14]
+      l: [3, 1.5, 4.5]
+      th0: [1.0472, 1.3, 0.95]
+      th: [0.7, 0.9, 0.3]
+    tolerance: 1e-12
+    shown: ['\frac{Mg}{4}\left[\left(3\sin\theta - \sin\theta_0\right)^2 + \cos^2\theta_0\right]']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-lambda2-form
+    kind: identity
+    where: 'Problem 5(d), solution: (1 + 9 sin²θ − 6 sin θ sin θ0) = (3 sin θ − sin θ0)² + cos²θ0'
+    formula: 1 + 9*sin(th)**2 - 6*sin(th)*sin(th0)
+    equals: (3*sin(th) - sin(th0))**2 + cos(th0)**2
+    samples:
+      th0: [1.0472, 1.3, 0.95]
+      th: [0.7, 0.9, 0.3]
+    tolerance: 1e-12
+    shown: ['\lambda_2 = M(\ddot y + g) = \frac{Mg}{4}\left(1 + 9\sin^2\theta - 6\sin\theta\sin\theta_0\right)']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-height
+    kind: identity
+    answer: p5d-height
+    where: 'Problem 5(d), answer box: the height ℓ sin θ1 of the upper end, with θ1 the root of 3 sin θ − 2 sin θ0'
+    formula: 2/3*l*sin(th0)
+    equals: l*sin(solve('3*sin(q) - 2*sin(th0)', 'q', 0.01, th0))
+    samples:
+      l: [3, 1.5, 4.5]
+      th0: [1.0472, 1.3, 0.95]
+    tolerance: 1e-9
+    shown: ['id="p5d-height"', 'at the height $\ell\sin\theta = \frac23\,\ell\sin\theta_0$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-angle
+    answer: p5d-angle
+    where: 'Problem 5(d), answer box: the angle where the wall''s push vanishes, for θ0 = 60°, in degrees'
+    formula: solve('3*sin(q) - 2*sin(pi/3)', 'q', 0.1, 1)*180/pi
+    expected: '35.3'
+    shown: ['id="p5d-angle"', '$\sin\theta = \frac23\cdot 0.8660 = 0.5774$ and $\theta = 35.3^\circ$']
+    source: {cite: mit, at: 'Problem 5(d) (our own numbers)'}
+    origin: page-own
+
+  - id: p5d-sin
+    where: 'Problem 5(d), solution: (2/3) sin 60°'
+    formula: 2/3*sin(pi/3)
+    expected: '0.5774'
+    shown: ['= 0.5774$']
+    source: {cite: mit, at: 'Problem 5(d) (our own numbers)'}
+    origin: page-own
+
+  - id: p5d-angle-digits
+    where: 'Problem 5(d), solution: the angle of leaving to two decimals, the lower limit of the integral'
+    formula: asin(2/3*sin(pi/3))*180/pi
+    expected: '35.26'
+    shown: ['from $35.26^\circ$ to $60^\circ$', 'domain={[35.26, 60]}']
+    source: {cite: mit, at: 'Problem 5(d) (our own numbers)'}
+    origin: page-own
+
+  - id: p5d-top
+    where: 'Problem 5(d), solution: the height of the top, 3.0 m × (2/3) sin 60°'
+    formula: 3.0*2/3*sin(pi/3)
+    expected: '1.73'
+    shown: ['the top is at $1.73$ m']
+    source: {cite: mit, at: 'Problem 5(d) (our own numbers)'}
+    origin: page-own
+
+  - id: p5d-time
+    answer: p5d-time
+    where: 'Problem 5(d), answer box: √(ℓ/3g) ∫ dθ/√(sin θ0 − sin θ) from θ1 to θ0, ℓ = 3.0 m, g = 9.81 m/s², θ0 = 60°'
+    formula: sqrt(3.0/(3*9.81))*integrate('1/sqrt(sin(pi/3) - sin(q))', 'q', asin(2/3*sin(pi/3)), pi/3)
+    expected: '0.563'
+    shown: ['id="p5d-time"', 'gives $t = 0.563$ s']
+    source: {cite: mit, at: 'Problem 5(d) (our own numbers)'}
+    origin: page-own
+
+  - id: p5d-upright
+    where: 'Problem 5(d), check: released upright, the ladder leaves the wall at sin θ = 2/3'
+    formula: asin(2/3)*180/pi
+    expected: '41.8'
+    shown: ['leaves the wall at $\sin\theta = \frac23$, $41.8^\circ$']
+    source: {cite: mit, at: 'Problem 5(d) (our own check)'}
+    origin: page-own
+
+  - id: p5d-plot
+    kind: fact
+    where: 'Problem 5(d), graph: the two curves are λ1/Mg and λ2/Mg of the solution with θ0 = 60° (sin(pi/3)), from 35.26° (entry p5d-angle-digits) to 60°'
+    shown: ['0.75*cos(x*pi/180)*(3*sin(x*pi/180) - 2*sin(pi/3))', '0.25*(1 + 9*sin(x*pi/180)^2 - 6*sin(x*pi/180)*sin(pi/3))']
+    source: {cite: mit, at: 'Problem 5(d) (our own graph)'}
+    origin: page-own
+
+  - id: p5e-thdd
+    kind: identity
+    answer: p5e-thdd
+    where: 'Problem 5(e), answer box: along θ̈ = (3 sin θ cos θ θ̇² − (6g/ℓ) cos θ)/(1 + 3cos²θ) the energy (M/2)ẋ² + (Mℓ²/8)(cos²θ + ⅓)θ̇² + (Mgℓ/2) sin θ is constant: setting its time derivative to zero (numerical θ derivative of the θ-dependent parts) gives θ̈'
+    formula: (3*sin(th)*cos(th)*thd**2 - 6*g/l*cos(th))/(1 + 3*cos(th)**2)
+    equals: -deriv('l**2/8*(cos(q)**2 + 1/3)*thd**2 + g*l/2*sin(q)', 'q', th, 1)/(l**2/4*(cos(th)**2 + 1/3))
+    samples:
+      g: [9.81, 6, 14]
+      l: [3, 1.5, 4.5]
+      th: [0.5, 0.3, 0.6]
+      thd: [-2.5, -3.5, -1.8]
+    tolerance: 1e-7
+    shown: ['id="p5e-thdd"', '\left(1 + 3\cos^2\theta\right)\ddot\theta = 3\sin\theta\cos\theta\,\dot\theta^2 - \frac{6g}{\ell}\cos\theta']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5e-continuity
+    kind: identity
+    where: 'Problem 5(e), check: at the moment of leaving (sin θ = (2/3) sin θ0, θ̇² = (3g/2ℓ) sin θ) the new θ̈ equals −(3g/2ℓ) cos θ'
+    formula: (3*sin(asin(2/3*sin(th0)))*cos(asin(2/3*sin(th0)))*3*g/(2*l)*2/3*sin(th0) - 6*g/l*cos(asin(2/3*sin(th0))))/(1 + 3*cos(asin(2/3*sin(th0)))**2)
+    equals: -3*g/(2*l)*cos(asin(2/3*sin(th0)))
+    samples:
+      g: [9.81, 6]
+      l: [3, 1.5]
+      th0: [1.0472, 1.3]
+    tolerance: 1e-12
+    shown: ['is exactly $-\frac{3g}{2\ell}\cos\theta$: the angular acceleration does not jump']
+    source: {cite: mit, at: 'Problem 5(e) (our own check)'}
+    origin: page-own
+
+  - id: p5f-floor
+    kind: identity
+    answer: p5f-floor
+    where: 'Problem 5(f), answer box: λ2 = −(Mℓ/6) θ̈ / cos θ (θ equation of 5(e)) against M(ÿ + g) with ÿ = (ℓ/2)(cos θ θ̈ − sin θ θ̇²), θ̈ from p5e-thdd'
+    formula: M*(g - l/2*sin(th)*thd**2)/(1 + 3*cos(th)**2)
+    equals: M*(l/2*(cos(th)*(3*sin(th)*cos(th)*thd**2 - 6*g/l*cos(th))/(1 + 3*cos(th)**2) - sin(th)*thd**2) + g)
+    samples:
+      M: [10, 3, 17]
+      g: [9.81, 9.2, 9.9]
+      l: [3, 2.2, 3.8]
+      th: [0.5, 0.3, 0.6]
+      thd: [-2, -1.4, -1.8]
+    tolerance: 1e-12
+    shown: ['id="p5f-floor"', '\lambda_2 = \frac{M\left(g - \frac{\ell}{2}\sin\theta\,\dot\theta^2\right)}{1 + 3\cos^2\theta}']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-thd2
+    kind: identity
+    where: 'Problem 5(f), solution: θ̇² after the wall from the energy (M/2)ẋ1² + (Mℓ²/8)(cos²θ + ⅓)θ̇² + (Mgℓ/2) sin θ = (Mgℓ/2) sin θ0, with ẋ1² = (3gℓ/8) s1³ and s1 = (2/3) s0'
+    formula: 3*g/l*(4*(sin(th0) - sin(th)) - 1.5*(2/3*sin(th0))**3)/(1 + 3*cos(th)**2)
+    equals: (g*l/2*(sin(th0) - sin(th)) - 1/2*(3*g*l/8)*(2/3*sin(th0))**3)/(l**2/8*(cos(th)**2 + 1/3))
+    samples:
+      g: [9.81, 6]
+      l: [3, 1.5]
+      th0: [1.0472, 1.3]
+      th: [0.3, 0.5]
+    tolerance: 1e-12
+    shown: ['\dot\theta^2 = \frac{3g}{\ell}\,\frac{4\left(s_0 - s\right) - \frac32 s_1^3}{1 + 3\cos^2\theta}', 'so $\dot x_1^2 = \frac{3g\ell}{8}s_1^3$']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-xdot
+    kind: identity
+    where: 'Problem 5(f), solution: ẋ1² = (ℓ²/4) s1² θ̇1² with θ̇1² = (3g/2ℓ) s1 is (3gℓ/8) s1³'
+    formula: l**2/4*s1**2*(3*g/(2*l)*s1)
+    equals: 3*g*l/8*s1**3
+    samples:
+      g: [9.81, 6]
+      l: [3, 1.5]
+      s1: [0.577, 0.4]
+    tolerance: 1e-12
+    shown: ['Then $\dot\theta_1^2 = \frac{3g}{2\ell}s_1$']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-bound
+    kind: identity
+    where: 'Problem 5(f), solution: (3s/2)[4(s0 − s) − (3/2)s1³] − (4 − 3s²) = 9 s s1 − 3s² − (9/4) s s1³ − 4 with s0 = (3/2) s1'
+    formula: 3*s/2*(4*(1.5*s1 - s) - 1.5*s1**3) - (4 - 3*s**2)
+    equals: 9*s*s1 - 3*s**2 - 9/4*s*s1**3 - 4
+    samples:
+      s: [0.3, 0.5, 0.1]
+      s1: [0.577, 0.6, 0.4]
+    tolerance: 1e-12
+    shown: ['this is $9ss_1 - 3s^2 - \frac94 ss_1^3 < 4$']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-max
+    where: 'Problem 5(f), solution: the largest value of 6 s1² with s1 ≤ 2/3'
+    formula: 6*(2/3)**2
+    expected: '2.667'
+    shown: ['$6 \cdot \frac49 = \frac83 < 4$']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-run
+    kind: fact
+    where: 'Problem 5(f) and 5(g): the smallest floor push after the wall in our solve_ivp run (see the header): 2.00196 m/s² × M, 0.204 Mg; before the wall it is at least Mg/4 (p5d-lambda2 at sin θ = (2/3) sin θ0)'
+    shown: ['the floor''s push never falls below $0.20\,Mg$', 'The floor''s push stays at $0.20\,Mg$ or more.']
+    source: {cite: mit, at: 'Problem 5(g) (our own computation)'}
+    origin: page-own
+
+  - id: p5g-land
+    answer: p5g-land
+    where: 'Problem 5(g), answer box: the time to land, as the quadrature of 1/|θ̇| in the two phases (θ̇² from 5(c) and 5(f)); our solve_ivp run gave 0.840346 s'
+    formula: sqrt(3.0/(3*9.81))*integrate('1/sqrt(sin(pi/3) - sin(q))', 'q', asin(2/3*sin(pi/3)), pi/3) + integrate('1/sqrt(3*9.81/3.0*(4*(sin(pi/3) - sin(q)) - 1.5*(2/3*sin(pi/3))**3)/(1 + 3*cos(q)**2))', 'q', 0, asin(2/3*sin(pi/3)))
+    expected: '0.840'
+    shown: ['id="p5g-land"', 'lies flat at $t = 0.840$ s']
+    source: {cite: mit, at: 'Problem 5(g) (our own numbers)'}
+    origin: page-own
+
+  - id: p5g-leave
+    where: 'Problem 5(g), solution: the time of leaving the wall in the run (= p5d-time)'
+    formula: sqrt(3.0/(3*9.81))*integrate('1/sqrt(sin(pi/3) - sin(q))', 'q', asin(2/3*sin(pi/3)), pi/3)
+    expected: '0.563'
+    shown: ['The ladder leaves the wall at $t = 0.563$ s, at $35.3^\circ$']
+    source: {cite: mit, at: 'Problem 5(g) (our own numbers)'}
+    origin: page-own
+
+  - id: p5g-thd
+    where: 'Problem 5(g), solution: θ̇ at landing, −√(θ̇²) at θ = 0 from p5f-thd2'
+    formula: -sqrt(3*9.81/3.0*(4*sin(pi/3) - 1.5*(2/3*sin(pi/3))**3)/4)
+    expected: '-2.79'
+    shown: ['$\dot\theta = -2.79$ rad/s']
+    source: {cite: mit, at: 'Problem 5(g) (our own numbers)'}
+    origin: page-own
+
+  - id: p5g-first10
+    where: 'Problem 5(g), solution: the time to fall from 60° to 50°'
+    formula: sqrt(3.0/(3*9.81))*integrate('1/sqrt(sin(pi/3) - sin(q))', 'q', 50*pi/180, pi/3)
+    expected: '0.37'
+    shown: ['$0.37$ s of the $0.84$ s go into the first $10^\circ$']
+    source: {cite: mit, at: 'Problem 5(g) (our own numbers)'}
+    origin: page-own
+
+  - id: p5g-total-short
+    where: 'Problem 5(g), solution: the landing time to two figures (p5g-land)'
+    formula: sqrt(3.0/(3*9.81))*integrate('1/sqrt(sin(pi/3) - sin(q))', 'q', asin(2/3*sin(pi/3)), pi/3) + integrate('1/sqrt(3*9.81/3.0*(4*(sin(pi/3) - sin(q)) - 1.5*(2/3*sin(pi/3))**3)/(1 + 3*cos(q)**2))', 'q', 0, asin(2/3*sin(pi/3)))
+    expected: '0.84'
+    shown: ['of the $0.84$ s']
+    source: {cite: mit, at: 'Problem 5(g) (our own numbers)'}
+    origin: page-own
+
+  - id: p5g-top
+    kind: fact
+    where: 'Problem 5(g), solution: the distance of the top end from the wall at landing in our solve_ivp run, 0.12898 m (see the header); the top moves away from the wall throughout'
+    shown: ['it is $0.13$ m from the wall when the ladder lands']
+    source: {cite: mit, at: 'Problem 5(g) (our own computation)'}
+    origin: page-own
+
+  - id: p5g-method
+    kind: fact
+    where: 'Problem 5(g), solution: our own integration method (SciPy solve_ivp, rtol 1e-11)'
+    shown: ['We solved the two equations with SciPy''s `solve_ivp` (relative tolerance $10^{-11}$)']
+    source: {cite: mit, at: 'Problem 5(g) (our own choice)'}
+    origin: page-own
+
+  - id: p5-numbers
+    kind: fact
+    where: 'Problem 5: our numbers ℓ = 3.0 m, θ0 = 60°, g = 9.81 m/s²'
+    shown: ['take $\ell = 3.0$ m, $\theta_0 = 60^\circ$ and $g = 9.81\ \text{m/s}^2$']
+    source: {cite: mit, at: 'Problem 5 (our own numbers)'}
+    origin: page-own
