@@ -1,0 +1,311 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-1.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the kinetic energy of two bodies minus that of their centre of mass (1(a)), numerical derivatives of the Lagrangian
+# or the Hamiltonian (1(b), 1(c), 3(a), 3(c)), the kinetic energy built from the Cartesian velocities of the two balls
+# (2(a)), Cramer's rule for the momenta (2(b)), the eigenvalues of the small-swing matrices (2(a)), and a root finder (3(c), 4(c)).
+# Outside this file, while writing (SymPy, .venv): the equations of motion of the double pendulum, its Hamiltonian for
+# equal masses and all four of Hamilton's equations (C1, C2 form), the bead's equation of motion, and the example of
+# Problem 5, all agree with the page.
+# Short names in the samples: th = θ, thd = θ̇, phd = φ̇, pphi = p_φ, th1, th2 the two angles, l1, l2 the rod lengths,
+# w = ω, q the variable of a numerical derivative or root.
+
+page: content/year-4/8.09/8-09-problem-set-1.mdx
+calcs:
+  # ---- Problem 1(a): the reduced mass, against ½m1v1² + ½m2v2² − ½MV² = ½μ(v1 − v2)² in one dimension
+
+  - id: p1a-mu
+    kind: identity
+    answer: p1a-mu
+    where: 'Problem 1(a), answer box: μ = m1m2/(m1 + m2), against the kinetic energy of two bodies minus that of their centre of mass, divided by ½(v1 − v2)²'
+    formula: m1*m2/(m1 + m2)
+    equals: (m1*v1**2 + m2*v2**2 - (m1*v1 + m2*v2)**2/(m1 + m2))/(v1 - v2)**2
+    samples:
+      m1: [1, 0.5, 1.5, 0.7]
+      m2: [1, 1.5, 0.6, 1.2]
+      v1: [2, -1, 0.5, 3]
+      v2: [0.5, 2, -1.5, 1]
+    tolerance: 1e-10
+    shown: ['id="p1a-mu"', '\mu = \frac{m_1m_2}{m_1 + m_2}']
+    source: {cite: reading1, at: 'Section 1.3, eq. (1.49), p. 12 (applied to two bodies, our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(b): r̈ = (1/μ) ∂L/∂r, since ∂L/∂ṙ = μṙ; ∂L/∂r from a numerical derivative of the relative Lagrangian
+
+  - id: p1b-rdd
+    kind: identity
+    answer: p1b-rdd
+    where: 'Problem 1(b), answer box: r̈ against (1/μ) ∂L_rel/∂r from a numerical derivative'
+    formula: r*thd**2 + r*sin(th)**2*phd**2 - G*(m1 + m2)/r**2
+    equals: deriv('0.5*(m1*m2/(m1 + m2))*(q**2*thd**2 + q**2*sin(th)**2*phd**2) + G*m1*m2/q', 'q', r)/(m1*m2/(m1 + m2))
+    samples:
+      r: [1, 2, 3, 1.5]
+      th: [0.3, 0.8, 1.3, 1.0]
+      thd: [0.2, 0.5, 1, 0.7]
+      phd: [1, 0.3, 0.6, 0.2]
+      G: [1, 0.5, 2, 1.2]
+      m1: [1, 0.5, 1.5, 0.8]
+      m2: [1, 1.5, 0.6, 1.1]
+    tolerance: 1e-6
+    shown: ['id="p1b-rdd"', '\ddot r = r\dot\theta^2 + r\sin^2\theta\,\dot\phi^2 - G(m_1 + m_2)/r^2']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-kepler
+    kind: identity
+    where: 'Problem 1(b), check: a circular orbit at θ = π/2 has r̈ = 0 when φ̇² = G(m1 + m2)/r³'
+    formula: r*sin(pi/2)**2*(G*(m1 + m2)/r**3)
+    equals: G*(m1 + m2)/r**2
+    samples:
+      r: [1, 2, 3]
+      G: [1, 0.5, 2]
+      m1: [1, 0.5, 1.5]
+      m2: [1, 1.5, 0.6]
+    tolerance: 1e-12
+    shown: ['$\dot\phi^2 = G(m_1 + m_2)/r^3$']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 1(c): ṗθ = −∂H/∂θ from a numerical derivative of the θ-dependent part of H
+
+  - id: p1c-pth
+    kind: identity
+    answer: p1c-pth
+    where: 'Problem 1(c), answer box: ṗθ against −∂H/∂θ from a numerical derivative of pφ²/(2μr²sin²θ)'
+    formula: pphi**2*cos(th)/(mu*r**2*sin(th)**3)
+    equals: -deriv('pphi**2/(2*mu*r**2*sin(q)**2)', 'q', th)
+    samples:
+      pphi: [1, 0.5, 2, 1.3]
+      th: [0.3, 0.8, 1.3, 1.0]
+      mu: [0.5, 0.2, 1, 0.7]
+      r: [1, 2, 3, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p1c-pth"', '\dot p_\theta = \frac{p_\phi^2\cos\theta}{\mu r^2\sin^3\theta}']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2(a): the cross term of T, from the Cartesian velocities of the second ball:
+  # T(1, 1) − T(1, 0) − T(0, 1) is the coefficient of θ̇1θ̇2 (the first ball has no cross term).
+
+  - id: p2a-cross
+    kind: identity
+    answer: p2a-cross
+    where: 'Problem 2(a), answer box: the coefficient of θ̇1θ̇2 in T, against T(1, 1) − T(1, 0) − T(0, 1) from the velocity of the second ball'
+    formula: m2*l1*l2*cos(th1 - th2)
+    equals: 0.5*m2*((l1*cos(th1) + l2*cos(th2))**2 + (l1*sin(th1) + l2*sin(th2))**2) - 0.5*m2*l1**2 - 0.5*m2*l2**2
+    samples:
+      m1: [1, 0.5, 2, 1.3]
+      m2: [1, 1.5, 0.6, 2]
+      l1: [1, 0.5, 2, 1.2]
+      l2: [1, 1.8, 0.7, 0.5]
+      th1: [0.1, 0.3, 0.5, 0.2]
+      th2: [0.7, 1.2, 0.9, 1.0]
+    tolerance: 1e-10
+    shown: ['id="p2a-cross"', 'm_2\ell_1\ell_2\cos(\theta_1 - \theta_2)\,\dot\theta_1\dot\theta_2']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2(a), our addition: normal modes for m1 = m2, l1 = l2. With T = mℓ²[[2, 1], [1, 1]] and
+  # V'' = mgℓ[[2, 0], [0, 1]], ω²ℓ/g solves λ² − 4λ + 2 = 0 (det(K − λM) = (2 − 2λ)(1 − λ) − λ²): λ = 2 ± √2.
+
+  - id: p2a-ratio
+    answer: p2a-ratio
+    where: 'Problem 2(a), answer box: ratio of the normal-mode frequencies, from the two roots of λ² − 4λ + 2 = 0 found numerically'
+    formula: sqrt(solve('(2 - 2*q)*(1 - q) - q**2', 'q', 2, 4)/solve('(2 - 2*q)*(1 - q) - q**2', 'q', 0, 1))
+    expected: '2.414'
+    tolerance: 1%
+    shown: ['id="p2a-ratio"', '\sqrt{(2 + \sqrt2)/(2 - \sqrt2)} = 1 + \sqrt2 = 2.414']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2a-ratio-exact
+    kind: identity
+    where: 'Problem 2(a), solution: √((2 + √2)/(2 − √2)) = 1 + √2'
+    formula: sqrt((2 + sqrt(2))/(2 - sqrt(2)))
+    equals: 1 + sqrt(2)
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['\sqrt{(2 + \sqrt2)/(2 - \sqrt2)} = 1 + \sqrt2']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 2(b): θ̇1 from p = Tθ̇ by Cramer's rule, with det = m²ℓ1²ℓ2²(2 − cos²Δ):
+  # θ̇1 = (p1 mℓ2² − p2 mℓ1ℓ2 cosΔ)/det.
+
+  - id: p2b-th1dot
+    kind: identity
+    answer: p2b-th1dot
+    where: "Problem 2(b), answer box: θ̇1 against Cramer's rule for p1 = 2mℓ1²θ̇1 + mℓ1ℓ2cosΔ θ̇2, p2 = mℓ2²θ̇2 + mℓ1ℓ2cosΔ θ̇1"
+    formula: (l2*p1 - l1*cos(th1 - th2)*p2)/(m*l1**2*l2*(1 + sin(th1 - th2)**2))
+    equals: (p1*m*l2**2 - p2*m*l1*l2*cos(th1 - th2))/(2*m**2*l1**2*l2**2 - (m*l1*l2*cos(th1 - th2))**2)
+    samples:
+      p1: [1, 2, 3, 1.5]
+      p2: [-2, -0.5, -1, -1.5]
+      m: [1, 0.5, 2, 1.3]
+      l1: [1, 0.5, 2, 1.2]
+      l2: [1, 1.8, 0.7, 0.5]
+      th1: [0, 0.3, 0.15, 0.2]
+      th2: [0.4, 0.6, 0.5, 0.45]
+    tolerance: 1e-10
+    shown: ['id="p2b-th1dot"', '\dot\theta_1 = \frac{\ell_2p_1 - \ell_1\cos\Delta\,p_2}{m\ell_1^2\ell_2\left(1 + \sin^2\Delta\right)}']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-check
+    kind: identity
+    where: 'Problem 2(b), check: at Δ = 0 and ℓ1 = ℓ2 = ℓ, θ̇1 = (p1 − p2)/(mℓ²)'
+    formula: (l*p1 - l*cos(0)*p2)/(m*l**2*l*(1 + sin(0)**2))
+    equals: (p1 - p2)/(m*l**2)
+    samples:
+      p1: [1, 2, 3]
+      p2: [-2, -0.5, 1]
+      m: [1, 0.5, 2]
+      l: [1, 0.5, 2]
+    tolerance: 1e-12
+    shown: ['$\dot\theta_1 = (p_1 - p_2)/(m\ell_1^2)$']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: the bead on the spinning hoop (our own problem)
+
+  - id: p3a-thdd
+    kind: identity
+    answer: p3a-thdd
+    where: 'Problem 3(a), answer box: θ̈ against (1/(mR²)) ∂L/∂θ from a numerical derivative (∂L/∂θ̇ = mR²θ̇)'
+    formula: sin(th)*(w**2*cos(th) + g/R)
+    equals: deriv('0.5*R**2*w**2*sin(q)**2 - g*R*cos(q)', 'q', th)/R**2
+    samples:
+      th: [1.8, 2.2, 2.9, 2.5]
+      w: [0.5, 1.5, 3, 2]
+      g: [9.81, 5, 15, 10]
+      R: [0.2, 1, 2, 0.5]
+    tolerance: 1e-6
+    shown: ['id="p3a-thdd"', '\ddot\theta = \sin\theta\left(\omega^2\cos\theta + \frac{g}{R}\right)']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-w0
+    kind: identity
+    answer: p3c-w0
+    where: 'Problem 3(c), answer box: ω0 = √(g/R), against the root of ω²R − g found numerically (where |cos θ0| = g/(ω²R) reaches 1)'
+    formula: sqrt(g/R)
+    equals: solve('q**2*R - g', 'q', 0.01, 100)
+    samples:
+      g: [9.81, 5, 15, 10]
+      R: [0.2, 1, 2, 0.5]
+    tolerance: 1e-6
+    shown: ['id="p3c-w0"', '\omega_0 = \sqrt{\frac{g}{R}}']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-numbers
+    kind: fact
+    where: 'Problem 3(c), statement: our own numbers'
+    shown: ['$R = 0.20$ m, $\omega = 10.0$ rad/s and $g = 9.81$ m/s² (our numbers)']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-w0-num
+    where: 'Problem 3(c), solution: ω0 = √(9.81/0.20) in rad/s'
+    formula: sqrt(9.81/0.20)
+    expected: '7.00'
+    shown: ['$\omega_0 = \sqrt{9.81/0.20} = 7.00$ rad/s']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-cos
+    where: 'Problem 3(c), solution: cos α0 = g/(ω²R)'
+    formula: 9.81/(10.0**2*0.20)
+    expected: '0.4905'
+    shown: ['$\cos\alpha_0 = 9.81/(100 \times 0.20) = 0.4905$']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-angle
+    answer: p3c-angle
+    where: 'Problem 3(c), answer box: α0 in degrees, from the root of θ̈ = 0 on (π/2, π) found numerically, α0 = π − θ0'
+    formula: (pi - solve('100*cos(q) + 9.81/0.20', 'q', 1.6, 3.1))*180/pi
+    expected: '60.6'
+    tolerance: 1%
+    shown: ['id="p3c-angle"', '$\alpha_0 = 60.6°$']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-osc
+    answer: p3c-osc
+    where: 'Problem 3(c), answer box: ω_osc = √(−f′(θ0)) with f(θ) = sinθ (ω² cosθ + g/R), from a numerical derivative at θ0 = π − arccos(0.4905)'
+    formula: sqrt(-deriv('sin(q)*(100*cos(q) + 9.81/0.20)', 'q', pi - acos(9.81/20)))
+    expected: '8.71'
+    tolerance: 1%
+    shown: ['id="p3c-osc"', '\omega_{\text{osc}} = 10.0 \times \sqrt{1 - 0.4905^2} = 8.71$ rad/s']
+    source: {cite: mit, at: 'Problem 3 (our own problem)'}
+    origin: page-own
+
+  - id: p3c-osc-formula
+    kind: identity
+    where: 'Problem 3(c), solution: ω_osc = ω sin θ0 = ω √(1 − (g/(ω²R))²), against √(−f′(θ0)) from a numerical derivative'
+    formula: w*sqrt(1 - (g/(w**2*R))**2)
+    equals: sqrt(-deriv('sin(q)*(w**2*cos(q) + g/R)', 'q', pi - acos(g/(w**2*R))))
+    samples:
+      w: [10, 3, 5]
+      g: [9.81, 5, 9.81]
+      R: [0.2, 1, 0.5]
+    tolerance: 1e-6
+    shown: ['\omega_{\text{osc}} = \omega\sin\theta_0 = \omega\sqrt{1 - \left(\frac{g}{\omega^2R}\right)^2}']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 4(c): steady turning
+
+  - id: p4c-r0
+    kind: identity
+    answer: p4c-r0
+    where: 'Problem 4(c), answer box: r0 = kb/(k − μω²), against the root of μrω² − k(r − b) found numerically'
+    formula: k*b/(k - mu*w**2)
+    equals: solve('mu*q*w**2 - k*(q - b)', 'q', b, 100*b)
+    samples:
+      k: [2, 3, 4, 2.5]
+      b: [0.2, 0.5, 1, 0.7]
+      mu: [0.2, 0.5, 0.3, 0.4]
+      w: [0.5, 1.5, 1, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p4c-r0"', 'r_0 = \frac{kb}{k - \mu\omega^2}']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4c-numbers
+    kind: fact
+    where: 'Problem 4(c), statement: our own numbers'
+    shown: ['$m_1 = 0.30$ kg, $m_2 = 0.20$ kg and $k = 12.0$ N/m (our numbers)']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-mu
+    where: 'Problem 4(c), solution: μ = 0.30 × 0.20/0.50 in kg'
+    formula: 0.30*0.20/(0.30 + 0.20)
+    expected: '0.12'
+    shown: ['$\mu = 0.30 \times 0.20/0.50 = 0.12$ kg']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-wmax
+    answer: p4c-wmax
+    where: 'Problem 4(c), answer box: the largest angular velocity √(k/μ) in rad/s'
+    formula: sqrt(12.0/(0.30*0.20/(0.30 + 0.20)))
+    expected: '10.0'
+    tolerance: 1%
+    shown: ['id="p4c-wmax"', '$\sqrt{12.0/0.12} = 10.0$ rad/s']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-small
+    kind: limit
+    where: 'Problem 4(c), check: for small ω, r0 ≈ b(1 + μω²/k)'
+    formula: k*b/(k - mu*w**2)
+    limit: b*(1 + mu*w**2/k)
+    vary: {w: [0.1, 0.03, 0.01, 0.003]}
+    inputs: {k: 3, b: 0.5, mu: 0.4}
+    tolerance: 1e-6
+    shown: ['r_0 \approx b\left(1 + \mu\omega^2/k\right)']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own check)'}
+    origin: page-own
