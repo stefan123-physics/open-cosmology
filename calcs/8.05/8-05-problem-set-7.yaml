@@ -1,0 +1,734 @@
+# Calculations on content/year-3/8.05/8-05-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 integrates the Hamiltonian and the classical precession rate numerically; Problem 2 puts the answers back
+# into the Heisenberg equations, integrated numerically; Problem 3 lets the commutator act on a test wavefunction and
+# integrates the force twice; Problem 4 checks the commutator on a test wavefunction (one dimension), uses a scaling
+# argument in place of the commutator, and integrates the hydrogen ground state; Problem 5 integrates the Heisenberg
+# equations and the Gaussian's expectation values; Problem 6 checks the eigenvalue equation and the overlap of the two
+# ground states numerically; Problem 7 fixes the phase by the overlap with the ground state, integrated numerically.
+
+page: content/year-3/8.05/8-05-problem-set-7.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points, 10 + 5 + 10 + 10 + 10 + 10 + 10 over its seven problems'
+    formula: |-
+      10 + 5 + 10 + 10 + 10 + 10 + 10
+    expected: '65'
+    shown: ['MIT gives the points per problem, 65 in all.']
+    source: {cite: mit, at: 'Problems 1 to 7, pp. 1–3'}
+    origin: page-own
+
+  - id: intro-constants
+    kind: fact
+    where: 'How to answer: the constants of Problems 4 and 5, CODATA 2018 rounded (electron mass 9.1093837015e-31 kg, hbar 1.054571817e-34 J s, Rydberg energy 13.605693123 eV)'
+    shown: ['the electron''s mass $9.109\times 10^{-31}$ kg and $\hbar = 1.0546\times 10^{-34}$ J s in Problem 5, and the energy $-13.6$ eV of the ground state of hydrogen in Problem 4']
+    source: {cite: codata, at: 'electron mass, reduced Planck constant, Rydberg constant times hc in eV'}
+    origin: later-data
+
+  # ---- Problem 1: a spin in an oscillating field
+
+  - id: p1-beta
+    kind: identity
+    answer: p1-beta
+    where: 'Problem 1(a), answer box: β(t) = −(1/ħ)∫H dt′ with S_z taken out, that is the integral of λB₀cos(ωt′), done numerically'
+    formula: |-
+      lam*B0*sin(omega*t)/omega
+    equals: |-
+      integrate('lam*B0*cos(omega*s)', 's', 0, t)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B0: [2.0, 0.6, 1.1, 1.5, 0.8]
+      omega: [0.5, 1.2, 2.0, 0.8, 1.6]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p1-beta"', '<Formula label="The exponent for the oscillating field"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1'}
+    origin: page-own
+
+  - id: p1-beta-slow
+    kind: limit
+    where: 'Problem 1(a), check: for times much shorter than 1/ω (here ω → 0 at fixed t) the angle is λB₀t, the constant-field result'
+    inputs: {lam: 1.3, B0: 0.7, t: 0.9}
+    formula: |-
+      lam*B0*sin(omega*t)/omega
+    limit: |-
+      lam*B0*t
+    vary:
+      omega: [1, 0.3, 0.1, 0.01, 0.001]
+    tolerance: 1e-6
+    shown: ['$\beta \approx \lambda B_0 t$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: classical precession. The spin turns about z at the rate −λB(t) of the moment.
+  - id: p1-phi
+    kind: identity
+    answer: p1-phi
+    where: 'Problem 1(b), answer box: the azimuthal angle as the integral of the precession rate −λB(t′), done numerically'
+    formula: |-
+      -lam*B0*sin(omega*t)/omega
+    equals: |-
+      -integrate('lam*B0*cos(omega*s)', 's', 0, t)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B0: [2.0, 0.6, 1.1, 1.5, 0.8]
+      omega: [0.5, 1.2, 2.0, 0.8, 1.6]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p1-phi"', '<Formula label="The angles of the spin"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1'}
+    origin: page-own
+
+  - id: p1-rate
+    kind: identity
+    where: 'Problem 1(b), check: the rate of turning dφ/dt by numerical differentiation is −λB₀cos(ωt)'
+    formula: |-
+      -lam*B0*cos(omega*t)
+    equals: |-
+      deriv('-lam*B0*sin(omega*s)/omega', 's', t)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B0: [2.0, 0.6, 1.1, 1.5, 0.8]
+      omega: [0.5, 1.2, 2.0, 0.8, 1.6]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-7
+    shown: ['$d\phi/dt = -\lambda B_0\cos\omega t = -\lambda B(t)$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: P(−) = (1 − ⟨σ_x⟩)/2, and ⟨σ_x⟩ = cos φ for a spin in the xy-plane at the azimuthal angle φ.
+  - id: p1-prob
+    kind: identity
+    answer: p1-prob
+    where: 'Problem 1(c), answer box: against (1 − cos φ)/2, with φ from the numerically integrated precession rate'
+    formula: |-
+      sin(lam*B0*sin(omega*t)/(2*omega))**2
+    equals: |-
+      (1 - cos(integrate('lam*B0*cos(omega*s)', 's', 0, t)))/2
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B0: [2.0, 0.6, 1.1, 1.5, 0.8]
+      omega: [0.5, 1.2, 2.0, 0.8, 1.6]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p1-prob"', '<Formula label="Probability of spin down along x"']
+    source: {cite: mit, at: 'Problem 1(c), p. 1'}
+    origin: page-own
+
+  # The largest probability at frequency s is sin²(λB₀/(2s)) while λB₀/s ≤ π; it first reaches 1 where cos(λB₀/(2s)) = 0.
+  - id: p1-wmax
+    kind: identity
+    answer: p1-wmax
+    where: 'Problem 1(d), answer box: the largest frequency at which cos(λB₀/(2ω)) vanishes, found numerically between λB₀/5 and λB₀'
+    formula: |-
+      lam*B0/pi
+    equals: |-
+      solve('cos(lam*B0/(2*s))', 's', lam*B0/5, lam*B0)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B0: [2.0, 0.6, 1.1, 1.5, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p1-wmax"', '<Formula label="Condition for a full flip"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1'}
+    origin: page-own
+
+  - id: p1-half
+    answer: p1-half
+    where: 'Problem 1(d), answer box (our addition): the largest probability for ω = λB₀/2, sin²(λB₀/(2ω)) with λB₀ = 1.4 and ω = 0.7'
+    inputs: {lam: 1.4, B0: 1.0, omega: 0.7}
+    formula: |-
+      sin(lam*B0/(2*omega))**2
+    expected: '0.708'
+    shown: ['id="p1-half"', '$\sin^2(2/2) = \sin^2 1 \approx 0.708$']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1-quarter
+    where: 'Problem 1(d), hint of a listed mistake: with ω = 2λB₀/π the largest angle is π/2 and the probability reaches sin²(π/4)'
+    formula: |-
+      sin(pi/4)**2
+    expected: '0.5'
+    shown: ['sin²(π/4) = 1/2']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: Heisenberg operators of the spin. Sx and Sy stand for the operators at t = 0; the answers are put
+  # back into the Heisenberg equations dS_x/dt = λB S_y, dS_y/dt = −λB S_x, integrated numerically from t = 0.
+
+  - id: p2-sx
+    kind: identity
+    answer: p2-sx
+    where: 'Problem 2, answer box: S_x(t) = S_x + ∫ λB S_y(s) ds with the page''s S_y(s), integrated numerically'
+    formula: |-
+      Sx*cos(lam*B*t) + Sy*sin(lam*B*t)
+    equals: |-
+      Sx + integrate('lam*B*(Sy*cos(lam*B*s) - Sx*sin(lam*B*s))', 's', 0, t)
+    samples:
+      Sx: [0.5, 1.1, 2.0, 0.8, 1.6]
+      Sy: [1.7, 0.6, 1.2, 2.0, 0.9]
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 0.6, 1.1, 1.5, 0.8]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p2-sx"', '<Formula label="Heisenberg operators of the spin"']
+    source: {cite: mit, at: 'Problem 2, p. 1'}
+    origin: page-own
+
+  - id: p2-sy
+    kind: identity
+    answer: p2-sy
+    where: 'Problem 2, answer box: S_y(t) = S_y − ∫ λB S_x(s) ds with the page''s S_x(s), integrated numerically'
+    formula: |-
+      Sy*cos(lam*B*t) - Sx*sin(lam*B*t)
+    equals: |-
+      Sy - integrate('lam*B*(Sx*cos(lam*B*s) + Sy*sin(lam*B*s))', 's', 0, t)
+    samples:
+      Sx: [0.5, 1.1, 2.0, 0.8, 1.6]
+      Sy: [1.7, 0.6, 1.2, 2.0, 0.9]
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 0.6, 1.1, 1.5, 0.8]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-9
+    shown: ['id="p2-sy"', '<Formula label="Equations of motion for the spin"']
+    source: {cite: mit, at: 'Problem 2, p. 1'}
+    origin: page-own
+
+  # The sign of the equations of motion, from the Pauli matrices σx = [[0,1],[1,0]], σz = diag(1,−1), σy = [[0,−i],[i,0]]:
+  # (σxσz − σzσx) has the top-right entry 1·(−1) − 1·1 = −2, and −2i σy has the top-right entry −2i·(−i) = −2.
+  - id: p2-comm
+    where: 'Problem 2, hint of a listed mistake: [S_x, S_z] = −iħ S_y, checked on the top-right entry of the Pauli matrices: (σxσz − σzσx)₁₂ = −2 = (−2i σy)₁₂'
+    formula: |-
+      1*(-1) - 1*1
+    expected: '-2'
+    shown: ['[S_x, S_z] = −iħ S_y gives']
+    source: {cite: reading2, at: 'eq. (2.17)'}
+    origin: page-own
+
+  # Independent route: the state of Problem 1 with a constant field has β = λBt and P(−x) = sin²(β/2), so ⟨S_x⟩ = (ħ/2)(1 − 2P).
+  - id: p2-expect
+    kind: identity
+    where: 'Problem 2, check: ⟨S_x(t)⟩ in |x;+⟩ in units of ħ (Sx → 1/2, Sy → 0), against (1 − 2 sin²(λBt/2))/2 from the probabilities of Problem 1'
+    formula: |-
+      0.5*cos(lam*B*t) + 0*sin(lam*B*t)
+    equals: |-
+      0.5*(1 - 2*sin(lam*B*t/2)**2)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      B: [2.0, 0.6, 1.1, 1.5, 0.8]
+      t: [0.2, 0.5, 0.7, 1.0, 1.2]
+    tolerance: 1e-12
+    shown: ['$\langle\hat S_x(t)\rangle = \frac{\hbar}{2}\cos\lambda Bt$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: Ehrenfest's theorem
+
+  - id: p3-free
+    kind: limit
+    answer: p3-free
+    where: 'Problem 3(b), answer box: the limit E₀ → 0 of the driven result of part (d)'
+    inputs: {x0: 0.7, p0: 1.3, t: 1.1, m: 0.8, q: 1.5, omega: 1.2}
+    formula: |-
+      x0 + p0*t/m
+    limit: |-
+      x0 + p0*t/m + q*E0*(sin(omega*t) - omega*t)/(m*omega**2)
+    vary:
+      E0: [1, 0.1, 0.01, 0.0001, 0.0000001]
+    tolerance: 1e-6
+    shown: ['id="p3-free"', '<Formula label="Mean position of a free particle"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2'}
+    origin: page-own
+
+  # Independent route: let the commutator act on the test wavefunction ψ = exp(−(y − 1)²/3), with ħ = m = qE₀ = 1.
+  # [H(t1), H(t2)]ψ = (sin ωt2 − sin ωt1)[K, x]ψ with [K, x]ψ = −(xψ)″/2 + xψ″/2, and iħ(qE₀/m) c p̂ψ = c ψ′.
+  - id: p3-comm
+    kind: identity
+    answer: p3-comm
+    where: 'Problem 3(c), answer box: the commutator acting on a test wavefunction, with numerical second derivatives, divided by ψ′'
+    formula: |-
+      sin(omega*t1) - sin(omega*t2)
+    equals: |-
+      (sin(omega*t2) - sin(omega*t1))*(-0.5*deriv('y*exp(-(y - 1)**2/3)', 'y', x1, 2) + 0.5*x1*deriv('exp(-(y - 1)**2/3)', 'y', x1, 2))/deriv('exp(-(y - 1)**2/3)', 'y', x1)
+    samples:
+      omega: [0.5, 0.8, 1.0, 1.3, 1.5]
+      t1: [0.1, 0.2, 0.3, 0.4, 0.5]
+      t2: [0.6, 0.7, 0.8, 0.9, 1.0]
+      x1: [-1.2, 0.4, 1.6, -0.3, 2.1]
+    tolerance: 1e-5
+    shown: ['id="p3-comm"', '<Formula label="Hamiltonians at two times"']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p3-momentum
+    kind: identity
+    where: 'Problem 3(d): the mean momentum, against the force −qE₀ sin(ωt′) integrated numerically'
+    formula: |-
+      p0 - q*E0*(1 - cos(omega*t))/omega
+    equals: |-
+      p0 + integrate('-q*E0*sin(omega*s)', 's', 0, t)
+    samples:
+      p0: [0.5, 1.1, 2.0, 0.8, 1.6]
+      q: [1.7, 0.6, 1.2, 2.0, 0.9]
+      E0: [0.5, 0.9, 1.3, 1.7, 2.0]
+      omega: [0.6, 1.8, 1.1, 1.5, 0.8]
+      t: [0.4, 0.7, 0.9, 1.2, 1.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Mean momentum of the driven particle"']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-driven
+    kind: identity
+    answer: p3-driven
+    where: 'Problem 3(d), answer box: Newton''s law for the mean position, the force −qE₀ sin(ωt) integrated twice numerically'
+    formula: |-
+      x0 + p0*t/m + q*E0*(sin(omega*t) - omega*t)/(m*omega**2)
+    equals: |-
+      x0 + p0*t/m + integrate("integrate('-q*E0*sin(omega*u)/m', 'u', 0, s)", 's', 0, t)
+    samples:
+      x0: [0.5, 1.1, 2.0, 0.8, 1.6]
+      p0: [1.7, 0.6, 1.2, 2.0, 0.9]
+      m: [0.5, 0.9, 1.3, 1.7, 2.0]
+      q: [1.7, 0.6, 1.2, 2.0, 0.9]
+      E0: [0.5, 0.9, 1.3, 1.7, 2.0]
+      omega: [0.6, 1.8, 1.1, 1.5, 0.8]
+      t: [0.4, 0.7, 0.9, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p3-driven"', '<Formula label="Mean position of the driven particle"']
+    source: {cite: mit, at: 'Problem 3(d), p. 2'}
+    origin: page-own
+
+  - id: p3-driven-small
+    kind: limit
+    where: 'Problem 3(d), check: for small t the extra displacement is −qE₀ω t³/(6m)'
+    inputs: {q: 1.5, E0: 0.8, m: 1.2, omega: 1.0}
+    formula: |-
+      q*E0*(sin(omega*t) - omega*t)/(m*omega**2)
+    limit: |-
+      -q*E0*omega*t**3/(6*m)
+    vary:
+      t: [0.5, 0.2, 0.1, 0.05, 0.01]
+    tolerance: 1e-4
+    shown: ['$-qE_0\,\omega\,t^3/(6m)$']
+    source: {cite: mit, at: 'Problem 3(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the virial theorem
+
+  # One-dimensional version on the test wavefunction ψ = exp(−y²/2) with V = y⁴ and ħ = m = 1: Hψ = (−(y² − 1)/2 + y⁴)ψ,
+  # x̂p̂ψ = i y²ψ, and [x̂p̂, H]ψ/i = −y(Hψ)′ + (y²ψ)″/2 − y⁶ψ must equal (p̂²ψ − yV′ψ) = (1 − y² − 4y⁴)ψ.
+  - id: p4-form
+    kind: identity
+    where: 'Problem 4(a), choice box: [x̂p̂, H]/(iħ) = p̂²/m − xV′ on a test wavefunction in one dimension, with numerical derivatives'
+    formula: |-
+      (1 - x1**2 - 4*x1**4)*exp(-x1**2/2)
+    equals: |-
+      -x1*deriv('(-(y**2 - 1)/2 + y**4)*exp(-y**2/2)', 'y', x1) + 0.5*deriv('y**2*exp(-y**2/2)', 'y', x1, 2) - x1**6*exp(-x1**2/2)
+    samples:
+      x1: [-1.2, 0.4, 1.1, -0.3, 0.8]
+    tolerance: 1e-5
+    shown: ['id="p4-form"', '<Formula label="Rate of change of r·p"']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-slope
+    kind: identity
+    where: 'Problem 4(c): r dV/dr = −kV for V = c/r^k, by numerical differentiation'
+    formula: |-
+      -k*c0/r0**k
+    equals: |-
+      r0*deriv('c0/s**k', 's', r0)
+    samples:
+      k: [1, 2, 3, 4, 1]
+      c0: [-1.0, 0.7, -2.0, 1.3, 2.5]
+      r0: [0.6, 1.0, 1.4, 1.9, 2.3]
+    tolerance: 1e-7
+    shown: ['<Formula label="r times the slope of a power law"']
+    source: {cite: mit, at: 'Problem 4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: scaling instead of the commutator. Stretching a stationary state, ψ(r) → u^(3/2) ψ(ur), gives the
+  # energy u²⟨T⟩ + u^k⟨V⟩, which must be stationary at u = 1. With ⟨V⟩ = −1 the solver finds ⟨T⟩ (called s).
+  - id: p4-ratio
+    kind: identity
+    answer: p4-ratio
+    where: 'Problem 4(c), answer box (our addition): E/⟨V⟩ with ⟨T⟩ from the scaling argument, d/du (u²⟨T⟩ + u^k⟨V⟩) = 0 at u = 1, solved numerically'
+    formula: |-
+      1 - k/2
+    equals: |-
+      (solve("deriv('u**2*s + u**k*(-1)', 'u', 1)", 's', 0, 10) + (-1))/(-1)
+    samples:
+      k: [1, 2, 3, 4, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p4-ratio"', '<Formula label="The expectation value of the rate of change"']
+    source: {cite: mit, at: 'Problem 4(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-t
+    answer: p4-t
+    where: 'Problem 4(c), answer box (our addition): ⟨T⟩ = −E for k = 1'
+    inputs: {E1: -13.6 eV}
+    formula: |-
+      -E1
+    expected: 13.6 eV
+    shown: ['id="p4-t"', '$\langle T\rangle = +13.6$ eV']
+    source: {cite: mit, at: 'Problem 4(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-v
+    answer: p4-v
+    where: 'Problem 4(c), answer box (our addition): ⟨V⟩ = 2E for k = 1'
+    inputs: {E1: -13.6 eV}
+    formula: |-
+      2*E1
+    expected: -27.2 eV
+    shown: ['id="p4-v"', 'this gives $\langle V\rangle = -27.2$ eV']
+    source: {cite: mit, at: 'Problem 4(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  # Hydrogen ground state exp(−r/a₀)/√(π a₀³) in units ħ = m = a₀ = 1: ⟨T⟩ = ½∫|ψ′|² 4πr² dr, ⟨V⟩ = −∫ψ² (1/r) 4πr² dr.
+  - id: p4-hydrogen
+    where: 'Problem 4(c), check: ⟨T⟩/⟨V⟩ in the hydrogen ground state, by numerical integration'
+    formula: |-
+      (0.5*integrate('4*s**2*exp(-2*s)', 's', 0, 60))/(-integrate('4*s*exp(-2*s)', 's', 0, 60))
+    expected: '-0.5'
+    shown: ['a ratio of $-\frac{1}{2}$']
+    source: {cite: mit, at: 'Problem 4(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: a wave packet under a constant force
+
+  - id: p5-xh
+    kind: identity
+    answer: p5-xh
+    where: 'Problem 5(a), answer box: x̂_H(t) = x̂ + ∫ p̂_H(s)/m ds with p̂_H(s) = p̂ − g s, integrated numerically (x and p stand for the operators at t = 0)'
+    formula: |-
+      x + p*t/m - g*t**2/(2*m)
+    equals: |-
+      x + integrate('(p - g*s)/m', 's', 0, t)
+    samples:
+      x: [0.5, 1.1, 2.0, 0.8, 1.6]
+      p: [1.7, 0.6, 1.2, 2.0, 0.9]
+      m: [0.5, 0.9, 1.3, 1.7, 2.0]
+      g: [2.0, 0.6, 1.1, 1.5, 0.8]
+      t: [0.3, 0.7, 0.9, 1.2, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p5-xh"', '<Formula label="Heisenberg operators for a constant force"']
+    source: {cite: mit, at: 'Problem 5(a), p. 3'}
+    origin: page-own
+
+  - id: p5-mean
+    kind: identity
+    answer: p5-mean
+    where: 'Problem 5(b), answer box: a classical particle from rest at the origin under the force −g, the acceleration integrated twice numerically'
+    formula: |-
+      -g*t**2/(2*m)
+    equals: |-
+      integrate("integrate('-g/m', 'u', 0, s)", 's', 0, t)
+    samples:
+      m: [0.5, 0.9, 1.3, 1.7, 2.0]
+      g: [2.0, 0.6, 1.1, 1.5, 0.8]
+      t: [0.3, 0.7, 0.9, 1.2, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p5-mean"', '<Formula label="Mean position of the falling packet"']
+    source: {cite: mit, at: 'Problem 5(b), p. 3'}
+    origin: page-own
+
+  - id: p5-norm
+    kind: identity
+    where: 'Problem 5(b), check: the normalisation constant of the Gaussian, by numerical integration'
+    formula: |-
+      (pi*D**2)**(-0.25)
+    equals: |-
+      1/sqrt(integrate('exp(-y**2/D**2)', 'y', -15, 15))
+    samples:
+      D: [0.6, 0.8, 1.0, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['$N = (\pi\Delta^2)^{-1/4}$']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-x2
+    kind: identity
+    where: 'Problem 5(c): ⟨x²⟩ in the Gaussian, by numerical integration'
+    formula: |-
+      D**2/2
+    equals: |-
+      integrate('y**2*exp(-y**2/D**2)', 'y', -15, 15)/integrate('exp(-y**2/D**2)', 'y', -15, 15)
+    samples:
+      D: [0.6, 0.8, 1.0, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['<Formula label="Expectation values in the Gaussian"']
+    source: {cite: mit, at: 'Problem 5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ⟨x̂p̂⟩ = (ħ/i) ∫ψ x ψ′ dx / ∫ψ² dx: the integral ratio must be −1/2, so that ⟨x̂p̂⟩ = iħ/2 and ⟨x̂p̂ + p̂x̂⟩ = 0.
+  - id: p5-cross
+    where: 'Problem 5(c): ∫ψ x ψ′ dx / ∫ψ² dx for the Gaussian with Δ = 1.3, with a numerical derivative'
+    inputs: {D: 1.3}
+    formula: |-
+      integrate("y*exp(-y**2/(2*D**2))*deriv('exp(-u**2/(2*D**2))', 'u', y)", 'y', -15, 15)/integrate('exp(-y**2/D**2)', 'y', -15, 15)
+    expected: '-0.5'
+    tolerance: 1e-6
+    shown: ['= -\frac{\hbar}{2i} = \frac{i\hbar}{2}$']
+    source: {cite: mit, at: 'Problem 5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent route: λ = ⟨p²⟩/m² with ⟨p²⟩ = ħ² ∫(ψ′)² dx / ∫ψ² dx, the derivative taken numerically.
+  - id: p5-lam
+    kind: identity
+    answer: p5-lam
+    where: 'Problem 5(c), answer box: ⟨p²⟩/m² for the Gaussian, by numerical differentiation and integration'
+    formula: |-
+      hbar**2/(2*m**2*D**2)
+    equals: |-
+      hbar**2*integrate("deriv('exp(-u**2/(2*D**2))', 'u', y)**2", 'y', -15, 15)/integrate('exp(-y**2/D**2)', 'y', -15, 15)/m**2
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.7]
+      m: [0.5, 0.9, 1.3, 1.7, 2.0]
+      D: [0.6, 0.8, 1.0, 1.2, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p5-lam"', '<Formula label="The squared uncertainty of the position"']
+    source: {cite: mit, at: 'Problem 5(c), p. 3'}
+    origin: page-own
+
+  - id: p5-time
+    answer: p5-time
+    where: 'Problem 5(c), answer box (our addition): the time mΔ²/ħ at which the squared uncertainty has doubled, for an electron with Δ = 1.0 nm'
+    inputs: {me: 9.1093837e-31 kg, D: 1.0e-9 m}
+    formula: |-
+      me*D**2/hbar
+    expected: 8.64 fs
+    shown: ['id="p5-time"', '<Formula label="Doubling time for the electron"']
+    source: {cite: codata, at: 'electron mass, reduced Planck constant'}
+    origin: page-own
+
+  - id: p5-time-rounded
+    where: 'Problem 5(c), formula: the same time from the rounded constants printed on the page'
+    inputs: {me: 9.109e-31 kg, D: 1.0e-9 m, hb: 1.0546e-34 J*s}
+    formula: |-
+      me*D**2/hb
+    expected: 8.64e-15 s
+    shown: ['\approx 8.64\times 10^{-15}\ \text{s} = 8.64\ \text{fs}"']
+    source: {cite: codata, at: 'electron mass, reduced Planck constant'}
+    origin: page-own
+
+  # ---- Problem 6: the shifted oscillator. The wavefunction exp(−mω(s − F/(mω²))²/(2ħ)) is put into the eigenvalue
+  # equation of H = p̂²/2m + mω²x²/2 − Fx with a numerical second derivative, at a point x1.
+
+  - id: p6-e0
+    kind: identity
+    answer: p6-e0
+    where: 'Problem 6(a), answer box: (Hψ)/ψ at a sample point for the shifted Gaussian, with a numerical second derivative'
+    formula: |-
+      hbar*omega/2 - F**2/(2*m*omega**2)
+    equals: |-
+      -hbar**2/(2*m)*deriv('exp(-m*omega*(s - F/(m*omega**2))**2/(2*hbar))', 's', x1, 2)/exp(-m*omega*(x1 - F/(m*omega**2))**2/(2*hbar)) + m*omega**2*x1**2/2 - F*x1
+    samples:
+      hbar: [1.0, 0.7, 1.5, 2.0, 0.9]
+      m: [1.0, 1.5, 2.0, 0.8, 1.2]
+      omega: [1.0, 1.2, 0.9, 1.5, 1.1]
+      F: [0.6, 0.5, 2.0, 1.5, 0.8]
+      x1: [0.3, 1.0, -0.4, 1.4, 0.7]
+    tolerance: 1e-5
+    shown: ['id="p6-e0"', '<Formula label="Ground-state energy and mean position"']
+    source: {cite: mit, at: 'Problem 6(a), p. 3'}
+    origin: page-own
+
+  - id: p6-x
+    kind: identity
+    answer: p6-x
+    where: 'Problem 6(a), answer box: the mean position in the wavefunction that the entry p6-e0 shows to be an eigenfunction, by numerical integration'
+    formula: |-
+      F/(m*omega**2)
+    equals: |-
+      integrate('y*exp(-m*omega*(y - F/(m*omega**2))**2/hbar)', 'y', -25, 25)/integrate('exp(-m*omega*(y - F/(m*omega**2))**2/hbar)', 'y', -25, 25)
+    samples:
+      hbar: [1.0, 0.7, 1.5, 2.0, 0.9]
+      m: [1.0, 1.5, 2.0, 0.8, 1.2]
+      omega: [1.0, 1.2, 0.9, 1.5, 1.1]
+      F: [1.0, 0.5, 2.0, 1.5, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p6-x"', '<Formula label="The Hamiltonian in the shifted variable"']
+    source: {cite: mit, at: 'Problem 6(a), p. 3'}
+    origin: page-own
+
+  - id: p6-balance
+    kind: identity
+    where: 'Problem 6(a), check: the classical resting point, where the spring force balances F, solved numerically'
+    formula: |-
+      F/(m*omega**2)
+    equals: |-
+      solve('m*omega**2*s - F', 's', 0, 50)
+    samples:
+      m: [1.0, 1.5, 2.0, 0.8, 1.2]
+      omega: [1.0, 1.2, 0.9, 1.5, 1.1]
+      F: [1.0, 0.5, 2.0, 1.5, 0.8]
+    tolerance: 1e-8
+    shown: ['$x_0$ is where the spring force $m\omega^2x_0$ balances $F$']
+    source: {cite: mit, at: 'Problem 6(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent route: N e^(α a†)|0⟩ with N = e^(−α²/2) has the overlap ⟨0|0′⟩ = e^(−α²/2) with the old ground state.
+  # The overlap of the two normalised Gaussians is integrated numerically; α = √(−2 ln overlap).
+  - id: p6-alpha
+    kind: identity
+    answer: p6-alpha
+    where: 'Problem 6(b), answer box: α from the numerically integrated overlap of the old and the shifted ground-state Gaussians'
+    formula: |-
+      F/sqrt(2*m*hbar*omega**3)
+    equals: |-
+      sqrt(-2*log(integrate('exp(-m*omega*y**2/(2*hbar))*exp(-m*omega*(y - F/(m*omega**2))**2/(2*hbar))', 'y', -25, 25)/integrate('exp(-m*omega*y**2/hbar)', 'y', -25, 25)))
+    samples:
+      hbar: [1.0, 0.7, 1.5, 2.0, 0.9]
+      m: [1.0, 1.5, 2.0, 0.8, 1.2]
+      omega: [1.0, 1.2, 0.9, 1.5, 1.1]
+      F: [1.0, 0.5, 2.0, 1.5, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p6-alpha"', '<Formula label="The coefficient in the exponent"', '$N = e^{-\alpha^2/2}$']
+    source: {cite: mit, at: 'Problem 6(b), p. 3'}
+    origin: page-own
+
+  # ---- Problem 7: the wavefunction of a coherent state
+
+  - id: p7-exponent-x
+    kind: identity
+    where: 'Problem 7(a): the coefficient of i x̂ in the exponent, (α − α*)/(i√2 d) with Im α = p₀d/(√2 ħ)'
+    formula: |-
+      p0/hbar
+    equals: |-
+      2*(p0*d/(sqrt(2)*hbar))/(sqrt(2)*d)
+    samples:
+      p0: [0.5, 1.0, 1.5, 0.8, 1.2]
+      hbar: [1.0, 1.0, 1.5, 0.8, 2.0]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+    tolerance: 1e-12
+    shown: ['<Formula label="The exponent worked out"']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-exponent-p
+    kind: identity
+    where: 'Problem 7(a): the coefficient of −i p̂ in the exponent, d(α + α*)/(√2 ħ) with Re α = x₀/(√2 d)'
+    formula: |-
+      x0/hbar
+    equals: |-
+      d*2*(x0/(sqrt(2)*d))/(sqrt(2)*hbar)
+    samples:
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      hbar: [1.0, 1.0, 1.5, 0.8, 2.0]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+    tolerance: 1e-12
+    shown: ['The last step uses $\alpha - \alpha^* = 2i\,\frac{p_0d}{\sqrt 2\hbar}$']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  # Independent route for the phase: its slope p₀/ħ is the mean momentum, and its constant c₀ is fixed by the overlap
+  # ⟨0|α⟩ = e^(−|α|²/2) being real and positive: Im ∫ψ₀(y) ψ₀(y − x₀) e^(i(p₀y/ħ + c₀)) dy = 0, so c₀ = −atan(S/C)
+  # with C and S the integrals with cos(p₀y/ħ) and sin(p₀y/ħ). The samples keep p₀x₀/(2ħ) below π/2.
+  - id: p7-eta
+    kind: identity
+    answer: p7-eta
+    where: 'Problem 7(b), answer box: the phase with its constant fixed by a real, positive overlap with the ground state, integrated numerically'
+    formula: |-
+      p0*(x - x0/2)/hbar
+    equals: |-
+      p0*x/hbar - atan(integrate('exp(-y**2/(2*d**2))*exp(-(y - x0)**2/(2*d**2))*sin(p0*y/hbar)', 'y', -25, 25)/integrate('exp(-y**2/(2*d**2))*exp(-(y - x0)**2/(2*d**2))*cos(p0*y/hbar)', 'y', -25, 25))
+    samples:
+      p0: [0.5, 1.0, 1.5, 0.8, 1.2]
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      hbar: [1.0, 1.0, 1.5, 0.8, 2.0]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+      x: [-1.0, 0.0, 1.0, 2.0, 0.5]
+    tolerance: 1e-6
+    shown: ['id="p7-eta"', '<Formula label="Wavefunction of the coherent state"']
+    source: {cite: mit, at: 'Problem 7, p. 3'}
+    origin: page-own
+
+  # The overlap itself: |⟨0|α⟩| = √(C² + S²)/(√π d) must be e^(−|α|²/2) with |α|² = x₀²/(2d²) + p₀²d²/(2ħ²).
+  - id: p7-overlap
+    kind: identity
+    where: 'Problem 7(b), check: the size of the overlap of the coherent state with the ground state, integrated numerically'
+    formula: |-
+      exp(-(x0**2/(2*d**2) + p0**2*d**2/(2*hbar**2))/2)
+    equals: |-
+      sqrt(integrate('exp(-y**2/(2*d**2))*exp(-(y - x0)**2/(2*d**2))*cos(p0*y/hbar)', 'y', -25, 25)**2 + integrate('exp(-y**2/(2*d**2))*exp(-(y - x0)**2/(2*d**2))*sin(p0*y/hbar)', 'y', -25, 25)**2)/(sqrt(pi)*d)
+    samples:
+      p0: [0.5, 1.0, 1.5, 0.8, 1.2]
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      hbar: [1.0, 1.0, 1.5, 0.8, 2.0]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+    tolerance: 1e-7
+    shown: ['is the real, positive number $e^{-|\alpha|^2/2}$ of the notes']
+    source: {cite: reading1, at: 'eq. (4.78)'}
+    origin: page-own
+
+  # The coherent state is an eigenstate of â = (x/d + d ∂/∂x)/√2 with eigenvalue α. Real part: from the Gaussian factor.
+  - id: p7-eig-real
+    kind: identity
+    where: 'Problem 7(b), check: the real part of the eigenvalue of â on the wavefunction, with a numerical derivative of the logarithm of the Gaussian'
+    formula: |-
+      x0/(sqrt(2)*d)
+    equals: |-
+      (x1/d + d*deriv('-(s - x0)**2/(2*d**2)', 's', x1))/sqrt(2)
+    samples:
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+      x1: [-1.0, 0.0, 1.0, 2.0, 0.5]
+    tolerance: 1e-7
+    shown: ['$\langle\hat x\rangle = \sqrt 2\,d\,\text{Re}\,\alpha$']
+    source: {cite: reading1, at: 'eqs. (4.77) and (4.80)'}
+    origin: page-own
+
+  - id: p7-eig-imag
+    kind: identity
+    where: 'Problem 7(b), check: the imaginary part of the eigenvalue of â on the wavefunction, d η′(x)/√2, with a numerical derivative of the phase'
+    formula: |-
+      p0*d/(sqrt(2)*hbar)
+    equals: |-
+      d*deriv('p0*(s - x0/2)/hbar', 's', x1)/sqrt(2)
+    samples:
+      p0: [0.5, 1.0, 1.5, 0.8, 1.2]
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      hbar: [1.0, 1.0, 1.5, 0.8, 2.0]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+      x1: [-1.0, 0.0, 1.0, 2.0, 0.5]
+    tolerance: 1e-7
+    shown: ['$\langle\hat p\rangle = \frac{\sqrt 2\,\hbar}{d}\,\text{Im}\,\alpha$']
+    source: {cite: reading1, at: 'eqs. (4.77) and (4.82)'}
+    origin: page-own
+
+  - id: p7-dens
+    kind: identity
+    answer: p7-dens
+    where: 'Problem 7(b), answer box (our addition): the shifted Gaussian divided by its numerically integrated area'
+    formula: |-
+      exp(-(x - x0)**2/d**2)/(sqrt(pi)*d)
+    equals: |-
+      exp(-(x - x0)**2/d**2)/integrate('exp(-y**2/d**2)', 'y', -20, 20)
+    samples:
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+      x: [-1.0, 0.0, 1.0, 2.0, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p7-dens"', '<Formula label="Probability density of the coherent state"']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p7-mean
+    kind: identity
+    where: 'Problem 7(b), check: the mean position in the probability density, by numerical integration'
+    formula: |-
+      x0
+    equals: |-
+      integrate('y*exp(-(y - x0)**2/d**2)', 'y', -20, 20)/integrate('exp(-(y - x0)**2/d**2)', 'y', -20, 20)
+    samples:
+      x0: [0.5, 1.0, 1.5, 1.2, 0.7]
+      d: [1.0, 0.8, 1.2, 1.5, 0.6]
+    tolerance: 1e-7
+    shown: ['so $\langle\hat x\rangle = x_0$. The phase winds']
+    source: {cite: mit, at: 'Problem 7, p. 3 (our own solution)'}
+    origin: page-own
