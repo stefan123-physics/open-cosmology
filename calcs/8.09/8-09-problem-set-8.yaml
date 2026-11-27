@@ -1,0 +1,663 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the walls as numerical roots of v_θ (Problem 1), the speeds and the velocity of Problem 2 from numerical
+# derivatives of the potential, Laplace's equation and the boundary condition checked numerically, the dipole as the
+# x derivative of a source in the plane, Bernoulli with the numerical surface speed (Problem 2(b)), the slope of a
+# streamline from numerical derivatives (Problem 2(c)), the velocity of the sound wave as a numerical time integral of
+# the linearized Euler equation for a Gaussian pulse (Problem 3(b)), the vector Laplacian by numerical derivatives
+# (Problem 3(c)), the profile of Problem 4 as an integral of 1/r and the forces from a numerical velocity gradient, and
+# the counting rule of the notes for the dimensional analysis (Problems 5 and 6).
+# Short names in the samples: z, w and s are variables of a numerical derivative, integral or root; th for θ;
+# Pinf for P∞; R1, R2 for R₁, R₂; f and g in Problem 3 are the values f(r − c_S t) and g(r − c_S t) for the pulse
+# g(x) = exp(−x²), f = g′.
+
+page: content/year-4/8.09/8-09-problem-set-8.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1a-wall
+    answer: p1a-wall
+    where: 'Problem 1(a), answer box: the second wall, the first root of v_θ ∝ sin 2θ after θ = 0, in degrees'
+    formula: solve('sin(2*z)', 'z', 0.5, 2.5)*180/pi
+    expected: '90'
+    tolerance: 1e-9
+    shown: ['id="p1a-wall"', '$v_\theta = 0$ at $\sin 2\theta = 0$: at $\theta = 0$ and next at $\theta = 90°$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-speed
+    kind: identity
+    answer: p1a-speed
+    where: 'Problem 1(a), answer box: |v| against √(v_r² + v_θ²) from numerical derivatives of φ = Cr² cos 2θ'
+    formula: 2*C*r
+    equals: sqrt(deriv('C*z**2*cos(2*th)', 'z', r)**2 + (deriv('C*r**2*cos(2*z)', 'z', th)/r)**2)
+    samples:
+      C: [0.6, 1.2, 1.9]
+      r: [0.6, 1.1, 1.8]
+      th: [0.2, 0.9, 1.4]
+    tolerance: 1e-8
+    shown: ['id="p1a-speed"', 'So $|\vec v| = 2Cr$, the same at every angle.']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-laplace
+    kind: identity
+    where: 'Problem 1(a), check: ∇²φ = 0 for φ = C(x² − y²), by numerical second derivatives (checked as 1 + ∇²φ = 1)'
+    formula: 1
+    equals: 1 + deriv('C*(z**2 - y**2)', 'z', x, 2) + deriv('C*(x**2 - z**2)', 'z', y, 2)
+    samples:
+      C: [0.6, 1.2, 1.9]
+      x: [0.3, 0.8, 1.7]
+      y: [0.4, 1.1, 0.2]
+    tolerance: 1e-8
+    shown: ['$\nabla^2\phi = 2C - 2C = 0$ in Cartesian coordinates']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-plot
+    kind: fact
+    where: 'Problem 1(a), graph: our own constants xy = 0.05 and 0.3 for the two streamlines'
+    shown: ['label: "xy = 0.05"', 'label: "xy = 0.3"']
+    source: {cite: mit, at: 'Problem 1(a) (our own graph)'}
+    origin: page-own
+
+  - id: p1b-wall
+    answer: p1b-wall
+    where: 'Problem 1(b), answer box: the second wall, the first root of sin 4θ after θ = 0, in degrees'
+    formula: solve('sin(4*z)', 'z', 0.5, 1.0)*180/pi
+    expected: '45'
+    tolerance: 1e-9
+    shown: ['id="p1b-wall"', '$v_\theta = 0$ at $\theta = 0$ and next at $\theta = 45°$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-speed
+    kind: identity
+    where: 'Problem 1(b), solution: |v| = 4Cr³ against √(v_r² + v_θ²) from numerical derivatives of φ = Cr⁴ cos 4θ'
+    formula: 4*C*r**3
+    equals: sqrt(deriv('C*z**4*cos(4*th)', 'z', r)**2 + (deriv('C*r**4*cos(4*z)', 'z', th)/r)**2)
+    samples:
+      C: [0.6, 1.2, 1.9]
+      r: [0.6, 1.1, 1.8]
+      th: [0.2, 0.5, 0.7]
+    tolerance: 1e-8
+    shown: ['|\vec v| = 4Cr^3']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-stream
+    kind: identity
+    where: 'Problem 1(b), solution: v·∇(r⁴ sin 4θ) = 0 by numerical derivatives (checked as 1 + v·∇ψ = 1)'
+    formula: 1
+    equals: 1 + 4*C*r**3*cos(4*th)*deriv('z**4*sin(4*th)', 'z', r) - 4*C*r**3*sin(4*th)*deriv('r**4*sin(4*z)', 'z', th)/r
+    samples:
+      C: [0.6, 1.2, 1.9]
+      r: [0.6, 1.1, 1.3]
+      th: [0.2, 0.5, 0.7]
+    tolerance: 1e-7
+    shown: ['since $\vec v\cdot\nabla(r^4\sin 4\theta) = 0$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-plot
+    kind: fact
+    where: 'Problem 1(b), graph: our own constant 0.05 for the streamline'
+    shown: ['computed from r⁴ sin 4θ = 0.05']
+    source: {cite: mit, at: 'Problem 1(b) (our own graph)'}
+    origin: page-own
+
+  - id: p1c-wall
+    answer: p1c-wall
+    where: 'Problem 1(c), answer box: the second wall, the first root of sin(2θ/3) after θ = 0, in degrees'
+    formula: solve('sin(2*z/3)', 'z', 3, 6)*180/pi
+    expected: '270'
+    tolerance: 1e-9
+    shown: ['id="p1c-wall"', 'next at $2\theta/3 = 180°$, so $\theta = 270°$']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-speed
+    kind: identity
+    answer: p1c-speed
+    where: 'Problem 1(c), answer box: |v| against √(v_r² + v_θ²) from numerical derivatives of φ = Cr^(2/3) cos(2θ/3)'
+    formula: 2*C/(3*r**(1/3))
+    equals: sqrt(deriv('C*z**(2/3)*cos(2*th/3)', 'z', r)**2 + (deriv('C*r**(2/3)*cos(2*z/3)', 'z', th)/r)**2)
+    samples:
+      C: [0.6, 1.2, 1.9]
+      r: [0.6, 1.6, 2.8]
+      th: [0.3, 2.1, 4.2]
+    tolerance: 1e-8
+    shown: ['id="p1c-speed"', 'The speed $2C/(3r^{1/3})$ is never zero']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-plot
+    kind: fact
+    where: 'Problem 1(c), graph: our own constant 0.4 for the streamline'
+    shown: ['computed from r^(2/3) sin(2θ/3) = 0.4']
+    source: {cite: mit, at: 'Problem 1(c) (our own graph)'}
+    origin: page-own
+
+  - id: p1-rule
+    kind: identity
+    where: 'Problem 1, checks: the wedge angle 180°/n for n = 2, 4, 2/3 (90°, 45°, 270°), against the first root of sin(nθ)'
+    formula: 180/n
+    equals: solve('sin(n*z)', 'z', 0.5*pi/n, 1.5*pi/n)*180/pi
+    samples:
+      n: [2, 4, 0.6666666666666666]
+    tolerance: 1e-9
+    shown: ['fits a wedge of angle $180°/n$', 'The wedge angle is $180°/n$ with $n = 2/3$']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2a-phi
+    kind: identity
+    answer: p2a-phi
+    where: 'Problem 2(a), answer box: φ against ux plus uR² times the x derivative of the source ln√(x² + y²), taken numerically at x = r cos θ'
+    formula: u*(r + R**2/r)*cos(theta)
+    equals: u*r*cos(theta) + u*R**2*deriv('log(sqrt(z**2 + (r*sin(theta))**2))', 'z', r*cos(theta))
+    samples:
+      u: [0.6, 1.2, 1.9]
+      R: [0.6, 0.8, 1.0]
+      r: [1.3, 2.1, 2.9]
+      theta: [0.3, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p2a-phi"', '\phi = u\left(r + \frac{R^2}{r}\right)\cos\theta']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-laplace
+    kind: identity
+    where: 'Problem 2(a): ∇²φ = 0 in polar coordinates, φ″ + φ′/r + (1/r²)∂²φ/∂θ², by numerical derivatives (checked as 1 + ∇²φ = 1)'
+    formula: 1
+    equals: 1 + deriv('u*(z + R**2/z)*cos(theta)', 'z', r, 2) + deriv('u*(z + R**2/z)*cos(theta)', 'z', r)/r + deriv('u*(r + R**2/r)*cos(z)', 'z', theta, 2)/r**2
+    samples:
+      u: [0.6, 1.2, 1.9]
+      R: [0.6, 0.8, 1.0]
+      r: [1.3, 2.1, 2.9]
+      theta: [0.3, 0.8, 1.2]
+    tolerance: 1e-7
+    shown: ['with solutions $\chi = r$ and $\chi = 1/r$']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-wall
+    kind: identity
+    where: 'Problem 2(a), check: v_r = ∂φ/∂r vanishes at r = R, by a numerical derivative (checked as 1 + v_r = 1)'
+    formula: 1
+    equals: 1 + deriv('u*(z + R**2/z)*cos(theta)', 'z', R)
+    samples:
+      u: [0.6, 1.2, 1.9]
+      R: [0.6, 0.8, 1.0]
+      theta: [0.3, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['At $r = R$, $v_r = 0$ and $v_\theta = -2u\sin\theta$']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-vr
+    kind: identity
+    answer: p2a-vr
+    where: 'Problem 2(a), answer box: v_r against the numerical derivative ∂φ/∂r'
+    formula: u*(1 - R**2/r**2)*cos(theta)
+    equals: deriv('u*(z + R**2/z)*cos(theta)', 'z', r)
+    samples:
+      u: [0.6, 1.2, 1.9]
+      R: [0.6, 0.8, 1.0]
+      r: [1.3, 2.1, 2.9]
+      theta: [0.3, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p2a-vr"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-vt
+    kind: identity
+    answer: p2a-vt
+    where: 'Problem 2(a), answer box: v_θ against the numerical derivative (1/r)∂φ/∂θ'
+    formula: -u*(1 + R**2/r**2)*sin(theta)
+    equals: deriv('u*(r + R**2/r)*cos(z)', 'z', theta)/r
+    samples:
+      u: [0.6, 1.2, 1.9]
+      R: [0.6, 0.8, 1.0]
+      r: [1.3, 2.1, 2.9]
+      theta: [0.3, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p2a-vt"', 'v_\theta = -u\left(1 + \frac{R^2}{r^2}\right)\sin\theta']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-p
+    kind: identity
+    answer: p2b-p
+    where: 'Problem 2(b), answer box: P against Bernoulli, P∞ + ½ρ(u² − v²), with v² on the surface from numerical derivatives of φ at r = R'
+    formula: Pinf + rho*u**2*(1 - 4*sin(theta)**2)/2
+    equals: Pinf + rho*(u**2 - deriv('u*(z + R**2/z)*cos(theta)', 'z', R)**2 - (deriv('u*(R + R**2/R)*cos(z)', 'z', theta)/R)**2)/2
+    samples:
+      Pinf: [95000, 101325, 108000]
+      rho: [950, 1000, 1080]
+      u: [0.6, 1.2, 1.9]
+      R: [0.6, 0.8, 1.0]
+      theta: [0.7, 1.0, 1.25]
+    tolerance: 1e-9
+    shown: ['id="p2b-p"', 'P(\theta) = P_\infty + \tfrac12\rho u^2\left(1 - 4\sin^2\theta\right)']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-min
+    answer: p2b-min
+    where: 'Problem 2(b), answer box: the lowest pressure minus P∞, −(3/2)ρu² for water at 1.5 m/s, in pascals'
+    formula: 1000*(1 - 4*sin(pi/2)**2)*1.5**2/2
+    expected: '-3375'
+    tolerance: 1e-9
+    shown: ['id="p2b-min"', '$-\frac32 \times 1000 \times 1.5^2 = -3375$ Pa below $P_\infty$']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2b-data
+    kind: fact
+    where: 'Problem 2(b), statement: our own numbers for water'
+    shown: ['take water ($\rho = 1000$ kg/m³) flowing at $u = 1.5$ m/s']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2b-force
+    kind: identity
+    where: 'Problem 2(b), choice box and check: the x component of the pressure force, ∫(1 − 4 sin²θ) cos θ dθ over a full turn, is zero (checked as 1 + integral = 1)'
+    formula: 1
+    equals: 1 + integrate('(1 - 4*sin(z)**2)*cos(z)', 'z', 0, 2*pi)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['\int_0^{2\pi}(1 - 4\sin^2\theta)\cos\theta\,d\theta = 0']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-average
+    kind: identity
+    where: 'Problem 2(b), check: the average of 1 − 4 sin²θ over a turn is −1'
+    formula: -1
+    equals: integrate('1 - 4*sin(z)**2', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['The average of $1 - 4\sin^2\theta$ over the surface is $-1$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-slope
+    kind: identity
+    answer: p2c-slope
+    where: 'Problem 2(c), answer box: dy/dx against v_y/v_x from numerical derivatives of φ/u = x[1 + R²/(x² + y²)]'
+    formula: -2*R**2*x*y/((x**2 + y**2)**2 - R**2*(x**2 - y**2))
+    equals: deriv('x*(1 + R**2/(x**2 + z**2))', 'z', y)/deriv('z*(1 + R**2/(z**2 + y**2))', 'z', x)
+    samples:
+      x: [1.6, 2.2, 2.9, -1.7]
+      y: [0.6, 1.4, 1.9, 0.9]
+      R: [0.6, 0.8, 1.0, 0.9]
+    tolerance: 1e-8
+    shown: ['id="p2c-slope"', '\frac{dy}{dx} = \frac{v_y}{v_x} = -\frac{2R^2xy}{(x^2 + y^2)^2 - R^2(x^2 - y^2)}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-family
+    kind: identity
+    where: 'Problem 2(c): the slope of the curve x² + y² = R²/(1 − K/y) through (x, y), −∂ₓψ/∂ᵧψ with ψ = y(1 − R²/(x² + y²)) by numerical derivatives, equals the streamline slope'
+    formula: -2*R**2*x*y/((x**2 + y**2)**2 - R**2*(x**2 - y**2))
+    equals: -deriv('y*(1 - R**2/(z**2 + y**2))', 'z', x)/deriv('z*(1 - R**2/(x**2 + z**2))', 'z', y)
+    samples:
+      x: [1.6, 2.2, 2.9, -1.7]
+      y: [0.6, 1.4, 1.9, 0.9]
+      R: [0.6, 0.8, 1.0, 0.9]
+    tolerance: 1e-8
+    shown: ['\psi \equiv y\left(1 - \frac{R^2}{x^2 + y^2}\right) = K']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-k
+    kind: identity
+    answer: p2c-k
+    where: 'Problem 2(c), answer box: K = h against ψ = y(1 − R²/(x² + y²)) evaluated far upstream, at x = −10⁶ and y = h'
+    formula: h
+    equals: h*(1 - R**2/(1e12 + h**2))
+    samples:
+      h: [0.6, 1.1, 1.9]
+      R: [0.6, 0.8, 1.0]
+    tolerance: 1e-9
+    shown: ['id="p2c-k"', 'So $K = h$, the height far upstream.']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-top
+    answer: p2c-top
+    where: 'Problem 2(c), answer box: y/R over the top of the cylinder for K = R/2, ½(0.5 + √4.25)'
+    formula: (0.5 + sqrt(4.25))/2
+    expected: '1.28'
+    shown: ['id="p2c-top"', '$y = \frac12(0.5 + \sqrt{4.25})R = 1.28R$']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-top-root
+    kind: identity
+    where: 'Problem 2(c), check: the same height as the root of ψ(0, y) = K, y(1 − 1/y²) = 0.5 in units of R, solved numerically'
+    formula: (0.5 + sqrt(4.25))/2
+    equals: solve('z*(1 - 1/z**2) - 0.5', 'z', 1, 2)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['or $y^2 - Ky - R^2 = 0$']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-gap
+    where: 'Problem 2(c), check: the gap over the cylinder, 1.28 − 1, in units of R'
+    formula: (0.5 + sqrt(4.25))/2 - 1
+    expected: '0.28'
+    shown: ['The streamline that starts $0.50R$ above the axis passes only $0.28R$ above the cylinder']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-data
+    kind: fact
+    where: 'Problem 2(c), statement: our own starting height h = R/2'
+    shown: ['for the streamline with $h = R/2$']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3a-wave
+    kind: identity
+    where: 'Problem 3(a): ∂²P′/∂t² = c_S²∇²P′ for P′ = f(r − c_S t)/r with the Gaussian pulse f = exp(−x²), by numerical derivatives (radial Laplacian P″ + 2P′/r)'
+    formula: deriv('exp(-(r - c*z)**2)/r', 'z', t, 2)
+    equals: c**2*(deriv('exp(-(z - c*t)**2)/z', 'z', r, 2) + 2*deriv('exp(-(z - c*t)**2)/z', 'z', r)/r)
+    samples:
+      r: [1.5, 2.0, 3.0]
+      t: [1.0, 1.4, 2.5]
+      c: [1.0, 1.2, 0.9]
+    tolerance: 1e-6
+    shown: ['So $\partial_t^2P'' = c_S^2\nabla^2P''$ for any twice differentiable $f$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-v
+    kind: identity
+    answer: p3b-v
+    where: 'Problem 3(b), answer box: v_r against a numerical time integral of the linearized Euler equation, v_r = −(1/ρ₀)∫∂P′/∂r dt from before the pulse arrives, for g(x) = exp(−x²), f = g′ = −2x exp(−x²); the samples f, g are these functions at r − c t'
+    formula: (f/r - g/r**2)/(rho*c)
+    equals: integrate("-deriv('-2*(z - c*w)*exp(-(z - c*w)**2)/z', 'z', r)/rho", 'w', t - 30/c, t)
+    samples:
+      r: [1.5, 2.0, 3.0]
+      t: [1.0, 1.4, 2.5]
+      c: [1.0, 1.2, 0.9]
+      rho: [1.1, 0.8, 1.3]
+      f: [-0.778800783071, -0.577707783732, -0.854674237096]
+      g: [0.778800783071, 0.902668412081, 0.569782824731]
+    tolerance: 1e-6
+    shown: ['id="p3b-v"', '\vec v = \frac{1}{\rho_0c_S}\left[\frac{f(r - c_St)}{r} - \frac{g(r - c_St)}{r^2}\right]\hat r']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-lap
+    kind: identity
+    where: 'Problem 3(c), choice box: the radial part of the vector Laplacian of r̂/r², χ″ + 2χ′/r − 2χ/r² with χ = r⁻², is zero (numerical derivatives; checked as 1 + value = 1)'
+    formula: 1
+    equals: 1 + deriv('z**(-2)', 'z', r, 2) + 2*deriv('z**(-2)', 'z', r)/r - 2/r**4
+    samples:
+      r: [0.7, 1.3, 2.6]
+    tolerance: 1e-8
+    shown: ['$\nabla^2(r^{-2}) = 2r^{-4}$, and $2r^{-4} - (2/r^2)r^{-2} = 0$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-wave
+    kind: identity
+    where: 'Problem 3(c): the velocity of (b) obeys ∂²v_r/∂t² = c_S²(v_r″ + 2v_r′/r − 2v_r/r²), for the Gaussian pulse, by numerical derivatives (ρ₀ c_S v_r = f/r − g/r²)'
+    formula: deriv('-2*(r - c*z)*exp(-(r - c*z)**2)/r - exp(-(r - c*z)**2)/r**2', 'z', t, 2)
+    equals: c**2*(deriv('-2*(z - c*t)*exp(-(z - c*t)**2)/z - exp(-(z - c*t)**2)/z**2', 'z', r, 2) + 2*deriv('-2*(z - c*t)*exp(-(z - c*t)**2)/z - exp(-(z - c*t)**2)/z**2', 'z', r)/r - 2*(-2*(r - c*t)*exp(-(r - c*t)**2)/r - exp(-(r - c*t)**2)/r**2)/r**2)
+    samples:
+      r: [1.5, 2.0, 3.0]
+      t: [1.0, 1.4, 2.5]
+      c: [1.0, 1.2, 0.9]
+    tolerance: 1e-5
+    shown: ['So $\partial_t^2\vec v = c_S^2\nabla^2\vec v$: the velocity of (b) obeys the wave equation']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-power
+    kind: identity
+    where: 'Problem 3(c), hint: ∇²rⁿ = n(n + 1)rⁿ⁻² against the radial Laplacian by numerical derivatives'
+    formula: n*(n + 1)*r**(n - 2)
+    equals: deriv('z**n', 'z', r, 2) + 2*deriv('z**n', 'z', r)/r
+    samples:
+      n: [-2, 2, 3]
+      r: [0.7, 1.3, 2.6]
+    tolerance: 1e-8
+    shown: ['For a power, $\nabla^2r^n = n(n + 1)r^{n-2}$.']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4a-vz
+    kind: identity
+    answer: p4a-vz
+    where: 'Problem 4(a), answer box: v_z against the solution of (r v_z′)′ = 0 by integration, u ∫ from R₁ to r of ds/s divided by ∫ from R₁ to R₂ of ds/s'
+    formula: u*log(r/R1)/log(R2/R1)
+    equals: u*integrate('1/z', 'z', R1, r)/integrate('1/z', 'z', R1, R2)
+    samples:
+      u: [0.6, 1.2, 1.9]
+      r: [0.76, 0.83, 0.89]
+      R1: [0.5, 0.6, 0.7]
+      R2: [2.0, 2.2, 2.5]
+    tolerance: 1e-8
+    shown: ['id="p4a-vz"', 'v_z(r) = u\,\frac{\ln(r/R_1)}{\ln(R_2/R_1)}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4a-narrow
+    kind: limit
+    where: 'Problem 4(a), check: for a narrow gap h = R₂ − R₁ the profile tends to the linear u(r − R₁)/h (here at the middle of the gap, R₁ = 1, u = 1)'
+    formula: log((1 + hh/2)/1)/log(1 + hh)
+    limit: 0.5
+    vary:
+      hh: [0.1, 0.01, 0.001]
+    tolerance: 1e-3
+    shown: ['$v_z \approx u(r - R_1)/h$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-f1
+    kind: identity
+    answer: p4b-f1
+    where: 'Problem 4(b), answer box: F₁ against 2πR₁ η dv_z/dr at r = R₁, the derivative taken numerically'
+    formula: 2*pi*eta*u/log(R2/R1)
+    equals: 2*pi*R1*eta*deriv('u*log(z/R1)/log(R2/R1)', 'z', R1)
+    samples:
+      eta: [0.6, 1.2, 1.9]
+      u: [0.6, 1.2, 1.9]
+      R1: [0.5, 0.7, 0.9]
+      R2: [1.6, 2.0, 2.4]
+    tolerance: 1e-8
+    shown: ['id="p4b-f1"', 'F_1 = 2\pi R_1\,\sigma_{zr}(R_1) = \frac{2\pi\eta u}{\ln(R_2/R_1)}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-f2
+    kind: identity
+    answer: p4b-f2
+    where: 'Problem 4(b), answer box: F₂ against −2πR₂ η dv_z/dr at r = R₂, the derivative taken numerically'
+    formula: -2*pi*eta*u/log(R2/R1)
+    equals: -2*pi*R2*eta*deriv('u*log(z/R1)/log(R2/R1)', 'z', R2)
+    samples:
+      eta: [0.6, 1.2, 1.9]
+      u: [0.6, 1.2, 1.9]
+      R1: [0.5, 0.7, 0.9]
+      R2: [1.6, 2.0, 2.4]
+    tolerance: 1e-8
+    shown: ['id="p4b-f2"', 'F_2 = -2\pi R_2\,\sigma_{zr}(R_2) = -\frac{2\pi\eta u}{\ln(R_2/R_1)}']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-num
+    answer: p4b-num
+    where: 'Problem 4(b), answer box: F₁ = 2πηu/ln(R₂/R₁) for η = 0.10 Pa·s, u = 0.20 m/s, R₂/R₁ = 1.5, in N/m'
+    formula: 2*pi*0.10*0.20/log(0.015/0.010)
+    expected: '0.310'
+    shown: ['id="p4b-num"', '/\ln 1.5 = 0.1257/0.405 = 0.310$ N/m']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4b-num-top
+    where: 'Problem 4(b), solution: the numerator 2πηu, in N/m'
+    formula: 2*pi*0.10*0.20
+    expected: '0.1257'
+    shown: ['$F_1 = 2\pi \times 0.10 \times 0.20']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4b-num-log
+    where: 'Problem 4(b), solution: ln 1.5'
+    formula: log(1.5)
+    expected: '0.405'
+    shown: ['= 0.1257/0.405 =']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4b-data
+    kind: fact
+    where: 'Problem 4(b), statement: our own numbers for an oil'
+    shown: ['$\eta = 0.10$ Pa·s, $R_1 = 1.0$ cm, $R_2 = 1.5$ cm and $u = 0.20$ m/s']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4b-reynolds
+    where: 'Problem 4(b), check: the Reynolds number of the gap, ρu(R₂ − R₁)/η with ρ = 900 kg/m³'
+    formula: 900*0.20*(0.015 - 0.010)/0.10
+    expected: '9'
+    shown: ['is about 9, so a steady smooth flow is reasonable']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4b-density
+    kind: fact
+    where: 'Problem 4(b), check: a typical density of an oil, our own round value'
+    shown: ['With a density of about $900$ kg/m³ for the oil']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5a-n
+    answer: p5a-n
+    where: 'Problem 5(a), answer box: the number of dimensionless ratios, five quantities (f, D, L, V, ν) minus two dimensions (m, s), the rule of the notes'
+    formula: 5 - 2
+    expected: '3'
+    tolerance: 1e-9
+    shown: ['id="p5a-n"', 'gives $5 - 2 = 3$']
+    source: {cite: reading1, at: 'Section 6.7, p. 134'}
+    origin: page-own
+
+  - id: p5b-v
+    answer: p5b-v
+    where: 'Problem 5(b), answer box: V₂/V₁ = D₁/D₂ for equal VD/ν with D₂ = D₁/2'
+    formula: 1/0.5
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['id="p5b-v"', '$V_2 = V_1D_1/D_2 = 2V_1$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-quarter
+    where: 'Problem 5(b), check: with V halved as well as D, the Reynolds number is 0.5 × 0.5 = 1/4 of the first'
+    formula: 0.5*0.5
+    expected: '0.25'
+    shown: ['the Reynolds number would be four times too small']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-f
+    answer: p5c-f
+    where: 'Problem 5(c), answer box: f₂/f₁ = (V₂/V₁)(D₁/D₂) for equal fD/V'
+    formula: 2*(1/0.5)
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['id="p5c-f"', '$f_2/f_1 = (V_2/V_1)(D_1/D_2) = 2 \times 2 = 4$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6a-n
+    answer: p6a-n
+    where: 'Problem 6(a), answer box: the number of dimensionless ratios, seven quantities (F_D, V, D, ω, ρ, η, c_S) minus three dimensions (kg, m, s)'
+    formula: 7 - 3
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['id="p6a-n"', 'Seven quantities minus three dimensions leaves four']
+    source: {cite: reading1, at: 'Section 6.7, p. 134'}
+    origin: page-own
+
+  - id: p6b-count
+    where: 'Problem 6(b), solution: without c_S, six quantities minus three dimensions'
+    formula: 6 - 3
+    expected: '3'
+    shown: ['$6 - 3 = 3$ ratios']
+    source: {cite: reading1, at: 'Section 6.7, p. 134'}
+    origin: page-own
+
+  - id: p6b-d
+    answer: p6b-d
+    where: 'Problem 6(b), answer box: D′/D = V/V′ for equal ρVD/η in the same air'
+    formula: 1/2
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['id="p6b-d"', 'needs $V''D'' = VD$: $D'' = D/2$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-w
+    answer: p6b-w
+    where: 'Problem 6(b), answer box: ω′/ω = (V′/V)(D/D′) for equal ωD/V'
+    formula: 2*(1/0.5)
+    expected: '4'
+    tolerance: 1e-9
+    shown: ['id="p6b-w"', '$\omega'' = \omega(V''/V)(D/D'') = 4\omega$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-f
+    answer: p6b-f
+    where: 'Problem 6(b), answer box: F_D′/F_D = (V′/V)²(D′/D)² for equal F_D/(ρV²D²)'
+    formula: 2**2*0.5**2
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['id="p6b-f"', '$F_D''/F_D = (V''/V)^2(D''/D)^2 = 4 \times \frac14 = 1$']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  - id: p6b-mach
+    where: 'Problem 6(b), check: the Mach number of a golf ball at 70 m/s, with c_S = 343 m/s'
+    formula: 70/343
+    expected: '0.2'
+    shown: ['A golf ball at about 70 m/s has $V/c_S \approx 0.2$']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  - id: p6b-mach2
+    where: 'Problem 6(b), check: the Mach number in the tunnel at 140 m/s'
+    formula: 140/343
+    expected: '0.4'
+    shown: ['the tunnel at 140 m/s would be at about 0.4']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  - id: p6b-sound
+    kind: fact
+    where: 'Problem 6(b), check: the speed of sound in air at about 20 °C, a round value'
+    shown: ['(with $c_S \approx 343$ m/s)']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
