@@ -1,0 +1,566 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the trace and a root of a characteristic polynomial (Problems 1 and 4), numerical time derivatives of the Euler
+# rotation matrix U = U_ψ U_θ U_φ itself (Problem 3(a), (b)) and of T(ψ) (3(c)), numerical derivatives of the position
+# of the point mass (4(c)), and numerical integrals over thin slices of the cone (Problem 5).
+# The two equations of motion of Problem 2(a) were first derived with SymPy while writing; entries p2a-theta and p2a-phi
+# check them here against Lagrange's equations taken numerically from the vector form of the Lagrangian.
+# Short names in the samples: ph, th, ps the Euler angles φ, θ, ψ and dph, dth, dps their rates; q the variable of a
+# numerical derivative, integral or root (for the matrix U, the time along a path with constant rates, at q = 0).
+
+page: content/year-4/8.09/8-09-problem-set-3.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-det-w
+    where: 'Problem 1(b), check: the determinant of W, (1/√2)³ √2 (i + i), has modulus 1'
+    formula: (1/sqrt(2))**3*sqrt(2)*2
+    expected: '1'
+    shown: ['Its determinant, $\frac12(i + i) = i$, has modulus 1.']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  - id: p1c-angle
+    answer: p1c-angle
+    where: 'Problem 1(c), answer box: the rotation angle of the cyclic permutation matrix P from Tr P = 0 = 1 + 2 cos Φ, in degrees'
+    formula: acos((0 + 0 + 0 - 1)/2)*180/pi
+    expected: '120'
+    shown: ['id="p1c-angle"', '$\cos\Phi = -\frac12$ and $\Phi = 120°$']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own example)'}
+    origin: page-own
+
+  - id: p1c-angle-root
+    kind: identity
+    where: 'Problem 1(c), check: the angle 120° against a root of cos Φ = −1/2 found numerically'
+    formula: 120
+    equals: solve('cos(q) + 0.5', 'q', 1.5, 3)*180/pi
+    samples: {dummy: [1]}
+    tolerance: 1e-9
+    shown: ['three turns of $120°$ make $360°$']
+    source: {cite: mit, at: 'Problem 1(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(a): the two equations of motion (divided by m ℓ², with ℓ = 1 and G = g/ℓ) against Lagrange's equations
+  # computed numerically from the Lagrangian to first order in ω, built from the vectors themselves:
+  # L/(mℓ²) = ½|v|² + v·(ω × r) + G cos θ, with r = (sin θ cos φ, sin θ sin φ, −cos θ), ω = W(0, cos λ, sin λ) and v
+  # written out in θ̇, φ̇. Test paths θ = th + a1 q + a2 q², φ = ph + b1 q + b2 q², at q = 0; the inner derivative (in p)
+  # is ∂L/∂θ̇ (or ∂L/∂φ̇) along the path, the outer one its time derivative.
+
+  - id: p2a-theta
+    kind: identity
+    where: 'Problem 2(a), solution: the θ equation against d/dt ∂L/∂θ̇ − ∂L/∂θ from the vector Lagrangian'
+    formula: 2*a2 - sin(th)*cos(th)*b1**2 + G*sin(th) - 2*W*sin(th)*(sin(lam)*cos(th) - cos(lam)*sin(th)*sin(ph))*b1
+    equals: deriv("deriv('0.5*((cos((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*p - sin((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*(b1 + 2*b2*q))**2 + (cos((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*p + sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*(b1 + 2*b2*q))**2 + (sin((th + a1*q + a2*q**2))*p)**2) + (cos((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*p - sin((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*(b1 + 2*b2*q))*(-W*cos(lam)*cos((th + a1*q + a2*q**2)) - W*sin(lam)*sin((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))) + (cos((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*p + sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*(b1 + 2*b2*q))*(W*sin(lam)*sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))) + (sin((th + a1*q + a2*q**2))*p)*(-W*cos(lam)*sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))) + G*cos((th + a1*q + a2*q**2))', 'p', (a1 + 2*a2*q))", 'q', 0) - deriv('0.5*((cos(p)*cos(ph)*a1 - sin(p)*sin(ph)*b1)**2 + (cos(p)*sin(ph)*a1 + sin(p)*cos(ph)*b1)**2 + (sin(p)*a1)**2) + (cos(p)*cos(ph)*a1 - sin(p)*sin(ph)*b1)*(-W*cos(lam)*cos(p) - W*sin(lam)*sin(p)*sin(ph)) + (cos(p)*sin(ph)*a1 + sin(p)*cos(ph)*b1)*(W*sin(lam)*sin(p)*cos(ph)) + (sin(p)*a1)*(-W*cos(lam)*sin(p)*cos(ph)) + G*cos(p)', 'p', th)
+    samples: &fouc
+      th: [0.3, 0.8, 1.2]
+      ph: [0.5, 2.0, 4.0]
+      a1: [0.4, -0.7, 1.1]
+      a2: [0.2, 0.5, -0.3]
+      b1: [0.6, 1.3, -0.8]
+      b2: [-0.4, 0.3, 0.7]
+      W: [0.05, 0.1, 0.02]
+      lam: [0.85, 0.4, 1.2]
+      G: [9.8, 4.0, 1.5]
+    tolerance: 1e-4
+    shown: ['\ddot\theta - \sin\theta\cos\theta\,\dot\phi^2 + \frac{g}{\ell}\sin\theta - 2\omega\sin\theta\left(\sin\lambda\cos\theta - \cos\lambda\sin\theta\sin\phi\right)\dot\phi = 0']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-phi
+    kind: identity
+    where: 'Problem 2(a), solution: the φ equation against d/dt ∂L/∂φ̇ − ∂L/∂φ from the vector Lagrangian'
+    formula: 2*sin(th)*cos(th)*a1*b1 + sin(th)**2*2*b2 + 2*W*sin(th)*(sin(lam)*cos(th) - cos(lam)*sin(th)*sin(ph))*a1
+    equals: deriv("deriv('0.5*((cos((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*(a1 + 2*a2*q) - sin((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*p)**2 + (cos((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*(a1 + 2*a2*q) + sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*p)**2 + (sin((th + a1*q + a2*q**2))*(a1 + 2*a2*q))**2) + (cos((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*(a1 + 2*a2*q) - sin((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*p)*(-W*cos(lam)*cos((th + a1*q + a2*q**2)) - W*sin(lam)*sin((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))) + (cos((th + a1*q + a2*q**2))*sin((ph + b1*q + b2*q**2))*(a1 + 2*a2*q) + sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))*p)*(W*sin(lam)*sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))) + (sin((th + a1*q + a2*q**2))*(a1 + 2*a2*q))*(-W*cos(lam)*sin((th + a1*q + a2*q**2))*cos((ph + b1*q + b2*q**2))) + G*cos((th + a1*q + a2*q**2))', 'p', (b1 + 2*b2*q))", 'q', 0) - deriv('0.5*((cos(th)*cos(p)*a1 - sin(th)*sin(p)*b1)**2 + (cos(th)*sin(p)*a1 + sin(th)*cos(p)*b1)**2 + (sin(th)*a1)**2) + (cos(th)*cos(p)*a1 - sin(th)*sin(p)*b1)*(-W*cos(lam)*cos(th) - W*sin(lam)*sin(th)*sin(p)) + (cos(th)*sin(p)*a1 + sin(th)*cos(p)*b1)*(W*sin(lam)*sin(th)*cos(p)) + (sin(th)*a1)*(-W*cos(lam)*sin(th)*cos(p)) + G*cos(th)', 'p', ph)
+    samples: *fouc
+    tolerance: 1e-4
+    shown: ['\frac{d}{dt}\left(\sin^2\theta\,\dot\phi\right) + 2\omega\sin\theta\left(\sin\lambda\cos\theta - \cos\lambda\sin\theta\sin\phi\right)\dot\theta = 0']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2(b): the precession time at the latitude of Paris (our addition)
+
+  - id: p2b-inputs
+    kind: fact
+    where: 'Problem 2(b), statement: our own values for the Earth''s rotation rate (2π per sidereal day, 23.93 h) and the latitude of Paris'
+    shown: ['$\omega = 7.29\times 10^{-5}$ s⁻¹', '$\lambda = 48.85°$']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2b-sin
+    where: 'Problem 2(b), solution: sin of the latitude of Paris'
+    formula: sin(48.85*pi/180)
+    expected: '0.7530'
+    shown: ['$\sin 48.85° = 0.7530$']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2b-day
+    where: 'Problem 2(b), solution: 2π/ω in hours'
+    formula: 2*pi/7.29e-5/3600
+    expected: '23.94'
+    shown: ['$2\pi/\omega = 23.94$ h']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2b-time
+    answer: p2b-time
+    where: 'Problem 2(b), answer box: 2π/(ω sin λ) in hours at λ = 48.85°'
+    formula: 2*pi/(7.29e-5*sin(48.85*pi/180))/3600
+    expected: '31.8'
+    shown: ['id="p2b-time"', '$23.94/0.7530 = 31.8$ hours']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3(a), (b): the angular velocity from dU/dt along a path with constant rates. The body components are
+  # read off U (dU/dt)ᵀ and the fixed components off (dU/dt)ᵀ U (both antisymmetric matrices), each compared with the
+  # sheet's formula.
+
+  - id: p3a-x
+    kind: identity
+    where: 'Problem 3(a): ω_x′ = φ̇ sin θ sin ψ + θ̇ cos ψ against U (dU/dt)ᵀ'
+    formula: dph*sin(th)*sin(ps) + dth*cos(ps)
+    equals: (sin(th)*sin(ph))*deriv('-sin((ps + dps*q))*cos((ph + dph*q)) - cos((th + dth*q))*sin((ph + dph*q))*cos((ps + dps*q))', 'q', 0) + (-sin(th)*cos(ph))*deriv('-sin((ps + dps*q))*sin((ph + dph*q)) + cos((th + dth*q))*cos((ph + dph*q))*cos((ps + dps*q))', 'q', 0) + (cos(th))*deriv('cos((ps + dps*q))*sin((th + dth*q))', 'q', 0)
+    samples: &eul
+      ph: [0.4, 1.3, 2.9, 5.0]
+      th: [1.1, 0.3, 2.5, 1.7]
+      ps: [2.0, 4.1, 0.6, 3.3]
+      dph: [0.7, -1.2, 0.4, 2.0]
+      dth: [-0.3, 0.8, 1.5, -0.6]
+      dps: [1.3, 0.5, -0.9, 0.2]
+    tolerance: 1e-6
+    shown: ['\omega_{x''} &= \dot\phi\sin\theta\sin\psi + \dot\theta\cos\psi']
+    source: {cite: mit, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3a-y
+    kind: identity
+    where: 'Problem 3(a): ω_y′ = φ̇ sin θ cos ψ − θ̇ sin ψ against U (dU/dt)ᵀ'
+    formula: dph*sin(th)*cos(ps) - dth*sin(ps)
+    equals: (cos(ps)*cos(ph) - cos(th)*sin(ph)*sin(ps))*deriv('sin((th + dth*q))*sin((ph + dph*q))', 'q', 0) + (cos(ps)*sin(ph) + cos(th)*cos(ph)*sin(ps))*deriv('-sin((th + dth*q))*cos((ph + dph*q))', 'q', 0) + (sin(ps)*sin(th))*deriv('cos((th + dth*q))', 'q', 0)
+    samples: *eul
+    tolerance: 1e-6
+    shown: ['\omega_{y''} &= \dot\phi\sin\theta\cos\psi - \dot\theta\sin\psi']
+    source: {cite: mit, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3a-z
+    kind: identity
+    where: 'Problem 3(a): ω_z′ = φ̇ cos θ + ψ̇ against U (dU/dt)ᵀ'
+    formula: dph*cos(th) + dps
+    equals: (-sin(ps)*cos(ph) - cos(th)*sin(ph)*cos(ps))*deriv('cos((ps + dps*q))*cos((ph + dph*q)) - cos((th + dth*q))*sin((ph + dph*q))*sin((ps + dps*q))', 'q', 0) + (-sin(ps)*sin(ph) + cos(th)*cos(ph)*cos(ps))*deriv('cos((ps + dps*q))*sin((ph + dph*q)) + cos((th + dth*q))*cos((ph + dph*q))*sin((ps + dps*q))', 'q', 0) + (cos(ps)*sin(th))*deriv('sin((ps + dps*q))*sin((th + dth*q))', 'q', 0)
+    samples: *eul
+    tolerance: 1e-6
+    shown: ['\omega_{z''} &= \dot\phi\cos\theta + \dot\psi']
+    source: {cite: mit, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3b-x
+    kind: identity
+    where: 'Problem 3(b): ω_x = θ̇ cos φ + ψ̇ sin θ sin φ against (dU/dt)ᵀ U'
+    formula: dth*cos(ph) + dps*sin(th)*sin(ph)
+    equals: deriv('sin((ps + dps*q))*sin((th + dth*q))', 'q', 0)*(cos(ps)*sin(ph) + cos(th)*cos(ph)*sin(ps)) + deriv('cos((ps + dps*q))*sin((th + dth*q))', 'q', 0)*(-sin(ps)*sin(ph) + cos(th)*cos(ph)*cos(ps)) + deriv('cos((th + dth*q))', 'q', 0)*(-sin(th)*cos(ph))
+    samples: *eul
+    tolerance: 1e-6
+    shown: ['\omega_x &= \dot\theta\cos\phi + \dot\psi\sin\theta\sin\phi']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3b-y
+    kind: identity
+    where: 'Problem 3(b): ω_y = θ̇ sin φ − ψ̇ sin θ cos φ against (dU/dt)ᵀ U'
+    formula: dth*sin(ph) - dps*sin(th)*cos(ph)
+    equals: deriv('cos((ps + dps*q))*cos((ph + dph*q)) - cos((th + dth*q))*sin((ph + dph*q))*sin((ps + dps*q))', 'q', 0)*(sin(ps)*sin(th)) + deriv('-sin((ps + dps*q))*cos((ph + dph*q)) - cos((th + dth*q))*sin((ph + dph*q))*cos((ps + dps*q))', 'q', 0)*(cos(ps)*sin(th)) + deriv('sin((th + dth*q))*sin((ph + dph*q))', 'q', 0)*(cos(th))
+    samples: *eul
+    tolerance: 1e-6
+    shown: ['\omega_y &= \dot\theta\sin\phi - \dot\psi\sin\theta\cos\phi']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3b-z
+    kind: identity
+    where: 'Problem 3(b): ω_z = ψ̇ cos θ + φ̇ against (dU/dt)ᵀ U'
+    formula: dps*cos(th) + dph
+    equals: deriv('cos((ps + dps*q))*sin((ph + dph*q)) + cos((th + dth*q))*cos((ph + dph*q))*sin((ps + dps*q))', 'q', 0)*(cos(ps)*cos(ph) - cos(th)*sin(ph)*sin(ps)) + deriv('-sin((ps + dps*q))*sin((ph + dph*q)) + cos((th + dth*q))*cos((ph + dph*q))*cos((ps + dps*q))', 'q', 0)*(-sin(ps)*cos(ph) - cos(th)*sin(ph)*cos(ps)) + deriv('-sin((th + dth*q))*cos((ph + dph*q))', 'q', 0)*(sin(th)*sin(ph))
+    samples: *eul
+    tolerance: 1e-6
+    shown: ['\omega_z &= \dot\psi\cos\theta + \dot\phi']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3b-length
+    kind: identity
+    where: 'Problem 3(b), check: |ω|² from the fixed components equals φ̇² + θ̇² + ψ̇² + 2φ̇ψ̇ cos θ'
+    formula: (dth*cos(ph) + dps*sin(th)*sin(ph))**2 + (dth*sin(ph) - dps*sin(th)*cos(ph))**2 + (dps*cos(th) + dph)**2
+    equals: dph**2 + dth**2 + dps**2 + 2*dph*dps*cos(th)
+    samples: *eul
+    tolerance: 1e-12
+    shown: ['$|\vec\omega|^2 = \dot\phi^2 + \dot\theta^2 + \dot\psi^2 + 2\dot\phi\dot\psi\cos\theta$']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3(c): ∂T/∂ψ against a numerical derivative of T(ψ) with φ̇, θ̇, ψ̇ and θ held fixed
+
+  - id: p3c-dtdpsi
+    kind: identity
+    answer: p3c-dtdpsi
+    where: 'Problem 3(c), answer box: (I₁ − I₂) ω₁ ω₂ against dT/dψ numerical, with ω₁, ω₂, ω₃ from Problem 3(a); the samples w1, w2 are ω₁, ω₂ of Problem 3(a) at the sampled angles and rates'
+    formula: (I1-I2)*w1*w2
+    equals: deriv('0.5*I1*(dph*sin(th)*sin(q) + dth*cos(q))**2 + 0.5*I2*(dph*sin(th)*cos(q) - dth*sin(q))**2 + 0.5*I3*(dph*cos(th) + dps)**2', 'q', ps)
+    samples:
+      I1: [1.0, 1.5, 2.0, 1.2]
+      I2: [3.0, 3.5, 4.0, 3.1]
+      I3: [2.0, 5.0, 2.5, 4.0]
+      ph: [0.4, 1.3, 2.9, 5.0]
+      th: [1.1, 0.3, 2.5, 1.7]
+      ps: [2.0, 4.1, 0.6, 3.3]
+      dph: [0.7, -1.2, 0.4, 2.0]
+      dth: [-0.3, 0.8, 1.5, -0.6]
+      dps: [1.3, 0.5, -0.9, 0.2]
+      w1: [0.6921048424545231, -0.1696782520650173, 1.3731725390464729, 0.2796261541808042]
+      w2: [0.013178041529737006, 0.8584681986196064, -0.649387560068412, -2.0531452941905926]
+    tolerance: 1e-6
+    shown: ['id="p3c-dtdpsi"', '= (I_1 - I_2)\,\omega_1\omega_2']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: disk (M, R) with m = 3M/8 at (R, R, 0); A at the origin, centre at (0, R, 0)
+
+  - id: p4a-disk
+    kind: identity
+    answer: p4a-disk
+    where: 'Problem 4(a), answer box: the disk about a diameter, MR²/4, against the integral of σ y² over the disk (rings of radius q, ∫ y² over the ring = π q³ dq)'
+    formula: 1/4*M*R**2
+    equals: integrate('M/(pi*R**2)*pi*q**3', 'q', 0, R)
+    samples:
+      M: [1, 2.5, 1.7]
+      R: [1, 0.6, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p4a-disk"', 'I^{\text{disk}}_{\text{centre}} = \frac{MR^2}{4}']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-disk-zz
+    kind: identity
+    where: 'Problem 4(a), solution: I_zz of the disk about its centre, MR²/2, against the integral over rings'
+    formula: 1/2*M*R**2
+    equals: integrate('M/(pi*R**2)*2*pi*q**3', 'q', 0, R)
+    samples:
+      M: [1, 2.5]
+      R: [1, 0.6]
+    tolerance: 1e-9
+    shown: ['= \frac12 MR^2$']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-xx
+    kind: identity
+    answer: p4a-xx
+    where: 'Problem 4(a), answer box: I_xx about A, 13MR²/8, against the sum of the disk (integral of σ y² over the disk at height R + y'') and m y² of the point mass'
+    formula: 13/8*M*R**2
+    equals: integrate('M/(pi*R**2)*(pi*q**3 + 2*pi*q*R**2)', 'q', 0, R) + 3*M/8*R**2
+    samples:
+      M: [1, 2.5, 1.7]
+      R: [1, 0.6, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p4a-xx"', '13 & -3 & 0']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-xy
+    kind: identity
+    answer: p4a-xy
+    where: 'Problem 4(a), answer box: I_xy about A, −3MR²/8, against −m x y for the point mass at (R, R) (the disk gives 0 by symmetry about the y axis)'
+    formula: -3/8*M*R**2
+    equals: -(3*M/8)*R*R
+    samples:
+      M: [1, 2.5, 1.7]
+      R: [1, 0.6, 1.9]
+    tolerance: 1e-12
+    shown: ['id="p4a-xy"', '-3 & 5 & 0']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-flat
+    where: 'Problem 4(a), check: I_zz = I_xx + I_yy in units of MR²/8'
+    formula: 13 + 5
+    expected: '18'
+    shown: ['$13 + 5 = 18$']
+    source: {cite: mit, at: 'Problem 4(a) (our own check)'}
+    origin: page-own
+
+  - id: p4b-small
+    answer: p4b-small
+    where: 'Problem 4(b), answer box: the smaller root of det(I − λ) in the xy block, in units of MR², by root finding'
+    formula: solve('(13/8 - q)*(5/8 - q) - 9/64', 'q', 0, 1)
+    expected: '0.5'
+    shown: ['id="p4b-small"', 'the principal moments are $0.5$, $1.75$ and $2.25$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-mid
+    answer: p4b-mid
+    where: 'Problem 4(b), answer box: the larger root of det(I − λ) in the xy block, in units of MR², by root finding'
+    formula: solve('(13/8 - q)*(5/8 - q) - 9/64', 'q', 1, 2)
+    expected: '1.75'
+    shown: ['id="p4b-mid"', '\frac{7}{4}\ \text{or}\ \frac{1}{2}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-large
+    answer: p4b-large
+    where: 'Problem 4(b), answer box: I_zz about A in units of MR², 18/8'
+    formula: 18/8
+    expected: '2.25'
+    shown: ['id="p4b-large"', '$I_{zz} = \frac94 MR^2$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-trace
+    kind: identity
+    where: 'Problem 4(b), solution: the trace of the xy block, 13 + 5 = 18 in units of MR²/8, is 9/4 in units of MR²'
+    formula: (13 + 5)/8
+    equals: 9/4
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['trace 18', 'the trace is $9/4$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-det
+    kind: identity
+    where: 'Problem 4(b), solution: the determinant of the xy block, 13·5 − 3·3 = 56 in units of (MR²/8)², is 7/8 in units of (MR²)²'
+    formula: (13*5 - 3*3)/64
+    equals: 7/8
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['determinant $65 - 9 = 56$', 'the determinant $7/8$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-axis
+    kind: identity
+    where: 'Problem 4(b), solution: (1, 3) is an eigenvector of the xy block with eigenvalue 1/2 (first row of (I − λ)·(1, 3))'
+    formula: (13/8 - 1/2)*1 - 3/8*3
+    equals: 0
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['the axis along $(1, 3, 0)/\sqrt{10}$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-axis2
+    kind: identity
+    where: 'Problem 4(b), solution: (3, −1) is an eigenvector of the xy block with eigenvalue 7/4 (second row of (I − λ)·(3, −1))'
+    formula: -3/8*3 + (5/8 - 7/4)*(-1)
+    equals: 0
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['along $(3, -1, 0)/\sqrt{10}$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4(c): the point mass at (R cos ωt, R, −R sin ωt); its angular momentum m r × v with v a numerical
+  # derivative of the position; the disk adds (MR²/4) ω along y.
+
+  - id: p4c-ly
+    kind: identity
+    answer: p4c-ly
+    where: 'Problem 4(c), answer box: L_y = (5/8)MR²ω against MR²ω/4 + m (z ẋ − x ż), ẋ and ż numerical'
+    formula: 5/8*M*R**2*omega
+    equals: M*R**2*omega/4 + 3*M/8*((-R*sin(omega*t))*deriv('R*cos(omega*q)', 'q', t) - R*cos(omega*t)*deriv('-R*sin(omega*q)', 'q', t))
+    samples: &disk
+      M: [1, 2.5, 1.7]
+      R: [1, 0.6, 1.9]
+      omega: [0.5, 1.3, 2.0]
+      t: [0.1, 0.4, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p4c-ly"', '\vec L(t) = MR^2\omega\left(-\frac{3}{8}\cos\omega t,\ \frac{5}{8},\ \frac{3}{8}\sin\omega t\right)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-lx
+    kind: identity
+    answer: p4c-lx
+    where: 'Problem 4(c), answer box: L_x = −(3/8)MR²ω cos ωt against m (y ż − z ẏ) with ż numerical (ẏ = 0); the disk adds nothing'
+    formula: -3/8*M*R**2*omega*cos(omega*t)
+    equals: 3*M/8*R*deriv('-R*sin(omega*q)', 'q', t)
+    samples: *disk
+    tolerance: 1e-6
+    shown: ['id="p4c-lx"']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-lz
+    kind: identity
+    where: 'Problem 4(c), solution: L_z = (3/8)MR²ω sin ωt against m (x ẏ − y ẋ) with ẋ numerical (ẏ = 0)'
+    formula: 3/8*M*R**2*omega*sin(omega*t)
+    equals: 3*M/8*(-R*deriv('R*cos(omega*q)', 'q', t))
+    samples: *disk
+    tolerance: 1e-6
+    shown: ['m\omega R^2\left(-\cos\omega t,\ 1,\ \sin\omega t\right)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the cone, sliced into disks at distance q from the tip, radius q tan α, mass ρπ q² tan²α dq.
+  # The boxes use M; each moment is checked as M times (slice integral of the moment)/(slice integral of the mass), so M
+# is a free sample and ρ drops out.
+
+  - id: p5a-mass
+    kind: identity
+    answer: p5a-mass
+    where: 'Problem 5(a), answer box: M = (π/3)ρh³tan²α against the integral of the slices'
+    formula: pi/3*rho*h**3*tan(alpha)**2
+    equals: integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)
+    samples: &cone
+      rho: [1, 2.5, 1.7, 3.0]
+      h: [1, 0.6, 1.9, 1.2]
+      alpha: [0.2, 0.45, 0.6, 0.35]
+      tau: [1, 2.5, 4.0, 3.0]
+      M: [1.3, 0.7, 2.2, 1.0]
+    tolerance: 1e-9
+    shown: ['id="p5a-mass"', 'M = \int_0^h \rho\pi\tan^2\alpha\,z^2\,dz = \frac{\pi}{3}\rho h^3\tan^2\alpha']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-cm
+    kind: identity
+    answer: p5a-cm
+    where: 'Problem 5(a), answer box: the CM at 3h/4 from the tip against ∫ q dm / ∫ dm'
+    formula: 3/4*h
+    equals: integrate('q**3', 'q', 0, h)/integrate('q**2', 'q', 0, h)
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5a-cm"', 'z_{\text{CM}} = \frac{1}{M}\int_0^h z\,dm = \frac{3}{4}h']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-axis
+    kind: identity
+    answer: p5a-axis
+    where: 'Problem 5(a), answer box: I_∥ = (3/10)Mh²tan²α against ∫ ½ (q tan α)² dm'
+    formula: 3/10*M*h**2*tan(alpha)**2
+    equals: M/integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*(integrate('0.5*(q*tan(alpha))**2*rho*pi*tan(alpha)**2*q**2', 'q', 0, h))
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5a-axis"', 'I_\parallel = \frac{3}{10}Mh^2\tan^2\alpha']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-perp
+    kind: identity
+    answer: p5a-perp
+    where: 'Problem 5(a), answer box: I_⊥ about the tip = (3/20)Mh²(4 + tan²α) against ∫ (¼ (q tan α)² + q²) dm'
+    formula: 3/20*M*h**2*(4+tan(alpha)**2)
+    equals: M/integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*(integrate('(0.25*(q*tan(alpha))**2 + q**2)*rho*pi*tan(alpha)**2*q**2', 'q', 0, h))
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5a-perp"', 'I_\perp = \frac{3}{20}Mh^2\left(4 + \tan^2\alpha\right)']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-perp
+    kind: identity
+    answer: p5b-perp
+    where: 'Problem 5(b), answer box: I_⊥ about the CM = (3/80)Mh²(1 + 4tan²α) against ∫ (¼ (q tan α)² + (q − 3h/4)²) dm'
+    formula: 3/80*M*h**2*(1+4*tan(alpha)**2)
+    equals: M/integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*(integrate('(0.25*(q*tan(alpha))**2 + (q - 0.75*h)**2)*rho*pi*tan(alpha)**2*q**2', 'q', 0, h))
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5b-perp"', '= \frac{3}{80}Mh^2\left(1 + 4\tan^2\alpha\right)']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-shift
+    where: 'Problem 5(b), solution: M (3h/4)² in units of Mh²'
+    formula: (3/4)**2
+    expected: '0.5625'
+    shown: ['M(3h/4)^2 = \frac{9}{16}Mh^2']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-yy
+    kind: identity
+    answer: p5c-yy
+    where: 'Problem 5(c), answer box: I_yy = (3/20)Mh² sin²α (6 + tan²α) against I_⊥ sin²α + I_∥ cos²α with both moments from the slice integrals'
+    formula: 3/20*M*h**2*sin(alpha)**2*(6+tan(alpha)**2)
+    equals: M/integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*(integrate('(0.25*(q*tan(alpha))**2 + q**2)*rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*sin(alpha)**2 + integrate('0.5*(q*tan(alpha))**2*rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*cos(alpha)**2)
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5c-yy"', 'I_{yy} = \frac{3}{20}Mh^2\sin^2\alpha\left(6 + \tan^2\alpha\right)']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-yz
+    kind: identity
+    answer: p5c-yz
+    where: 'Problem 5(c), answer box: I_yz = (3/20)Mh²(tan²α − 4) sin α cos α against (I_∥ − I_⊥) sin α cos α from the slice integrals'
+    formula: 3/20*M*h**2*(tan(alpha)**2-4)*sin(alpha)*cos(alpha)
+    equals: M/integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*((integrate('0.5*(q*tan(alpha))**2*rho*pi*tan(alpha)**2*q**2', 'q', 0, h) - integrate('(0.25*(q*tan(alpha))**2 + q**2)*rho*pi*tan(alpha)**2*q**2', 'q', 0, h))*sin(alpha)*cos(alpha))
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5c-yz"', 'I_{yz} = \frac{3}{20}Mh^2\left(\tan^2\alpha - 4\right)\sin\alpha\cos\alpha']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-angle
+    where: 'Problem 5(c), check: I_∥ < I_⊥ while tan α < 2, that is α < 63.4°'
+    formula: atan(2)*180/pi
+    expected: '63.4'
+    shown: ['$\alpha < 63.4°$']
+    source: {cite: mit, at: 'Problem 5(c) (our own check)'}
+    origin: page-own
+
+  - id: p5d-omega
+    kind: identity
+    answer: p5d-omega
+    where: 'Problem 5(d), answer box: |ω| = 2π/(τ tan α) against the root of ω (3h/4) sin α = (2π/τ)(3h/4) cos α (the two speeds of the CM)'
+    formula: 2*pi/(tau*tan(alpha))
+    equals: solve('q*0.75*h*sin(alpha) - 2*pi/tau*0.75*h*cos(alpha)', 'q', 0, 100)
+    samples: *cone
+    tolerance: 1e-8
+    shown: ['id="p5d-omega"', '\omega = \Omega\cot\alpha = \frac{2\pi}{\tau\tan\alpha}']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-t
+    kind: identity
+    answer: p5d-t
+    where: 'Problem 5(d), answer box: T = (3π²/10)Mh²(1 + 5cos²α)/τ² against the route of part (b): ½Mv² + ½(I∥_CM ω² cos²α + I⊥_CM ω² sin²α), with the moments about the CM from the slice integrals, v = (2π/τ)(3h/4)cos α and ω = (2π/τ) cot α'
+    formula: 3*pi**2/10*M*h**2*(1+5*cos(alpha)**2)/tau**2
+    equals: M/integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*(0.5*integrate('rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*(2*pi/tau*0.75*h*cos(alpha))**2 + 0.5*(2*pi/(tau*tan(alpha)))**2*(integrate('0.5*(q*tan(alpha))**2*rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*cos(alpha)**2 + integrate('(0.25*(q*tan(alpha))**2 + (q - 0.75*h)**2)*rho*pi*tan(alpha)**2*q**2', 'q', 0, h)*sin(alpha)**2))
+    samples: *cone
+    tolerance: 1e-9
+    shown: ['id="p5d-t"', '= \frac{3\pi^2Mh^2}{10\,\tau^2}\left(1 + 5\cos^2\alpha\right)']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-rho
+    kind: identity
+    where: 'Problem 5(d), solution: T in terms of the density, with M = (π/3)ρh³tan²α'
+    formula: pi**3*rho*h**5/(10*tau**2)*tan(alpha)**2*(1 + 5*cos(alpha)**2)
+    equals: 3*pi**2/10*(pi/3*rho*h**3*tan(alpha)**2)*h**2*(1 + 5*cos(alpha)**2)/tau**2
+    samples: *cone
+    tolerance: 1e-12
+    shown: ['T = \frac{\pi^3\rho h^5}{10\,\tau^2}\tan^2\alpha\left(1 + 5\cos^2\alpha\right)']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-45-c
+    where: 'Problem 5(d), check at α = 45°: the route of part (c), (3/40)(1 + 5/2), in units of Mh²Ω²'
+    formula: 3/40*(1 + 5/2)*80
+    expected: '21'
+    shown: ['$\frac{3}{40}\left(1 + \frac52\right) = \frac{21}{80}$']
+    source: {cite: mit, at: 'Problem 5(d) (our own check)'}
+    origin: page-own
+
+  - id: p5d-45-b
+    kind: identity
+    where: 'Problem 5(d), check at α = 45°: the route of part (b), 9/64 + 39/320 = 21/80, with 39/320 = ½·½(3/10 + 3/16)'
+    formula: 0.5*9/16*0.5 + 0.5*0.5*(3/10 + 3/16)
+    equals: 21/80
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['the sum is $\frac{45 + 39}{320} = \frac{21}{80}$', '\frac12\cdot\frac12\left(\frac{3}{10} + \frac{3}{16}\right) = \frac{39}{320}']
+    source: {cite: mit, at: 'Problem 5(d) (our own check)'}
+    origin: page-own

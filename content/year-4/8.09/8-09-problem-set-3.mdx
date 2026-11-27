@@ -1,0 +1,986 @@
+---
+title: "Problem Set 3: The rotation angle, the Foucault pendulum, Euler angles, a disk with a point mass and a rolling cone"
+slug: 8-09-problem-set-3
+course: "8.09"
+kind: problems
+set: 3
+lecture: 2.4
+order: 90
+covers: [2.1, 2.2, 2.3, 2.4]
+solutions: own
+summary: "Five problems on rigid bodies and rotating coordinates. Finish the proof of Euler's theorem by finding real axes in which a rotation matrix shows its rotation angle. Describe a Foucault pendulum in coordinates that turn with the Earth and find how its plane of swing moves. Work out the angular velocity in terms of the Euler angles, in the body and in space, and get one of Euler's equations from Lagrange's equation. Find the inertia tensor and principal axes of a disk with a point mass on its rim, and its angular momentum when it turns about a fixed axis. Find the inertia tensors and the kinetic energy of a cone rolling on a table."
+prerequisites: [rigid-body-coordinates-euler-angles, rotating-frames-coriolis-force, moment-of-inertia-tensor, euler-equations-rigid-body]
+source:
+  title: "MIT 8.09 Problem Set 3 (Fall 2014)"
+  url: https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/resources/mit8_09f14_pset3/
+  readings:
+    - title: "8.09 Chapter 2 notes (Stewart, typed, pp. 29–51)"
+      url: https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/6fe39e8d5ce4ce746ca256dfea665eda_MIT8_09F14_Chapter_2.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: reviewed
+---
+
+This set practises the four lessons on the first sections of Chapter 2 of the course notes: [coordinates of a rigid body, Euler angles and Euler's theorem](/courses/8-09/rigid-body-coordinates-euler-angles) (Section 2.1), [rotating coordinates and the Coriolis force](/courses/8-09/rotating-frames-coriolis-force) (Section 2.2), [the moment of inertia tensor](/courses/8-09/moment-of-inertia-tensor) (Section 2.3) and [Euler's equations](/courses/8-09/euler-equations-rigid-body) (Section 2.4). The problems follow MIT's Problem Set 3, in our own words and in MIT's order. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own. The sheet's advice holds throughout: where a result follows from symmetry, use the symmetry.
+
+A few things to know about the source. The sheet has printed page numbers; the problems are on pp. 2 to 4, cited below as "p. 2" and so on. The notes are cited by their printed page and equation number. The sheet's two figures (the pendulum's coordinates and the disk) are marked "Image by MIT OpenCourseWare"; they are described in words here, not copied. The sheet points to a mechanics textbook in Problems 3 and 5; those pointers are left out, since every problem is stated in full without them, and the hints say what is needed.
+
+Some choices are ours, each marked where it appears:
+
+- in Problem 1, the sign of the second real axis, which fixes the sense in which the rotation angle is counted;
+- in Problem 2, the origin of the axes is at the pivot, and $\phi$ is counted from $\hat x$ (east) towards $\hat y$ (north), anticlockwise seen from above (the sheet's figure counts it from $\hat y$, clockwise; the solution of Problem 2(b) compares the two);
+- in Problem 4, the sense of rotation and the position of the point mass at $t = 0$;
+- in Problem 5, the direction of the $z$ axis (up) and of the $y$ axis (from the tip towards the base), and the reading of "returns to its original position in a time $\tau$" as one full turn of the line of contact.
+
+Some boxes are our additions, each marked where it appears: the rotation angle and axis of a given matrix in Problem 1(c), the precession time at the latitude of Paris in Problem 2(b), the generalized force in Problem 3(c), the mass of the cone and the instantaneous axis and angular speed in Problem 5, and every choice box.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit named in the question. A formula box takes plain typing, for example `3/8*M*R^2`, and accepts every correct way of writing the answer. It treats its letters as independent, so each question says which letters to type: `M` and `R` for the disk, `omega` for $\omega$, `t` for time, `I1`, `I2`, `I3` for the principal moments, `w1`, `w2`, `w3` for $\omega_1$, $\omega_2$, $\omega_3$, and `rho`, `h`, `alpha`, `tau` for the cone. Angles are in radians: type `tan(alpha)` and `cos(alpha)`.
+
+The points per problem are MIT's; their split between the parts of Problem 1 to 5 is MIT's too. Several parts ask you to show something. Those parts have no box, or only a small one: open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The conventions are those of the notes and the lessons. The inertia tensor is $I_{ab} = \sum_i m_i\left(\delta_{ab}\,r_i^2 - r_{ia}r_{ib}\right)$, so its off-diagonal entries carry a minus sign. The Euler angles $\phi$, $\theta$, $\psi$ are the turns about $z$, then about the new $x$ axis (the line of nodes), then about the new $z$ axis, and $U = U_\psi U_\theta U_\phi$ takes the components of a vector in the fixed axes to its components in the body axes. An overdot is $d/dt$. A dagger $\dagger$ means complex conjugate and transpose.
+
+## Problem 1
+
+<Exercise id="p1" title="Rotation angle in Euler's theorem" points={10} mit="Problem 1">
+
+The lesson on Euler's theorem shows that every rotation $U$ (a real orthogonal matrix with determinant 1) leaves an axis fixed. This problem finishes the argument: it shows that the angle $\Phi$ in the eigenvalues really is the angle of a rotation about that axis.
+
+The set-up, as the sheet recalls it: $\vec r\,' = U\vec r$, and the eigenvectors $\vec\xi_i$ of $U$ satisfy
+
+<Formula label="Problem 1: eigenvalues and eigenvectors of a rotation" tex="U\vec\xi_i = \lambda_i\,\vec\xi_i, \qquad \lambda_1 = e^{i\Phi}, \quad \lambda_2 = e^{-i\Phi}, \quad \lambda_3 = 1, \qquad \vec\xi_i^{\,\dagger}\cdot\vec\xi_j = \delta_{ij}" cite="mit" at="Problem 1, p. 2" />
+
+with $\Phi \neq 0$. The third eigenvector is real, $\vec\xi_3^{\,*} = \vec\xi_3$; the other two are complex and conjugate to each other, $\vec\xi_1^{\,*} = \vec\xi_2$. The matrix $X$ with columns $\vec\xi_1$, $\vec\xi_2$, $\vec\xi_3$ is unitary, $X^\dagger = X^{-1}$, and it diagonalizes $U$:
+
+<Formula label="Problem 1: X diagonalizes U" tex="X^\dagger U X = \begin{pmatrix} \lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3 \end{pmatrix}" cite="mit" at="Problem 1, p. 2" />
+
+(compare eq. (2.15) of the notes). Since $U\vec\xi_3 = \vec\xi_3$, the axis is along the real vector $\vec\xi_3$, and we take it as the new $z$ axis.
+
+<Part label="a" points={4}>
+
+The obvious choice for the other two axes would be $\vec\xi_1$ and $\vec\xi_2$: with $\vec r = X\vec s$, the vector $\vec s$ holds the components of $\vec r$ along $\vec\xi_1$, $\vec\xi_2$, $\vec\xi_3$. But $\vec\xi_1$ and $\vec\xi_2$ are complex, so they cannot be axes in real space. Find two real vectors $\vec\xi_a$ and $\vec\xi_b$, linear combinations of $\vec\xi_1$ and $\vec\xi_2$, such that $\{\vec\xi_a, \vec\xi_b, \vec\xi_3\}$ is an orthonormal set.
+
+<Hint>
+
+Use $\vec\xi_2 = \vec\xi_1^{\,*}$. Which combinations of a complex vector and its conjugate are real?
+
+</Hint>
+
+<Hint>
+
+The sum $\vec\xi_1 + \vec\xi_2$ is real. The difference $\vec\xi_1 - \vec\xi_2$ is purely imaginary, so multiply it by $i$. Then fix the lengths with $\vec\xi_i^{\,\dagger}\cdot\vec\xi_j = \delta_{ij}$.
+
+</Hint>
+
+<Answer id="p1a-pair" label="A real orthonormal pair is:" choices={["(ξ₁ + ξ₂)/2 and i(ξ₁ − ξ₂)/2", "i(ξ₁ + ξ₂)/√2 and (ξ₁ − ξ₂)/√2", "(ξ₁ + ξ₂)/√2 and i(ξ₁ − ξ₂)/√2", "(ξ₁ + ξ₂)/√2 and (ξ₁ − ξ₂)/√2"]} answer={2} />
+
+<Solution>
+
+**The idea.** A complex vector plus its conjugate is twice its real part; minus its conjugate is $2i$ times its imaginary part. Both are real once the second is multiplied by $i$.
+
+<Step title="Two real vectors">
+
+Take
+
+<Formula label="Problem 1(a): the real axes" tex="\vec\xi_a = \frac{1}{\sqrt 2}\left(\vec\xi_1 + \vec\xi_2\right), \qquad \vec\xi_b = \frac{i}{\sqrt 2}\left(\vec\xi_1 - \vec\xi_2\right)" cite="mit" at="Problem 1(a), p. 2 (our own solution)" />
+
+With $\vec\xi_2 = \vec\xi_1^{\,*}$: $\vec\xi_a^{\,*} = (\vec\xi_2 + \vec\xi_1)/\sqrt2 = \vec\xi_a$ and $\vec\xi_b^{\,*} = -i(\vec\xi_2 - \vec\xi_1)/\sqrt2 = \vec\xi_b$. Both are real: $\vec\xi_a = \sqrt2\,\mathrm{Re}\,\vec\xi_1$ and $\vec\xi_b = -\sqrt2\,\mathrm{Im}\,\vec\xi_1$. The overall sign of $\vec\xi_b$ is our choice; the other sign also works and turns the rotation of part (c) into one by $-\Phi$.
+
+</Step>
+
+<Step title="Orthonormal">
+
+Using $\vec\xi_i^{\,\dagger}\cdot\vec\xi_j = \delta_{ij}$:
+
+<Formula label="Problem 1(a): the new axes are orthonormal" tex="\vec\xi_a^{\,\dagger}\cdot\vec\xi_a = \tfrac12(1 + 1) = 1, \qquad \vec\xi_b^{\,\dagger}\cdot\vec\xi_b = \tfrac{(-i)(i)}{2}(1 + 1) = 1, \qquad \vec\xi_a^{\,\dagger}\cdot\vec\xi_b = \tfrac{i}{2}(1 - 1) = 0" cite="mit" at="Problem 1(a), p. 2 (our own solution)" />
+
+Both are combinations of $\vec\xi_1$ and $\vec\xi_2$, which are orthogonal to $\vec\xi_3$, so they are orthogonal to $\vec\xi_3$ too. For real vectors the dagger is just the transpose, so these are ordinary dot products.
+
+</Step>
+
+<Step title="Check the result">
+
+Without the factor $i$ the second vector, $(\vec\xi_1 - \vec\xi_2)/\sqrt2 = \sqrt2\,i\,\mathrm{Im}\,\vec\xi_1$, would be purely imaginary. With $1/2$ in place of $1/\sqrt2$ the vectors would have length $1/\sqrt2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Write the relation between the components $\vec u$ of a vector in the basis $\{\vec\xi_a, \vec\xi_b, \vec\xi_3\}$ and its components $\vec s$ in the basis $\{\vec\xi_1, \vec\xi_2, \vec\xi_3\}$ as a matrix, $\vec u = W\vec s$, and show that $W$ is unitary.
+
+<Hint>
+
+Write $\vec r = s_1\vec\xi_1 + s_2\vec\xi_2 + s_3\vec\xi_3 = u_a\vec\xi_a + u_b\vec\xi_b + u_3\vec\xi_3$, put in part (a), and compare the coefficients of $\vec\xi_1$ and $\vec\xi_2$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Express the new basis in the old one, then solve for the new components.
+
+<Step title="The matrix">
+
+Comparing coefficients gives $s_1 = (u_a + i u_b)/\sqrt2$ and $s_2 = (u_a - i u_b)/\sqrt2$, $s_3 = u_3$. Solving for $\vec u$:
+
+<Formula label="Problem 1(b): the change of components" tex="\vec u = W\vec s, \qquad W = \frac{1}{\sqrt 2}\begin{pmatrix} 1 & 1 & 0 \\ -i & i & 0 \\ 0 & 0 & \sqrt 2 \end{pmatrix}" cite="mit" at="Problem 1(b), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Unitary">
+
+Multiply $W$ by $W^\dagger$ (transpose, then conjugate, so the $-i$ and $i$ swap sign). The first row with itself gives $\frac12(1 + 1) = 1$, the second row with itself $\frac12\left((-i)(i) + (i)(-i)\right) = 1$, the first with the second $\frac12\left(1\cdot i + 1\cdot(-i)\right) = 0$, and the third row stands apart:
+
+<Formula label="Problem 1(b): W is unitary" tex="W W^\dagger = \frac{1}{2}\begin{pmatrix} 1 & 1 & 0 \\ -i & i & 0 \\ 0 & 0 & \sqrt 2 \end{pmatrix}\begin{pmatrix} 1 & i & 0 \\ 1 & -i & 0 \\ 0 & 0 & \sqrt 2 \end{pmatrix} = 1" cite="mit" at="Problem 1(b), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+A unitary matrix takes one orthonormal basis to another, as it must here: both bases are orthonormal. Its determinant, $\frac12(i + i) = i$, has modulus 1.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+The new coordinates are $\vec u = W\vec s = WX^\dagger\vec r$. Write the rotation $\vec r\,' = U\vec r$ as $\vec u\,' = \tilde U\vec u$, and show that $\tilde U$ is a standard rotation matrix with rotation angle $\Phi$. The sheet ends with a remark: the trace is the same in every basis, $\mathrm{Tr}\,U = \mathrm{Tr}\,\tilde U = 1 + 2\cos\Phi$, so the angle of any rotation matrix can be read off its trace.
+
+Then use that remark on a matrix of our own (our addition). The matrix below sends the components $(x, y, z)$ to $(z, x, y)$:
+
+<Formula label="Problem 1(c): a matrix of our own" tex="P = \begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}" cite="mit" at="Problem 1, p. 2 (our own example)" />
+
+Find its rotation angle between $0°$ and $180°$, and its axis.
+
+<Hint>
+
+$\vec r = X\vec s$ and $\vec s = W^\dagger\vec u$, so $\vec r = XW^\dagger\vec u$. Put that into $\vec u\,' = WX^\dagger\vec r\,'$ with $\vec r\,' = U\vec r$.
+
+</Hint>
+
+<Hint>
+
+The middle of the product, $X^\dagger U X$, is the diagonal matrix of eigenvalues. Only the upper-left $2\times2$ block needs work: write $e^{\pm i\Phi} = \cos\Phi \pm i\sin\Phi$.
+
+</Hint>
+
+<Hint>
+
+For $P$: its trace gives $\cos\Phi$. The axis is the vector that $P$ leaves unchanged.
+
+</Hint>
+
+<Answer id="p1c-angle" label="Rotation angle of $P$:" value="120" unit="degrees" tolerance="1%" calc="p1c-angle" />
+
+<Answer id="p1c-axis" label="Axis of $P$:" choices={["along (1, 1, 1)", "along (0, 0, 1)", "along (1, −1, 0)", "along (1, 0, −1)"]} answer={0} />
+
+<Solution>
+
+**The idea.** In the new coordinates the rotation is $\tilde U = W(X^\dagger U X)W^\dagger$, and $W$ turns the two complex phases into a cosine and a sine.
+
+<Step title="The rotation in the new coordinates">
+
+With $\vec r = XW^\dagger\vec u$,
+
+<Formula label="Problem 1(c): the rotation in the real coordinates" tex="\vec u\,' = WX^\dagger U\vec r = WX^\dagger U X W^\dagger\,\vec u \equiv \tilde U\vec u, \qquad \tilde U = W\,\mathrm{diag}\!\left(e^{i\Phi}, e^{-i\Phi}, 1\right)W^\dagger" cite="mit" at="Problem 1(c), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Multiply out">
+
+The upper-left entry is $\frac12\left(e^{i\Phi} + e^{-i\Phi}\right) = \cos\Phi$. The entry in row 1, column 2 is $\frac12\left(e^{i\Phi}\cdot i + e^{-i\Phi}\cdot(-i)\right) = \frac{i}{2}\cdot 2i\sin\Phi = -\sin\Phi$; the entry in row 2, column 1 is $+\sin\Phi$, and the entry in row 2, column 2 is $\cos\Phi$. So
+
+<Formula label="Problem 1(c): a standard rotation" tex="\tilde U = \begin{pmatrix} \cos\Phi & -\sin\Phi & 0 \\ \sin\Phi & \cos\Phi & 0 \\ 0 & 0 & 1 \end{pmatrix}" cite="mit" at="Problem 1(c), p. 2 (our own solution)" />
+
+a rotation by the angle $\Phi$ about the third axis, $\vec\xi_3$. It is real, as it must be: $\vec u$ holds the components of a real vector along real axes. With the other sign of $\vec\xi_b$ the sines change sign, a rotation by $-\Phi$, which is the same rotation seen from the other end of the axis.
+
+</Step>
+
+<Step title="The matrix P">
+
+$\mathrm{Tr}\,P = 0 = 1 + 2\cos\Phi$, so $\cos\Phi = -\frac12$ and $\Phi = 120°$. $P$ leaves $(1, 1, 1)$ unchanged, so the axis is along $(1, 1, 1)$. Seen down that axis, the three coordinate axes are $120°$ apart, and $P$ moves each into the next.
+
+</Step>
+
+<Step title="Check the result">
+
+The trace of $\tilde U$ is $2\cos\Phi + 1$, the trace of the diagonal form, as the sheet's remark says. Its determinant is $\cos^2\Phi + \sin^2\Phi = 1$. For $P$, three turns give the identity, $P^3 = 1$, and three turns of $120°$ make $360°$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Foucault pendulum and the Coriolis effect" points={13} mit="Problem 2">
+
+A mass $m$ hangs from a long massless rod of length $\ell$ in a tower at latitude $\lambda$. Its motion is described in axes fixed to the Earth, which turns with angular velocity $\omega$. The sheet's figure sets up the axes: $\hat z$ is at right angles to the Earth's surface (up), $\hat y$ points north along the meridian, and so $\hat x = \hat y\times\hat z$ points east. The origin is at the pivot. The bob is at
+
+<Formula label="Problem 2: the position of the bob" tex="\vec r = \ell\left(\sin\theta\cos\phi,\ \sin\theta\sin\phi,\ -\cos\theta\right)" cite="mit" at="Problem 2, p. 3 (our choice of origin and of the sense of φ)" />
+
+The sheet's figure marks $\theta$ at the pivot, between the rod and the vertical below it, as we do; our choice is to put the origin of the axes at the pivot. We count $\phi$ from $\hat x$ (east) towards $\hat y$ (north), anticlockwise seen from above (our choice; the sheet's figure counts it from $\hat y$ towards the plane of swing, clockwise seen from above). The Earth's angular velocity has a northward and an upward part: $\vec\omega = \omega(0, \cos\lambda, \sin\lambda)$.
+
+<Part label="a" points={9}>
+
+The velocity seen from an inertial frame is $\vec v + \vec\omega\times(R_e\hat z + \vec r)$, where $\vec v$ is the velocity in the Earth's frame and $R_e$ the Earth's radius. So
+
+<Formula label="Problem 2(a): the Lagrangian in the Earth's frame" tex="L = \frac{m}{2}\left[\vec v + \vec\omega\times\left(\vec r + R_e\hat z\right)\right]^2 - V" cite="mit" at="Problem 2(a), p. 3" />
+
+with $V$ the potential energy of gravity near the surface; air resistance is neglected. This is the Lagrangian of eq. (2.25) of the notes, with the origin moved to the Earth's surface. Write everything in terms of $\theta$, $\phi$ and the fixed angle $\lambda$, and derive the equations of motion of the pendulum. Keep only terms up to first order in $\omega$ from the start. The term proportional to $\omega R_e$ may be dropped: it is a total time derivative.
+
+<Hint>
+
+To first order in $\omega$, $L = \frac{m}{2}\vec v^{\,2} + m\,\vec v\cdot(\vec\omega\times\vec r) - V$, plus the $\omega R_e$ term. Rewrite the middle term as $m\,\vec\omega\cdot(\vec r\times\vec v)$.
+
+</Hint>
+
+<Hint>
+
+$\vec v^{\,2} = \ell^2(\dot\theta^2 + \sin^2\theta\,\dot\phi^2)$ and $V = -mg\ell\cos\theta$. For $\vec r\times\vec v$ you need its $y$ and $z$ components only, since $\omega_x = 0$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Expand the square, keep the term linear in $\omega$, and write it as $m\,\vec\omega\cdot(\vec r\times\vec v)$: the rotation couples to the angular momentum of the bob about the pivot.
+
+<Step title="The Lagrangian to first order">
+
+The term $m R_e\,\vec v\cdot(\vec\omega\times\hat z) = mR_e\omega\cos\lambda\,\dot x$ is the time derivative of $mR_e\omega\cos\lambda\,x$, so it changes no equation of motion. The terms quadratic in $\omega$ (the centrifugal ones) are dropped. With $\vec r\times\vec v$ worked out from the position of the bob,
+
+<Formula label="Problem 2(a): the Lagrangian in θ and φ" tex="L = \frac{m\ell^2}{2}\left(\dot\theta^2 + \sin^2\theta\,\dot\phi^2\right) + m\ell^2\omega\left[\sin\lambda\,\sin^2\theta\,\dot\phi + \cos\lambda\left(\sin\theta\cos\theta\sin\phi\,\dot\phi - \cos\phi\,\dot\theta\right)\right] + mg\ell\cos\theta" cite="mit" at="Problem 2(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The equation for θ">
+
+Lagrange's equation for $\theta$, divided by $m\ell^2$:
+
+<Formula label="Problem 2(a): the θ equation" tex="\ddot\theta - \sin\theta\cos\theta\,\dot\phi^2 + \frac{g}{\ell}\sin\theta - 2\omega\sin\theta\left(\sin\lambda\cos\theta - \cos\lambda\sin\theta\sin\phi\right)\dot\phi = 0" cite="mit" at="Problem 2(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The equation for φ">
+
+Lagrange's equation for $\phi$, divided by $m\ell^2$:
+
+<Formula label="Problem 2(a): the φ equation" tex="\frac{d}{dt}\left(\sin^2\theta\,\dot\phi\right) + 2\omega\sin\theta\left(\sin\lambda\cos\theta - \cos\lambda\sin\theta\sin\phi\right)\dot\theta = 0" cite="mit" at="Problem 2(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+With $\omega = 0$ these are the equations of a spherical pendulum. The bracket $\sin\lambda\cos\theta - \cos\lambda\sin\theta\sin\phi$ is $-\hat\omega\cdot\hat r$: the component of the Earth's rotation along the rod, from the bob up to the pivot. That is what one expects. The velocity $\vec v$ is at right angles to the rod. The part of $\vec\omega$ at right angles to the rod gives a Coriolis force $-2m\vec\omega\times\vec v$ along the rod, which the rod takes up; only the part of $\vec\omega$ along the rod pushes the bob sideways. We checked both equations with a computer algebra program while writing this page.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Since $\ell$ is large, the swing is small. Use the small-angle approximation for $\theta$ to simplify the equations of part (a), and show that the plane of swing turns at the rate $\omega\sin\lambda$. (The sheet writes $\dot\phi = \omega\sin\lambda$ with its $\phi$ counted clockwise; with ours the sign is minus.)
+
+Then two boxes of our own. Take $\omega = 7.29\times 10^{-5}$ s⁻¹ (one turn of the Earth in a sidereal day) and the latitude of Paris, $\lambda = 48.85°$.
+
+<Hint>
+
+At small $\theta$, $\sin\theta \approx \theta$ and $\cos\theta \approx 1$. The terms with $\cos\lambda$ carry one more power of $\theta$ than those with $\sin\lambda$: drop them.
+
+</Hint>
+
+<Hint>
+
+The $\phi$ equation becomes a total time derivative. Which quantity is conserved, and what is it for a pendulum that swings through the vertical?
+
+</Hint>
+
+<Answer id="p2b-sense" label="Seen from above in the northern hemisphere, the plane of swing turns:" choices={["anticlockwise, with the Earth", "it does not turn at small angles", "clockwise, against the Earth's turning", "anticlockwise at first, then clockwise"]} answer={2} />
+
+<Answer id="p2b-time" label="Time for the plane of swing to turn through a full $360°$ at Paris:" value="31.8" unit="hours" tolerance="1%" calc="p2b-time" />
+
+<Solution>
+
+**The idea.** At small angles only the vertical part of $\vec\omega$ matters, and the $\phi$ equation says that a combination of $\theta$ and $\dot\phi$ is conserved. For a swing through the vertical that combination is zero, which fixes $\dot\phi$.
+
+<Step title="Small angles">
+
+With $\sin\theta \approx \theta$, $\cos\theta \approx 1$ and the $\cos\lambda$ terms dropped (they are smaller by a factor $\theta$):
+
+<Formula label="Problem 2(b): the small-angle equations" tex="\ddot\theta - \theta\,\dot\phi^2 + \frac{g}{\ell}\,\theta - 2\omega\sin\lambda\,\theta\,\dot\phi = 0, \qquad \frac{d}{dt}\left[\theta^2\left(\dot\phi + \omega\sin\lambda\right)\right] = 0" cite="mit" at="Problem 2(b), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The precession">
+
+So $\theta^2(\dot\phi + \omega\sin\lambda)$ is constant. A pendulum started from the vertical with a sideways push passes through $\theta = 0$, so the constant is zero. One released from rest has the small constant $\theta_0^2\,\omega\sin\lambda$: its path is a very thin ellipse, and its plane turns at the same rate. With the constant zero:
+
+<Formula label="Problem 2(b): the precession of the plane of swing" tex="\dot\phi = -\,\omega\sin\lambda" cite="mit" at="Problem 2(b), p. 3 (our own solution, with our φ)" />
+
+Put this into the $\theta$ equation: $\dot\phi^2 + 2\omega\sin\lambda\,\dot\phi = -\omega^2\sin^2\lambda$, of second order in $\omega$, so $\ddot\theta + (g/\ell)\theta = 0$. The bob swings as an ordinary pendulum in a plane that turns at the rate $\omega\sin\lambda$ (here $\theta$ is allowed to change sign as the bob passes the vertical, so that $\phi$ labels the plane).
+
+</Step>
+
+<Step title="The sign">
+
+The sheet's figure marks $\phi$ from $\hat y$ (north) towards the plane of swing, clockwise seen from above; in that angle the motion reads $\dot\phi = +\omega\sin\lambda$, as the sheet and the notes (Section 2.2, p. 35) write. With our $\phi$ it is $-\omega\sin\lambda$. Both say clockwise in the north.
+
+</Step>
+
+<Step title="The numbers">
+
+A full turn of the plane takes $2\pi/(\omega\sin\lambda)$. At Paris, $\sin 48.85° = 0.7530$ and $2\pi/\omega = 23.94$ h, so the time is $23.94/0.7530 = 31.8$ hours.
+
+</Step>
+
+<Step title="Check the result">
+
+At the north pole, $\lambda = 90°$, the plane stays fixed in space while the Earth turns under it once a day, and $\omega\sin\lambda = \omega$. At the equator the vertical part of $\vec\omega$ is zero and the plane does not turn. In the Earth's frame the Coriolis force pushes a moving body to its right in the northern hemisphere, so each swing is bent to the right: clockwise seen from above, as found.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Angular velocity with Euler angles" points={9} mit="Problem 3">
+
+The Euler angles $\phi$, $\theta$, $\psi$ give the orientation of the body axes $(x', y', z')$ relative to the fixed axes $(x, y, z)$, with $\vec r\,' = U\vec r$ and $U = U_\psi U_\theta U_\phi$ (eq. (2.5) of the notes):
+
+<Formula label="Problem 3: the three Euler turns" tex="U = \begin{pmatrix} \cos\psi & \sin\psi & 0 \\ -\sin\psi & \cos\psi & 0 \\ 0 & 0 & 1 \end{pmatrix}\begin{pmatrix} 1 & 0 & 0 \\ 0 & \cos\theta & \sin\theta \\ 0 & -\sin\theta & \cos\theta \end{pmatrix}\begin{pmatrix} \cos\phi & \sin\phi & 0 \\ -\sin\phi & \cos\phi & 0 \\ 0 & 0 & 1 \end{pmatrix}" cite="reading1" at="Section 2.1, eq. (2.6), p. 31" />
+
+<Part label="a" points={2}>
+
+Show that the components of the angular velocity along the body axes are
+
+<Formula label="Problem 3(a): angular velocity in the body axes" tex="\begin{aligned} \omega_{x'} &= \dot\phi\sin\theta\sin\psi + \dot\theta\cos\psi \\ \omega_{y'} &= \dot\phi\sin\theta\cos\psi - \dot\theta\sin\psi \\ \omega_{z'} &= \dot\phi\cos\theta + \dot\psi \end{aligned}" cite="mit" at="Problem 3(a), p. 3" />
+
+The notes state this result as eq. (2.70) and leave the steps to the student; go through them.
+
+<Hint>
+
+The angular velocity is the sum of three: $\dot\phi$ about the fixed $z$ axis, $\dot\theta$ about the line of nodes, $\dot\psi$ about the body $z'$ axis. Find the components of each of those three directions in the body axes.
+
+</Hint>
+
+<Hint>
+
+The line of nodes is the $x$ axis after the first turn; only the last turn, $U_\psi$, takes it to the body axes. The fixed $z$ axis is untouched by the first turn, so it reaches the body axes through $U_\psi U_\theta$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Angular velocities add as vectors. Each of the three rates is about a known axis; turn each axis into body components with the matrices that come after it.
+
+<Step title="The three axes in body components">
+
+The body $z'$ axis is $(0, 0, 1)$ in body components. The line of nodes is the $x$ axis after the first turn, $(1, 0, 0)$ in those intermediate axes, and $U_\psi$ takes it to $(\cos\psi, -\sin\psi, 0)$. The fixed $z$ axis, $(0, 0, 1)$, is unchanged by $U_\phi$; $U_\theta$ takes it to $(0, \sin\theta, \cos\theta)$, and $U_\psi$ to $(\sin\theta\sin\psi, \sin\theta\cos\psi, \cos\theta)$.
+
+</Step>
+
+<Step title="Add">
+
+<Formula label="Problem 3(a): the sum" tex="\vec\omega = \dot\phi\begin{pmatrix} \sin\theta\sin\psi \\ \sin\theta\cos\psi \\ \cos\theta \end{pmatrix} + \dot\theta\begin{pmatrix} \cos\psi \\ -\sin\psi \\ 0 \end{pmatrix} + \dot\psi\begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix}" cite="mit" at="Problem 3(a), p. 3 (our own solution)" />
+
+which is the result, line by line.
+
+</Step>
+
+<Step title="Check the result">
+
+With only $\psi$ changing, the body spins about its own $z'$ axis: $\vec\omega = (0, 0, \dot\psi)$. With only $\phi$ changing, $|\vec\omega|^2 = \dot\phi^2(\sin^2\theta + \cos^2\theta) = \dot\phi^2$: a turn about one axis at the rate $\dot\phi$. In our calculation file the three components are compared with the angular velocity found from the time derivative of the matrix $U$ itself.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Show that the components of the angular velocity along the fixed (inertial) axes are
+
+<Formula label="Problem 3(b): angular velocity in the fixed axes" tex="\begin{aligned} \omega_x &= \dot\theta\cos\phi + \dot\psi\sin\theta\sin\phi \\ \omega_y &= \dot\theta\sin\phi - \dot\psi\sin\theta\cos\phi \\ \omega_z &= \dot\psi\cos\theta + \dot\phi \end{aligned}" cite="mit" at="Problem 3(b), p. 3" />
+
+You may use the results of part (a) and of the lessons.
+
+<Hint>
+
+Two routes. Either turn each of the three axes into fixed components, as in part (a) but with the inverse matrices; or multiply the column of body components from part (a) by $U^T$, which turns body components into fixed ones.
+
+</Hint>
+
+<Hint>
+
+On the first route: the fixed $z$ axis is $(0, 0, 1)$; the line of nodes is the first-turned $x$ axis, $(\cos\phi, \sin\phi, 0)$ in fixed components; the body $z'$ axis is the third row of $U$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The same sum of three rotations as in part (a), now with each axis written in the fixed components.
+
+<Step title="The three axes in fixed components">
+
+The fixed $z$ axis is $(0, 0, 1)$. The line of nodes is the $x$ axis after the turn by $\phi$, which is $U_\phi^T(1, 0, 0) = (\cos\phi, \sin\phi, 0)$. The body $z'$ axis is $U^T(0, 0, 1)$, the third row of $U$; the last turn $U_\psi$ does not change the third row, so it is the third row of $U_\theta U_\phi$, which is $(\sin\theta\sin\phi, -\sin\theta\cos\phi, \cos\theta)$.
+
+</Step>
+
+<Step title="Add">
+
+<Formula label="Problem 3(b): the sum" tex="\vec\omega = \dot\phi\begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix} + \dot\theta\begin{pmatrix} \cos\phi \\ \sin\phi \\ 0 \end{pmatrix} + \dot\psi\begin{pmatrix} \sin\theta\sin\phi \\ -\sin\theta\cos\phi \\ \cos\theta \end{pmatrix}" cite="mit" at="Problem 3(b), p. 3 (our own solution)" />
+
+which is the result.
+
+</Step>
+
+<Step title="Check the result">
+
+The two sets of formulas swap the roles of $\phi$ and $\psi$ (with a change of sign in the $y$ components), as they should: the body sees the fixed $z$ axis the way the fixed frame sees the body $z'$ axis. Both give the same length, $|\vec\omega|^2 = \dot\phi^2 + \dot\theta^2 + \dot\psi^2 + 2\dot\phi\dot\psi\cos\theta$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Take the body axes along the principal axes, so that $T = \frac12\left(I_1\omega_1^2 + I_2\omega_2^2 + I_3\omega_3^2\right)$ with $\omega_1 = \omega_{x'}$ and so on (eq. (2.58) of the notes). Use $\psi$ as a generalized coordinate and derive one of Euler's equations from Lagrange's equation in the form with generalized forces $Q_j$:
+
+<Formula label="Problem 3(c): Lagrange's equation with generalized forces" tex="\frac{d}{dt}\frac{\partial T}{\partial\dot q_j} - \frac{\partial T}{\partial q_j} = Q_j" cite="mit" at="Problem 3(c), p. 4" />
+
+For the box, type $\partial T/\partial\psi$ in terms of `I1`, `I2`, `I3` and `w1`, `w2`, `w3`. The second box is our addition.
+
+<Hint>
+
+From part (a): which of $\omega_1$, $\omega_2$, $\omega_3$ contain $\dot\psi$, and how do $\omega_1$ and $\omega_2$ change when $\psi$ changes with $\dot\phi$, $\dot\theta$ held fixed?
+
+</Hint>
+
+<Hint>
+
+$\partial\omega_1/\partial\psi$ and $\partial\omega_2/\partial\psi$ are again combinations of $\omega_1$ and $\omega_2$.
+
+</Hint>
+
+<Answer id="p3c-dtdpsi" label="$\partial T/\partial\psi =$" expr="(I1-I2)*w1*w2"
+  vars={{ I1: [1, 2], I2: [3, 4], w1: [0.5, 2], w2: [0.5, 2] }} names={{ w1: "\\omega_1", w2: "\\omega_2" }}
+  mistakes={[
+    { expr: "(I2-I1)*w1*w2", hint: "Check the signs: ∂ω₁/∂ψ = +ω₂ and ∂ω₂/∂ψ = −ω₁ (differentiate sin ψ and cos ψ), so the I₁ term is positive and the I₂ term negative." },
+    { expr: "0", hint: "T does depend on ψ through ω₁ and ω₂, even though ψ does not appear in ω₃: differentiate sin ψ and cos ψ." }
+  ]} />
+
+<Answer id="p3c-force" label="The generalized force $Q_\psi$ is:" choices={["the torque about the fixed z axis", "the torque about the line of nodes", "the magnitude of the total torque", "the torque about the body z′ axis"]} answer={3} />
+
+<Solution>
+
+**The idea.** $\psi$ turns the body about its own $z'$ axis, so its Lagrange equation should be the third Euler equation, the one with the torque about that axis.
+
+<Step title="The derivatives">
+
+Only $\omega_3$ contains $\dot\psi$, with coefficient 1, so $\partial T/\partial\dot\psi = I_3\omega_3$. Differentiating the formulas of part (a) with respect to $\psi$ gives $\partial\omega_1/\partial\psi = \omega_2$, $\partial\omega_2/\partial\psi = -\omega_1$, $\partial\omega_3/\partial\psi = 0$. So
+
+<Formula label="Problem 3(c): the derivative with respect to ψ" tex="\frac{\partial T}{\partial\psi} = I_1\omega_1\omega_2 + I_2\omega_2(-\omega_1) = (I_1 - I_2)\,\omega_1\omega_2" cite="mit" at="Problem 3(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The generalized force">
+
+The work done in a small change $\delta\psi$ is $Q_\psi\,\delta\psi$. A change of $\psi$ turns the body by $\delta\psi$ about its $z'$ axis, so the work is $\tau_3\,\delta\psi$ and $Q_\psi = \tau_3$, the torque component along the body $z'$ axis.
+
+</Step>
+
+<Step title="Euler's equation">
+
+<Formula label="Problem 3(c): the third Euler equation" tex="I_3\,\dot\omega_3 - (I_1 - I_2)\,\omega_1\omega_2 = \tau_3" cite="mit" at="Problem 3(c), p. 4 (our own solution)" />
+
+This is the third of Euler's equations, eq. (2.68) of the notes:
+
+<Formula label="Euler's equations" tex="I_1\dot\omega_1 - (I_2 - I_3)\,\omega_2\omega_3 = \tau_1, \quad \text{and cyclic}" cite="reading1" at="Section 2.4, eq. (2.68), p. 44" />
+
+</Step>
+
+<Step title="Check the result">
+
+For a symmetric body, $I_1 = I_2$, and no torque about the axis, $I_3\omega_3$ is conserved: the spin of a symmetric top is constant, as in [the lesson on the symmetric top](/courses/8-09/symmetric-top-one-point-fixed). The other two Euler equations follow by a cyclic relabelling of the axes, since the principal axes can be named in any cyclic order.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Point mass on a disk" points={12} mit="Problem 4">
+
+A thin uniform disk of radius $R$ and mass $M$ lies in the $xy$-plane. A point mass $m = 3M/8$ is fixed on its rim. There is no gravity. The sheet's figure places the point $A$ at the origin, on the rim at the bottom of the disk; the centre of the disk is at $(0, R, 0)$, the point $B$ at the top of the rim, $(0, 2R, 0)$, and the point mass at the right of the rim, $(R, R, 0)$, level with the centre. Give every tensor component in the axes $x$, $y$, $z$ of the figure, as a formula in `M` and `R`.
+
+<Part label="a" points={4}>
+
+Find the inertia tensor of the disk alone about its centre. Then find the inertia tensor of the disk and the point mass together about the point $A$.
+
+<Hint>
+
+For the disk about its centre, use symmetry: the two moments about diameters are equal, and for a flat body $I_{zz} = I_{xx} + I_{yy}$. You need only one integral.
+
+</Hint>
+
+<Hint>
+
+Move the disk's tensor to $A$ with the parallel axis theorem (eq. (2.49) of the notes); the point mass needs only the definition $I_{ab} = m(\delta_{ab}r^2 - r_ar_b)$.
+
+</Hint>
+
+<Answer id="p4a-disk" label="Disk about its centre, $I_{xx} =$" expr="1/4*M*R^2"
+  vars={{ M: [1, 3], R: [0.5, 2] }}
+  mistakes={[
+    { expr: "1/2*M*R^2", hint: "MR²/2 is the moment about the axis through the centre at right angles to the disk, I_zz. About a diameter it is half of that, since I_zz = I_xx + I_yy for a flat body." }
+  ]} />
+
+<Answer id="p4a-xx" label="Disk and mass about $A$, $I_{xx} =$" expr="13/8*M*R^2"
+  vars={{ M: [1, 3], R: [0.5, 2] }}
+  mistakes={[
+    { expr: "5/4*M*R^2", hint: "That is the disk alone about A. The point mass adds m y² = (3/8)MR²." }
+  ]} />
+
+<Answer id="p4a-xy" label="Disk and mass about $A$, $I_{xy} =$" expr="-3/8*M*R^2"
+  vars={{ M: [1, 3], R: [0.5, 2] }}
+  mistakes={[
+    { expr: "3/8*M*R^2", hint: "The off-diagonal entries are −m x y: with x = y = R the point mass gives −mR²." },
+    { expr: "0", hint: "The disk alone has I_xy = 0 about A, but the point mass, off both axes, gives −m x y." }
+  ]} />
+
+<Solution>
+
+**The idea.** Symmetry gives the disk's tensor about its centre from one integral. The parallel axis theorem moves it to $A$, and the point mass is added from the definition.
+
+<Step title="The disk about its centre">
+
+The axis at right angles to the disk: $I_{zz} = \int_0^R \frac{M}{\pi R^2}\,2\pi r\,dr\;r^2 = \frac12 MR^2$. For a flat body in the $xy$-plane, $I_{xx} + I_{yy} = \int\rho\,(y^2 + x^2) = I_{zz}$, and $I_{xx} = I_{yy}$ by symmetry. The products of inertia vanish by symmetry:
+
+<Formula label="Problem 4(a): the disk about its centre" tex="I^{\text{disk}}_{\text{centre}} = \frac{MR^2}{4}\begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 2 \end{pmatrix}" cite="mit" at="Problem 4(a), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Move the disk to A">
+
+The parallel axis theorem of the notes is
+
+<Formula label="Parallel axis theorem" tex="I^Q_{ab} = M\left(\delta_{ab}R^2 - R_aR_b\right) + I^{\text{CM}}_{ab}" cite="reading1" at="Section 2.3, eq. (2.49), p. 40" />
+
+where (only in this formula) $\vec R$ is the position of the centre of mass seen from $Q$; here $\vec R = (0, R, 0)$, with $R$ the disk's radius. It adds $MR^2$ to $I_{xx}$ and $I_{zz}$ and nothing to $I_{yy}$: the disk about $A$ has $MR^2\,\mathrm{diag}(5/4, 1/4, 3/2)$.
+
+</Step>
+
+<Step title="Add the point mass">
+
+At $(R, R, 0)$ the point mass gives $mR^2$ times the matrix with rows $(1, -1, 0)$, $(-1, 1, 0)$, $(0, 0, 2)$. With $m = 3M/8$:
+
+<Formula label="Problem 4(a): the disk and the point mass about A" tex="I_A = \frac{MR^2}{8}\begin{pmatrix} 13 & -3 & 0 \\ -3 & 5 & 0 \\ 0 & 0 & 18 \end{pmatrix}" cite="mit" at="Problem 4(a), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The body is flat, so $I_{zz} = I_{xx} + I_{yy}$ must hold about any point in its plane: $13 + 5 = 18$. The point mass is off both axes, so $I_{xy}$ is non-zero; nothing lies off the plane, so $I_{xz} = I_{yz} = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Find the principal moments of inertia and the principal axes about $A$. You may use a computer for the algebra, but write out the steps. Give the three moments in units of $MR^2$, as decimals.
+
+<Hint>
+
+The $z$ axis is already a principal axis: the $z$ row and column have no off-diagonal entries. That leaves a $2\times2$ problem.
+
+</Hint>
+
+<Answer id="p4b-small" label="Smallest principal moment:" value="0.5" unit="MR²" tolerance="1%" calc="p4b-small" />
+
+<Answer id="p4b-mid" label="Middle principal moment:" value="1.75" unit="MR²" tolerance="1%" calc="p4b-mid" />
+
+<Answer id="p4b-large" label="Largest principal moment:" value="2.25" unit="MR²" tolerance="1%" calc="p4b-large" />
+
+<Answer id="p4b-axis" label="The principal axis with the smallest moment is along:" choices={["(1, 1, 0)", "(3, −1, 0)", "(0, 1, 0)", "(1, 3, 0)"]} answer={3} />
+
+<Solution>
+
+**The idea.** One principal axis is $z$, at right angles to the flat body. In the plane, the $2\times2$ block has a characteristic equation that factors neatly; the value $m = 3M/8$ was chosen for that.
+
+<Step title="The eigenvalues">
+
+Write the moments as $\lambda MR^2$. The $2\times2$ block, in units of $MR^2/8$, has rows $(13, -3)$ and $(-3, 5)$: trace 18, determinant $65 - 9 = 56$. In units of $MR^2$ the trace is $9/4$ and the determinant $7/8$:
+
+<Formula label="Problem 4(b): the characteristic equation" tex="\lambda^2 - \frac{9}{4}\lambda + \frac{7}{8} = 0 \quad\Rightarrow\quad \lambda = \frac{1}{2}\left(\frac{9}{4} \pm \frac{5}{4}\right) = \frac{7}{4}\ \text{or}\ \frac{1}{2}" cite="mit" at="Problem 4(b), p. 4 (our own solution)" />
+
+The third moment is $I_{zz} = \frac94 MR^2$. So the principal moments are $0.5$, $1.75$ and $2.25$ in units of $MR^2$.
+
+</Step>
+
+<Step title="The axes">
+
+For $\lambda = \frac12$: $(13/8 - 4/8)x - (3/8)y = 0$, so $y = 3x$: the axis along $(1, 3, 0)/\sqrt{10}$. For $\lambda = \frac74$: $(13/8 - 14/8)x - (3/8)y = 0$, so $x = -3y$: along $(3, -1, 0)/\sqrt{10}$. The third axis is $z$.
+
+</Step>
+
+<Step title="Check the result">
+
+The two axes in the plane are at right angles, $(1, 3)\cdot(3, -1) = 0$, as they must be for a symmetric tensor. The perpendicular axis rule holds for the principal moments too: $\frac12 + \frac74 = \frac94$. The smallest moment belongs to the axis that passes closest to most of the mass: it runs from $A$ up through the body, tilted from the $y$ axis towards the point mass.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+The disk is made to turn about the $y$ axis with constant angular velocity $\omega$, held by pivots at $A$ and $B$. Find the angular momentum about $A$ as a function of time. Our choice: $\vec\omega = \omega\hat y$ (anticlockwise when seen from high up on the $y$ axis, looking back towards $A$: the right-hand rule), and at $t = 0$ the body is as in the figure, with the point mass at $(R, R, 0)$. Type `omega` and `t`.
+
+<Hint>
+
+The disk's own part is simple: $y$ is a principal axis of the disk about $A$, whichever way the disk has turned about it. Only the point mass needs care.
+
+</Hint>
+
+<Hint>
+
+Turning about $y$ by the angle $\omega t$ takes the point mass to $(R\cos\omega t, R, -R\sin\omega t)$. Find its velocity $\vec\omega\times\vec r$ and then $m\,\vec r\times\vec v$.
+
+</Hint>
+
+<Answer id="p4c-ly" label="$L_y =$" expr="5/8*M*R^2*omega"
+  vars={{ M: [1, 3], R: [0.5, 2], omega: [0.5, 2] }}
+  mistakes={[
+    { expr: "1/4*M*R^2*omega", hint: "That is the disk alone. The point mass is a distance R from the y axis and adds mR²ω = (3/8)MR²ω." }
+  ]} />
+
+<Answer id="p4c-lx" label="$L_x =$" expr="-3/8*M*R^2*omega*cos(omega*t)"
+  vars={{ M: [1, 3], R: [0.5, 2], omega: [0.5, 2], t: [0.1, 0.7] }}
+  mistakes={[
+    { expr: "3/8*M*R^2*omega*cos(omega*t)", hint: "Check the sign at t = 0: L_x = I_xy ω, and I_xy is negative." },
+    { expr: "0", hint: "L is not parallel to ω here: the product of inertia I_xy is not zero, so L has a component across the axis of rotation." }
+  ]} />
+
+<Solution>
+
+**The idea.** $\vec L = I\vec\omega$ with the tensor in the fixed axes. As the body turns, its tensor in those axes changes, so $\vec L$ turns with it: the part of $\vec L$ across the $y$ axis goes round with the point mass.
+
+<Step title="The disk">
+
+The disk's tensor about $A$ has $y$ as a principal axis, with moment $\frac14 MR^2$, and turning about $y$ does not change that. Its angular momentum is $\frac14 MR^2\omega\,\hat y$, constant.
+
+</Step>
+
+<Step title="The point mass">
+
+At time $t$ the point mass is at $\vec r = R(\cos\omega t, 1, -\sin\omega t)$ and moves with $\vec v = \vec\omega\times\vec r = \omega R(-\sin\omega t, 0, -\cos\omega t)$. Its angular momentum about $A$ is
+
+<Formula label="Problem 4(c): the angular momentum of the point mass" tex="m\,\vec r\times\vec v = m\omega R^2\left(-\cos\omega t,\ 1,\ \sin\omega t\right)" cite="mit" at="Problem 4(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The total">
+
+With $m = 3M/8$:
+
+<Formula label="Problem 4(c): the total angular momentum about A" tex="\vec L(t) = MR^2\omega\left(-\frac{3}{8}\cos\omega t,\ \frac{5}{8},\ \frac{3}{8}\sin\omega t\right)" cite="mit" at="Problem 4(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $t = 0$ this is the $y$ column of the tensor of part (a) times $\omega$: $(-3/8, 5/8, 0)\,MR^2\omega$, as $\vec L = I\vec\omega$ requires (eq. (2.43) of the notes). The part across the axis turns round the $y$ axis with the disk, so $d\vec L/dt \neq 0$: the pivots must exert a torque to keep the axis fixed, the dynamic imbalance of a wheel whose axis is not a principal axis.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="A rolling cone" points={16} mit="Problem 5">
+
+A uniform right circular cone of height $h$, half-angle $\alpha$ (the angle between its axis and its side) and density $\rho$ rolls on its side, without slipping, on a horizontal plane. Its tip stays at one point, and the line along which it touches the plane goes round that point. The cone returns to its original position in a time $\tau$. We read this as one full turn of the line of contact about the tip (our choice): after such a turn the cone is back in the same place on the plane, although it has in general turned about its own axis by an angle that is not a whole number of turns.
+
+<Part label="a" points={5}>
+
+Find the centre of mass (CM) of the cone. Then find its inertia tensor in body axes with the origin at the tip and the $y'$ axis through the CM (so along the axis of the cone). The first box is our addition: give the mass $M$ in terms of `rho`, `h` and `alpha`. From then on, write the answers with `M`, `h` and `alpha`.
+
+<Hint>
+
+Cut the cone into thin disks at distance $z$ from the tip along its axis, each of radius $z\tan\alpha$. Every integral is then a single integral over $z$.
+
+</Hint>
+
+<Hint>
+
+For a thin disk of mass $dm$ and radius $r$: the moment about its own axis is $\frac12 r^2\,dm$, about a diameter $\frac14 r^2\,dm$. A disk at distance $z$ from the tip adds $z^2\,dm$ to the moment about an axis through the tip at right angles to the cone's axis.
+
+</Hint>
+
+<Answer id="p5a-mass" label="$M =$" expr="pi/3*rho*h^3*tan(alpha)^2"
+  vars={{ rho: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6] }} names={{ rho: "\\rho", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "pi*rho*h^3*tan(alpha)^2", hint: "That is the volume of a cylinder of radius h tan α and height h, times ρ. A cone has a third of it." }
+  ]} />
+
+<Answer id="p5a-cm" label="Distance of the CM from the tip:" expr="3/4*h"
+  vars={{ h: [0.5, 2] }}
+  mistakes={[
+    { expr: "2/3*h", hint: "2h/3 from the apex is the centroid of a triangle (a flat cone). In the solid cone the slices grow as z², which pulls the centre of mass further towards the base." },
+    { expr: "1/4*h", hint: "That is the distance from the base, not from the tip." }
+  ]} />
+
+<Answer id="p5a-axis" label="$I_{y'y'}$ (about the cone's axis):" expr="3/10*M*h^2*tan(alpha)^2"
+  vars={{ M: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6] }} names={{ alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "1/2*M*h^2*tan(alpha)^2", hint: "MR²/2 with R = h tan α is the moment of a cylinder. The cone's slices have radius z tan α, smaller than R, and the integral gives 3/10 in place of 1/2." }
+  ]} />
+
+<Answer id="p5a-perp" label="$I_{x'x'} = I_{z'z'}$ (about an axis through the tip, across the cone):" expr="3/20*M*h^2*(4+tan(alpha)^2)"
+  vars={{ M: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6] }} names={{ alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "3/80*M*h^2*(1+4*tan(alpha)^2)", hint: "That is the moment about a parallel axis through the centre of mass. Part (a) asks for an axis through the tip, 3h/4 away." }
+  ]} />
+
+<Solution>
+
+**The idea.** Slice the cone into disks along its axis; mass, centre of mass and moments are each one integral over $z$, the distance from the tip.
+
+<Step title="Mass and centre of mass">
+
+A slice at $z$ has radius $z\tan\alpha$ and mass $dm = \rho\pi z^2\tan^2\alpha\,dz$. Then
+
+<Formula label="Problem 5(a): mass and centre of mass" tex="M = \int_0^h \rho\pi\tan^2\alpha\,z^2\,dz = \frac{\pi}{3}\rho h^3\tan^2\alpha, \qquad z_{\text{CM}} = \frac{1}{M}\int_0^h z\,dm = \frac{3}{4}h" cite="mit" at="Problem 5(a), p. 4 (our own solution)" />
+
+The CM is on the axis, by symmetry, three quarters of the way from the tip to the base.
+
+</Step>
+
+<Step title="The moments about the tip">
+
+About the axis, each slice gives $\frac12(z\tan\alpha)^2\,dm$. About an axis through the tip at right angles to the cone's axis, each slice gives $\left(\frac14 z^2\tan^2\alpha + z^2\right)dm$. With $\int_0^h z^4\,dz = h^5/5$ and $M$ from above:
+
+<Formula label="Problem 5(a): the inertia tensor about the tip" tex="I^{\text{tip}} = \begin{pmatrix} I_\perp & 0 & 0 \\ 0 & I_\parallel & 0 \\ 0 & 0 & I_\perp \end{pmatrix}, \qquad I_\parallel = \frac{3}{10}Mh^2\tan^2\alpha, \qquad I_\perp = \frac{3}{20}Mh^2\left(4 + \tan^2\alpha\right)" cite="mit" at="Problem 5(a), p. 4 (our own solution)" />
+
+The axes are principal axes by symmetry: the cone looks the same after any turn about $y'$, so every axis at right angles to $y'$ through the tip has the same moment, and no products of inertia survive.
+
+</Step>
+
+<Step title="Check the result">
+
+With the radius of the base, $h\tan\alpha$, $I_\parallel = \frac{3}{10}M(h\tan\alpha)^2$: less than the $\frac12 M(h\tan\alpha)^2$ of a cylinder of the same mass and radius, since the cone's mass is closer to its axis. In our calculation file each moment is also found by a numerical integral over the slices.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+What is the inertia tensor if the axes of part (a) are moved, without turning, so that their origin is at the CM? Type the moment about an axis through the CM at right angles to the cone's axis.
+
+<Hint>
+
+Use the parallel axis theorem from the tip to the CM, a distance $\frac34 h$ along $y'$. Which components does it change?
+
+</Hint>
+
+<Answer id="p5b-perp" label="$I^{\text{CM}}_{x'x'} = I^{\text{CM}}_{z'z'} =$" expr="3/80*M*h^2*(1+4*tan(alpha)^2)"
+  vars={{ M: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6] }} names={{ alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "3/20*M*h^2*(4+tan(alpha)^2) + 9/16*M*h^2", hint: "The parallel axis theorem adds M d² when moving away from the centre of mass. Here you move to the centre of mass, so subtract M(3h/4)²." }
+  ]} />
+
+<Solution>
+
+**The idea.** The parallel axis theorem, read backwards: the tensor about the tip is the tensor about the CM plus that of a point mass $M$ placed at the CM, a distance $\frac34 h$ from the tip along $y'$.
+
+<Step title="Subtract">
+
+The shift is along $y'$, so $I_{y'y'}$ is unchanged and $I_{x'x'}$, $I_{z'z'}$ each lose $M(3h/4)^2 = \frac{9}{16}Mh^2$:
+
+<Formula label="Problem 5(b): the inertia tensor about the CM" tex="I^{\text{CM}}_\parallel = \frac{3}{10}Mh^2\tan^2\alpha, \qquad I^{\text{CM}}_\perp = \frac{3}{20}Mh^2\left(4 + \tan^2\alpha\right) - \frac{9}{16}Mh^2 = \frac{3}{80}Mh^2\left(1 + 4\tan^2\alpha\right)" cite="mit" at="Problem 5(b), p. 4 (our own solution)" />
+
+The tensor stays diagonal, with $I^{\text{CM}}_\perp$ in the $x'x'$ and $z'z'$ places and $I^{\text{CM}}_\parallel$ in the $y'y'$ place.
+
+</Step>
+
+<Step title="Check the result">
+
+$I^{\text{CM}}_\perp$ is positive for every $\alpha$, as a moment of inertia must be. It is the smallest moment across the cone of all parallel axes, since the CM is where the parallel axis term vanishes.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Now the cone rolls on the fixed plane. Take new axes $(x, y, z)$ with the origin at the tip, $z$ at right angles to the plane, and $y$ along the line of contact at that instant. The sheet calls them body axes, but they turn with the line of contact, not with the cone; but the cone is symmetric about its axis, so its tensor in them does not change in time. Our choice: $z$ points up, away from the plane, and $y$ points from the tip along the line of contact towards the base. Find the inertia tensor in these axes. Give $I_{yy}$ and $I_{yz}$.
+
+<Hint>
+
+Where is the cone's axis in the new axes? It lies in the $yz$-plane, at the angle $\alpha$ above the line of contact.
+
+</Hint>
+
+<Hint>
+
+For a body symmetric about a unit vector $\hat n$, the tensor about a point on that axis is $I_{ab} = I_\perp\delta_{ab} + (I_\parallel - I_\perp)\,n_an_b$.
+
+</Hint>
+
+<Answer id="p5c-yy" label="$I_{yy} =$" expr="3/20*M*h^2*sin(alpha)^2*(6+tan(alpha)^2)"
+  vars={{ M: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6] }} names={{ alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "3/20*M*h^2*(4+tan(alpha)^2)", hint: "That is I_⊥ of part (a), the moment about an axis across the cone. The line of contact is not at right angles to the cone's axis: it makes the angle α with it." },
+    { expr: "3/20*M*h^2*((4+tan(alpha)^2)*cos(alpha)^2+2*tan(alpha)^2*sin(alpha)^2)", hint: "That is I_zz: the cos² and sin² factors are swapped. Along the line of contact the cone's axis has the component cos α, so I_yy = I_⊥ sin²α + I_∥ cos²α." }
+  ]} />
+
+<Answer id="p5c-yz" label="$I_{yz} =$" expr="3/20*M*h^2*(tan(alpha)^2-4)*sin(alpha)*cos(alpha)"
+  vars={{ M: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6] }} names={{ alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "3/20*M*h^2*(4-tan(alpha)^2)*sin(alpha)*cos(alpha)", hint: "Check the sign: I_yz = (I_∥ − I_⊥) n_y n_z with n_y and n_z both positive, and I_∥ < I_⊥ here." }
+  ]} />
+
+<Solution>
+
+**The idea.** The new axes are the axes of part (a) turned by $\alpha$ about $x$, so the tensor follows from $I_\perp\delta_{ab} + (I_\parallel - I_\perp)n_an_b$ with the cone's axis $\hat n$ written in the new axes.
+
+<Step title="The cone's axis">
+
+The line of contact is a line on the cone's side, at the angle $\alpha$ from its axis. So, with $z$ up and $y$ towards the base, the cone's axis points along $\hat n = (0, \cos\alpha, \sin\alpha)$.
+
+</Step>
+
+<Step title="The tensor">
+
+<Formula label="Problem 5(c): the inertia tensor in the rolling axes" tex="I = \begin{pmatrix} I_\perp & 0 & 0 \\ 0 & I_\perp\sin^2\alpha + I_\parallel\cos^2\alpha & (I_\parallel - I_\perp)\sin\alpha\cos\alpha \\ 0 & (I_\parallel - I_\perp)\sin\alpha\cos\alpha & I_\perp\cos^2\alpha + I_\parallel\sin^2\alpha \end{pmatrix}" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+With the moments of part (a):
+
+<Formula label="Problem 5(c): the components" tex="I_{yy} = \frac{3}{20}Mh^2\sin^2\alpha\left(6 + \tan^2\alpha\right), \qquad I_{yz} = \frac{3}{20}Mh^2\left(\tan^2\alpha - 4\right)\sin\alpha\cos\alpha, \qquad I_{xx} = I_\perp" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+This is the rule $I' = UIU^T$ of the notes (eq. (2.55)) for a turn by $\alpha$ about the $x$ axis.
+
+</Step>
+
+<Step title="Check the result">
+
+The trace does not change under a turn: $I_{xx} + I_{yy} + I_{zz} = 2I_\perp + I_\parallel$, the trace of part (a). As $\alpha \to 0$ (a thin needle lying on the plane) $I_{yy} \to I_\parallel \to 0$: a needle has no moment about its own length. For the cones with $\tan\alpha < 2$, that is $\alpha < 63.4°$, $I_\parallel < I_\perp$ and $I_{yz}$ is negative.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={5}>
+
+Find the kinetic energy of the rolling cone, in terms of `M`, `h`, `alpha` and `tau`. There are two ways: one uses part (b), the other part (c). The first two boxes are our additions.
+
+<Hint>
+
+Rolling without slipping: which points of the cone are at rest at this instant? The angular velocity is along the line through them.
+
+</Hint>
+
+<Hint>
+
+The CM goes round a horizontal circle about the vertical through the tip, once in the time $\tau$. Its speed can be written in two ways: from that circle, and as $|\vec\omega\times\vec r_{\text{CM}}|$. Equate them to find $|\vec\omega|$.
+
+</Hint>
+
+<Answer id="p5d-axis" label="At each instant the cone turns about:" choices={["the vertical line through the tip", "the line of contact with the plane", "the cone's own axis", "the line from the tip through the CM"]} answer={1} />
+
+<Answer id="p5d-omega" label="Magnitude of the cone's angular velocity, $|\vec\omega| =$" expr="2*pi/(tau*tan(alpha))"
+  vars={{ tau: [1, 5], alpha: [0.2, 0.6] }} names={{ tau: "\\tau", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "2*pi/tau", hint: "2π/τ is the rate at which the line of contact goes round the vertical. The cone itself turns about the line of contact, faster: equate the two expressions for the speed of the centre of mass." },
+    { expr: "2*pi*tan(alpha)/tau", hint: "The ratio is the other way up: the speed of the CM is |ω| (3h/4) sin α from the turning about the line of contact, and (2π/τ)(3h/4) cos α from its circle." }
+  ]} />
+
+<Answer id="p5d-t" label="$T =$" expr="3*pi^2/10*M*h^2*(1+5*cos(alpha)^2)/tau^2"
+  vars={{ M: [1, 3], h: [0.5, 2], alpha: [0.2, 0.6], tau: [1, 5] }} names={{ tau: "\\tau", alpha: "\\alpha" }}
+  mistakes={[
+    { expr: "9*pi^2/8*M*h^2*cos(alpha)^2/tau^2", hint: "That is only the kinetic energy of the motion of the centre of mass. The cone also turns about its centre of mass." },
+    { expr: "3*pi^2/10*M*h^2*sin(alpha)^2*(6+tan(alpha)^2)/tau^2", hint: "The cone turns about the line of contact at |ω| = (2π/τ) cot α, not at 2π/τ, the rate at which the line of contact goes round." }
+  ]} />
+
+<Solution>
+
+**The idea.** The tip is fixed and the points on the line of contact are at rest, so the cone turns about the line of contact: $\vec\omega$ lies along the $y$ axis of part (c). The CM's circle fixes $|\vec\omega|$, and then $T = \frac12 I_{yy}\omega^2$.
+
+<Step title="The angular velocity">
+
+Write $\Omega = 2\pi/\tau$ for the rate at which the line of contact goes round. The CM is at $\frac34 h\,\hat n$, a height $\frac34 h\sin\alpha$ above the plane and a distance $\frac34 h\cos\alpha$ from the vertical through the tip. Its speed is $\Omega\cdot\frac34 h\cos\alpha$ from its circle and $\omega\cdot\frac34 h\sin\alpha$ from the turning about the line of contact. So
+
+<Formula label="Problem 5(d): the angular speed" tex="\omega = \Omega\cot\alpha = \frac{2\pi}{\tau\tan\alpha}" cite="mit" at="Problem 5(d), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="From part (c)">
+
+With $\vec\omega = \omega\hat y$, only $I_{yy}$ enters:
+
+<Formula label="Problem 5(d): the kinetic energy" tex="T = \frac{1}{2}I_{yy}\,\omega^2 = \frac{3}{40}Mh^2\sin^2\alpha\left(6 + \tan^2\alpha\right)\Omega^2\cot^2\alpha = \frac{3}{40}Mh^2\Omega^2\left(1 + 5\cos^2\alpha\right) = \frac{3\pi^2Mh^2}{10\,\tau^2}\left(1 + 5\cos^2\alpha\right)" cite="mit" at="Problem 5(d), p. 4 (our own solution)" />
+
+using $\sin^2\alpha\left(6 + \tan^2\alpha\right)\cot^2\alpha = 6\cos^2\alpha + \sin^2\alpha = 1 + 5\cos^2\alpha$. In terms of the density, $T = \frac{\pi^3\rho h^5}{10\,\tau^2}\tan^2\alpha\left(1 + 5\cos^2\alpha\right)$.
+
+</Step>
+
+<Step title="From part (b)">
+
+The CM moves with speed $v = \Omega\cdot\frac34 h\cos\alpha$. Relative to the CM, $\vec\omega$ has the component $\omega\cos\alpha$ along the cone's axis and $\omega\sin\alpha$ across it, so
+
+<Formula label="Problem 5(d): the kinetic energy split at the CM" tex="T = \frac{1}{2}Mv^2 + \frac{1}{2}\left(I^{\text{CM}}_\parallel\omega^2\cos^2\alpha + I^{\text{CM}}_\perp\omega^2\sin^2\alpha\right)" cite="mit" at="Problem 5(d), p. 4 (our own solution)" />
+
+Putting in $v$, $\omega = \Omega\cot\alpha$ and the moments of part (b) gives the same result; our calculation file compares the two routes.
+
+</Step>
+
+<Step title="Check the result">
+
+$T$ is an energy: $Mh^2/\tau^2$ has units kg m² s⁻². At $\alpha = 45°$ the two routes are easy to compare by hand. From part (c), $\frac{3}{40}\left(1 + \frac52\right) = \frac{21}{80}$ in units of $Mh^2\Omega^2$. From part (b), with $\omega = \Omega$, the motion of the CM gives $\frac12\cdot\frac{9}{16}\cdot\frac12 = \frac{9}{64}$ and the turning about the CM $\frac12\cdot\frac12\left(\frac{3}{10} + \frac{3}{16}\right) = \frac{39}{320}$; the sum is $\frac{45 + 39}{320} = \frac{21}{80}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>

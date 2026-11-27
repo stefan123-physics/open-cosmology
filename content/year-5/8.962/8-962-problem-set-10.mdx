@@ -1,0 +1,581 @@
+---
+title: "Problem Set 10: Isotropic coordinates for the Schwarzschild metric, neutron stars from the TOV equations, and the most massive stable star"
+slug: 8-962-problem-set-10
+course: "8.962"
+kind: problems
+set: 10
+lecture: 21
+order: 90
+covers: [20, 21]
+solutions: own
+summary: "Three problems on spherical bodies in general relativity. A change of the radial coordinate puts the Schwarzschild metric into isotropic form, and far from the body it becomes the weak-field metric of linearized gravity. Then a numerical project: neutron stars built from the Tolman–Oppenheimer–Volkoff equations with a polytropic equation of state, in units where masses and densities are powers of a kilometre. The radius, mass and surface redshift of one star, the mass found by adding up the fluid over the proper volume, and the binding energy. Finally a sequence of stars of growing central density, the turn from stable to unstable, and the largest mass this equation of state allows."
+prerequisites: [schwarzschild-birkhoff-tov, buchdahl-equations-of-state-schwarzschild]
+source:
+  title: "MIT 8.962 Problem Set 10 (Spring 2020)"
+  url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/mit8_962s20_pset10/
+  readings:
+    - title: "8.962 Lecture 20 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/96fab1aa22da86fbde1c5abc5b6b8c7e_PVYTNKZDHBo.pdf
+    - title: "8.962 Lecture 21 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/dd826563ba0278e6f3fb2a040ca62e0a_K1vpc9YwlQI.pdf
+    - title: "8.962 Lecture 22 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/9cb27977551aade8f7121d257bfe82da_ZqF-7bjnzCU.pdf
+license: CC BY-NC-SA 4.0
+references:
+  nist:
+    title: "NIST, Fundamental Physical Constants: CODATA 2018 values"
+    url: https://physics.nist.gov/cuu/Constants/archive2018.html
+    location: "Newtonian constant of gravitation, speed of light in vacuum, reduced Planck constant and neutron mass"
+status: reviewed
+---
+
+This set practises two lessons: [the Schwarzschild metric, Birkhoff's theorem and the TOV equations](/courses/8-962/schwarzschild-birkhoff-tov) and [constant-density stars, Buchdahl's limit and equations of state](/courses/8-962/buchdahl-equations-of-state-schwarzschild). The problems follow MIT's Problem Set 10, in our own words. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own. Problem 2 is the numerical project that Hughes calls one of his favourite homework exercises (Lecture 21 transcript, p. 2).
+
+A few things to know about the source. The sheet's header reads "8.962 Spring 2006": for the 2020 course MIT reused an older sheet, and our source is the 2020 course's page for it. The sheet has printed page numbers, used below as "p. 1" to "p. 4". The lecture transcripts have no printed page numbers, so a transcript page below is a page of the PDF. A transcript records what was said, not what was written on the board, so a formula cited to a transcript page is printed here in the form of the lesson for that lecture. The sheet has no figure. For the stability criterion it names a textbook, which is not needed here.
+
+Two details of the sheet are handled as follows. In Problem 2(c) the sheet defines the surface redshift as $(E_\text{ob} - E_\text{em})/E_\text{ob}$. Light that climbs out of a star loses energy, so this is negative; the usual redshift has the two energies the other way round, and we ask for that positive number (it has the same size). In Problem 2 the sheet suggests Mathematica's routine for differential equations and says that MIT would post an example; any tool will do, and the solutions say what ours was.
+
+Some boxes are our additions, each marked where it appears: the first-order components in Problem 1(b), the conversion factor of $K$ in Problem 2(a), the formula for the observed energy in Problem 2(c), the choice box of Problem 3(a), and the central density of the heaviest star in Problem 3(b).
+
+## How to answer
+
+Work each problem on paper (Problem 1) or on a computer (Problems 2 and 3) first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit named in the question. A formula box takes plain typing, for example `G*M/rbar` or `E*(1 - M/R)`, and accepts every correct way of writing the answer. It treats its letters as independent, so each question says which letters to type: `rbar` for $\bar r$, and in Problem 2(c) `E` for $E_\text{em}$, `M` for $M_\star$ and `R` for $R_\star$.
+
+MIT's set gives no points. The points here, and their split between parts, are ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The conventions are those of the lessons. The metric has the signature $(-,+,+,+)$. In Problem 1 the speed of light is 1 and Newton's constant $G$ is kept. In Problems 2 and 3 both $G$ and $c$ are 1 and every quantity is a power of a kilometre, except where a number is given in grams and centimetres. $d\Omega^2 = d\theta^2 + \sin^2\theta\,d\phi^2$ is the metric of a unit sphere. For the numbers we use the CODATA 2018 values: $G = 6.67430\times 10^{-8}$ cm³ g⁻¹ s⁻² (measured), $c = 2.99792458\times 10^{10}$ cm/s (exact), $\hbar = 1.054571817\times 10^{-27}$ erg s (exact) and $m_n = 1.67492749804\times 10^{-24}$ g (measured). For the mass of the Sun as a length we use $GM_\odot/c^2 = 1.4766$ km, from the solar mass parameter $GM_\odot = 1.3271244\times 10^{20}$ m³ s⁻² that [Problem Set 5](/courses/8-962/8-962-problem-set-5) also uses.
+
+## Problem 1
+
+<Exercise id="p1" title="Isotropic coordinates for the Schwarzschild metric" points={20} mit="Problem 1">
+
+In Schwarzschild coordinates the metric outside a spherical body of mass $M$ is
+
+<Formula label="Problem 1: the Schwarzschild metric" tex="ds^2 = -\left(1 - \frac{2GM}{r}\right)dt^2 + \frac{dr^2}{1 - 2GM/r} + r^2\,d\Omega^2" cite="mit" at="Problem 1(a), p. 1" />
+
+Here $r$ is an areal radius: the sphere labelled $r$ has the area $4\pi r^2$. The lesson showed another useful choice, isotropic coordinates, in which the three space directions enter alike.
+
+<Part label="a" points={12}>
+
+Define a new radial coordinate $\bar r$ by
+
+<Formula label="Problem 1(a): the isotropic radius" tex="r = \bar r\left(1 + \frac{GM}{2\bar r}\right)^2" cite="mit" at="Problem 1(a), p. 1" />
+
+Show that the metric then takes the form
+
+<Formula label="Problem 1(a): the isotropic form" tex="ds^2 = g_{tt}(\bar r)\,dt^2 + g(\bar r)\left(d\bar r^2 + \bar r^2\,d\Omega^2\right)" cite="mit" at="Problem 1(a), p. 1" />
+
+and find the two functions $g_{tt}(\bar r)$ and $g(\bar r)$. Type them in terms of `G`, `M` and `rbar`.
+
+<Hint>
+
+Three things change: $1 - 2GM/r$, $dr$, and $r^2$. Work out each in terms of $\bar r$. The short name $x = GM/(2\bar r)$ keeps the algebra tidy.
+
+</Hint>
+
+<Hint>
+
+$1 - 2GM/r$ with $r = \bar r(1 + x)^2$ becomes $1 - 4x/(1 + x)^2$. Put it over the common denominator: the numerator is a perfect square.
+
+</Hint>
+
+<Answer id="p1a-gtt" label="$g_{tt}(\bar r) =$" expr="-((1 - G*M/(2*rbar))/(1 + G*M/(2*rbar)))^2"
+  vars={{ G: [1, 1.5], M: [0.5, 1], rbar: [1, 4] }} names={{ rbar: "\\bar r" }}
+  mistakes={[
+    { expr: "((1 - G*M/(2*rbar))/(1 + G*M/(2*rbar)))^2", hint: "The sign is reversed. With the signature (−, +, +, +) the time component is negative outside the body, as it is in Schwarzschild coordinates." },
+    { expr: "-(1 - 2*G*M/rbar)", hint: "This is the Schwarzschild component with r̄ written in place of r. The coordinate change also acts on 2GM/r: substitute r = r̄(1 + GM/2r̄)²." },
+    { expr: "-(1 - G*M/(2*rbar))/(1 + G*M/(2*rbar))", hint: "The ratio must be squared. Over a common denominator, 1 − 2GM/r has the square of 1 − GM/2r̄ on top and the square of 1 + GM/2r̄ below." }
+  ]} />
+
+<Answer id="p1a-g" label="$g(\bar r) =$" expr="(1 + G*M/(2*rbar))^4"
+  vars={{ G: [1, 1.5], M: [0.5, 1], rbar: [1, 4] }} names={{ rbar: "\\bar r" }}
+  mistakes={[
+    { expr: "(1 + G*M/(2*rbar))^2", hint: "That is r/r̄. The angular part r² dΩ² must become g r̄² dΩ², so g is the square of r/r̄." },
+    { expr: "1/(1 - 2*G*M/rbar)", hint: "This is the radial Schwarzschild component with r̄ written in place of r. Transform dr as well: dr/dr̄ is not 1." }
+  ]} />
+
+<Solution>
+
+**The idea.** Write each piece of the Schwarzschild metric in terms of $\bar r$. The angular part fixes $g$ at once; the radial part must then give the same $g$, and that is what makes the coordinates isotropic.
+
+<Step title="The time component">
+
+Let $x = GM/(2\bar r)$, so $r = \bar r(1 + x)^2$ and $2GM/r = 4x/(1 + x)^2$. Then
+
+<Formula label="Problem 1(a): the time component" tex="1 - \frac{2GM}{r} = \frac{(1 + x)^2 - 4x}{(1 + x)^2} = \left(\frac{1 - x}{1 + x}\right)^2, \qquad g_{tt} = -\left(\frac{1 - GM/2\bar r}{1 + GM/2\bar r}\right)^2" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="The space part">
+
+The angular part is $r^2 d\Omega^2 = (1 + x)^4\,\bar r^2 d\Omega^2$. For the radial part, differentiate $r = \bar r + GM + G^2M^2/(4\bar r)$:
+
+<Formula label="Problem 1(a): the radial part" tex="\frac{dr}{d\bar r} = 1 - \frac{G^2M^2}{4\bar r^2} = (1 - x)(1 + x), \qquad \frac{dr^2}{1 - 2GM/r} = \frac{(1 - x)^2(1 + x)^2}{(1 - x)^2/(1 + x)^2}\,d\bar r^2 = (1 + x)^4\,d\bar r^2" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+Both parts carry the same factor, so
+
+<Formula label="Problem 1(a): the isotropic metric" tex="ds^2 = -\left(\frac{1 - GM/2\bar r}{1 + GM/2\bar r}\right)^2 dt^2 + \left(1 + \frac{GM}{2\bar r}\right)^4\left(d\bar r^2 + \bar r^2\,d\Omega^2\right)" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+This is the lesson's form $-e^{2\Phi}dt^2 + e^{2\mu}[d\bar r^2 + \bar r^2 d\Omega^2]$ (Lecture 20 transcript, p. 3), with $e^{2\mu} = (1 + GM/2\bar r)^4$.
+
+</Step>
+
+<Step title="Check the result">
+
+Far away, $x \to 0$: $g_{tt} \to -1$ and $g \to 1$, flat space in spherical coordinates. The horizon $r = 2GM$ is at $x = 1$, that is $\bar r = GM/2$, and there $g_{tt} = 0$, as it should be. In our calculation file both components are also checked by putting $r(\bar r)$ into the Schwarzschild components numerically, with $dr/d\bar r$ from a numerical derivative.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={8}>
+
+Take $\bar r \gg GM$ and keep the metric to first order in $GM/\bar r$. Show that it becomes the metric outside a spherical body in linearized gravity. For the boxes (our addition), type the first-order forms of $g_{tt}$ and $g$, in terms of `G`, `M` and `rbar`.
+
+<Hint>
+
+To first order, $(1 + \epsilon)^n \approx 1 + n\epsilon$ for any power $n$, including negative ones.
+
+</Hint>
+
+<Hint>
+
+Compare with the weak-field metric of the lessons, $-(1 + 2\Phi)\,dt^2 + (1 - 2\Phi)(dx^2 + dy^2 + dz^2)$. What is the Newtonian potential of a sphere, and how is $d\bar r^2 + \bar r^2 d\Omega^2$ written in Cartesian coordinates?
+
+</Hint>
+
+<Answer id="p1b-gtt" label="To first order, $g_{tt} =$" expr="-(1 - 2*G*M/rbar)"
+  vars={{ G: [1, 1.5], M: [0.5, 1], rbar: [10, 40] }} names={{ rbar: "\\bar r" }}
+  mistakes={[
+    { expr: "-(1 - G*M/rbar)", hint: "A factor 2 is missing. The square of 1 − GM/2r̄ loses GM/r̄, and the inverse square of 1 + GM/2r̄ loses another GM/r̄: the two losses add." },
+    { expr: "1 - 2*G*M/rbar", hint: "The sign is reversed. The time component stays negative: it is −1 far away." }
+  ]} />
+
+<Answer id="p1b-g" label="To first order, $g =$" expr="1 + 2*G*M/rbar"
+  vars={{ G: [1, 1.5], M: [0.5, 1], rbar: [10, 40] }} names={{ rbar: "\\bar r" }}
+  mistakes={[
+    { expr: "1 + G*M/(2*rbar)", hint: "The fourth power is missing: (1 + GM/2r̄)⁴ multiplies the first-order term by four." },
+    { expr: "1 - 2*G*M/rbar", hint: "The sign is reversed. The factor (1 + GM/2r̄)⁴ is larger than 1, so the space part grows near the body." }
+  ]} />
+
+<Solution>
+
+**The idea.** Expand both factors to first order, and recognise the Newtonian potential $\Phi = -GM/\bar r$.
+
+<Step title="Expand">
+
+With $x = GM/(2\bar r) \ll 1$, $(1 - x)^2 \approx 1 - 2x$ and $(1 + x)^{-2} \approx 1 - 2x$, so $g_{tt} \approx -(1 - 4x) = -(1 - 2GM/\bar r)$. And $(1 + x)^4 \approx 1 + 4x = 1 + 2GM/\bar r$.
+
+</Step>
+
+<Step title="The weak-field metric">
+
+Write $\Phi = -GM/\bar r$, the Newtonian potential of a body of mass $M$, and $d\bar r^2 + \bar r^2 d\Omega^2 = dx^2 + dy^2 + dz^2$ with $\bar r^2 = x^2 + y^2 + z^2$ (here $x, y, z$ are Cartesian coordinates, not the short name of part (a)). Then
+
+<Formula label="Problem 1(b): the weak-field limit" tex="ds^2 \approx -\left(1 + 2\Phi\right)dt^2 + \left(1 - 2\Phi\right)\left(dx^2 + dy^2 + dz^2\right), \qquad \Phi = -\frac{GM}{\bar r}" cite="reading1" at="transcript p. 3 (the form of the metric; the potential of the sphere is our step)" />
+
+This is the metric of linearized gravity outside a spherical body, which the lesson recalls on the same page: it is in isotropic coordinates, with $\mu = -\Phi$.
+
+</Step>
+
+<Step title="Check the result">
+
+At large distance $r = \bar r + GM + \ldots$, so $r$ and $\bar r$ differ by a fixed length $GM$; to first order $2GM/r$ and $2GM/\bar r$ agree, and the time component is the same in both coordinates. The space parts differ: in Schwarzschild coordinates only the radial direction is stretched, while here all three are stretched alike. For the Sun at its surface, $2GM/\bar r$ is about $4\times 10^{-6}$, so the first-order metric is excellent there.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Neutron stars from the TOV equations" points={50} mit="Problem 2">
+
+A fair approximation to the matter of a neutron star is a polytrope,
+
+<Formula label="Problem 2: the equation of state" tex="P = K\rho_0^{\Gamma}, \qquad \Gamma = \frac{5}{3}, \qquad K = \frac{3^{2/3}\pi^{4/3}\hbar^2}{5\,m_n^{8/3}} = 5.38\times 10^{9}\ \text{g}^{-2/3}\,\text{cm}^4\,\text{s}^{-2}" cite="mit" at="Problem 2, p. 1" />
+
+where $P$ is the pressure, $\rho_0$ the rest-mass density and $m_n$ the neutron mass. (The sheet also writes the unit of $K$ as (dyne/cm²)(g/cm³)⁻⁵ᐟ³, which is the same.) The TOV equations need the energy density $\rho$, which includes the internal energy of the compressed fluid:
+
+<Formula label="Problem 2: the energy density" tex="\rho = \rho_0 + \frac{P}{\Gamma - 1} = \rho_0 + \frac{K\rho_0^{\Gamma}}{\Gamma - 1}" cite="mit" at="Problem 2, p. 2" />
+
+The lesson derives this from the first law (Lecture 21 transcript, pp. 8–9). With $G = c = 1$ the equations to integrate are
+
+<Formula label="Problem 2: the TOV equations" tex="\frac{dm}{dr} = 4\pi\rho\,r^2, \qquad \frac{dP}{dr} = -\frac{(\rho + P)\left(m + 4\pi r^3 P\right)}{r\,(r - 2m)}" cite="mit" at="Problem 2, p. 2" />
+
+starting from $m = 0$ and $P = P_c = K\rho_{0,c}^{\Gamma}$ at $r = 0$, where $\rho_{0,c}$ is the central rest-mass density. Integrate outwards until the pressure falls to zero: that radius is the surface $R_\star$, and the mass there is $M_\star = m(R_\star)$. Near the surface the pressure falls steeply, and a solver may take smaller and smaller steps; the radius where that starts is still the surface to high accuracy. The numbers work best when they are within a few powers of ten of 1, so measure everything in powers of a kilometre: a neutron star then has a mass of about 1 km and a radius of about 10 km.
+
+<Part label="a" points={10}>
+
+With $G = c = 1$, convert to powers of a kilometre: (i) a density of 1 g/cm³, in km⁻²; (ii) a pressure of 1 dyne/cm² = 1 g cm⁻¹ s⁻², in km⁻²; (iii) a constant $K$ of 1 g⁻²ᐟ³ cm⁴ s⁻², in km⁴ᐟ³ (this factor is the third box, our addition). Then convert the $K$ of the equation of state to km⁴ᐟ³.
+
+<Hint>
+
+A mass becomes a length when multiplied by $G/c^2$, and an energy (or a mass times $c^2$) becomes a length when multiplied by $G/c^4$. A density is a mass per volume; a pressure is an energy per volume.
+
+</Hint>
+
+<Hint>
+
+For $K$: it is a pressure divided by a density to the power 5/3. Convert both in this way and see which powers of $G$ and $c$ are left.
+
+</Hint>
+
+<Answer id="p2a-rho" label="1 g/cm³ $=$" value="7.43" unit="× 10⁻¹⁹ km⁻²" tolerance="1%" calc="p2a-rho" />
+
+<Answer id="p2a-p" label="1 dyne/cm² $=$" value="8.26" unit="× 10⁻⁴⁰ km⁻²" tolerance="1%" calc="p2a-p" />
+
+<Answer id="p2a-kfac" label="1 g⁻²ᐟ³ cm⁴ s⁻² $=$" value="1.36" unit="× 10⁻⁹ km⁴ᐟ³" tolerance="1%" calc="p2a-kfac" />
+
+<Answer id="p2a-k" label="$K =$" value="7.30" unit="km⁴ᐟ³" tolerance="1%" calc="p2a-k" />
+
+<Solution>
+
+**The idea.** In units with $G = c = 1$, a density $\rho$ in g/cm³ stands for the length scale $G\rho/c^2$, and a pressure for $GP/c^4$. Both are inverse areas.
+
+<Step title="Density and pressure">
+
+<Formula label="Problem 2(a): density and pressure as inverse areas" tex="\frac{G}{c^2}\times 1\ \frac{\text{g}}{\text{cm}^3} = 7.426\times 10^{-29}\ \text{cm}^{-2} = 7.426\times 10^{-19}\ \text{km}^{-2}, \qquad \frac{G}{c^4}\times 1\ \frac{\text{dyne}}{\text{cm}^2} = 8.263\times 10^{-40}\ \text{km}^{-2}" cite="mit" at="Problem 2(a), p. 2 (our own solution)" />
+
+(1 cm⁻² is $10^{10}$ km⁻².)
+
+</Step>
+
+<Step title="The constant of the polytrope">
+
+$K = P/\rho_0^{5/3}$, so in these units it carries the factor $(G/c^4)/(G/c^2)^{5/3} = (Gc)^{-2/3}$. In cgs numbers $(Gc)^{-2/3} = 6.298\times 10^{-3}$ cm⁴ᐟ³, and with $1\ \text{cm}^{4/3} = 10^{-20/3}$ km⁴ᐟ³ this is
+
+<Formula label="Problem 2(a): the constant of the polytrope" tex="1\ \text{g}^{-2/3}\,\text{cm}^4\,\text{s}^{-2} \to 1.357\times 10^{-9}\ \text{km}^{4/3}, \qquad K = 5.38\times 10^{9}\times 1.357\times 10^{-9}\ \text{km}^{4/3} = 7.30\ \text{km}^{4/3}" cite="mit" at="Problem 2(a), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Units: $K\rho_0^{5/3}$ is km⁴ᐟ³ times (km⁻²)⁵ᐟ³ = km⁻², a pressure, as it should be. The sheet's formula for $K$ with the CODATA values of $\hbar$ and $m_n$ gives $5.380\times 10^{9}$ in cgs units, the sheet's value. With the rounded values $G = 6.67\times 10^{-8}$ and $c = 3.00\times 10^{10}$ the density and pressure factors come out 0.2% and 0.3% smaller, and the factor for $K$ hardly changes, inside the tolerance.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={12}>
+
+Take the central rest-mass density $\rho_{0,c} = 10^{15}$ g/cm³. Integrate the TOV equations and find the radius $R_\star$ and the mass $M_\star$ of this star, both in km.
+
+<Hint>
+
+The unknowns are $m$ and $P$. At each radius find $\rho_0 = (P/K)^{1/\Gamma}$ and then $\rho$. The right sides blow up at $r = 0$: start at a small radius $r_1$ with $m = \tfrac{4\pi}{3}\rho_c r_1^3$, where $\rho_c$ is the central energy density.
+
+</Hint>
+
+<Hint>
+
+Stop when $P$ reaches zero (most solvers can stop on an event, such as $P$ falling below a tiny fraction of $P_c$). Check that the radius barely moves when you make the tolerance of the solver or the starting radius smaller.
+
+</Hint>
+
+<Answer id="p2b-r" label="$R_\star =$" value="12.68" unit="km" tolerance="2%" calc="p2b-r" />
+
+<Answer id="p2b-m" label="$M_\star =$" value="1.002" unit="km" tolerance="2%" calc="p2b-m" />
+
+<Solution>
+
+**The idea.** A standard solver for ordinary differential equations does the work; the care goes into the start at the centre and the stop at the surface.
+
+<Step title="The start">
+
+In km units, $\rho_{0,c} = 7.426\times 10^{-4}$ km⁻² and $P_c = K\rho_{0,c}^{5/3} = 4.45\times 10^{-5}$ km⁻². The central energy density is
+
+<Formula label="Problem 2(b): the central energy density" tex="\rho_c = \rho_{0,c} + \frac{P_c}{\Gamma - 1} = \rho_{0,c} + \tfrac32 P_c" cite="reading2" at="transcript pp. 8–9" />
+
+which is $8.093\times 10^{-4}$ km⁻², or $1.090\times 10^{15}$ g/cm³: the internal energy adds 9% to the rest mass at the centre.
+
+</Step>
+
+<Step title="The integration">
+
+We used SciPy's `solve_ivp` (an eighth-order Runge–Kutta method, relative tolerance $10^{-10}$), starting at $r_1 = 10^{-6}$ km and stopping when $P$ fell to $10^{-14}P_c$. The result:
+
+<Formula label="Problem 2(b): radius and mass" tex="R_\star = 12.68\ \text{km}, \qquad M_\star = 1.002\ \text{km} = 0.679\,M_\odot" cite="mit" at="Problem 2(b), p. 2 (our own numerical solution)" />
+
+Stopping at $10^{-8}P_c$ instead moves the radius by 0.1% and the mass by less than a part in a million: near the surface the pressure falls like $(R_\star - r)^{5/2}$, and the last layers hold almost no mass. (MIT's rounded $G$ and $c$ give 12.68 km and 1.002 km as well.)
+
+[MIT's example Mathematica notebook](https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/ps10/) for this set prints $R_\star \approx 14.16$ km and $M_\star \approx 0.995$ km for this star. It integrates $\rho_0$ instead of $P$ and runs on past the point where $\rho_0$ reaches zero (12.68 km) into complex values, so its radius lies beyond the surface. The surface is where $\rho_0$, and with it $P$, first reaches zero.
+
+</Step>
+
+<Step title="Check the result">
+
+The compactness is $2M_\star/R_\star = 0.158$, well below the limit $8/9$ of Buchdahl's theorem. At low density the TOV star must become a Newtonian polytrope with $n = 1/(\Gamma - 1) = 3/2$, whose radius is $\xi_1 a$ with $\xi_1 = 3.65375$, the first zero of the Lane–Emden function for this $n$ (a value from our own integration of the Lane–Emden equation). Here $a^2 = \tfrac52 K\rho_{0,c}^{-1/3}/(4\pi)$, and for this central density the Newtonian star would have $R = 14.6$ km and $M = 1.63$ km. General relativity makes this star 13% smaller and 38% lighter: at this density it is far from Newtonian. At $\rho_{0,c} = 10^{12}$ g/cm³ the two calculations agree to within 0.6% in mass.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={10}>
+
+A photon leaves the surface of this star radially with energy $E_\text{em}$, measured by an observer at rest there. Find the energy $E_\text{ob}$ that observers far away measure (this formula box is our addition; type it with `E`, `M` and `R`). Then find the surface redshift, which we take as
+
+<Formula label="Problem 2(c): the surface redshift" tex="z_\text{surf} = \frac{E_\text{em} - E_\text{ob}}{E_\text{ob}}" cite="mit" at="Problem 2(c), p. 3 (with the energies in the usual order; the sheet writes the numerator the other way round)" />
+
+<Hint>
+
+Outside the star the metric is Schwarzschild's. The lesson on black holes gives the energy that reaches infinity from a static observer at radius $r$.
+
+</Hint>
+
+<Answer id="p2c-e" label="$E_\text{ob} =$" expr="E*sqrt(1 - 2*M/R)"
+  vars={{ E: [1, 5], M: [0.5, 1.5], R: [4, 20] }} names={{ E: "E_\\text{em}", M: "M_\\star", R: "R_\\star" }}
+  mistakes={[
+    { expr: "E/sqrt(1 - 2*M/R)", hint: "That is a gain of energy. Light that climbs out of the star loses energy: the factor is the square root of 1 − 2M/R, not its inverse." },
+    { expr: "E*(1 - 2*M/R)", hint: "The square root is missing. The ratio of energies is the ratio of the clock rates, and the clock rate is the square root of −g_tt." },
+    { expr: "E*(1 - M/R)", hint: "That is the weak-field approximation of the square root. For this star M/R is not small enough for it; give the exact factor." }
+  ]} />
+
+<Answer id="p2c-z" label="$z_\text{surf} =$" value="0.0899" tolerance="2%" calc="p2c-z" />
+
+<Solution>
+
+**The idea.** The vector $\partial_t$ is a Killing vector of the Schwarzschild metric, so $-p_t$ is conserved along the photon's path. A static observer at radius $r$ measures $-p_\mu U^\mu = -p_t U^t$ with $U^t = 1/\sqrt{1 - 2M/r}$.
+
+<Step title="The energies">
+
+<Formula label="The redshift to infinity" tex="\frac{E_\infty}{E_r} = \sqrt{1 - \frac{2GM}{r}}" cite="reading3" at="transcript pp. 4–5" />
+
+With $G = 1$ and $r = R_\star$: $E_\text{ob} = E_\text{em}\sqrt{1 - 2M_\star/R_\star}$.
+
+</Step>
+
+<Step title="The number">
+
+<Formula label="Problem 2(c): the redshift of this star" tex="\frac{E_\text{ob}}{E_\text{em}} = \sqrt{1 - 0.158} = 0.9175, \qquad z_\text{surf} = \frac{1}{\sqrt{1 - 2M_\star/R_\star}} - 1 = 0.0899" cite="mit" at="Problem 2(c), p. 3 (our own solution)" />
+
+With the sheet's order of the energies the same number comes out with a minus sign, $-0.0899$.
+
+</Step>
+
+<Step title="Check the result">
+
+The weak-field estimate $z \approx M_\star/R_\star = 0.079$ is 12% too low: at this compactness the higher orders matter. A line emitted at the surface arrives with its wavelength 9% longer.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={8}>
+
+The mass $M_\star$ is not what one gets by adding up the fluid over the proper volume of the star. Call that sum $M_p$. Integrate the TOV equations again for $\rho_{0,c} = 10^{15}$ g/cm³, together with
+
+<Formula label="Problem 2(d): the proper-volume mass" tex="\frac{dm_p}{dr} = 4\pi\rho\,r^2\sqrt{g_{rr}} = \frac{4\pi\rho\,r^2}{\sqrt{1 - 2m(r)/r}}" cite="mit" at="Problem 2(d), p. 3" />
+
+and find $M_p = m_p(R_\star)$ in km.
+
+<Hint>
+
+Add $m_p$ as a third unknown, with $m_p = m$ at the starting radius. The surface is where it was before.
+
+</Hint>
+
+<Answer id="p2d-mp" label="$M_p =$" value="1.082" unit="km" tolerance="2%" calc="p2d-mp" />
+
+<Solution>
+
+**The idea.** The proper volume of a shell is $4\pi r^2\sqrt{g_{rr}}\,dr$, larger than the flat $4\pi r^2 dr$ that the mass function uses (Lecture 20 transcript, pp. 12–13).
+
+<Step title="The integration">
+
+The same run as in part (b), with the third equation, gives
+
+<Formula label="Problem 2(d): the proper-volume mass of this star" tex="M_p = 1.082\ \text{km}" cite="mit" at="Problem 2(d), p. 3 (our own numerical solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+$M_p > M_\star$, as it must be, since $1/\sqrt{1 - 2m/r} > 1$ everywhere inside. In our run $m/r$ is largest at $r = 9.2$ km, where it is 0.094, so the factor is never more than 1.110: the excess must be below 11%. It is 8%.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={10}>
+
+The difference between $M_p$ and $M_\star$ can be read as the gravitational binding energy of the star. Find the fraction
+
+<Formula label="Problem 2(e): the binding fraction" tex="\Delta = \frac{M_p - M_\star}{M_\star}" cite="mit" at="Problem 2(e), p. 3" />
+
+for this central density, as a decimal.
+
+<Hint>
+
+Use the numbers of parts (b) and (d), with all the digits your solver gives: the difference of two close numbers loses accuracy.
+
+</Hint>
+
+<Answer id="p2e-delta" label="$\Delta =$" value="0.0794" tolerance="2%" calc="p2e-delta" />
+
+<Solution>
+
+**The idea.** Gravity binds the star, and a bound system weighs less than its parts: the mass $M_\star$ that the outside world feels is smaller than the sum $M_p$.
+
+<Step title="The number">
+
+<Formula label="Problem 2(e): the binding fraction of this star" tex="\Delta = \frac{1.0818 - 1.0022}{1.0022} = 0.0794" cite="mit" at="Problem 2(e), p. 3 (our own solution)" />
+
+About 8% of the star's mass is binding energy (with a minus sign: it is energy the star has lost while forming).
+
+</Step>
+
+<Step title="Rest mass or energy (our remark)">
+
+The sheet adds up the energy density $\rho$. The lesson notes that counting the particles uses the rest-mass density $\rho_0$ instead (Lecture 20 transcript, pp. 12–13). With $\rho_0$ in place of $\rho$ the sum is the baryonic mass, 1.034 km, and its excess over $M_\star$ is 3.2%. The difference between the two sums, 4.8% of $M_\star$, is the internal energy of the compressed fluid, so the sheet's $\Delta$ counts the binding energy together with the internal energy, which a compressed star must hold.
+
+</Step>
+
+<Step title="Check the result">
+
+$\Delta$ is of the size of $M_\star/R_\star = 0.079$, the gravitational energy per unit mass in these units. It grows with the compactness: our runs give 0.020 at $\rho_{0,c} = 10^{14}$ g/cm³ and 0.228 at $10^{16}$ g/cm³.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Stability of a TOV star" points={30} mit="Problem 3">
+
+A sequence of TOV models tells whether a star is stable against purely radial (spherical) changes. The sheet states the criterion
+
+<Formula label="Problem 3: the stability criterion" tex="\frac{dM_\star}{d\rho_c} > 0 \ \ \text{(stable)}, \qquad \frac{dM_\star}{d\rho_c} < 0 \ \ \text{(unstable)}" cite="mit" at="Problem 3, p. 4" />
+
+along the sequence of stars of growing central density. The derivative is taken with respect to the central energy density $\rho_c$, not the rest-mass density $\rho_{0,c}$. The sheet's argument in brief, in our words: squeeze a star a little, so that its central density rises. If the star pushes back, the squeeze does work on it, the work adds energy, and its mass goes up. If instead its mass goes down, the smaller star is energetically favoured, a further squeeze is favoured again, and the star runs away into a black hole.
+
+<Part label="a" points={12}>
+
+Build the models with $\rho_{0,c} = 10^{14}$, $10^{15}$, $10^{16}$, $10^{17}$ and $10^{18}$ g/cm³. Plot $M_\star$ against $\rho_c$ (a logarithmic axis for $\rho_c$ helps). Is there a sign of a change from stable to unstable stars?
+
+<Hint>
+
+Turn your code of Problem 2 into a function of $\rho_{0,c}$ that returns $\rho_c$, $R_\star$ and $M_\star$. For the denser stars, check that the solver still stops at the surface.
+
+</Hint>
+
+<Answer id="p3a-choice" label="The five models show (our box):" choices={["no change: the mass grows with the central density at every step, as it does for a Newtonian polytrope", "a change already among the lightest stars: the mass falls between the first and the second model", "a change: the 10¹⁶ model is the heaviest of the five and the 10¹⁷ one is lighter, so the mass turns over between 10¹⁵ and 10¹⁷", "no lasting change: the mass rises again from the 10¹⁷ model to the 10¹⁸ model, so the densest stars of the sequence are stable once more"]} answer={2} />
+
+<Solution>
+
+**The idea.** The models are those of Problem 2(b) with other central densities. Read off where $M_\star$ stops growing.
+
+<Step title="The five models">
+
+Our own numerical solution, as in Problem 2(b):
+
+| $\rho_{0,c}$ (g/cm³) | $\rho_c$ (g/cm³) | $R_\star$ (km) | $M_\star$ (km) | $M_\star$ ($M_\odot$) |
+|---|---|---|---|---|
+| $10^{14}$ | $1.019\times 10^{14}$ | 20.72 | 0.4575 | 0.310 |
+| $10^{15}$ | $1.090\times 10^{15}$ | 12.68 | 1.0022 | 0.679 |
+| $10^{16}$ | $1.417\times 10^{16}$ | 6.658 | 1.0953 | 0.742 |
+| $10^{17}$ | $2.935\times 10^{17}$ | 4.608 | 0.6502 | 0.440 |
+| $10^{18}$ | $9.979\times 10^{18}$ | 5.939 | 0.7096 | 0.481 |
+
+</Step>
+
+<Step title="Reading the sequence">
+
+The mass grows from the first model to the third and is much lower at the fourth. So $dM_\star/d\rho_c$ changes sign at least once between $\rho_c \approx 10^{15}$ and $3\times 10^{17}$ g/cm³: the light stars are stable, and beyond a maximum the stars are unstable. Five points cannot tell whether the maximum lies before or after the $10^{16}$ model; part (b) finds it.
+
+</Step>
+
+<Step title="The densest model (our remark)">
+
+From the fourth model to the fifth the mass rises again. Read literally, the criterion would call the densest stars stable again. The sheet's argument starts from a stable star and asks about the first change; it does not say what happens once the sequence has passed its maximum, and a further turn (here a minimum of $M_\star$ near $\rho_c = 7.7\times 10^{17}$ g/cm³) needs the full study of radial oscillations, which is beyond this set. The problem asks only for the change from stable to unstable, at the maximum.
+
+</Step>
+
+<Step title="Check the result">
+
+At low density the masses should follow the Newtonian polytrope, for which $M \propto \rho_{0,c}^{1/2}$ when $n = 3/2$: from $10^{14}$ to $10^{15}$ that is a factor $\sqrt{10} = 3.16$. The TOV masses grow by only 2.19, because general relativity matters more and more; already at $10^{14}$ g/cm³ the TOV mass is 11% below the Newtonian one.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={18}>
+
+Zoom in on the region where the stars turn unstable and find, as well as you can, the marginally stable star, where $dM_\star/d\rho_c = 0$. It has the largest mass that this equation of state allows in general relativity. Give that mass in km and in solar masses, and (our addition) the central energy density $\rho_c$ of that star in g/cm³. Because the mass hardly changes near its maximum, the box for $\rho_c$ accepts 10%.
+
+<Hint>
+
+Compute $M_\star$ on a finer grid of $\rho_{0,c}$ between the models that bracket the turn, for example in steps of a tenth of a power of ten. Then refine around the largest value, or fit a parabola to the three highest points.
+
+</Hint>
+
+<Hint>
+
+Convert to solar masses with $GM_\odot/c^2 = 1.4766$ km. Report $\rho_c$, the energy density, not $\rho_{0,c}$.
+
+</Hint>
+
+<Answer id="p3b-m" label="$M_\text{max} =$" value="1.174" unit="km" tolerance="2%" calc="p3b-m" />
+
+<Answer id="p3b-msun" label="$M_\text{max} =$" value="0.795" unit="M☉" tolerance="2%" calc="p3b-msun" />
+
+<Answer id="p3b-rho" label="$\rho_c =$" value="4.89" unit="× 10¹⁵ g/cm³" tolerance="10%" calc="p3b-rho" />
+
+<Solution>
+
+**The idea.** Find the maximum of $M_\star$ as a function of the central density. Near a maximum the mass changes only to second order, so the mass is found accurately even where the density is not.
+
+<Step title="The zoom">
+
+Some of our models between $10^{15}$ and $10^{16}$ g/cm³:
+
+| $\rho_{0,c}$ (g/cm³) | $\rho_c$ (g/cm³) | $M_\star$ (km) |
+|---|---|---|
+| $2\times 10^{15}$ | $2.285\times 10^{15}$ | 1.1275 |
+| $3\times 10^{15}$ | $3.560\times 10^{15}$ | 1.1660 |
+| $4\times 10^{15}$ | $4.905\times 10^{15}$ | 1.1741 |
+| $5\times 10^{15}$ | $6.313\times 10^{15}$ | 1.1691 |
+| $7\times 10^{15}$ | $9.300\times 10^{15}$ | 1.1434 |
+
+The maximum lies near the $4\times 10^{15}$ model. A one-dimensional search for the largest mass (SciPy's bounded minimiser applied to $-M_\star$) puts it at $\rho_{0,c} = 3.99\times 10^{15}$ g/cm³.
+
+</Step>
+
+<Step title="The marginally stable star">
+
+<Formula label="Problem 3(b): the heaviest stable star" tex="M_\text{max} = 1.174\ \text{km} = \frac{1.174}{1.4766}\,M_\odot = 0.795\,M_\odot, \qquad \rho_c = 4.89\times 10^{15}\ \frac{\text{g}}{\text{cm}^3}, \qquad R_\star = 8.73\ \text{km}" cite="mit" at="Problem 3(b), p. 4 (our own numerical solution)" />
+
+Stars just beyond it are unstable to collapse, and no stable star of this equation of state is heavier than about 0.8 solar masses.
+
+</Step>
+
+<Step title="Check the result">
+
+Moving $\rho_{0,c}$ by a tenth of a power of ten either way, to $3.17\times 10^{15}$ or $5.03\times 10^{15}$ g/cm³, lowers the mass by only 0.5%: this is why the mass of the maximum is sharp and its density is not. The heaviest star has $2M_\star/R_\star = 0.269$, still well inside Buchdahl's limit of $8/9$: it is the softness of this equation of state, not Buchdahl's bound, that sets the limit. Real neutron stars need equations of state computed from nuclear physics, as the [lesson](/courses/8-962/buchdahl-equations-of-state-schwarzschild) explains; this polytrope of free neutrons is a model for practice.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>

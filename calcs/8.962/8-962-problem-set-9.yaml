@@ -1,0 +1,684 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page where
+# one exists: numerical integration of the definitions (distances and horizons as ∫ dt/a = ∫ da/(a²H), with H from
+# the Friedmann equation), numerical derivatives (the Ω laws from (Ω − 1)/Ω = 3κ/(8πGρa²)), numerical root finding
+# (the redshift of largest d_A), or plain arithmetic with the stated values, written out as numbers.
+# Values: MIT's sheet (1 pc = 3.1e13 km, T0 = 2.73 K, k_B = 8.6e-11 MeV/K, ħ = 6.6e-22 MeV s, z_r = 1200, the
+# distances and speed of Problem 1); 1 MeV = 1.6e-6 erg (the sheet prints 1.6e-12, the value of 1 eV); NASA's GM of
+# the Sun, 1.32712e20 m³/s²; CODATA 2018 G = 6.674e-8 cgs and c = 2.998e10 cm/s (299 792 458 m/s exact where in m);
+# our own H0 = 70 km/s/Mpc with 1 Mpc = 3.1e19 km. The astronomical unit 1.496e11 m (IAU 2012: 149 597 870 700 m).
+# Short names: A = a_r = 1/(1 + z_r), W = a_2 = T0/T_vac, Hi = √(Λ/3), Z = 1201 = 1 + z_r.
+
+page: content/year-5/8.962/8-962-problem-set-9.mdx
+calcs:
+  # ---- Values given on MIT's sheet
+
+  - id: sheet-p1-values
+    kind: fact
+    where: "Problem 1, statement: the sheet's distances, mass and speed"
+    shown: ['at the distance $D_S = 100$ kpc', 'at the distance $D_L = 10$ kpc', '$v = 200$ km/s', '$1\ \text{pc} = 3.1\times 10^{13}$ km']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: sheet-zr
+    kind: fact
+    where: "Problem 3, statement: the redshift of recombination and of equality on MIT's sheet"
+    shown: ['$z_r \approx 1200$ (the sheet''s value)', '$z_\text{eq} \approx 3000$']
+    source: {cite: mit, at: 'Problem 3, pp. 1–2, footnote 1'}
+    origin: mit
+
+  - id: sheet-cmb-variation
+    kind: fact
+    where: "Problem 3(b), statement: the CMB varies by about a part in 10^5 (sheet; also Lecture 19 transcript, p. 20)"
+    shown: ['by about one part in $10^5$ over the sky']
+    source: {cite: mit, at: 'Problem 3, p. 2'}
+    origin: mit
+
+  - id: sheet-background
+    kind: fact
+    where: "Problems 4 and 5, background: the sheet's T0, k_B and ħ"
+    shown: ['T_0 = 2.73\ \text{K}, \qquad k_B = 8.6\times 10^{-11}\ \text{MeV/K}, \qquad \hbar = 6.6\times 10^{-22}\ \text{MeV s}']
+    source: {cite: mit, at: 'background, p. 2'}
+    origin: mit
+
+  - id: sheet-mev-printed
+    kind: fact
+    where: "Introduction: the value the sheet prints for 1 MeV (it is the value of 1 eV)"
+    shown: ['$1\ \text{MeV} = 1.6\times 10^{-12}$ g cm²/s²']
+    source: {cite: mit, at: 'Problem 4(a), p. 3'}
+    origin: mit
+
+  - id: mev-erg
+    kind: fact
+    where: "Introduction and Problem 4: 1 MeV in erg (1.602176634e-13 J exactly, rounded as the sheet rounds)"
+    shown: ['1 MeV is $1.6\times 10^{-6}$ g cm²/s² (erg)', 'Use $1\ \text{MeV} = 1.6\times 10^{-6}$ g cm²/s²']
+    source: {cite: codata, at: 'electron volt'}
+    origin: page-own
+
+  - id: sheet-tvac
+    kind: fact
+    where: "Problem 4 and 5(b), statements: the energy scales on MIT's sheet"
+    shown: ['$k_BT_\text{vac} \sim 10^{15}$ GeV', '$k_BT_N \sim 1$ MeV', '$k_BT_\text{GUT} \sim 10^{15}$ GeV', '$\Omega = 1 \pm 0.01$ today']
+    source: {cite: mit, at: 'Problems 4 and 5, p. 3'}
+    origin: mit
+
+  - id: codata-g-c
+    kind: fact
+    where: "Introduction: G and c, CODATA 2018 rounded (6.67430e-11 m³ kg⁻¹ s⁻², 299 792 458 m/s)"
+    shown: ['$G = 6.674\times 10^{-8}$ cm³ g⁻¹ s⁻² and $c = 2.998\times 10^{10}$ cm/s']
+    source: {cite: codata, at: 'Newtonian constant of gravitation; speed of light in vacuum'}
+    origin: page-own
+
+  - id: h0-choice
+    kind: fact
+    where: "Introduction and Problem 4(b): our round H0 (calcs/values.yaml: example) and the Mpc of the sheet's parsec"
+    shown: ['We take $H_0 = 70$ km/s/Mpc, a round value', '$H_0 = 70$ km/s/Mpc, with 1 Mpc $= 3.1\times 10^{19}$ km']
+    source: {cite: mit, at: 'Problem 4(b) (our own addition)'}
+    origin: page-own
+
+  - id: nasa-gm-sun
+    kind: fact
+    where: "Problem 1, statement: GM of the Sun, 132,712 × 10^6 km³/s² on the NASA Sun Fact Sheet"
+    shown: ['$GM = 1.32712\times 10^{20}$ m³/s² (NASA)']
+    source: {cite: nasasun, at: 'Bulk parameters: GM'}
+    origin: page-own
+
+  # ---- Problem 1: microlensing
+
+  - id: p1-gm-c2
+    where: 'Problem 1, solution: GM/c² of the Sun in m'
+    formula: 1.32712e20/299792458**2
+    expected: '1476.6'
+    shown: ['$GM/c^2 = 1.32712\times 10^{20}/(299\,792\,458)^2 = 1476.6$ m']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-4gm
+    where: 'Problem 1, solution: 4GM/c² in m'
+    formula: 4*1.32712e20/299792458**2
+    expected: '5906'
+    shown: ['so $4GM/c^2 = 5906$ m', 'r_E = \sqrt{5906 \times 2.79\times 10^{20}}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-dls
+    where: 'Problem 1, solution: D_LS = 100 − 10 kpc, and D_L D_LS/D_S = 9 kpc in m'
+    formula: 10*90/100*1e3*3.1e16
+    expected: '2.79e20'
+    shown: ['With $D_{LS} = 90$ kpc, $D_L D_{LS}/D_S = 9$ kpc $= 2.79\times 10^{20}$ m']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-re
+    where: 'Problem 1, solution: the Einstein radius in m, from the lens equation with β = 0 solved numerically for θ'
+    inputs: {}
+    formula: 10e3*3.1e16*solve('q**2 - 4*1476.62*90e3*3.1e16/(10e3*3.1e16*100e3*3.1e16)', 'q', 1e-10, 1e-7)
+    expected: '1.28e12'
+    shown: ['= 1.28\times 10^{12}\ \text{m}, \qquad t_E', '\frac{1.28\times 10^{12}\ \text{m}}{2\times 10^{5}\ \text{m/s}}', '\frac{1.28\times 10^{12}\ \text{m}}{3.1\times 10^{20}\ \text{m}}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-te-s
+    where: 'Problem 1, solution: t_E in seconds'
+    formula: sqrt(4*1.32712e20/299792458**2*10e3*3.1e16*90e3*3.1e16/(100e3*3.1e16))/2e5
+    expected: '6.42e6'
+    shown: ['= 6.42\times 10^{6}\ \text{s} = 74.3\ \text{days}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-te
+    answer: p1-te
+    where: 'Problem 1, answer box: t_E = r_E/v in days'
+    formula: sqrt(4*1.32712e20/299792458**2*10e3*3.1e16*90e3*3.1e16/(100e3*3.1e16))/2e5/86400
+    expected: '74.3'
+    shown: ['id="p1-te"', '= 74.3\ \text{days}']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-au
+    where: 'Problem 1, solution: the Einstein radius in astronomical units'
+    formula: sqrt(4*1.32712e20/299792458**2*9e3*3.1e16)/1.496e11
+    expected: '8.6'
+    shown: ['about 8.6 times the distance from the Earth to the Sun']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-2te-months
+    where: 'Problem 1, solution: 2 t_E is about five months (148.6 days / 30.4 days per month)'
+    formula: 2*74.3/30.44
+    expected: '5'
+    tolerance: 0.2
+    shown: ['about $2t_E$, some five months']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-theta-rad
+    where: 'Problem 1, solution: θ_E = r_E/D_L in rad'
+    formula: sqrt(4*1.32712e20/299792458**2*9e3*3.1e16)/(10e3*3.1e16)
+    expected: '4.14e-9'
+    shown: ['= 4.14\times 10^{-9}\ \text{rad}']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1-theta
+    answer: p1-theta
+    where: 'Problem 1, answer box: θ_E in milliarcseconds'
+    formula: sqrt(4*1.32712e20/299792458**2*9e3*3.1e16)/(10e3*3.1e16)*180/pi*3600*1000
+    expected: '0.854'
+    shown: ['id="p1-theta"', '= 0.854\ \text{milliarcseconds}']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1-theta-thousandth
+    where: 'Problem 1, solution: the images are less than a thousandth of an arcsecond from the lens'
+    formula: 0.854/1000
+    expected: '0.000854'
+    shown: ['less than a thousandth of an arcsecond']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1-hundredth
+    where: 'Problem 1, check: a lens of 0.01 solar masses gives t_E ten times shorter, about a week (days)'
+    formula: 74.3*sqrt(0.01)
+    expected: '7.4'
+    shown: ['a lens of a hundredth of a solar mass gives an event ten times shorter, about a week']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the proper-motion distance
+
+  - id: p2-dm
+    kind: identity
+    answer: p2-dm
+    where: 'Problem 2, answer box: d_M of a flat universe of matter against a numerical integral of dz/(H0 E(z)), E = (1 + z)^(3/2)'
+    formula: 2*(1 - 1/sqrt(1 + z))/H0
+    equals: integrate('1/(H0*(1 + q)**1.5)', 'q', 0, z)
+    samples:
+      H0: [0.5, 1, 1.3, 2, 0.7]
+      z: [0.1, 0.5, 1, 3, 5]
+    tolerance: 1e-8
+    shown: ['id="p2-dm"', '= \frac{2}{H_0}\left(1 - \frac{1}{\sqrt{1 + z}}\right)']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-dm-small-z
+    kind: limit
+    where: 'Problem 2, check: for small z, 2(1 − 1/√(1 + z)) goes to z'
+    formula: 2*(1 - 1/sqrt(1 + Y))/Y
+    limit: '1'
+    vary:
+      Y: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['$2(1 - 1/\sqrt{1 + z}) \approx z$ for small $z$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-zmax
+    answer: p2-zmax
+    where: 'Problem 2, answer box: the z where d_A = 2(1 − 1/√(1+z))/(1+z) is largest, from the root of its numerical derivative'
+    formula: solve("deriv('2*(1 - 1/sqrt(1 + w))/(1 + w)', 'w', q)", 'q', 0.5, 3)
+    expected: '1.25'
+    shown: ['id="p2-zmax"', 'which is $1 + z = 9/4$, $z = 1.25$']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-s
+    where: 'Problem 2, solution: s = 2/3 gives 1 + z = 9/4'
+    formula: 1/(2/3)**2
+    expected: '2.25'
+    shown: ['vanishes at $s = 2/3$, which is $1 + z = 9/4$']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3: particle horizons (H0 = 1 in the samples where it cancels)
+
+  - id: p3a-rh
+    kind: identity
+    answer: p3a-rh
+    where: 'Problem 3(a), answer box: r_H against ∫ da/(a² H) with H² ∝ ρ, ρ ∝ a⁻⁴ before a_r, continuous at a_r'
+    formula: 1/(H0*sqrt(1 + z))
+    equals: integrate('1/(q**2*H0*sqrt((1 + z)**3*((1/(1 + z))/q)**4))', 'q', 0, 1/(1 + z))
+    samples:
+      H0: [0.5, 1, 1.3, 2, 0.7]
+      z: [100, 500, 1200, 2000, 3000]
+    tolerance: 1e-7
+    shown: ['id="p3a-rh"', '= \frac{1}{H_0\sqrt{1 + z_r}}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-robs
+    kind: identity
+    answer: p3a-robs
+    where: 'Problem 3(a), answer box: r_obs against ∫ da/(a² H) with H = H0 a^(−3/2) after a_r'
+    formula: 2*(1 - 1/sqrt(1 + z))/H0
+    equals: integrate('1/(q**2*H0*q**(-1.5))', 'q', 1/(1 + z), 1)
+    samples:
+      H0: [0.5, 1, 1.3, 2, 0.7]
+      z: [100, 500, 1200, 2000, 3000]
+    tolerance: 1e-7
+    shown: ['id="p3a-robs"', '\left(1 - \frac{1}{\sqrt{1 + z_r}}\right)" cite']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-sqrt
+    where: 'Problem 3(a), solution: √1201'
+    formula: sqrt(1201)
+    expected: '34.66'
+    shown: ['$\sqrt{1201} = 34.66$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-h0rh
+    where: 'Problem 3(a), solution: H0 r_H for z_r = 1200'
+    formula: 1/sqrt(1201)
+    expected: '0.0289'
+    shown: ['so $H_0 r_H = 0.0289$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-h0robs
+    where: 'Problem 3(a), solution: H0 r_obs for z_r = 1200'
+    formula: 2*(1 - 1/sqrt(1201))
+    expected: '1.942'
+    shown: ['$H_0 r_\text{obs} = 2(1 - 0.0289) = 1.942$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-ratio
+    answer: p3a-ratio
+    where: 'Problem 3(a), answer box: r_H/r_obs for z_r = 1200, from the two numerical integrals'
+    formula: integrate('1/(q**2*sqrt(1201**3*((1/1201)/q)**4))', 'q', 0, 1/1201)/integrate('q**(-0.5)', 'q', 1/1201, 1)
+    expected: '0.0149'
+    shown: ['id="p3a-ratio"', 'The ratio is $r_H/r_\text{obs} = 0.0149$']
+    source: {cite: mit, at: 'Problem 3(a) (our own addition)'}
+    origin: page-own
+
+  - id: p3a-one-in
+    where: 'Problem 3(a), solution: the ratio is about 1/67'
+    formula: 1/0.014856
+    expected: '67'
+    tolerance: 0.5
+    shown: ['about 1/67']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-time-matched
+    where: 'Problem 3(a), check: with a ∝ t^(1/2) and t^(2/3) joined at t_r with only a continuous, r_H is 4/3 larger, ratio about 1/50'
+    formula: 1/((4/3)/sqrt(1201)/(2*(1 - 1/sqrt(1201))))
+    expected: '50'
+    tolerance: 1
+    shown: ['the ratio is still about 1/50', '$r_H$ comes out larger by the factor 4/3']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-horizons
+    where: 'Problem 3(b), solution: 2 r_obs in units of r_H'
+    formula: 2/0.0148564
+    expected: '135'
+    tolerance: 1
+    shown: ['$2r_\text{obs} = 2\times 67\,r_H$ apart, about 135 particle horizons']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-theta
+    answer: p3c-theta
+    where: 'Problem 3(c), answer box: θ_c = 2 arcsin(r_H/(2 r_obs)) in degrees'
+    formula: 2*asin(1/sqrt(1201)/(2*2*(1 - 1/sqrt(1201))))*180/pi
+    expected: '0.851'
+    shown: ['id="p3c-theta"', '$\theta_c = 0.0149$ rad $= 0.851°$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: inflation
+
+  - id: p4a-hbarc
+    where: 'Problem 4(a), solution: ħc in MeV cm'
+    formula: 6.6e-22*2.998e10
+    expected: '1.98e-11'
+    shown: ['$\hbar c = 6.6\times 10^{-22} \times 2.998\times 10^{10} = 1.98\times 10^{-11}$ MeV cm']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-rho-mev
+    where: 'Problem 4(a), solution: ρ_vac = (π²/15)(k_B T)⁴/(ħc)³ in MeV/cm³, against (4σ/c)T⁴ with the sheet''s σ'
+    formula: 4*(pi**2*8.6e-11**4/(60*6.6e-22**3*2.998e10**2))*(1e18/8.6e-11)**4/2.998e10
+    expected: '8.49e103'
+    shown: ['so $\rho_\text{vac} = 8.49\times 10^{103}$ MeV/cm³']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-rho-erg
+    where: 'Problem 4(a), solution: ρ_vac in erg/cm³'
+    formula: pi**2/15*1e72/(6.6e-22*2.998e10)**3*1.6e-6
+    expected: '1.36e98'
+    shown: ['$= 1.36\times 10^{98}$ erg/cm³', '\frac{1.36\times 10^{98}}{\left(2.998\times 10^{10}\right)^2}']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-lambda
+    answer: p4a-lambda
+    where: 'Problem 4(a), answer box: Λ = 8πGρ_vac/c² in units of 10^71 s⁻²'
+    formula: 8*pi*6.674e-8*(pi**2/15*1e72/(6.6e-22*2.998e10)**3*1.6e-6)/2.998e10**2/1e71
+    expected: '2.54'
+    shown: ['id="p4a-lambda"', '= 2.54\times 10^{71}\ \text{s}^{-2}']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-hinf
+    where: 'Problem 4(a), check and 4(b): H = √(Λ/3) in s⁻¹'
+    formula: sqrt(2.536e71/3)
+    expected: '2.91e35'
+    shown: ['$H = \sqrt{\Lambda/3} = 2.91\times 10^{35}$ s⁻¹: the universe', '$H = \sqrt{\Lambda/3} = 2.91\times 10^{35}$ s⁻¹; $H_0']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-efold-time
+    where: 'Problem 4(a), check: 1/H in s'
+    formula: 1/2.9075e35
+    expected: '3.4e-36'
+    shown: ['in $1/H = 3.4\times 10^{-36}$ s']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-slip
+    where: 'Problem 4(a), check: with the sheet''s 1.6e-12 per MeV, Λ is smaller by 1.6e-12/1.6e-6'
+    formula: 1.6e-6/1.6e-12
+    expected: '1e6'
+    shown: ['the result would be a million times smaller']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-a2
+    where: 'Problem 4(b), solution: a_2 = k_B T0/(k_B T_vac)'
+    formula: 8.6e-11*2.73/1e18
+    expected: '2.35e-28'
+    shown: ['$a_2 = k_BT_0/(k_BT_\text{vac}) = 8.6\times 10^{-11}\times 2.73/10^{18} = 2.35\times 10^{-28}$', '$a_\text{GUT} = 2.35\times 10^{-28}$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-h0
+    where: 'Problem 4(b), solution: H0 = 70 km/s/Mpc in s⁻¹ with 1 Mpc = 3.1e19 km'
+    formula: 70/3.1e19
+    expected: '2.26e-18'
+    shown: ['$H_0 = 70/(3.1\times 10^{19})$ s⁻¹ $= 2.26\times 10^{-18}$ s⁻¹']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-factor
+    where: 'Problem 4(b), solution: 2 − 3 √a_r for z_r = 1200'
+    formula: 2 - 3/sqrt(1201)
+    expected: '1.913'
+    shown: ['$2 - 3a_r^{1/2} = 1.913$', '\approx \frac{1}{1.913^2}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # e^Ne from the condition written as integrals: ∫ dt/a over inflation, (e^N − 1)/(W Hi), plus the radiation and matter
+  # pieces by numerical integration of da/(a² H) from a_2 to a_r (radiation, H continuous at a_r) and from a_r to 1.
+  - id: p4b-eN
+    where: 'Problem 4(b), solution: e^Ne, solved numerically from r_H(t_r) = r_obs(t_r) with the integrals done numerically'
+    inputs: {}
+    formula: exp(solve('(exp(q) - 1)/(2.3478e-28*sqrt(2.53609e71/3)) + sqrt(1/1201)*(1 - 2.3478e-28*1201)/(70/3.1e19) - 2*(1 - sqrt(1/1201))/(70/3.1e19)', 'q', 40, 80))
+    expected: '5.78e25'
+    shown: ['e^{N_e} = 5.78\times 10^{25}, \qquad', '$a(t_2)/a(t_1) = e^{N_e} = 5.78\times 10^{25}$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-ne
+    answer: p4b-ne
+    where: 'Problem 4(b), answer box: N_e from the same condition'
+    formula: solve('(exp(q) - 1)/(2.3478e-28*sqrt(2.53609e71/3)) + sqrt(1/1201)*(1 - 2.3478e-28*1201)/(70/3.1e19) - 2*(1 - sqrt(1/1201))/(70/3.1e19)', 'q', 40, 80)
+    expected: '59.3'
+    shown: ['id="p4b-ne"', 'N_e = 59.3, \qquad', '$N_e = 59.3$ e-foldings']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-about60
+    where: 'Problem 4(b), solution: about 60 e-foldings'
+    formula: 59.32
+    expected: '60'
+    tolerance: 1
+    shown: ['About 60 e-foldings are needed']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-t2
+    answer: p4b-t2
+    where: 'Problem 4(b), answer box: t_2 ≈ N_e √(3/Λ) in units of 10^-34 s'
+    formula: 59.3198*sqrt(3/2.53609e71)/1e-34
+    expected: '2.04'
+    shown: ['id="p4b-t2"', '= 2.04\times 10^{-34}\ \text{s}', 'in about $2\times 10^{-34}$ s']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-h0-range
+    where: 'Problem 4(b), check: N_e for H0 = 67 minus N_e for H0 = 73 (km/s/Mpc), below 0.1'
+    formula: log(73/67)
+    expected: '0.09'
+    tolerance: 0.01
+    shown: ['between 67 and 73 (in km/s/Mpc) it changes by less than 0.1', 'between 67 and 73 (in km/s/Mpc).']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-hrad
+    where: 'Problem 4(b), check: H0 a_r^(1/2)/a_2² in s⁻¹'
+    formula: (70/3.1e19)*sqrt(1/1201)/2.3478e-28**2
+    expected: '1.18e36'
+    shown: ['$H_0\,a_r^{1/2}/a_2^2 = 1.18\times 10^{36}$ s⁻¹, about 4 times']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-hratio
+    where: 'Problem 4(b) and 5(d), checks: that rate divided by √(Λ/3)'
+    formula: (70/3.1e19)*sqrt(1/1201)/2.3478e-28**2/sqrt(2.53609e71/3)
+    expected: '4.07'
+    shown: ['is 4.07 times the $H$ of inflation']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-ln4
+    where: 'Problem 4(b), check: ln 4'
+    formula: log(4)
+    expected: '1.4'
+    shown: ['would shift $N_e$ by $\ln 4 = 1.4$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-log
+    answer: p4c-log
+    where: 'Problem 4(c), answer box: log10 of e^Ne'
+    formula: 59.3198/log(10)
+    expected: '25.8'
+    shown: ['id="p4c-log"', 'the power of ten is $N_e/\ln 10 = 25.8$', 'almost 26 powers of ten']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4d-theta
+    where: 'Problem 4(d), solution: θ_c = 2 arcsin(1/2) in degrees for r_H = r_obs, and 1 rad in degrees'
+    formula: 2*asin(0.5)*180/pi
+    expected: '60'
+    shown: ['so $\theta_c = 60°$', '60 degrees for exactly this N_e']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4d-rad
+    where: 'Problem 4(d), solution: 1 rad in degrees'
+    formula: 180/pi
+    expected: '57'
+    shown: ['would give 1 rad $= 57°$']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  - id: p4d-ln2
+    where: 'Problem 4(d), solution: ln 2'
+    formula: log(2)
+    expected: '0.69'
+    shown: ['$N_e$ larger by $\ln 2 = 0.69$']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: flatness. (Ω − 1)/Ω = 3κ/(8πGρa²): with κ, G constant and ρ = ρ1 (a1/a)^n, the ratio is (a/a1)^(2−n)·(1 − 1/Ω1).
+  # Independent route: integrate d ln[(Ω − 1)/Ω]/d ln a = −(d ln ρ/d ln a) − 2 numerically, with ρ from the dilution law.
+
+  - id: p5a-matter
+    kind: identity
+    answer: p5a-matter
+    where: 'Problem 5(a), answer box: matter, against (1 − 1/Ω1)·exp(∫ (n − 2) d ln a) with n = −d ln ρ/d ln a from a numerical derivative of ρ ∝ a⁻³'
+    formula: (1 - 1/Omega1)*a2/a1
+    equals: (1 - 1/Omega1)*exp(integrate("(-deriv('log(w**(-3))', 'w', exp(q))*exp(q) - 2)", 'q', log(a1), log(a2)))
+    samples:
+      Omega1: [1.1, 1.5, 2, 2.5, 3]
+      a1: [0.5, 0.6, 0.8, 1, 0.7]
+      a2: [2, 3, 5, 4, 2.5]
+    tolerance: 1e-6
+    shown: ['id="p5a-matter"']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-radiation
+    kind: identity
+    answer: p5a-radiation
+    where: 'Problem 5(a), answer box: radiation, the same route with ρ ∝ a⁻⁴'
+    formula: (1 - 1/Omega1)*(a2/a1)**2
+    equals: (1 - 1/Omega1)*exp(integrate("(-deriv('log(w**(-4))', 'w', exp(q))*exp(q) - 2)", 'q', log(a1), log(a2)))
+    samples:
+      Omega1: [1.1, 1.5, 2, 2.5, 3]
+      a1: [0.5, 0.6, 0.8, 1, 0.7]
+      a2: [2, 3, 5, 4, 2.5]
+    tolerance: 1e-6
+    shown: ['id="p5a-radiation"']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-inflation
+    kind: identity
+    answer: p5c-inflation
+    where: 'Problem 5(c), answer box: inflation, the same route with ρ constant (n = 0)'
+    formula: (1 - 1/Omega1)*(a1/a2)**2
+    equals: (1 - 1/Omega1)*exp(integrate("(-deriv('log(1 + 0*w)', 'w', exp(q))*exp(q) - 2)", 'q', log(a1), log(a2)))
+    samples:
+      Omega1: [1.1, 1.5, 2, 2.5, 3]
+      a1: [0.5, 0.6, 0.8, 1, 0.7]
+      a2: [2, 3, 5, 4, 2.5]
+    tolerance: 1e-6
+    shown: ['id="p5c-inflation"']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-kt0
+    where: 'Problem 5(b), solution: k_B T0 in MeV (= a_N for T_N = 1 MeV)'
+    formula: 8.6e-11*2.73
+    expected: '2.35e-10'
+    shown: ['$k_BT_0 = 8.6\times 10^{-11} \times 2.73 = 2.35\times 10^{-10}$ MeV', 'At nucleosynthesis $a_N = 2.35\times 10^{-10}$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-n
+    answer: p5b-n
+    where: 'Problem 5(b), answer box: |Ω − 1| at nucleosynthesis in units of 10^-19: 0.01 shrunk by a_r (matter) and by (a_N/a_r)² (radiation)'
+    formula: 0.01*(1/1201)*((8.6e-11*2.73/1.0)*1201)**2/1e-19
+    expected: '6.62'
+    shown: ['id="p5b-n"', '\times (2.35\times 10^{-10})^2 = 6.62\times 10^{-19}$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-gut
+    answer: p5b-gut
+    where: 'Problem 5(b), answer box: |Ω − 1| at grand unification in units of 10^-55'
+    formula: 0.01*(1/1201)*((8.6e-11*2.73/1e18)*1201)**2/1e-55
+    expected: '6.62'
+    shown: ['id="p5b-gut"', '$|\Omega - 1| \le 6.62\times 10^{-55}$', 'the bound $6.62\times 10^{-55}$ of part (b)']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-1201
+    where: 'Problem 5(b), solution: 1 + z_r'
+    formula: 1 + 1200
+    expected: '1201'
+    shown: ['$|\Omega - 1| \le 0.01 \times 1201 \times']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-parts
+    where: 'Problem 5(b), solution: flat to better than one part in 10^18 and 10^54 (orders of 6.62e-19 and 6.62e-55)'
+    formula: log(1/6.62e-19)/log(10)
+    expected: '18'
+    tolerance: 0.5
+    shown: ['one part in $10^{18}$ at nucleosynthesis and one part in $10^{54}$ at grand unification']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-ratio36
+    where: 'Problem 5(b), check: the two bounds differ by (10^18)² = 10^36'
+    formula: 6.6201e-19/6.6201e-55
+    expected: '1e36'
+    shown: ['$(10^{18})^2 = 10^{36}$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-matter-only
+    where: 'Problem 5(b), check: matter law all the way back, 0.01 a_N'
+    formula: 0.01*8.6e-11*2.73
+    expected: '2.35e-12'
+    shown: ['$0.01 \times a_N = 2.35\times 10^{-12}$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-e2n
+    where: 'Problem 5(c) and (d), checks: e^(−2 N_e)'
+    formula: exp(-2*59.3198)
+    expected: '3.0e-52'
+    shown: ['the factor is $e^{-2N_e} = 3.0\times 10^{-52}$', 'The factor $e^{-2N_e} = 3.0\times 10^{-52}$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-ratio
+    answer: p5d-ratio
+    where: 'Problem 5(d), answer box: (a1 H1/H0)² with a1 = a2 e^(−Ne), Ne solved numerically as in p4b-ne'
+    formula: (2.3478e-28*sqrt(2.53609e71/3)*exp(-solve('(exp(q) - 1)/(2.3478e-28*sqrt(2.53609e71/3)) + sqrt(1/1201)*(1 - 2.3478e-28*1201)/(70/3.1e19) - 2*(1 - sqrt(1/1201))/(70/3.1e19)', 'q', 40, 80))/(70/3.1e19))**2
+    expected: '0.273'
+    shown: ['id="p5d-ratio"', '\approx \frac{1}{1.913^2} = 0.273', 'it is 0.273 today with the minimum']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-shrink
+    where: 'Problem 5(d), solution: 0.273/0.01'
+    formula: 0.27313/0.01
+    expected: '27.3'
+    shown: ['a further $0.273/0.01 = 27.3$', '\times 27.3 = 450$']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-extra
+    answer: p5d-extra
+    where: 'Problem 5(d), answer box: extra e-foldings, ½ ln(0.273/0.01)'
+    formula: 0.5*log(0.27313/0.01)
+    expected: '1.65'
+    shown: ['id="p5d-extra"', '$\Delta N = \tfrac12\ln 27.3 = 1.65$']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-61
+    where: 'Problem 5(d), solution: about 61 e-foldings solve both problems'
+    formula: 59.32 + 1.65
+    expected: '61'
+    shown: ['So about 61 e-foldings solve both problems at once']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-59
+    where: 'Problem 5(d), solution: the horizon problem demands about 59 e-foldings'
+    formula: 59.32
+    expected: '59'
+    shown: ['already demands about 59 e-foldings']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-450
+    where: 'Problem 5(d), check: e^(−2Ne) over the bound 0.01 a_2²/a_r, and 4.07² × 27.3'
+    formula: exp(-2*59.3198)/(0.01*2.3478e-28**2*1201)
+    expected: '450'
+    tolerance: 5
+    shown: ['by a factor of about 450', '$4.07^2 \times 27.3 = 450$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own

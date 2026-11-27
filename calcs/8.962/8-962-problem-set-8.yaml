@@ -1,0 +1,369 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# numerical second derivatives of the quadrupole moment built from the positions of the two bodies (Problem 2(a), (b)),
+# a numerical derivative of the orbital energy (2(c)) and of Kepler's law (2(d)), a numerical integral (2(e)),
+# the rotation matrices themselves (3(f)), and plain arithmetic with NASA's GM of the Sun and the exact c (2(e)).
+# The speed of light is 1 and G is kept, except in Problem 2(e).
+# Outside this file, while writing (NumPy, truncated Taylor polynomials): the Penrose equation of Problem 4(b) and the
+# contracted Bianchi identity of Problem 4(a), checked at a point for a metric η + S with random polynomial S of degree 4
+# (Lorentzian signature), with the Ricci tensor standing for 8πG T̄: both sides agree to 1e-14 (|□R| about 19). The page
+# says so in Problem 4(b).
+# Short names in the samples: m1, m2 the masses, a the separation, r the distance to the observer, W (inlined) the
+# orbital angular frequency sqrt(G (m1 + m2)/a³), q the variable of a numerical derivative or integral.
+
+page: content/year-5/8.962/8-962-problem-set-8.mdx
+calcs:
+  # ---- Problem 1: the projection
+
+  - id: p1-trace
+    where: "Problem 1, solution: the trace of the projection, 3 − n_k n_k"
+    formula: 3 - (0.6**2 + 0**2 + 0.8**2)
+    expected: '2'
+    shown: ['P_{kk} = 3 - n_k n_k = 2']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-count
+    where: "Problem 1, check: six components of a symmetric 3 × 3 tensor minus one trace leave 2l + 1 = 5 for l = 2"
+    formula: 2*2 + 1
+    equals: 6 - 1
+    kind: identity
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['six components of $I_{kl}$ minus one trace leave five, the $2l + 1$ of a quadrupole with $l = 2$']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  # ---- Problem 2(a): the amplitude of h+, against the TT projection of numerical second derivatives of I_xx and I_yy
+  # built from the two positions x1 = (m2/M) a (cos Wt, sin Wt), x2 = −(m1/M) a (cos Wt, sin Wt), at t = 0, where
+  # h+ = (G/r)(Ï_xx − Ï_yy) = −amplitude.
+
+  - id: p2a-amp
+    kind: identity
+    answer: p2a-amp
+    where: 'Problem 2(a), answer box: 4G²μM/(ra) against −(G/r)(Ï_xx − Ï_yy) at t = 0 from numerical derivatives'
+    formula: 4*G**2*mu*M/(r*a)
+    equals: -(G/r)*(deriv('m1*(m2/(m1 + m2)*a*cos(sqrt(G*(m1 + m2)/a**3)*q))**2 + m2*(m1/(m1 + m2)*a*cos(sqrt(G*(m1 + m2)/a**3)*q))**2', 'q', 0, 2) - deriv('m1*(m2/(m1 + m2)*a*sin(sqrt(G*(m1 + m2)/a**3)*q))**2 + m2*(m1/(m1 + m2)*a*sin(sqrt(G*(m1 + m2)/a**3)*q))**2', 'q', 0, 2))
+    samples:
+      G: [1, 0.7, 1.5, 1.2]
+      m1: [1, 0.5, 2, 1.3]
+      m2: [1, 1.5, 0.8, 0.4]
+      M: [2, 2.0, 2.8, 1.7]
+      mu: [0.5, 0.375, 0.571428571428572, 0.305882352941176]
+      a: [2, 3, 1.5, 4]
+      r: [50, 20, 80, 35]
+    tolerance: 1e-5
+    shown: ['id="p2a-amp"', 'h_+ = -\frac{4G\mu a^2\Omega^2}{r}\cos 2\Omega(t - r) = -\frac{4G^2\mu M}{r\,a}\cos 2\Omega(t - r)']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-equal
+    kind: identity
+    where: 'Problem 2(a), check: for equal masses (μ = m/2, M = 2m) the amplitude is 4G²m²/(ra) = 2Gma²Ω²/r with Ω² = 2Gm/a³'
+    formula: 4*G**2*(m/2)*(2*m)/(r*a)
+    equals: 2*G*m*a**2*(2*G*m/a**3)/r
+    samples:
+      G: [1, 0.7, 1.5]
+      m: [1, 2, 0.6]
+      a: [2, 3, 1.5]
+      r: [50, 20, 80]
+    tolerance: 1e-12
+    shown: ['the amplitude is $4G^2m^2/(ra) = 2Gma^2\Omega^2/r$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own check, as in the lesson gravitational-waves-quadrupole-formula)'}
+    origin: page-own
+
+  # ---- Problem 2(b): the power, against (G/5)(2W)² times the sum of squares of the numerical second derivatives
+  # (each component is a sinusoid of angular frequency 2W, so its third derivative is 2W times the second derivative a
+  # quarter period later, and the sum of squares is constant in time); I_xy enters twice (xy and yx). Taken at t = 0.3.
+
+  - id: p2b-power
+    kind: identity
+    answer: p2b-power
+    where: 'Problem 2(b), answer box: (32/5)G⁴μ²M³/a⁵ against (G/5)(2Ω)²(Ï_xx² + Ï_yy² + 2Ï_xy²) from numerical derivatives'
+    formula: 32/5*G**4*mu**2*M**3/a**5
+    equals: G/5*4*(G*(m1 + m2)/a**3)*(deriv('m1*(m2/(m1 + m2)*a*cos(sqrt(G*(m1 + m2)/a**3)*q))**2 + m2*(m1/(m1 + m2)*a*cos(sqrt(G*(m1 + m2)/a**3)*q))**2', 'q', 0.3, 2)**2 + deriv('m1*(m2/(m1 + m2)*a*sin(sqrt(G*(m1 + m2)/a**3)*q))**2 + m2*(m1/(m1 + m2)*a*sin(sqrt(G*(m1 + m2)/a**3)*q))**2', 'q', 0.3, 2)**2 + 2*deriv('(m1*(m2/(m1 + m2))**2 + m2*(m1/(m1 + m2))**2)*a**2*cos(sqrt(G*(m1 + m2)/a**3)*q)*sin(sqrt(G*(m1 + m2)/a**3)*q)', 'q', 0.3, 2)**2)
+    samples:
+      G: [1, 0.7, 1.5, 1.2]
+      m1: [1, 0.5, 2, 1.3]
+      m2: [1, 1.5, 0.8, 0.4]
+      M: [2, 2.0, 2.8, 1.7]
+      mu: [0.5, 0.375, 0.571428571428572, 0.305882352941176]
+      a: [2, 3, 1.5, 4]
+    tolerance: 1e-5
+    shown: ['id="p2b-power"', 'P = \frac{32}{5}\,G\,\mu^2 a^4\Omega^6 = \frac{32}{5}\,\frac{G^4\mu^2M^3}{a^5}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-sum
+    where: 'Problem 2(b), solution: 16 μ²a⁴Ω⁶ times (2 sin² + 2 cos²), in units of μ²a⁴Ω⁶'
+    formula: 16*(2*sin(0.4)**2 + 2*cos(0.4)**2)
+    expected: '32'
+    shown: ['= 32\mu^2a^4\Omega^6']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-equal
+    kind: identity
+    where: 'Problem 2(b), check: for equal masses μ²M³ = 2m⁵, so the power is (64/5)G⁴m⁵/a⁵'
+    formula: 32/5*(m/2)**2*(2*m)**3
+    equals: 64/5*m**5
+    samples:
+      m: [1, 2, 0.6]
+    tolerance: 1e-12
+    shown: ['$\mu^2M^3 = \frac{m^2}{4}\cdot 8m^3 = 2m^5$ and $P = \frac{64}{5}G^4m^5/a^5$']
+    source: {cite: mit, at: 'Problem 2(b), p. 1, and 2(c), p. 2 (our own check, as in the lesson gravitational-wave-energy-isaacson)'}
+    origin: page-own
+
+  # ---- Problem 2(c): da/dt = −P/(dE/da), with dE/da a numerical derivative of E(a) = −G m1 m2/(2a)
+
+  - id: p2c-adot
+    kind: identity
+    answer: p2c-adot
+    where: 'Problem 2(c), answer box: −(64/5)G³μM²/a³ against −P/(dE/da), dE/da numerical'
+    formula: -64/5*G**3*mu*M**2/a**3
+    equals: -(32/5*G**4*(m1*m2/(m1 + m2))**2*(m1 + m2)**3/a**5)/deriv('-G*m1*m2/(2*q)', 'q', a)
+    samples:
+      G: [1, 0.7, 1.5, 1.2]
+      m1: [1, 0.5, 2, 1.3]
+      m2: [1, 1.5, 0.8, 0.4]
+      M: [2, 2.0, 2.8, 1.7]
+      mu: [0.5, 0.375, 0.571428571428572, 0.305882352941176]
+      a: [2, 3, 1.5, 4]
+    tolerance: 1e-6
+    shown: ['id="p2c-adot"', '= -\frac{64}{5}\,\frac{G^3\mu M^2}{a^3}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-merge
+    kind: identity
+    where: 'Problem 2(c), check: the merger time (5/256) a⁴/(G³μM²) is (5/512) a⁴/(G³m³) for equal masses'
+    formula: 5/256*a**4/(G**3*(m/2)*(2*m)**2)
+    equals: 5/512*a**4/(G**3*m**3)
+    samples:
+      G: [1, 0.7]
+      m: [1, 2]
+      a: [2, 3]
+    tolerance: 1e-12
+    shown: ['$\frac{5}{256}\frac{a^4}{G^3\mu M^2}$ (for equal masses this is the lesson''s $\frac{5}{512}\frac{a^4}{G^3m^3}$)']
+    source: {cite: mit, at: 'Problem 2(b), p. 1, and 2(c), p. 2 (our own check, as in the lesson gravitational-wave-energy-isaacson)'}
+    origin: page-own
+
+  # ---- Problem 2(d): dΩ/dt = (dΩ/da)(da/dt), with dΩ/da a numerical derivative of Kepler's law, at a = (GM/Ω²)^(1/3)
+
+  - id: p2d-omdot
+    kind: identity
+    answer: p2d-omdot
+    where: 'Problem 2(d), answer box: (96/5)(G𝓜)^(5/3) Ω^(11/3) against (dΩ/da)(da/dt) with dΩ/da numerical'
+    formula: 96/5*(G*Mc)**(5/3)*Omega**(11/3)
+    equals: deriv('sqrt(G*(m1 + m2)/q**3)', 'q', (G*(m1 + m2)/Omega**2)**(1/3))*(-64/5*G**3*m1*m2*(m1 + m2)/((G*(m1 + m2)/Omega**2)**(1/3))**3)
+    samples:
+      G: [1, 0.7, 1.5, 1.2]
+      m1: [1, 0.5, 2, 1.3]
+      m2: [1, 1.5, 0.8, 0.4]
+      Mc: [0.870550563296124, 0.73253901289588, 1.079047053880145, 0.607452357533183]
+      Omega: [0.3, 0.5, 0.2, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p2d-omdot"', '\frac{d\Omega}{dt} = \frac{96}{5}\left(G\mathcal{M}\right)^{5/3}\Omega^{11/3}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-mc
+    kind: identity
+    answer: p2d-mc
+    where: 'Problem 2(d), answer box: the chirp mass in terms of m1 and m2 against μ^(3/5) M^(2/5)'
+    formula: (m1*m2)**(3/5)/(m1 + m2)**(1/5)
+    equals: (m1*m2/(m1 + m2))**(3/5)*(m1 + m2)**(2/5)
+    samples:
+      m1: [1, 2.5, 1.3]
+      m2: [1, 1.2, 2.9]
+    tolerance: 1e-12
+    shown: ['id="p2d-mc"', '\mathcal{M} = \frac{\left(m_1 m_2\right)^{3/5}}{\left(m_1 + m_2\right)^{1/5}}']
+    source: {cite: mit, at: 'Problem 2(d), p. 2'}
+    origin: page-own
+
+  - id: p2d-equal
+    where: 'Problem 2(d), check: for equal masses 𝓜 = m/2^(1/5)'
+    formula: 2**(-1/5)
+    expected: '0.87'
+    shown: ['$\mathcal{M} = m/2^{1/5} \approx 0.87\,m$']
+    source: {cite: mit, at: 'Problem 2(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(e): our own numbers, a pair of neutron stars at f = 100 Hz
+
+  - id: const-gm-sun
+    kind: fact
+    where: 'Problem 2(e), statement: GM of the Sun, 132,712 × 10^6 km^3/s^2 on the NASA Sun Fact Sheet'
+    shown: ['$GM_\odot = 1.32712\times 10^{20}$ m³/s² (NASA''s Sun fact sheet)']
+    source: {cite: nasasun, at: 'Bulk parameters: GM'}
+    origin: page-own
+
+  - id: const-c
+    where: 'Problem 2(e), statement: the speed of light (exact)'
+    formula: c
+    expected: 299792458 m/s
+    shown: ['$c = 299\,792\,458$ m/s (exact, CODATA 2018)']
+    source: {cite: nist, at: 'Speed of light in vacuum (exact)'}
+    origin: page-own
+
+  - id: p2e-masses
+    kind: fact
+    where: 'Problem 2(e), statement: our own masses and frequency'
+    shown: ['$m_1 = 1.4\,M_\odot$ and $m_2 = 1.3\,M_\odot$', '$f = 100$ Hz']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2e-mu
+    where: 'Problem 2(e), solution: the reduced mass in solar masses'
+    formula: 1.4*1.3/2.7
+    expected: '0.6741'
+    shown: ['$\mu = 1.4\times 1.3/2.7 = 0.6741\,M_\odot$', '$M = 2.7\,M_\odot$']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-mc
+    answer: p2e-mc
+    where: 'Problem 2(e), answer box: the chirp mass in solar masses, (m1 m2)^(3/5)/(m1 + m2)^(1/5)'
+    formula: (1.4*1.3)**(3/5)/(1.4 + 1.3)**(1/5)
+    expected: '1.174'
+    shown: ['id="p2e-mc"', '\mathcal{M} = 0.6741^{3/5}\times 2.7^{2/5}\,M_\odot = 1.174\,M_\odot']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-tsun
+    where: 'Problem 2(e), solution: GM_sun/c³ in units of 10^-6 s'
+    formula: 1.32712e20/299792458**3*1e6
+    expected: '4.9255'
+    shown: ['= 1.174 \times 4.9255\times 10^{-6}\ \text{s}']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p2e-tmc
+    where: 'Problem 2(e), solution: G𝓜/c³ in units of 10^-6 s'
+    formula: (1.4*1.3)**(3/5)/(1.4 + 1.3)**(1/5)*1.32712e20/299792458**3*1e6
+    expected: '5.784'
+    shown: ['= 5.784\times 10^{-6}\ \text{s}', '\left(5.784\times 10^{-6}\right)^{5/3}']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p2e-omega
+    where: 'Problem 2(e), solution: Ω = πf for f = 100 Hz, in rad/s'
+    formula: pi*100
+    expected: '314.16'
+    shown: ['$\Omega = \pi f = 314.16$ rad/s', '(314.16)^{11/3}']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-omdot
+    where: 'Problem 2(e), solution: dΩ/dt in s^-2'
+    formula: 96/5*((1.4*1.3)**(3/5)/(1.4 + 1.3)**(1/5)*1.32712e20/299792458**3)**(5/3)*(pi*100)**(11/3)
+    expected: '51.3'
+    shown: ['= 51.3$ s⁻²', '\frac{314.16}{51.3}']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-fdot
+    answer: p2e-fdot
+    where: 'Problem 2(e), answer box: df/dt = (dΩ/dt)/π in Hz/s'
+    formula: 96/5*((1.4*1.3)**(3/5)/(1.4 + 1.3)**(1/5)*1.32712e20/299792458**3)**(5/3)*(pi*100)**(11/3)/pi
+    expected: '16.3'
+    shown: ['id="p2e-fdot"', '$df/dt = \dot\Omega/\pi = 16.3$ Hz/s']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  # The time left: (3/8) Ω/Ω̇ against the integral of dω/(K ω^(11/3)) from Ω to 10^6 rad/s (the rest is below 1e-11 s).
+  - id: p2e-tau-integral
+    kind: identity
+    where: 'Problem 2(e), answer box: τ = (3/8) Ω/Ω̇ against a numerical integral of 1/(K ω^(11/3))'
+    formula: 3/8*Omega/(96/5*T**(5/3)*Omega**(11/3))
+    equals: integrate('1/(96/5*T**(5/3)*q**(11/3))', 'q', Omega, 1e6)
+    samples:
+      T: [5.7841e-6]
+      Omega: [314.159265]
+    tolerance: 1e-6
+    shown: ['\tau = \frac{3}{8}\,\frac{\Omega}{\dot\Omega} = \frac{3}{8}\times\frac{314.16}{51.3}\ \text{s} = 2.30\ \text{s}']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-tau
+    answer: p2e-tau
+    where: 'Problem 2(e), answer value: τ in seconds'
+    formula: 3/8/(96/5*((1.4*1.3)**(3/5)/(1.4 + 1.3)**(1/5)*1.32712e20/299792458**3)**(5/3)*(pi*100)**(8/3))
+    expected: '2.30'
+    shown: ['id="p2e-tau"', 'value="2.30"']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-sep
+    where: 'Problem 2(e), check: the separation (GM/Ω²)^(1/3) in km'
+    formula: (2.7*1.32712e20/(pi*100)**2)**(1/3)/1000
+    expected: '154'
+    shown: ['$a = \left(GM/\Omega^2\right)^{1/3} = 154$ km']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-speed
+    where: 'Problem 2(e), check: the relative speed aΩ as a fraction of c'
+    formula: (2.7*1.32712e20/(pi*100)**2)**(1/3)*pi*100/299792458
+    expected: '0.16'
+    shown: ['$a\Omega = 0.16\,c$']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  - id: p2e-equal
+    where: 'Problem 2(e), check: the chirp mass for two stars of 1.35 solar masses'
+    formula: (1.35*1.35)**(3/5)/2.7**(1/5)
+    expected: '1.175'
+    shown: ['$1.35\,M_\odot$ each (the same total) the chirp mass would be $1.175\,M_\odot$']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3(f): the rotation
+
+  # h'_xx = R_xk R_xl h_kl and h'_xy = R_xk R_yl h_kl with R = [[cos, sin], [−sin, cos]], h_xx = −h_yy = hp, h_xy = hc.
+  - id: p3f-hxx
+    kind: identity
+    where: "Problem 3(f), solution: h'+ from the rotation matrix against cos 2θ h+ + sin 2θ h×"
+    formula: cos(2*th)*hp + sin(2*th)*hc
+    equals: cos(th)**2*hp + 2*cos(th)*sin(th)*hc - sin(th)**2*hp
+    samples:
+      th: [0.3, 1.1, 2.0, -0.7]
+      hp: [1, 0.4, -0.6, 2]
+      hc: [0.5, -1, 0.3, 1.2]
+    tolerance: 1e-12
+    shown: ["h'_+ = h'_{xx} = \\cos 2\\theta\\;h_+ + \\sin 2\\theta\\;h_\\times"]
+    source: {cite: mit, at: 'Problem 3(f) (our own solution)'}
+    origin: page-own
+
+  - id: p3f-hxy
+    kind: identity
+    where: "Problem 3(f), solution: h'× from the rotation matrix against −sin 2θ h+ + cos 2θ h×"
+    formula: -sin(2*th)*hp + cos(2*th)*hc
+    equals: -cos(th)*sin(th)*hp + cos(th)**2*hc - sin(th)**2*hc - sin(th)*cos(th)*hp
+    samples:
+      th: [0.3, 1.1, 2.0, -0.7]
+      hp: [1, 0.4, -0.6, 2]
+      hc: [0.5, -1, 0.3, 1.2]
+    tolerance: 1e-12
+    shown: ["h'_\\times = h'_{xy} = -\\sin 2\\theta\\;h_+ + \\cos 2\\theta\\;h_\\times"]
+    source: {cite: mit, at: 'Problem 3(f) (our own solution)'}
+    origin: page-own
+
+  - id: p3f-same
+    answer: p3f-same
+    where: 'Problem 3(f), answer box: the smallest positive θ with sin θ = 0 (so e^(−2iθ) = 1), in degrees'
+    formula: solve('sin(q)', 'q', 2.5, 3.5)*180/pi
+    expected: '180'
+    shown: ['id="p3f-same"', 'first at $\theta = 180°$']
+    source: {cite: mit, at: 'Problem 3(f) (our own addition)'}
+    origin: page-own
+
+  - id: p3f-swap
+    answer: p3f-swap
+    where: 'Problem 3(f), answer box: the smallest positive θ with cos 2θ = 0, in degrees'
+    formula: solve('cos(2*q)', 'q', 0.5, 1)*180/pi
+    expected: '45'
+    shown: ['id="p3f-swap"', 'first at $\theta = 45°$']
+    source: {cite: mit, at: 'Problem 3(f) (our own addition)'}
+    origin: page-own

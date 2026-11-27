@@ -1,0 +1,732 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set. Problem 1 is checked here by routes independent of the page: the
+# Schwarzschild components evaluated at r(r̄) with a numerical derivative for dr/dr̄, and limits for part (b).
+# Problem 2(a) is unit conversion with pint and the CODATA 2018 constants of calcs/constants.yaml.
+# Problems 2(b) to 3(b) need the numerical solution of the TOV equations, which this harness cannot run (no ODE solver).
+# Outside this file, while writing: SciPy solve_ivp (method DOP853, rtol 1e-10, atol 1e-30), unknowns m, P (and m_p
+# or the baryonic sum), starting at r1 = 1e-6 km with m = (4π/3)ρ_c r1³, stopped by an event at P = 1e-14 P_c; constants
+# G = 6.67430e-8, c = 2.99792458e10 (cgs), K = 5.38e9 cgs converted with them. The maximum of M⋆ was found with SciPy's
+# bounded scalar minimiser on log10 ρ_0,c (xatol 1e-7), the minimum the same way. Checks of that run: rtol 1e-8 and
+# 1e-12 change R⋆ and M⋆ by less than 1e-8; stopping at 1e-8 P_c moves R⋆ by 0.1%; MIT's rounded G and c give
+# R⋆ = 12.683 km, M⋆ = 1.0018 km, Δ = 0.0793, M_max = 1.1741 km; the low-density models agree with the Newtonian
+# polytrope (Lane–Emden n = 3/2, integrated separately: ξ1 = 3.65375, ξ1²|θ'(ξ1)| = 2.71406). Those solver results are
+# recorded below as inputs of value entries (so each box is tied to the run) or as facts; everything that can be
+# derived from them (redshift, Δ, solar masses, ratios, the Newtonian comparison) is recomputed here.
+
+page: content/year-5/8.962/8-962-problem-set-10.mdx
+calcs:
+  # ---- Sheet values and constants
+
+  - id: sheet-k
+    kind: fact
+    where: "Problem 2, statement: MIT's constant of the polytrope and its exponent"
+    shown: ['\Gamma = \frac{5}{3}', '= 5.38\times 10^{9}\ \text{g}^{-2/3}\,\text{cm}^4\,\text{s}^{-2}']
+    source: {cite: mit, at: 'Problem 2, p. 1'}
+    origin: mit
+
+  - id: codata
+    kind: fact
+    where: "How to answer: the CODATA 2018 values used"
+    shown: ['$G = 6.67430\times 10^{-8}$ cm³ g⁻¹ s⁻² (measured)', '$c = 2.99792458\times 10^{10}$ cm/s (exact)', '$\hbar = 1.054571817\times 10^{-27}$ erg s (exact)', '$m_n = 1.67492749804\times 10^{-24}$ g (measured)']
+    source: {ref: nist}
+    origin: later-data
+
+  - id: gm-sun-param
+    kind: fact
+    where: "How to answer: the solar mass parameter (IAU 2015 nominal value, as in calcs/constants.yaml and Problem Set 5)"
+    shown: ['$GM_\odot = 1.3271244\times 10^{20}$ m³ s⁻²']
+    source: {cite: mit, at: 'Problem 3(b), p. 4 (our own choice of value)'}
+    origin: page-own
+
+  - id: gm-sun-km
+    where: "How to answer and Problem 3(b): GM_sun/c² in km"
+    inputs: {}
+    formula: G*M_sun/c**2
+    expected: 1.4766 km
+    shown: ['we use $GM_\odot/c^2 = 1.4766$ km']
+    source: {cite: mit, at: 'Problem 3(b), p. 4 (our own arithmetic)'}
+    origin: page-own
+
+  # ---- Problem 1(a): the isotropic components against the Schwarzschild ones at r = r̄(1 + GM/2r̄)²
+
+  - id: p1a-gtt
+    kind: identity
+    answer: p1a-gtt
+    where: 'Problem 1(a), answer box: g_tt against −(1 − 2GM/r) evaluated at r(r̄)'
+    formula: -((1 - G*M/(2*rbar))/(1 + G*M/(2*rbar)))**2
+    equals: -(1 - 2*G*M/(rbar*(1 + G*M/(2*rbar))**2))
+    samples:
+      G: [1, 1.2, 1.5, 1.1, 1.4]
+      M: [0.5, 1, 0.7, 0.9, 0.6]
+      rbar: [1, 4, 2.5, 1.3, 3.2]
+    tolerance: 1e-10
+    shown: ['id="p1a-gtt"', 'g_{tt} = -\left(\frac{1 - GM/2\bar r}{1 + GM/2\bar r}\right)^2']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-g
+    kind: identity
+    answer: p1a-g
+    where: 'Problem 1(a), answer box: g against the radial Schwarzschild term (dr/dr̄)²/(1 − 2GM/r), with dr/dr̄ from a numerical derivative of r(r̄)'
+    formula: (1 + G*M/(2*rbar))**4
+    equals: deriv('q*(1 + G*M/(2*q))**2', 'q', rbar)**2/(1 - 2*G*M/(rbar*(1 + G*M/(2*rbar))**2))
+    samples:
+      G: [1, 1.2, 1.5, 1.1, 1.4]
+      M: [0.5, 1, 0.7, 0.9, 0.6]
+      rbar: [1, 4, 2.5, 1.3, 3.2]
+    tolerance: 1e-7
+    shown: ['id="p1a-g"', '\left(1 + \frac{GM}{2\bar r}\right)^4\left(d\bar r^2 + \bar r^2\,d\Omega^2\right)']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-g-angular
+    kind: identity
+    where: 'Problem 1(a), solution: the angular part r² = g r̄², so g = (r/r̄)²'
+    formula: (1 + G*M/(2*rbar))**4
+    equals: (rbar*(1 + G*M/(2*rbar))**2/rbar)**2
+    samples:
+      G: [1, 1.2, 1.5, 1.1, 1.4]
+      M: [0.5, 1, 0.7, 0.9, 0.6]
+      rbar: [1, 4, 2.5, 1.3, 3.2]
+    tolerance: 1e-10
+    shown: ['The angular part is $r^2 d\Omega^2 = (1 + x)^4\,\bar r^2 d\Omega^2$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-drdrbar
+    kind: identity
+    where: 'Problem 1(a), formula "the radial part": dr/dr̄ = 1 − G²M²/(4r̄²), by a numerical derivative'
+    formula: 1 - G**2*M**2/(4*rbar**2)
+    equals: deriv('q*(1 + G*M/(2*q))**2', 'q', rbar)
+    samples:
+      G: [1, 1.2, 1.5, 1.1, 1.4]
+      M: [0.5, 1, 0.7, 0.9, 0.6]
+      rbar: [1, 4, 2.5, 1.3, 3.2]
+    tolerance: 1e-7
+    shown: ['\frac{dr}{d\bar r} = 1 - \frac{G^2M^2}{4\bar r^2} = (1 - x)(1 + x)']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-horizon
+    where: 'Problem 1(a), check: at x = 1 (r̄ = GM/2) the Schwarzschild radius is r = 2GM; r/(GM) with GM = 1'
+    inputs: {rb: 0.5}
+    formula: rb*(1 + 1/(2*rb))**2
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['The horizon $r = 2GM$ is at $x = 1$, that is $\bar r = GM/2$']
+    source: {cite: mit, at: 'Problem 1(a) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 1(b): first-order forms (limits as r̄ grows, GM = 1)
+
+  - id: p1b-gtt
+    kind: limit
+    answer: p1b-gtt
+    where: 'Problem 1(b), answer box: the first-order g_tt approaches the exact isotropic g_tt as r̄ grows (GM = 1)'
+    inputs: {G: 1, M: 1}
+    formula: -(1 - 2*G*M/rbar)
+    limit: -((1 - G*M/(2*rbar))/(1 + G*M/(2*rbar)))**2
+    vary:
+      rbar: [10, 100, 1000, 10000]
+    tolerance: 1e-7
+    shown: ['id="p1b-gtt"', '$g_{tt} \approx -(1 - 4x) = -(1 - 2GM/\bar r)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-g
+    kind: limit
+    answer: p1b-g
+    where: 'Problem 1(b), answer box: the first-order g approaches (1 + GM/2r̄)⁴ as r̄ grows (GM = 1)'
+    inputs: {G: 1, M: 1}
+    formula: 1 + 2*G*M/rbar
+    limit: (1 + G*M/(2*rbar))**4
+    vary:
+      rbar: [10, 100, 1000, 10000]
+    tolerance: 1e-7
+    shown: ['id="p1b-g"', '$(1 + x)^4 \approx 1 + 4x = 1 + 2GM/\bar r$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-sun
+    where: 'Problem 1(b), check: 2GM/r at the surface of the Sun (R_sun = 6.957e8 m, IAU nominal radius)'
+    inputs: {R_sun: 6.957e8 m}
+    formula: 2*G*M_sun/(R_sun*c**2)*1e6
+    expected: '4'
+    tolerance: 10%
+    shown: ['$2GM/\bar r$ is about $4\times 10^{-6}$']
+    source: {cite: mit, at: 'Problem 1(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(a): unit conversions with G = c = 1
+
+  - id: p2a-rho
+    answer: p2a-rho
+    where: 'Problem 2(a), answer box: G/c² × 1 g/cm³ in units of 1e-19 km⁻²'
+    inputs: {}
+    formula: G*(1*gram/cm**3)/c**2*km**2*1e19
+    expected: '7.43'
+    shown: ['id="p2a-rho"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-rho-4
+    where: 'Problem 2(a), solution: the same with four digits, in cm⁻² and km⁻²'
+    inputs: {}
+    formula: G*(1*gram/cm**3)/c**2*cm**2*1e29
+    expected: '7.426'
+    shown: ['= 7.426\times 10^{-29}\ \text{cm}^{-2} = 7.426\times 10^{-19}\ \text{km}^{-2}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-p
+    answer: p2a-p
+    where: 'Problem 2(a), answer box: G/c⁴ × 1 dyne/cm² in units of 1e-40 km⁻²'
+    inputs: {}
+    formula: G*(1*dyne/cm**2)/c**4*km**2*1e40
+    expected: '8.26'
+    shown: ['id="p2a-p"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-p-4
+    where: 'Problem 2(a), solution: the same with four digits'
+    inputs: {}
+    formula: G*(1*dyne/cm**2)/c**4*km**2*1e40
+    expected: '8.263'
+    shown: ['= 8.263\times 10^{-40}\ \text{km}^{-2}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-gc
+    where: 'Problem 2(a), solution: (Gc)^(−2/3) in cgs numbers, × 1e3 (unit cm^(4/3) per g^(−2/3) cm⁴ s⁻²)'
+    inputs: {}
+    formula: (6.67430e-8*2.99792458e10)**(-2/3)*1e3
+    expected: '6.298'
+    shown: ['$(Gc)^{-2/3} = 6.298\times 10^{-3}$ cm⁴ᐟ³']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-kfac
+    answer: p2a-kfac
+    where: 'Problem 2(a), answer box: 1 g^(−2/3) cm⁴ s⁻² times (G/c⁴)/(G/c²)^(5/3), in units of 1e-9 km^(4/3)'
+    inputs: {}
+    formula: (1*gram**(-2/3)*cm**4/second**2)*(G/c**4)/(G/c**2)**(5/3)/km**(4/3)*1e9
+    expected: '1.36'
+    shown: ['id="p2a-kfac"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-kfac-4
+    where: 'Problem 2(a), formula "the constant of the polytrope": the factor with four digits'
+    inputs: {}
+    formula: (1*gram**(-2/3)*cm**4/second**2)*(G/c**4)/(G/c**2)**(5/3)/km**(4/3)*1e9
+    expected: '1.357'
+    shown: ['\text{s}^{-2} \to 1.357\times 10^{-9}\ \text{km}^{4/3}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-k
+    answer: p2a-k
+    where: 'Problem 2(a), answer box: the sheet''s K = 5.38e9 cgs in km^(4/3)'
+    inputs: {}
+    formula: 5.38e9*(1*gram**(-2/3)*cm**4/second**2)*(G/c**4)/(G/c**2)**(5/3)/km**(4/3)
+    expected: '7.30'
+    shown: ['id="p2a-k"', '\ \text{km}^{4/3} = 7.30\ \text{km}^{4/3}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-k-formula
+    where: 'Problem 2(a), check: the sheet''s formula 3^(2/3) π^(4/3) ħ²/(5 m_n^(8/3)) with CODATA values, in units of 1e9 g^(−2/3) cm⁴ s⁻²'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: 3**(2/3)*pi**(4/3)*hbar**2/(5*m_n**(8/3))/(gram**(-2/3)*cm**4/second**2)/1e9
+    expected: '5.380'
+    shown: ['gives $5.380\times 10^{9}$ in cgs units']
+    source: {cite: mit, at: 'Problem 2(a) (our own check)'}
+    origin: page-own
+
+  - id: p2a-rounded
+    where: 'Problem 2(a), check: with G = 6.67e-8 and c = 3.00e10 the density factor is smaller by 0.20%, the pressure factor by 0.34% (the larger of the two shown, in %)'
+    inputs: {}
+    formula: (1 - (6.67e-8/(3.00e10)**4)/(6.67430e-8/(2.99792458e10)**4))*100
+    expected: '0.3'
+    tolerance: 0.06
+    shown: ['the density and pressure factors come out 0.2% and 0.3% smaller']
+    source: {cite: mit, at: 'Problem 2(a) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(b): the star with ρ_0,c = 1e15 g/cm³
+
+  - id: p2b-rho0c
+    where: 'Problem 2(b), solution: ρ_0,c = 1e15 g/cm³ in km⁻², × 1e4'
+    inputs: {}
+    formula: G*(1e15*gram/cm**3)/c**2*km**2*1e4
+    expected: '7.426'
+    shown: ['$\rho_{0,c} = 7.426\times 10^{-4}$ km⁻²']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-pc
+    where: 'Problem 2(b), solution: P_c = K ρ_0,c^(5/3) in km⁻², × 1e5 (K and ρ in km units, as pure numbers)'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4}
+    formula: Kk*r0**(5/3)*1e5
+    expected: '4.45'
+    shown: ['$P_c = K\rho_{0,c}^{5/3} = 4.45\times 10^{-5}$ km⁻²']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-rhoc-km
+    where: 'Problem 2(b), solution: ρ_c = ρ_0,c + (3/2) P_c in km⁻², × 1e4'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4}
+    formula: (r0 + 1.5*Kk*r0**(5/3))*1e4
+    expected: '8.093'
+    shown: ['which is $8.093\times 10^{-4}$ km⁻²']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-rhoc-cgs
+    where: 'Problem 2(b), solution: the same in g/cm³, × 1e-15; and the 9% the internal energy adds'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4}
+    formula: (1 + 1.5*Kk*r0**(2/3))*1
+    expected: '1.090'
+    shown: ['$1.090\times 10^{15}$ g/cm³: the internal energy adds 9% to the rest mass']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-run
+    kind: fact
+    where: 'Problem 2(b), solution: the solver settings and the result of our run (R⋆ = 12.6766 km, M⋆ = 1.002239 km); stopping at 1e-8 P_c gives R⋆ = 12.6639 km (0.10% less) and M⋆ = 1.0022384 km'
+    shown: ['relative tolerance $10^{-10}$), starting at $r_1 = 10^{-6}$ km and stopping when $P$ fell to $10^{-14}P_c$', 'Stopping at $10^{-8}P_c$ instead moves the radius by 0.1% and the mass by less than a part in a million', "(MIT's rounded $G$ and $c$ give 12.68 km and 1.002 km as well.)"]
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2b-r
+    answer: p2b-r
+    where: 'Problem 2(b), answer box: R⋆ from our run'
+    inputs: {R_s: 12.6766 km}
+    formula: R_s
+    expected: 12.68 km
+    shown: ['id="p2b-r"', 'R_\star = 12.68\ \text{km}', '| $10^{15}$ | $1.090\times 10^{15}$ | 12.68 |']
+    source: {cite: mit, at: 'Problem 2(b) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2b-m
+    answer: p2b-m
+    where: 'Problem 2(b), answer box: M⋆ from our run'
+    inputs: {M_s: 1.002239 km}
+    formula: M_s
+    expected: 1.002 km
+    shown: ['id="p2b-m"', 'M_\star = 1.002\ \text{km}']
+    source: {cite: mit, at: 'Problem 2(b) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2b-msun
+    where: 'Problem 2(b) and the table of Problem 3(a): M⋆ in solar masses'
+    inputs: {M_s: 1.002239 km}
+    formula: M_s/(G*M_sun/c**2)
+    expected: '0.679'
+    shown: ['= 0.679\,M_\odot', '| 12.68 | 1.0022 | 0.679 |']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-compact
+    where: 'Problem 2(b), check, and 2(c): 2M⋆/R⋆'
+    inputs: {M_s: 1.002239 km, R_s: 12.6766 km}
+    formula: 2*M_s/R_s
+    expected: '0.158'
+    shown: ['The compactness is $2M_\star/R_\star = 0.158$', '\sqrt{1 - 0.158}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: buchdahl
+    where: 'Problem 2(b) and 3(b), checks: Buchdahl''s limit 2GM/r < 8/9 (from GM/r < 4/9 in the lesson)'
+    inputs: {}
+    formula: 2*4/9
+    expected: '0.889'
+    shown: ['well below the limit $8/9$ of Buchdahl', "Buchdahl's limit of $8/9$"]
+    source: {cite: reading2, at: 'transcript p. 4'}
+    origin: mit
+
+  - id: lane-emden
+    kind: fact
+    where: 'Problem 2(b), check: the first zero of the Lane–Emden function for n = 3/2 (our own integration, 3.6537537) and ξ1²|θ′(ξ1)| = 2.7140551'
+    shown: ['$\xi_1 = 3.65375$']
+    source: {cite: mit, at: 'Problem 2(b) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2b-newton-r
+    where: 'Problem 2(b), check: radius of the Newtonian n = 3/2 polytrope with the same central density, ξ1 a with a² = (5/2) K ρ0c^(−1/3)/(4π) (km units)'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4, xi1: 3.65375}
+    formula: xi1*sqrt(2.5*Kk*r0**(-1/3)/(4*pi))
+    expected: '14.6'
+    shown: ['would have $R = 14.6$ km']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2b-newton-m
+    where: 'Problem 2(b), check: mass of the same Newtonian polytrope, 4π a³ ρ0c ξ1²|θ′(ξ1)|'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4, w1: 2.71406}
+    formula: 4*pi*(2.5*Kk*r0**(-1/3)/(4*pi))**1.5*r0*w1
+    expected: '1.63'
+    shown: ['and $M = 1.63$ km']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2b-newton-r-pct
+    where: 'Problem 2(b), check: the TOV star is smaller than the Newtonian one by this %'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4, xi1: 3.65375, R_s: 12.6766}
+    formula: (1 - R_s/(xi1*sqrt(2.5*Kk*r0**(-1/3)/(4*pi))))*100
+    expected: '13'
+    shown: ['General relativity makes this star 13% smaller and 38% lighter']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2b-newton-m-pct
+    where: 'Problem 2(b), check: and lighter by this %'
+    inputs: {Kk: 7.29958, r0: 7.42616e-4, w1: 2.71406, M_s: 1.002239}
+    formula: (1 - M_s/(4*pi*(2.5*Kk*r0**(-1/3)/(4*pi))**1.5*r0*w1))*100
+    expected: '38'
+    shown: ['General relativity makes this star 13% smaller and 38% lighter']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2b-newton-1e12
+    where: 'Problem 2(b), check: at ρ0c = 1e12 g/cm³ the TOV mass of our run (0.051147 km) is below the Newtonian one by this %'
+    inputs: {Kk: 7.29958, w1: 2.71406, M_s: 0.051147}
+    formula: (1 - M_s/(4*pi*(2.5*Kk*(7.42616e-7)**(-1/3)/(4*pi))**1.5*7.42616e-7*w1))*100
+    expected: '0.6'
+    tolerance: 0.1
+    shown: ['At $\rho_{0,c} = 10^{12}$ g/cm³ the two calculations agree to within 0.6% in mass']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(c): the redshift
+
+  - id: p2c-e
+    kind: identity
+    answer: p2c-e
+    where: 'Problem 2(c), answer box: against −g_tt in isotropic coordinates (Problem 1), (1 − x)/(1 + x) with x = M/(2r̄) and r̄ found by solving r̄(1 + M/2r̄)² = R'
+    formula: E*sqrt(1 - 2*M/R)
+    equals: E*(1 - M/(2*solve('q*(1 + M/(2*q))**2 - R', 'q', M/2, R)))/(1 + M/(2*solve('q*(1 + M/(2*q))**2 - R', 'q', M/2, R)))
+    samples:
+      E: [1, 2, 3.5, 5, 1.7]
+      M: [0.5, 1, 1.5, 0.8, 1.2]
+      R: [4, 10, 20, 6, 12.7]
+    tolerance: 1e-8
+    shown: ['id="p2c-e"', '$E_\text{ob} = E_\text{em}\sqrt{1 - 2M_\star/R_\star}$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-ratio
+    where: 'Problem 2(c), solution: E_ob/E_em for our star'
+    inputs: {M_s: 1.002239, R_s: 12.6766}
+    formula: sqrt(1 - 2*M_s/R_s)
+    expected: '0.9175'
+    shown: ['= 0.9175']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-z
+    answer: p2c-z
+    where: 'Problem 2(c), answer box: z = 1/sqrt(1 − 2M⋆/R⋆) − 1'
+    inputs: {M_s: 1.002239, R_s: 12.6766}
+    formula: 1/sqrt(1 - 2*M_s/R_s) - 1
+    expected: '0.0899'
+    shown: ['id="p2c-z"', '- 1 = 0.0899', 'with a minus sign, $-0.0899$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-weak
+    where: 'Problem 2(c), check: the weak-field estimate M⋆/R⋆'
+    inputs: {M_s: 1.002239, R_s: 12.6766}
+    formula: M_s/R_s
+    expected: '0.079'
+    shown: ['$z \approx M_\star/R_\star = 0.079$', '$M_\star/R_\star = 0.079$']
+    source: {cite: mit, at: 'Problem 2(c) (our own check)'}
+    origin: page-own
+
+  - id: p2c-weak-pct
+    where: 'Problem 2(c), check: the weak-field estimate is too low by this %'
+    inputs: {M_s: 1.002239, R_s: 12.6766}
+    formula: (1 - (M_s/R_s)/(1/sqrt(1 - 2*M_s/R_s) - 1))*100
+    expected: '12'
+    shown: ['is 12% too low']
+    source: {cite: mit, at: 'Problem 2(c) (our own check)'}
+    origin: page-own
+
+  - id: p2c-lambda
+    where: 'Problem 2(c), check: the wavelength grows by the factor 1 + z, in %'
+    inputs: {M_s: 1.002239, R_s: 12.6766}
+    formula: (1/sqrt(1 - 2*M_s/R_s) - 1)*100
+    expected: '9'
+    shown: ['arrives with its wavelength 9% longer']
+    source: {cite: mit, at: 'Problem 2(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(d), (e): the proper-volume mass and Δ
+
+  - id: p2d-mp
+    answer: p2d-mp
+    where: 'Problem 2(d), answer box: M_p from our run (1.081788 km)'
+    inputs: {M_p: 1.081788 km}
+    formula: M_p
+    expected: 1.082 km
+    shown: ['id="p2d-mp"', 'M_p = 1.082\ \text{km}']
+    source: {cite: mit, at: 'Problem 2(d) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2d-maxmr
+    kind: fact
+    where: 'Problem 2(d), check: the largest m/r inside the star in our run, 0.0940 at r = 9.16 km'
+    shown: ['In our run $m/r$ is largest at $r = 9.2$ km, where it is 0.094']
+    source: {cite: mit, at: 'Problem 2(d) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2d-maxfactor
+    where: 'Problem 2(d), check: 1/sqrt(1 − 2 m/r) at the largest m/r'
+    inputs: {mr: 0.094046}
+    formula: 1/sqrt(1 - 2*mr)
+    expected: '1.110'
+    shown: ['so the factor is never more than 1.110: the excess must be below 11%']
+    source: {cite: mit, at: 'Problem 2(d) (our own check)'}
+    origin: page-own
+
+  - id: p2d-excess
+    where: 'Problem 2(d), check: (M_p − M⋆)/M⋆ in %'
+    inputs: {M_p: 1.081788, M_s: 1.002239}
+    formula: (M_p - M_s)/M_s*100
+    expected: '8'
+    shown: ['It is 8%.', 'About 8% of the star']
+    source: {cite: mit, at: 'Problem 2(d) (our own check)'}
+    origin: page-own
+
+  - id: p2e-delta
+    answer: p2e-delta
+    where: 'Problem 2(e), answer box: Δ = (M_p − M⋆)/M⋆'
+    inputs: {M_p: 1.081788, M_s: 1.002239}
+    formula: (M_p - M_s)/M_s
+    expected: '0.0794'
+    shown: ['id="p2e-delta"', '\Delta = \frac{1.0818 - 1.0022}{1.0022} = 0.0794']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-baryonic
+    kind: fact
+    where: 'Problem 2(e), remark: the sum with ρ_0 in place of ρ in our run, 1.034122 km'
+    shown: ['the sum is the baryonic mass, 1.034 km']
+    source: {cite: mit, at: 'Problem 2(e) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p2e-baryonic-pct
+    where: 'Problem 2(e), remark: (M_b − M⋆)/M⋆ in %'
+    inputs: {M_b: 1.034122, M_s: 1.002239}
+    formula: (M_b - M_s)/M_s*100
+    expected: '3.2'
+    shown: ['its excess over $M_\star$ is 3.2%']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-internal-pct
+    where: 'Problem 2(e), remark: (M_p − M_b)/M⋆ in %'
+    inputs: {M_p: 1.081788, M_b: 1.034122, M_s: 1.002239}
+    formula: (M_p - M_b)/M_s*100
+    expected: '4.8'
+    shown: ['The difference between the two sums, 4.8% of $M_\star$']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-other-densities
+    kind: fact
+    where: 'Problem 2(e), check: Δ in our runs at ρ0c = 1e14 (0.01968) and 1e16 g/cm³ (0.22837)'
+    shown: ['our runs give 0.020 at $\rho_{0,c} = 10^{14}$ g/cm³ and 0.228 at $10^{16}$ g/cm³']
+    source: {cite: mit, at: 'Problem 2(e) (our own numerical solution)'}
+    origin: page-own
+
+  # ---- Problem 3(a): the sequence
+
+  - id: p3a-table
+    kind: fact
+    where: 'Problem 3(a), table: our runs (ρ_c in g/cm³, R⋆ and M⋆ in km): 1e14: 1.0193e14, 20.7245, 0.45753; 1e15: 1.0898e15, 12.6766, 1.00224; 1e16: 1.4168e16, 6.6578, 1.09532; 1e17: 2.9345e17, 4.6080, 0.65021; 1e18: 9.9791e18, 5.9392, 0.70964'
+    shown: ['| $10^{14}$ | $1.019\times 10^{14}$ | 20.72 | 0.4575 | 0.310 |', '| $10^{16}$ | $1.417\times 10^{16}$ | 6.658 | 1.0953 | 0.742 |', '| $10^{17}$ | $2.935\times 10^{17}$ | 4.608 | 0.6502 | 0.440 |', '| $10^{18}$ | $9.979\times 10^{18}$ | 5.939 | 0.7096 | 0.481 |']
+    source: {cite: mit, at: 'Problem 3(a), p. 4 (our own numerical solution)'}
+    origin: page-own
+
+  - id: p3a-msun-1e14
+    where: 'Problem 3(a), table: solar masses of the 1e14, 1e16, 1e17 and 1e18 rows (the first one tested)'
+    inputs: {M_s: 0.45753 km}
+    formula: M_s/(G*M_sun/c**2)
+    expected: '0.310'
+    shown: ['| 0.4575 | 0.310 |']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-msun-1e16
+    where: 'Problem 3(a), table: solar masses of the 1e16 row'
+    inputs: {M_s: 1.09532 km}
+    formula: M_s/(G*M_sun/c**2)
+    expected: '0.742'
+    shown: ['| 1.0953 | 0.742 |']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-msun-1e17
+    where: 'Problem 3(a), table: solar masses of the 1e17 row'
+    inputs: {M_s: 0.65021 km}
+    formula: M_s/(G*M_sun/c**2)
+    expected: '0.440'
+    shown: ['| 0.6502 | 0.440 |']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-msun-1e18
+    where: 'Problem 3(a), table: solar masses of the 1e18 row'
+    inputs: {M_s: 0.70964 km}
+    formula: M_s/(G*M_sun/c**2)
+    expected: '0.481'
+    shown: ['| 0.7096 | 0.481 |']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-rhoc-1e14
+    where: 'Problem 3(a), table: ρ_c from ρ_0,c = 1e14 (the energy density is computed, not solved), × 1e-14'
+    inputs: {Kk: 7.29958, r0: 7.42616e-5}
+    formula: 1 + 1.5*Kk*r0**(2/3)
+    expected: '1.019'
+    shown: ['$1.019\times 10^{14}$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-rhoc-1e18
+    where: 'Problem 3(a), table: ρ_c from ρ_0,c = 1e18, × 1e-18'
+    inputs: {Kk: 7.29958, r0: 0.742616}
+    formula: 1 + 1.5*Kk*r0**(2/3)
+    expected: '9.979'
+    shown: ['$9.979\times 10^{18}$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-minimum
+    kind: fact
+    where: 'Problem 3(a), remark: the minimum of M⋆ in our runs, at ρ0c = 1.92e17, ρ_c = 7.667e17 g/cm³, M⋆ = 0.6113 km'
+    shown: ['a minimum of $M_\star$ near $\rho_c = 7.7\times 10^{17}$ g/cm³']
+    source: {cite: mit, at: 'Problem 3(a) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p3a-newton-factor
+    where: 'Problem 3(a), check: the Newtonian factor sqrt(10)'
+    inputs: {}
+    formula: sqrt(10)
+    expected: '3.16'
+    shown: ['a factor $\sqrt{10} = 3.16$']
+    source: {cite: mit, at: 'Problem 3(a) (our own check)'}
+    origin: page-own
+
+  - id: p3a-tov-factor
+    where: 'Problem 3(a), check: the TOV mass ratio from 1e14 to 1e15'
+    inputs: {M1: 0.45753, M2: 1.002239}
+    formula: M2/M1
+    expected: '2.19'
+    shown: ['The TOV masses grow by only 2.19']
+    source: {cite: mit, at: 'Problem 3(a) (our own check)'}
+    origin: page-own
+
+  - id: p3a-newton-1e14
+    where: 'Problem 3(a), check: at 1e14 g/cm³ the TOV mass is below the Newtonian polytrope by this %'
+    inputs: {Kk: 7.29958, w1: 2.71406, M_s: 0.45753}
+    formula: (1 - M_s/(4*pi*(2.5*Kk*(7.42616e-5)**(-1/3)/(4*pi))**1.5*7.42616e-5*w1))*100
+    expected: '11'
+    shown: ['the TOV mass is 11% below the Newtonian one']
+    source: {cite: mit, at: 'Problem 3(a) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3(b): the maximum
+
+  - id: p3b-zoom
+    kind: fact
+    where: 'Problem 3(b), table: our runs (ρ_c in g/cm³, M⋆ in km): 2e15: 2.2851e15, 1.12754; 3e15: 3.5603e15, 1.16598; 4e15: 4.9050e15, 1.17410; 5e15: 6.3128e15, 1.16907; 7e15: 9.3000e15, 1.14340; maximum by the bounded minimiser at ρ0c = 3.99218e15'
+    shown: ['| $2\times 10^{15}$ | $2.285\times 10^{15}$ | 1.1275 |', '| $3\times 10^{15}$ | $3.560\times 10^{15}$ | 1.1660 |', '| $4\times 10^{15}$ | $4.905\times 10^{15}$ | 1.1741 |', '| $5\times 10^{15}$ | $6.313\times 10^{15}$ | 1.1691 |', '| $7\times 10^{15}$ | $9.300\times 10^{15}$ | 1.1434 |', 'puts it at $\rho_{0,c} = 3.99\times 10^{15}$ g/cm³']
+    source: {cite: mit, at: 'Problem 3(b), p. 4 (our own numerical solution)'}
+    origin: page-own
+
+  - id: p3b-m
+    answer: p3b-m
+    where: 'Problem 3(b), answer box: the largest mass in our run (1.174096 km)'
+    inputs: {M_x: 1.174096 km}
+    formula: M_x
+    expected: 1.174 km
+    shown: ['id="p3b-m"', 'M_\text{max} = 1.174\ \text{km}']
+    source: {cite: mit, at: 'Problem 3(b) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p3b-msun
+    answer: p3b-msun
+    where: 'Problem 3(b), answer box: the largest mass in solar masses'
+    inputs: {M_x: 1.174096 km}
+    formula: M_x/(G*M_sun/c**2)
+    expected: '0.795'
+    shown: ['id="p3b-msun"', '\,M_\odot = 0.795\,M_\odot']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-rho
+    answer: p3b-rho
+    where: 'Problem 3(b), answer box: ρ_c of the heaviest star from ρ0c = 3.99218e15 g/cm³ (in km units 2.96466e-3 km⁻²), × 1e-15'
+    inputs: {Kk: 7.29958, r0: 2.96466e-3}
+    formula: 3.99218*(1 + 1.5*Kk*r0**(2/3))
+    expected: '4.89'
+    shown: ['id="p3b-rho"', '\rho_c = 4.89\times 10^{15}\ \frac{\text{g}}{\text{cm}^3}']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-r0-km
+    where: 'Problem 3(b): the input above, 3.99218e15 g/cm³ in km⁻², × 1e3'
+    inputs: {}
+    formula: G*(3.99218e15*gram/cm**3)/c**2*km**2*1e3
+    expected: '2.96466'
+    tolerance: 1e-5
+    shown: ['puts it at $\rho_{0,c} = 3.99\times 10^{15}$ g/cm³']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-radius
+    kind: fact
+    where: 'Problem 3(b): the radius of the heaviest star in our run, 8.7258 km'
+    shown: ['R_\star = 8.73\ \text{km}']
+    source: {cite: mit, at: 'Problem 3(b) (our own numerical solution)'}
+    origin: page-own
+
+  - id: p3b-compact
+    where: 'Problem 3(b), check: 2M/R of the heaviest star'
+    inputs: {M_x: 1.174096, R_x: 8.7258}
+    formula: 2*M_x/R_x
+    expected: '0.269'
+    shown: ['The heaviest star has $2M_\star/R_\star = 0.269$']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  - id: p3b-shift-lo
+    where: 'Problem 3(b), check: a tenth of a power of ten below the maximum, × 1e-15'
+    inputs: {}
+    formula: 3.99218*10**(-0.1)
+    expected: '3.17'
+    shown: ['to $3.17\times 10^{15}$ or $5.03\times 10^{15}$ g/cm³']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  - id: p3b-shift-hi
+    where: 'Problem 3(b), check: a tenth of a power of ten above, × 1e-15'
+    inputs: {}
+    formula: 3.99218*10**0.1
+    expected: '5.03'
+    shown: ['to $3.17\times 10^{15}$ or $5.03\times 10^{15}$ g/cm³']
+    source: {cite: mit, at: 'Problem 3(b) (our own check)'}
+    origin: page-own
+
+  - id: p3b-shift-mass
+    where: 'Problem 3(b), check: the mass there in our runs (1.168805 and 1.168830 km) is lower than 1.174096 km by this % (the larger drop)'
+    inputs: {M_x: 1.174096, M_lo: 1.168805}
+    formula: (1 - M_lo/M_x)*100
+    expected: '0.5'
+    shown: ['lowers the mass by only 0.5%']
+    source: {cite: mit, at: 'Problem 3(b) (our own numerical solution)'}
+    origin: page-own

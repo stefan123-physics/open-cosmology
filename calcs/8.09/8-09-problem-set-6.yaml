@@ -1,0 +1,374 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the unexpanded Hamiltonian (1(a)), p_θ = 0 solved for θ̇ and the curvature of the radial potential (1(b)),
+# the Hamilton-Jacobi residual and the integral of −f²/2m (2(a)), integrating the velocity (2(b)), numerical
+# integrals of ∮ p dx and of the period ∮ dx/ẋ (3, 4(c)), a numerical second derivative of V (4(d)), the energy
+# from the sheet's map (w, J) → (x, p) (5(a)), ∮ p dx of one oscillator (5(b)) and derivatives of the generating
+# function (5(c)).
+# Outside this file, while writing (SciPy, .venv): a direct integration of Newton's equation with the Lorentz force
+# (solve_ivp, rtol 1e-11) for e = 1.3, B = 0.9, k = 2.0, m = 0.8, r(0) = 0.5, ṙ(0) = 0.3 and p_θ = 0 agrees with
+# the motion of Problem 1(b) to 1e-11 at t = 1, 3 and 5; SymPy confirms the Hamilton-Jacobi residual of 2(a) is zero.
+# Short names: al = α or α_θ, w1, w2, w3 = w₁, w₂, w₃, Ja, Jb, Jc = J_a, J_b, J_c, x0 = x₀, v0 = v₀,
+# q, z, u the variables of a numerical derivative, integral or root, r0 a sample radius.
+
+page: content/year-4/8.09/8-09-problem-set-6.mdx
+calcs:
+  # ---- Problem 1
+  - id: p1a-wr
+    kind: identity
+    answer: p1a-wr
+    where: 'Problem 1(a), answer box: (∂W_r/∂r)² against 2m(E − ½kr²) − (α_θ/r − eBr/2)², the Hamiltonian before expanding the square'
+    formula: '2*m*E + e*B*al - al**2/r**2 - (m*k + e**2*B**2/4)*r**2'
+    equals: '2*m*(E - k*r**2/2) - (al/r - e*B*r/2)**2'
+    samples:
+      m: [1, 0.5, 2, 1.3]
+      E: [5, 10, 7, 6]
+      k: [1, 0.5, 2, 1.5]
+      e: [1, 0.5, 1.5, 1.2]
+      B: [1, 1.5, 0.5, 0.8]
+      r: [1, 0.5, 1.5, 0.8]
+      al: [1, 2, 0.5, 1.4]
+    tolerance: 1e-12
+    shown: ['id="p1a-wr"', 'W = \alpha_\theta\theta + \int\sqrt{2mE + eB\alpha_\theta - \frac{\alpha_\theta^2}{r^2} - \left(mk + \frac{e^2B^2}{4}\right)r^2}\;dr']
+    source: {cite: mit, at: 'Problem 1(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-rate
+    kind: identity
+    answer: p1b-rate
+    where: 'Problem 1(b), answer box: θ̇ = −eB/(2m) against the root of p_θ = mr²θ̇ + eBr²/2 = 0'
+    formula: '-e*B/(2*m)'
+    equals: 'solve(''m*r0**2*q + e*B*r0**2/2'', ''q'', -100, 100)'
+    samples:
+      e: [1, 0.5, 2, 1.3]
+      B: [1, 2, 0.5, 0.7]
+      m: [1, 0.5, 2, 1.6]
+      r0: [1, 0.3, 2, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p1b-rate"', '\theta = \theta_0 - \frac{eB}{2m}\,t']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-freq
+    kind: identity
+    answer: p1b-freq
+    where: 'Problem 1(b), answer box: Ω against √(U′(r)/(mr)) for the radial potential U = (α_θ/r − eBr/2)²/2m + ½kr² at α_θ = 0, by a numerical derivative'
+    formula: 'sqrt(k/m + e**2*B**2/(4*m**2))'
+    equals: 'sqrt(deriv(''(0/q - e*B*q/2)**2/(2*m) + k*q**2/2'', ''q'', r0)/(m*r0))'
+    samples:
+      k: [1, 0.5, 2, 1.4]
+      m: [1, 0.5, 2, 0.9]
+      e: [1, 2, 0.5, 1.1]
+      B: [1, 0.5, 2, 1.7]
+      r0: [1, 0.5, 1.5, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p1b-freq"', '\Omega = \sqrt{\frac{k}{m} + \frac{e^2B^2}{4m^2}}']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-ode
+    kind: fact
+    where: 'Problem 1(b), check: our numerical solution of Newton''s equation with the Lorentz force agrees with the formulas (computed with SciPy while writing; see the header of this file)'
+    shown: ['A direct numerical solution of Newton''s equation with the Lorentz force agrees with these formulas']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p1b-plot
+    kind: fact
+    where: 'Problem 1(b), graph: our own ratio of rates eB/(2m) = 0.15 Ω; the curve runs over Ωt from 0 to π/0.15 = 20.944, half a turn of the line'
+    shown: ['eB/(2m) = 0.15 Ω and eB > 0', 'range: [0, 20.944]']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own graph)'}
+    origin: page-own
+
+  - id: p1b-plot-range
+    where: 'Problem 1(b), graph: the end of the parameter range, π/0.15'
+    formula: 'pi/0.15'
+    expected: '20.944'
+    tolerance: 1e-4
+    shown: ['range: [0, 20.944]']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own graph)'}
+    origin: page-own
+
+  # ---- Problem 2
+  - id: p2a-s
+    kind: identity
+    answer: p2a-s
+    where: 'Problem 2(a), answer box: S against x f(t) − ∫₀ᵗ f²/(2m) dt′ with f = α + mAt′²/2, integrated numerically'
+    formula: 'x*(al + m*A*t**2/2) - (al**2*t + al*m*A*t**3/3 + m**2*A**2*t**5/20)/(2*m)'
+    equals: 'x*(al + m*A*t**2/2) - integrate(''(al + m*A*q**2/2)**2/(2*m)'', ''q'', 0, t)'
+    samples:
+      x: [1, 0.5, 2, 1.3]
+      al: [1, 2, 0.5, 1.1]
+      t: [1, 0.5, 2, 1.7]
+      m: [1, 0.5, 2, 0.8]
+      A: [1, 2, 0.5, 1.4]
+    tolerance: 1e-9
+    shown: ['id="p2a-s"', 'S(x, \alpha, t) = x\left(\alpha + \frac{1}{2}mAt^2\right) - \frac{1}{2m}\left(\alpha^2 t + \frac{1}{3}\alpha mAt^3 + \frac{1}{20}m^2A^2t^5\right)']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-hj
+    kind: identity
+    where: 'Problem 2(a), check: the Hamilton-Jacobi residual (∂S/∂x)²/2m − mAtx + ∂S/∂t vanishes, by numerical derivatives of S'
+    formula: '0'
+    equals: 'deriv(''q*(al + m*A*t**2/2) - (al**2*t + al*m*A*t**3/3 + m**2*A**2*t**5/20)/(2*m)'', ''q'', x)**2/(2*m) - m*A*t*x + deriv(''x*(al + m*A*q**2/2) - (al**2*q + al*m*A*q**3/3 + m**2*A**2*q**5/20)/(2*m)'', ''q'', t)'
+    samples:
+      x: [1, 0.5, 2, 1.3]
+      al: [1, 2, 0.5, 1.1]
+      t: [1, 0.5, 2, 1.7]
+      m: [1, 0.5, 2, 0.8]
+      A: [1, 2, 0.5, 1.4]
+    tolerance: 1e-5
+    shown: ['together they make the equation vanish']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-x
+    kind: identity
+    answer: p2b-x
+    where: 'Problem 2(b), answer box: x(t) against the integral of ẋ = p/m = v₀ + At²/2 from Hamilton''s equations'
+    formula: 'v0*t + A*t**3/6'
+    equals: 'integrate(''v0 + A*q**2/2'', ''q'', 0, t)'
+    samples:
+      v0: [1, 0.5, 2, 1.2]
+      A: [1, 2, 0.5, 1.6]
+      t: [1, 0.5, 2, 1.4]
+    tolerance: 1e-10
+    shown: ['id="p2b-x"', 'x(t) = v_0 t + \frac{1}{6}At^3']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-beta
+    kind: identity
+    where: 'Problem 2(b), check: β = ∂S/∂α = x − αt/m − At³/6, by a numerical derivative of S'
+    formula: 'x - al*t/m - A*t**3/6'
+    equals: 'deriv(''x*(q + m*A*t**2/2) - (q**2*t + q*m*A*t**3/3 + m**2*A**2*t**5/20)/(2*m)'', ''q'', al)'
+    samples:
+      x: [1, 0.5, 2, 1.3]
+      al: [1, 2, 0.5, 1.1]
+      t: [1, 0.5, 2, 1.7]
+      m: [1, 0.5, 2, 0.8]
+      A: [1, 2, 0.5, 1.4]
+    tolerance: 1e-6
+    shown: ['Here $\beta = x - \alpha t/m - At^3/6$']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+  - id: p3a-j
+    kind: identity
+    answer: p3a-j
+    where: 'Problem 3(a), answer box: J against 4∫₀^{E/F} √(2m(E − Fx)) dx, integrated numerically'
+    formula: '8*sqrt(2*m)*E**(3/2)/(3*F)'
+    equals: '4*integrate(''sqrt(abs(2*m*(E - F*q)))'', ''q'', 0, E/F)'
+    samples:
+      m: [1, 0.5, 2, 1.3]
+      E: [1, 0.5, 2, 1.6]
+      F: [1, 2, 0.5, 0.9]
+    tolerance: 1e-8
+    shown: ['id="p3a-j"', 'J = 4\int_0^{E/F}\sqrt{2m(E - Fx)}\,dx = \frac{8\sqrt{2m}}{3F}\,E^{3/2}']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3b-tau
+    kind: identity
+    answer: p3b-tau
+    where: 'Problem 3(b), answer box: τ against the time ∮ dx/ẋ = 4∫₀^{E/F} dx/√(2(E − Fx)/m), integrated numerically'
+    formula: '4*sqrt(2*m*E)/F'
+    equals: '4*integrate(''1/sqrt(abs(2*(E - F*q)/m))'', ''q'', 0, E/F)'
+    samples:
+      m: [1, 0.5, 2, 1.3]
+      E: [1, 0.5, 2, 1.6]
+      F: [1, 2, 0.5, 0.9]
+    tolerance: 1e-7
+    shown: ['id="p3b-tau"', '\tau = \frac{1}{\nu} = \frac{dJ}{dE} = \frac{4\sqrt{2m}}{F}\,E^{1/2} = \frac{4\sqrt{2mE}}{F}']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+  - id: p4a-dw
+    kind: identity
+    answer: p4a-dw
+    where: 'Problem 4(a), answer box: ∂W/∂x against the positive root p of p²/2m + a/sin²(x/x₀) = E'
+    formula: 'sqrt(2*m*(E - a/sin(x/x0)**2))'
+    equals: 'solve(''q**2/(2*m) + a/sin(x/x0)**2 - E'', ''q'', 0, 100)'
+    samples:
+      m: [1, 0.5, 2, 1.4]
+      E: [4, 3, 5, 3.5]
+      a: [0.7, 0.5, 1, 0.9]
+      x: [1.7, 1.6, 1.8, 1.65]
+      x0: [1.1, 1, 1.2, 1.05]
+    tolerance: 1e-9
+    shown: ['id="p4a-dw"', 'W(x, E) = \pm\int\sqrt{2m\left(E - \frac{a}{\sin^2(x/x_0)}\right)}\;dx']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4c-j
+    kind: identity
+    answer: p4c-j
+    where: 'Problem 4(c), answer box: J against 2∫ √(2m(E − a/sin²(x/x₀))) dx between the turning points x₀ asin√(a/E) and x₀(π − asin√(a/E)), integrated numerically'
+    formula: '2*pi*x0*sqrt(2*m)*(sqrt(E) - sqrt(a))'
+    equals: '2*integrate(''sqrt(abs(2*m*(E - a/sin(q/x0)**2)))'', ''q'', x0*asin(sqrt(a/E)), x0*(pi - asin(sqrt(a/E))))'
+    samples:
+      m: [1, 0.5, 2, 0.7]
+      E: [3, 2, 4, 2.5]
+      a: [1, 0.5, 1.5, 0.8]
+      x0: [1, 0.5, 2, 1.3]
+    tolerance: 1e-7
+    shown: ['id="p4c-j"', 'J = 2\pi x_0\sqrt{2m}\left(\sqrt E - \sqrt a\right)']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4c-nu
+    kind: identity
+    answer: p4c-nu
+    where: 'Problem 4(c), answer box: ν against 1/τ, with the period τ = 2∫ dx/ẋ between the turning points integrated numerically (no use of J)'
+    formula: 'sqrt(E/(2*m))/(pi*x0)'
+    equals: '1/(2*integrate(''1/sqrt(abs(2*(E - a/sin(q/x0)**2)/m))'', ''q'', x0*asin(sqrt(a/E)), x0*(pi - asin(sqrt(a/E)))))'
+    samples:
+      m: [1, 0.5, 2, 0.7]
+      E: [3, 2, 4, 2.5]
+      a: [1, 0.5, 1.5, 0.8]
+      x0: [1, 0.5, 2, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p4c-nu"', '\nu = \frac{\partial E}{\partial J} = \frac{2\sqrt E}{2\pi x_0\sqrt{2m}} = \frac{1}{\pi x_0}\sqrt{\frac{E}{2m}}']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4d-nu0
+    kind: identity
+    answer: p4d-nu0
+    where: 'Problem 4(d), answer box: ν₀ against √(V″/m)/(2π) at the bottom x = πx₀/2, with V″ a numerical second derivative of a/sin²(x/x₀)'
+    formula: 'sqrt(a/(2*m))/(pi*x0)'
+    equals: 'sqrt(deriv("deriv(''a/sin(z/x0)**2'', ''z'', q)", ''q'', pi*x0/2)/m)/(2*pi)'
+    samples:
+      m: [1, 0.5, 2, 0.7]
+      a: [1, 0.5, 1.5, 0.8]
+      x0: [1, 0.5, 2, 1.3]
+    tolerance: 1e-4
+    shown: ['id="p4d-nu0"', '\nu_0 = \frac{1}{2\pi}\sqrt{\frac{2a}{m x_0^2}} = \frac{1}{\pi x_0}\sqrt{\frac{a}{2m}}']
+    source: {cite: mit, at: 'Problem 4(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4d-limit
+    kind: identity
+    where: 'Problem 4(d), cross check: the frequency of (c), √(E/2m)/(πx₀), at E = a equals ν₀'
+    formula: 'sqrt(a/(2*m))/(pi*x0)'
+    equals: 'sqrt(E/(2*m))/(pi*x0)'
+    samples:
+      m: [1, 0.5, 2]
+      a: [1, 0.5, 1.5]
+      E: [1, 0.5, 1.5]
+      x0: [1, 0.5, 2]
+    tolerance: 1e-12
+    shown: ['Setting $E = a$ in the result of (c) gives $\nu = \sqrt{a/(2m)}/(\pi x_0)$, the same.']
+    source: {cite: mit, at: 'Problem 4(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+  - id: p5a-h
+    kind: identity
+    answer: p5a-h
+    where: 'Problem 5(a), answer box: H(J) against the energy Σ (p_i²/2m + k_i x_i²/2) of the point given by the sheet''s map (w, J) → (x, p) of 5(b), at arbitrary angles'
+    formula: '(J1*sqrt(k1/m) + J2*sqrt(k2/m) + J3*sqrt(k3/m))/(2*pi)'
+    equals: '(J1*sqrt(k1*m)/pi*cos(2*pi*w1)**2/(2*m) + k1/2*J1/(pi*sqrt(k1*m))*sin(2*pi*w1)**2) + (J2*sqrt(k2*m)/pi*cos(2*pi*w2)**2/(2*m) + k2/2*J2/(pi*sqrt(k2*m))*sin(2*pi*w2)**2) + (J3*sqrt(k3*m)/pi*cos(2*pi*w3)**2/(2*m) + k3/2*J3/(pi*sqrt(k3*m))*sin(2*pi*w3)**2)'
+    samples:
+      J1: [1, 0.5, 2, 1.2]
+      J2: [1, 2, 0.5, 0.7]
+      J3: [1, 1.5, 1.8, 0.9]
+      k1: [1, 0.5, 2, 1.3]
+      k2: [2, 1, 0.5, 1.7]
+      k3: [0.5, 2, 1, 1.1]
+      m: [1, 0.5, 2, 1.4]
+      w1: [0.1, 0.37, 0.8, 0.55]
+      w2: [0.2, 0.61, 0.05, 0.33]
+      w3: [0.3, 0.12, 0.9, 0.71]
+    tolerance: 1e-12
+    shown: ['id="p5a-h"', 'H = \frac{1}{2\pi}\left(J_1\sqrt{\frac{k_1}{m}} + J_2\sqrt{\frac{k_2}{m}} + J_3\sqrt{\frac{k_3}{m}}\right)']
+    source: {cite: mit, at: 'Problem 5(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5b-j
+    kind: identity
+    answer: p5b-j
+    where: 'Problem 5(b), answer box: J(x, p) against ∮ p dx = 4∫₀^{x_max} √(2m(E − kx²/2)) dx with E = p²/2m + kx²/2, integrated numerically'
+    formula: 'pi*(sqrt(k*m)*x**2 + p**2/sqrt(k*m))'
+    equals: '4*integrate(''sqrt(abs(2*m*(p**2/(2*m) + k*x**2/2 - k*q**2/2)))'', ''q'', 0, sqrt(2*(p**2/(2*m) + k*x**2/2)/k))'
+    samples:
+      x: [1, 0.5, 2, 1.3]
+      p: [1, 2, 0.5, 1.1]
+      k: [1, 0.5, 2, 1.6]
+      m: [1, 2, 0.5, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p5b-j"', 'J = \pi\left(s\,x^2 + \frac{p^2}{s}\right)']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5b-bracket
+    kind: identity
+    where: 'Problem 5(b), check: {w, J} = 1, with w = arctan(√(km) x/p)/(2π) and J = π(√(km)x² + p²/√(km)), by numerical derivatives'
+    formula: '1'
+    equals: 'deriv(''atan(sqrt(k*m)*q/p)/(2*pi)'', ''q'', x)*deriv(''pi*(sqrt(k*m)*x**2 + q**2/sqrt(k*m))'', ''q'', p) - deriv(''pi*(sqrt(k*m)*q**2 + p**2/sqrt(k*m))'', ''q'', x)*deriv(''atan(sqrt(k*m)*x/q)/(2*pi)'', ''q'', p)'
+    samples:
+      x: [1, 0.5, 2, 1.3]
+      p: [1, 2, 0.5, 1.1]
+      k: [1, 0.5, 2, 1.6]
+      m: [1, 2, 0.5, 0.8]
+    tolerance: 1e-6
+    shown: ['Problem 5(b): the bracket of w and J']
+    source: {cite: mit, at: 'Problem 5(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5c-wa
+    kind: identity
+    answer: p5c-wa
+    where: 'Problem 5(c), answer box: w_a against ∂F₂/∂J_a, F₂ = w₁J_c + w₂(J_b − J_c) + w₃(J_a − J_b), by a numerical derivative'
+    formula: 'w3'
+    equals: 'deriv(''w1*Jc + w2*(Jb - Jc) + w3*(q - Jb)'', ''q'', Ja)'
+    samples: &wJ
+      w1: [0.1, 0.2, 0.3, 0.15]
+      w2: [0.4, 0.5, 0.6, 0.45]
+      w3: [0.7, 0.8, 0.9, 0.75]
+      Ja: [3, 4, 5, 3.5]
+      Jb: [2, 2.5, 3, 2.2]
+      Jc: [1, 1.5, 0.5, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p5c-wa"', 'w_a = w_3, \qquad w_b = w_2 - w_3, \qquad w_c = w_1 - w_2']
+    source: {cite: mit, at: 'Problem 5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5c-wb
+    kind: identity
+    answer: p5c-wb
+    where: 'Problem 5(c), answer box: w_b against ∂F₂/∂J_b'
+    formula: 'w2 - w3'
+    equals: 'deriv(''w1*Jc + w2*(q - Jc) + w3*(Ja - q)'', ''q'', Jb)'
+    samples: *wJ
+    tolerance: 1e-8
+    shown: ['id="p5c-wb"', 'w_b = w_2 - w_3']
+    source: {cite: mit, at: 'Problem 5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5c-wc
+    kind: identity
+    answer: p5c-wc
+    where: 'Problem 5(c), answer box: w_c against ∂F₂/∂J_c'
+    formula: 'w1 - w2'
+    equals: 'deriv(''w1*q + w2*(Jb - q) + w3*(Ja - Jb)'', ''q'', Jc)'
+    samples: *wJ
+    tolerance: 1e-8
+    shown: ['id="p5c-wc"', 'w_c = w_1 - w_2']
+    source: {cite: mit, at: 'Problem 5(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5c-sum
+    kind: identity
+    where: 'Problem 5(c), check: w_aJ_a + w_bJ_b + w_cJ_c = w₁J₁ + w₂J₂ + w₃J₃ with J₁ = J_c, J₂ = J_b − J_c, J₃ = J_a − J_b'
+    formula: 'w3*Ja + (w2 - w3)*Jb + (w1 - w2)*Jc'
+    equals: 'w1*Jc + w2*(Jb - Jc) + w3*(Ja - Jb)'
+    samples: *wJ
+    tolerance: 1e-12
+    shown: ['= w_1J_1 + w_2J_2 + w_3J_3$']
+    source: {cite: mit, at: 'Problem 5(c), p. 3 (our own solution)'}
+    origin: page-own
