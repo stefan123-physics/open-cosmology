@@ -1,0 +1,413 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 takes the average spin as k_B T times the derivative of ln Z with respect to h, the small-field slope by
+# numerical differentiation of the full average, T_c by a root search for the temperature where the slope of the
+# self-consistent right-hand side (differentiated numerically) is 1, and the magnetization at T_c/2 by a root search;
+# Problem 2 solves the critical-point conditions and the line by root searches and finds the density jump from the
+# minimum of G found by a root search of dG/dδn; Problem 3 finds T_1 from the largest value of b m² − c m⁴ (root search
+# of its derivative), T_c from a root search of f(m₊) = f(0) along the ordered branch, m_c from the ordered minimum at
+# that temperature, and the latent heat as T_c times the temperature derivative of f(m₊) − f(0) (numerical derivative).
+# Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-3.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    kind: fact
+    where: 'Introduction and How to answer: MIT''s 20 points for Problem 3, the only points on the sheet'
+    value: '20'
+    shown: ['MIT''s sheet gives points only for Problem 3, 20 points']
+    source: {cite: mit, at: 'Problem 3, p. 1'}
+    origin: mit
+
+  - id: points-total
+    where: 'How to answer: 20 + 20 (ours) + 20 (MIT''s)'
+    formula: |-
+      20 + 20 + 20
+    expected: '60'
+    shown: ['60 points in all']
+    source: {cite: mit, at: 'Problem 3, p. 1 (Problems 1 and 2: our points)'}
+    origin: page-own
+
+  # ---- Problem 1: spin-1 chain
+
+  - id: p1-avg
+    kind: identity
+    answer: p1-avg
+    where: 'Problem 1(a), answer box: ⟨S⟩ of a spin 1, against k_B T d(ln Z)/dh with Z = e^(βh) + 1 + e^(−βh) differentiated numerically'
+    formula: |-
+      2*sinh(h/(kB*T))/(1 + 2*cosh(h/(kB*T)))
+    equals: |-
+      kB*T*deriv('log(exp(x/(kB*T)) + 1 + exp(-x/(kB*T)))', 'x', h)
+    samples:
+      h: [0.3, 1.0, 2.0, 0.7, 1.5]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p1-avg"', '<Formula label="Average of a spin 1 in a field"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-sinh1
+    where: 'Problem 1(a), check: sinh 1'
+    formula: |-
+      sinh(1)
+    expected: '1.1752'
+    shown: ['2 \times 1.1752/']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cosh1
+    where: 'Problem 1(a), check: cosh 1'
+    formula: |-
+      cosh(1)
+    expected: '1.5431'
+    shown: ['(1 + 2 \times 1.5431)']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-avg-at-1
+    where: 'Problem 1(a), check: ⟨S⟩ at βh = 1'
+    formula: |-
+      (exp(1) - exp(-1))/(exp(1) + 1 + exp(-1))
+    expected: '0.575'
+    shown: ['= 0.575$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-tanh1
+    where: 'Problem 1(a), check: the two-state average tanh 1'
+    formula: |-
+      tanh(1)
+    expected: '0.762'
+    shown: ['$\tanh 1 = 0.762$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-curie
+    kind: identity
+    answer: p1-curie
+    where: 'Problem 1(b), answer box: ⟨S⟩/h at small field, against the derivative of the full average at h = 0 (numerical)'
+    formula: |-
+      2/(3*kB*T)
+    equals: |-
+      deriv('2*sinh(x/(kB*T))/(1 + 2*cosh(x/(kB*T)))', 'x', 0)
+    samples:
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p1-curie"', 'so $\langle S\rangle/h \approx 2/(3k_BT)$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-tc
+    kind: identity
+    answer: p1-tc
+    where: 'Problem 1(c), answer box: mean-field T_c of the spin-1 chain, against a root search for the temperature at which the slope of 2 sinh(2βJm)/(1 + 2 cosh(2βJm)) at m = 0 (numerical derivative) is 1'
+    formula: |-
+      4*J/(3*kB)
+    equals: |-
+      solve("deriv('2*sinh(2*J*y/(kB*x))/(1 + 2*cosh(2*J*y/(kB*x)))', 'y', 0) - 1", 'x', 0.2*J/kB, 10*J/kB)
+    samples:
+      J: [0.5, 1.0, 2.0, 1.3, 0.8]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p1-tc"', '<Formula label="Mean-field critical temperature of the spin-1 chain"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cubic
+    kind: identity
+    where: 'Problem 1(c), solution: 2 sinh x/(1 + 2 cosh x) ≈ (2/3)(x − x³/6) to third order (checked at small x, where the next term is of order x⁵)'
+    formula: |-
+      2*sinh(x)/(1 + 2*cosh(x))
+    equals: |-
+      (2/3)*(x - x**3/6)
+    samples:
+      x: [0.002, 0.004, -0.003, 0.001]
+    tolerance: 1e-9
+    shown: ['gives $\frac23(x - x^3/6)$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(d), answer box: positive root of S = 2 sinh(3S)/(1 + 2 cosh(3S)), i.e. T = T_c/2'
+    formula: |-
+      solve('y - 2*sinh(3*y)/(1 + 2*cosh(3*y))', 'y', 0.5, 1)
+    expected: '0.937'
+    shown: ['id="p1-num"', 'the iteration settles at $\langle S\rangle = 0.937$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-num-arg
+    where: 'Problem 1(d), solution: 2βJ = (3/2) T_c/T at T = T_c/2, with k_B T_c = 4J/3'
+    formula: |-
+      1.5*2
+    expected: '3'
+    shown: ['which is 3 at $T = T_c/2$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-num-2sinh3
+    where: 'Problem 1(d), solution: 2 sinh 3'
+    formula: |-
+      2*sinh(3)
+    expected: '20.036'
+    shown: ['= 20.036/21.135']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-num-denom
+    where: 'Problem 1(d), solution: 1 + 2 cosh 3'
+    formula: |-
+      1 + 2*cosh(3)
+    expected: '21.135'
+    shown: ['20.036/21.135']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-num-it1
+    where: 'Problem 1(d), solution: first iteration from 1'
+    formula: |-
+      2*sinh(3)/(1 + 2*cosh(3))
+    expected: '0.948'
+    shown: ['21.135 = 0.948$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-num-it2
+    where: 'Problem 1(d), solution: second iteration'
+    formula: |-
+      2*sinh(3*0.9479745786)/(1 + 2*cosh(3*0.9479745786))
+    expected: '0.939'
+    shown: ['then $0.939$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our addition)'}
+    origin: page-own
+
+  - id: p1-num-ising
+    where: 'Problem 1(d), check: the two-state chain at half its T_c, positive root of S = tanh 2S'
+    formula: |-
+      solve('y - tanh(2*y)', 'y', 0.5, 1)
+    expected: '0.958'
+    shown: ['which gives 0.958']
+    source: {cite: reading1, at: 'p. 23 (self-consistent equation; our numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: water
+
+  - id: p2-tc
+    kind: identity
+    answer: p2-tc
+    where: 'Problem 2(a), answer box: T_c, against a root search of −a1 + a2 T + a3 P with P = (h1/h2) T'
+    formula: |-
+      a1*h2/(a2*h2 + a3*h1)
+    equals: |-
+      solve('-a1 + a2*x + a3*h1*x/h2', 'x', 0, 50)
+    samples:
+      a1: [0.5, 1.0, 2.0, 1.4, 0.8]
+      a2: [1.0, 0.5, 2.0, 0.7, 1.6]
+      a3: [2.0, 1.0, 0.5, 1.2, 0.9]
+      h1: [0.5, 2.0, 1.0, 1.5, 0.6]
+      h2: [1.5, 0.5, 2.0, 1.0, 1.8]
+    tolerance: 1e-6
+    shown: ['id="p2-tc"', '<Formula label="Critical temperature and pressure"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-pc
+    kind: identity
+    answer: p2-pc
+    where: 'Problem 2(a), answer box: P_c, against a root search of −a1 + a2 T + a3 P with T = (h2/h1) P'
+    formula: |-
+      a1*h1/(a2*h2 + a3*h1)
+    equals: |-
+      solve('-a1 + a2*h2*x/h1 + a3*x', 'x', 0, 50)
+    samples:
+      a1: [0.5, 1.0, 2.0, 1.4, 0.8]
+      a2: [1.0, 0.5, 2.0, 0.7, 1.6]
+      a3: [2.0, 1.0, 0.5, 1.2, 0.9]
+      h1: [0.5, 2.0, 1.0, 1.5, 0.6]
+      h2: [1.5, 0.5, 2.0, 1.0, 1.8]
+    tolerance: 1e-6
+    shown: ['id="p2-pc"', '<Formula label="Critical temperature and pressure"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-line
+    kind: identity
+    answer: p2-line
+    where: 'Problem 2(b), answer box: the first-order line, against a root search of h1 T − h2 P = 0 for P'
+    formula: |-
+      h1*T/h2
+    equals: |-
+      solve('h1*T - h2*x', 'x', 0, 100)
+    samples:
+      h1: [0.5, 2.0, 1.0, 1.5, 0.6]
+      h2: [1.5, 0.5, 2.0, 1.0, 1.8]
+      T: [0.5, 2.0, 1.0, 1.7, 0.9]
+    tolerance: 1e-6
+    shown: ['id="p2-line"', '<Formula label="The first-order line"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-dn
+    kind: identity
+    answer: p2-dn
+    where: 'Problem 2(c), answer box: Δn = 2 δn₀, against twice the positive root of (dG/dδn)/δn = 2 r0 + 4 b δn² with r0 = −a1 + a2 T + a3 P, P = (h1/h2) T and a1 = (a2 + a3 h1/h2) T_c'
+    formula: |-
+      sqrt(2*(a2 + a3*h1/h2)*(Tc - T)/b)
+    equals: |-
+      2*solve('2*(-(a2 + a3*h1/h2)*Tc + a2*T + a3*h1*T/h2) + 4*b*y**2', 'y', 1e-9, 20)
+    samples:
+      a2: [1.0, 0.5, 2.0, 0.7, 1.6]
+      a3: [2.0, 1.0, 0.5, 1.2, 0.9]
+      h1: [0.5, 2.0, 1.0, 1.5, 0.6]
+      h2: [1.5, 0.5, 2.0, 1.0, 1.8]
+      b: [0.5, 2.0, 1.0, 1.3, 0.7]
+      Tc: [2.0, 3.0, 2.5, 2.2, 2.8]
+      T: [0.5, 1.5, 1.0, 1.2, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p2-dn"', '<Formula label="Density jump along the line"']
+    source: {cite: mit, at: 'Problem 2(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-beta
+    answer: p2-beta
+    where: 'Problem 2(d), answer box: the exponent of Δn ∝ (T_c − T)^β, from the ratio of Δn at T_c − T = 0.02 and 0.01 (any positive constants)'
+    formula: |-
+      log(sqrt(2*1.7*0.02/0.9)/sqrt(2*1.7*0.01/0.9))/log(2)
+    expected: '0.5'
+    shown: ['id="p2-beta"', 'so $\beta = 0.5$']
+    source: {cite: mit, at: 'Problem 2(c), p. 1 (our addition)'}
+    origin: page-own
+
+  # ---- Problem 3: first-order transition (our own problem)
+
+  - id: p3-t1
+    kind: identity
+    answer: p3-t1
+    where: 'Problem 3(a), answer box: T_1 = T0 + (largest value of b u − c u², u = m²)/a0, the largest u found by a root search of b − 2 c u'
+    formula: |-
+      T0 + b**2/(4*a0*c)
+    equals: |-
+      T0 + (b*solve('b - 2*c*u', 'u', 0, 100) - c*solve('b - 2*c*u', 'u', 0, 100)**2)/a0
+    samples:
+      T0: [1.0, 3.0, 2.0, 1.5, 2.5]
+      a0: [0.5, 2.0, 1.0, 1.3, 0.7]
+      b: [2.0, 0.5, 1.0, 1.5, 0.8]
+      c: [0.5, 1.0, 2.0, 0.7, 1.6]
+    tolerance: 1e-6
+    shown: ['id="p3-t1"', '<Formula label="Upper limit of the ordered state"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-tc
+    kind: identity
+    answer: p3-tc
+    where: 'Problem 3(b), answer box: T_c = T0 + α/a0, with α found by a root search of f(m₊) − f(0) = m₊²(½α − ¼b m₊² + ⅙c m₊⁴) = 0 along the ordered branch m₊² = (b + √(b² − 4αc))/2c'
+    formula: |-
+      T0 + 3*b**2/(16*a0*c)
+    equals: |-
+      T0 + solve('0.5*x - 0.25*b*((b + sqrt(b**2 - 4*x*c))/(2*c)) + (c/6)*((b + sqrt(b**2 - 4*x*c))/(2*c))**2', 'x', 0, 0.249*b**2/c)/a0
+    samples:
+      T0: [1.0, 3.0, 2.0, 1.5, 2.5]
+      a0: [0.5, 2.0, 1.0, 1.3, 0.7]
+      b: [2.0, 0.5, 1.0, 1.5, 0.8]
+      c: [0.5, 1.0, 2.0, 0.7, 1.6]
+    tolerance: 1e-6
+    shown: ['id="p3-tc"', '<Formula label="Transition temperature and jump of the order parameter"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-mc
+    kind: identity
+    answer: p3-mc
+    where: 'Problem 3(b), answer box: m_c, the ordered minimum at the α of the previous entry, found by a root search of α − b u + c u² on the outer branch u > b/2c'
+    formula: |-
+      sqrt(3*b/(4*c))
+    equals: |-
+      sqrt(solve("solve('0.5*x - 0.25*b*((b + sqrt(b**2 - 4*x*c))/(2*c)) + (c/6)*((b + sqrt(b**2 - 4*x*c))/(2*c))**2', 'x', 0, 0.249*b**2/c) - b*u + c*u**2", 'u', b/(2*c), 2*b/c))
+    samples:
+      b: [2.0, 0.5, 1.0, 1.5, 0.8]
+      c: [0.5, 1.0, 2.0, 0.7, 1.6]
+    tolerance: 1e-6
+    shown: ['id="p3-mc"', '<Formula label="Transition temperature and jump of the order parameter"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-l
+    kind: identity
+    answer: p3-l
+    where: 'Problem 3(c), answer box: L = T_c d[f(m₊) − f(0)]/dT at T_c (the entropy of the disordered phase minus that of the ordered one), the derivative taken numerically along the ordered branch, with x = T − T0 and T_c − T0 = 3b²/(16 a0 c)'
+    formula: |-
+      3*a0*b*Tc/(8*c)
+    equals: |-
+      Tc*deriv('0.5*a0*x*((b + sqrt(b**2 - 4*a0*x*c))/(2*c)) - 0.25*b*((b + sqrt(b**2 - 4*a0*x*c))/(2*c))**2 + (c/6)*((b + sqrt(b**2 - 4*a0*x*c))/(2*c))**3', 'x', 3*b**2/(16*a0*c))
+    samples:
+      a0: [0.5, 2.0, 1.0, 1.3, 0.7]
+      b: [2.0, 0.5, 1.0, 1.5, 0.8]
+      c: [0.5, 1.0, 2.0, 0.7, 1.6]
+      Tc: [1.0, 3.0, 2.0, 1.5, 2.5]
+    tolerance: 1e-5
+    shown: ['id="p3-l"', '<Formula label="Entropy jump and latent heat"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-num-tc
+    answer: p3-num-tc
+    where: 'Problem 3(d), answer box: T_c − T0 = (3/16) × 40.0 K'
+    formula: |-
+      3/16*40.0
+    expected: '7.5'
+    shown: ['id="p3-num-tc"', 'K $= 7.50$ K']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-num-t1
+    answer: p3-num-t1
+    where: 'Problem 3(d), answer box: T_1 − T0 = (1/4) × 40.0 K'
+    formula: |-
+      40.0/4
+    expected: '10.0'
+    shown: ['id="p3-num-t1"', 'K $= 10.0$ K']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-num-tc-abs
+    where: 'Problem 3(d), solution: T_c = 300 K + 7.5 K'
+    formula: |-
+      300 + 7.5
+    expected: '307.5'
+    shown: ['the transition is at $307.5$ K']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-num-t1-abs
+    where: 'Problem 3(d), solution: T_1 = 300 K + 10.0 K'
+    formula: |-
+      300 + 10.0
+    expected: '310.0'
+    shown: ['stay ordered up to $310.0$ K']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-window
+    where: 'Problem 3(d), solution: the hysteresis window T_1 − T0'
+    formula: |-
+      310.0 - 300
+    expected: '10'
+    shown: ['a window of hysteresis 10 K wide']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-plot-tc
+    where: 'Problem 3(b), figure: τ at T_c is 3/16 and at T_1 is 1/4; the minima at T_c lie at m = ±√0.75 in units of √(b/c)'
+    formula: |-
+      3/16
+    expected: '0.1875'
+    shown: ['At τ = 0.1875 (that is 3/16']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
