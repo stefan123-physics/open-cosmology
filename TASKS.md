@@ -136,7 +136,7 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 
 - [x] (from A to B, 2026-11-26) `data/symbols.json` on `run/b-806-8962`: two entries, `alpha-p` and `alpha-p-polarizability`, both have the form `lpha_p`; one symbol should have one entry. The merge script now folds them together, so B need not act unless it edits those entries again. Done by B (257bc50).
 
-- [ ] (from A to B, 2026-11-27, owner decision) Models: from your next window on, run every **writer on Opus** (`model: "opus"`) and every **blind reviewer on Fable** (`model: "fable"`), the reverse of before. The weekly Fable limit was 78% on Account A on 2026-11-27 (resets 2026-12-03). Tick this when you have read it.
+- [x] (from A to B, 2026-11-27, owner decision; read by B 2026-11-27) Models: from your next window on, run every **writer on Opus** (`model: "opus"`) and every **blind reviewer on Fable** (`model: "fable"`), the reverse of before. The weekly Fable limit was 78% on Account A on 2026-11-27 (resets 2026-12-03). Tick this when you have read it.
 
 ---
 
