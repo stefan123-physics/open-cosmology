@@ -1,0 +1,775 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-11.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, and all five problems are our own, so every answer is checked here
+# by a route independent of the page: Problem 1 takes the flux of effusion and the energy of the escaping atoms as
+# numerical integrals over the Maxwell distribution of v_x; Problem 2 takes γ from the logarithmic slope of P(n) along a
+# curve of constant entropy, with T(n) solved numerically; Problem 3 takes ⟨v_x²⟩ as a numerical integral over the
+# Maxwell distribution; Problem 5 takes the escape time from the diffusion law ⟨r²⟩ = 6Dt solved numerically.
+# Constants: c, k_B, M_sun from calcs/constants.yaml; atomic mass constant, proton mass and Thomson cross-section
+# (CODATA 2018) as inputs; atomic masses of U-235, U-238 and F-19 (AME 2020) as inputs.
+# Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-11.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 20 + 15 + 20 + 20 + 15'
+    formula: |-
+      20 + 15 + 20 + 20 + 15
+    expected: '90'
+    shown: ['and 15 each for Problems 2 and 5, 90 points in all']
+    source: {cite: mit, at: 'Problems 1 to 5, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1: a gas effusing from a vessel
+
+  - id: p1-te
+    kind: identity
+    answer: p1-te
+    where: 'Problem 1(a), answer box: t_e = V/(A I/n), against the flux per unit density as a numerical integral of v_x over the Maxwell distribution for v_x > 0'
+    formula: |-
+      V/A*sqrt(2*pi*m/(kB*T))
+    equals: |-
+      V/(A*integrate('u*sqrt(m/(2*pi*kB*T))*exp(-m*u**2/(2*kB*T))', 'u', 0, 40*sqrt(kB*T/m)))
+    samples:
+      V: [0.5, 2.0, 1.0, 1.7]
+      A: [0.5, 2.0, 1.3, 0.8]
+      m: [0.5, 2.0, 1.0, 1.4]
+      kB: [0.5, 2.0, 1.0, 0.9]
+      T: [1.0, 3.0, 2.0, 1.5]
+    tolerance: 1e-7
+    shown: ['id="p1-te"', '$t_e = \dfrac{V}{A}\sqrt{\dfrac{2\pi m}{k_BT}}$']
+    source: {cite: reading1, at: 'p. 94, flux of effusion (our own problem)'}
+    origin: page-own
+
+  - id: p1-area
+    where: 'Problem 1(b): area of a circular hole 50 μm across'
+    inputs: {r: 25e-6 m}
+    formula: |-
+      pi*r**2
+    expected: 1.963e-9 m**2
+    shown: ['$A = \pi(25 \times 10^{-6}\ \text{m})^2 = 1.963 \times 10^{-9}$ m²']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-va
+    where: 'Problem 1(b): V/A for 2.0 litres'
+    inputs: {V: 2.0e-3 m**3, r: 25e-6 m}
+    formula: |-
+      V/(pi*r**2)
+    expected: 1.019e6 m
+    shown: ['so $V/A = 2.0 \times 10^{-3}/1.963 \times 10^{-9} = 1.019 \times 10^{6}$ m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-mne
+    where: 'Problem 1(b): mass of a neon atom, 20.180 u'
+    inputs: {mu: 1.66053906660e-27 kg}
+    formula: |-
+      20.180*mu
+    expected: 3.351e-26 kg
+    shown: ['$m = 20.180 \times 1.66054 \times 10^{-27} = 3.351 \times 10^{-26}$ kg']
+    source: {cite: codata, at: 'atomic mass constant (our own numbers)'}
+    origin: page-own
+
+  - id: p1-kt
+    where: 'Problems 1, 2, 4: k_B T at 300 K'
+    inputs: {T: 300 K}
+    formula: |-
+      k_B*T
+    expected: 4.142e-21 J
+    shown: ['$k_BT = 4.142 \times 10^{-21}$ J']
+    source: {cite: codata, at: 'Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p1-root
+    where: 'Problem 1(b): sqrt(2π m/k_B T) for neon at 300 K'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg}
+    formula: |-
+      sqrt(2*pi*20.180*mu/(k_B*T))
+    expected: 7.130e-3 s/m
+    shown: ['$\sqrt{2\pi m/k_BT} = 7.130 \times 10^{-3}$ s/m']
+    source: {cite: codata, at: 'Boltzmann and atomic mass constants (our own numbers)'}
+    origin: page-own
+
+  - id: p1-seconds
+    where: 'Problem 1(b): t_e in seconds'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg, V: 2.0e-3 m**3, r: 25e-6 m}
+    formula: |-
+      V/(pi*r**2)*sqrt(2*pi*20.180*mu/(k_B*T))
+    expected: 7.26e3 s
+    shown: ['s $= 7.26 \times 10^3$ s', 'about $1/7260$ of the gas per second']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(b), answer box: t_e for 2.0 L of neon at 300 K and a hole 50 μm across, in hours'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg, V: 2.0e-3 m**3, r: 25e-6 m}
+    formula: |-
+      V/(pi*r**2)*sqrt(2*pi*20.180*mu/(k_B*T))
+    expected: 2.02 hour
+    shown: ['id="p1-num"', 'about 2.02 hours']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-neon-lam
+    where: 'Problem 1(b), check: mean free path of neon at 10 Pa and 300 K, hard balls of radius 0.14 nm (our estimate)'
+    inputs: {T: 300 K, P: 10 Pa, r: 0.14e-9 m}
+    formula: |-
+      k_B*T/(4*pi*r**2*P)
+    expected: 1.7 mm
+    shown: ['there the mean free path is about 1.7 mm']
+    source: {cite: reading1, at: 'p. 93, λ = 1/σn and σ = 4πr² (our own numbers)'}
+    origin: page-own
+
+  - id: p1-neon-r
+    kind: fact
+    where: 'Problem 1(b), check: radius of a neon atom as a hard ball (our value)'
+    value: '0.14'
+    shown: ['a neon radius of about 0.14 nm']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own value)'}
+    origin: page-own
+
+  - id: p1-e
+    kind: identity
+    answer: p1-e
+    where: 'Problem 1(c), answer box: mean energy of an escaping atom, against the flux-weighted mean of m v_x²/2 by numerical integration plus k_B T/2 each for y and z'
+    formula: |-
+      2*kB*T
+    equals: |-
+      m/2*integrate('u**3*exp(-m*u**2/(2*kB*T))', 'u', 0, 40*sqrt(kB*T/m))/integrate('u*exp(-m*u**2/(2*kB*T))', 'u', 0, 40*sqrt(kB*T/m)) + kB*T
+    samples:
+      kB: [0.5, 2.0, 1.0, 1.3]
+      T: [1.0, 3.0, 2.0, 1.7]
+      m: [0.7, 1.9, 1.0, 1.2]
+    tolerance: 1e-7
+    shown: ['id="p1-e"', '$\epsilon_\text{out} = k_BT + \frac12k_BT + \frac12k_BT = 2k_BT$']
+    source: {cite: reading1, at: 'p. 94, Boltzmann distribution (our own problem)'}
+    origin: page-own
+
+  - id: p1-m235
+    where: 'Problem 1(e): mass of a ²³⁵UF₆ molecule from the atomic masses (AME 2020)'
+    inputs: {mU5: 235.0439299, mF: 18.998403163}
+    formula: |-
+      mU5 + 6*mF
+    expected: '349.034'
+    shown: ['²³⁵UF₆ molecules of mass 349.034 u']
+    source: {cite: ame, at: 'atomic masses of ²³⁵U and ¹⁹F'}
+    origin: page-own
+
+  - id: p1-m238
+    where: 'Problem 1(e): mass of a ²³⁸UF₆ molecule from the atomic masses (AME 2020)'
+    inputs: {mU8: 238.0507882, mF: 18.998403163}
+    formula: |-
+      mU8 + 6*mF
+    expected: '352.041'
+    shown: ['²³⁸UF₆ molecules of mass 352.041 u']
+    source: {cite: ame, at: 'atomic masses of ²³⁸U and ¹⁹F'}
+    origin: page-own
+
+  - id: p1-alpha
+    where: 'Problem 1(e): separation factor of one stage, sqrt(352.041/349.034)'
+    formula: |-
+      sqrt(352.041/349.034)
+    expected: '1.004298'
+    shown: ['$\alpha = \sqrt{\dfrac{352.041}{349.034}} = 1.004298$']
+    source: {cite: reading1, at: 'p. 94, I ∝ n/√m (our own problem)'}
+    origin: page-own
+
+  - id: p1-gain
+    where: 'Problem 1(e), check: gain of one stage in percent'
+    formula: |-
+      (sqrt(352.041/349.034) - 1)*100
+    expected: '0.43'
+    shown: ['Each stage gains only 0.43%']
+    source: {cite: reading1, at: 'p. 94 (our own problem)'}
+    origin: page-own
+
+  - id: p1-shares
+    kind: fact
+    where: 'Problem 1(e): the shares of ²³⁵U, 0.72% (natural) and 3.0% (reactor fuel), our values'
+    value: '0.72'
+    shown: ['from 0.72% (natural uranium) to 3.0% (a typical reactor fuel)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own values)'}
+    origin: page-own
+
+  - id: p1-r0
+    where: 'Problem 1(e): starting ratio of ²³⁵U to ²³⁸U'
+    formula: |-
+      0.0072/0.9928
+    expected: '0.007252'
+    shown: ['$0.0072/0.9928 = 0.007252$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-r1
+    where: 'Problem 1(e): final ratio of ²³⁵U to ²³⁸U'
+    formula: |-
+      0.030/0.970
+    expected: '0.030928'
+    shown: ['$0.030/0.970 = 0.030928$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-growth
+    where: 'Problem 1(e): factor by which the ratio must grow'
+    formula: |-
+      (0.030/0.970)/(0.0072/0.9928)
+    expected: '4.2646'
+    shown: ['The ratio must grow by a factor $4.2646$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-logs
+    where: 'Problem 1(e): ln 4.2646'
+    formula: |-
+      log((0.030/0.970)/(0.0072/0.9928))
+    expected: '1.45035'
+    shown: ['the number of stages is $\ln 4.2646/\ln 1.004298 = 1.45035/0.0042892 = 338$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-lnalpha
+    where: 'Problem 1(e): ln α'
+    formula: |-
+      log(sqrt(352.041/349.034))
+    expected: '0.0042892'
+    shown: ['1.45035/0.0042892']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-stages
+    answer: p1-stages
+    where: 'Problem 1(e), answer box: number of stages, ln(ratio growth)/ln α, with α from the molecular masses added up from AME 2020 atomic masses'
+    inputs: {mU5: 235.0439299, mU8: 238.0507882, mF: 18.998403163}
+    formula: |-
+      log((0.030/0.970)/(0.0072/0.9928))/log(sqrt((mU8 + 6*mF)/(mU5 + 6*mF)))
+    expected: '338'
+    tolerance: 1
+    shown: ['id="p1-stages"', 'about 338 stages (338 give']
+    source: {cite: ame, at: 'atomic masses (our own problem)'}
+    origin: page-own
+
+  - id: p1-share338
+    where: 'Problem 1(e): share of U-235 after 338 stages'
+    formula: |-
+      100*(0.0072/0.9928*sqrt(352.041/349.034)**338)/(1 + 0.0072/0.9928*sqrt(352.041/349.034)**338)
+    expected: '2.998'
+    shown: ['338 give 2.998%, which rounds to 3.0%']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-wrong-shares
+    where: 'Problem 1(e), check: the number of stages if the shares are used in place of the ratios'
+    formula: |-
+      log(3.0/0.72)/log(sqrt(352.041/349.034))
+    expected: '333'
+    tolerance: 1
+    shown: ['$\ln(3.0/0.72)/\ln\alpha = 333$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: sound in a gas of molecules that rotate
+
+  - id: p2-gamma
+    kind: identity
+    answer: p2-gamma
+    where: 'Problem 2(a), answer box: γ, against the slope d ln P/d ln n between n = 1 and n = 2 along constant s = c_v ln T − k_B ln n, with T solved numerically at each n'
+    formula: |-
+      1 + kB/cv
+    equals: |-
+      (log(2*solve('cv*log(y) - kB*log(2)', 'y', 0.001, 1000)) - log(1*solve('cv*log(y) - kB*log(1.0)', 'y', 0.001, 1000)))/log(2)
+    samples:
+      kB: [0.5, 2.0, 1.0, 1.3]
+      cv: [1.0, 4.0, 1.5, 2.5]
+    tolerance: 1e-7
+    shown: ['id="p2-gamma"', 'so is $P\rho^{-\gamma}$ with $\gamma = 1 + \dfrac{k_B}{c_v}$']
+    source: {cite: reading1, at: 'p. 96, adiabatic condition (our own problem)'}
+    origin: page-own
+
+  - id: p2-mono-gamma
+    where: 'Problem 2(a), check: γ for c_v = 3k_B/2'
+    formula: |-
+      1 + 1/1.5
+    expected: '1.6667'
+    shown: ['$\gamma = 1 + \frac23 = \frac53$']
+    source: {cite: reading1, at: 'p. 96'}
+    origin: page-own
+
+  - id: p2-ratio
+    answer: p2-ratio
+    where: 'Problem 2(b), answer box: c_s/sqrt(<v²>) = sqrt(γ/3) for γ = 7/5'
+    formula: |-
+      sqrt((1 + 1/2.5)/3)
+    expected: '0.683'
+    shown: ['id="p2-ratio"', '\sqrt{\gamma/3} = \sqrt{7/15} = 0.683$']
+    source: {cite: reading1, at: 'p. 97, speed of sound (our own problem)'}
+    origin: page-own
+
+  - id: p2-mono-ratio
+    where: 'Problem 2(b), check: the same ratio for a monatomic gas'
+    formula: |-
+      sqrt(5/9)
+    expected: '0.745'
+    shown: ['$\sqrt{5/9} = 0.745$']
+    source: {cite: reading1, at: 'p. 97'}
+    origin: page-own
+
+  - id: p2-mh2
+    where: 'Problem 2(c): mass of a hydrogen molecule, 2.016 u'
+    inputs: {mu: 1.66053906660e-27 kg}
+    formula: |-
+      2.016*mu
+    expected: 3.348e-27 kg
+    shown: ['$m = 2.016 \times 1.66054 \times 10^{-27} = 3.348 \times 10^{-27}$ kg']
+    source: {cite: codata, at: 'atomic mass constant (our own numbers)'}
+    origin: page-own
+
+  - id: p2-h2
+    answer: p2-h2
+    where: 'Problem 2(c), answer box: speed of sound in H2 at 300 K, γ = 7/5, in m/s'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg}
+    formula: |-
+      sqrt(1.4*k_B*T/(2.016*mu))
+    expected: 1316 m/s
+    tolerance: 1 m/s
+    shown: ['id="p2-h2"', 'm/s $= 1316$ m/s']
+    source: {cite: reading1, at: 'p. 97 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-n2
+    where: 'Problem 2(c), check: speed of sound in N2 (28.014 u) at 300 K'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg}
+    formula: |-
+      sqrt(1.4*k_B*T/(28.014*mu))
+    expected: 353 m/s
+    shown: ['gives about $\sqrt{14}$ times less, 353 m/s']
+    source: {cite: reading1, at: 'p. 97 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-factor
+    where: 'Problem 2(d): ratio of frequencies at 298.15 K and 288.15 K'
+    formula: |-
+      sqrt(298.15/288.15)
+    expected: '1.01720'
+    shown: ['$\sqrt{298.15/288.15} = 1.01720$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-pipe
+    answer: p2-pipe
+    where: 'Problem 2(d), answer box: rise in pitch in percent from 15 °C to 25 °C'
+    formula: |-
+      (sqrt(298.15/288.15) - 1)*100
+    expected: '1.72'
+    shown: ['id="p2-pipe"', 'the pitch is 1.72% higher']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-cents
+    where: 'Problem 2(d), check: the rise in musical cents'
+    formula: |-
+      1200*log(sqrt(298.15/288.15))/log(2)
+    expected: '30'
+    tolerance: 1
+    shown: ['that is about 30 cents']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-small
+    where: 'Problem 2(d), check: half the relative change of temperature'
+    formula: |-
+      10/(2*288.15)
+    expected: '0.0174'
+    shown: ['$10/(2 \times 288.15) = 0.0174$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3: diffusion and mobility from the Boltzmann equation
+
+  - id: p3-d
+    kind: identity
+    answer: p3-d
+    where: 'Problem 3(a), answer box: D = τ⟨v_x²⟩, against ⟨v_x²⟩ as a numerical integral over the Maxwell distribution'
+    formula: |-
+      tau*kB*T/m
+    equals: |-
+      tau*integrate('u**2*exp(-m*u**2/(2*kB*T))', 'u', -40*sqrt(kB*T/m), 40*sqrt(kB*T/m))/integrate('exp(-m*u**2/(2*kB*T))', 'u', -40*sqrt(kB*T/m), 40*sqrt(kB*T/m))
+    samples:
+      tau: [0.5, 2.0, 1.0, 1.4]
+      kB: [0.5, 2.0, 1.0, 0.8]
+      T: [1.0, 3.0, 2.0, 1.3]
+      m: [0.5, 2.0, 1.0, 1.7]
+    tolerance: 1e-7
+    shown: ['id="p3-d"', '$D = \dfrac{\tau k_BT}{m}$']
+    source: {cite: reading1, at: 'p. 109, linearized solution (our own problem)'}
+    origin: page-own
+
+  - id: p3-eta
+    kind: identity
+    answer: p3-eta
+    where: 'Problem 3(b), answer box: η = τβ⟨v_x²⟩, with ⟨v_x²⟩ as a numerical integral over the Maxwell distribution'
+    formula: |-
+      tau/m
+    equals: |-
+      tau/(kB*T)*integrate('u**2*exp(-m*u**2/(2*kB*T))', 'u', -40*sqrt(kB*T/m), 40*sqrt(kB*T/m))/integrate('exp(-m*u**2/(2*kB*T))', 'u', -40*sqrt(kB*T/m), 40*sqrt(kB*T/m))
+    samples:
+      tau: [0.5, 2.0, 1.0, 1.4]
+      kB: [0.5, 2.0, 1.0, 0.8]
+      T: [1.0, 3.0, 2.0, 1.3]
+      m: [0.5, 2.0, 1.0, 1.7]
+    tolerance: 1e-7
+    shown: ['id="p3-eta"', 'and $\eta = \dfrac{\tau}{m}$']
+    source: {cite: reading1, at: 'p. 109, linearized solution (our own problem)'}
+    origin: page-own
+
+  - id: p3-einstein
+    kind: identity
+    where: 'Problem 3(c): D/η = k_B T from the two results'
+    formula: |-
+      (tau*kB*T/m)/(tau/m)
+    equals: |-
+      kB*T
+    samples:
+      tau: [0.5, 2.0, 1.0]
+      kB: [0.5, 2.0, 1.0]
+      T: [1.0, 3.0, 2.0]
+      m: [0.5, 2.0, 1.0]
+    tolerance: 1e-12
+    shown: ['$D/\eta = (\tau k_BT/m)/(\tau/m) = k_BT$']
+    source: {cite: reading1, at: 'p. 115, Einstein relation'}
+    origin: page-own
+
+  - id: p3-ratio
+    answer: p3-ratio
+    where: 'Problem 3(d), answer box: (τ k_BT/m)/(λ v̄/6) with λ = v̄τ and v̄² = 2k_BT/m (k_BT/m = 1, τ = 1)'
+    formula: |-
+      1/(2/6)
+    expected: '3'
+    tolerance: 0.001
+    shown: ['id="p3-ratio"', '$(\tau k_BT/m)/(\tau k_BT/3m) = 3$']
+    source: {cite: reading1, at: 'p. 98 and p. 102 (our own problem)'}
+    origin: page-own
+
+  - id: p3-meanspeed
+    where: 'Problem 3(d), check: the factor with the mean speed sqrt(8k_BT/πm), 3π/4'
+    formula: |-
+      1/((8/pi)/6)
+    expected: '2.36'
+    shown: ['the factor would be $3\pi/4 = 2.36$']
+    source: {cite: reading1, at: 'p. 98 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: krypton in a double-glazed window
+
+  - id: p4-r
+    kind: fact
+    where: 'Problem 4: radius of a krypton atom as a hard ball, gap 12 mm, 20 K across it (our values)'
+    value: '0.20'
+    shown: ['treat them as hard balls of radius $r = 0.20$ nm (our value)']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own value)'}
+    origin: page-own
+
+  - id: p4-n
+    where: 'Problem 4(a): number density of krypton at 300 K and 101 325 Pa'
+    inputs: {T: 300 K, P: 101325 Pa}
+    formula: |-
+      P/(k_B*T)
+    expected: 2.446e25 1/m**3
+    shown: ['$n = P/k_BT = 101\,325/4.142 \times 10^{-21} = 2.446 \times 10^{25}$ m⁻³']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-sigma
+    where: 'Problem 4(a): hard-ball cross-section 4π r² for r = 0.20 nm'
+    inputs: {r: 0.20e-9 m}
+    formula: |-
+      4*pi*r**2
+    expected: 5.027e-19 m**2
+    shown: ['$\sigma = 4\pi(0.20 \times 10^{-9})^2 = 5.027 \times 10^{-19}$ m²']
+    source: {cite: reading1, at: 'p. 93 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-lam
+    answer: p4-lam
+    where: 'Problem 4(a), answer box: mean free path 1/(σ n) of krypton, in nm'
+    inputs: {T: 300 K, P: 101325 Pa, r: 0.20e-9 m}
+    formula: |-
+      k_B*T/(4*pi*r**2*P)
+    expected: 81.3 nm
+    shown: ['id="p4-lam"', 'm $= 8.13 \times 10^{-8}$ m $= 81.3$ nm']
+    source: {cite: reading1, at: 'p. 93 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-spacing
+    where: 'Problem 4(a), check: spacing n^(-1/3) between atoms'
+    inputs: {T: 300 K, P: 101325 Pa}
+    formula: |-
+      (P/(k_B*T))**(-1/3)
+    expected: 3.44 nm
+    shown: ['$n^{-1/3} = 3.44$ nm']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-spacings
+    where: 'Problem 4(a), check: mean free path in units of the spacing'
+    inputs: {T: 300 K, P: 101325 Pa, r: 0.20e-9 m}
+    formula: |-
+      (k_B*T/(4*pi*r**2*P))/(P/(k_B*T))**(-1/3)
+    expected: '24'
+    tolerance: 0.5
+    shown: ['about 24 neighbours']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-gap
+    where: 'Problem 4(a), check: the gap of 12 mm in mean free paths'
+    inputs: {T: 300 K, P: 101325 Pa, r: 0.20e-9 m, d: 0.012 m}
+    formula: |-
+      d/(k_B*T/(4*pi*r**2*P))
+    expected: '1.5e5'
+    shown: ['The gap is some $1.5 \times 10^5$ mean free paths wide']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-m
+    where: 'Problem 4(b): mass of a krypton atom, 83.798 u'
+    inputs: {mu: 1.66053906660e-27 kg}
+    formula: |-
+      83.798*mu
+    expected: 1.3915e-25 kg
+    shown: ['$m = 83.798 \times 1.66054 \times 10^{-27} = 1.3915 \times 10^{-25}$ kg']
+    source: {cite: codata, at: 'atomic mass constant (our own numbers)'}
+    origin: page-own
+
+  - id: p4-vbar
+    where: 'Problem 4(b): v̄ = sqrt(2k_BT/m) for krypton at 300 K'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg}
+    formula: |-
+      sqrt(2*k_B*T/(83.798*mu))
+    expected: 244 m/s
+    shown: ['so $\bar v = \sqrt{2k_BT/m} = 244$ m/s']
+    source: {cite: reading1, at: 'p. 104 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-k
+    answer: p4-k
+    where: 'Problem 4(b), answer box: K = c_v v̄/(6σ) with c_v = 3k_B/2, in mW/(m K)'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg, r: 0.20e-9 m}
+    formula: |-
+      1.5*k_B*sqrt(2*k_B*T/(83.798*mu))/(6*4*pi*r**2)
+    expected: 1.68 mW/(m*K)
+    shown: ['id="p4-k"', 'W/(m K) $= 1.68 \times 10^{-3}$ W/(m K), that is 1.68 mW/(m K)']
+    source: {cite: reading1, at: 'p. 104 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-argon-visc
+    kind: fact
+    where: 'Problem 4(b), check: the factor of about 2.4 the lesson found for the viscosity of argon'
+    value: '2.4'
+    shown: ['the lesson found the simple formula low by a factor of about 2.4 for the viscosity of argon']
+    source: {cite: reading1, at: 'p. 102, as compared in the lesson viscosity-conduction-boltzmann-equation'}
+    origin: page-own
+
+  - id: p4-q
+    answer: p4-q
+    where: 'Problem 4(c), answer box: q = KΔT/d for ΔT = 20 K, d = 12 mm, in W/m²'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg, r: 0.20e-9 m, dT: 20 K, d: 0.012 m}
+    formula: |-
+      1.5*k_B*sqrt(2*k_B*T/(83.798*mu))/(6*4*pi*r**2)*dT/d
+    expected: 2.79 W/m**2
+    shown: ['id="p4-q"', '$q = 1.675 \times 10^{-3} \times 20/0.012$ W/m² $= 2.79$ W/m²', 'about 2.8 W through the gas alone']
+    source: {cite: reading1, at: 'p. 104 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-k-four
+    where: 'Problem 4(c): K to four figures, as used in the solution'
+    inputs: {T: 300 K, mu: 1.66053906660e-27 kg, r: 0.20e-9 m}
+    formula: |-
+      1.5*k_B*sqrt(2*k_B*T/(83.798*mu))/(6*4*pi*r**2)
+    expected: 1.675e-3 W/(m*K)
+    shown: ['$q = 1.675 \times 10^{-3}']
+    source: {cite: reading1, at: 'p. 104 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-p
+    answer: p4-p
+    where: 'Problem 4(d), answer box: pressure at which λ = 12 mm, k_BT/(σ d), in Pa'
+    inputs: {T: 300 K, r: 0.20e-9 m, d: 0.012 m}
+    formula: |-
+      k_B*T/(4*pi*r**2*d)
+    expected: 0.687 Pa
+    shown: ['id="p4-p"', 'Pa $= 0.687$ Pa', '(below about 0.7 Pa)']
+    source: {cite: reading1, at: 'p. 93 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-pfactor
+    where: 'Problem 4(d), check: atmospheric pressure over that pressure'
+    inputs: {T: 300 K, r: 0.20e-9 m, d: 0.012 m, P: 101325 Pa}
+    formula: |-
+      P/(k_B*T/(4*pi*r**2*d))
+    expected: '1.5e5'
+    shown: ['That is $1.5 \times 10^5$ times below atmospheric pressure']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5: light escaping from the Sun
+
+  - id: p5-r
+    kind: fact
+    where: 'Problem 5: IAU 2015 nominal solar radius'
+    value: '6.957e8'
+    shown: ['$R = 6.957 \times 10^8$ m']
+    source: {cite: iau, at: 'nominal solar radius'}
+    origin: page-own
+
+  - id: p5-sigmat
+    kind: fact
+    where: 'Problem 5: Thomson cross-section (CODATA 2018: 6.6524587321e-29 m²)'
+    value: '6.652e-29'
+    shown: ['$\sigma_T = 6.652 \times 10^{-29}$ m² (CODATA 2018)']
+    source: {cite: codata, at: 'Thomson cross-section'}
+    origin: page-own
+
+  - id: p5-msun
+    where: 'Problem 5: solar mass as written on the page'
+    formula: |-
+      M_sun
+    expected: 1.988e30 kg
+    shown: ['$M_\odot = 1.988 \times 10^{30}$ kg']
+    source: {cite: iau, at: 'nominal solar mass parameter'}
+    origin: page-own
+
+  - id: p5-rho
+    where: 'Problem 5(a): mean density of the Sun'
+    inputs: {R: 6.957e8 m}
+    formula: |-
+      M_sun/(4/3*pi*R**3)
+    expected: 1410 kg/m**3
+    tolerance: 1 kg/m**3
+    shown: ['$\bar\rho = M_\odot/(\frac43\pi R^3) = 1410$ kg/m³']
+    source: {cite: iau, at: 'nominal solar radius and mass (our own numbers)'}
+    origin: page-own
+
+  - id: p5-ne
+    where: 'Problem 5(a): electrons per unit volume, mean density over the proton mass'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg}
+    formula: |-
+      M_sun/(4/3*pi*R**3)/m_p
+    expected: 8.43e29 1/m**3
+    shown: ['$n_e = \bar\rho/m_p = 1410/1.6726 \times 10^{-27} = 8.43 \times 10^{29}$ m⁻³']
+    source: {cite: codata, at: 'proton mass (our own numbers)'}
+    origin: page-own
+
+  - id: p5-opacity
+    where: 'Problem 5(a), check: σ_T n_e per metre'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg, sT: 6.6524587321e-29 m**2}
+    formula: |-
+      sT*M_sun/(4/3*pi*R**3)/m_p
+    expected: 56 1/m
+    shown: ['$\sigma_Tn_e \approx 56$ per metre']
+    source: {cite: codata, at: 'Thomson cross-section (our own numbers)'}
+    origin: page-own
+
+  - id: p5-lam
+    answer: p5-lam
+    where: 'Problem 5(a), answer box: photon mean free path 1/(σ_T n_e), in cm'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg, sT: 6.6524587321e-29 m**2}
+    formula: |-
+      1/(sT*M_sun/(4/3*pi*R**3)/m_p)
+    expected: 1.78 cm
+    shown: ['id="p5-lam"', 'm $= 0.0178$ m, about 1.78 cm']
+    source: {cite: codata, at: 'Thomson cross-section, proton mass (our own numbers)'}
+    origin: page-own
+
+  - id: p5-t
+    kind: identity
+    answer: p5-t
+    where: 'Problem 5(b), answer box: t = R²/(λc), against the root of 6Dt = R² with D = λc/6, solved numerically'
+    formula: |-
+      R**2/(lam*c)
+    equals: |-
+      solve('6*(lam*c/6)*x - R**2', 'x', 0, 1000)
+    samples:
+      R: [1.0, 3.0, 2.0, 1.4]
+      lam: [0.1, 1.0, 0.5, 0.3]
+      c: [1.0, 3.0, 2.0, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p5-t"', 'so $t = N\lambda/c = \dfrac{R^2}{\lambda c}$']
+    source: {cite: reading1, at: 'p. 100, random walk (our own problem)'}
+    origin: page-own
+
+  - id: p5-seconds
+    where: 'Problem 5(c): R²/(λc) in seconds, with λ to four figures as in the solution'
+    inputs: {R: 6.957e8 m, lam: 0.01783 m}
+    formula: |-
+      R**2/(lam*c)
+    expected: 9.05e10 s
+    shown: ['s $= 9.05 \times 10^{10}$ s', 'is $9.05 \times 10^{10}$ s, the time of part (c)']
+    source: {cite: reading1, at: 'p. 100 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-lam4
+    where: 'Problem 5(c): λ to four figures, as used in the solution'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg, sT: 6.6524587321e-29 m**2}
+    formula: |-
+      1/(sT*M_sun/(4/3*pi*R**3)/m_p)
+    expected: 0.01783 m
+    shown: ['$t = (6.957 \times 10^8)^2/(0.01783 \times 2.998 \times 10^8)$']
+    source: {cite: codata, at: 'Thomson cross-section, proton mass (our own numbers)'}
+    origin: page-own
+
+  - id: p5-year
+    where: 'Problem 5(c): one Julian year in seconds'
+    inputs: {year: 365.25 day}
+    formula: |-
+      year
+    expected: 3.156e7 s
+    shown: ['One year is $3.156 \times 10^7$ s']
+    source: {cite: iau, at: 'Julian year of 365.25 days'}
+    origin: page-own
+
+  - id: p5-yr
+    answer: p5-yr
+    where: 'Problem 5(c), answer box: R²/(λc) in years, with λ = 1/(σ_T n_e) from the mean density'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg, sT: 6.6524587321e-29 m**2}
+    formula: |-
+      R**2*sT*M_sun/(4/3*pi*R**3)/m_p/c
+    expected: 2870 yr
+    tolerance: 5 yr
+    shown: ['id="p5-yr"', 'so $t \approx 2870$ years']
+    source: {cite: codata, at: 'Thomson cross-section, proton mass, speed of light (our own numbers)'}
+    origin: page-own
+
+  - id: p5-steps
+    where: 'Problem 5(c), check: number of steps (R/λ)²'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg, sT: 6.6524587321e-29 m**2}
+    formula: |-
+      (R*sT*M_sun/(4/3*pi*R**3)/m_p)**2
+    expected: '1.5e21'
+    shown: ['$(R/\lambda)^2 = 1.5 \times 10^{21}$']
+    source: {cite: codata, at: 'Thomson cross-section, proton mass (our own numbers)'}
+    origin: page-own
+
+  - id: p5-factor
+    answer: p5-factor
+    where: 'Problem 5(d), answer box: t/(R/c) = R/λ, in units of 10^10'
+    inputs: {R: 6.957e8 m, m_p: 1.67262192369e-27 kg, sT: 6.6524587321e-29 m**2}
+    formula: |-
+      R*sT*M_sun/(4/3*pi*R**3)/m_p/1e10
+    expected: '3.90'
+    shown: ['id="p5-factor"', '$t/(R/c) = R/\lambda = 6.957 \times 10^8/0.01783 = 3.90 \times 10^{10}$']
+    source: {cite: codata, at: 'Thomson cross-section, proton mass (our own numbers)'}
+    origin: page-own
+
+  - id: p5-flight
+    where: 'Problem 5(d), check: straight flight time R/c'
+    inputs: {R: 6.957e8 m}
+    formula: |-
+      R/c
+    expected: 2.32 s
+    shown: ['The straight flight takes $R/c = 2.32$ s; $2.32 \times 3.90 \times 10^{10}$ s']
+    source: {cite: iau, at: 'nominal solar radius (our own numbers)'}
+    origin: page-own
