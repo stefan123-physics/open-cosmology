@@ -1,0 +1,667 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT's sheet gives only textbook pointers and MIT publishes no solutions, so every problem and answer is our own and is
+# checked here by a route independent of the page's solution where one exists: Problem 1 takes Curie's law from the
+# moment μ_B tanh(βμ_B B) of one electron at a tiny field, and the field of full polarization as the root of the number
+# of electrons in the lowered band, integrated numerically from the one-spin density of states; Problem 2 takes the
+# crossing temperature as the root of C_el − C_ph; Problem 3 takes the density of states by slicing the pyramid of
+# levels, the Fermi energy as the root of the integrated count, and the energy by numerical integration; Problem 4
+# takes the barrier as the root of the Boltzmann balance N_D e^(−ε_B/k_BT) = n_i²/N_A.
+# Constants: hbar, k_B from calcs/constants.yaml; electron mass, Bohr magneton in eV/T, Avogadro constant (CODATA 2018)
+# and our model values as inputs. Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-10.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 20 + 15 + 20 + 15'
+    formula: |-
+      20 + 15 + 20 + 15
+    expected: '70'
+    shown: ['and 15 for Problem 4, 70 points in all']
+    source: {cite: mit, at: 'Problems 1 to 4, p. 1 (points are ours)'}
+    origin: page-own
+
+  - id: points-p1
+    where: 'Problem 1: parts 5 + 5 + 6 + 4'
+    formula: |-
+      5 + 5 + 6 + 4
+    expected: '20'
+    shown: ['points={20} mit="Problem 1"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (points are ours)'}
+    origin: page-own
+
+  - id: points-p2
+    where: 'Problem 2: parts 4 + 5 + 3 + 3'
+    formula: |-
+      4 + 5 + 3 + 3
+    expected: '15'
+    shown: ['points={15} mit="Problem 2"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (points are ours)'}
+    origin: page-own
+
+  - id: points-p3
+    where: 'Problem 3: parts 4 + 3 + 3 + 3 + 4 + 3'
+    formula: |-
+      4 + 3 + 3 + 3 + 4 + 3
+    expected: '20'
+    shown: ['points={20} mit="Problem 3"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (points are ours)'}
+    origin: page-own
+
+  - id: points-p4
+    where: 'Problem 4: parts 6 + 3 + 3 + 3'
+    formula: |-
+      6 + 3 + 3 + 3
+    expected: '15'
+    shown: ['points={15} mit="Problem 4"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1: electron spins in a magnetic field
+
+  - id: p1-curie
+    kind: identity
+    answer: p1-curie
+    where: 'Problem 1(b), answer box: χ for k_BT ≫ ε_F, against N μ_B tanh(μ_B B/k_BT)/B of classical two-orientation moments at a tiny field B = 1e-6'
+    formula: |-
+      N*muB**2/(kB*T)
+    equals: |-
+      N*muB*tanh(muB*1e-6/(kB*T))/1e-6
+    samples:
+      N: [1, 100, 30, 7]
+      muB: [0.5, 2.0, 1.0, 1.3]
+      kB: [0.5, 1.5, 1.0, 0.8]
+      T: [0.5, 2.0, 1.0, 1.7]
+    tolerance: 1e-6
+    shown: ['id="p1-curie"', '<Formula label="Curie''s law for free electrons"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-zero
+    kind: identity
+    where: 'Problem 1(a), solution check: at T = 0 the general formula gives 2μ_B² D(ε_F); with the one-spin D = (3N/4)ε^(1/2)/ε_F^(3/2) this is (3/2)Nμ_B²/ε_F (N = 1), checked against the numerical integral of D times the derivative of n_F at a low temperature'
+    formula: |-
+      3/2*muB**2/eF
+    equals: |-
+      2*muB**2*integrate('3/4*sqrt(u)/eF**1.5/(4*0.001*eF*cosh((u - eF)/(0.002*eF))**2)', 'u', 0.5*eF, 1.5*eF)
+    samples:
+      muB: [0.5, 2.0, 1.0]
+      eF: [1.0, 5.0, 2.0]
+    tolerance: 1e-4
+    shown: ['$\chi = 2\mu_B^2D(\epsilon_F)$, the notes'' result (reading 1, p. 85)']
+    source: {cite: reading1, at: 'p. 85'}
+    origin: page-own
+
+  - id: p1-bp
+    kind: identity
+    answer: p1-bp
+    where: 'Problem 1(c), answer box: B_p, against the root of the number in the lowered band (filled to 2μ_B B above its bottom), integrated numerically from the one-spin density of states (3/4)ε^(1/2)/ε_F^(3/2) per electron, set equal to all of the electrons'
+    formula: |-
+      eF/(2**(1/3)*muB)
+    equals: |-
+      solve("integrate('3/4*sqrt(u)/eF**1.5', 'u', 0, 2*muB*x) - 1", 'x', 0.01*eF/muB, 2*eF/muB)
+    samples:
+      eF: [1.0, 5.0, 2.0, 3.3]
+      muB: [0.5, 2.0, 1.0, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p1-bp"', '<Formula label="The field of full polarization"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-factor
+    where: 'Problem 1(c) and (d): 2^(−1/3) = 0.794'
+    formula: |-
+      2**(-1/3)
+    expected: '0.794'
+    shown: ['\mu_BB_p = 2^{-1/3}\,\epsilon_F = 0.794\,\epsilon_F', 'gets there later, at $0.794\,\epsilon_F$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-linear
+    where: 'Problem 1(c), check: the linear law (3/2)Nμ_B B/ε_F reaches N at μ_B B = (2/3)ε_F, below 0.794 ε_F'
+    formula: |-
+      1/(3/2)
+    expected: '0.6667'
+    shown: ['would reach $N$ already at $\mu_BB = \frac23\epsilon_F$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-bpnum
+    answer: p1-bpnum
+    where: 'Problem 1(d), answer box: B_p = 2^(−1/3) ε_F/μ_B with ε_F = 3.24 eV, μ_B = 5.7883818060e-5 eV/T, in units of 1e4 T'
+    formula: |-
+      2**(-1/3)*3.24/5.7883818060e-5/1e4
+    expected: '4.44'
+    shown: ['id="p1-bpnum"', '$B_p = 0.794 \times 3.24\ \text{eV}/(5.788 \times 10^{-5}\ \text{eV/T}) = 4.44 \times 10^4$ T']
+    source: {cite: codata, at: 'Bohr magneton in eV/T (our own numbers)'}
+    origin: page-own
+
+  - id: p1-const-muB
+    kind: fact
+    where: 'Problem 1(d), statement: μ_B = 5.788e-5 eV/T (CODATA 2018: 5.7883818060e-5 eV/T)'
+    expected: '5.788e-5'
+    shown: ['$\mu_B = 5.788 \times 10^{-5}$ eV/T (CODATA 2018)']
+    source: {cite: codata, at: 'Bohr magneton in eV/T'}
+    origin: page-own
+
+  - id: p1-const-eF
+    kind: fact
+    where: 'Problem 1(d), statement: ε_F = 3.24 eV, our value (close to the free-electron value for sodium)'
+    expected: '3.24'
+    shown: ['Take $\epsilon_F = 3.24$ eV (our value']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: electrons and lattice vibrations in the heat capacity of a metal
+
+  - id: p2-kf
+    where: 'Problem 2(a), solution: k_F = (3π²n)^(1/3) for n = 1.40e28 m⁻³'
+    inputs: {n: 1.40e28 1/m**3}
+    formula: |-
+      (3*pi**2*n)**(1/3)
+    expected: 7.46e9 1/m
+    shown: ['= 7.46 \times 10^9$ m⁻¹']
+    source: {cite: reading1, at: 'p. 84 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ef
+    where: 'Problem 2(a), solution: ε_F = ħ²k_F²/2m_e in J'
+    inputs: {n: 1.40e28 1/m**3, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar**2*(3*pi**2*n)**(2/3)/(2*m_e)
+    expected: 3.39e-19 J
+    shown: ['$\epsilon_F = \hbar^2k_F^2/2m_e = 3.39 \times 10^{-19}$ J']
+    source: {cite: codata, at: 'ħ, electron mass (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ef-ev
+    where: 'Problem 2(a), solution: ε_F in eV'
+    inputs: {n: 1.40e28 1/m**3, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar**2*(3*pi**2*n)**(2/3)/(2*m_e)
+    expected: 2.12 eV
+    shown: ['J $= 2.12$ eV']
+    source: {cite: codata, at: 'ħ, electron mass, electron volt (our own numbers)'}
+    origin: page-own
+
+  - id: p2-tf
+    answer: p2-tf
+    where: 'Problem 2(a), answer box: T_F = ε_F/k_B in K'
+    inputs: {n: 1.40e28 1/m**3, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar**2*(3*pi**2*n)**(2/3)/(2*m_e*k_B)
+    expected: 24600 K
+    shown: ['id="p2-tf"', 'and $T_F = \epsilon_F/k_B = 2.46 \times 10^4$ K']
+    source: {cite: codata, at: 'ħ, electron mass, Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p2-tf-full
+    where: 'Problem 2(c) and (d), solutions: T_F = 24 580 K, the unrounded value used'
+    inputs: {n: 1.40e28 1/m**3, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar**2*(3*pi**2*n)**(2/3)/(2*m_e*k_B)
+    expected: 24580 K
+    tolerance: '0.1%'
+    shown: ['(24\pi^2 \times 24\,580)}$ K', '8.314\ \text{J mol}^{-1}\text{K}^{-1}/24\,580\ \text{K}']
+    source: {cite: codata, at: 'ħ, electron mass, Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p2-eightieth
+    where: 'Problem 2(a), check: room temperature is less than an eightieth of T_F (300/24 580 = 1/82)'
+    formula: |-
+      24580/300
+    expected: '81.9'
+    shown: ['room temperature is less than an eightieth of $T_F$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-tstar
+    kind: identity
+    answer: p2-tstar
+    where: 'Problem 2(b), answer box: T*, against the root of C_el − C_ph = (π²/2)T/T_F − (12π⁴/5)(T/T_D)³ (per atom, in units of k_B) solved numerically'
+    formula: |-
+      sqrt(5*TD**3/(24*pi**2*TF))
+    equals: |-
+      solve("pi**2/2*x/TF - 12*pi**4/5*(x/TD)**3", 'x', 1e-3, TD)
+    samples:
+      TD: [50, 500, 91, 300]
+      TF: [5000, 50000, 24580, 12000]
+    tolerance: 1e-6
+    shown: ['id="p2-tstar"', '<Formula label="Where the two heat capacities are equal"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-del
+    kind: identity
+    where: 'Problem 2(b), solution: D(ε_F) = 3N/2ε_F (both spins, N = 1), against the numerical derivative of the count N(ε) = (ε/ε_F)^(3/2)'
+    formula: |-
+      3/(2*eF)
+    equals: |-
+      deriv('(u/eF)**1.5', 'u', eF)
+    samples:
+      eF: [1.0, 5.0, 2.0]
+    tolerance: 1e-6
+    shown: ['gives $D(\epsilon_F) = 3N/2\epsilon_F$']
+    source: {cite: reading1, at: 'p. 87'}
+    origin: page-own
+
+  - id: p2-tstarnum
+    answer: p2-tstarnum
+    where: 'Problem 2(c), answer box: T* for T_D = 91 K and the T_F of part (a), as the root of C_el = C_ph'
+    inputs: {n: 1.40e28 1/m**3, m_e: 9.1093837015e-31 kg, T_D: 91 K}
+    formula: |-
+      sqrt(5*T_D**3/(24*pi**2*hbar**2*(3*pi**2*n)**(2/3)/(2*m_e*k_B)))
+    expected: 0.804 K
+    shown: ['id="p2-tstarnum"', '$ K $= 0.804$ K']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-gamma
+    answer: p2-gamma
+    where: 'Problem 2(d), answer box: γ = (π²/2) N_A k_B/T_F in mJ/(mol K²)'
+    inputs: {n: 1.40e28 1/m**3, m_e: 9.1093837015e-31 kg, N_Av: 6.02214076e23}
+    formula: |-
+      pi**2/2*N_Av*k_B/(hbar**2*(3*pi**2*n)**(2/3)/(2*m_e*k_B))*1000
+    expected: 1.67 J/K**2
+    shown: ['id="p2-gamma"', 'that is $1.67$ mJ mol⁻¹ K⁻²']
+    source: {cite: codata, at: 'Avogadro constant, Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p2-pi2half
+    where: 'Problem 2(d), solution: π²/2 = 4.935'
+    formula: |-
+      pi**2/2
+    expected: '4.935'
+    shown: ['= 4.935 \times 8.314']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-R
+    where: 'Problem 2(d), solution: N_A k_B = 8.314 J/(mol K) for one mole'
+    inputs: {N_Av: 6.02214076e23}
+    formula: |-
+      N_Av*k_B
+    expected: 8.314 J/K
+    shown: ['4.935 \times 8.314\ \text{J mol}^{-1}\text{K}^{-1}']
+    source: {cite: codata, at: 'Avogadro constant, Boltzmann constant'}
+    origin: page-own
+
+  - id: p2-gamma-sci
+    where: 'Problem 2(d), solution: γ = 1.67e-3 J/(mol K²)'
+    formula: |-
+      pi**2/2*8.314462618/24580.05
+    expected: '1.67e-3'
+    shown: ['24\,580\ \text{K} = 1.67 \times 10^{-3}$ J mol⁻¹ K⁻²']
+    source: {cite: codata, at: 'our own numbers'}
+    origin: page-own
+
+  - id: p2-room
+    where: 'Problem 2(d), check: γT at 300 K, in J/(mol K)'
+    formula: |-
+      pi**2/2*8.314462618/24580.05*300
+    expected: '0.50'
+    shown: ['At 300 K this gives $0.50$ J mol⁻¹ K⁻¹']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dp
+    where: 'Problem 2(d), check: 3 N_A k_B = 24.9 J/(mol K)'
+    formula: |-
+      3*8.314462618
+    expected: '24.9'
+    shown: ['$3Nk_B = 24.9$ J mol⁻¹ K⁻¹ for one mole']
+    source: {cite: codata, at: 'Avogadro constant, Boltzmann constant'}
+    origin: page-own
+
+  - id: p2-twopct
+    where: 'Problem 2(d), check: γT at 300 K is two percent of 3N_A k_B'
+    formula: |-
+      (pi**2/2*8.314462618/24580.05*300)/(3*8.314462618)*100
+    expected: '2.0'
+    tolerance: '3%'
+    shown: ['two percent of the lattice''s classical']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-const-n
+    kind: fact
+    where: 'Problem 2, statement: n = 1.40e28 m⁻³, our value (close to potassium)'
+    expected: '1.40e28'
+    shown: ['$n = 1.40 \times 10^{28}$ atoms (and electrons) per m³']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-const-td
+    kind: fact
+    where: 'Problem 2, statement: T_D = 91 K, our value (close to potassium)'
+    expected: '91'
+    shown: ['a Debye temperature $T_D = 91$ K']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-const-me
+    where: 'Problem 2, statement: m_e = 9.109e-31 kg'
+    inputs: {m_e: 9.1093837015e-31 kg}
+    formula: |-
+      m_e
+    expected: 9.109e-31 kg
+    shown: ['$m_e = 9.109 \times 10^{-31}$ kg']
+    source: {cite: codata, at: 'electron mass'}
+    origin: page-own
+
+  - id: p2-const-hbar
+    where: 'Problem 2, statement: ħ = 1.0546e-34 J s'
+    formula: |-
+      hbar
+    expected: 1.0546e-34 J*s
+    shown: ['Use $\hbar = 1.0546 \times 10^{-34}$ J s']
+    source: {cite: codata, at: 'reduced Planck constant'}
+    origin: page-own
+
+  - id: p2-const-kb
+    where: 'Problem 2, statement: k_B = 1.3806e-23 J/K'
+    formula: |-
+      k_B
+    expected: 1.3806e-23 J/K
+    shown: ['$k_B = 1.3806 \times 10^{-23}$ J/K']
+    source: {cite: codata, at: 'Boltzmann constant'}
+    origin: page-own
+
+  - id: p2-const-na
+    where: 'Problem 2(d), statement: 6.022e23 atoms in a mole'
+    inputs: {N_Av: 6.02214076e23}
+    formula: |-
+      N_Av
+    expected: '6.022e23'
+    shown: ['with $6.022 \times 10^{23}$ atoms in a mole']
+    source: {cite: codata, at: 'Avogadro constant'}
+    origin: page-own
+
+  # ---- Problem 3: a cloud of fermionic atoms in a harmonic trap
+
+  - id: p3-dos
+    kind: identity
+    answer: p3-dos
+    where: 'Problem 3(a), answer box: D(ε), against slicing the pyramid of levels: at fixed n_x the states with n_y + n_z between s − n_x and s − n_x + ds number (s − n_x) ds, integrated over n_x numerically'
+    formula: |-
+      eps**2/(2*(hbar*w)**3)
+    equals: |-
+      integrate('(eps - u)/(hbar*w)**3', 'u', 0, eps)
+    samples:
+      eps: [1.0, 10.0, 4.0]
+      hbar: [0.5, 1.5, 1.0]
+      w: [0.5, 2.0, 1.0]
+    tolerance: 1e-8
+    shown: ['id="p3-dos"', '<Formula label="Density of states in a harmonic trap"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ef
+    kind: identity
+    answer: p3-ef
+    where: 'Problem 3(b), answer box: ε_F, against the root of ∫₀^ε_F D dε = N solved numerically'
+    formula: |-
+      (6*N)**(1/3)*hbar*w
+    equals: |-
+      solve("integrate('u**2/(2*(hbar*w)**3)', 'u', 0, x) - N", 'x', 0, 100*N*hbar*w)
+    samples:
+      N: [10, 1000, 100]
+      hbar: [0.5, 1.5, 1.0]
+      w: [0.5, 2.0, 1.0]
+    tolerance: 1e-6
+    shown: ['id="p3-ef"', '<Formula label="Fermi energy in a harmonic trap"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-e0
+    kind: identity
+    answer: p3-e0
+    where: 'Problem 3(c), answer box: E_0, against the numerical integral of ε D(ε) up to ε_F, with (ħω)³ = ε_F³/6N'
+    formula: |-
+      3/4*N*eF
+    equals: |-
+      integrate('u**3/2', 'u', 0, eF)*6*N/eF**3
+    samples:
+      N: [10, 1000, 100]
+      eF: [1.0, 5.0, 2.0]
+    tolerance: 1e-8
+    shown: ['id="p3-e0"', '<Formula label="Energy of the trapped cloud at zero temperature"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-levels
+    where: 'Problem 3(b), check: (6N)^(1/3) for N = 1e6, about 180 levels'
+    formula: |-
+      (6*1e6)**(1/3)
+    expected: '181.7'
+    shown: ['about 180 levels of the oscillator', 'and $(6 \times 10^6)^{1/3} = 181.7$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-hw
+    where: 'Problem 3(d), solution: ħω/k_B for ω = 2π × 100 s⁻¹, in nK'
+    inputs: {omega: 628.3185307179586 1/s}
+    formula: |-
+      hbar*omega/k_B
+    expected: 4.80e-9 K
+    shown: ['$\hbar\omega/k_B = 4.80$ nK']
+    source: {cite: codata, at: 'ħ, Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p3-tf
+    answer: p3-tf
+    where: 'Problem 3(d), answer box: T_F = (6N)^(1/3) ħω/k_B for N = 1e6, ω = 2π × 100 s⁻¹, in nK'
+    inputs: {omega: 628.3185307179586 1/s}
+    formula: |-
+      (6*1e6)**(1/3)*hbar*omega/k_B
+    expected: 872 nK
+    shown: ['id="p3-tf"', 'so $T_F = 872$ nK']
+    source: {cite: codata, at: 'ħ, Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p3-c
+    kind: identity
+    answer: p3-c
+    where: 'Problem 3(e), answer box: C, against (π²/3)k_B²T D(ε_F) with D(ε_F) = ε_F²/2(ħω)³ evaluated with (ħω)³ = ε_F³/6N and ε_F = k_B T_F'
+    formula: |-
+      pi**2*N*kB*T/TF
+    equals: |-
+      pi**2/3*kB**2*T*((kB*TF)**2/2)*6*N/(kB*TF)**3
+    samples:
+      N: [10, 1000, 100]
+      kB: [0.5, 1.5, 1.0]
+      T: [0.01, 0.1, 0.05]
+      TF: [1.0, 2.0, 1.5]
+    tolerance: 1e-10
+    shown: ['id="p3-c"', '<Formula label="Low-temperature heat capacity of the trapped cloud"']
+    source: {cite: reading1, at: 'p. 87 (our own solution)'}
+    origin: page-own
+
+  - id: p3-validity
+    where: 'Problem 3(e), check: π² T/T_F = 3 at T = 3/π² T_F = 0.30 T_F'
+    formula: |-
+      3/pi**2
+    expected: '0.30'
+    shown: ['reaches that value at $T = 0.30\,T_F$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ef-j
+    where: 'Problem 3(f), solution: ε_F = k_B × 872 nK in J'
+    inputs: {omega: 628.3185307179586 1/s}
+    formula: |-
+      (6*1e6)**(1/3)*hbar*omega
+    expected: 1.204e-29 J
+    shown: ['$\epsilon_F = k_B \times 872$ nK $= 1.204 \times 10^{-29}$ J']
+    source: {cite: codata, at: 'ħ (our own numbers)'}
+    origin: page-own
+
+  - id: p3-omega
+    where: 'Problem 3(f), solution: ω = 2π × 100 s⁻¹ = 628.3 s⁻¹'
+    formula: |-
+      2*pi*100
+    expected: '628.3'
+    shown: ['and $\omega = 628.3$ s⁻¹']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-rf
+    answer: p3-rf
+    where: 'Problem 3(f), answer box: R_F = √(2ε_F/mω²) for potassium-40, m = 6.636e-26 kg, in μm'
+    inputs: {m: 6.636e-26 kg, omega: 628.3185307179586 1/s}
+    formula: |-
+      sqrt(2*(6*1e6)**(1/3)*hbar*omega/(m*omega**2))
+    expected: 30.3 um
+    shown: ['id="p3-rf"', 'gives $R_F = 3.03 \times 10^{-5}$ m $= 30.3$ μm']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-aho
+    where: 'Problem 3(f), check: the ground-state size √(ħ/mω) = 1.6 μm'
+    inputs: {m: 6.636e-26 kg, omega: 628.3185307179586 1/s}
+    formula: |-
+      sqrt(hbar/(m*omega))
+    expected: 1.6e-6 m
+    tolerance: '2%'
+    shown: ['$\sqrt{\hbar/m\omega} = 1.6$ μm']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-wider
+    kind: identity
+    where: 'Problem 3(f), check: R_F/√(ħ/mω) = √(2ε_F/ħω) = √2 (6N)^(1/6)'
+    formula: |-
+      sqrt(2)*(6*N)**(1/6)
+    equals: |-
+      sqrt(2*(6*N)**(1/3))
+    samples:
+      N: [10, 1e6, 1000]
+    tolerance: 1e-10
+    shown: ['$R_F/\sqrt{\hbar/m\omega} = \sqrt2\,(6N)^{1/6} = 19$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-wider-num
+    where: 'Problem 3(f), check: √2 (6 × 1e6)^(1/6) = 19, about twenty'
+    formula: |-
+      sqrt(2)*(6e6)**(1/6)
+    expected: '19'
+    tolerance: '1%'
+    shown: ['= 19$, and the size grows', 'about twenty times wider']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-const-m
+    kind: fact
+    where: 'Problem 3(f), statement: m = 6.636e-26 kg for potassium-40, our value (39.964 u)'
+    expected: '6.636e-26'
+    shown: ['$m = 6.636 \times 10^{-26}$ kg (our value)']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: the potential barrier of a p–n junction
+
+  - id: p4-eb
+    kind: identity
+    answer: p4-eb
+    where: 'Problem 4(a), answer box: ε_B, against the root of the Boltzmann balance N_D e^(−ε_B/k_BT) = n_i²/N_A solved numerically'
+    formula: |-
+      kB*T*log(ND*NA/ni**2)
+    equals: |-
+      solve("ND*exp(-x/(kB*T)) - ni**2/NA", 'x', 0, 50*kB*T)
+    samples:
+      kB: [0.5, 1.5, 1.0, 0.8]
+      T: [0.5, 2.0, 1.0, 1.3]
+      ND: [10, 100, 30, 70]
+      NA: [10, 100, 50, 20]
+      ni: [0.5, 2.0, 1.0, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p4-eb"', '<Formula label="Height of the barrier"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-kt
+    where: 'Problem 4(b), statement: k_BT = 0.025852 eV at 300 K'
+    inputs: {T: 300 K}
+    formula: |-
+      k_B*T
+    expected: 0.025852 eV
+    tolerance: '0.01%'
+    shown: ['with $k_BT = 0.025852$ eV']
+    source: {cite: codata, at: 'Boltzmann constant, electron volt'}
+    origin: page-own
+
+  - id: p4-log
+    where: 'Problem 4(b), solution: ln 1e13 = 29.93'
+    formula: |-
+      log(1e22*1e23/1e16**2)
+    expected: '29.93'
+    shown: ['$\ln 10^{13} = 29.93$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-ebnum
+    answer: p4-ebnum
+    where: 'Problem 4(b), answer box: ε_B = k_BT ln(N_D N_A/n_i²) at 300 K, in eV'
+    inputs: {T: 300 K}
+    formula: |-
+      k_B*T*log(1e22*1e23/1e16**2)
+    expected: 0.774 eV
+    shown: ['id="p4-ebnum"', '0.025852$ eV $= 0.774$ eV']
+    source: {cite: codata, at: 'Boltzmann constant (our own numbers)'}
+    origin: page-own
+
+  - id: p4-builtin
+    where: 'Problem 4(b), solution: a built-in voltage of about 0.77 V'
+    formula: |-
+      0.025852*log(1e13)
+    expected: '0.77'
+    shown: ['a built-in voltage of about $0.77$ V']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-x
+    where: 'Problem 4(c), solution: x = eV/k_BT = 0.2/0.025852'
+    formula: |-
+      0.2/0.025852
+    expected: '7.736'
+    shown: ['$x = eV/k_BT = 0.2/0.025852 = 7.736$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-ratio
+    answer: p4-ratio
+    where: 'Problem 4(c), answer box: (e^x − 1)/(1 − e^(−x)) at x = 0.2 V/(k_BT/e), 300 K'
+    formula: |-
+      (exp(0.2/0.025852) - 1)/(1 - exp(-0.2/0.025852))
+    expected: '2290'
+    shown: ['id="p4-ratio"', '$(e^x - 1)/(1 - e^{-x}) = e^x = 2290$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-mv
+    where: 'Problem 4(c), check: the forward current grows by e for every k_BT/e = 25.9 mV'
+    formula: |-
+      0.025852*1000
+    expected: '25.9'
+    shown: ['grows by a factor $e$ for every $25.9$ mV']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-gap
+    kind: fact
+    where: 'Problem 4(b), check: the gap 1.12 eV of the lesson''s silicon-like example (semiconductors-and-diodes)'
+    expected: '1.12'
+    shown: ['(1.12 eV in the lesson''s example)']
+    source: {cite: reading1, at: 'p. 91 (the value is the lesson''s example, not the notes'')'}
+    origin: page-own
+
+  - id: p4-const
+    kind: fact
+    where: 'Problem 4(b), statement: N_D = 1e22 m⁻³, N_A = 1e23 m⁻³, n_i = 1.0e16 m⁻³, T = 300 K, our values'
+    expected: '1.0e16'
+    shown: ['$n_i = 1.0 \times 10^{16}$ m⁻³ and $T = 300$ K (our values']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
