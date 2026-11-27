@@ -1,0 +1,340 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the exact integral of the source over 1/|x − x'| done numerically (Problem 1(b) and the interior field of
+# Problem 2(b)), the moment of inertia integrated numerically (Problem 1(c)), the change to spherical coordinates
+# with numerical derivatives (Problem 1(d)), the Christoffel side of the force with numerical derivatives of a sample
+# β (Problem 2(a)), the Lorenz-gauge form of the Einstein tensor (Problem 3(c)), numerical derivatives of the
+# metric (Problem 4), and a second way of counting (Problem 5(c)).
+# The speed of light is 1 and G is kept. A field point "on the y axis" has y = r, one "on the x axis" has x = r.
+# Outside this file, while writing (NumPy): the Euler–Lagrange expression of the Lagrangian of Problem 3, computed by
+# numerical derivatives of the Lagrangian for a random quadratic h_μν, with sixteen independent components: the direct
+# variation equals the Einstein tensor with its first two terms replaced by twice the first, and its symmetric part,
+# as well as the symmetric part of the variation of the symmetrized Lagrangian, equals the linearized Einstein tensor
+# with factor +1. The page says so where it mentions this check.
+# Short names: q, w = integration or differentiation variables; c1, c2 = coefficients of a sample potential;
+# a1, a2, a3 = coefficients of a sample β; vy, vz = velocity components.
+
+page: content/year-5/8.962/8-962-problem-set-7.mdx
+calcs:
+  # ---- Problem 1(a)
+
+  # Exact dust: T_0x = ρ u_0 u_x = ρ (−γ)(γ v_x) with v_x = −Ω y and γ² = 1/(1 − Ω²(x² + y²)).
+  - id: p1a-t0x
+    kind: limit
+    answer: p1a-t0x
+    where: 'Problem 1(a), answer box: T_0x = ρΩy is the first-order part of the exact ρ γ² Ω y'
+    inputs: {rho: 1.3, x: 0.4, y: 0.7}
+    formula: rho*Omega*y
+    limit: rho*Omega*y/(1 - Omega**2*(x**2 + y**2))
+    vary: {Omega: [0.1, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['T_{0x} = T_{x0} = \rho\,\Omega\,y']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(b)
+
+  - id: p1b-moment
+    kind: identity
+    where: 'Problem 1(b), solution: the second moment of the ball, as a product of three numerical integrals'
+    formula: 4*pi*R**5/15
+    equals: integrate('q**4', 'q', 0, R)*integrate('sin(w)**3', 'w', 0, pi)*integrate('sin(w)**2', 'w', 0, 2*pi)
+    samples:
+      R: [0.5, 1, 1.7]
+    tolerance: 1e-9
+    shown: ['= \frac{R^5}{5}\cdot\frac43\cdot\pi = \frac{4\pi R^5}{15}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # Field point (0, r, 0) outside the ball; polar axis along y, so y' = q w with w = cos θ'; the φ' integral gives 2π.
+  # h_0x = 4G ρΩ ∫ y'/|x − x'| d³x', with the full 1/|x − x'|, not its expansion.
+  - id: p1b-h0x
+    kind: identity
+    answer: p1b-h0x
+    where: 'Problem 1(b), answer box: h_0x at a point on the y axis outside the ball, against the full integral done numerically'
+    formula: 16*pi*G*rho*Omega*R**5*y/(15*r**3)
+    equals: 4*G*rho*Omega*2*pi*integrate("q**3*integrate('w/sqrt(r**2 + q**2 - 2*r*q*w)', 'w', -1, 1)", 'q', 0, R)
+    samples:
+      G: [1, 0.7, 1.3]
+      rho: [1, 2, 0.5]
+      Omega: [0.3, 0.1, 0.2]
+      R: [1, 0.8, 0.5]
+      r: [2, 3, 1.5]
+      y: [2, 3, 1.5]
+    tolerance: 1e-7
+    shown: ['h_{0x} = \frac{16\pi}{15}\,\frac{G\rho\,\Omega R^5\,y}{r^3}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # Field point (r, 0, 0); h_0y = 4G ∫ T_0y/|x − x'| = −4GρΩ ∫ x'/|x − x'|, polar axis along x.
+  - id: p1b-h0y
+    kind: identity
+    answer: p1b-h0y
+    where: 'Problem 1(b), answer box: h_0y at a point on the x axis outside the ball, against the full integral done numerically'
+    formula: -16*pi*G*rho*Omega*R**5*x/(15*r**3)
+    equals: -4*G*rho*Omega*2*pi*integrate("q**3*integrate('w/sqrt(r**2 + q**2 - 2*r*q*w)', 'w', -1, 1)", 'q', 0, R)
+    samples:
+      G: [1, 0.7, 1.3]
+      rho: [1, 2, 0.5]
+      Omega: [0.3, 0.1, 0.2]
+      R: [1, 0.8, 0.5]
+      r: [2, 3, 1.5]
+      x: [2, 3, 1.5]
+    tolerance: 1e-7
+    shown: ['h_{0y} = -\frac{16\pi}{15}\,\frac{G\rho\,\Omega R^5\,x}{r^3}']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(c)
+
+  # I/ρ = ∫ (x² + y²) d³x = 2π ∫ q⁴ dq ∫ (1 − w²) dw.
+  - id: p1c-inertia
+    kind: identity
+    where: 'Problem 1(c), solution: the moment of inertia of a uniform ball, integrated numerically'
+    formula: 8*pi/15*rho*R**5
+    equals: rho*2*pi*integrate('q**4', 'q', 0, R)*integrate('1 - w**2', 'w', -1, 1)
+    samples:
+      rho: [0.5, 1, 2]
+      R: [0.5, 1, 1.7]
+    tolerance: 1e-9
+    shown: ['= \tfrac{8\pi}{15}\rho R^5$']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-h0x
+    kind: identity
+    answer: p1c-h0x
+    where: 'Problem 1(c), answer box: 2GSy/r³ against the result of part (b) with ρ = S/(Ω I/ρ), I/ρ integrated numerically'
+    formula: 2*G*S*y/r**3
+    equals: 16*pi*G*(S/(Omega*2*pi*integrate('q**4', 'q', 0, R)*integrate('1 - w**2', 'w', -1, 1)))*Omega*R**5*y/(15*r**3)
+    samples:
+      G: [0.5, 1, 2]
+      S: [0.5, 1.5, 2]
+      Omega: [0.1, 0.3, 0.5]
+      R: [0.5, 1, 0.8]
+      y: [0.3, 1, 1.5]
+      r: [2, 3, 4]
+    tolerance: 1e-9
+    shown: ['h_{0x} = \frac{2GS\,y}{r^3}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(d): h_0φ = h_0x ∂x/∂φ + h_0y ∂y/∂φ, h_0θ likewise, with numerical derivatives of x(φ), y(φ), x(θ), y(θ).
+
+  - id: p1d-h0phi
+    kind: identity
+    answer: p1d-h0phi
+    where: 'Problem 1(d), answer box: h_0φ from part (c) and numerical derivatives of x and y with respect to φ'
+    formula: -2*G*S*sin(theta)**2/r
+    equals: 2*G*S/r**3*((r*sin(theta)*sin(phi))*deriv('r*sin(theta)*cos(w)', 'w', phi) - (r*sin(theta)*cos(phi))*deriv('r*sin(theta)*sin(w)', 'w', phi))
+    samples:
+      G: [0.5, 1, 2]
+      S: [0.5, 1.5, 2]
+      r: [2, 3, 4]
+      theta: [0.3, 0.9, 1.4]
+      phi: [0.2, 1.7, 4]
+    tolerance: 1e-7
+    shown: ['-\frac{2GS\,(x^2 + y^2)}{r^3} = -\frac{2GS\sin^2\theta}{r}']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-h0theta
+    kind: identity
+    where: 'Problem 1(d), solution: h_0θ = 0, from part (c) and numerical derivatives of x and y with respect to θ'
+    formula: 0
+    equals: 2*G*S/r**3*((r*sin(theta)*sin(phi))*deriv('r*sin(w)*cos(phi)', 'w', theta) - (r*sin(theta)*cos(phi))*deriv('r*sin(w)*sin(phi)', 'w', theta))
+    samples:
+      G: [0.5, 1, 2]
+      S: [0.5, 1.5, 2]
+      r: [2, 3, 4]
+      theta: [0.3, 0.9, 1.4]
+      phi: [0.2, 1.7, 4]
+    tolerance: 1e-8
+    shown: ['h_{0r} = h_{0\theta} = 0']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2(a): sample β = (a1 y² + a2 y z, a3 x z, 0); H = curl β written out by hand on the left,
+  # (∂_x β_j − ∂_j β_x) v_j from numerical derivatives on the right (the x component; v_x drops out).
+
+  - id: p2a-force
+    kind: identity
+    where: 'Problem 2(a), solution: the x component of v × H equals (∂_x β_j − ∂_j β_x) v_j for a sample β'
+    formula: vy*(a3*z - 2*a1*y - a2*z) - vz*(a2*y)
+    equals: (deriv('a3*w*z', 'w', x) - deriv('a1*w**2 + a2*w*z', 'w', y))*vy - deriv('a1*y**2 + a2*y*w', 'w', z)*vz
+    samples:
+      a1: [0.3, -0.7, 1.1]
+      a2: [0.5, 0.2, -0.4]
+      a3: [-0.6, 0.9, 0.3]
+      x: [0.4, -1.2, 0.8]
+      y: [1.1, 0.5, -0.3]
+      z: [-0.2, 0.7, 1.5]
+      vy: [0.01, -0.02, 0.03]
+      vz: [0.02, 0.01, -0.01]
+    tolerance: 1e-7
+    shown: ['= -\partial_i\Phi + \left(\partial_i\beta_j - \partial_j\beta_i\right)v_j']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2(b)
+
+  # Interior field of the rotating ball at (0, r, 0) with r < R: the full integral, split at q = r.
+  - id: p2b-interior
+    kind: identity
+    where: 'Problem 2(b), check: h_0x inside the ball, at a point on the y axis, against the full integral done numerically'
+    formula: 16*pi/3*G*rho*Omega*y*(R**2/2 - 3*r**2/10)
+    equals: 4*G*rho*Omega*2*pi*(integrate("q**3*integrate('w/sqrt(r**2 + q**2 - 2*r*q*w)', 'w', -1, 1)", 'q', 0, r) + integrate("q**3*integrate('w/sqrt(r**2 + q**2 - 2*r*q*w)', 'w', -1, 1)", 'q', r, R))
+    samples:
+      G: [1, 0.7]
+      rho: [1, 2]
+      Omega: [0.3, 0.1]
+      R: [1, 2]
+      r: [0.5, 0.9]
+      y: [0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['h_{0x} = \tfrac{16\pi}{3}G\rho\Omega\,y\left(\tfrac12R^2 - \tfrac{3}{10}r^2\right)']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  # The Laplacian of that interior field at (0.1, y0, 0.2), y0 = −J/(ρΩ), numerically, against 16πG J_x with J_x = −ρΩ y0.
+  - id: p2b-lap
+    kind: identity
+    answer: p2b-lap
+    where: 'Problem 2(b), answer box: ∇²β_x = 16πG J_x, from numerical second derivatives of the interior field of the rotating ball'
+    inputs: {rho: 1.3, Omega: 0.4, R: 2}
+    formula: 16*pi*G*J
+    equals: deriv('16*pi/3*G*rho*Omega*(-J/(rho*Omega))*(R**2/2 - 3*(w**2 + (J/(rho*Omega))**2 + 0.04)/10)', 'w', 0.1, 2) + deriv('16*pi/3*G*rho*Omega*w*(R**2/2 - 3*(0.01 + w**2 + 0.04)/10)', 'w', -J/(rho*Omega), 2) + deriv('16*pi/3*G*rho*Omega*(-J/(rho*Omega))*(R**2/2 - 3*(0.01 + (J/(rho*Omega))**2 + w**2)/10)', 'w', 0.2, 2)
+    samples:
+      G: [0.5, 1, 2]
+      J: [0.1, 0.2, 0.3]
+    tolerance: 1e-6
+    shown: ['\nabla^2\beta_i = -16\pi G\,T_{0i} = 16\pi G\,J_i']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-lap-check
+    kind: identity
+    where: 'Problem 2(b), check: the Laplacian of the interior field is −16πGρΩy'
+    formula: -16*pi*G*rho*Omega*y
+    equals: 16*pi/3*G*rho*Omega*deriv('w*(R**2/2 - 3*w**2/10)', 'w', y, 2) + 16*pi/3*G*rho*Omega*y*(-3/10)*4
+    samples:
+      G: [0.5, 1]
+      rho: [1, 2]
+      Omega: [0.3, 0.1]
+      R: [1, 2]
+      y: [0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['Its Laplacian is $-16\pi G\rho\Omega\,y$']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3(c): the Lorenz-gauge route G_00 = −½∇²h̄_00 with h̄_00 = −4Φ, for a sample Φ = c1 x² + c2 y² + c3 z²
+  # with c3 = L/2 − c1 − c2 (so that ∇²Φ = L), second derivatives numerical.
+
+  - id: p3c-g00
+    kind: identity
+    answer: p3c-g00
+    where: 'Problem 3(c), answer box: G_00 = 2∇²Φ against −½∇²h̄_00 with h̄_00 = −4Φ for a sample potential'
+    formula: 2*L
+    equals: -0.5*(deriv('-4*c1*w**2', 'w', 0.3, 2) + deriv('-4*c2*w**2', 'w', 0.7, 2) + deriv('-4*(L/2 - c1 - c2)*w**2', 'w', 1.1, 2))
+    samples:
+      L: [0.5, 1.7, 3]
+      c1: [0.1, 0.4, -0.2]
+      c2: [0.3, -0.5, 0.6]
+    tolerance: 1e-6
+    shown: ['= \frac12\left[2\nabla^2\Phi - 2\nabla^2\Phi + 4\nabla^2\Phi\right] = 2\nabla^2\Phi']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4b-htx
+    kind: identity
+    answer: p4b-htx
+    where: 'Problem 4(b), answer box: h_tx = −∂_t ξ_x − ∂_x ξ_t with ξ_t = a x², ξ_x = 0, derivative numerical'
+    formula: -2*a*x
+    equals: -deriv('a*w**2', 'w', x)
+    samples:
+      a: [0.1, 0.5, 1]
+      x: [0.2, 1, 2]
+    tolerance: 1e-7
+    shown: ['= -\partial_t\xi_x - \partial_x\xi_t = -2a\,x']
+    source: {cite: reading1, at: 'transcript p. 8 (our own problem)'}
+    origin: page-own
+
+  # On the x axis h_tt = −2Φ = 2GM/x; R_txtx = −½ ∂ₓ² h_tt, second derivative numerical.
+  - id: p4c-rtxtx
+    kind: identity
+    answer: p4c-rtxtx
+    where: 'Problem 4(c), answer box: R_txtx = −½ ∂ₓ² h_tt on the x axis, numerical second derivative'
+    formula: -2*G*M/r**3
+    equals: -0.5*deriv('2*G*M/w', 'w', r, 2)
+    samples:
+      G: [0.5, 1, 2]
+      M: [0.5, 1, 2]
+      r: [1, 2.5, 4]
+    tolerance: 1e-6
+    shown: ['= -\frac12\,\partial_x^2 h_{tt} = \partial_x^2\Phi = -\frac{2GM}{r^3}']
+    source: {cite: reading1, at: 'transcript p. 9 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5b-theta
+    kind: identity
+    answer: p5b-theta
+    where: 'Problem 5(b), answer box: Θ = (H − ∇²λ)/3 with H the trace of h_ij = −2Φ_N δ_ij and λ = 0'
+    formula: -2*Phi
+    equals: ((-2*Phi) + (-2*Phi) + (-2*Phi) - 0)/3
+    samples:
+      Phi: [-2, -1, -0.5]
+    tolerance: 1e-12
+    shown: ['\Theta = \frac13\left(H - \nabla^2\lambda\right) = -2\Phi_N']
+    source: {cite: reading2, at: 'transcript pp. 9–12 (our own problem)'}
+    origin: page-own
+
+  - id: p5c-count
+    kind: identity
+    answer: p5c-count
+    where: 'Problem 5(c), answer box: n(n − 3)/2 against the second count, n(n + 1)/2 components minus n gauge functions minus n bound fields'
+    formula: n*(n-3)/2
+    equals: n*(n + 1)/2 - 2*n
+    samples:
+      n: [4, 5, 6, 10, 11]
+    tolerance: 1e-12
+    shown: ['= \frac{n^2 - 3n}{2} = \frac{n\,(n - 3)}{2}']
+    source: {cite: reading2, at: 'transcript pp. 9–10 (our own problem)'}
+    origin: page-own
+
+  - id: p5c-direct
+    kind: identity
+    where: 'Problem 5(c), solution: the direct count, (n − 1)n/2 − 1 − (n − 1)'
+    formula: (n - 1)*n/2 - 1 - (n - 1)
+    equals: n*(n - 3)/2
+    samples:
+      n: [4, 5, 6, 10, 11]
+    tolerance: 1e-12
+    shown: ['\frac{(n - 1)\,n}{2} - 1 - (n - 1)']
+    source: {cite: reading2, at: 'transcript pp. 9–10 (our own problem)'}
+    origin: page-own
+
+  - id: p5c-four
+    where: 'Problem 5(c), check: n(n − 3)/2 for n = 4'
+    formula: 4*(4 - 3)/2
+    expected: '2'
+    shown: ['For $n = 4$ this is 2']
+    source: {cite: reading2, at: 'transcript pp. 9–10'}
+    origin: page-own
+
+  - id: p5c-ten
+    kind: identity
+    where: 'Problem 5(c), check: in four dimensions the ten components are 4 gauge + 4 bound + 2 radiative'
+    formula: 4*5/2
+    equals: 4 + 4 + 2
+    samples:
+      n: [4]
+    tolerance: 1e-12
+    shown: ['the lesson''s $10 = 4 + 4 + 2$']
+    source: {cite: reading2, at: 'transcript p. 15'}
+    origin: page-own
