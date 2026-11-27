@@ -1,0 +1,748 @@
+# Calculations on content/year-3/8.06/8-06-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 lets U p U⁻¹ act on a test function by numerical derivatives; Problem 2 tests the orbit on the force law
+# and on MIT's eq. (5); Problem 3 lets the commutators act on test functions in explicit gauges, applies R² and r_c²
+# to explicit oscillator eigenfunctions, and tests the angular momentum on arbitrary classical phase-space points;
+# Problem 4 computes the current of the plane wave from Im(ψ*∂ψ) numerically; Problem 5 integrates the flux and
+# applies the ring Hamiltonian to its eigenfunction; Problem 6 solves the two forms of the adiabatic condition for
+# the critical rate; Problem 7 uses the Rabi limit and a damped numerical Fresnel integral.
+# The numerical solution of Problem 7(c) (a complex differential equation) cannot be recomputed by this harness:
+# its values are recorded as facts. They come from scipy's solve_ivp (RK45, rtol 1e-11, atol 1e-13), started at
+# τ = −25 with B = 1, dB/dτ = 0 (script kept outside the repository).
+
+page: content/year-3/8.06/8-06-problem-set-7.mdx
+calcs:
+  # ---- Problem 1: gauge covariance
+
+  - id: p1-upu
+    kind: identity
+    where: 'Problem 1(b): the real part of U p U⁻¹ g for a real test function g = exp(−x²) and Λ = lam x², by numerical derivatives: ħ Im[e^{iθ} d/dx(e^{−iθ} g)] with θ = qΛ/ħc, against −(q/c)(dΛ/dx) g'
+    formula: |-
+      -q/c*deriv('lam*s**2', 's', x0)*exp(-x0**2)
+    equals: |-
+      hbar*(cos(q*lam*x0**2/(hbar*c))*deriv('-sin(q*lam*s**2/(hbar*c))*exp(-s**2)', 's', x0) + sin(q*lam*x0**2/(hbar*c))*deriv('cos(q*lam*s**2/(hbar*c))*exp(-s**2)', 's', x0))
+    samples:
+      q: [1, 2, 0.5]
+      c: [1, 0.5, 2]
+      hbar: [1, 2, 0.5]
+      lam: [0.7, 0.3, 1.2]
+      x0: [0.4, 0.9, -0.6]
+    tolerance: 1e-06
+    shown: ['<Formula label="The momentum between U and its inverse"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: classical orbit x = X + r0 cos(ωc t + θ0), y = Y − r0 sin(ωc t + θ0)
+
+  - id: p2-y
+    kind: identity
+    answer: p2-y
+    where: 'Problem 2(a), answer box: from MIT''s eq. (5), y = Y + v_x/ω_c, with v_x the numerical time derivative of x(t) = X + r0 cos(ω_c t + θ0)'
+    formula: |-
+      Y - r0*sin(wc*t + th0)
+    equals: |-
+      Y + deriv('X + r0*cos(wc*s + th0)', 's', t)/wc
+    samples:
+      X: [0.3, -1, 2]
+      Y: [-0.5, 1, 0.2]
+      r0: [0.5, 1, 2]
+      wc: [2, 1, 0.5]
+      t: [0.2, 1.3, 3]
+      th0: [0.1, 0.5, 1]
+    tolerance: 1e-07
+    shown: ['id="p2-y"', '<Formula label="General solution: a circle around (X, Y)"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-force-x
+    kind: identity
+    where: 'Problem 2(a): the x component of the force law, d²x/dt² = ω_c dy/dt, on the solution, by numerical derivatives'
+    formula: |-
+      deriv('X + r0*cos(wc*s + th0)', 's', t, 2)
+    equals: |-
+      wc*deriv('Y - r0*sin(wc*s + th0)', 's', t)
+    samples:
+      X: [0.3, -1, 2]
+      Y: [-0.5, 1, 0.2]
+      r0: [0.5, 1, 2]
+      wc: [2, 1, 0.5]
+      t: [0.2, 1.3, 3]
+      th0: [0.1, 0.5, 1]
+    tolerance: 1e-05
+    shown: ['<Formula label="Equations for the velocity"']
+    source: {cite: mit, at: 'Problem 2(a) and eq. (4), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-force-y
+    kind: identity
+    where: 'Problem 2(a): the y component of the force law, d²y/dt² = −ω_c dx/dt, on the solution, by numerical derivatives'
+    formula: |-
+      deriv('Y - r0*sin(wc*s + th0)', 's', t, 2)
+    equals: |-
+      -wc*deriv('X + r0*cos(wc*s + th0)', 's', t)
+    samples:
+      X: [0.3, -1, 2]
+      Y: [-0.5, 1, 0.2]
+      r0: [0.5, 1, 2]
+      wc: [2, 1, 0.5]
+      t: [0.2, 1.3, 3]
+      th0: [0.1, 0.5, 1]
+    tolerance: 1e-05
+    shown: ['<Formula label="The velocity turns at the cyclotron frequency"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-r0
+    kind: identity
+    answer: p2-r0
+    where: 'Problem 2(a), answer box: the radius from the balance of the centripetal force m v²/r and the magnetic force (q/c) v B, r = m v c/(qB); ω_c in the samples equals qB/(mc)'
+    formula: |-
+      v/wc
+    equals: |-
+      mm*v*cc/(qq*BB)
+    samples:
+      v: [0.5, 1, 2]
+      qq: [1, 2, 1]
+      BB: [2, 1, 1]
+      mm: [1, 0.5, 2]
+      cc: [2, 2, 1]
+      wc: [1, 2, 0.5]
+    tolerance: 1e-12
+    shown: ['id="p2-r0"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: operators in a constant field
+
+  - id: p3-vv
+    kind: identity
+    answer: p3-vv
+    where: 'Problem 3(a), answer box: [v_x, v_y] acting on the test function exp(−x² − xy), divided by i times that function, in the gauge A = (−By/2 + 2k x, Bx/2 + 3k y²) (the circular gauge plus the gradient of k x² + k y³), by numerical derivatives'
+    formula: |-
+      hbar*q*B/(m**2*c)
+    equals: |-
+      hbar*q/(m**2*c)*((deriv('(B*s/2 + 3*kk*y0**2)*exp(-s**2 - s*y0)', 's', x0) - (B*x0/2 + 3*kk*y0**2)*deriv('exp(-s**2 - s*y0)', 's', x0)) + ((-B*y0/2 + 2*kk*x0)*deriv('exp(-x0**2 - x0*s)', 's', y0) - deriv('(-B*s/2 + 2*kk*x0)*exp(-x0**2 - x0*s)', 's', y0)))/exp(-x0**2 - x0*y0)
+    samples:
+      hbar: [1, 2, 0.5]
+      q: [1, 0.5, 2]
+      B: [2, 1, 0.5]
+      m: [1, 2, 0.5]
+      c: [1, 0.5, 2]
+      kk: [0.3, 0.7, 1.1]
+      x0: [0.4, -0.3, 0.8]
+      y0: [0.2, 0.6, -0.5]
+    tolerance: 1e-06
+    shown: ['id="p3-vv"', '<Formula label="Commutator of the velocities"']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-xy
+    kind: identity
+    answer: p3-xy
+    where: 'Problem 3(b), answer box: in the Landau gauge A = (−By, 0), X = x + p_y/(mω_c) and Y = −p_x/(mω_c); [X, Y] acting on exp(−x²), divided by i times that function, by numerical derivatives. ℓ_B in the samples equals √(ħ/mω_c)'
+    formula: |-
+      -lB**2
+    equals: |-
+      -hbar/(m*wc)*(deriv('s*exp(-s**2)', 's', x0) - x0*deriv('exp(-s**2)', 's', x0))/exp(-x0**2)
+    samples:
+      hbar: [1, 2, 1]
+      m: [2, 1, 1]
+      wc: [0.5, 0.5, 4]
+      lB: [1, 2, 0.5]
+      x0: [0.4, -0.3, 0.8]
+    tolerance: 1e-07
+    shown: ['id="p3-xy"', '<Formula label="Commutator of the centre coordinates"']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-r2
+    kind: identity
+    answer: p3-r2
+    where: 'Problem 3(d), answer box: with X → x and Y → iℓ_B² d/dx (which obey [X, Y] = −iℓ_B²), R² = x² − ℓ_B⁴ d²/dx²; applied to the first excited oscillator function x exp(−x²/2ℓ_B²), n_R = 1, by a numerical second derivative'
+    formula: |-
+      lB**2*(2*nR + 1)
+    equals: |-
+      (x0**2*x0*exp(-x0**2/(2*lB**2)) - lB**4*deriv('s*exp(-s**2/(2*lB**2))', 's', x0, 2))/(x0*exp(-x0**2/(2*lB**2)))
+    samples:
+      lB: [0.5, 1, 2]
+      nR: [1, 1, 1]
+      x0: [0.3, 0.7, 1.1]
+    tolerance: 1e-05
+    shown: ['id="p3-r2"', '<Formula label="Spectrum of the distance of the centre, squared"']
+    source: {cite: mit, at: 'Problem 3(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-r2-n2
+    kind: identity
+    where: 'Problem 3(d): the same operator on the second excited oscillator function (2x²/ℓ_B² − 1) exp(−x²/2ℓ_B²): eigenvalue 5 ℓ_B²'
+    formula: |-
+      lB**2*(2*2 + 1)
+    equals: |-
+      (x0**2*(2*x0**2/lB**2 - 1)*exp(-x0**2/(2*lB**2)) - lB**4*deriv('(2*s**2/lB**2 - 1)*exp(-s**2/(2*lB**2))', 's', x0, 2))/((2*x0**2/lB**2 - 1)*exp(-x0**2/(2*lB**2)))
+    samples:
+      lB: [0.5, 1, 2]
+      x0: [0.3, 0.2, 1.1]
+    tolerance: 1e-05
+    shown: ['with the number operator $\hat b^\dagger\hat b$ taking the values $n_R$']
+    source: {cite: mit, at: 'Problem 3(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-r2-n0
+    kind: identity
+    where: 'Problem 3(d), check: the smallest value ℓ_B², from the Gaussian exp(−x²/2ℓ_B²)'
+    formula: |-
+      lB**2
+    equals: |-
+      (x0**2*exp(-x0**2/(2*lB**2)) - lB**4*deriv('exp(-s**2/(2*lB**2))', 's', x0, 2))/exp(-x0**2/(2*lB**2))
+    samples:
+      lB: [0.5, 1, 2]
+      x0: [0.3, 0.7, 1.1]
+    tolerance: 1e-05
+    shown: ['The smallest value is $\ell_B^2$, not zero']
+    source: {cite: mit, at: 'Problem 3(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rc2
+    kind: identity
+    answer: p3-rc2
+    where: 'Problem 3(e), answer box: r_c² = 2H/(mω_c²), with H in the Landau gauge applied to the first excited oscillator function around y0, (y − y0) exp(−mω_c(y − y0)²/2ħ), n = 1, by a numerical second derivative. ℓ_B in the samples equals √(ħ/mω_c)'
+    formula: |-
+      lB**2*(2*n + 1)
+    equals: |-
+      2/(m*wc**2)*(-hbar**2/(2*m)*deriv('(s - y0)*exp(-m*wc*(s - y0)**2/(2*hbar))', 's', y1, 2) + 0.5*m*wc**2*(y1 - y0)**2*(y1 - y0)*exp(-m*wc*(y1 - y0)**2/(2*hbar)))/((y1 - y0)*exp(-m*wc*(y1 - y0)**2/(2*hbar)))
+    samples:
+      hbar: [1, 2, 1]
+      m: [2, 1, 1]
+      wc: [0.5, 0.5, 4]
+      lB: [1, 2, 0.5]
+      n: [1, 1, 1]
+      y0: [0.2, -0.4, 0.1]
+      y1: [0.7, 0.5, 0.4]
+    tolerance: 1e-05
+    shown: ['id="p3-rc2"', '<Formula label="Spectrum of the radius of the orbit, squared"']
+    source: {cite: mit, at: 'Problem 3(e), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-dots
+    kind: identity
+    answer: p3-dots
+    where: 'Problem 3(f), answer box: in the circular gauge the difference L_z − (x m v_y − y m v_x) is (q/c)(x A_y − y A_x), divided by x² + y²'
+    formula: |-
+      q*B/(2*c)
+    equals: |-
+      q/c*(x0*(B*x0/2) - y0*(-B*y0/2))/(x0**2 + y0**2)
+    samples:
+      q: [1, 0.5, 2]
+      B: [2, 1, 0.5]
+      c: [1, 0.5, 2]
+      x0: [0.4, -0.3, 0.8]
+      y0: [0.2, 0.6, -0.5]
+    tolerance: 1e-12
+    shown: ['id="p3-dots"', '<Formula label="Gauge covariant angular momentum"']
+    source: {cite: mit, at: 'Problem 3(f), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-prop
+    kind: identity
+    answer: p3-prop
+    where: 'Problem 3(f), answer box: for arbitrary classical values of x, y, v_x, v_y, the ratio of m(x v_y − y v_x) + (mω_c/2)(x² + y²) to R² − r_c², with X = x + v_y/ω_c, Y = y − v_x/ω_c and r_c² = (v_x² + v_y²)/ω_c²'
+    formula: |-
+      m*wc/2
+    equals: |-
+      (m*(xx*vy - yy*vx) + m*wc/2*(xx**2 + yy**2))/((xx + vy/wc)**2 + (yy - vx/wc)**2 - (vx**2 + vy**2)/wc**2)
+    samples:
+      m: [1, 2, 0.5]
+      wc: [0.5, 1, 2]
+      xx: [0.4, -0.3, 0.8]
+      yy: [0.2, 0.6, -0.5]
+      vx: [1.1, -0.7, 0.3]
+      vy: [0.5, 0.9, -1.2]
+    tolerance: 1e-10
+    shown: ['id="p3-prop"', '<Formula label="Angular momentum from the two radii"']
+    source: {cite: mit, at: 'Problem 3(f), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-lz
+    kind: identity
+    answer: p3-lz
+    where: 'Problem 3(f), answer box: (mω_c/2) times the difference of the two spectra; ℓ_B in the samples equals √(ħ/mω_c)'
+    formula: |-
+      hbar*(nR - n)
+    equals: |-
+      m*wc/2*(lB**2*(2*nR + 1) - lB**2*(2*n + 1))
+    samples:
+      hbar: [1, 2, 1]
+      m: [2, 1, 1]
+      wc: [0.5, 0.5, 4]
+      lB: [1, 2, 0.5]
+      nR: [3, 0, 2]
+      n: [1, 4, 2.5]
+    tolerance: 1e-12
+    shown: ['id="p3-lz"', '<Formula label="Eigenvalues of the gauge covariant angular momentum"']
+    source: {cite: mit, at: 'Problem 3(f), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-lz-classical
+    kind: identity
+    where: 'Problem 3(f), check: on the classical orbit of Problem 2 around the origin, x = r0 cos a, y = −r0 sin a, v = (−r0ω_c sin a, −r0ω_c cos a), the angular momentum is −(mω_c/2) r0²'
+    formula: |-
+      -m*wc/2*r0**2
+    equals: |-
+      m*(r0*cos(aa)*(-r0*wc*cos(aa)) - (-r0*sin(aa))*(-r0*wc*sin(aa))) + m*wc/2*((r0*cos(aa))**2 + (r0*sin(aa))**2)
+    samples:
+      m: [1, 2, 0.5]
+      wc: [0.5, 1, 2]
+      r0: [0.7, 1.5, 2]
+      aa: [0.3, 1.9, 4.2]
+    tolerance: 1e-12
+    shown: ['with the sum $-\frac{m\omega_c}{2}r_0^2$']
+    source: {cite: mit, at: 'Problem 3(f), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: probability current
+
+  - id: p4-plane
+    kind: identity
+    answer: p4-plane
+    where: 'Problem 4(a), answer box (our addition): MIT''s eq. (11), (ħ/m) Im(ψ*∂ψ) − (q/mc)|ψ|²A, for ψ = √ρ0 e^{ikx}, with Im(ψ*ψ′) = Re ψ (Im ψ)′ − Im ψ (Re ψ)′ by numerical derivatives'
+    formula: |-
+      rho0*(hbar*k - q*A0/c)/m
+    equals: |-
+      hbar/m*(sqrt(rho0)*cos(k*x0)*deriv('sqrt(rho0)*sin(k*s)', 's', x0) - sqrt(rho0)*sin(k*x0)*deriv('sqrt(rho0)*cos(k*s)', 's', x0)) - q/(m*c)*rho0*A0
+    samples:
+      rho0: [0.5, 1, 2]
+      hbar: [1, 2, 0.5]
+      k: [1, 2, 3]
+      q: [1, 0.5, 2]
+      A0: [0.5, 2, 1]
+      c: [1, 0.5, 2]
+      m: [1, 2, 0.5]
+      x0: [0.4, -0.3, 0.8]
+    tolerance: 1e-07
+    shown: ['id="p4-plane"', '<Formula label="Current of a plane wave in a uniform vector potential"']
+    source: {cite: mit, at: 'Problem 4(a), p. 4 (our own solution, our addition)'}
+    origin: page-own
+
+  - id: p4-gauge
+    kind: identity
+    where: 'Problem 4(b), check: with Λ = λx the wavenumber becomes k + qλ/(ħc) and A0 becomes A0 + λ; the current is unchanged'
+    formula: |-
+      rho0*(hbar*k - q*A0/c)/m
+    equals: |-
+      rho0*(hbar*(k + q*lam/(hbar*c)) - q*(A0 + lam)/c)/m
+    samples:
+      rho0: [0.5, 1, 2]
+      hbar: [1, 2, 0.5]
+      k: [1, 2, 3]
+      q: [1, 0.5, 2]
+      A0: [0.5, 2, 1]
+      c: [1, 0.5, 2]
+      m: [1, 2, 0.5]
+      lam: [0.7, -0.4, 1.3]
+    tolerance: 1e-12
+    shown: ['the two changes cancel.']
+    source: {cite: mit, at: 'Problem 4(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: bead on a ring around a solenoid
+
+  - id: p5-ain
+    kind: identity
+    answer: p5-ain
+    where: 'Problem 5(a), answer box: the flux through a circle of radius r inside the solenoid, by numerical integration of B0 over the disc, divided by the circumference'
+    formula: |-
+      B0*r/2
+    equals: |-
+      integrate('B0*2*pi*s', 's', 0, r)/(2*pi*r)
+    samples:
+      B0: [0.5, 1, 2]
+      r: [0.2, 0.6, 1]
+    tolerance: 1e-10
+    shown: ['id="p5-ain"']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-aout
+    kind: identity
+    answer: p5-aout
+    where: 'Problem 5(a), answer box: outside, the flux is that of the whole solenoid (numerical integration up to a), divided by the circumference 2πr'
+    formula: |-
+      B0*a**2/(2*r)
+    equals: |-
+      integrate('B0*2*pi*s', 's', 0, a)/(2*pi*r)
+    samples:
+      B0: [0.5, 1, 2]
+      a: [0.5, 1, 1.5]
+      r: [2, 3, 4]
+    tolerance: 1e-10
+    shown: ['id="p5-aout"', '<Formula label="Vector potential of the solenoid"']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-curl-in
+    kind: identity
+    where: 'Problem 5(a), check: the z component of the curl, (1/r) d(rα)/dr, inside the solenoid, by a numerical derivative'
+    formula: |-
+      B0
+    equals: |-
+      deriv('s*B0*s/2', 's', r)/r
+    samples:
+      B0: [0.5, 1, 2]
+      r: [0.2, 0.6, 1]
+    tolerance: 1e-07
+    shown: ['this is $B_0$ inside, and zero outside']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-curl-out
+    kind: identity
+    where: 'Problem 5(a), check: outside, (1/r) d(rα)/dr = 0 (written as 1 + curl = 1)'
+    formula: |-
+      1 + deriv('s*B0*a**2/(2*s)', 's', r)/r
+    equals: |-
+      1
+    samples:
+      B0: [0.5, 1, 2]
+      a: [0.5, 1, 1.5]
+      r: [2, 3, 4]
+    tolerance: 1e-07
+    shown: ['The two forms agree at $r = a$.']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-en
+    kind: identity
+    answer: p5-en
+    where: 'Problem 5(c), answer box: the gauge-transformed function e^{i(n − f)φ} obeys the free equation; its real part cos((n − f)φ) gives E = −(ħ²/2mb²) (d²/dφ²)/(function), by a numerical second derivative'
+    formula: |-
+      hbar**2*(n - f)**2/(2*m*b**2)
+    equals: |-
+      -hbar**2/(2*m*b**2)*deriv('cos((n - f)*s)', 's', s0, 2)/cos((n - f)*s0)
+    samples:
+      hbar: [1, 2, 0.5]
+      n: [2, -1, 0]
+      f: [0.3, 0.7, 0.45]
+      m: [1, 2, 0.5]
+      b: [0.5, 1, 2]
+      s0: [0.2, 0.3, 0.5]
+    tolerance: 1e-05
+    shown: ['id="p5-en"', '<Formula label="Energy levels of the bead around the solenoid"']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-phi0
+    kind: identity
+    answer: p5-phi0
+    where: 'Problem 5(d), answer box: the flux at which the level n = 1 comes down to zero energy, the root of 1 − qΦ/(2πħc), found numerically'
+    formula: |-
+      2*pi*hbar*c/q
+    equals: |-
+      solve('1 - q*s/(2*pi*hbar*c)', 's', 0.01, 1000)
+    samples:
+      hbar: [1, 2, 0.5]
+      c: [1, 0.5, 2]
+      q: [1, 0.5, 2]
+    tolerance: 1e-09
+    shown: ['id="p5-phi0"', '<Formula label="The flux quantum"']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  - id: p5-ground
+    answer: p5-ground
+    where: 'Problem 5(d), number box (our addition): the lowest level at Φ_B/Φ0 = 3.7 is n = 4, in units of ħ²/(2mb²)'
+    inputs: {}
+    formula: |-
+      (4 - 3.7)**2
+    expected: '0.09'
+    tolerance: 0.0005
+    shown: ['the lowest level is $(4 - 3.7)^2 = 0.09$']
+    source: {cite: mit, at: 'Problem 5(d), p. 4 (our own solution, our addition)'}
+    origin: page-own
+
+  - id: p5-next
+    where: 'Problem 5(d): the next level at Φ_B/Φ0 = 3.7 is n = 3'
+    inputs: {}
+    formula: |-
+      (3 - 3.7)**2
+    expected: '0.49'
+    tolerance: 0.0005
+    shown: ['at $(3 - 3.7)^2 = 0.49$']
+    source: {cite: mit, at: 'Problem 5(d), p. 4 (our own solution, our addition)'}
+    origin: page-own
+
+  - id: p5-same
+    where: 'Problem 5(d), check: the lowest level for Φ_B/Φ0 = 0.7 is n = 1; for 0.3 (n = 0) it is (0 − 0.3)², the same'
+    inputs: {}
+    formula: |-
+      (1 - 0.7)**2
+    expected: '0.09'
+    tolerance: 0.0005
+    shown: ['The same value, 0.09, is the lowest level for $\Phi_B/\Phi_0 = 0.3$']
+    source: {cite: mit, at: 'Problem 5(d), p. 4 (our own solution, our addition)'}
+    origin: page-own
+
+  # ---- Problem 6: adiabatic spin rotation
+
+  - id: p6-gap
+    kind: identity
+    answer: p6-gap
+    where: 'Problem 6(a), answer box: at t = 0 the eigenvalues of −μ0 σ·B are the two roots of E² = μ0²(B_x² + B_y²), found numerically; B⊥ in the samples equals √(B_x² + B_y²)'
+    formula: |-
+      2*mu0*Bp
+    equals: |-
+      solve('s**2 - mu0**2*(Bx**2 + By**2)', 's', 0, 100) - solve('s**2 - mu0**2*(Bx**2 + By**2)', 's', -100, 0)
+    samples:
+      mu0: [1, 2, 0.5]
+      Bx: [3, 0.6, 1.5]
+      By: [4, 0.8, 2]
+      Bp: [5, 1, 2.5]
+    tolerance: 1e-08
+    shown: ['id="p6-gap"', '<Formula label="Instantaneous energies of the spin"']
+    source: {cite: mit, at: 'Problem 6(a), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-gamma
+    kind: identity
+    answer: p6-gamma
+    where: 'Problem 6(a), answer box: a quarter of the rate at which the coupling criterion ħ|Ḣ₋₊|/(gap)² = ħμ0γ/(2μ0B⊥)² reaches 1, solved numerically for γ (the 4 is the number of order one of this form of the condition)'
+    formula: |-
+      mu0*Bp**2/hbar
+    equals: |-
+      solve('hbar*mu0*s/(2*mu0*Bp)**2 - 1', 's', 0.0001, 10000)/4
+    samples:
+      mu0: [1, 2, 0.5]
+      Bp: [0.5, 1, 2]
+      hbar: [1, 0.5, 2]
+    tolerance: 1e-08
+    shown: ['id="p6-gamma"', '<Formula label="The coupling compared with the gap"']
+    source: {cite: reading5, at: 'eqs. (3.9), (3.10), for the two spin states'}
+    origin: page-own
+
+  - id: p6-gamma-lz
+    kind: identity
+    where: 'Problem 6(a): the same combination from the Landau–Zener form: twice the rate at which |H12|²/(ħα) = (μ0B⊥)²/(ħ 2μ0γ) falls to 1, solved numerically (the 2 is the number of order one of this form)'
+    formula: |-
+      mu0*Bp**2/hbar
+    equals: |-
+      2*solve('(mu0*Bp)**2/(hbar*2*mu0*s) - 1', 's', 0.0001, 10000)
+    samples:
+      mu0: [1, 2, 0.5]
+      Bp: [0.5, 1, 2]
+      hbar: [1, 0.5, 2]
+    tolerance: 1e-08
+    shown: ['<Formula label="Adiabatic condition for the spin"']
+    source: {cite: reading5, at: 'eq. (4.12)'}
+    origin: page-own
+
+  - id: p6-lnp
+    kind: identity
+    answer: p6-lnp
+    where: 'Problem 6(a), answer box (our addition): the notes'' exponent 2π|H12|²/(ħα), with |H12| = μ0B⊥ and α the numerical time derivative of the difference of the diagonal entries, μ0γt − (−μ0γt)'
+    formula: |-
+      pi*mu0*Bp**2/(hbar*ga)
+    equals: |-
+      2*pi*(mu0*Bp)**2/(hbar*deriv('mu0*ga*s - (-mu0*ga*s)', 's', t0))
+    samples:
+      mu0: [1, 2, 0.5]
+      Bp: [0.5, 1, 2]
+      hbar: [1, 0.5, 2]
+      ga: [0.5, 2, 1]
+      t0: [0.3, -1, 2]
+    tolerance: 1e-07
+    shown: ['id="p6-lnp"', '<Formula label="Probability that the spin fails to follow the field"']
+    source: {cite: reading5, at: 'eq. (4.18), with the entries of this problem (our addition)'}
+    origin: page-own
+
+  - id: p6-t
+    kind: identity
+    answer: p6-t
+    where: 'Problem 6(b), answer box: the time at which the lower bound B⊥/T on γ meets the upper bound μ0B⊥²/ħ, solved numerically for T'
+    formula: |-
+      hbar/(mu0*Bp)
+    equals: |-
+      solve('Bp/s - mu0*Bp**2/hbar', 's', 0.0001, 10000)
+    samples:
+      mu0: [1, 2, 0.5]
+      Bp: [0.5, 1, 2]
+      hbar: [1, 0.5, 2]
+    tolerance: 1e-08
+    shown: ['id="p6-t"', '<Formula label="How long the sweep must take"']
+    source: {cite: mit, at: 'Problem 6(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-grad
+    kind: identity
+    answer: p6-grad
+    where: 'Problem 6(c), answer box: the gradient at which the rate v|∇B| seen by an atom of speed √(k_BT/m) equals the bound μ0B²/ħ of part (a), solved numerically'
+    formula: |-
+      mu0*B**2/(hbar*sqrt(kB*T/m))
+    equals: |-
+      solve('sqrt(kB*T/m)*s - mu0*B**2/hbar', 's', 0.0001, 10000)
+    samples:
+      mu0: [1, 2, 0.5]
+      B: [0.5, 1, 2]
+      hbar: [1, 0.5, 2]
+      kB: [1, 2, 0.5]
+      T: [2, 0.5, 1]
+      m: [0.5, 1, 2]
+    tolerance: 1e-08
+    shown: ['id="p6-grad"', '<Formula label="Adiabatic condition in a magnetic trap"']
+    source: {cite: mit, at: 'Problem 6(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-grad-units
+    kind: units
+    where: 'Problem 6(c): both sides of ħ v |∇B| ≪ μ0 B² have the same units (SI stand-ins: μ0 in J/T)'
+    inputs: {mu: 1 J/T, BB: 1 T, vv: 1 m/s, gB: 1 T/m}
+    terms: ['hbar*vv*gB', 'mu*BB**2']
+    shown: ['the left side, $v|\nabla B|/B$, is the rate at which the field seen by the atom changes']
+    source: {cite: mit, at: 'Problem 6(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p6-hole
+    kind: identity
+    answer: p6-hole
+    where: 'Problem 6(d), answer box (our addition): the distance at which ħ v |∇B| = μ0 (|∇B| d)², solved numerically'
+    formula: |-
+      sqrt(hbar*v/(mu0*gB))
+    equals: |-
+      solve('hbar*v*gB - mu0*(gB*s)**2', 's', 0.0001, 10000)
+    samples:
+      hbar: [1, 0.5, 2]
+      v: [0.5, 1, 2]
+      mu0: [1, 2, 0.5]
+      gB: [2, 0.5, 1]
+    tolerance: 1e-08
+    shown: ['id="p6-hole"', '<Formula label="Radius of the region where spins flip"']
+    source: {cite: mit, at: 'Problem 6(d), p. 6 (our own solution, our addition)'}
+    origin: page-own
+
+  # ---- Problem 7: Landau–Zener
+
+  - id: p7-c1
+    kind: identity
+    answer: p7-c1
+    where: 'Problem 7(a), answer box: the rate of change of the phase φ(t) = (1/ħ)∫₀ᵗ α s ds, by numerical integration and differentiation'
+    formula: |-
+      al*t/hbar
+    equals: |-
+      (integrate('al*s/hbar', 's', 0, t + 0.001) - integrate('al*s/hbar', 's', 0, t - 0.001))/0.002
+    samples:
+      al: [0.5, 1, 2]
+      t: [0.2, 1.3, 3]
+      hbar: [1, 2, 0.5]
+    tolerance: 1e-08
+    shown: ['id="p7-c1"', '<Formula label="Second-order equation for B"']
+    source: {cite: mit, at: 'Problem 7(a), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p7-c0
+    kind: identity
+    answer: p7-c0
+    where: 'Problem 7(a), answer box: for α = 0 the exact solution is the Rabi oscillation B = cos(|H12| t/ħ); c0 = −(d²B/dt²)/B by a numerical second derivative'
+    formula: |-
+      h12**2/hbar**2
+    equals: |-
+      -deriv('cos(h12*s/hbar)', 's', t0, 2)/cos(h12*t0/hbar)
+    samples:
+      h12: [0.5, 1, 2]
+      hbar: [1, 2, 0.5]
+      t0: [0.3, 0.7, 0.2]
+    tolerance: 1e-05
+    shown: ['id="p7-c0"', 'an oscillation at the lesson''s Rabi frequency']
+    source: {cite: mit, at: 'Problem 7(a), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p7-a2
+    kind: limit
+    answer: p7-a2
+    where: 'Problem 7(b), answer box: (|H12|/ħ)² times the squared modulus of ∫e^{iαt²/2ħ}dt, computed numerically with a damping factor e^{−εt²} (cosine and sine parts, twice the integral from 0 to 5/√ε), as ε → 0'
+    inputs: {h12: 0.7, hbar: 1.3, al: 2.2}
+    formula: |-
+      2*pi*h12**2/(hbar*al)
+    limit: |-
+      (h12/hbar)**2*((2*integrate('exp(-eps*s**2)*cos(al*s**2/(2*hbar))', 's', 0, 5/sqrt(eps)))**2 + (2*integrate('exp(-eps*s**2)*sin(al*s**2/(2*hbar))', 's', 0, 5/sqrt(eps)))**2)
+    vary: {eps: [0.4, 0.2, 0.1, 0.05]}
+    tolerance: 0.003
+    shown: ['id="p7-a2"', '<Formula label="First-order amplitude and probabilities"']
+    source: {cite: mit, at: 'Problem 7(b), p. 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-tau
+    kind: identity
+    answer: p7-tau
+    where: 'Problem 7(c), answer box: the coefficient (αt/ħ)(dt/dτ) of dB/dτ, after dividing the equation by (α/|H12|)², must be γτ with γ = |H12|²/(ħα): so τ = that coefficient divided by γ'
+    formula: |-
+      al*t/h12
+    equals: |-
+      (al*t/hbar)*(h12/al)/(h12**2/(hbar*al))
+    samples:
+      al: [0.5, 1, 2]
+      t: [0.2, 1.3, 3]
+      h12: [2, 0.5, 1]
+      hbar: [1, 2, 0.5]
+    tolerance: 1e-12
+    shown: ['id="p7-tau"', '<Formula label="Changing the time variable"']
+    source: {cite: mit, at: 'Problem 7(c), p. 7 (our own solution)'}
+    origin: page-own
+
+  - id: p7-lz
+    answer: p7-lz
+    where: 'Problem 7(c), number box (our addition): the Landau–Zener prediction exp(−2πγ) for γ = 0.1'
+    inputs: {}
+    formula: |-
+      exp(-2*pi*0.1)
+    expected: '0.533'
+    shown: ['The prediction is $e^{-2\pi \times 0.1} = e^{-0.628} = 0.533$.']
+    source: {cite: reading5, at: 'eq. (4.18)'}
+    origin: page-own
+
+  - id: p7-first
+    answer: p7-first
+    where: 'Problem 7(c), number box (our addition): the first-order result 1 − 2πγ of part (b) for γ = 0.1'
+    inputs: {}
+    formula: |-
+      1 - 2*pi*0.1
+    expected: '0.372'
+    shown: ['$1 - 2\pi \times 0.1 = 0.372$']
+    source: {cite: mit, at: 'Problem 7(c), p. 7 (our own solution, our addition)'}
+    origin: page-own
+
+  - id: p7-2pig
+    where: 'Problem 7(c): 2πγ for γ = 0.1, the expansion parameter of the first-order result'
+    inputs: {}
+    formula: |-
+      2*pi*0.1
+    expected: '0.63'
+    shown: ['$2\pi\gamma = 0.63$ is not small']
+    source: {cite: mit, at: 'Problem 7(c), p. 7 (our own solution, our addition)'}
+    origin: page-own
+
+  - id: p7-given
+    kind: fact
+    where: 'Problem 7(c), statement: MIT''s value of γ and its interval'
+    shown: ['for $\gamma = 0.1$ on the interval from $\tau = -25$ to $\tau = 25$']
+    source: {cite: mit, at: 'Problem 7(c), p. 7'}
+    origin: mit
+
+  - id: p7-table
+    kind: fact
+    where: 'Problem 7(c): |B(τ)|² from our own numerical solution (scipy solve_ivp, rtol 1e-11), started at τ = −25 with B = 1, dB/dτ = 0: 1, 0.9783, 0.8770, 0.4750, 0.6447, 0.6167, 0.5153, 0.5685'
+    shown: ['| probability | 1 | 0.978 | 0.877 | 0.475 | 0.645 | 0.617 | 0.515 | 0.569 |']
+    source: {cite: mit, at: 'Problem 7(c), p. 7 (our own numerical solution)'}
+    origin: page-own
+
+  - id: p7-shape
+    kind: fact
+    where: 'Problem 7(c): the same solution: lowest value 0.4139 at τ = 6.45; between τ = 15 and 25 the minimum is 0.4941, the maximum 0.6170, the mean 0.5544'
+    shown: ['to a lowest value of 0.414 near $\tau = 6.4$', 'it moves between 0.49 and 0.62, around a mean of 0.55']
+    source: {cite: mit, at: 'Problem 7(c), p. 7 (our own numerical solution)'}
+    origin: page-own
+
+  - id: p7-long
+    kind: fact
+    where: 'Problem 7(c): the same solver from τ = −100 to 100: the mean of |B|² over τ from 60 to 100 is 0.5378'
+    shown: ['gives a mean of 0.538 over the last fifth of the interval up to $\tau = 100$']
+    source: {cite: mit, at: 'Problem 7(c), p. 7 (our own numerical solution)'}
+    origin: page-own
