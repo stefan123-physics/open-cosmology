@@ -1,0 +1,680 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 finds the equilibrium shift by a root search and the cloud's field from its enclosed charge (integral);
+# Problem 2 solves the two boundary conditions of the spherical cavity by a root search; Problem 3 adds the bound
+# point charge at the centre to q and integrates the field for the potential; Problem 4 differentiates the dipole
+# fields numerically and adds the torques; Problem 5 integrates the free charge over the inner sphere and the field
+# from a to b; Problem 6 integrates the chord length for the covered area and differentiates it numerically.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: eps0, e (exact in the 2019 SI).
+
+page: content/year-4/8.07/8-07-problem-set-6.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points, 10 + 15 + 10 + 15 + 15 + 15'
+    formula: |-
+      10 + 15 + 10 + 15 + 15 + 15
+    expected: '80'
+    shown: ['80 points in all']
+    source: {cite: mit, at: 'credit line and Problems 1 to 6, pp. 1–3'}
+    origin: mit
+
+  # ---- Problem 1: the model atom
+
+  - id: p1-gauss
+    kind: identity
+    where: 'Problem 1(a): the field of the uniform cloud at distance s < a, from the charge inside a sphere of radius s (integral of the density over shells, q/a³ times ∫3u² du), divided by 4π ε0 s²'
+    formula: |-
+      (q/a**3)*integrate('3*u**2', 'u', 0, s)/(4*pi*eps0*s**2)
+    equals: |-
+      q*s/(4*pi*eps0*a**3)
+    samples:
+      q: [1.0, 2.0, 0.5, 3.0, 1.5]
+      a: [1.0, 2.0, 1.5, 3.0, 0.8]
+      s: [0.5, 1.0, 0.3, 2.5, 0.7]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+    tolerance: 1e-8
+    shown: ['<Formula label="The field inside the uniform cloud"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-alpha
+    kind: identity
+    answer: p1-alpha
+    where: 'Problem 1(a), answer box: q times the equilibrium shift (root of q s/(4π ε0 a³) = E in s) divided by E'
+    formula: |-
+      4*pi*eps0*a**3
+    equals: |-
+      q*solve('x*q/(4*pi*eps0*a**3) - E', 'x', 0, 1e5)/E
+    samples:
+      q: [1.0, 2.0, 0.5, 3.0, 1.5]
+      a: [1.0, 2.0, 1.5, 0.5, 0.8]
+      E: [1.0, 3.0, 0.5, 2.0, 1.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p1-alpha"', '<Formula label="The polarizability of the model atom"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-4pieps0
+    where: 'Problem 1(b): 4π ε0'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      4*pi*eps0
+    expected: 1.113e-10 F/m
+    shown: ['$4\pi\varepsilon_0 = 1.113 \times 10^{-10}$ F/m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-a3
+    where: 'Problem 1(b): a³ for a = 0.53 × 10⁻¹⁰ m'
+    inputs: {a: 0.53e-10 m}
+    formula: |-
+      a**3
+    expected: 1.489e-31 m**3
+    shown: ['$a^3 = 1.489 \times 10^{-31}$ m³']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-alpha-num
+    where: 'Problem 1(b): α = 4π ε0 a³'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 0.53e-10 m}
+    formula: |-
+      4*pi*eps0*a**3
+    expected: 1.656e-41 F*m**2
+    shown: ['$\alpha = 1.656 \times 10^{-41}$ C m²/V']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-d-m
+    where: 'Problem 1(b): the shift d = α E/q in metres'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 0.53e-10 m, E: 1.0e6 V/m, q: 1.602176634e-19 C}
+    formula: |-
+      4*pi*eps0*a**3*E/q
+    expected: 1.03e-16 m
+    shown: ['$= 1.03 \times 10^{-16}$ m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-d
+    answer: p1-d
+    where: 'Problem 1(b), answer box: the shift in femtometres, by a root search on the force balance on the nucleus (SI numbers, d = x fm)'
+    formula: |-
+      solve('1.602176634e-19*1.0e6 - (1.602176634e-19)**2*x*1e-15/(4*pi*8.8541878128e-12*(0.53e-10)**3)', 'x', 0, 10)
+    expected: '0.103'
+    shown: ['id="p1-d"', '$= 0.103$ fm']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-ratio
+    where: 'Problem 1(b): d/a, about 2 × 10⁻⁶'
+    formula: |-
+      4*pi*8.8541878128e-12*(0.53e-10)**2*1.0e6/1.602176634e-19
+    expected: '2e-6'
+    tolerance: 5%
+    shown: ['about $2 \times 10^{-6}$ of the atom''s radius']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-edge
+    where: 'Problem 1(b): the field of the cloud at its edge, q/(4π ε0 a²)'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 0.53e-10 m, q: 1.602176634e-19 C}
+    formula: |-
+      q/(4*pi*eps0*a**2)
+    expected: 5.1e11 V/m
+    shown: ['$q/(4\pi\varepsilon_0 a^2) = 5.1 \times 10^{11}$ V/m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-edge-ratio
+    where: 'Problem 1(b): the field at the edge over the applied 10⁶ V/m, "half a million"'
+    formula: |-
+      1.602176634e-19/(4*pi*8.8541878128e-12*(0.53e-10)**2)/1.0e6
+    expected: '5e5'
+    tolerance: 5%
+    shown: ['half a million times stronger']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: cavities
+
+  - id: p2-needle
+    kind: identity
+    answer: p2-needle
+    where: 'Problem 2(a), answer box: E is continuous along the long wall, so E = E0 = D0/(εr ε0) inside, and D = ε0 E in the empty needle'
+    formula: |-
+      D0/er
+    equals: |-
+      eps0*(D0/(er*eps0))
+    samples:
+      D0: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+    tolerance: 1e-10
+    shown: ['id="p2-needle"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-wafer
+    kind: identity
+    answer: p2-wafer
+    where: 'Problem 2(b), answer box: E0 plus the field P/ε0 of the bound charges ±P on the two faces, with P = ε0 χe E0 (the check of the solution)'
+    formula: |-
+      er*E0
+    equals: |-
+      E0 + eps0*(er - 1)*E0/eps0
+    samples:
+      E0: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+    tolerance: 1e-10
+    shown: ['id="p2-wafer"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-sphere
+    kind: identity
+    answer: p2-sphere
+    where: 'Problem 2(c), answer box: E0 − β with β the root of εr (E0 + 2β) = E0 − β (continuity of V and of the radial D at the wall)'
+    formula: |-
+      3*er*E0/(2*er + 1)
+    equals: |-
+      E0 - solve('er*(E0 + 2*x) - (E0 - x)', 'x', -10, 10)
+    samples:
+      E0: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p2-sphere"', '<Formula label="The field in a spherical cavity"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-sphere-small
+    kind: limit
+    where: 'Problem 2(c), mistake hint: for εr near 1 the frozen-polarization form (εr + 2)/3 and the exact 3εr/(2εr + 1) agree to first order in εr − 1 (difference of order (εr − 1)²)'
+    formula: |-
+      (3*er/(2*er + 1) - (er + 2)/3)/(er - 1)
+    limit: '0'
+    vary: {er: [1.1, 1.01, 1.001, 1.0001]}
+    tolerance: 1e-3
+    shown: ['id="p2-sphere"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-num
+    answer: p2-num
+    where: 'Problem 2(d), answer box: 3 × 4/(2 × 4 + 1)'
+    formula: |-
+      3*4/(2*4 + 1)
+    expected: '1.333'
+    shown: ['id="p2-num"', '= 12/9 = 1.333$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-large
+    kind: limit
+    where: 'Problem 2(c), check: for very large εr the cavity field tends to 3/2 E0'
+    formula: |-
+      3*er/(2*er + 1)
+    limit: '1.5'
+    vary: {er: [10, 100, 1000, 100000]}
+    tolerance: 1e-4
+    shown: ['$E_c \to \frac32 E_0$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: the dielectric ball
+
+  - id: p3-ein
+    kind: identity
+    answer: p3-ein
+    where: 'Problem 3(a), answer box: the vacuum field of the free charge q plus the bound point charge −q(εr − 1)/εr at the centre'
+    formula: |-
+      q/(4*pi*er*eps0*r**2)
+    equals: |-
+      (q - q*(er - 1)/er)/(4*pi*eps0*r**2)
+    samples:
+      q: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['id="p3-ein"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-sigma
+    kind: identity
+    answer: p3-sigma
+    where: 'Problem 3(b), answer box: σb = P · r̂ at R with P = ε0 (εr − 1) E and E = q/(4π εr ε0 R²)'
+    formula: |-
+      (er - 1)*q/(4*pi*er*R**2)
+    equals: |-
+      eps0*(er - 1)*q/(4*pi*er*eps0*R**2)
+    samples:
+      q: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      R: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['id="p3-sigma"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-neutral
+    kind: identity
+    where: 'Problem 3(b): the surface bound charge 4πR² σb plus the bound point charge at the centre is zero'
+    formula: |-
+      4*pi*R**2*(er - 1)*q/(4*pi*er*R**2) - (er - 1)*q/er
+    equals: |-
+      0
+    samples:
+      q: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      R: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['<Formula label="The bound charge at the centre"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-vr
+    where: 'Problem 3(c): V(R) = q/(4π ε0 R) for q = 2.0 nC, R = 5.0 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, q: 2.0 nC, R: 5.0 cm}
+    formula: |-
+      q/(4*pi*eps0*R)
+    expected: 359.5 V
+    shown: ['$= 359.5$ V']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-k
+    where: 'Problem 3(c): 1/(4π ε0)'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      1/(4*pi*eps0)
+    expected: 8.988e9 m/F
+    shown: ['$V(R) = q/(4\pi\varepsilon_0 R) = 8.988 \times 10^{9}']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-inner
+    where: 'Problem 3(c): the piece from R to R/2, 359.5 V/5.0'
+    formula: |-
+      359.5/5.0
+    expected: '71.9'
+    shown: ['$= 71.9$ V']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-v
+    answer: p3-v
+    where: 'Problem 3(c), answer box: V(R) plus the integral of the field inside, q/(4π εr ε0 s²), from R/2 to R (numerical, SI numbers)'
+    formula: |-
+      2.0e-9/(4*pi*8.8541878128e-12*0.05) + integrate('2.0e-9/(4*pi*5.0*8.8541878128e-12*s**2)', 's', 0.025, 0.05)
+    expected: '431'
+    shown: ['id="p3-v"', 'So $V(R/2) = 431$ V']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-vacuum
+    where: 'Problem 3(c), check: 2 × 359.5 V without the dielectric'
+    formula: |-
+      2*359.5
+    expected: '719'
+    shown: ['$2 \times 359.5 = 719$ V', 'gives that 719 V']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: two dipoles
+
+  - id: p4-f2
+    kind: identity
+    answer: p4-f2
+    where: 'Problem 4(a), answer box: p2 times the x derivative (numerical) of the z field of dipole 1 on the x axis, −p1/(4π ε0 x³), at x = r'
+    formula: |-
+      3*p1*p2/(4*pi*eps0*r**4)
+    equals: |-
+      p2*deriv('-p1/(4*pi*eps0*u**3)', 'u', r, 1)
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p4-f2"', '<Formula label="The force on dipole 2"']
+    source: {cite: mit, at: 'Problem 4, pp. 1–2'}
+    origin: page-own
+
+  - id: p4-f2-offaxis
+    kind: identity
+    where: 'Problem 4(a): the full z component of the field of dipole 1, 3p1 z²/ρ⁵ − p1/ρ³, differentiated along x at (r, 0, 0) numerically; the z² term adds nothing on the axis'
+    formula: |-
+      deriv('(3*p1*0**2/(u**2 + 0**2)**2.5 - p1/(u**2 + 0**2)**1.5)/(4*pi*eps0)', 'u', r, 1)
+    equals: |-
+      3*p1/(4*pi*eps0*r**4)
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['<Formula label="The field of dipole 1"']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-f1
+    kind: identity
+    answer: p4-f1
+    where: 'Problem 4(a), answer box: p1 times the z derivative (numerical) at z = 0 of the z field of dipole 2 at (0, 0, z), 3(p2 · s)s_z/(4π ε0 s⁵) with s = (−r, 0, z)'
+    formula: |-
+      -3*p1*p2/(4*pi*eps0*r**4)
+    equals: |-
+      p1*deriv('3*p2*(-r)*u/(4*pi*eps0*(r**2 + u**2)**2.5)', 'u', 0, 1)
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p4-f1"', '<Formula label="The force on dipole 1"']
+    source: {cite: mit, at: 'Problem 4, pp. 1–2'}
+    origin: page-own
+
+  - id: p4-f1-x
+    kind: identity
+    where: 'Problem 4(a): the x field of dipole 2 near the origin, (3r² − s²)p2/(4π ε0 s⁵) with s² = r² + z², has zero z derivative at z = 0 (numerical)'
+    formula: |-
+      deriv('p2*(3*r**2 - (r**2 + u**2))/(4*pi*eps0*(r**2 + u**2)**2.5)', 'u', 0, 1)
+    equals: |-
+      0
+    samples:
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['the $x$ component of the field changes only at second order in $z$']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t1
+    kind: identity
+    answer: p4-t1
+    where: 'Problem 4(b), answer box: p1 times the x field of dipole 2 at the origin, from the general dipole formula with r̂ = −ê_x: (3(−p2)(−1) − p2)/(4π ε0 r³)'
+    formula: |-
+      2*p1*p2/(4*pi*eps0*r**3)
+    equals: |-
+      p1*(3*(-p2)*(-1) - p2)/(4*pi*eps0*r**3)
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['id="p4-t1"', '<Formula label="The torques on the two dipoles"']
+    source: {cite: mit, at: 'Problem 4, p. 2'}
+    origin: page-own
+
+  - id: p4-t2
+    kind: identity
+    answer: p4-t2
+    where: 'Problem 4(b), answer box: (p2 ê_x × E1z ê_z)_y = −p2 E1z, with E1z = −p1/(4π ε0 r³)'
+    formula: |-
+      p1*p2/(4*pi*eps0*r**3)
+    equals: |-
+      -p2*(-p1/(4*pi*eps0*r**3))
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['id="p4-t2"']
+    source: {cite: mit, at: 'Problem 4, p. 2'}
+    origin: page-own
+
+  - id: p4-orb
+    kind: identity
+    answer: p4-orb
+    where: 'Problem 4(b), answer box: (r ê_x × F2z ê_z)_y = −r F2z, with F2z found by the numerical derivative of p4-f2'
+    formula: |-
+      -3*p1*p2/(4*pi*eps0*r**3)
+    equals: |-
+      -r*p2*deriv('-p1/(4*pi*eps0*u**3)', 'u', r, 1)
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p4-orb"', '<Formula label="The torque of the force on dipole 2"']
+    source: {cite: mit, at: 'Problem 4, p. 2'}
+    origin: page-own
+
+  - id: p4-total
+    kind: identity
+    where: 'Problem 4(b): the three y components add to zero'
+    formula: |-
+      2*p1*p2/(4*pi*eps0*r**3) + p1*p2/(4*pi*eps0*r**3) - 3*p1*p2/(4*pi*eps0*r**3)
+    equals: |-
+      0
+    samples:
+      p1: [1.0, 2.0, 3.0, 1.5, 2.5]
+      p2: [2.0, 1.0, 1.5, 3.0, 2.2]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['(2 + 1 - 3)\,\hat e_y = 0']
+    source: {cite: mit, at: 'Problem 4(b), p. 2'}
+    origin: page-own
+
+  # ---- Problem 5: the half-filled spherical capacitor
+
+  - id: p5-e
+    kind: identity
+    answer: p5-e
+    where: 'Problem 5(a), answer box: the free charge on the inner sphere, 2π a² ∫ ε(cos θ) E(a) d(cos θ) with ε = ε0 above and εr ε0 below (numerical), equals Q; written as Q times E/(that integral)'
+    formula: |-
+      Q/(2*pi*eps0*(1 + er)*r**2)
+    equals: |-
+      Q/(r**2*2*pi*(integrate('eps0', 'u', 0, 1) + integrate('er*eps0', 'u', -1, 0)))
+    samples:
+      Q: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      r: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p5-e"', '<Formula label="The field between the spheres"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-c
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(b), answer box: Q over the integral of the field from a to b (numerical)'
+    formula: |-
+      2*pi*eps0*(1 + er)*a*b/(b - a)
+    equals: |-
+      1/integrate('1/(2*pi*eps0*(1 + er)*u**2)', 'u', a, b)
+    samples:
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      a: [0.5, 1.0, 0.7, 0.9, 0.6]
+      b: [1.5, 2.0, 3.0, 1.6, 2.5]
+    tolerance: 1e-8
+    shown: ['id="p5-c"', '<Formula label="The capacitance of the half-filled capacitor"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-frac
+    kind: identity
+    answer: p5-frac
+    where: 'Problem 5(c), answer box: the integral of ε over the lower half of the sphere (in cos θ) over the integral over the whole sphere (numerical)'
+    formula: |-
+      er/(1 + er)
+    equals: |-
+      integrate('er', 'u', -1, 0)/(integrate('1', 'u', 0, 1) + integrate('er', 'u', -1, 0))
+    samples:
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p5-frac"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-sb
+    kind: identity
+    answer: p5-sb
+    where: 'Problem 5(d), answer box: the total charge density on the upper half (free only, ε0 E(a)) minus the free charge density on the lower half (εr ε0 E(a)), since the totals agree'
+    formula: |-
+      -(er - 1)*Q/(2*pi*(1 + er)*a**2)
+    equals: |-
+      eps0*Q/(2*pi*eps0*(1 + er)*a**2) - er*eps0*Q/(2*pi*eps0*(1 + er)*a**2)
+    samples:
+      Q: [1.0, 2.0, 3.0, 1.5, 2.5]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      a: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-10
+    shown: ['id="p5-sb"', '<Formula label="The bound charge on the dielectric next to the inner sphere"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-num
+    answer: p5-num
+    where: 'Problem 5(e), answer box: the capacitance in pF for a = 1.0 cm, b = 2.0 cm, εr = 3.0, as Q/ΔV with the field integrated numerically (Q = 1 C)'
+    formula: |-
+      1e12/integrate('1/(2*pi*8.8541878128e-12*4.0*u**2)', 'u', 0.010, 0.020)
+    expected: '4.45'
+    shown: ['id="p5-num"', '$= 4.45$ pF']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-empty
+    where: 'Problem 5(e), check: the empty capacitor 4π ε0 ab/(b − a) = 4π ε0 × 0.020 m'
+    inputs: {eps0: 8.8541878128e-12 F/m, L: 0.020 m}
+    formula: |-
+      4*pi*eps0*L
+    expected: 2.23 pF
+    shown: ['$4\pi\varepsilon_0 \times 0.020$ m $= 2.23$ pF']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: the circular capacitor
+
+  - id: p6-area
+    kind: identity
+    where: 'Problem 6(a): the covered area, the integral of the chord length 2√(R² − x²) from x0 to R (numerical), against R² arccos(x0/R) − x0 √(R² − x0²)'
+    formula: |-
+      integrate('2*sqrt(R**2 - u**2)', 'u', x0, R)
+    equals: |-
+      R**2*acos(x0/R) - x0*sqrt(R**2 - x0**2)
+    samples:
+      R: [2.0, 2.5, 3.0, 2.2, 2.8]
+      x0: [-1.5, 0.0, 1.5, 0.7, -0.9]
+    tolerance: 1e-6
+    shown: ['<Formula label="The area of the disk covered by the sheet"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-c
+    kind: identity
+    answer: p6-c
+    where: 'Problem 6(a), answer box: the two parallel pieces, ε0 (πR² − A) + εr ε0 A, over d, with A the numerical integral of the chord length'
+    formula: |-
+      eps0*(pi*R**2 + (er - 1)*(R**2*acos(x0/R) - x0*sqrt(R**2 - x0**2)))/d
+    equals: |-
+      (eps0*(pi*R**2 - integrate('2*sqrt(R**2 - u**2)', 'u', x0, R)) + er*eps0*integrate('2*sqrt(R**2 - u**2)', 'u', x0, R))/d
+    samples:
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      R: [2.0, 2.5, 3.0, 2.2, 2.8]
+      x0: [-1.5, 0.0, 1.5, 0.7, -0.9]
+      d: [0.1, 0.2, 0.5, 0.3, 0.4]
+    tolerance: 1e-6
+    shown: ['id="p6-c"', '<Formula label="The capacitance with the sheet part way in"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-f
+    kind: identity
+    answer: p6-f
+    where: 'Problem 6(b), answer box: ½ V0² dC/dx0, with the derivative of the covered area taken numerically'
+    formula: |-
+      -eps0*(er - 1)*V0**2*sqrt(R**2 - x0**2)/d
+    equals: |-
+      0.5*V0**2*eps0*(er - 1)/d*deriv('R**2*acos(u/R) - u*sqrt(R**2 - u**2)', 'u', x0, 1)
+    samples:
+      eps0: [1.0, 0.5, 2.0, 1.3, 0.8]
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      V0: [1.0, 2.0, 3.0, 1.5, 2.5]
+      R: [2.0, 2.5, 3.0, 2.2, 2.8]
+      x0: [-1.5, 0.0, 1.5, 0.7, -0.9]
+      d: [0.1, 0.2, 0.5, 0.3, 0.4]
+    tolerance: 1e-6
+    shown: ['id="p6-f"', '<Formula label="The force on the sheet"']
+    source: {cite: mit, at: 'Problem 6, p. 3'}
+    origin: page-own
+
+  - id: p6-fixed-q
+    kind: identity
+    where: 'Problem 6(b), check: at fixed charge, −d(Q²/2C)/dx0 (numerical) with Q = C V0 at the position equals ½ V0² dC/dx0'
+    formula: |-
+      -deriv('(V0*(pi*R**2 + (er - 1)*(R**2*acos(x0/R) - x0*sqrt(R**2 - x0**2))))**2/(2*(pi*R**2 + (er - 1)*(R**2*acos(u/R) - u*sqrt(R**2 - u**2))))', 'u', x0, 1)
+    equals: |-
+      -(er - 1)*V0**2*sqrt(R**2 - x0**2)
+    samples:
+      er: [1.5, 2.0, 4.0, 6.0, 3.0]
+      V0: [1.0, 2.0, 3.0, 1.5, 2.5]
+      R: [2.0, 2.5, 3.0, 2.2, 2.8]
+      x0: [-1.5, 0.0, 1.5, 0.7, -0.9]
+    tolerance: 1e-6
+    shown: ['The same at fixed charge']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own check, with ε0/d = 1)'}
+    origin: page-own
+
+  - id: p6-half-chord
+    where: 'Problem 6(d): √(5.0² − 3.0²) cm'
+    formula: |-
+      sqrt(5.0**2 - 3.0**2)
+    expected: '4.0'
+    shown: ['$\sqrt{5.0^2 - 3.0^2}$ cm $= 4.0$ cm']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-num
+    answer: p6-num
+    where: 'Problem 6(d), answer box: the size of the force in mN, from ½ V0² times the numerical derivative of C (SI numbers)'
+    formula: |-
+      -1e3*0.5*(1.0e3)**2*8.8541878128e-12*(3.0 - 1)/1.0e-3*deriv('0.05**2*acos(u/0.05) - u*sqrt(0.05**2 - u**2)', 'u', 0.03, 1)
+    expected: '0.708'
+    shown: ['id="p6-num"', '$= 0.708$ mN']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own problem)'}
+    origin: page-own
+
+  - id: p6-f-num
+    where: 'Problem 6(d): the force in newtons'
+    inputs: {eps0: 8.8541878128e-12 F/m, V0: 1.0 kV, d: 1.0 mm, h: 0.040 m}
+    formula: |-
+      eps0*(3.0 - 1)*V0**2*h/d
+    expected: 7.08e-4 N
+    shown: ['N $= 7.08 \times 10^{-4}$ N']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-max
+    where: 'Problem 6(d), check: the force at x0 = 0, half chord 5.0 cm, in mN'
+    formula: |-
+      1e3*8.8541878128e-12*2.0*(1.0e3)**2*0.050/1.0e-3
+    expected: '0.885'
+    shown: ['the force $0.885$ mN']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p6-gram
+    where: 'Problem 6(d), check: the weight of a gram, about 10 mN (1 g × 9.8 m/s²)'
+    formula: |-
+      1e-3*9.8*1e3
+    expected: '10'
+    tolerance: 3%
+    shown: ['the weight of a gram is about 10 mN']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own check)'}
+    origin: page-own

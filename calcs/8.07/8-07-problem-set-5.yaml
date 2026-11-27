@@ -1,0 +1,587 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 2 integrates the charge of the disk numerically (on the axis, and over the whole disk for a point off the
+# axis, against the first five terms of the Legendre series); Problem 3 takes the moments from the exact potentials
+# of the point charges and from the Legendre expansion, and checks the shift of origin with three point charges;
+# Problem 4 fixes the constants of Y31, Y33 and Y22 from their normalisation integrals and P4 from the Legendre
+# recurrence (the page uses the tensor formulas and Rodrigues' formula); Problem 5 differentiates the potential
+# numerically and finds the delta-function term from a Gaussian test function, as in MIT's eq. (5.3).
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: eps0.
+
+page: content/year-4/8.07/8-07-problem-set-5.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points for Problems 2 to 5, 20 + 20 + 20 + 15'
+    formula: |-
+      20 + 20 + 20 + 15
+    expected: '75'
+    shown: ['which makes 75 points here']
+    source: {cite: mit, at: 'Problems 2 to 5, pp. 1–3'}
+    origin: mit
+
+  - id: points-sheet
+    where: 'How to answer: MIT''s total with the held-over Problem 1 (15 points)'
+    formula: |-
+      15 + 75
+    expected: '90'
+    shown: ["(MIT's sheet has 90 with Problem 1)", 'a sphere with oppositely charged hemispheres, 15 points']
+    source: {cite: mit, at: 'credit line and Problem 1, p. 1'}
+    origin: mit
+
+  - id: points-extra
+    kind: fact
+    where: 'How to answer: MIT''s 10 points of extra credit for Problem 5(c)'
+    value: '10'
+    shown: ['plus 10 points of extra credit for Problem 5(c)']
+    source: {cite: mit, at: 'Problem 5(c), p. 3'}
+    origin: mit
+
+  # ---- Problem 2: the disk
+
+  - id: p2-a
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box: A, against the condition that the numerical integral over the disk gives V0 at its centre, V(0) = (A/2ε0) ∫ ds/√(R² − s²)'
+    formula: |-
+      4*eps0*V0/pi
+    equals: |-
+      2*eps0*V0/integrate('1/sqrt(R**2 - s**2)', 's', 0, R)
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+      V0: [1.0, 3.0, 2.0, 1.5, 2.5]
+      R: [0.5, 2.0, 1.0, 1.7, 0.9]
+    tolerance: 1e-7
+    shown: ['id="p2-a"', '<Formula label="The constant in the charge density"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-axis
+    kind: identity
+    answer: p2-axis
+    where: 'Problem 2(a), answer box: the potential on the axis, against the integral over the rings done numerically (with s = R sin t, so that the integrand is smooth)'
+    formula: |-
+      2*V0/pi*atan(R/z)
+    equals: |-
+      2*V0/pi*integrate('R*sin(s)/sqrt(R**2*sin(s)**2 + z**2)', 's', 0, pi/2)
+    samples:
+      V0: [1.0, 3.0, 2.0, 1.5, 2.5]
+      R: [0.5, 2.0, 1.0, 1.7, 0.9]
+      z: [0.3, 3.0, 2.0, 0.7, 1.1]
+    tolerance: 1e-7
+    shown: ['id="p2-axis"', '<Formula label="The potential on the axis"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-antiderivative
+    kind: identity
+    where: 'Problem 2(a): the derivative of −2 arctan √((R² − u)/(u + z²)) with respect to u is 1/√((R² − u)(u + z²)) (numerical derivative)'
+    formula: |-
+      deriv('-2*atan(sqrt((R**2 - s)/(s + z**2)))', 's', u)
+    equals: |-
+      1/sqrt((R**2 - u)*(u + z**2))
+    samples:
+      R: [1.0, 2.0, 1.5, 0.8, 1.2]
+      z: [0.5, 1.0, 2.0, 0.3, 1.4]
+      u: [0.3, 2.0, 1.0, 0.2, 0.9]
+    tolerance: 1e-6
+    shown: ['Since the derivative of $-2\arctan\sqrt{(R^2 - u)/(u + z^2)}$ is exactly']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-axis-num
+    where: 'Problem 2(a), check: (2/π) arctan 0.5 for R = 1, z = 2, V0 = 1'
+    formula: |-
+      2/pi*atan(0.5)
+    expected: '0.2952'
+    shown: ['$(2/\pi)\arctan 0.5 = 0.2952$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-axis-rings
+    where: 'Problem 2(a), check: the same value from the numerical integral over the rings, (A/2ε0) ∫ s ds/√((R² − s²)(s² + z²)) with A = 4ε0V0/π, R = 1, z = 2'
+    formula: |-
+      2/pi*integrate('s/sqrt((1 - s**2)*(s**2 + 4))', 's', 0, 1)
+    expected: '0.2952'
+    shown: ['a direct numerical integral over the rings gives the same']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-series
+    kind: identity
+    where: 'Problem 2(a): the Legendre series of MIT''s eq. (2a), first five terms (to 2ℓ = 8; the rest is below 2e-6 of the total for r ≥ 3R), against the potential of the disk integrated numerically over the whole disk at a point off the axis: (V0/π²) ∫ R sin t ∫ dφ/√(r² + R² sin²t − 2rR sin t sin θ cos φ) with s = R sin t'
+    formula: |-
+      2*V0/pi*(R/r)*(1 - (R/r)**2/3*(3*cos(th)**2 - 1)/2 + (R/r)**4/5*(35*cos(th)**4 - 30*cos(th)**2 + 3)/8 - (R/r)**6/7*(231*cos(th)**6 - 315*cos(th)**4 + 105*cos(th)**2 - 5)/16 + (R/r)**8/9*(6435*cos(th)**8 - 12012*cos(th)**6 + 6930*cos(th)**4 - 1260*cos(th)**2 + 35)/128)
+    equals: |-
+      V0/pi**2*integrate('R*sin(t)*integrate("1/sqrt(r**2 + R**2*sin(t)**2 - 2*r*R*sin(t)*sin(th)*cos(f))", "f", 0, 2*pi)', 't', 0, pi/2)
+    samples:
+      V0: [1.0, 2.0, 1.5]
+      R: [1.0, 0.5, 0.8]
+      r: [3.0, 2.0, 3.5]
+      th: [0.7, 0.3, 1.2]
+    tolerance: 1e-5
+    shown: ['<Formula label="The potential outside the disk"', '<Formula label="The coefficients of the Legendre series"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1'}
+    origin: mit
+
+  - id: p2-cap
+    kind: identity
+    answer: p2-cap
+    where: 'Problem 2(b), answer box: the capacitance, against the charge integrated numerically over the disk, divided by V0 (V0 = 1)'
+    formula: |-
+      8*eps0*R
+    equals: |-
+      2*pi*(4*eps0/pi)*integrate('s/sqrt(R**2 - s**2)', 's', 0, R)
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+      R: [0.5, 2.0, 1.0, 1.7, 0.9]
+    tolerance: 1e-7
+    shown: ['id="p2-cap"', '<Formula label="The capacitance of the disk"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1'}
+    origin: page-own
+
+  - id: p2-capnum
+    answer: p2-capnum
+    where: 'Problem 2(b), answer box: 8 ε0 R for R = 10 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm}
+    formula: |-
+      8*eps0*R
+    expected: 7.08 picofarad
+    shown: ['id="p2-capnum"', '$C = 8 \times 8.854 \times 10^{-12} \times 0.10 = 7.08 \times 10^{-12}$ F $= 7.08$ pF']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-sphere
+    where: 'Problem 2(b), check: 4π ε0 R for a sphere of radius 10 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 10 cm}
+    formula: |-
+      4*pi*eps0*R
+    expected: 11.1 picofarad
+    shown: ['$C = 4\pi\varepsilon_0R = 11.1$ pF']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-ratio
+    where: 'Problem 2(b), check: the ratio of the two capacitances, 8/(4π) = 2/π'
+    formula: |-
+      2/pi
+    expected: '0.64'
+    shown: ['the disk has $2/\pi = 0.64$ of that']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: quadrupole and octopole
+
+  - id: p3-coef3
+    where: 'Problem 3(d): (2ℓ − 1)!!/ℓ! for ℓ = 3'
+    formula: |-
+      (5*3*1)/(3*2*1)
+    expected: '2.5'
+    shown: ['Multiplying by $15/6 = \frac52$']
+    source: {cite: reading3, at: 'eq. (9.69)'}
+    origin: page-own
+
+  - id: p3-qzz
+    kind: identity
+    answer: p3-qzz
+    where: 'Problem 3(b), answer box: Q_zz, against twice the coefficient of 1/r³ in the exact potential of the three charges on the axis (Q_zz/2 = C⁽²⁾_zz is that coefficient): 2r³ q(1/(r − d) + 1/(r + d) − 2/r) times (r² − d²)/r², which removes the higher terms exactly'
+    formula: |-
+      4*q*d**2
+    equals: |-
+      2*r**3*q*(1/(r - d) + 1/(r + d) - 2/r)*(r**2 - d**2)/r**2
+    samples:
+      q: [0.5, 3.0, 1.0, 2.2, 1.4]
+      d: [0.5, 2.0, 1.0, 0.7, 1.5]
+      r: [3.0, 7.0, 4.0, 5.0, 9.0]
+    tolerance: 1e-9
+    shown: ['id="p3-qzz"', '<Formula label="The quadrupole moment of the linear quadrupole"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-vquad
+    kind: identity
+    answer: p3-vquad
+    where: 'Problem 3(b), answer box: the quadrupole term, against the ℓ = 2 term of the Legendre expansion (eq. (9.52)) for the three point charges, Σ q_a z_a² P2(cos θ)/(4π ε0 r³)'
+    formula: |-
+      q*d**2*(3*cos(th)**2 - 1)/(4*pi*eps0*r**3)
+    equals: |-
+      (q*d**2 + (-2*q)*0**2 + q*(-d)**2)*(3*cos(th)**2 - 1)/2/(4*pi*eps0*r**3)
+    samples:
+      q: [0.5, 3.0, 1.0, 2.2, 1.4]
+      d: [0.5, 1.0, 0.8, 0.6, 0.9]
+      th: [0.1, 0.8, 0.4, 0.6, 0.2]
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+      r: [2.0, 5.0, 3.0, 4.0, 2.5]
+    tolerance: 1e-9
+    shown: ['id="p3-vquad"', '<Formula label="The quadrupole term of the linear quadrupole"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-vnum
+    answer: p3-vnum
+    where: 'Problem 3(b), answer box: the quadrupole term on the axis, 2qd²/(4π ε0 r³), with 1/(4π ε0) = 8.988e9 N m²/C², q = 2.0 nC, d = 1.0 cm, r = 20 cm'
+    inputs: {k: 8.988e9 N*m**2/C**2, q: 2.0 nC, d: 1.0 cm, r: 20 cm}
+    formula: |-
+      k*2*q*d**2/r**3
+    expected: 0.449 V
+    shown: ['id="p3-vnum"', '\times (0.010)^2/(0.20)^3 = 0.449$ V']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-vexact
+    where: 'Problem 3(b), check: the exact potential of the three charges on the axis at r = 20 cm'
+    inputs: {k: 8.988e9 N*m**2/C**2, q: 2.0 nC, d: 1.0 cm, r: 20 cm}
+    formula: |-
+      k*q*(1/(r - d) + 1/(r + d) - 2/r)
+    expected: 0.4505 V
+    shown: ['the exact value is $0.4505$ V']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-vdiff
+    where: 'Problem 3(b), check: the exact potential is above the quadrupole term by d²/(r² − d²) = 1/399'
+    formula: |-
+      100*(0.01**2/(0.2**2 - 0.01**2))
+    expected: '0.25'
+    shown: ['0.25% above the quadrupole term']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-exact-axis
+    kind: identity
+    where: 'Problem 3(b), check: q[1/(r − d) + 1/(r + d) − 2/r] = 2qd²/(r(r² − d²))'
+    formula: |-
+      q*(1/(r - d) + 1/(r + d) - 2/r)
+    equals: |-
+      2*q*d**2/(r*(r**2 - d**2))
+    samples:
+      q: [0.5, 3.0, 1.0, 2.2, 1.4]
+      d: [0.5, 2.0, 1.0, 0.7, 1.5]
+      r: [3.0, 7.0, 4.0, 5.0, 9.0]
+    tolerance: 1e-9
+    shown: ['= \frac{1}{4\pi\varepsilon_0}\,\frac{2qd^2}{r(r^2 - d^2)}$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-shift-zz
+    kind: identity
+    where: 'Problem 3(c): the shifted quadrupole moment, zz component, for three point charges (1.0 at (0.3, −0.2, 0.5), −0.4 at (−0.1, 0.6, 0.2), 0.7 at (0.4, 0.1, −0.3)): computed directly about the point a, against the formula with Q_zz, p and q_tot about the origin'
+    formula: |-
+      1.0*(3*(0.5 - az)**2 - ((0.3 - ax)**2 + (-0.2 - ay)**2 + (0.5 - az)**2)) + (-0.4)*(3*(0.2 - az)**2 - ((-0.1 - ax)**2 + (0.6 - ay)**2 + (0.2 - az)**2)) + 0.7*(3*(-0.3 - az)**2 - ((0.4 - ax)**2 + (0.1 - ay)**2 + (-0.3 - az)**2))
+    equals: |-
+      (1.0*(3*0.5**2 - (0.3**2 + 0.2**2 + 0.5**2)) - 0.4*(3*0.2**2 - (0.1**2 + 0.6**2 + 0.2**2)) + 0.7*(3*0.3**2 - (0.4**2 + 0.1**2 + 0.3**2))) - 3*2*az*(1.0*0.5 - 0.4*0.2 + 0.7*(-0.3)) + 2*(ax*(1.0*0.3 - 0.4*(-0.1) + 0.7*0.4) + ay*(1.0*(-0.2) - 0.4*0.6 + 0.7*0.1) + az*(1.0*0.5 - 0.4*0.2 + 0.7*(-0.3))) + (1.0 - 0.4 + 0.7)*(3*az**2 - (ax**2 + ay**2 + az**2))
+    samples:
+      ax: [0.1, -0.5, 1.2, 0.0, 2.0]
+      ay: [0.3, 0.7, -0.4, 1.0, -1.5]
+      az: [-0.2, 0.9, 0.5, -1.1, 0.4]
+    tolerance: 1e-9
+    shown: ['<Formula label="The quadrupole moment about a shifted origin"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-shift-zx
+    kind: identity
+    where: 'Problem 3(c): the same, zx component (no δ terms)'
+    formula: |-
+      1.0*3*(0.5 - az)*(0.3 - ax) + (-0.4)*3*(0.2 - az)*(-0.1 - ax) + 0.7*3*(-0.3 - az)*(0.4 - ax)
+    equals: |-
+      (1.0*3*0.5*0.3 - 0.4*3*0.2*(-0.1) + 0.7*3*(-0.3)*0.4) - 3*(az*(1.0*0.3 - 0.4*(-0.1) + 0.7*0.4) + ax*(1.0*0.5 - 0.4*0.2 + 0.7*(-0.3))) + (1.0 - 0.4 + 0.7)*3*az*ax
+    samples:
+      ax: [0.1, -0.5, 1.2, 0.0, 2.0]
+      ay: [0.3, 0.7, -0.4, 1.0, -1.5]
+      az: [-0.2, 0.9, 0.5, -1.1, 0.4]
+    tolerance: 1e-9
+    shown: ['<Formula label="The quadrupole moment about a shifted origin"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-oct-sum
+    where: 'Problem 3(d): the sum of q_a z_a³ for the four charges, in units of q d³'
+    formula: |-
+      2**3 - 2*1**3 + 2*(-1)**3 - (-2)**3
+    expected: '12'
+    shown: ['(8 - 2 - 2 + 8)\,qd^3 = 12\,qd^3']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ozzz
+    kind: identity
+    answer: p3-ozzz
+    where: 'Problem 3(d), answer box: O_zzz, from its definition charge by charge, q_a(5z_a³ − r_a² × 3 z_a) with r_a = |z_a| on the axis'
+    formula: |-
+      24*q*d**3
+    equals: |-
+      q*(5*(2*d)**3 - 3*(2*d)**2*(2*d)) - 2*q*(5*d**3 - 3*d**2*d) + 2*q*(5*(-d)**3 - 3*d**2*(-d)) - q*(5*(-2*d)**3 - 3*(2*d)**2*(-2*d))
+    samples:
+      q: [0.5, 3.0, 1.0, 2.2, 1.4]
+      d: [0.5, 2.0, 1.0, 0.7, 1.5]
+    tolerance: 1e-9
+    shown: ['id="p3-ozzz"', 'so $O_{zzz} = 24qd^3$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-voct
+    kind: identity
+    answer: p3-voct
+    where: 'Problem 3(d), answer box: the octopole term, against the exact potential of the four point charges far away (r between 1000 d and 4000 d, where the next term is a few parts in a million of it)'
+    formula: |-
+      6*q*d**3*(5*cos(th)**3 - 3*cos(th))/(4*pi*eps0*r**4)
+    equals: |-
+      q/(4*pi*eps0)*(1/sqrt(r**2 + 4*d**2 - 4*r*d*cos(th)) - 2/sqrt(r**2 + d**2 - 2*r*d*cos(th)) + 2/sqrt(r**2 + d**2 + 2*r*d*cos(th)) - 1/sqrt(r**2 + 4*d**2 + 4*r*d*cos(th)))
+    samples:
+      q: [0.5, 3.0, 1.0, 2.2, 1.4]
+      d: [0.001, 0.0005, 0.001, 0.002, 0.0015]
+      th: [0.05, 0.5, 0.3, 0.2, 0.4]
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+      r: [2.0, 1.0, 2.0, 4.0, 3.0]
+    tolerance: 1e-4
+    shown: ['id="p3-voct"', '<Formula label="The octopole term of the four charges"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-oct-50
+    where: 'Problem 3(d), check: the exact potential of the four charges on the axis at r = 50d, over the octopole term 12qd³/r⁴, minus 1'
+    formula: |-
+      100*((1/(50 - 2) - 2/(50 - 1) + 2/(50 + 1) - 1/(50 + 2))/(12/50**4) - 1)
+    expected: '0.2'
+    shown: ['differs from this term by only 0.2%']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: spherical harmonics
+
+  - id: p4-d31
+    answer: p4-d31
+    where: 'Problem 4(a), answer box: d31, from the normalisation of Y31 = d31 (5cos²θ − 1) sin θ e^(iφ)/(5√2): |d31| = 5√2/√(2π ∫(5x² − 1)²(1 − x²) dx), with the sign (−1)^m = −1 of eq. (4.8) (the page uses eq. (4.8) itself)'
+    formula: |-
+      -5*sqrt(2)/sqrt(2*pi*integrate('(5*s**2 - 1)**2*(1 - s**2)', 's', -1, 1))
+    expected: '-2.285'
+    shown: ['id="p4-d31"', '= -15\sqrt{\frac{14}{192\pi}} = -2.285']
+    source: {cite: mit, at: 'Problem 4, eq. (4.8), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-d31-direct
+    where: 'Problem 4(a): d31 from eq. (4.8): −6!/(2³ 3!) √(2 × 7/(4π × 4! × 2!))'
+    formula: |-
+      -720/(8*6)*sqrt(2*7/(4*pi*24*2))
+    expected: '-2.285'
+    shown: ['<Formula label="The constant d 3 1"']
+    source: {cite: mit, at: 'Problem 4, eq. (4.8), p. 2'}
+    origin: page-own
+
+  - id: p4-y31-const
+    where: 'Problem 4(a): d31/(5√2) equals −(1/4)√(21/(4π)); both sides as numbers'
+    formula: |-
+      (-720/(8*6)*sqrt(2*7/(4*pi*24*2))/(5*sqrt(2)))/(-0.25*sqrt(21/(4*pi)))
+    expected: '1.0000'
+    shown: ['which is eq. (4.10)']
+    source: {cite: mit, at: 'Problem 4(a), eq. (4.10), p. 3'}
+    origin: mit
+
+  - id: p4-y31-norm
+    where: 'Problem 4(a), check: the normalisation integral of Y31, (21/(64π)) × 2π × ∫(5x² − 1)²(1 − x²) dx'
+    formula: |-
+      21/(64*pi)*2*pi*integrate('(5*s**2 - 1)**2*(1 - s**2)', 's', -1, 1)
+    expected: '1.0000'
+    shown: ['\frac{21}{32} \times \frac{32}{21} = 1$']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-y33
+    answer: p4-y33
+    where: 'Problem 4(b), answer box: c in Y33 = c sin³θ e^(3iφ), from the normalisation 2π c² ∫ sin⁷θ dθ = 1, with the sign (−1)^ℓ = −1 (the page uses the general formula)'
+    formula: |-
+      -1/sqrt(2*pi*integrate('sin(s)**7', 's', 0, pi))
+    expected: '-0.4172'
+    shown: ['id="p4-y33"', '= -20.03/48 = -0.4172$']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-y33-root
+    where: 'Problem 4(b): √(7!/(4π)) = √(5040/(4π))'
+    formula: |-
+      sqrt(5040/(4*pi))
+    expected: '20.03'
+    shown: ['\sqrt{5040/(4\pi)} = -20.03/48']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-y33-norm
+    where: 'Problem 4(b), check: c² × 2π × 32/35 with c = −0.4172'
+    formula: |-
+      0.4172238**2*2*pi*32/35
+    expected: '1.000'
+    shown: ['$c^2 \times 2\pi\int_0^\pi\sin^7\theta\,d\theta = 0.1741 \times 2\pi \times \frac{32}{35} = 1.000$']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-y33-csq
+    where: 'Problem 4(b), check: c² for c = −0.4172'
+    formula: |-
+      0.4172238**2
+    expected: '0.1741'
+    shown: ['= 0.1741 \times 2\pi']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-sin7
+    where: 'Problem 4(b), check: ∫ sin⁷θ dθ from 0 to π = 32/35'
+    formula: |-
+      integrate('sin(s)**7', 's', 0, pi)/(32/35)
+    expected: '1.00000'
+    shown: ['\times \frac{32}{35} = 1.000$']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-yll-22
+    where: 'Problem 4(b), choice box: the general formula for ℓ = 2, (1/(2² 2!)) √(5!/(4π)), against the normalisation of sin²θ e^(2iφ)'
+    formula: |-
+      (1/(4*2)*sqrt(120/(4*pi)))*sqrt(2*pi*integrate('sin(s)**5', 's', 0, pi))
+    expected: '1.00000'
+    shown: ['id="p4-yll"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-y11
+    where: 'Problem 4(b), check: −(1/2)√(6/(4π)) = −√(3/(8π)), the standard Y11'
+    formula: |-
+      (-0.5*sqrt(6/(4*pi)))/(-sqrt(3/(8*pi)))
+    expected: '1.00000'
+    shown: ['$-\frac12\sqrt{6/(4\pi)}\sin\theta\,e^{i\phi} = -\sqrt{3/(8\pi)}\sin\theta\,e^{i\phi}$']
+    source: {cite: reading2, at: 'eqs. (8.36) and (8.37), written out for ℓ = 1'}
+    origin: page-own
+
+  - id: p4-p4
+    kind: identity
+    answer: p4-p4
+    where: 'Problem 4(c), answer box: P4, against the Legendre recurrence 4P4 = 7x P3 − 3P2 (the page uses the tensor formula and Rodrigues'' formula)'
+    formula: |-
+      (35*x**4 - 30*x**2 + 3)/8
+    equals: |-
+      (7*x*(5*x**3 - 3*x)/2 - 3*(3*x**2 - 1)/2)/4
+    samples:
+      x: [-0.9, -0.3, 0.1, 0.55, 0.9]
+    tolerance: 1e-12
+    shown: ['id="p4-p4"', '<Formula label="The fourth Legendre polynomial"']
+    source: {cite: mit, at: 'Problem 4(c), eq. (4.12), p. 3'}
+    origin: page-own
+
+  - id: p4-factor
+    where: 'Problem 4(c): 8!/(2⁴ (4!)²)'
+    formula: |-
+      40320/(16*24**2)
+    expected: '4.375'
+    shown: ['$8!/(2^4\,(4!)^2) = 40320/9216 = 35/8$']
+    source: {cite: mit, at: 'Problem 4(c), eq. (4.12), p. 3'}
+    origin: page-own
+
+  - id: p4-rodrigues
+    kind: identity
+    where: 'Problem 4(c), check: the fourth derivative of (x² − 1)⁴, 1680x⁴ − 1440x² + 144, divided by 2⁴ 4! = 384, against P4 (the fourth derivative as two numerical second derivatives of the second derivative written out: 56x⁶ − 120x⁴ + 72x² − 8)'
+    formula: |-
+      deriv('56*s**6 - 120*s**4 + 72*s**2 - 8', 's', x, 2)/384
+    equals: |-
+      (1680*x**4 - 1440*x**2 + 144)/384
+    samples:
+      x: [-0.9, -0.3, 0.1, 0.55, 0.9]
+    tolerance: 1e-6
+    shown: ['whose fourth derivative is $1680x^4 - 1440x^2 + 144$; divided by $2^4\,4! = 384$']
+    source: {cite: reading2, at: 'eq. (8.10)'}
+    origin: page-own
+
+  - id: p4-misprint
+    where: 'Problem 4(c), check: P4(1) with the inverted factor of MIT''s first version, (8/35)(1 − 6/7 + 3/35)'
+    formula: |-
+      8/35*(1 - 6/7 + 3/35)
+    expected: '0.052'
+    shown: ['$P_4(1) = 8/35 \times 8/35 = 0.052$']
+    source: {cite: mit, at: 'footnote, p. 1, and eq. (4.12), p. 3'}
+    origin: page-own
+
+  # ---- Problem 5: the dipole
+
+  - id: p5-er
+    kind: identity
+    answer: p5-er
+    where: 'Problem 5(a), answer box: E_r, against −∂V/∂r done numerically'
+    formula: |-
+      2*p*cos(th)/(4*pi*eps0*r**3)
+    equals: |-
+      -deriv('p*cos(th)/(4*pi*eps0*s**2)', 's', r)
+    samples:
+      p: [0.5, 3.0, 1.0, 2.2, 1.4]
+      th: [0.2, 1.3, 0.7, 1.0, 0.4]
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+      r: [0.5, 3.0, 1.0, 2.0, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p5-er"', '<Formula label="The components of the dipole field"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own problem)'}
+    origin: page-own
+
+  - id: p5-eth
+    kind: identity
+    answer: p5-eth
+    where: 'Problem 5(a), answer box: E_θ, against −(1/r)∂V/∂θ done numerically'
+    formula: |-
+      p*sin(th)/(4*pi*eps0*r**3)
+    equals: |-
+      -deriv('p*cos(s)/(4*pi*eps0*r**2)', 's', th)/r
+    samples:
+      p: [0.5, 3.0, 1.0, 2.2, 1.4]
+      th: [0.2, 1.3, 0.7, 1.0, 0.4]
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+      r: [0.5, 3.0, 1.0, 2.0, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p5-eth"', '<Formula label="The components of the dipole field"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own problem)'}
+    origin: page-own
+
+  - id: p5-nn
+    where: 'Problem 5(b): ∫ n̂_z n̂_z dΩ = 2π ∫ cos²θ sin θ dθ, against 4π/3'
+    formula: |-
+      2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi)/(4*pi/3)
+    expected: '1.00000'
+    shown: ['<Formula label="The average of n i n j over directions"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-shell
+    where: 'Problem 5(b): the angular integral of the z component of 3(p · n̂)n̂ − p, for p along z: 2π ∫ (3cos²θ − 1) sin θ dθ'
+    formula: |-
+      2*pi*integrate('(3*cos(s)**2 - 1)*sin(s)', 's', 0, pi)
+    expected: '0'
+    tolerance: 1e-9
+    shown: ['= 3p_j\frac{4\pi}{3}\delta_{ij} - 4\pi p_i = 0$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-delta
+    kind: identity
+    answer: p5-delta
+    where: 'Problem 5(b), answer box: c, against the distribution route of Problem 5(c) with the Gaussian test function g = e^(−r²) and p = 1: c = −F_z[g]/g(0), with F_z = −∫ ∂_z g V_dip d³x = (2/(4π ε0)) ∫ r e^(−r²) dr × 2π ∫ cos²θ sin θ dθ (the page uses the average-field theorem)'
+    formula: |-
+      -1/(3*eps0)
+    equals: |-
+      -(2/(4*pi*eps0))*integrate('s*exp(-s**2)', 's', 0, 12)*2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi)
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.3, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p5-delta"', '<Formula label="The complete field of a dipole"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own problem)'}
+    origin: page-own
+
+  - id: p5c-gauss
+    kind: identity
+    where: 'Problem 5(c), check: for g = e^(−r²/b²), p = ε0 = 1, F_z from eq. (5.3) integrated numerically equals +1/3, the sign of the corrected eq. (5.8)'
+    formula: |-
+      1/3
+    equals: |-
+      2/(4*pi*b**2)*integrate('s*exp(-s**2/b**2)', 's', 0, 12*b)*2*pi*integrate('cos(s)**2*sin(s)', 's', 0, pi)
+    samples:
+      b: [0.5, 1.0, 2.0, 3.5, 0.2]
+    tolerance: 1e-8
+    shown: ['= \frac{2p}{4\pi\varepsilon_0b^2} \times \frac{b^2}{2} \times \frac{4\pi}{3} = \frac{p}{3\varepsilon_0}$']
+    source: {cite: mit, at: 'Problem 5(c), eqs. (5.3) and (5.8), pp. 4–5'}
+    origin: page-own

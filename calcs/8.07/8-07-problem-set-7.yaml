@@ -1,0 +1,562 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 solves the force balance by a root search and uses the centripetal acceleration; Problem 2 integrates the
+# Biot–Savart law numerically; Problem 3 integrates the rings numerically and takes the infinite solenoid as very long
+# ends; Problem 4 differentiates the gauge function numerically; Problem 5 works out the torque and the derivative of r̂
+# for one sample position and velocity (r = (1, 2, 0.5), v = (0.3, −0.4, 0.7)), by explicit cross products and a
+# numerical time derivative; Problem 6 integrates the moment over the ball, gets the average field from the surface
+# integral of A (∫ ∇ × A d³x = ∮ n̂ × A da) and the far vector potential from the flux of the dipole field through a cap;
+# Problem 7 integrates cos²θ over directions and differentiates x_j/r³ numerically.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: qe (elementary charge), me (electron mass).
+
+page: content/year-4/8.07/8-07-problem-set-7.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points for Problems 1 to 7, 10 + 15 + 15 + 10 + 20 + 25 + 20'
+    formula: |-
+      10 + 15 + 15 + 10 + 20 + 25 + 20
+    expected: '115'
+    shown: ['115 points in all']
+    source: {cite: mit, at: 'credit note and Problems 1 to 7, pp. 1–2'}
+    origin: mit
+
+  - id: points-extra
+    kind: fact
+    where: 'How to answer: MIT''s 10 points of extra credit for Problem 7(e)'
+    value: '10'
+    shown: ['plus 10 points of extra credit for Problem 7(e)']
+    source: {cite: mit, at: 'credit note, p. 1, and Problem 7(e), p. 3'}
+    origin: mit
+
+  - id: points-p5
+    where: 'Problem 5: MIT''s 5 points for each of parts (a) to (c) and 5 for part (d)'
+    formula: |-
+      3*5 + 5
+    expected: '20'
+    shown: ['points={20} mit="Problem 5"']
+    source: {cite: mit, at: 'Problem 5, p. 2'}
+    origin: mit
+
+  # ---- Problem 1: e/m
+
+  - id: p1-v
+    kind: identity
+    answer: p1-v
+    where: 'Problem 1(a), answer box: the speed E/B, against a root search of the force balance E − vB = 0'
+    formula: |-
+      E/B
+    equals: |-
+      solve('E - s*B', 's', 0, 100)
+    samples:
+      E: [1.0, 1.5, 2.0, 2.5, 3.0]
+      B: [2.0, 0.5, 1.0, 1.7, 0.9]
+    tolerance: 1e-8
+    shown: ['id="p1-v"', '<Formula label="The speed selected by crossed fields"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-em
+    kind: identity
+    answer: p1-em
+    where: 'Problem 1(b), answer box: e/mₑ, against the centripetal acceleration v²/R divided by vB with v = E/B'
+    formula: |-
+      E/(B**2*R)
+    equals: |-
+      ((E/B)**2/R)/((E/B)*B)
+    samples:
+      E: [1.0, 1.5, 2.0, 2.5, 3.0]
+      B: [2.0, 0.5, 1.0, 1.7, 0.9]
+      R: [0.5, 1.2, 2.0, 0.8, 1.6]
+    tolerance: 1e-10
+    shown: ['id="p1-em"', '<Formula label="The charge-to-mass ratio from the two measurements"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-speed
+    where: 'Problem 1(c): the speed E/B'
+    inputs: {E: 1.20e4 V/m, B: 8.00e-4 T}
+    formula: |-
+      E/B
+    expected: 1.50e7 m/s
+    shown: ['= 1.50\times10^7$ m/s']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-frac-c
+    where: 'Problem 1(c): the speed as a fraction of c, about 5%'
+    inputs: {v: 1.50e7 m/s}
+    formula: |-
+      v/c
+    expected: '0.05'
+    tolerance: 0.01
+    shown: ['about 5% of the speed of light']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(c), answer box: e/mₑ = v/(BR) in units of 1e11 C/kg (SI numbers: E = 1.20e4 V/m, B = 8.00e-4 T, R = 0.104 m)'
+    formula: |-
+      (1.20e4/8.00e-4)/(8.00e-4*0.104)/1e11
+    expected: '1.803'
+    shown: ['id="p1-num"', '= 1.803\times10^{11}\ \text{C/kg}']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-codata
+    where: 'Problem 1(c), check: the CODATA 2018 value of e/mₑ'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg}
+    formula: |-
+      qe/me
+    expected: 1.759e11 C/kg
+    shown: ['$e/m_e = 1.759\times10^{11}$ C/kg']
+    source: {cite: codata, at: 'electron charge to mass quotient'}
+    origin: later-data
+
+  - id: p1-high
+    where: 'Problem 1(c), check: the run is 2.5% above the CODATA value'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, E: 1.20e4 V/m, B: 8.00e-4 T, R: 0.104 m}
+    formula: |-
+      100*((E/B)/(B*R)/(qe/me) - 1)
+    expected: '2.5'
+    shown: ['this run is 2.5% high']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-true-r
+    where: 'Problem 1(c), check: the radius mₑv/(eB) for these fields, with the CODATA values'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, v: 1.50e7 m/s, B: 8.00e-4 T}
+    formula: |-
+      me*v/(qe*B)
+    expected: 10.66 cm
+    shown: ['the true value for these fields would be 10.66 cm']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: Biot–Savart
+
+  - id: p2-seg
+    kind: identity
+    answer: p2-seg
+    where: 'Problem 2(a), answer box: the field opposite the middle of a straight piece, against the Biot–Savart integral done numerically'
+    formula: |-
+      mu0*I*L/(2*pi*s*sqrt(4*s**2 + L**2))
+    equals: |-
+      mu0*I/(4*pi)*integrate('s/(x**2 + s**2)**1.5', 'x', -L/2, L/2)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      L: [0.5, 3.0, 1.2, 2.0, 0.8]
+      s: [2.0, 0.5, 1.0, 1.4, 0.7]
+    tolerance: 1e-8
+    shown: ['id="p2-seg"', '<Formula label="The field opposite the middle of a straight piece"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-tri
+    answer: p2-tri
+    where: 'Problem 2(b), answer box: three sides, each from the numerical Biot–Savart integral with s = L/(2√3), in μT (SI numbers: μ₀ = 4π × 1e-7 T m/A, I = 2.00 A, L = 0.100 m)'
+    formula: |-
+      3*(4*pi*1e-7)*2.00/(4*pi)*integrate('(0.1/(2*sqrt(3)))/(x**2 + (0.1/(2*sqrt(3)))**2)**1.5', 'x', -0.05, 0.05)/1e-6
+    expected: '36.0'
+    shown: ['id="p2-tri"', 'That is 36.0 μT.', '= 3.60\times10^{-5}\ \text{T}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-s
+    where: 'Problem 2(b), check: the radius of the inscribed circle, L/(2√3)'
+    inputs: {L: 10.0 cm}
+    formula: |-
+      L/(2*sqrt(3))
+    expected: 2.887 cm
+    shown: ['of radius $s = 2.887$ cm']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-2s
+    where: 'Problem 2(b), check: the radius of the circumscribed circle, 2s = L/√3'
+    inputs: {L: 10.0 cm}
+    formula: |-
+      L/sqrt(3)
+    expected: 5.774 cm
+    shown: ['of radius $2s = 5.774$ cm']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-inner
+    where: 'Problem 2(b), check: a ring on the inscribed circle, μ₀I/(2s)'
+    inputs: {mu0: 1.2566370614359173e-6 T*m/A, I: 2.00 A, L: 0.100 m}
+    formula: |-
+      mu0*I/(2*L/(2*sqrt(3)))
+    expected: 43.5 microtesla
+    shown: ['43.5 μT for the inner circle']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-outer
+    where: 'Problem 2(b), check: a ring on the circumscribed circle, μ₀I/(4s)'
+    inputs: {mu0: 1.2566370614359173e-6 T*m/A, I: 2.00 A, L: 0.100 m}
+    formula: |-
+      mu0*I/(2*L/sqrt(3))
+    expected: 21.8 microtesla
+    shown: ['21.8 μT for the outer one']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-ring
+    kind: identity
+    answer: p2-ring
+    where: 'Problem 2(c), answer box: the field on the axis of a ring, against the Biot–Savart integral around the ring (z component of dℓ × u/u³ with dℓ = R(−sin p, cos p, 0) dp, u = (−R cos p, −R sin p, z))'
+    formula: |-
+      mu0*I*R**2/(2*(R**2 + z**2)**(3/2))
+    equals: |-
+      mu0*I/(4*pi)*integrate('((-R*sin(p))*(-R*sin(p)) - (R*cos(p))*(-R*cos(p)))/(R**2 + z**2)**1.5', 'p', 0, 2*pi)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      R: [0.5, 2.0, 1.2, 0.8, 1.6]
+      z: [2.0, 0.2, 1.0, 1.4, 0.7]
+    tolerance: 1e-8
+    shown: ['id="p2-ring"', '<Formula label="The field on the axis of a ring"']
+    source: {cite: mit802-ch9, at: 'Eq. (9.1.15), p. 8'}
+    origin: page-own
+
+  # ---- Problem 3: the solenoid
+
+  - id: p3-b
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(a), answer box: the field at the origin, against the sum of the rings integrated numerically'
+    formula: |-
+      mu0*n*I/2*(z2/sqrt(R**2 + z2**2) - z1/sqrt(R**2 + z1**2))
+    equals: |-
+      mu0*n*I*integrate('R**2/(2*(R**2 + s**2)**1.5)', 's', z1, z2)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      n: [1.0, 2.0, 3.0, 1.5, 2.5]
+      I: [3.0, 1.0, 2.0, 2.5, 1.5]
+      R: [0.5, 2.0, 1.2, 0.8, 1.6]
+      z1: [-2.0, 0.5, -0.7, -1.3, 0.1]
+      z2: [1.0, 3.0, 2.2, 1.5, 2.7]
+    tolerance: 1e-8
+    shown: ['id="p3-b"', '<Formula label="The field at the origin"']
+    source: {cite: mit, at: 'Problem 3(a), p. 1'}
+    origin: page-own
+
+  - id: p3-c2
+    where: 'Problem 3(a), worked case: z₂/√(R² + z₂²) with R = 2, z₂ = 10 (cm)'
+    formula: |-
+      10/sqrt(4 + 100)
+    expected: '0.9806'
+    shown: ['$10/\sqrt{4 + 100} = 0.9806$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-c1
+    where: 'Problem 3(a), worked case: −z₁/√(R² + z₁²) with R = 2, z₁ = −5 (cm)'
+    formula: |-
+      5/sqrt(4 + 25)
+    expected: '0.9285'
+    shown: ['$-(-5)/\sqrt{4 + 25} = 0.9285$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-frac
+    answer: p3-frac
+    where: 'Problem 3(a), answer box: the field at the origin over μ₀nI for R = 2, z₁ = −5, z₂ = 10 (cm), by the numerical sum of rings'
+    formula: |-
+      integrate('4/(2*(4 + s**2)**1.5)', 's', -5, 10)
+    expected: '0.955'
+    shown: ['id="p3-frac"', 'Half their sum is $0.955$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-within
+    where: 'Problem 3(a), worked case: the field is within 5% of μ₀nI (4.5% below)'
+    formula: |-
+      100*(1 - integrate('4/(2*(4 + s**2)**1.5)', 's', -5, 10))
+    expected: '4.5'
+    shown: ['within 5% of its value deep inside']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-radii
+    where: 'Problem 3(a), worked case: the bottom end is 5 cm / 2 cm = 2.5 radii away'
+    formula: |-
+      5/2
+    expected: '2.5'
+    shown: ['only 2.5 radii away']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-inf
+    kind: identity
+    answer: p3-inf
+    where: 'Problem 3(b), answer box: the infinite solenoid, as the numerical sum of rings from −10⁴ R to 10⁴ R (agrees to 1e-6)'
+    formula: |-
+      mu0*n*I
+    equals: |-
+      mu0*n*I*(integrate('R**2/(2*(R**2 + s**2)**1.5)', 's', -1e4*R, 0) + integrate('R**2/(2*(R**2 + s**2)**1.5)', 's', 0, 1e4*R))
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      n: [1.0, 2.0, 3.0, 1.5, 2.5]
+      I: [3.0, 1.0, 2.0, 2.5, 1.5]
+      R: [0.5, 2.0, 1.2, 0.8, 1.6]
+    tolerance: 1e-6
+    shown: ['id="p3-inf"', '<Formula label="The field of the infinite solenoid"']
+    source: {cite: mit, at: 'Problem 3(b), p. 1'}
+    origin: page-own
+
+  # ---- Problem 4: vector potentials of a uniform field
+
+  - id: p4-a
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box: |A| = Bs/2, against the size of ½B(−y, x, 0) at x = s cos a, y = s sin a'
+    formula: |-
+      B*s/2
+    equals: |-
+      sqrt((-B*s*sin(a)/2)**2 + (B*s*cos(a)/2)**2)
+    samples:
+      B: [1.0, 1.5, 2.0, 2.5, 3.0]
+      s: [0.5, 2.0, 1.2, 0.8, 1.6]
+      a: [0.3, 1.0, 2.0, 4.0, 5.5]
+    tolerance: 1e-10
+    shown: ['id="p4-a"', '$|\vec A| = \tfrac12 B\sqrt{x^2 + y^2} = \tfrac12 Bs$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-curl
+    kind: identity
+    where: 'Problem 4(a): the z component of the curl of ½B(−y, x, 0), by numerical derivatives, is B'
+    formula: |-
+      B
+    equals: |-
+      deriv('B*s/2', 's', x) - deriv('-B*s/2', 's', y)
+    samples:
+      B: [1.0, 1.5, 2.0, 2.5, 3.0]
+      x: [0.5, 2.0, 1.2, -0.8, 1.6]
+      y: [2.0, 0.5, -1.0, 1.4, 0.7]
+    tolerance: 1e-6
+    shown: ['$\nabla \times \vec A = \vec B$']
+    source: {cite: reading2, at: 'slide 3'}
+    origin: page-own
+
+  - id: p4-lam-x
+    kind: identity
+    answer: p4-lam
+    where: 'Problem 4(b), answer box: λ = Bxy/2, against the line integral of A′ − A from the origin, first along x (where A′ − A = (0 − (−B·0/2), …) = 0), then along y (where its y component is Bx − Bx/2), done numerically'
+    formula: |-
+      B*x*y/2
+    equals: |-
+      integrate('0 - (-B*0/2)', 's', 0, x) + integrate('B*x - B*x/2', 's', 0, y)
+    samples:
+      B: [1.0, 1.5, 2.0, 2.5, 3.0]
+      x: [0.5, 2.0, 1.2, 0.8, 1.6]
+      y: [2.0, 0.5, 1.0, 1.4, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p4-lam"', '<Formula label="The gauge function between the two potentials"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-lam-y
+    kind: identity
+    where: 'Problem 4(b), check: ∂λ/∂y of λ = Bxy/2 (numerical derivative) equals the y component of A′ − A = Bx − Bx/2'
+    formula: |-
+      deriv('B*x*s/2', 's', y)
+    equals: |-
+      B*x - B*x/2
+    samples:
+      B: [1.0, 1.5, 2.0, 2.5, 3.0]
+      x: [0.5, 2.0, 1.2, 0.8, 1.6]
+      y: [2.0, 0.5, 1.0, 1.4, 0.7]
+    tolerance: 1e-6
+    shown: ['$\partial_x\lambda = \tfrac12 By$ and $\partial_y\lambda = \tfrac12 Bx$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the monopole
+
+  - id: p5-c
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(b), answer box: C = (dL/dt)ₓ/(dr̂/dt)ₓ at r = (1, 2, 0.5), v = (0.3, −0.4, 0.7): the torque by explicit cross products, dr̂/dt by a numerical time derivative along r + vt'
+    formula: |-
+      mu0*qe*qm/(4*pi)
+    equals: |-
+      (qe*mu0*qm/(4*pi)/5.25**1.5*(2*(0.3*2 - (-0.4)*1) - 0.5*(0.7*1 - 0.3*0.5)))/deriv('(1 + 0.3*t)/sqrt((1 + 0.3*t)**2 + (2 - 0.4*t)**2 + (0.5 + 0.7*t)**2)', 't', 0)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      qe: [0.5, 2.0, 1.2, 0.8, 1.6]
+      qm: [2.0, 0.5, 1.0, 1.4, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p5-c"', '<Formula label="The torque of the monopole''s force"', '<Formula label="The rate of change of the unit vector"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-cos
+    kind: identity
+    answer: p5-cos
+    where: 'Problem 5(d), answer box: cos θ = −κ/Q, against Q · r̂/Q with Q · r̂ = L · r̂ − κ worked out for r = (1, 2, 0.5), v = (0.3, −0.4, 0.7), M = 1 (L = r × v by explicit components, so L · r̂ is computed, not assumed zero)'
+    formula: |-
+      -mu0*qe*qm/(4*pi*Q)
+    equals: |-
+      (((2*0.7 - 0.5*(-0.4))*1 + (0.5*0.3 - 1*0.7)*2 + (1*(-0.4) - 2*0.3)*0.5)/sqrt(5.25) - mu0*qe*qm/(4*pi))/Q
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      qe: [0.5, 1.5, 1.2, 0.8, 1.0]
+      qm: [1.5, 0.5, 1.0, 1.4, 0.7]
+      Q: [2.0, 3.0, 4.0, 2.5, 3.5]
+    tolerance: 1e-10
+    shown: ['id="p5-cos"', '<Formula label="The component of Q along the radius"', '<Formula label="The angle of the cone"']
+    source: {cite: mit, at: 'Problem 5(d), p. 2'}
+    origin: page-own
+
+  # ---- Problem 6: the spinning ball
+
+  - id: p6-m
+    kind: identity
+    answer: p6-m
+    where: 'Problem 6(a), answer box: m_z = qωR²/5, against ½ρω ∫r⁴dr ∫sin²θ dΩ done numerically'
+    formula: |-
+      q*w*R**2/5
+    equals: |-
+      0.5*q/(4/3*pi*R**3)*w*integrate('s**4', 's', 0, R)*integrate('2*pi*sin(t)**3', 't', 0, pi)
+    samples:
+      q: [0.5, 2.0, 1.2, 0.8, 1.6]
+      w: [2.0, 0.5, 1.0, 1.4, 0.7]
+      R: [1.0, 1.5, 0.5, 2.0, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p6-m"', '<Formula label="The moment of the spinning ball"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-sin2
+    where: 'Problem 6(a): ∫ sin²θ dΩ = 8π/3'
+    formula: |-
+      integrate('2*pi*sin(t)**3', 't', 0, pi)/(8*pi/3)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$\int \sin^2\theta\,d\Omega = 8\pi/3$']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-shells
+    kind: identity
+    where: 'Problem 6(a), check: the ball as a stack of shells, each with moment dq ω r′²/3, integrated numerically'
+    formula: |-
+      q*w*R**2/5
+    equals: |-
+      integrate('3*q*s**2/R**3*w*s**2/3', 's', 0, R)
+    samples:
+      q: [0.5, 2.0, 1.2, 0.8, 1.6]
+      w: [2.0, 0.5, 1.0, 1.4, 0.7]
+      R: [1.0, 1.5, 0.5, 2.0, 0.8]
+    tolerance: 1e-8
+    shown: ['$\int_0^R 3q\,\omega\,r''^4\,dr''/(3R^3) = q\omega R^2/5$']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-bavg
+    kind: identity
+    answer: p6-bavg
+    where: 'Problem 6(b), answer box: the average field, against (1/V) ∮ n̂ × A da with the dipole A on the sphere r = R (z component: ∫ A_φ sin θ da), integrated numerically'
+    formula: |-
+      mu0*q*w/(10*pi*R)
+    equals: |-
+      integrate('mu0*(q*w*R**2/5)*sin(t)/(4*pi*R**2)*sin(t)*R**2*2*pi*sin(t)', 't', 0, pi)/(4/3*pi*R**3)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      q: [0.5, 2.0, 1.2, 0.8, 1.6]
+      w: [2.0, 0.5, 1.0, 1.4, 0.7]
+      R: [1.0, 1.5, 0.5, 2.0, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p6-bavg"', '<Formula label="The average field of the spinning ball"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-a
+    kind: identity
+    answer: p6-a
+    where: 'Problem 6(c), answer box: A_φ, against the flux of the dipole field (radial part μ₀ 2m cos θ/(4πr³)) through the cap up to θ, divided by the circumference 2πr sin θ'
+    formula: |-
+      mu0*q*w*R**2*sin(th)/(20*pi*r**2)
+    equals: |-
+      integrate('mu0*2*(q*w*R**2/5)*cos(u)/(4*pi*r**3)*r**2*2*pi*sin(u)', 'u', 0, th)/(2*pi*r*sin(th))
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      q: [0.5, 2.0, 1.2, 0.8, 1.6]
+      w: [2.0, 0.5, 1.0, 1.4, 0.7]
+      R: [1.0, 0.5, 0.7, 0.9, 0.6]
+      r: [2.0, 3.0, 4.0, 2.5, 3.5]
+      th: [0.3, 0.7, 1.0, 1.3, 2.5]
+    tolerance: 1e-8
+    shown: ['id="p6-a"', '<Formula label="The far vector potential of the spinning ball"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 7: the identity
+
+  - id: p7-away
+    kind: identity
+    where: 'Problem 7(d): ∂_x(y/r³) by a numerical derivative, against (δ_xy − 3 r̂ₓ r̂_y)/r³ = −3xy/r⁵'
+    formula: |-
+      deriv('y/(s**2 + y**2 + z**2)**1.5', 's', x)
+    equals: |-
+      -3*x*y/(x**2 + y**2 + z**2)**2.5
+    samples:
+      x: [0.5, 2.0, 1.2, -0.8, 1.6]
+      y: [2.0, 0.5, -1.0, 1.4, 0.7]
+      z: [1.0, -0.3, 0.6, 2.0, 0.4]
+    tolerance: 1e-6
+    shown: ['<Formula label="The derivative away from the origin"']
+    source: {cite: mit, at: 'Problem 7(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-away-diag
+    kind: identity
+    where: 'Problem 7(d): ∂_x(x/r³) by a numerical derivative, against (1 − 3 r̂ₓ²)/r³'
+    formula: |-
+      deriv('s/(s**2 + y**2 + z**2)**1.5', 's', x)
+    equals: |-
+      (1 - 3*x**2/(x**2 + y**2 + z**2))/(x**2 + y**2 + z**2)**1.5
+    samples:
+      x: [0.5, 2.0, 1.2, -0.8, 1.6]
+      y: [2.0, 0.5, -1.0, 1.4, 0.7]
+      z: [1.0, -0.3, 0.6, 2.0, 0.4]
+    tolerance: 1e-6
+    shown: ['<Formula label="The derivative away from the origin"']
+    source: {cite: mit, at: 'Problem 7(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-cos2
+    answer: p7-cos2
+    where: 'Problem 7(d), answer box: ∫ cos²θ dΩ = 4π/3, integrated numerically'
+    formula: |-
+      integrate('2*pi*cos(t)**2*sin(t)', 't', 0, pi)
+    expected: '4.189'
+    shown: ['id="p7-cos2"', 'it is $\int\cos^2\theta\,d\Omega = 4\pi/3 = 4.189$']
+    source: {cite: mit, at: 'Problem 7(d), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p7-traceless
+    where: 'Problem 7(d): the angular integral of 1 − 3 cos²θ is zero (the zz component of δ_ij − 3 r̂_i r̂_j); shown as 4π against 3 × 4π/3'
+    formula: |-
+      3*integrate('2*pi*cos(t)**2*sin(t)', 't', 0, pi)/(4*pi)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$(4\pi\delta_{ij} - 3 \cdot \tfrac{4\pi}{3}\delta_{ij})/r^3 = 0$']
+    source: {cite: mit, at: 'Problem 7(d), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p7-delta-coef
+    where: 'Problem 7(c): μ₀/(4π) times (4π − 4π/3) is 2μ₀/3 (in units of μ₀)'
+    formula: |-
+      (4*pi - 4*pi/3)/(4*pi)
+    expected: '0.6667'
+    shown: ['$\tfrac{\mu_0}{4\pi} \cdot \tfrac{8\pi}{3} = \tfrac{2\mu_0}{3}$']
+    source: {cite: mit, at: 'Problem 7(c), Eq. (7.6), p. 3'}
+    origin: mit
