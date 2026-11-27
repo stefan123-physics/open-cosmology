@@ -1,0 +1,500 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-1.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="..."> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set and its sheet gives no points, so every answer is checked here by a
+# route independent of the page: Problem 1 counts states by the first oscillator and integrates dS/dq, and solves the
+# temperature condition for q/N by a root search; Problems 2 and 3 compare the small-extension results with the full
+# Stirling entropy at very small extension and solve the exact temperature condition numerically; Problem 4 integrates
+# over the height and differentiates ln Q1 numerically.
+# Constants: k_B (exact, calcs/constants.yaml); u = 1.66053906660e-27 kg (CODATA 2018), written out.
+
+page: content/year-4/8.08/8-08-problem-set-1.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 25 for each of the four problems'
+    formula: |-
+      25 + 25 + 25 + 25
+    expected: '100'
+    shown: ['25 for each problem, 100 points in all']
+    source: {cite: mit, at: 'Problems 1 to 4, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1: Einstein solid
+
+  - id: p1-count
+    answer: p1-count
+    where: 'Problem 1(a), answer box: states of 3 oscillators sharing 4 quanta, counted by the first oscillator (5 + 4 + 3 + 2 + 1)'
+    formula: |-
+      5 + 4 + 3 + 2 + 1
+    expected: '15'
+    shown: ['$5 + 4 + 3 + 2 + 1 = 15$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-count-binomial
+    where: 'Problem 1(a) and (b), checks: 6!/(4! 2!) by the product formula, and the other choices 3^4, 7!/(4! 3!) and 4!/(3! 1!)'
+    formula: |-
+      6*5/2
+    expected: '15'
+    shown: ['$\binom{6}{2} = 15$', '$6!/(4!\,2!) = 15$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-other-choices
+    where: 'Problem 1(b), check: the other choices give 81, 35 and 4 (3^4; 7!/(4! 3!) = 7*6*5/6; 4!/(3! 1!) = 4), written as 81*10000 + 35*100 + 4'
+    formula: |-
+      3**4*10000 + 7*6*5/6*100 + 4*3*2/(3*2*1)
+    expected: '813504'
+    shown: ['The other choices give 81, 35 and 4']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-s
+    kind: identity
+    answer: p1-s
+    where: 'Problem 1(c), answer box: Stirling entropy, against the integral over q of its derivative ln((q + N)/q) (S = 0 at q = 0)'
+    formula: |-
+      (q + N)*log(q + N) - q*log(q) - N*log(N)
+    equals: |-
+      integrate('log((u + N)/u)', 'u', 0, q)
+    samples:
+      q: [50.0, 120.0, 300.0, 500.0, 75.0]
+      N: [50.0, 400.0, 90.0, 500.0, 200.0]
+    tolerance: 1e-6
+    shown: ['id="p1-s"', '<Formula label="Entropy of the Einstein solid"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-stirling-check
+    where: 'Problem 1(c), check: q = N = 1000, Stirling 2000 ln 2'
+    formula: |-
+      2000*log(2)
+    expected: '1386.3'
+    shown: ['it gives $2000\ln 2 = 1386.3$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-exact-check
+    where: 'Problem 1(c), check: the exact ln[1999!/(1000! 999!)], recomputed outside the harness (which has no factorial) with Python math.lgamma: 1381.575'
+    kind: fact
+    value: '1381.6'
+    shown: ['against the exact $\ln[1999!/(1000!\,999!)] = 1381.6$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers; lgamma(2000) - lgamma(1001) - lgamma(1000) = 1381.57)'}
+    origin: page-own
+
+  - id: p1-nbar
+    kind: identity
+    answer: p1-nbar
+    where: 'Problem 1(d), answer box: q/N = 1/(e^y - 1), against a root search of ln((u + 1)/u) = y for u = q/N'
+    formula: |-
+      1/(exp(y) - 1)
+    equals: |-
+      solve('log((u + 1)/u) - y', 'u', 1e-6, 1e4)
+    samples:
+      y: [0.3, 0.8, 1.5, 3.0, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p1-nbar"', '<Formula label="Mean number of quanta per oscillator"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(e), answer box: q/N at y = 0.8'
+    formula: |-
+      1/(exp(0.8) - 1)
+    expected: '0.816'
+    shown: ['id="p1-num"', '$q/N = 1/1.2255 = 0.816$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-exp08
+    where: 'Problem 1(e): e^0.8'
+    formula: |-
+      exp(0.8)
+    expected: '2.2255'
+    shown: ['$e^{0.8} = 2.2255$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-limit-high
+    where: 'Problem 1(e), check: the high-temperature limit 1/y at y = 0.8'
+    formula: |-
+      1/0.8
+    expected: '1.25'
+    shown: ['$1/y = 1.25$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-limit-low
+    where: 'Problem 1(e), check: the low-temperature limit e^-y at y = 0.8'
+    formula: |-
+      exp(-0.8)
+    expected: '0.449'
+    shown: ['$e^{-y} = 0.449$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: hanging chain with a weight
+
+  - id: p2-count
+    answer: p2-count
+    where: 'Problem 2(a), answer box: 12!/(8! 4!) as (12*11*10*9)/24'
+    formula: |-
+      12*11*10*9/24
+    expected: '495'
+    shown: ['id="p2-count"', '$\Gamma = 12!/(8!\,4!) = (12 \cdot 11 \cdot 10 \cdot 9)/24 = 495$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-s
+    kind: identity
+    answer: p2-s
+    where: 'Problem 2(b), answer box: N ln 2 - L^2/(2 N a^2), against the full Stirling entropy -N[f ln f + (1 - f) ln(1 - f)], f = (1 + L/Na)/2, at extensions L/Na of 1e-4 or less (the quartic term is then below 1e-14 of the value)'
+    formula: |-
+      N*log(2) - L**2/(2*N*a**2)
+    equals: |-
+      -N*((1 + L/(N*a))/2*log((1 + L/(N*a))/2) + (1 - L/(N*a))/2*log((1 - L/(N*a))/2))
+    samples:
+      N: [1e4, 5e4, 2e5, 1e6, 3e4]
+      L: [0.5, 2.0, 5.0, 10.0, 1.0]
+      a: [1.0, 0.5, 1.0, 0.8, 0.7]
+    tolerance: 1e-9
+    shown: ['id="p2-s"', '<Formula label="Entropy of a slightly stretched chain"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-s-curvature
+    kind: identity
+    where: 'Problem 2(b): the second derivative of the full Stirling entropy at L = 0 is -1/(N a^2), the coefficient of the quadratic drop'
+    formula: |-
+      -1/(N*a**2)
+    equals: |-
+      deriv('-N*((1 + u/(N*a))/2*log((1 + u/(N*a))/2) + (1 - u/(N*a))/2*log((1 - u/(N*a))/2))', 'u', 0, 2)
+    samples:
+      N: [50.0, 100.0, 200.0]
+      a: [0.5, 1.0, 0.7]
+    tolerance: 1e-5
+    shown: ['<Formula label="Entropy of a slightly stretched chain"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-e
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(b), answer box: E = -mgL, against the work done by gravity, minus the integral of the force mg over the drop L'
+    formula: |-
+      -m*g*L
+    equals: |-
+      -integrate('m*g', 'u', 0, L)
+    samples:
+      m: [0.5, 1.0, 2.0]
+      g: [5.0, 9.81, 15.0]
+      L: [1.0, 3.0, 5.0]
+    tolerance: 1e-10
+    shown: ['id="p2-e"', '<Formula label="Energy of the chain with its weight"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-t
+    kind: identity
+    answer: p2-t
+    where: 'Problem 2(c), answer box: T = N m g a^2/(kB L), against 1/T = (dS/dL)/(dE/dL) with dS/dL of the full Stirling entropy taken numerically at small extension (L/Na below 1e-4)'
+    formula: |-
+      N*m*g*a**2/(kB*L)
+    equals: |-
+      -m*g/(kB*deriv('-N*((1 + u/(N*a))/2*log((1 + u/(N*a))/2) + (1 - u/(N*a))/2*log((1 - u/(N*a))/2))', 'u', L))
+    samples:
+      N: [1e5, 2e5, 5e5]
+      m: [0.5, 1.0, 2.0]
+      g: [5.0, 9.81, 15.0]
+      a: [1.0, 0.5, 0.8]
+      kB: [1.0, 0.5, 2.0]
+      L: [1.0, 3.0, 5.0]
+    tolerance: 1e-5
+    shown: ['id="p2-t"', '<Formula label="Temperature of the hanging chain"']
+    source: {cite: mit, at: 'Problem 2(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-l
+    kind: identity
+    answer: p2-l
+    where: 'Problem 2(d), answer box: L = N m g a^2/(kB T), against the exact L = N a tanh(m g a/(kB T)) of part (e) at m g a/(kB T) of 1e-4 or less'
+    formula: |-
+      N*m*g*a**2/(kB*T)
+    equals: |-
+      N*a*tanh(m*g*a/(kB*T))
+    samples:
+      N: [50.0, 100.0, 200.0]
+      m: [0.5, 1.0, 2.0]
+      g: [0.5, 1.0, 2.0]
+      a: [0.5, 1.0, 0.8]
+      kB: [1.0, 2.0, 0.5]
+      T: [1e4, 3e4, 1e5]
+    tolerance: 1e-7
+    shown: ['id="p2-l"', '<Formula label="Length of the chain at temperature T"']
+    source: {cite: mit, at: 'Problem 2(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-exact-law
+    kind: identity
+    where: 'Problem 2(e): dS/dL of the full Stirling entropy is -(kB/a) artanh(L/Na), so 1/T = (kB/(m g a)) artanh(L/Na); derivative taken numerically'
+    formula: |-
+      deriv('-N*((1 + u/(N*a))/2*log((1 + u/(N*a))/2) + (1 - u/(N*a))/2*log((1 - u/(N*a))/2))', 'u', L)
+    equals: |-
+      -(1/a)*0.5*log((1 + L/(N*a))/(1 - L/(N*a)))
+    samples:
+      N: [50.0, 100.0, 200.0]
+      a: [1.0, 0.5, 0.8]
+      L: [10.0, 30.0, 100.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="Exact length of the hanging chain"']
+    source: {cite: mit, at: 'Problem 2(e), our addition (our own solution)'}
+    origin: page-own
+
+  - id: p2-exact
+    answer: p2-exact
+    where: 'Problem 2(e), answer box: L/a for N = 100 and m g a = 0.5 kB T, by solving artanh(x) = 0.5 for x = L/Na with a root search'
+    formula: |-
+      100*solve('0.5*log((1 + u)/(1 - u)) - 0.5', 'u', 0, 0.99)
+    expected: '46.21'
+    shown: ['id="p2-exact"', '$L/a = 100\tanh 0.5 = 100 \times 0.46212 = 46.21$']
+    source: {cite: mit, at: 'Problem 2(e), our addition (our own numbers)'}
+    origin: page-own
+
+  - id: p2-tanh05
+    where: 'Problem 2(e): tanh 0.5'
+    formula: |-
+      tanh(0.5)
+    expected: '0.46212'
+    shown: ['= 100 \times 0.46212 = 46.21$. The linear law']
+    source: {cite: mit, at: 'Problem 2(e), our addition (our own numbers)'}
+    origin: page-own
+
+  - id: p2-linear-excess
+    where: 'Problem 2(e): the linear law gives 50, 8% more than 46.21'
+    formula: |-
+      (50/46.2117 - 1)*100
+    expected: '8'
+    tolerance: 0.5
+    shown: ['would give $50$, 8% too long']
+    source: {cite: mit, at: 'Problem 2(e), our addition (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3: chain in a heat bath
+
+  - id: p3-a
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(b), answer box: A = -kB T (N ln 2 - L^2/(2 N a^2)), against -kB T times the full Stirling entropy at extensions L/Na of 1e-4 or less'
+    formula: |-
+      -kB*T*(N*log(2) - L**2/(2*N*a**2))
+    equals: |-
+      kB*T*N*((1 + L/(N*a))/2*log((1 + L/(N*a))/2) + (1 - L/(N*a))/2*log((1 - L/(N*a))/2))
+    samples:
+      kB: [1.0, 0.5, 2.0, 1.3]
+      T: [1.0, 3.0, 2.0, 1.5]
+      N: [1e4, 1e5, 1e6, 5e4]
+      L: [0.5, 2.0, 5.0, 1.0]
+      a: [1.0, 0.5, 0.8, 1.0]
+    tolerance: 1e-9
+    shown: ['id="p3-a"', '<Formula label="Free energy of the chain"']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-tau
+    kind: identity
+    answer: p3-tau
+    where: 'Problem 3(c), answer box: tau = kB T L/(N a^2), against the numerical L-derivative of kB T times minus the full Stirling entropy at small extension'
+    formula: |-
+      kB*T*L/(N*a**2)
+    equals: |-
+      kB*T*deriv('N*((1 + u/(N*a))/2*log((1 + u/(N*a))/2) + (1 - u/(N*a))/2*log((1 - u/(N*a))/2))', 'u', L)
+    samples:
+      kB: [1.0, 0.5, 2.0]
+      T: [1.0, 3.0, 2.0]
+      N: [1e5, 2e5, 5e5]
+      L: [1.0, 3.0, 5.0]
+      a: [1.0, 0.5, 0.8]
+    tolerance: 1e-5
+    shown: ['id="p3-tau"', '<Formula label="Tension of the chain at small extension"']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-num
+    answer: p3-num
+    where: 'Problem 3(c), answer box: tau in pN for N = 1000, a = 0.5 nm, T = 300 K, L = 50 nm'
+    inputs: {N: 1000, a: 0.5 nm, T: 300 K, L: 50 nm}
+    formula: |-
+      k_B*T*L/(N*a**2)
+    expected: 0.828 pN
+    shown: ['id="p3-num"', '$= 8.28 \times 10^{-13}$ N $= 0.828$ pN']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-kT
+    where: 'Problem 3(c): kB T at 300 K'
+    inputs: {T: 300 K}
+    formula: |-
+      k_B*T
+    expected: 4.142e-21 J
+    shown: ['$= 4.142 \times 10^{-21}$ J', 'about $4.14 \times 10^{-21}$ J']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-na2
+    where: 'Problem 3(c): N a^2 for N = 1000, a = 0.5 nm'
+    inputs: {N: 1000, a: 0.5e-9 m}
+    formula: |-
+      N*a**2
+    expected: 2.5e-16 m**2
+    shown: ['$= 2.5 \times 10^{-16}$ m²']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-exact-ratio
+    where: 'Problem 3(c), check: the exact tanh law differs from the linear one at L/Na = 0.1 by artanh(0.1)/0.1 - 1, in per cent'
+    formula: |-
+      (0.5*log(1.1/0.9)/0.1 - 1)*100
+    expected: '0.3'
+    tolerance: 0.15
+    shown: ['the exact tanh law differs by 0.3%']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-heat
+    answer: p3-heat
+    where: 'Problem 3(d), answer box: heat to the bath in units of kB T, by integrating tau dL/(kB T) = L dL/(N a^2) from 0 to 50 nm (lengths in nm)'
+    formula: |-
+      integrate('u/(1000*0.5**2)', 'u', 0, 50)
+    expected: '5.00'
+    shown: ['id="p3-heat"', '$W/k_BT = (50 \times 10^{-9})^2/(2 \times 2.5 \times 10^{-16}) = 2.5 \times 10^{-15}/(5 \times 10^{-16}) = 5.00$']
+    source: {cite: mit, at: 'Problem 3(d), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-full-stretch
+    where: 'Problem 3(d), check: N ln 2 for N = 1000, in units of kB T'
+    formula: |-
+      1000*log(2)
+    expected: '693'
+    tolerance: 0.5
+    shown: ['$Nk_BT\ln 2 = 693\,k_BT$']
+    source: {cite: reading1, at: 'p. 6'}
+    origin: page-own
+
+  # ---- Problem 4: gas in a gravitational field
+
+  - id: p4-q1
+    kind: identity
+    answer: p4-q1
+    where: 'Problem 4(a), answer box: Q1 = sigma kB T/(m g lam^3), against sigma/lam^3 times the numerical height integral of exp(-m g z/(kB T)) up to 60 heights kB T/(m g)'
+    formula: |-
+      sigma*kB*T/(m*g*lam**3)
+    equals: |-
+      sigma/lam**3*integrate('exp(-m*g*u/(kB*T))', 'u', 0, 60*kB*T/(m*g))
+    samples:
+      sigma: [0.5, 1.0, 2.0]
+      kB: [0.5, 1.0, 2.0]
+      T: [1.0, 2.0, 3.0]
+      m: [0.5, 2.0, 1.0]
+      g: [0.5, 1.0, 2.0]
+      lam: [0.5, 1.0, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p4-q1"', '<Formula label="One-molecule partition function in a gravitational field"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-e
+    kind: identity
+    answer: p4-e
+    where: 'Problem 4(b), answer box: E/N = 5/2 kB T, against minus the numerical beta-derivative of ln Q1 with lam = sqrt(2 pi hb^2 bb/m) and the height kB T/(m g) = 1/(m g bb)'
+    formula: |-
+      5/2*kB*T
+    equals: |-
+      -deriv('log(sigma/(m*g*bb)*(2*pi*hb**2*bb/m)**(-1.5))', 'bb', 1/(kB*T))
+    samples:
+      kB: [0.5, 1.0, 2.0]
+      T: [1.0, 2.0, 3.0]
+      sigma: [1.0, 2.0, 0.5]
+      m: [1.0, 0.5, 2.0]
+      g: [1.0, 2.0, 0.5]
+      hb: [1.0, 0.3, 2.0]
+    tolerance: 1e-6
+    shown: ['id="p4-e"', '<Formula label="Mean energy of the gas in a gravitational field"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-zmean
+    kind: identity
+    where: 'Problem 4(c): the mean of z over exp(-z/ell) is ell (numerical integrals up to 60 ell)'
+    formula: |-
+      ell
+    equals: |-
+      integrate('u*exp(-u/ell)', 'u', 0, 60*ell)/integrate('exp(-u/ell)', 'u', 0, 60*ell)
+    samples:
+      ell: [0.5, 1.0, 9.0]
+    tolerance: 1e-8
+    shown: ['<Formula label="Mean height of a molecule"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-mass
+    where: 'Problem 4(c): mass of a nitrogen molecule, 28.014 u'
+    inputs: {M: 28.014, mu: 1.66053906660e-27 kg}
+    formula: |-
+      M*mu
+    expected: 4.6518e-26 kg
+    shown: ['$= 4.6518 \times 10^{-26}$ kg']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-z
+    answer: p4-z
+    where: 'Problem 4(c), answer box: kB T/(m g) for N2 (28.014 u) at 300 K with g = 9.81 m/s^2, in km'
+    inputs: {T: 300 K, g: 9.81 m/s**2, mu: 1.66053906660e-27 kg}
+    formula: |-
+      k_B*T/(28.014*mu*g)
+    expected: 9.08 km
+    shown: ['id="p4-z"', '$= 9.08 \times 10^3$ m $= 9.08$ km']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-kT
+    where: 'Problem 4(c): kB T at 300 K, as written in the solution'
+    inputs: {T: 300 K}
+    formula: |-
+      k_B*T
+    expected: 4.1419e-21 J
+    shown: ['$\langle z\rangle = 4.1419 \times 10^{-21}/(4.6518 \times 10^{-26} \times 9.81)$ m']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-helium
+    where: 'Problem 4(c), check: helium (4.003 u) at 300 K, kB T/(m g) in km'
+    inputs: {T: 300 K, g: 9.81 m/s**2, mu: 1.66053906660e-27 kg}
+    formula: |-
+      k_B*T/(4.003*mu*g)
+    expected: 64 km
+    tolerance: 1 km
+    shown: ['the same formula gives about 64 km']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-pressure
+    kind: identity
+    where: 'Problem 4(d), check: the floor pressure n(0) kB T equals mg times the integral of n(z) = N/(sigma ell) exp(-z/ell) over the column (the weight of the gas per area), with ell = kB T/(m g)'
+    formula: |-
+      N/(sigma*kB*T/(m*g))*kB*T
+    equals: |-
+      m*g*integrate('N/(sigma*kB*T/(m*g))*exp(-u*m*g/(kB*T))', 'u', 0, 60*kB*T/(m*g))
+    samples:
+      N: [10.0, 100.0, 1000.0]
+      sigma: [0.5, 1.0, 2.0]
+      kB: [1.0, 0.5, 2.0]
+      T: [1.0, 3.0, 2.0]
+      m: [1.0, 2.0, 0.5]
+      g: [1.0, 0.5, 2.0]
+    tolerance: 1e-8
+    shown: ['<Formula label="Pressure on the floor"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
