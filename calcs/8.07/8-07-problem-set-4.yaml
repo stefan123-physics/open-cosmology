@@ -1,0 +1,856 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 integrates the lid's potential against the sines numerically and sums the series with sinh ratios
+# (the page uses 1/(2 cosh)); Problem 2 finds each image by a root search for the charge and the position that
+# make the potential vanish at the top and the bottom of the sphere, adds up the potentials of all five charges
+# at points of the sphere, and compares the energy with the first terms of the closed series for the capacitance
+# of a sphere and a plane; Problem 3 does the angular integral for A_11 numerically (the page reads it off);
+# Problem 4 differentiates and integrates the potential numerically; Problem 5 integrates the Legendre polynomials
+# and the rings of charge numerically; Problem 6 averages the field of the point charge over the ball numerically
+# (the page uses the field of a fictitious ball).
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: eps0.
+
+page: content/year-4/8.07/8-07-problem-set-4.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points, 15 + 25 + 15 + 15 + 15 + 20'
+    formula: |-
+      15 + 25 + 15 + 15 + 15 + 20
+    expected: '105'
+    shown: ['105 points in all']
+    source: {cite: mit, at: 'Problems 1 to 6, pp. 1–2'}
+    origin: mit
+
+  # ---- Problem 1: the box
+
+  - id: p1-centre
+    kind: identity
+    answer: p1-centre
+    where: 'Problem 1(a), answer box: the potential at the centre, against the form V0/(2 cosh(πh/(√2 L)))'
+    formula: |-
+      V0*sinh(pi*h/(sqrt(2)*L))/sinh(sqrt(2)*pi*h/L)
+    equals: |-
+      V0/(2*cosh(pi*h/(sqrt(2)*L)))
+    samples:
+      V0: [1.0, 1.5, 2.0, 2.5, 3.0]
+      h: [0.5, 2.0, 1.2, 0.8, 1.6]
+      L: [2.0, 0.5, 1.0, 1.7, 0.9]
+    tolerance: 1e-10
+    shown: ['id="p1-centre"', '<Formula label="The potential at the centre of the box"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-laplace
+    kind: identity
+    where: 'Problem 1(a): the z factor sinh(√2 πz/L) has the second derivative (2π²/L²) times itself (numerical derivative), which cancels the −2π²/L² from the two sines'
+    formula: |-
+      deriv('sinh(sqrt(2)*pi*s/L)', 's', z, 2)
+    equals: |-
+      2*pi**2/L**2*sinh(sqrt(2)*pi*z/L)
+    samples:
+      z: [0.2, 0.5, 0.8, 1.1, 0.4]
+      L: [1.0, 1.5, 2.0, 1.2, 0.8]
+    tolerance: 1e-5
+    shown: ['<Formula label="The potential in the box for the single pattern"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-arg
+    where: 'Problem 1(a): π/√2'
+    formula: |-
+      pi/sqrt(2)
+    expected: '2.221'
+    shown: ['$\pi/\sqrt2 = 2.221$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cosh
+    where: 'Problem 1(a): cosh(π/√2)'
+    formula: |-
+      cosh(pi/sqrt(2))
+    expected: '4.665'
+    shown: ['$\cosh 2.221 = 4.665$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cube
+    answer: p1-cube
+    where: 'Problem 1(a), answer box: the potential at the centre of the cube over V0, as the ratio of hyperbolic sines (the page uses 1/(2 cosh))'
+    formula: |-
+      sinh(pi/sqrt(2))/sinh(sqrt(2)*pi)
+    expected: '0.107'
+    shown: ['id="p1-cube"', 'so $V_{\text{centre}} = 0.107\,V_0$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-coef
+    kind: identity
+    answer: p1-coef
+    where: 'Problem 1(b), answer box: the coefficient, against (4/L²) times the two integrals over the lid done numerically (L = 1)'
+    formula: |-
+      32*V0/(n*m*pi**2)
+    equals: |-
+      4*V0*(integrate('sin(n*pi*s)', 's', 0, 0.5) - integrate('sin(n*pi*s)', 's', 0.5, 1))*integrate('sin(m*pi*s)', 's', 0, 1)
+    samples:
+      V0: [1.0, 1.5, 2.0, 2.5, 3.0]
+      n: [2, 6, 2, 6, 10]
+      m: [1, 3, 5, 1, 3]
+    tolerance: 1e-7
+    shown: ['id="p1-coef"', '<Formula label="The coefficients for the lid in two strips"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-n2
+    where: 'Problem 1(b), choice box: the integral over x for n = 2, times nπ/L (L = 1), numerically: the bracket is 4'
+    formula: |-
+      2*pi*(integrate('sin(2*pi*s)', 's', 0, 0.5) - integrate('sin(2*pi*s)', 's', 0.5, 1))
+    expected: '4'
+    tolerance: 1e-7
+    shown: ['it is $1 + 2 + 1 = 4$ for']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n4
+    where: 'Problem 1(b), choice box: the same for n = 4: the bracket is 0'
+    formula: |-
+      4*pi*(integrate('sin(4*pi*s)', 's', 0, 0.5) - integrate('sin(4*pi*s)', 's', 0.5, 1))
+    expected: '0'
+    tolerance: 1e-7
+    shown: ['it is $1 - 2 + 1 = 0$ when']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n3
+    where: 'Problem 1(b), choice box: the same for n = 3: the bracket is 0'
+    formula: |-
+      3*pi*(integrate('sin(3*pi*s)', 's', 0, 0.5) - integrate('sin(3*pi*s)', 's', 0.5, 1))
+    expected: '0'
+    tolerance: 1e-7
+    shown: ['The bracket is $0$ for odd $n$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-c21
+    where: 'Problem 1(c): c_21 over V0'
+    formula: |-
+      32/(2*pi**2)
+    expected: '1.621'
+    shown: ['32V_0/(2\pi^2) = 1.621\,V_0$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-g21
+    where: 'Problem 1(c): γ_21 L/2 = √5 π/2'
+    formula: |-
+      sqrt(5)*pi/2
+    expected: '3.512'
+    shown: ['\sqrt5\,\pi/2 = 3.512$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cosh21
+    where: 'Problem 1(c): cosh(√5 π/2)'
+    formula: |-
+      cosh(sqrt(5)*pi/2)
+    expected: '16.78'
+    shown: ['$\cosh 3.512 = 16.78$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-term21
+    where: 'Problem 1(c): the term n = 2, m = 1 at the point (L/4, L/2, L/2), over V0, with the ratio of hyperbolic sines'
+    formula: |-
+      32/(2*pi**2)*sinh(sqrt(5)*pi/2)/sinh(sqrt(5)*pi)*sin(2*pi/4)*sin(pi/2)
+    expected: '0.0483'
+    shown: ['(2 \times 16.78) = 0.0483\,V_0$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-c23
+    where: 'Problem 1(c): c_23 over V0'
+    formula: |-
+      32/(6*pi**2)
+    expected: '0.540'
+    shown: ['32V_0/(6\pi^2) = 0.540\,V_0$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-g23
+    where: 'Problem 1(c): γ_23 L/2 = √13 π/2'
+    formula: |-
+      sqrt(13)*pi/2
+    expected: '5.664'
+    shown: ['\sqrt{13}\,\pi/2 = 5.664$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cosh23
+    where: 'Problem 1(c): cosh(√13 π/2)'
+    formula: |-
+      cosh(sqrt(13)*pi/2)
+    expected: '144.1'
+    shown: ['$\cosh 5.664 = 144.1$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-term23
+    where: 'Problem 1(c): the term n = 2, m = 3 at the point, over V0'
+    formula: |-
+      32/(6*pi**2)*sinh(sqrt(13)*pi/2)/sinh(sqrt(13)*pi)*sin(2*pi/4)*sin(3*pi/2)
+    expected: '-0.0019'
+    shown: ['(2 \times 144.1) = -0.0019\,V_0$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-term61
+    where: 'Problem 1(c): the term n = 6, m = 1 at the point, over V0'
+    formula: |-
+      32/(6*pi**2)*sinh(sqrt(37)*pi/2)/sinh(sqrt(37)*pi)*sin(6*pi/4)*sin(pi/2)
+    expected: '-0.00004'
+    shown: ['is $-0.00004\,V_0$, and the rest are smaller still']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-point
+    answer: p1-point
+    where: 'Problem 1(c), answer box: the six largest terms of the series at (L/4, L/2, L/2) in the cube, over V0: (n, m) = (2,1), (2,3), (6,1), (2,5), (6,3), (10,1)'
+    formula: |-
+      32/pi**2*(sinh(sqrt(5)*pi/2)/sinh(sqrt(5)*pi)/2 - sinh(sqrt(13)*pi/2)/sinh(sqrt(13)*pi)/6 - sinh(sqrt(37)*pi/2)/sinh(sqrt(37)*pi)/6 + sinh(sqrt(29)*pi/2)/sinh(sqrt(29)*pi)/10 + sinh(sqrt(45)*pi/2)/sinh(sqrt(45)*pi)/18 + sinh(sqrt(101)*pi/2)/sinh(sqrt(101)*pi)/10)
+    expected: '0.0465'
+    shown: ['id="p1-point"', '+ \cdots\right)V_0 = 0.0465\,V_0']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-first-alone
+    where: 'Problem 1(c): the first term alone against the sum, 0.0483/0.0465 − 1'
+    formula: |-
+      0.0483/0.0465 - 1
+    expected: '0.04'
+    shown: ['The first term alone is 4% too large']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the sphere and the plane
+
+  - id: p2-q2
+    kind: identity
+    answer: p2-q2
+    where: 'Problem 2(b), answer box: q2 against a root search for the charge at z2 that cancels the potential of q1 = −q0 at the top of the sphere (distances 2 z0 + R and R + R²/(2 z0))'
+    formula: |-
+      q0*R/(2*z0)
+    equals: |-
+      solve('-q0/(2*z0 + R) + x/(R + R**2/(2*z0))', 'x', 0, 10)
+    samples:
+      q0: [0.5, 1.0, 1.5, 2.2, 3.0]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+    tolerance: 1e-7
+    shown: ['id="p2-q2"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1'}
+    origin: mit
+
+  - id: p2-z2
+    kind: identity
+    answer: p2-z2
+    where: 'Problem 2(b), answer box: z2 against a root search for the distance s below the centre at which the ratio of distances to q2 and to q1 is the same at the top and at the bottom of the sphere'
+    formula: |-
+      z0 - R**2/(2*z0)
+    equals: |-
+      z0 - solve('(R + s)/(2*z0 + R) - (R - s)/(2*z0 - R)', 's', 0, R)
+    samples:
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+    tolerance: 1e-7
+    shown: ['id="p2-z2"', '<Formula label="The second image charge"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1'}
+    origin: mit
+
+  - id: p2-q4
+    kind: identity
+    answer: p2-q4
+    where: 'Problem 2(b), answer box: q4 against a root search for the charge at z4 that cancels the potential of q3 = −q0 R/(2 z0) at the top of the sphere (q3 is at the distance d3 = 2 z0 − R²/(2 z0) from the centre)'
+    formula: |-
+      q0*R**2/(4*z0**2 - R**2)
+    equals: |-
+      solve('-(q0*R/(2*z0))/(2*z0 - R**2/(2*z0) + R) + x/(R + R**2/(2*z0 - R**2/(2*z0)))', 'x', 0, 10)
+    samples:
+      q0: [0.5, 1.0, 1.5, 2.2, 3.0]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+    tolerance: 1e-7
+    shown: ['id="p2-q4"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1'}
+    origin: mit
+
+  - id: p2-z4
+    kind: identity
+    answer: p2-z4
+    where: 'Problem 2(b), answer box: z4 against a root search for the distance s below the centre at which the ratio of distances to q4 and to q3 is the same at the top and at the bottom of the sphere'
+    formula: |-
+      z0 - 2*z0*R**2/(4*z0**2 - R**2)
+    equals: |-
+      z0 - solve('(R + s)/(2*z0 - R**2/(2*z0) + R) - (R - s)/(2*z0 - R**2/(2*z0) - R)', 's', 0, R)
+    samples:
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+    tolerance: 1e-7
+    shown: ['id="p2-z4"', '<Formula label="The fourth image charge"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1'}
+    origin: mit
+
+  - id: p2-d3
+    kind: identity
+    where: 'Problem 2(b): the distance of q3 from the centre, z0 + z2, against (4 z0² − R²)/(2 z0)'
+    formula: |-
+      (4*z0**2 - R**2)/(2*z0)
+    equals: |-
+      z0 + (z0 - R**2/(2*z0))
+    samples:
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+    tolerance: 1e-12
+    shown: ['<Formula label="The distance of the third image from the centre of the sphere"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-check-z2
+    where: 'Problem 2(b), check: z2/R for z0 = 2R'
+    formula: |-
+      2 - 1/(2*2)
+    expected: '1.75'
+    shown: ['$q_2 = q_0/4$ at $z_2 = 1.75R$']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-check-q4
+    where: 'Problem 2(b), check: q0/q4 for z0 = 2R'
+    formula: |-
+      4*2**2 - 1
+    expected: '15'
+    shown: ['$q_4 = q_0/15$ at']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-check-z4
+    where: 'Problem 2(b), check: z4/R for z0 = 2R'
+    formula: |-
+      2 - 2*2/(4*2**2 - 1)
+    expected: '1.733'
+    shown: ['at $z_4 = 1.733R$']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-check-ratio
+    where: 'Problem 2(b), check: q2/q4 for z0 = 2R is 15/4, about 4'
+    formula: |-
+      (1/4)/(1/15)
+    expected: '4'
+    tolerance: 0.5
+    shown: ['shrink by a factor of about 4']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-v
+    kind: identity
+    answer: p2-v
+    where: 'Problem 2(c), answer box: the potential of the five charges q0 to q4 added up at a point of the sphere, at the angle tt from its top (numerically the same at every angle)'
+    formula: |-
+      q0/(4*pi*eps0*R)
+    equals: |-
+      (q0/R - q0/sqrt((R*sin(tt))**2 + (2*z0 + R*cos(tt))**2) + (q0*R/(2*z0))/sqrt((R*sin(tt))**2 + (R*cos(tt) + R**2/(2*z0))**2) - (q0*R/(2*z0))/sqrt((R*sin(tt))**2 + (2*z0 - R**2/(2*z0) + R*cos(tt))**2) + (q0*R**2/(4*z0**2 - R**2))/sqrt((R*sin(tt))**2 + (R*cos(tt) + 2*z0*R**2/(4*z0**2 - R**2))**2))/(4*pi*eps0)
+    samples:
+      q0: [0.5, 1.0, 1.5, 2.2, 3.0]
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+      tt: [0.0, 0.7, 1.6, 2.4, 3.1]
+    tolerance: 1e-10
+    shown: ['id="p2-v"', '<Formula label="The potential of the sphere after four images"']
+    source: {cite: mit, at: 'Problem 2(c), p. 1'}
+    origin: mit
+
+  - id: p2-plane-first
+    where: 'Problem 2(c), check: the potential at the origin from q0 alone over V0, R/z0 for z0 = 2R'
+    formula: |-
+      1/2
+    expected: '0.5'
+    shown: ['= 0.5\,V_0$ with $q_0$ alone']
+    source: {cite: mit, at: 'Problem 2(c), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-plane-after
+    where: 'Problem 2(c), check: the potential at the origin from all five charges over V0, for z0 = 2R (R = 1): q0 and q1, q2 and q3 cancel in pairs'
+    formula: |-
+      1/2 - 1/2 + (1/4)/1.75 - (1/4)/1.75 + (1/15)/(2 - 4/15)
+    expected: '0.038'
+    shown: ['V_0\,(1/15)/1.733 = 0.038\,V_0$']
+    source: {cite: mit, at: 'Problem 2(c), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-w
+    kind: identity
+    answer: p2-w
+    where: 'Problem 2(d), answer box: the energy against (1/2) C V0² with the first three terms of the closed series for the capacitance of a sphere and a plane, C = 4πε0 R sinh β Σ 1/sinh(nβ), cosh β = z0/R'
+    formula: |-
+      2*pi*eps0*R*V0**2*(1 + R/(2*z0) + R**2/(4*z0**2 - R**2))
+    equals: |-
+      2*pi*eps0*R*V0**2*sinh(acosh(z0/R))*(1/sinh(acosh(z0/R)) + 1/sinh(2*acosh(z0/R)) + 1/sinh(3*acosh(z0/R)))
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z0: [1.5, 3.0, 2.0, 2.6, 1.8]
+      V0: [1.0, 1.5, 2.0, 2.5, 3.0]
+    tolerance: 1e-10
+    shown: ['id="p2-w"', '<Formula label="The energy of the sphere and the plane"']
+    source: {cite: mit, at: 'Problem 2(d), p. 1'}
+    origin: mit
+
+  - id: p2-w-pref
+    where: 'Problem 2(d): 2π ε0 R V0² for R = 5.0 cm, V0 = 600 V'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 5.0 cm, V0: 600 V}
+    formula: |-
+      2*pi*eps0*R*V0**2
+    expected: 1.001e-6 J
+    shown: ['\times 600^2 = 1.001 \times 10^{-6}$ J']
+    source: {cite: mit, at: 'Problem 2(d), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-w-bracket
+    where: 'Problem 2(d): the bracket for R = 5.0 cm, z0 = 10 cm'
+    formula: |-
+      1 + 5/(2*10) + 5**2/(4*10**2 - 5**2)
+    expected: '1.317'
+    shown: ['$1 + 0.25 + 0.0667 = 1.317$']
+    source: {cite: mit, at: 'Problem 2(d), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-wnum
+    answer: p2-wnum
+    where: 'Problem 2(d), answer box: (1/2)(q0 + q2 + q4) V0 for R = 5.0 cm, z0 = 10 cm, V0 = 600 V, with q0 = 4π ε0 R V0'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 5.0 cm, z0: 10 cm, V0: 600 V}
+    formula: |-
+      0.5*V0*(4*pi*eps0*R*V0)*(1 + R/(2*z0) + R**2/(4*z0**2 - R**2))
+    expected: 1.32 microjoule
+    shown: ['id="p2-wnum"', 'So $W = 1.32$ µJ.']
+    source: {cite: mit, at: 'Problem 2(d), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-exact
+    where: 'Problem 2(d), check: the full series sinh β Σ 1/sinh(nβ) for z0 = 2R (cosh β = 2), twelve terms'
+    formula: |-
+      sinh(acosh(2))*(1/sinh(acosh(2)) + 1/sinh(2*acosh(2)) + 1/sinh(3*acosh(2)) + 1/sinh(4*acosh(2)) + 1/sinh(5*acosh(2)) + 1/sinh(6*acosh(2)) + 1/sinh(7*acosh(2)) + 1/sinh(8*acosh(2)) + 1/sinh(9*acosh(2)) + 1/sinh(10*acosh(2)) + 1/sinh(11*acosh(2)) + 1/sinh(12*acosh(2)))
+    expected: '1.341'
+    shown: ['gives the bracket 1.341']
+    source: {cite: mit, at: 'Problem 2(d), p. 1 (our own remark)'}
+    origin: page-own
+
+  - id: p2-within
+    where: 'Problem 2(d), check: the three terms for z0 = 2R against the full series, 1 − 1.3167/1.3411'
+    formula: |-
+      1 - (1 + 1/4 + 1/15)/1.3411
+    expected: '0.02'
+    tolerance: 0.005
+    shown: ['are within 2% of the full answer']
+    source: {cite: mit, at: 'Problem 2(d), p. 1 (our own remark)'}
+    origin: page-own
+
+  # ---- Problem 3: the spherical cavity
+
+  - id: p3-y11-norm
+    where: 'Problem 3(b): Y_11 as written is normalised: (3/(8π)) times the integral of sin³θ over θ, times 2π'
+    formula: |-
+      3/(8*pi)*integrate('sin(s)**3', 's', 0, pi)*2*pi
+    expected: '1'
+    tolerance: 1e-7
+    shown: ['<Formula label="The spherical harmonics of degree 1 with m = ±1"']
+    source: {cite: reading3, at: 'eqs. (8.36) and (8.37), p. 7'}
+    origin: mit
+
+  - id: p3-y00-norm
+    where: 'Problem 3(a), check: Y_00 = 1/√(4π) is normalised: the solid angle 4π over 4π'
+    formula: |-
+      integrate('sin(s)', 's', 0, pi)*2*pi/(4*pi)
+    expected: '1'
+    tolerance: 1e-7
+    shown: ['Since $Y_{00} = 1/\sqrt{4\pi}$']
+    source: {cite: reading3, at: 'eq. (8.36), p. 7'}
+    origin: mit
+
+  - id: p3-a11
+    answer: p3-a11
+    where: 'Problem 3(b), answer box: A_11/V1 from the integral of Y_11* sin θ cos φ over all directions, done numerically (the imaginary part vanishes; the page reads the coefficient off)'
+    formula: |-
+      -sqrt(3/(8*pi))*integrate('sin(s)**3', 's', 0, pi)*integrate('cos(s)**2', 's', 0, 2*pi)
+    expected: '-1.447'
+    shown: ['id="p3-a11"', '\times \pi = -1.447\,V_1$']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p3-a11-closed
+    where: 'Problem 3(b): −√(2π/3)'
+    formula: |-
+      -sqrt(2*pi/3)
+    expected: '-1.447'
+    shown: ['A_{11} = -\sqrt{\frac{2\pi}{3}}\,V_1 = -1.447\,V_1', 'A_{1,-1} = +1.447\,V_1']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p3-sin3
+    where: 'Problem 3(b), check: the integral of sin³θ from 0 to π'
+    formula: |-
+      integrate('sin(s)**3', 's', 0, pi)
+    expected: '1.3333'
+    shown: ['V_1 \times \frac43 \times']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4: the charged metal sphere in a uniform field
+
+  - id: p4-v
+    kind: identity
+    answer: p4-v
+    where: 'Problem 4(a), answer box: the potential against the value on the sphere, Q/(4πε0 R), minus the integral of the radial field of part (b) from R to r (numerical)'
+    formula: |-
+      -E0*r*cos(th) + E0*R**3*cos(th)/r**2 + Q/(4*pi*eps0*r)
+    equals: |-
+      Q/(4*pi*eps0*R) - integrate('E0*(1 + 2*R**3/s**3)*cos(th) + Q/(4*pi*eps0*s**2)', 's', R, r)
+    samples:
+      E0: [0.5, 1.0, 1.5, 2.0, 0.8]
+      r: [1.2, 3.0, 2.0, 1.6, 2.5]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      th: [0.3, 1.4, 0.8, 1.1, 0.5]
+      Q: [0.5, 3.0, 1.5, 2.2, 1.0]
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p4-v"', '<Formula label="The potential outside the charged sphere in a uniform field"']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p4-laplace
+    kind: identity
+    where: 'Problem 4(a): the ℓ = 1 radial function f = −(r − R³/r²) obeys d/dr(r² f′) = 2 f (numerical derivative of r² f′, with f′ = −(1 + 2R³/r³))'
+    formula: |-
+      deriv('s**2*(-(1 + 2*R**3/s**3))', 's', r)
+    equals: |-
+      2*(-(r - R**3/r**2))
+    samples:
+      r: [1.2, 3.0, 2.0, 1.6, 2.5]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+    tolerance: 1e-6
+    shown: ['$-E_0R + B_1/R^2 = 0$']
+    source: {cite: reading2, at: 'eqs. (7.2) and (7.4), p. 1'}
+    origin: page-own
+
+  - id: p4-sigma
+    kind: identity
+    answer: p4-sigma
+    where: 'Problem 4(b), answer box: the surface charge against −ε0 times the numerical radial derivative of the potential of part (a) at r = R'
+    formula: |-
+      3*eps0*E0*cos(th) + Q/(4*pi*R**2)
+    equals: |-
+      -eps0*deriv('-E0*s*cos(th) + E0*R**3*cos(th)/s**2 + Q/(4*pi*eps0*s)', 's', R)
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+      E0: [0.5, 1.0, 1.5, 2.0, 0.8]
+      th: [0.3, 1.4, 0.8, 1.1, 0.5]
+      Q: [0.5, 3.0, 1.5, 2.2, 1.0]
+      R: [0.5, 2.0, 1.0, 1.6, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p4-sigma"', '<Formula label="The surface charge on the sphere"']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p4-total
+    kind: identity
+    where: 'Problem 4(b), check: the surface charge integrated over the sphere (numerically) is Q'
+    formula: |-
+      2*pi*R**2*integrate('(3*eps0*E0*cos(s) + Q/(4*pi*R**2))*sin(s)', 's', 0, pi)
+    equals: |-
+      Q
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+      E0: [0.5, 1.0, 1.5, 2.0, 0.8]
+      Q: [0.5, 3.0, 1.5, 2.2, 1.0]
+      R: [0.5, 2.0, 1.0, 1.6, 0.8]
+    tolerance: 1e-7
+    shown: ['The integral of $\sigma$ over the sphere is $Q$']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p4-qmin-c
+    where: 'Problem 4(b): 12π ε0 R² E0 for R = 4.0 cm, E0 = 2.5 × 10⁴ V/m'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 4.0 cm, E0: 2.5e4 V/m}
+    formula: |-
+      12*pi*eps0*R**2*E0
+    expected: 1.34e-8 C
+    shown: ['\times 2.5 \times 10^4 = 1.34 \times 10^{-8}$ C']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-qmin
+    answer: p4-qmin
+    where: 'Problem 4(b), answer box: the charge in nC for which the surface charge at θ = π is zero, by a root search on −3 ε0 E0 + Q/(4π R²) (SI numbers, Q = x nC)'
+    formula: |-
+      solve('-3*8.8541878128e-12*2.5e4 + x*1e-9/(4*pi*0.04**2)', 'x', 0, 100)
+    expected: '13.4'
+    shown: ['id="p4-qmin"', 'or 13.4 nC']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p4-force
+    kind: identity
+    where: 'Problem 4(c): the pressure σ²/(2ε0) times cos θ integrated over the sphere numerically (variable s = cos θ) is Q E0'
+    formula: |-
+      2*pi*R**2/(2*eps0)*integrate('(3*eps0*E0*s + Q/(4*pi*R**2))**2*s', 's', -1, 1)
+    equals: |-
+      Q*E0
+    samples:
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+      E0: [0.5, 1.0, 1.5, 2.0, 0.8]
+      Q: [0.5, 3.0, 1.5, 2.2, 1.0]
+      R: [0.5, 2.0, 1.0, 1.6, 0.8]
+    tolerance: 1e-7
+    shown: ['<Formula label="The total force on the sphere"']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 5: the two charged halves
+
+  - id: p5-p
+    kind: identity
+    answer: p5-p
+    where: 'Problem 5(a), answer box: the dipole moment against the integral of σ z over the two halves in the angle θ (numerical)'
+    formula: |-
+      2*pi*R**3*s0
+    equals: |-
+      2*pi*R**2*s0*(integrate('R*cos(s)*sin(s)', 's', 0, pi/2) - integrate('R*cos(s)*sin(s)', 's', pi/2, pi))
+    samples:
+      R: [0.5, 2.0, 1.0, 1.6, 0.8]
+      s0: [0.5, 3.0, 1.5, 2.2, 1.0]
+    tolerance: 1e-7
+    shown: ['id="p5-p"', '<Formula label="The dipole moment of the ball"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-legendre-1
+    where: 'Problem 5(b): P5(1) = 1 with the coefficients given'
+    formula: |-
+      (63 - 70 + 15)/8
+    expected: '1'
+    shown: ['<Formula label="Three Legendre polynomials"']
+    source: {cite: reading3, at: 'eq. (8.10), p. 2'}
+    origin: mit
+
+  - id: p5-legendre-2
+    where: 'Problem 5(b): P5 as given is orthogonal to P3 and has the norm 2/11 (eq. (7.16) of Lecture Notes 7): the integral of P5(P5 + P3) from −1 to 1'
+    formula: |-
+      integrate('(63*s**5 - 70*s**3 + 15*s)/8*((63*s**5 - 70*s**3 + 15*s)/8 + (5*s**3 - 3*s)/2)', 's', -1, 1)
+    expected: '0.181818'
+    shown: ['P_5(x) = \tfrac18\left(63x^5 - 70x^3 + 15x\right)']
+    source: {cite: reading3, at: 'eq. (8.10), p. 2'}
+    origin: mit
+
+  - id: p5-legendre-3
+    where: 'Problem 5(b): P3 as given has the norm 2/7 and is orthogonal to P1: the integral of P3(P3 + P1) from −1 to 1'
+    formula: |-
+      integrate('(5*s**3 - 3*s)/2*((5*s**3 - 3*s)/2 + s)', 's', -1, 1)
+    expected: '0.285714'
+    shown: ['P_3(x) = \tfrac12\left(5x^3 - 3x\right)']
+    source: {cite: reading3, at: 'eq. (8.10), p. 2'}
+    origin: mit
+
+  - id: p5-c1
+    where: 'Problem 5(b): c1, the integral of P1 from 0 to 1 (numerical)'
+    formula: |-
+      integrate('s', 's', 0, 1)
+    expected: '0.5'
+    tolerance: 1e-8
+    shown: ['$c_1 = \int_0^1 x\,dx = \frac12$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-c3
+    answer: p5-c3
+    where: 'Problem 5(b), answer box: c3, the integral of P3 from 0 to 1 (numerical; the page integrates term by term)'
+    formula: |-
+      integrate('(5*s**3 - 3*s)/2', 's', 0, 1)
+    expected: '-0.125'
+    tolerance: 1e-7
+    shown: ['id="p5-c3"', '= -\frac18 = -0.125$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-c5
+    answer: p5-c5
+    where: 'Problem 5(b), answer box: c5, the integral of P5 from 0 to 1 (numerical)'
+    formula: |-
+      integrate('(63*s**5 - 70*s**3 + 15*s)/8', 's', 0, 1)
+    expected: '0.0625'
+    tolerance: 1e-7
+    shown: ['id="p5-c5"', '= \frac1{16} = 0.0625$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-c5-terms
+    where: 'Problem 5(b): 63/6 − 70/4 + 15/2'
+    formula: |-
+      63/6 - 70/4 + 15/2
+    expected: '0.5'
+    shown: ['\frac{63}{6} - \frac{70}{4} + \frac{15}{2}\right) = \frac18 \times \frac12']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-axis
+    kind: identity
+    answer: p5-axis
+    where: 'Problem 5(c), answer box: the potential on the axis against the integral over the rings of the two halves, done numerically'
+    formula: |-
+      s0*R*(sqrt(R**2 + z**2) - z)/(eps0*z)
+    equals: |-
+      R**2*s0/(2*eps0)*(integrate('1/sqrt(R**2 + z**2 - 2*R*z*s)', 's', 0, 1) - integrate('1/sqrt(R**2 + z**2 - 2*R*z*s)', 's', -1, 0))
+    samples:
+      s0: [0.5, 3.0, 1.5, 2.2, 1.0]
+      R: [0.5, 1.0, 0.7, 0.9, 0.6]
+      z: [1.2, 3.0, 2.0, 1.6, 2.5]
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p5-axis"', '<Formula label="The potential on the axis outside the ball"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-pref
+    where: 'Problem 5(c): σ0 R/ε0 for σ0 = 3.0 µC/m², R = 6.0 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, R: 6.0 cm, s0: 3.0e-6 C/m**2}
+    formula: |-
+      s0*R/eps0
+    expected: 2.033e4 V
+    shown: ['= 2.033 \times 10^4$ V. At']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-frac
+    where: 'Problem 5(c): (√5 − 2)/2'
+    formula: |-
+      (sqrt(5) - 2)/2
+    expected: '0.1180'
+    shown: ['$(\sqrt5 - 2)/2 = 0.1180$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-vnum
+    answer: p5-vnum
+    where: 'Problem 5(c), answer box: the potential at z = 12 cm in volts, from the numerical integral over the rings (SI numbers)'
+    formula: |-
+      3.0e-6*0.06**2/(2*8.8541878128e-12)*(integrate('1/sqrt(0.06**2 + 0.12**2 - 2*0.06*0.12*s)', 's', 0, 1) - integrate('1/sqrt(0.06**2 + 0.12**2 - 2*0.06*0.12*s)', 's', -1, 0))
+    expected: '2400'
+    tolerance: 1
+    shown: ['id="p5-vnum"', '\times 0.1180 = 2400$ V']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-series
+    where: 'Problem 5(c), check: the three terms of the series at z = 2R, 1/8 − 1/128 + 1/1024'
+    formula: |-
+      (1/2)/4 - (1/8)/16 + (1/16)/64
+    expected: '0.1182'
+    shown: ['$0.125 - 0.0078 + 0.0010 = 0.1182$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 6: the average field over a ball
+
+  - id: p6-in
+    kind: identity
+    answer: p6-in
+    where: 'Problem 6(b), answer box: the z component of the field of q (on the z axis at height b < R) averaged over the ball. The integral over each disk at height s is done in closed form, 2π[sign(s − b) − (s − b)/√(R² + b² − 2bs)]; the integral of the sign over the heights is −2b, and the rest is integrated numerically'
+    formula: |-
+      -q*b/(4*pi*eps0*R**3)
+    equals: |-
+      q/(4*pi*eps0)*3/(4*pi*R**3)*2*pi*(-2*b - integrate('(s - b)/sqrt(R**2 + b**2 - 2*b*s)', 's', -R, R))
+    samples:
+      q: [0.5, 3.0, 1.5, 2.2, 1.0]
+      b: [0.2, 0.9, 0.5, 0.7, 0.35]
+      R: [1.0, 2.0, 1.5, 1.2, 1.8]
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p6-in"', '<Formula label="The average field of a charge inside the ball"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-out
+    kind: identity
+    answer: p6-out
+    where: 'Problem 6(c), answer box: the same average for a charge at height b > R, where the sign is −1 at every height of the ball and its integral is −2R'
+    formula: |-
+      -q/(4*pi*eps0*b**2)
+    equals: |-
+      q/(4*pi*eps0)*3/(4*pi*R**3)*2*pi*(-2*R - integrate('(s - b)/sqrt(R**2 + b**2 - 2*b*s)', 's', -R, R))
+    samples:
+      q: [0.5, 3.0, 1.5, 2.2, 1.0]
+      b: [2.5, 4.0, 3.0, 3.6, 2.8]
+      R: [1.0, 2.0, 1.5, 1.2, 1.8]
+      eps0: [0.5, 2.0, 1.0, 1.4, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p6-out"', '<Formula label="The average field of a charge outside the ball"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-k
+    where: 'Problem 6(d): 1/(4π ε0)'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      1/(4*pi*eps0)
+    expected: 8.988e9 m/F
+    shown: ['Use $1/(4\pi\varepsilon_0) = 8.988 \times 10^9$ N m²/C²']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-pz
+    where: 'Problem 6(d): the dipole moment of the two inside charges about the centre'
+    formula: |-
+      4.0e-9*0.030 + (-4.0e-9)*(-0.030)
+    expected: '2.4e-10'
+    shown: ['(-0.030) = 2.4 \times 10^{-10}$ C m']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-inside
+    where: 'Problem 6(d): the average field of the two inside charges'
+    formula: |-
+      -8.988e9*2.4e-10/0.10**3
+    expected: '-2157'
+    shown: ['(0.10)^3 = -2157$ V/m']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-outside
+    where: 'Problem 6(d): the field of the outside charge at the centre'
+    formula: |-
+      -8.988e9*9.0e-9/0.30**2
+    expected: '-899'
+    shown: ['(0.30)^2 = -899$ V/m']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-num
+    answer: p6-num
+    where: 'Problem 6(d), answer box: the z component of the average field, from the numerical averages of the three charges one by one (SI numbers, as in the entries p6-in and p6-out; the page uses the dipole moment)'
+    formula: |-
+      1/(4*pi*8.8541878128e-12)*3/(4*pi*0.1**3)*2*pi*(4.0e-9*(-2*0.03 - integrate('(s - 0.03)/sqrt(0.1**2 + 0.03**2 - 2*0.03*s)', 's', -0.1, 0.1)) - 4.0e-9*(2*0.03 - integrate('(s + 0.03)/sqrt(0.1**2 + 0.03**2 + 2*0.03*s)', 's', -0.1, 0.1)) + 9.0e-9*(-2*0.1 - integrate('(s - 0.3)/sqrt(0.1**2 + 0.3**2 - 2*0.3*s)', 's', -0.1, 0.1)))
+    expected: '-3056'
+    tolerance: 1
+    shown: ['id="p6-num"', '$-2157 - 899 = -3056$ V/m']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-moved
+    where: 'Problem 6(d), check: charges of ±2.0 nC at ±6.0 cm have the same dipole moment'
+    formula: |-
+      2.0e-9*0.060 + (-2.0e-9)*(-0.060)
+    expected: '2.4e-10'
+    shown: ['moved to $z = \pm 6.0$ cm and halved']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own check)'}
+    origin: page-own
