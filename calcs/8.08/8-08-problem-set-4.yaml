@@ -1,0 +1,459 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 takes K from 2 mu_H = mu_H2 with the molecule's own thermal wavelength (mass 2m) and finds alpha by a root
+# search of the law of mass action written with the partial densities; Problem 2 takes the probabilities as
+# −k_B T times the derivative of ln Q_site with respect to the energy of that state (numerical, at zero energy), the
+# mean number and its variance as first and second numerical mu-derivatives of k_B T ln Q_site, and the chemical
+# potential of the van der Waals gas as the numerical N-derivative of A at V = 1.
+# Constants not in calcs/constants.yaml: NA (Avogadro, exact 2019 SI), m (hydrogen atom, 1.00783 u, rounded).
+# Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-4.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-total
+    where: 'How to answer: our points, 20 for Problem 1 and 30 for Problem 2'
+    formula: |-
+      20 + 30
+    expected: '50'
+    shown: ['50 in all']
+    source: {cite: mit, at: 'Problems 1 and 2, p. 1 (our points)'}
+    origin: page-own
+
+  - id: points-p2
+    where: 'Problem 2: the parts 8 + 5 + 5 + 7 + 5'
+    formula: |-
+      8 + 5 + 5 + 7 + 5
+    expected: '30'
+    shown: ['points={30} mit="Problem 2"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our points)'}
+    origin: page-own
+
+  # ---- Problem 1: dissociation of hydrogen
+
+  - id: p1-k
+    kind: identity
+    answer: p1-k
+    where: 'Problem 1(a), answer box: K = e^(−e0/kB T)/(2^(3/2) lam^3), against (n_H lam^3)^2/(n_H2 lam_H2^3) = e^(−e0/kB T) solved for n_H^2/n_H2, with lam_H2 = lam*sqrt(m/(2m))'
+    formula: |-
+      exp(-e0/(kB*T))/(2**(3/2)*lam**3)
+    equals: |-
+      exp(-e0/(kB*T))*(lam*sqrt(1/2))**3/lam**6
+    samples:
+      e0: [0.5, 1.0, 2.0, 1.3, 0.7]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+      lam: [0.5, 1.0, 2.0, 1.4, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p1-k"', '<Formula label="Equilibrium constant"']
+    source: {cite: reading1, at: 'p. 34, point ④ⓒ'}
+    origin: page-own
+
+  - id: p1-alpha
+    kind: identity
+    answer: p1-alpha
+    where: 'Problem 1(b), answer box: alpha = 1/sqrt(1 + 4P/(K kB T)), against a root search of n_H^2/n_H2 = K with n_H = 2a/(1+a) P/kB T and n_H2 = (1−a)/(1+a) P/kB T'
+    formula: |-
+      1/sqrt(1 + 4*P/(K*kB*T))
+    equals: |-
+      solve('(2*a/(1 + a))**2/((1 - a)/(1 + a))*P/(kB*T) - K', 'a', 1e-9, 1 - 1e-12)
+    samples:
+      P: [0.5, 1.0, 2.0, 1.3, 0.7]
+      K: [0.5, 2.0, 1.0, 0.8, 1.6]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-7
+    shown: ['id="p1-alpha"', '<Formula label="Fraction of molecules split"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p1-e0
+    where: 'Problem 1(c): 436 kJ/mol per molecule'
+    inputs: {E: 436e3 J, NA: 6.02214076e23}
+    formula: |-
+      E/NA
+    expected: 7.240e-19 J
+    shown: ['$\epsilon_0 = 7.240 \times 10^{-19}$ J per molecule']
+    source: {cite: reading1, at: 'p. 35, point ④ⓒ'}
+    origin: page-own
+
+  - id: p1-kt
+    where: 'Problem 1(c): kB T at 3000 K'
+    inputs: {T: 3000 K}
+    formula: |-
+      k_B*T
+    expected: 4.142e-20 J
+    shown: ['$k_BT = 4.142 \times 10^{-20}$ J']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-ratio
+    where: 'Problem 1(c): e0/kB T at 3000 K'
+    inputs: {E: 436e3 J, NA: 6.02214076e23, T: 3000 K}
+    formula: |-
+      E/NA/(k_B*T)
+    expected: '17.48'
+    shown: ['$\epsilon_0/k_BT = 17.48$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-lam
+    where: 'Problem 1(c): thermal wavelength of the hydrogen atom at 3000 K'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K}
+    formula: |-
+      sqrt(2*pi*hbar**2/(m*k_B*T))
+    expected: 3.175e-11 m
+    shown: ['= 3.175 \times 10^{-11}$ m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-kval
+    where: 'Problem 1(c): K at 3000 K'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K, E: 436e3 J, NA: 6.02214076e23}
+    formula: |-
+      exp(-E/NA/(k_B*T))/(2**1.5*sqrt(2*pi*hbar**2/(m*k_B*T))**3)
+    expected: 2.831e23 m**-3
+    shown: ['= 2.831 \times 10^{23}$ m⁻³']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-kkt
+    where: 'Problem 1(c): K kB T at 3000 K, a pressure'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K, E: 436e3 J, NA: 6.02214076e23}
+    formula: |-
+      exp(-E/NA/(k_B*T))/(2**1.5*sqrt(2*pi*hbar**2/(m*k_B*T))**3)*k_B*T
+    expected: 1.173e4 Pa
+    shown: ['$Kk_BT = 1.173 \times 10^4$ Pa']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-4p
+    where: 'Problem 1(c): 4P/(K kB T) at 3000 K'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K, E: 436e3 J, NA: 6.02214076e23, P: 101325 Pa}
+    formula: |-
+      4*P/(exp(-E/NA/(k_B*T))/(2**1.5*sqrt(2*pi*hbar**2/(m*k_B*T))**3)*k_B*T)
+    expected: '34.57'
+    shown: ['$4P/Kk_BT = 34.57$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(c), answer box: alpha at 3000 K and 1 atm'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K, E: 436e3 J, NA: 6.02214076e23, P: 101325 Pa}
+    formula: |-
+      1/sqrt(1 + 4*P/(exp(-E/NA/(k_B*T))/(2**1.5*sqrt(2*pi*hbar**2/(m*k_B*T))**3)*k_B*T))
+    expected: '0.1677'
+    shown: ['id="p1-num"', '$\alpha = 1/\sqrt{35.57} = 0.1677$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-small
+    where: 'Problem 1(c), check: the small-alpha formula sqrt(K kB T/4P) at 3000 K'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K, E: 436e3 J, NA: 6.02214076e23, P: 101325 Pa}
+    formula: |-
+      sqrt(exp(-E/NA/(k_B*T))/(2**1.5*sqrt(2*pi*hbar**2/(m*k_B*T))**3)*k_B*T/(4*P))
+    expected: '0.170'
+    shown: ['gives 0.170 at 3000 K']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-43p
+    where: 'Problem 1(c): alpha = 1/2 needs K kB T = (4/3) P'
+    inputs: {P: 101325 Pa}
+    formula: |-
+      4*P/3
+    expected: 1.351e5 Pa
+    shown: ['\frac43 P = 1.351 \times 10^5$ Pa']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-factor
+    where: 'Problem 1(c): (4/3)P over K kB T at 3000 K'
+    inputs: {m: 1.6735e-27 kg, T: 3000 K, E: 436e3 J, NA: 6.02214076e23, P: 101325 Pa}
+    formula: |-
+      (4*P/3)/(exp(-E/NA/(k_B*T))/(2**1.5*sqrt(2*pi*hbar**2/(m*k_B*T))**3)*k_B*T)
+    expected: '11.5'
+    shown: ['about 11.5 times its value at 3000 K']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-half
+    answer: p1-half
+    where: 'Problem 1(c), answer box: the temperature (K) at which alpha = 1/2, by a root search of alpha(T) − 1/2 in SI numbers (kB, hbar, m = 1.6735e-27 kg, e0 = 436e3/6.02214076e23 J, P = 101325 Pa)'
+    formula: |-
+      solve('1/sqrt(1 + 4*101325/(exp(-(436e3/6.02214076e23)/(1.380649e-23*x))/(2**1.5*sqrt(2*pi*1.054571817646e-34**2/(1.6735e-27*1.380649e-23*x))**3)*1.380649e-23*x)) - 0.5', 'x', 2000, 6000)
+    expected: '3414'
+    tolerance: 1
+    shown: ['id="p1-half"', 'Bisection gives $T = 3414$ K']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-half-ratio
+    where: 'Problem 1(c): e0/kB T at 3414 K'
+    inputs: {E: 436e3 J, NA: 6.02214076e23, T: 3414 K}
+    formula: |-
+      E/NA/(k_B*T)
+    expected: '15.36'
+    shown: ['where $\epsilon_0/k_BT = 15.36$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-fifteenth
+    where: 'Problem 1(c), check: kB T is about 1/15 of the binding energy at 3414 K'
+    formula: |-
+      1/15.36
+    expected: '0.065'
+    tolerance: 0.003
+    shown: ['only $\frac{1}{15}$ of the binding energy']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-sixth
+    where: 'Problem 1(c): 0.1677 is about one in six'
+    formula: |-
+      1/0.1677
+    expected: '6.0'
+    tolerance: 0.1
+    shown: ['about one molecule in six is split']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: sites with 0, 1 or 2 atoms; van der Waals gas
+
+  - id: p2-p0
+    kind: identity
+    answer: p2-p0
+    where: 'Problem 2(a)(i), answer box: p0, against −kB T d ln Q/d e at e = 0 with Q = e^(−e/kB T) + z + z^2 (energy e given to the empty state)'
+    formula: |-
+      1/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))
+    equals: |-
+      -kB*T*deriv('log(exp(-x/(kB*T)) + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))', 'x', 0)
+    samples:
+      mu: [-2.0, 1.0, 0.0, -0.7, 0.4]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p2-p0"', '<Formula label="Grand partition function of one site"']
+    source: {cite: mit, at: 'Problem 2(a)(i), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-p1
+    kind: identity
+    answer: p2-p1
+    where: 'Problem 2(a)(i), answer box: p1, against −kB T d ln Q/d e at e = 0 with Q = 1 + e^(−(e − mu)/kB T) + z^2'
+    formula: |-
+      exp(mu/(kB*T))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))
+    equals: |-
+      -kB*T*deriv('log(1 + exp(-(x - mu)/(kB*T)) + exp(2*mu/(kB*T)))', 'x', 0)
+    samples:
+      mu: [-2.0, 1.0, 0.0, -0.7, 0.4]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p2-p1"']
+    source: {cite: mit, at: 'Problem 2(a)(i), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-p2
+    kind: identity
+    answer: p2-p2
+    where: 'Problem 2(a)(i), answer box: p2, against −kB T d ln Q/d e at e = 0 with Q = 1 + z + e^(−(e − 2 mu)/kB T)'
+    formula: |-
+      exp(2*mu/(kB*T))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))
+    equals: |-
+      -kB*T*deriv('log(1 + exp(mu/(kB*T)) + exp(-(x - 2*mu)/(kB*T)))', 'x', 0)
+    samples:
+      mu: [-2.0, 1.0, 0.0, -0.7, 0.4]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p2-p2"']
+    source: {cite: mit, at: 'Problem 2(a)(i), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-n
+    kind: identity
+    answer: p2-n
+    where: 'Problem 2(a)(ii), answer box: <N>, against −dOmega/dmu with Omega = −Ns kB T ln(1 + z + z^2), differentiated numerically'
+    formula: |-
+      Ns*(exp(mu/(kB*T)) + 2*exp(2*mu/(kB*T)))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))
+    equals: |-
+      deriv('Ns*kB*T*log(1 + exp(x/(kB*T)) + exp(2*x/(kB*T)))', 'x', mu)
+    samples:
+      Ns: [10, 100, 50, 30, 70]
+      mu: [-2.0, 1.0, 0.0, -0.7, 0.4]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p2-n"', '<Formula label="Mean number of atoms adsorbed"']
+    source: {cite: mit, at: 'Problem 2(a)(ii), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-var
+    kind: identity
+    answer: p2-var
+    where: 'Problem 2(a)(iii), answer box: the variance of N, against Ns times (mean square − square of mean) of one site from the three probabilities'
+    formula: |-
+      Ns*exp(mu/(kB*T))*(1 + 4*exp(mu/(kB*T)) + exp(2*mu/(kB*T)))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))**2
+    equals: |-
+      Ns*((exp(mu/(kB*T)) + 4*exp(2*mu/(kB*T)))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T))) - ((exp(mu/(kB*T)) + 2*exp(2*mu/(kB*T)))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T))))**2)
+    samples:
+      Ns: [10, 100, 50, 30, 70]
+      mu: [-2.0, 1.0, 0.0, -0.7, 0.4]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-9
+    shown: ['id="p2-var"', '<Formula label="Variance of the number adsorbed"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our addition and solution)'}
+    origin: page-own
+
+  - id: p2-var-kt
+    kind: identity
+    where: 'Problem 2(a)(iii), solution: the variance equals kB T d<N>/dmu (second numerical derivative of kB T Ns ln Q_site)'
+    formula: |-
+      Ns*exp(mu/(kB*T))*(1 + 4*exp(mu/(kB*T)) + exp(2*mu/(kB*T)))/(1 + exp(mu/(kB*T)) + exp(2*mu/(kB*T)))**2
+    equals: |-
+      kB*T*deriv('Ns*(exp(x/(kB*T)) + 2*exp(2*x/(kB*T)))/(1 + exp(x/(kB*T)) + exp(2*x/(kB*T)))', 'x', mu)
+    samples:
+      Ns: [10, 100, 50, 30, 70]
+      mu: [-2.0, 1.0, 0.0, -0.7, 0.4]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['The numerator simplifies to $1 + 4z + z^2$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our addition and solution)'}
+    origin: page-own
+
+  - id: p2-var-z1
+    where: 'Problem 2(a)(iii), check: variance per site at z = 1'
+    formula: |-
+      1*(1 + 4 + 1)/(1 + 1 + 1)**2
+    expected: '0.6667'
+    shown: ['At $z = 1$ it is $\frac23N_s$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our addition and solution)'}
+    origin: page-own
+
+  - id: p2-mu
+    kind: identity
+    answer: p2-mu
+    where: 'Problem 2(b), answer box: mu of the van der Waals gas, against the numerical N-derivative of A at V = 1 (so N = n)'
+    formula: |-
+      kB*T*log(n*lam**3/(1 - n*v0)) + kB*T*n*v0/(1 - n*v0) + 2*n*vb
+    equals: |-
+      deriv('x*kB*T*(log(x*lam**3/(1 - x*v0)) - 1) + x**2*vb', 'x', n)
+    samples:
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+      n: [0.1, 0.5, 0.3, 0.2, 0.4]
+      lam: [0.5, 1.5, 1.0, 0.8, 1.2]
+      v0: [0.2, 1.0, 0.5, 0.7, 0.3]
+      vb: [-2.0, -0.3, -1.0, -0.6, -1.5]
+    tolerance: 1e-6
+    shown: ['id="p2-mu"', '<Formula label="Chemical potential of the van der Waals gas"']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-gibbs-duhem
+    kind: identity
+    where: 'Problem 2(b), check: dP/dn = n dmu/dn, with P = n kB T/(1 − n v0) + n^2 vb (numerical derivatives)'
+    formula: |-
+      deriv('x*kB*T/(1 - x*v0) + x**2*vb', 'x', n)
+    equals: |-
+      n*deriv('kB*T*log(x*lam**3/(1 - x*v0)) + kB*T*x*v0/(1 - x*v0) + 2*x*vb', 'x', n)
+    samples:
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+      n: [0.1, 0.5, 0.3, 0.2, 0.4]
+      lam: [0.5, 1.5, 1.0, 0.8, 1.2]
+      v0: [0.2, 1.0, 0.5, 0.7, 0.3]
+      vb: [-2.0, -0.3, -1.0, -0.6, -1.5]
+    tolerance: 1e-6
+    shown: ['differ by exactly the factor $n$']
+    source: {cite: mit, at: 'Problem 2(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-pref
+    where: 'Problem 2(c): n lam^3/(1 − n v0)'
+    formula: |-
+      0.05/(1 - 0.3)
+    expected: '0.07143'
+    shown: ['= 0.07143 \times 0.4624']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-hard
+    where: 'Problem 2(c): n v0/(1 − n v0)'
+    formula: |-
+      0.3/(1 - 0.3)
+    expected: '0.4286'
+    shown: ['e^{0.4286 - 1.200}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-exp
+    where: 'Problem 2(c): exp(0.4286 − 1.200)'
+    formula: |-
+      exp(0.3/0.7 - 1.2)
+    expected: '0.4624'
+    shown: ['0.07143 \times 0.4624']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-z
+    where: 'Problem 2(c): the fugacity'
+    formula: |-
+      0.05/0.7*exp(0.3/0.7 - 1.2)
+    expected: '0.03303'
+    shown: ['= 0.03303$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-num
+    where: 'Problem 2(c): numerator z + 2z^2'
+    formula: |-
+      0.033025 + 2*0.033025**2
+    expected: '0.03521'
+    shown: ['= 0.03521/1.03412']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-den
+    where: 'Problem 2(c): denominator 1 + z + z^2'
+    formula: |-
+      1 + 0.033025 + 0.033025**2
+    expected: '1.03412'
+    shown: ['0.03521/1.03412']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-cover
+    answer: p2-cover
+    where: 'Problem 2(c), answer box: atoms per site with the van der Waals gas as reservoir, z from mu of part (b) computed as a numerical derivative of A (V = 1, kB T = 1, lam = 1)'
+    formula: |-
+      exp(deriv('x*(log(x/(1 - x*0.3/0.05)) - 1) + x**2*(-0.6/0.05)', 'x', 0.05))*(1 + 2*exp(deriv('x*(log(x/(1 - x*0.3/0.05)) - 1) + x**2*(-0.6/0.05)', 'x', 0.05)))/(1 + exp(deriv('x*(log(x/(1 - x*0.3/0.05)) - 1) + x**2*(-0.6/0.05)', 'x', 0.05)) + exp(2*deriv('x*(log(x/(1 - x*0.3/0.05)) - 1) + x**2*(-0.6/0.05)', 'x', 0.05)))
+    expected: '0.0340'
+    shown: ['id="p2-cover"', '= 0.0340$.']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-ideal
+    where: 'Problem 2(c), check: the ideal gas at the same density, z = 0.05'
+    formula: |-
+      (0.05 + 2*0.05**2)/(1 + 0.05 + 0.05**2)
+    expected: '0.0523'
+    shown: ['gives $0.0523$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
+
+  - id: p2-c-third
+    where: 'Problem 2(c), check: about a third fewer atoms'
+    formula: |-
+      1 - 0.034045/0.052257
+    expected: '0.35'
+    tolerance: 0.02
+    shown: ['about a third fewer atoms']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our addition and numbers)'}
+    origin: page-own
