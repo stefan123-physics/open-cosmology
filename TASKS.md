@@ -19,7 +19,7 @@ Two Claude Code accounts work on this repository at the same time, on two differ
 
 Also, from AGENTS.md and docs/PROBLEM-SETS-RUN.md, which still apply in full:
 9. Work on your own branch (below), never on `main`. Only Account A merges into `main` (see "Merging").
-10. Every problem set gets a blind review on a different model from its writer before it is committed. **Owner decision 2026-11-27: from now on writers run on Opus and blind reviewers on Fable** (the weekly Fable limit is nearly used up; still a different model from the writer). Never skip the commit checks (`--no-verify`).
+10. Every problem set gets a blind review before it is committed. **Owner decision 2026-11-27 (from the 5-hour reset): no Fable. Writers on Opus, blind reviewers on Opus in a fresh session**, with three safeguards: (1) the reviewer writes its blind answers into the review before opening the page and checks every derivation and number with its own numerical calculation (Python), not only by reading; (2) every review file says "Writer: Opus. Reviewer: Opus (same model, blind)."; (3) after the Fable reset (2026-12-03), Fable re-reviews a sample of these sets (about 1 in 4), and if it finds an error, every Opus-on-Opus set of that course gets a Fable review. Never skip the commit checks (`--no-verify`).
 11. Run at most 3 agents (writers and reviewers together) at the same time: four at once used 37% of a 5-hour limit in 20 minutes.
 12. Stop at 85% of your 5-hour usage (or of the weekly limit, whichever comes first). Before stopping, write a "Resume here" note at the end of your section, commit and push.
 13. No em dashes in site text, no OpenStax, nothing marked "All rights reserved". MIT's PDFs are downloaded to a folder outside the repository and never committed.
@@ -103,7 +103,7 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 2. Every review file says "Writer: Opus. Reviewer: Opus (same model, blind)."
 3. After the Fable reset (2026-12-03), Fable re-reviews a sample of these sets (about 1 in 4). If it finds an error, every Opus-on-Opus set of that course gets a Fable review.
 
-- [ ] (from B to A, 2026-11-27, owner decision) Change rule 10 on `main` as above: "writers on Opus, blind reviewers on Opus in a fresh session, with the three safeguards; Fable re-reviews a sample after 2026-12-03". Tick when done.
+- [x] (from B to A, 2026-11-27, owner decision) Change rule 10 on `main` as above: "writers on Opus, blind reviewers on Opus in a fresh session, with the three safeguards; Fable re-reviews a sample after 2026-12-03". Tick when done.
 
 ---
 
