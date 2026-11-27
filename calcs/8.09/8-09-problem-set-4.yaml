@@ -1,0 +1,678 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# r × F with the rotation matrix (1(a)), p_ψ from a numerical derivative of T (1(b)), the θ equation from a numerical
+# derivative of the Lagrangian at the double root (1(c)), numerical second derivatives of the full exponential potential
+# along a mode (2(a)), projection on the normal modes (2(d)), roots of the 2 × 2 determinant (3(b), 3(c)), and numerical
+# first and second derivatives of the full spring potential of the bar (4(a), 4(b), 4(c)).
+# Outside this file, while writing (SymPy and SciPy, .venv): the torque, the steady-precession condition, the Hessian of
+# Problem 2, the determinant of Problem 3 and the exact Hessian of Problem 4 with its expansion in θ0 all agree with the page.
+# Short names: th = θ, psi = ψ, W = Ω, wp = ω′, th0 = θ0, l = ℓ, l1, l2 the rod lengths, w = ω, w0 = ω0,
+# q, p, u, v the variables of a numerical derivative or root, S a trial natural length.
+
+page: content/year-4/8.09/8-09-problem-set-4.mdx
+calcs:
+  - id: p1a-tau1
+    kind: identity
+    answer: p1a-tau1
+    where: 'Problem 1(a), answer box: τ1 against the x component of r × F, r = (0, 0, R), F = −mg ẑ_I, with ẑ_I the third column of the rotation matrix (body components)'
+    formula: 'm*g*R*sin(th)*cos(psi)'
+    equals: '0*(-m*g*cos(th)) - R*(-m*g*cos(psi)*sin(th))'
+    samples:
+      m: [1, 0.5, 2, 1.3]
+      g: [9.81, 9, 10, 9.5]
+      R: [1, 0.5, 2, 1.5]
+      th: [0.9, 1.1, 1.4, 1.0]
+      psi: [0.9, 1.2, 1.4, 1.0]
+    tolerance: 1e-10
+    shown: ['id="p1a-tau1"', '\tau_1 = mgR\sin\theta\cos\psi']
+    source: {cite: mit, at: 'Problem 1(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1a-tau2
+    kind: identity
+    answer: p1a-tau2
+    where: 'Problem 1(a), answer box: τ2 against the y component of r × F with the same r and F'
+    formula: '-m*g*R*sin(th)*sin(psi)'
+    equals: 'R*(-m*g*sin(psi)*sin(th)) - 0*(-m*g*cos(th))'
+    samples:
+      m: [1, 0.5, 2, 1.3]
+      g: [9.81, 9, 10, 9.5]
+      R: [1, 0.5, 2, 1.5]
+      th: [0.9, 1.1, 1.4, 1.0]
+      psi: [0.9, 1.2, 1.4, 1.0]
+    tolerance: 1e-10
+    shown: ['id="p1a-tau2"', '\tau_2 = -mgR\sin\theta\sin\psi']
+    source: {cite: mit, at: 'Problem 1(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-w3
+    kind: identity
+    answer: p1b-w3
+    where: 'Problem 1(b), answer box: ω3 = Ω cos θ + ω′ against p_ψ/I3, with p_ψ = ∂T/∂ψ̇ from a numerical derivative of the kinetic energy (2.86)'
+    formula: 'W*cos(th) + wp'
+    equals: 'deriv(''I1/2*sin(th)**2*W**2 + I3/2*(q + cos(th)*W)**2'', ''q'', wp)/I3'
+    samples:
+      W: [1, 0.5, 2, 1.5]
+      th: [0.3, 0.8, 1.3, 1.0]
+      wp: [10, 5, 20, 8]
+      I1: [2, 3, 4, 2.5]
+      I3: [1, 0.5, 1.5, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p1b-w3"', '\omega_3 = \Omega\cos\theta + \omega''']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-wmin
+    kind: identity
+    answer: p1c-wmin
+    where: 'Problem 1(c), answer box: the smallest ω′, against the ω′ at which ∂L/∂θ (a numerical derivative of the Lagrangian) vanishes at the vertex Ω* = I3ω′/(2(I1 − I3)cos θ) of the quadratic in Ω, found by a root finder'
+    formula: '2*sqrt(m*g*R*(I1 - I3)*cos(th))/I3'
+    equals: 'solve("deriv(''I1/2*sin(p)**2*(I3*q/(2*(I1 - I3)*cos(th)))**2 + I3/2*(q + cos(p)*I3*q/(2*(I1 - I3)*cos(th)))**2 - m*g*R*cos(p)'', ''p'', th)", ''q'', 1e-3, 1e3)'
+    samples:
+      m: [0.1, 0.05, 0.2, 0.15]
+      g: [9.81, 9, 10, 9.5]
+      R: [0.04, 0.02, 0.06, 0.05]
+      I1: [3, 2, 4, 2.5]
+      I3: [1, 0.5, 1.5, 0.8]
+      th: [0.5, 0.2, 1.2, 0.9]
+    tolerance: 1e-6
+    shown: ['id="p1c-wmin"', '\omega'' \ge \frac{2}{I_3}\sqrt{mgR\,(I_1 - I_3)\cos\theta}']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-numbers
+    kind: fact
+    where: 'Problem 1(c), statement: our own numbers for a toy top'
+    shown: ['$m = 0.10$ kg, $R = 4.0$ cm, $I_1 = 1.8 \times 10^{-4}$ kg m², $I_3 = 4.0 \times 10^{-5}$ kg m², $\theta = 30°$ and $g = 9.81$ m/s²']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-mgR
+    where: 'Problem 1(c), solution: mgR in J'
+    formula: '0.10*9.81*0.040'
+    expected: '0.0392'
+    shown: ['$mgR = 0.10 \times 9.81 \times 0.040 = 0.0392$ J']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-dI
+    where: 'Problem 1(c), solution: I1 − I3 in kg m²'
+    formula: '1.8e-4 - 4.0e-5'
+    expected: '1.4e-4'
+    shown: ['$I_1 - I_3 = 1.4 \times 10^{-4}$ kg m²']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-cos
+    where: 'Problem 1(c), solution: cos 30°'
+    formula: 'cos(30*pi/180)'
+    expected: '0.866'
+    shown: ['\times 0.866}/(4.0 \times 10^{-5})']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-num
+    answer: p1c-num
+    where: 'Problem 1(c), answer box: smallest spin of the toy top in rad/s, as the root of the discriminant I3²ω′² − 4mgR(I1 − I3)cos θ found numerically'
+    formula: 'solve(''(4.0e-5)**2*q**2 - 4*0.10*9.81*0.040*(1.8e-4 - 4.0e-5)*cos(30*pi/180)'', ''q'', 1, 1000)'
+    expected: '109'
+    tolerance: 1%
+    shown: ['id="p1c-num"', '\times 0.866}/(4.0 \times 10^{-5}) = 109$ rad/s']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-turns
+    where: 'Problem 1(c), solution: 109 rad/s in turns per second'
+    formula: '109/(2*pi)'
+    expected: '17'
+    tolerance: 5%
+    shown: ['about 17 turns per second']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-merge
+    where: 'Problem 1(c), solution: the double root Ω = I3ω′/(2(I1 − I3)cos θ) at the smallest spin, in rad/s'
+    formula: '4.0e-5*(2*sqrt(0.10*9.81*0.040*(1.8e-4 - 4.0e-5)*cos(30*pi/180))/4.0e-5)/(2*(1.8e-4 - 4.0e-5)*cos(30*pi/180))'
+    expected: '18.0'
+    shown: ['= 18.0$ rad/s']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1c-gyro
+    kind: identity
+    where: 'Problem 1(c), check: at θ = π/2 the condition becomes −I3ω′Ω + mgR = 0, so Ω = mgR/(I3ω′)'
+    formula: 'm*g*R/(I3*wp)'
+    equals: 'solve(''(I1 - I3)*cos(pi/2)*q**2 - I3*wp*q + m*g*R'', ''q'', 0, 100)'
+    samples:
+      m: [0.1, 0.2]
+      g: [9.81, 9]
+      R: [0.04, 0.05]
+      I1: [3, 2]
+      I3: [1, 0.5]
+      wp: [10, 20]
+    tolerance: 1e-6
+    shown: ['At $\theta = \pi/2$ the condition is always met and $\Omega = mgR/(I_3\omega'')$ exactly']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2a-w
+    kind: identity
+    answer: p2a-w
+    where: 'Problem 2(a), answer box: ω against the potential along the mode (θ1, θ2, θ3) = q(1, −1, 0): ω² = V″(q)/(2ma²) from a numerical second derivative of the full exponential potential'
+    formula: 'sqrt(12*V0*exp(-4*pi/3)/(m*a**2))'
+    equals: 'sqrt(deriv(''V0*(exp(-2*(2*pi/3 - 2*q)) + exp(-2*(2*pi/3 + q)) + exp(-2*(2*pi/3 + q)))'', ''q'', 0, 2)/(2*m*a**2))'
+    samples:
+      V0: [1, 0.5, 2, 1.5]
+      m: [1, 0.5, 2, 0.8]
+      a: [1, 0.5, 2, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p2a-w"', '\omega_2 = \omega_3 = \omega = \sqrt{\frac{12\,V_0\,e^{-4\pi/3}}{ma^2}}']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-zero
+    kind: identity
+    where: 'Problem 2(a): turning all three particles together, θi = q, leaves V unchanged (zero frequency)'
+    formula: 'deriv(''V0*(exp(-2*(2*pi/3 + q - q)) + exp(-2*(2*pi/3 + q - q)) + exp(-2*(2*pi/3 + q - q)))'', ''q'', 0.3, 2) + 1'
+    equals: '1'
+    samples:
+      V0: [1, 2]
+    tolerance: 1e-8
+    shown: ['\omega_1 = 0, \qquad']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-check
+    kind: identity
+    where: 'Problem 2(a), check: the pattern matrix times (1, −1, 0) is 3(1, −1, 0), so 4κ times it is 12κ(1, −1, 0)'
+    formula: '4*k*(2*1 - (-1)*(-1)*(-1) - 1*0)'
+    equals: '12*k'
+    samples:
+      k: [1, 0.3]
+    tolerance: 1e-12
+    shown: ['$\hat V\vec a^{(2)} = 4\kappa(3, -3, 0) = 12\kappa\,(1, -1, 0)$']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2a-norm
+    kind: identity
+    where: 'Problem 2(a): the modes are normalised with T = ma²·1: (1, 1, −2)·(1, 1, −2) ma²/(6ma²) = 1, and likewise for the other two'
+    formula: 'm*a**2*(1 + 1 + 4)/(a**2*6*m) + m*a**2*(1 + 1)/(a**2*2*m) + m*a**2*3/(a**2*3*m)'
+    equals: '3'
+    samples:
+      m: [1, 0.5]
+      a: [1, 2]
+    tolerance: 1e-12
+    shown: ['\vec a^{(3)} = \frac{1}{a\sqrt{6m}}']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-check
+    kind: identity
+    where: 'Problem 2(b), check: ½ξ̇1² = ½a²(m/3)(3θ̇)² equals the kinetic energy (3/2)ma²θ̇² of a common turn'
+    formula: '0.5*a**2*(m/3)*(3*thd)**2'
+    equals: '1.5*m*a**2*thd**2'
+    samples:
+      m: [1, 0.5]
+      a: [1, 2]
+      thd: [1, 0.7]
+    tolerance: 1e-12
+    shown: ['$\frac12\dot\xi_1^2 = \frac12 a^2\frac{m}{3}(3\dot\theta)^2 = \frac32ma^2\dot\theta^2$']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own check)'}
+    origin: page-own
+
+  - id: p2d-th1
+    kind: identity
+    answer: p2d-th1
+    where: 'Problem 2(d), answer box: θ1(t) against the sum over modes 2 and 3 of a_1^(α) times ξ̇α(0) sin(ωt)/ω, with ξ̇α(0) = a^(α)T·T̂·θ̇(0) (the ma² and normalisations cancel to the weights 1/2 and 1/6)'
+    formula: '3*w0*sin(w*t)/w'
+    equals: '(1/2*(3*w0 - (-2*w0)) + 1/6*(3*w0 + (-2*w0) - 2*(-w0)))*sin(w*t)/w'
+    samples:
+      w0: [1, 0.5, 2, 1.5]
+      w: [1.5, 1.2, 1.8, 1.3]
+      t: [1, 0.7, 1.1, 0.9]
+    tolerance: 1e-10
+    shown: ['id="p2d-th1"', '\theta_1(t) = \frac{3\omega_0}{\omega}\sin\omega t']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2d-rates
+    kind: identity
+    where: 'Problem 2(d), solution: θ1 − θ2 = 5ω0 and θ1 + θ2 − 2θ3 = 3ω0 for the initial rates (3, −2, −1)ω0'
+    formula: '(3 - (-2))*w0 + (3 + (-2) - 2*(-1))*w0'
+    equals: '8*w0'
+    samples:
+      w0: [1, 0.5]
+    tolerance: 1e-12
+    shown: ['(5\omega_0)$', '(3 - 2 + 2)\omega_0 = a\sqrt{m/6}\,(3\omega_0)$']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-t12
+    kind: identity
+    answer: p3a-t12
+    where: 'Problem 3(a), answer box: T12 against T(1, 1) − T(1, 0) − T(0, 1) from the Cartesian velocity of the lower ball at θ1 = θ2 = 0 (the upper ball has no cross term)'
+    formula: 'm*l1*l2'
+    equals: '0.5*m*((l1 + l2)**2) - 0.5*m*l1**2 - 0.5*m*l2**2'
+    samples:
+      m: [1, 0.5, 2]
+      l1: [1, 0.5, 2]
+      l2: [1, 1.8, 0.7]
+    tolerance: 1e-12
+    shown: ['id="p3a-t12"', '\hat T = m\begin{pmatrix} 4\ell_1^2 & \ell_1\ell_2 \\ \ell_1\ell_2 & \ell_2^2 \end{pmatrix}']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-v11
+    kind: identity
+    answer: p3a-v11
+    where: 'Problem 3(a), answer box: V11 against a numerical second derivative of V = −(m1 + m2)gℓ1 cos θ1 with m1 + m2 = 4m'
+    formula: '4*m*g*l1'
+    equals: 'deriv(''-(3*m + m)*g*l1*cos(q)'', ''q'', 0, 2)'
+    samples:
+      m: [1, 0.5, 2]
+      g: [9.81, 9, 10]
+      l1: [1, 0.5, 2]
+    tolerance: 1e-6
+    shown: ['id="p3a-v11"', '\hat V = mg\begin{pmatrix} 4\ell_1 & 0 \\ 0 & \ell_2 \end{pmatrix}']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3b-w2
+    kind: identity
+    answer: p3b-w2
+    where: 'Problem 3(b), answer box: the larger ω², against the larger root of det(V − λT) = 0 written out from the 2 × 2 matrices, found by a root finder between half the sum of the roots and the sum'
+    formula: '2*g*(l1 + l2 + sqrt(l1**2 - l1*l2 + l2**2))/(3*l1*l2)'
+    equals: 'solve(''(4*m*g*l1 - q*4*m*l1**2)*(m*g*l2 - q*m*l2**2) - (q*m*l1*l2)**2'', ''q'', 2*g*(l1 + l2)/(3*l1*l2) + 1e-9, 4*g*(l1 + l2)/(3*l1*l2))'
+    samples:
+      m: [1, 0.5, 2]
+      g: [9.81, 9, 10]
+      l1: [0.5, 0.8, 1]
+      l2: [1.2, 2, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p3b-w2"', '\omega_\pm^2 = \frac{2g}{3\ell_1\ell_2}\left[\ell_1 + \ell_2 \pm \sqrt{\ell_1^2 - \ell_1\ell_2 + \ell_2^2}\right]']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3b-ratio
+    answer: p3b-ratio
+    where: 'Problem 3(b), answer box: ratio of the two frequencies for ℓ1 = ℓ2 = 1, g = 1, from the two roots of the determinant found numerically'
+    formula: 'sqrt(solve(''(4*1 - q*4)*(1 - q) - q**2'', ''q'', 1.4, 3)/solve(''(4*1 - q*4)*(1 - q) - q**2'', ''q'', 0.1, 1))'
+    expected: '1.732'
+    tolerance: 1%
+    shown: ['id="p3b-ratio"', 'The ratio of the frequencies is $\sqrt3 = 1.732$.']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3b-equal
+    kind: identity
+    where: 'Problem 3(b): for ℓ1 = ℓ2 = ℓ the roots are 2g/ℓ and 2g/(3ℓ)'
+    formula: '2*g*(2*l + sqrt(l**2))/(3*l**2) + 2*g*(2*l - sqrt(l**2))/(3*l**2)'
+    equals: '2*g/l + 2*g/(3*l)'
+    samples:
+      g: [9.81, 1]
+      l: [1, 0.5]
+    tolerance: 1e-12
+    shown: ['$\omega_+^2 = 2g/\ell$ and $\omega_-^2 = 2g/(3\ell)$. The ratio']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3b-roots
+    kind: identity
+    where: 'Problem 3(b), check: product and sum of the roots of 3ℓ1ℓ2λ² − 4g(ℓ1 + ℓ2)λ + 4g² = 0'
+    formula: '(2*g/(3*l1*l2))**2*((l1 + l2)**2 - (l1**2 - l1*l2 + l2**2)) + 2*(2*g/(3*l1*l2))*(l1 + l2)'
+    equals: '4*g**2/(3*l1*l2) + 4*g*(l1 + l2)/(3*l1*l2)'
+    samples:
+      g: [9.81, 1]
+      l1: [1, 0.5]
+      l2: [0.7, 2]
+    tolerance: 1e-10
+    shown: ['The product of the roots is $4g^2/(3\ell_1\ell_2)$ and their sum $4g(\ell_1 + \ell_2)/(3\ell_1\ell_2)$']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3b-setone
+    kind: identity
+    where: 'Problem 3(b), check: the equal-mass ratio of Problem Set 1, 1 + √2'
+    formula: 'sqrt((2 + sqrt(2))/(2 - sqrt(2)))'
+    equals: '1 + sqrt(2)'
+    samples:
+      dummy: [1]
+    tolerance: 1e-12
+    shown: ['$1 + \sqrt2 = 2.414$']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3c-ratio
+    answer: p3c-ratio
+    where: 'Problem 3(c), answer box: θ2/θ1 = 4(g − λℓ1)/(λℓ2) in the faster mode, for ℓ1 = ℓ2 = 1, g = 1, with λ the larger root of the determinant found numerically'
+    formula: '4*(1 - solve(''(4 - q*4)*(1 - q) - q**2'', ''q'', 1.4, 3))/solve(''(4 - q*4)*(1 - q) - q**2'', ''q'', 1.4, 3)'
+    expected: '-2.00'
+    tolerance: 1%
+    shown: ['id="p3c-ratio"', 'and $\omega_+^2 = 2g/\ell$ gives $a_2/a_1 = -2$']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3c-slow
+    kind: identity
+    where: 'Problem 3(c): the slow mode, λ = 2g/(3ℓ), has a2/a1 = 4(g − λℓ)/(λℓ) = 2'
+    formula: '4*(g - 2*g/(3*l)*l)/(2*g/(3*l)*l)'
+    equals: '2'
+    samples:
+      g: [9.81, 1]
+      l: [1, 0.4]
+    tolerance: 1e-12
+    shown: ['$\omega_-^2 = 2g/(3\ell)$ gives $a_2/a_1 = 2$']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3c-norm
+    kind: identity
+    where: 'Problem 3(c): both modes have aᵀT̂a = 1, with T̂ = mℓ²[[4, 1], [1, 1]]'
+    formula: 'm*l**2*(4*1 + 2*1*2 + 4)/(4*l**2*3*m) + m*l**2*(4*1 - 2*1*2 + 4)/(4*l**2*m)'
+    equals: '2'
+    samples:
+      m: [1, 0.5]
+      l: [1, 2]
+    tolerance: 1e-12
+    shown: ['\vec a^{(-)} = \frac{1}{2\ell\sqrt{3m}}', '\vec a^{(+)} = \frac{1}{2\ell\sqrt{m}}']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3c-orth
+    kind: identity
+    where: 'Problem 3(c), check: (1, 2) T̂ (1, −2)ᵀ = mℓ²(4 − 2 + 2 − 4) = 0 (plus 1 on both sides)'
+    formula: 'm*l**2*(4*1*1 + 1*1*(-2) + 1*2*1 + 1*2*(-2)) + 1'
+    equals: '1'
+    samples:
+      m: [1, 0.5]
+      l: [1, 2]
+    tolerance: 1e-12
+    shown: ['m\ell^2(4 - 2 + 2 - 4) = 0']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3c-cm
+    kind: identity
+    where: 'Problem 3(c), check: centre of mass ℓθ1/2 in the fast mode and 3ℓθ1/2 in the slow one (sum of both)'
+    formula: '(3*m*l*th + m*(l*th - 2*l*th))/(4*m) + (3*m*l*th + m*(l*th + 2*l*th))/(4*m)'
+    equals: 'l*th/2 + 3*l*th/2'
+    samples:
+      m: [1, 0.5]
+      l: [1, 2]
+      th: [0.1, 0.05]
+    tolerance: 1e-12
+    shown: ['= \ell\theta_1/2$', '$(3\ell\theta_1 + 3\ell\theta_1)/4 = 3\ell\theta_1/2$']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4a-s0
+    kind: identity
+    answer: p4a-s0
+    where: 'Problem 4(a), answer box: the natural length s0, against the S that makes ∂V/∂y = 0 at equilibrium (numerical derivative of the full potential, root finder)'
+    formula: 'a - m*g/(2*k*cos(th0))'
+    equals: 'solve("deriv(''m*g*(u) + k/2*(sqrt((l + a*sin(th0) - l*cos(0) + (0))**2 + (a*cos(th0) - (u) + l*sin(0))**2) - S)**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(0) - (0))**2 + (a*cos(th0) - (u) - l*sin(0))**2) - S)**2'', ''u'', 0)", ''S'', 0.01, a)'
+    samples:
+      a: [0.75, 0.5, 1, 0.6]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      k: [30, 20, 40, 25]
+      th0: [0.3, 0.2, 0.5, 0.4]
+      l: [0.25, 0.3, 0.2, 0.4]
+    tolerance: 1e-6
+    shown: ['id="p4a-s0"', 's_0 = a - \frac{mg}{2k\cos\theta_0}']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4a-inertia
+    kind: identity
+    answer: p4a-inertia
+    where: 'Problem 4(a), answer box: I = mℓ²/3, against the integral of (m/2ℓ) q² over the bar from −ℓ to ℓ'
+    formula: 'm*l**2/3'
+    equals: 'integrate(''m/(2*l)*q**2'', ''q'', -l, l)'
+    samples:
+      m: [1, 0.5, 2]
+      l: [1, 0.5, 2]
+    tolerance: 1e-8
+    shown: ['id="p4a-inertia"', 'with $I = m(2\ell)^2/12 = m\ell^2/3$']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4a-grad
+    kind: identity
+    where: 'Problem 4(a), check: ∂V/∂x and ∂V/∂φ vanish at equilibrium by symmetry (numerical derivatives of the full potential; plus 1 on both sides)'
+    formula: 'deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(0) + (u))**2 + (a*cos(th0) - (0) + l*sin(0))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(0) - (u))**2 + (a*cos(th0) - (0) - l*sin(0))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0) + deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(u) + (0))**2 + (a*cos(th0) - (0) + l*sin(u))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(u) - (0))**2 + (a*cos(th0) - (0) - l*sin(u))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0) + 1'
+    equals: '1'
+    samples:
+      a: [0.6, 0.5]
+      m: [0.6, 0.3]
+      g: [9.81, 9]
+      k: [10, 30]
+      th0: [0.1, 0.3]
+      l: [0.25, 0.4]
+    tolerance: 1e-6
+    shown: ['and $\partial V/\partial x = \partial V/\partial\phi = 0$ by the left-right symmetry']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p4b-v33
+    kind: identity
+    answer: p4b-v33
+    where: 'Problem 4(b), answer box: V33 to first order in θ0, against a numerical second derivative of the full potential in φ at small θ0 (θ0 ≤ 0.003, so the θ0² terms are below the tolerance)'
+    formula: '2*k*l**2 + m*g*l*th0'
+    equals: 'deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(u) + (0))**2 + (a*cos(th0) - (0) + l*sin(u))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(u) - (0))**2 + (a*cos(th0) - (0) - l*sin(u))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0, 2)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.001, 0.002, 0.003, 0.0015]
+    tolerance: 1e-4
+    shown: ['id="p4b-v33"', '2k\ell^2 + mg\ell\theta_0 \end{pmatrix}']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-v13
+    kind: identity
+    answer: p4b-v13
+    where: 'Problem 4(b), answer box: V13 to first order in θ0, against a numerical mixed derivative ∂²V/∂x∂φ of the full potential at small θ0'
+    formula: '2*k*l*th0 - m*g*l*th0/a'
+    equals: 'deriv("deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(v) + (u))**2 + (a*cos(th0) - (0) + l*sin(v))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(v) - (u))**2 + (a*cos(th0) - (0) - l*sin(v))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0)", ''v'', 0)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.001, 0.002, 0.003, 0.0015]
+    tolerance: 1e-3
+    shown: ['id="p4b-v13"', '& 0 & 2k\ell\theta_0 - mg\ell\theta_0/a \\']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-full33
+    kind: identity
+    where: 'Problem 4(b): the second-order potential with s = sin θ0, c = cos θ0, F = mg/(2c), checked at finite θ0: its φφ second derivative 2kc²ℓ² + 2(F/a)s²ℓ² + 2Fsℓ against the full potential'
+    formula: '2*k*cos(th0)**2*l**2 + 2*(m*g/(2*cos(th0)))/a*sin(th0)**2*l**2 + 2*(m*g/(2*cos(th0)))*sin(th0)*l'
+    equals: 'deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(u) + (0))**2 + (a*cos(th0) - (0) + l*sin(u))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(u) - (0))**2 + (a*cos(th0) - (0) - l*sin(u))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0, 2)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.1, 0.3, 0.5, 0.2]
+    tolerance: 1e-5
+    shown: ['V = k\left(sx + c\ell\phi\right)^2 + kc^2y^2 + \frac{F}{a}\left(cx - s\ell\phi\right)^2 + \frac{F}{a}s^2y^2 + Fs\ell\phi^2']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-full11
+    kind: identity
+    where: 'Problem 4(b): the same second-order potential, xx entry 2ks² + 2Fc²/a, against the full potential at finite θ0'
+    formula: '2*k*sin(th0)**2 + 2*(m*g/(2*cos(th0)))*cos(th0)**2/a'
+    equals: 'deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(0) + (u))**2 + (a*cos(th0) - (0) + l*sin(0))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(0) - (u))**2 + (a*cos(th0) - (0) - l*sin(0))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0, 2)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.1, 0.3, 0.5, 0.2]
+    tolerance: 1e-5
+    shown: ['\hat V = \begin{pmatrix} mg/a & 0 &']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-full22
+    kind: identity
+    where: 'Problem 4(b): the same second-order potential, yy entry 2kc² + 2Fs²/a, against the full potential at finite θ0'
+    formula: '2*k*cos(th0)**2 + 2*(m*g/(2*cos(th0)))*sin(th0)**2/a'
+    equals: 'deriv(''m*g*(u) + k/2*(sqrt((l + a*sin(th0) - l*cos(0) + (0))**2 + (a*cos(th0) - (u) + l*sin(0))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(0) - (0))**2 + (a*cos(th0) - (u) - l*sin(0))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0, 2)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.1, 0.3, 0.5, 0.2]
+    tolerance: 1e-5
+    shown: ['0 & 2k & 0 \\']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4b-full13
+    kind: identity
+    where: 'Problem 4(b): the same second-order potential, xφ entry 2scℓ(k − F/a), against a mixed derivative of the full potential at finite θ0'
+    formula: '2*sin(th0)*cos(th0)*l*(k - (m*g/(2*cos(th0)))/a)'
+    equals: 'deriv("deriv(''m*g*(0) + k/2*(sqrt((l + a*sin(th0) - l*cos(v) + (u))**2 + (a*cos(th0) - (0) + l*sin(v))**2) - (a - m*g/(2*k*cos(th0))))**2 + k/2*(sqrt((l + a*sin(th0) - l*cos(v) - (u))**2 + (a*cos(th0) - (0) - l*sin(v))**2) - (a - m*g/(2*k*cos(th0))))**2'', ''u'', 0)", ''v'', 0)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.1, 0.3, 0.5, 0.2]
+    tolerance: 1e-4
+    shown: ['To first order in $\theta_0$ ($s \to \theta_0$, $c \to 1$, $F \to mg/2$, $s^2 \to 0$):']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4c-w2
+    kind: identity
+    answer: p4c-w2
+    where: 'Problem 4(c), answer box: ω² of the rocking mode, against the larger root of the coupled x–φ determinant with the first-order matrices, at small θ0 (the coupling shifts it only at order θ0²)'
+    formula: '6*k/m + 3*g*th0/l'
+    equals: 'solve(''(m*g/a - q*m)*(2*k*l**2 + m*g*l*th0 - q*m*l**2/3) - (2*k*l*th0 - m*g*l*th0/a)**2'', ''q'', 3*k/m, 12*k/m)'
+    samples:
+      k: [30, 20, 40, 25]
+      m: [0.4, 0.2, 0.6, 0.3]
+      g: [9.81, 9, 10, 9.5]
+      a: [0.5, 0.3, 0.8, 0.6]
+      l: [0.25, 0.1, 0.4, 0.3]
+      th0: [0.001, 0.002, 0.003, 0.0015]
+    tolerance: 1e-4
+    shown: ['id="p4c-w2"', '\omega_\phi^2 = \frac{2k\ell^2 + mg\ell\theta_0}{m\ell^2/3} = \frac{6k}{m} + \frac{3g\theta_0}{\ell}']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4c-numbers
+    kind: fact
+    where: 'Problem 4(c), statement: our own numbers'
+    shown: ['$m = 0.60$ kg, $\ell = 0.25$ m, $k = 10.0$ N/m, $a = 0.60$ m, $\theta_0 = 0.10$ and $g = 9.81$ m/s² (our numbers)']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-6k
+    where: 'Problem 4(c), solution: 6k/m in s⁻²'
+    formula: '6*10.0/0.60'
+    expected: '100'
+    shown: ['$6k/m = 100$ s⁻²']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-tilt
+    where: 'Problem 4(c), solution: 3gθ0/ℓ in s⁻²'
+    formula: '3*9.81*0.10/0.25'
+    expected: '11.77'
+    shown: ['$3g\theta_0/\ell = 11.77$ s⁻²']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-sum
+    where: 'Problem 4(c), solution: 6k/m + 3gθ0/ℓ in s⁻²'
+    formula: '6*10.0/0.60 + 3*9.81*0.10/0.25'
+    expected: '111.77'
+    shown: ['\sqrt{111.77}']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-num
+    answer: p4c-num
+    where: 'Problem 4(c), answer box: rocking frequency in rad/s for our numbers, first order in θ0'
+    formula: 'sqrt(6*10.0/0.60 + 3*9.81*0.10/0.25)'
+    expected: '10.57'
+    tolerance: 1%
+    shown: ['id="p4c-num"', '= 10.57$ rad/s; the bounce']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-bounce
+    where: 'Problem 4(c), solution: bounce frequency √(2k/m) in rad/s'
+    formula: 'sqrt(2*10.0/0.60)'
+    expected: '5.77'
+    shown: ['$\sqrt{2k/m} = 5.77$ rad/s']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-swing
+    where: 'Problem 4(c), solution: swing frequency √(g/a) in rad/s'
+    formula: 'sqrt(9.81/0.60)'
+    expected: '4.04'
+    shown: ['$\sqrt{g/a} = 4.04$ rad/s']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-full-rock
+    where: 'Problem 4(c), solution: the rocking frequency from the full matrices (numerical second derivatives of the full potential at our numbers, x–φ block solved exactly), within 1% of 10.57 rad/s (it is 10.55)'
+    formula: 'sqrt(((deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) + (u))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) - (u))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/0.60 + (deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) + (0))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) - (0))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/(0.60*0.25**2/3) + sqrt(((deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) + (u))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) - (u))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/0.60 - (deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) + (0))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) - (0))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/(0.60*0.25**2/3))**2 + 4*(deriv("deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(v) + (u))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(v))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(v) - (u))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(v))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0)", ''v'', 0))**2/(0.60*(0.60*0.25**2/3))))/2)'
+    expected: '10.57'
+    tolerance: 1%
+    shown: ['differ from these by less than 1%']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-full-swing
+    where: 'Problem 4(c), solution: the swing frequency from the full matrices, within 1% of 4.04 rad/s (it is 4.06)'
+    formula: 'sqrt(((deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) + (u))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) - (u))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/0.60 + (deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) + (0))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) - (0))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/(0.60*0.25**2/3) - sqrt(((deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) + (u))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) - (u))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/0.60 - (deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) + (0))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(u) - (0))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(u))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/(0.60*0.25**2/3))**2 + 4*(deriv("deriv(''0.60*9.81*(0) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(v) + (u))**2 + (0.60*cos(0.10) - (0) + 0.25*sin(v))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(v) - (u))**2 + (0.60*cos(0.10) - (0) - 0.25*sin(v))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0)", ''v'', 0))**2/(0.60*(0.60*0.25**2/3))))/2)'
+    expected: '4.04'
+    tolerance: 1%
+    shown: ['the eigenvalues of the full matrices, without the first-order approximation']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-full-bounce
+    where: 'Problem 4(c), solution: the bounce frequency from the full matrices, within 1% of 5.77 rad/s (it is 5.76)'
+    formula: 'sqrt((deriv(''0.60*9.81*(u) + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) + (0))**2 + (0.60*cos(0.10) - (u) + 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2 + 10.0/2*(sqrt((0.25 + 0.60*sin(0.10) - 0.25*cos(0) - (0))**2 + (0.60*cos(0.10) - (u) - 0.25*sin(0))**2) - (0.60 - 0.60*9.81/(2*10.0*cos(0.10))))**2'', ''u'', 0, 2))/0.60)'
+    expected: '5.77'
+    tolerance: 1%
+    shown: ['In our calculation file the eigenvalues of the full matrices']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4c-rockcheck
+    kind: identity
+    where: 'Problem 4(c), check: two springs at ±ℓ give the torque 2kℓ²φ on the moment mℓ²/3, so ω² = 6k/m'
+    formula: '2*k*l**2/(m*l**2/3)'
+    equals: '6*k/m'
+    samples:
+      k: [10, 30]
+      m: [0.6, 0.3]
+      l: [0.25, 0.4]
+    tolerance: 1e-12
+    shown: ['a torque $2k\ell^2\phi$ on a moment of inertia $m\ell^2/3$']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own check)'}
+    origin: page-own
+
