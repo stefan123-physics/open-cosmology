@@ -1,0 +1,446 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1(a) takes the root-mean-square radius from numerical integrals of the Gaussian density; 1(b) solves
+# N = ∫|ψ|² d³r numerically for the edge R of the Thomas–Fermi profile; 1(c) goes through ω₀ = ħ/(m r₀²) and
+# g = m ω₀² R²/(2 n₀), not the page's simplified a = R²/(8π n₀ r₀⁴). Problem 2(a) evaluates ω_k/k from the full
+# dispersion at a small k; 2(b) finds the edge of the band of negative frequencies numerically from ω_k + v_s k = 0;
+# 2(c) solves ħ/(m r) = v_c numerically.
+# Our illustrative numbers (Problem 1(c): R = 0.021 cm; Problem 2(d): μ/k_B = 100 nK) and MIT's (r₀ = 5 × 10⁻³ cm,
+# n₀ = 10¹¹ cm⁻³) are the inputs. Sodium: m = 22.99 u, 1 u = 1.66054e-27 kg. Constants hbar, k_B from calcs/constants.yaml.
+# Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-8.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 20 + 15'
+    formula: |-
+      20 + 15
+    expected: '35'
+    shown: ['and 15 for Problem 2, 35 points in all']
+    source: {cite: mit, at: 'Problems 1 and 2, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1(a): the ideal condensate
+
+  - id: p1-rms
+    kind: identity
+    answer: p1-rms
+    where: 'Problem 1(a), answer box: √⟨r²⟩ of the density e^(−r²/r₀²), against numerical integrals over r'
+    formula: |-
+      sqrt(3/2)*r0
+    equals: |-
+      sqrt(integrate('r**4*exp(-r**2/r0**2)', 'r', 0, 12*r0)/integrate('r**2*exp(-r**2/r0**2)', 'r', 0, 12*r0))
+    samples:
+      r0: [0.5, 1.0, 2.0, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p1-rms"', '<Formula label="Size of the ideal condensate"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-norm
+    kind: identity
+    where: 'Problem 1(a), formula "Density of the ideal condensate in the trap": the prefactor N/(π^(3/2) r₀³) normalises the density to N (numerical integral)'
+    formula: |-
+      N
+    equals: |-
+      integrate('N/(pi**1.5*r0**3)*exp(-r**2/r0**2)*4*pi*r**2', 'r', 0, 12*r0)
+    samples:
+      N: [1, 10, 100]
+      r0: [0.5, 1.0, 2.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="Density of the ideal condensate in the trap"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-r0
+    where: 'Problem 1(a): MIT''s r₀ = 5 × 10⁻³ cm in micrometres'
+    inputs: {r0: 5e-3 cm}
+    formula: |-
+      r0
+    expected: 50 um
+    shown: ['For MIT''s $r_0 = 50$ μm']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: page-own
+
+  - id: p1-rms-num
+    where: 'Problem 1(a): √(3/2) r₀ for r₀ = 50 μm'
+    inputs: {r0: 5e-3 cm}
+    formula: |-
+      sqrt(3/2)*r0
+    expected: 61.2 um
+    shown: ['the size is $61.2$ μm']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-omega0
+    where: 'Problem 1(a), check: ω₀ = ħ/(m r₀²) for sodium'
+    inputs: {r0: 5e-3 cm, m: 3.81758e-26 kg}
+    formula: |-
+      hbar/(m*r0**2)
+    expected: 1.10 1/s
+    shown: ['$\omega_0 = \hbar/(mr_0^2) = 1.10$ s⁻¹']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(b): Thomas–Fermi
+
+  - id: p1-n-integral
+    kind: identity
+    where: 'Problem 1(b), formula "Number of atoms in the Thomas–Fermi profile": (4π/15) m ω₀² R⁵/g against the numerical integral of (μ − U)/g over the ball'
+    formula: |-
+      4*pi/15*m*w0**2*R**5/g
+    equals: |-
+      integrate('(0.5*m*w0**2*R**2 - 0.5*m*w0**2*r**2)/g*4*pi*r**2', 'r', 0, R)
+    samples:
+      m: [0.5, 1.0, 2.0]
+      w0: [0.5, 1.5, 2.0]
+      R: [1.0, 2.0, 0.7]
+      g: [0.5, 1.0, 2.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="Number of atoms in the Thomas–Fermi profile"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-radius
+    kind: identity
+    answer: p1-radius
+    where: 'Problem 1(b), answer box: R, against the edge u found numerically from N = ∫(μ − U)/g d³r with μ = ½ m ω₀² u²'
+    formula: |-
+      (15*g*N/(4*pi*m*w0**2))**(1/5)
+    equals: |-
+      solve("integrate('(0.5*m*w0**2*u**2 - 0.5*m*w0**2*r**2)/g*4*pi*r**2', 'r', 0, u) - N", 'u', 0.01, 100)
+    samples:
+      N: [1, 10, 100, 50]
+      g: [0.5, 1.0, 2.0, 1.5]
+      m: [0.5, 1.0, 2.0, 0.8]
+      w0: [0.5, 1.0, 2.0, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p1-radius"', '<Formula label="Thomas–Fermi radius"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(c): the scattering length
+
+  - id: p1-a
+    answer: p1-a
+    where: 'Problem 1(c), answer box: a = m g/(4π ħ²) with g = m ω₀² R²/(2 n₀) and ω₀ = ħ/(m r₀²), in nm'
+    inputs: {R: 0.021 cm, n0: 1e11 1/cm**3, r0: 5e-3 cm, m: 3.81758e-26 kg}
+    formula: |-
+      m*(m*(hbar/(m*r0**2))**2*R**2/(2*n0))/(4*pi*hbar**2)
+    expected: 2.81 nm
+    shown: ['id="p1-a"', 'm $= 2.81$ nm']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own numbers and solution)'}
+    origin: page-own
+
+  - id: p1-a-short
+    kind: identity
+    where: 'Problem 1(c), formula "Scattering length from the profile": m² ω₀² R²/(8π ħ² n₀) = R²/(8π n₀ r₀⁴) with r₀ = √(ħ/(m ω₀))'
+    formula: |-
+      m**2*w0**2*R**2/(8*pi*hb**2*n0)
+    equals: |-
+      R**2/(8*pi*n0*(sqrt(hb/(m*w0)))**4)
+    samples:
+      m: [0.5, 1.0, 2.0]
+      w0: [0.5, 1.5, 2.0]
+      R: [1.0, 2.0, 0.7]
+      hb: [0.5, 1.0, 2.0]
+      n0: [1.0, 3.0, 0.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Scattering length from the profile"']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-n0-si
+    where: 'Problem 1(c): MIT''s maximum density 10¹¹ cm⁻³ in SI units'
+    inputs: {n0: 1e11 1/cm**3}
+    formula: |-
+      n0
+    expected: 1e17 1/m**3
+    shown: ['$n_0 = 10^{17}$ m⁻³']
+    source: {cite: mit, at: 'Problem 1(c), p. 1'}
+    origin: page-own
+
+  - id: p1-r04
+    where: 'Problem 1(c): r₀⁴'
+    inputs: {r0: 5e-3 cm}
+    formula: |-
+      r0**4
+    expected: 6.25e-18 m**4
+    shown: ['$r_0^4 = 6.25 \times 10^{-18}$ m⁴']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-8pi
+    where: 'Problem 1(c): 8π n₀ r₀⁴'
+    inputs: {r0: 5e-3 cm, n0: 1e11 1/cm**3}
+    formula: |-
+      8*pi*n0*r0**4
+    expected: 15.71 m
+    shown: ['$8\pi n_0r_0^4 = 15.71$ m']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-R2
+    where: 'Problem 1(c): R² for R = 0.021 cm'
+    inputs: {R: 0.021 cm}
+    formula: |-
+      R**2
+    expected: 4.41e-8 m**2
+    shown: ['Then $a = 4.41 \times 10^{-8}/15.71$ m']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-a-m
+    where: 'Problem 1(c): a in metres, R²/(8π n₀ r₀⁴)'
+    inputs: {R: 0.021 cm, n0: 1e11 1/cm**3, r0: 5e-3 cm}
+    formula: |-
+      R**2/(8*pi*n0*r0**4)
+    expected: 2.81e-9 m
+    shown: ['m $= 2.81 \times 10^{-9}$ m']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-g
+    where: 'Problem 1(c): g = m ω₀² R²/(2 n₀)'
+    inputs: {R: 0.021 cm, n0: 1e11 1/cm**3, r0: 5e-3 cm, m: 3.81758e-26 kg}
+    formula: |-
+      m*(hbar/(m*r0**2))**2*R**2/(2*n0)
+    expected: 1.03e-50 J*m**3
+    shown: ['$g = 1.03 \times 10^{-50}$ J m³']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-atoms
+    answer: p1-atoms
+    where: 'Problem 1(c), answer box: N = (8π/15) n₀ R³, in millions'
+    inputs: {R: 0.021 cm, n0: 1e11 1/cm**3}
+    formula: |-
+      8*pi/15*n0*R**3/1e6
+    expected: '1.55'
+    shown: ['id="p1-atoms"', '= 1.55 \times 10^6$ atoms']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own numbers and solution)'}
+    origin: page-own
+
+  - id: p1-atoms-factor
+    where: 'Problem 1(c): (8π/15) n₀'
+    inputs: {n0: 1e11 1/cm**3}
+    formula: |-
+      8*pi/15*n0
+    expected: 1.676e17 1/m**3
+    shown: ['= 1.676 \times 10^{17} \times']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-R3
+    where: 'Problem 1(c): R³'
+    inputs: {R: 0.021 cm}
+    formula: |-
+      R**3
+    expected: 9.26e-12 m**3
+    shown: ['9.26 \times 10^{-12} = 1.55']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: na-scattering
+    kind: fact
+    where: 'Problem 1(c), check: the scattering length of sodium quoted in the lesson interacting-bosons-gross-pitaevskii, about 2.75 nm'
+    value: '2.75 nm'
+    shown: ['about 2.75 nm (we chose']
+    source: {ref: 'measured s-wave scattering length of sodium-23 in its |F = 1> state, about 52 Bohr radii (2.75 nm), as quoted in calcs/8.08/interacting-bosons-gross-pitaevskii.yaml'}
+    origin: later-data
+
+  - id: p1-R-over-r0
+    where: 'Problem 1(c), check: R/r₀'
+    inputs: {R: 0.021 cm, r0: 5e-3 cm}
+    formula: |-
+      R/r0
+    expected: '4.2'
+    shown: ['$R/r_0 = 4.2$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-ideal-peak
+    where: 'Problem 1(c), check: the peak density N/(π^(3/2) r₀³) of the same atoms without interactions'
+    inputs: {R: 0.021 cm, n0: 1e11 1/cm**3, r0: 5e-3 cm}
+    formula: |-
+      8*pi/15*n0*R**3/(pi**1.5*r0**3)
+    expected: 2.2e12 1/cm**3
+    shown: ['$2.2 \times 10^{12}$ cm⁻³']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-ideal-ratio
+    where: 'Problem 1(c), check: the ideal peak density over the measured one'
+    inputs: {R: 0.021 cm, n0: 1e11 1/cm**3, r0: 5e-3 cm}
+    formula: |-
+      8*pi/15*n0*R**3/(pi**1.5*r0**3)/n0
+    expected: '22'
+    shown: ['22 times the measured one']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-mu
+    where: 'Problem 1(c), check: μ/k_B = ½ m ω₀² R²/k_B'
+    inputs: {R: 0.021 cm, r0: 5e-3 cm, m: 3.81758e-26 kg}
+    formula: |-
+      0.5*m*(hbar/(m*r0**2))**2*R**2/k_B
+    expected: 74 pK
+    shown: ['$\mu/k_B = 74$ pK']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: na-mass
+    where: 'Problems 1(c) and 2(d): m = 22.99 u'
+    inputs: {}
+    formula: |-
+      22.99*1.66054e-27
+    expected: '3.818e-26'
+    shown: ['kg $= 3.818 \times 10^{-26}$ kg']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own values)'}
+    origin: page-own
+
+  # ---- Problem 2: the uniform condensate
+
+  - id: p2-vc
+    kind: identity
+    answer: p2-vc
+    where: 'Problem 2(a), answer box: v_c, against ω_k/k of the full dispersion (with ħ = 1) at a small k'
+    formula: |-
+      sqrt(mu/m)
+    equals: |-
+      sqrt(((1e-6)**2/(2*m) + 2*mu)*(1e-6)**2/(2*m))/1e-6
+    samples:
+      mu: [0.5, 1.0, 2.0, 1.4]
+      m: [0.5, 1.0, 2.0, 0.7]
+    tolerance: 1e-9
+    shown: ['id="p2-vc"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-phase-velocity
+    kind: identity
+    where: 'Problem 2(a), formula "Phase velocity of the excitations": ω_k²/k² = μ/m + ħ²k²/4m²'
+    formula: |-
+      mu/m + hb**2*k**2/(4*m**2)
+    equals: |-
+      (hb**2*k**2/(2*m) + 2*mu)*k**2/(2*m)/k**2
+    samples:
+      mu: [0.5, 1.0, 2.0]
+      m: [0.5, 1.0, 2.0]
+      hb: [0.5, 1.0, 2.0]
+      k: [0.3, 1.0, 3.0]
+    tolerance: 1e-12
+    shown: ['<Formula label="Phase velocity of the excitations"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-rc
+    kind: identity
+    answer: p2-rc
+    where: 'Problem 2(c), answer box: r_c, against the root of ħ/(m r) − √(μ/m), found numerically'
+    formula: |-
+      hbar/sqrt(m*mu)
+    equals: |-
+      solve('hbar/(m*r) - sqrt(mu/m)', 'r', 0.001, 1000)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.3]
+      m: [0.5, 1.0, 2.0, 0.9]
+      mu: [0.5, 1.0, 2.0, 1.6]
+    tolerance: 1e-6
+    shown: ['id="p2-rc"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-mu
+    where: 'Problem 2(d): μ = 100 nK × k_B'
+    inputs: {T: 100 nK}
+    formula: |-
+      k_B*T
+    expected: 1.381e-30 J
+    shown: ['J $= 1.381 \times 10^{-30}$ J']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own values)'}
+    origin: page-own
+
+  - id: p2-mu-over-m
+    where: 'Problem 2(d): μ/m'
+    inputs: {T: 100 nK, m: 3.81758e-26 kg}
+    formula: |-
+      k_B*T/m
+    expected: 3.617e-5 m**2/s**2
+    shown: ['\sqrt{3.617 \times 10^{-5}}$ m/s']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-vc-num
+    answer: p2-vc-num
+    where: 'Problem 2(d), answer box: v_c = √(μ/m) in mm/s'
+    inputs: {T: 100 nK, m: 3.81758e-26 kg}
+    formula: |-
+      sqrt(k_B*T/m)
+    expected: 6.01 mm/s
+    shown: ['id="p2-vc-num"', 'm/s $= 6.01$ mm/s']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own values and solution)'}
+    origin: page-own
+
+  - id: p2-sqrt-m-mu
+    where: 'Problem 2(d): √(m μ)'
+    inputs: {T: 100 nK, m: 3.81758e-26 kg}
+    formula: |-
+      sqrt(m*k_B*T)
+    expected: 2.296e-28 kg*m/s
+    shown: ['1.0546 \times 10^{-34}/2.296 \times 10^{-28}$ m']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-kmax
+    kind: identity
+    answer: p2-kmax
+    where: 'Problem 2(b), answer box: k_max, against the root u > 0 of the frequency ω_k − v_s u of an excitation with k = −u (full dispersion), found numerically'
+    formula: |-
+      2*m*sqrt(vs**2 - mu/m)/hbar
+    equals: |-
+      solve('sqrt((hbar**2*u**2/(2*m) + 2*mu)*u**2/(2*m)) - vs*u', 'u', 1e-3*2*m*sqrt(vs**2 - mu/m)/hbar, 1e3*2*m*vs/hbar)
+    samples:
+      m: [0.5, 1.0, 2.0, 0.8]
+      vs: [3.0, 4.0, 5.0, 3.5]
+      mu: [0.5, 1.0, 2.0, 1.5]
+      hbar: [0.5, 1.0, 2.0, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p2-kmax"', '<Formula label="Band of unstable excitations"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-rc-num
+    answer: p2-rc-num
+    where: 'Problem 2(d), answer box: r_c = ħ/√(m μ) in μm'
+    inputs: {T: 100 nK, m: 3.81758e-26 kg}
+    formula: |-
+      hbar/sqrt(m*k_B*T)
+    expected: 0.459 um
+    shown: ['id="p2-rc-num"', 'm $= 0.459$ μm']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own values and solution)'}
+    origin: page-own
+
+  - id: p2-kmax-num
+    answer: p2-kmax-num
+    where: 'Problem 2(d), answer box: k_max = (2m/ħ)√(v_s² − μ/m) at v_s = 1.5 v_c, in units of 10⁶ 1/m'
+    inputs: {T: 100 nK, m: 3.81758e-26 kg}
+    formula: |-
+      2*m*sqrt((1.5*sqrt(k_B*T/m))**2 - k_B*T/m)/hbar
+    expected: 4.87 1/um
+    shown: ['id="p2-kmax-num"', '= 4.87 \times 10^6$ m⁻¹']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own values and solution)'}
+    origin: page-own
+
+  - id: p2-kmax-wavelength
+    where: 'Problem 2(d): 2π/k_max'
+    inputs: {T: 100 nK, m: 3.81758e-26 kg}
+    formula: |-
+      2*pi*hbar/(2*m*sqrt((1.5*sqrt(k_B*T/m))**2 - k_B*T/m))
+    expected: 1.29 um
+    shown: ['of $1.29$ μm']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
