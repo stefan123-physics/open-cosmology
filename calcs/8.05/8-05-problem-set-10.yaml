@@ -1,0 +1,529 @@
+# Calculations on content/year-3/8.05/8-05-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 builds the correlation from the four joint probabilities of the lecture notes and finds the maximum of the
+# left side by solving for the zero of its derivative; Problem 2 builds the winning probability from the amplitudes of
+# the basis states and counts the classical strategies by going through all eight sums c0 + c1 x + c2 y (the parity
+# of a whole number k is written (1 − cos πk)/2); Problem 5 lets the operators act on a basis state with n_R and n_L
+# quanta and solves j(j + 1) for j. The operator identities of Problems 3 and 5 were also checked with matrices
+# (NumPy, outside this file): they cannot be written as formulas here.
+
+page: content/year-3/8.05/8-05-problem-set-10.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-left
+    where: 'Introduction: MIT''s 65 points without the 10 of the skipped Problem 4'
+    formula: |-
+      65 - 10
+    expected: '55'
+    shown: ['which leaves 55']
+    source: {cite: mit, at: 'Problems 1 to 5, pp. 1–4'}
+    origin: mit
+
+  - id: points-here
+    where: 'How to answer: the points of Problems 1, 2, 3 and 5'
+    formula: |-
+      10 + 10 + 20 + 15
+    expected: '55'
+    shown: ['which is 55 points here']
+    source: {cite: mit, at: 'Problems 1, 2, 3 and 5, pp. 1–4'}
+    origin: mit
+
+  - id: points-p3
+    where: 'Problem 3: our split of MIT''s 20 points over the seven exercises'
+    formula: |-
+      2 + 4 + 3 + 3 + 2 + 4 + 2
+    expected: '20'
+    shown: ['points={20} mit="Problem 3"']
+    source: {cite: mit, at: 'Problem 3, p. 4'}
+    origin: page-own
+
+  # ---- Problem 1: Bell's inequality with correlation coefficients
+
+  - id: p1-c
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box: the correlation from the four joint probabilities: equal results (+1) with probability sin²(θ/2), opposite results (−1) with probability cos²(θ/2)'
+    formula: |-
+      -cos(th)
+    equals: |-
+      2*(1/2)*sin(th/2)**2 - 2*(1/2)*cos((pi - (pi - th))/2)**2
+    samples:
+      th: [0.3, 0.9, 1.4, 2.1, 2.8]
+    tolerance: 1e-12
+    shown: ['id="p1-c"', '<Formula label="The correlation coefficient from the four probabilities"']
+    source: {cite: reading1, at: 'eq. (5.8)'}
+    origin: page-own
+
+  - id: p1-opposite
+    kind: identity
+    where: 'Problem 1(c), check: up along a and up along −b, at the angle π − θ, has the probability ½ sin²((π − θ)/2) = ½ cos²(θ/2)'
+    formula: |-
+      (1/2)*sin((pi - th)/2)**2
+    equals: |-
+      (1/2)*cos(th/2)**2
+    samples:
+      th: [0.3, 0.9, 1.4, 2.1, 2.8]
+    tolerance: 1e-12
+    shown: ['so its probability is $\frac{1}{2}\cos^2\frac{\theta_{ab}}{2}$']
+    source: {cite: reading1, at: 'eq. (5.8)'}
+    origin: page-own
+
+  - id: p1-eq
+    answer: p1-eq
+    where: 'Problem 1(c), answer box: the fraction of pairs with equal results at 60°, twice ½ sin²(30°)'
+    formula: |-
+      2*(1/2)*sin((60*pi/180)/2)**2
+    expected: '0.25'
+    tolerance: 1e-9
+    shown: ['id="p1-eq"', '$\sin^2 30° = 0.25$']
+    source: {cite: reading1, at: 'eq. (5.8) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-c60
+    where: 'Problem 1(c), check: C at 60° from the two fractions, and as −cos 60°'
+    formula: |-
+      0.25 - 0.75 + cos(60*pi/180)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['$C = 0.25 - 0.75 = -0.5 = -\cos 60°$']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-lhs
+    kind: identity
+    answer: p1-lhs
+    where: 'Problem 1(d), answer box: the left side built from the three correlation coefficients −cos θ, −cos 2θ and −cos θ, with the absolute value kept'
+    formula: |-
+      2*cos(th) - cos(2*th)
+    equals: |-
+      abs((-cos(th)) - (-cos(2*th))) - (-cos(th))
+    samples:
+      th: [0.1, 0.5, 0.9, 1.2, 1.5]
+    tolerance: 1e-12
+    shown: ['id="p1-lhs"']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-factor
+    kind: identity
+    where: 'Problem 1(d): the left side written as 1 + 2 cos θ (1 − cos θ)'
+    formula: |-
+      2*cos(th) - cos(2*th)
+    equals: |-
+      1 + 2*cos(th)*(1 - cos(th))
+    samples:
+      th: [0.3, 0.9, 1.4, 2.1, 2.8]
+    tolerance: 1e-12
+    shown: ['<Formula label="The left side minus one, factorised"']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-ang
+    answer: p1-ang
+    where: 'Problem 1(d), answer box: the angle of the maximum in degrees, from the zero of the derivative −2 sin θ + 2 sin 2θ between 0.5 and 1.5 rad'
+    formula: |-
+      solve('2*sin(2*x) - 2*sin(x)', 'x', 0.5, 1.5)*180/pi
+    expected: '60'
+    tolerance: 1e-6
+    shown: ['id="p1-ang"', 'at $\theta = 60°$']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1-max
+    answer: p1-max
+    where: 'Problem 1(d), answer box: the left side at the zero of its derivative'
+    formula: |-
+      2*cos(solve('2*sin(2*x) - 2*sin(x)', 'x', 0.5, 1.5)) - cos(2*solve('2*sin(2*x) - 2*sin(x)', 'x', 0.5, 1.5))
+    expected: '1.5'
+    tolerance: 1e-9
+    shown: ['id="p1-max"', '= 1.5$']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1-max-product
+    where: 'Problem 1(d): the same maximum from the factorised form at cos θ = 1/2'
+    formula: |-
+      1 + 2*(1/2)*(1/2)
+    expected: '1.5'
+    tolerance: 1e-12
+    shown: ['$1 + 2\cdot\frac{1}{2}\cdot\frac{1}{2} = 1.5$']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-ends
+    where: 'Problem 1(d): the left side at θ = π/2 (at θ = 0 it is 2 − 1 = 1 as well)'
+    formula: |-
+      abs(cos(2*pi/2) - cos(pi/2)) + cos(pi/2)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['the left side equals 1 exactly']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-kink
+    kind: identity
+    where: 'Problem 1(d), check: beyond θ = 2π/3 the left side is cos 2θ'
+    formula: |-
+      abs(cos(2*th) - cos(th)) + cos(th)
+    equals: |-
+      cos(2*th)
+    samples:
+      th: [2.1, 2.3, 2.6, 2.9, 3.1]
+    tolerance: 1e-12
+    shown: ['the left side is just $\cos 2\theta$']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-kink-angle
+    where: 'Problem 1(d): cos 2θ = cos θ at θ = 2π/3, where the absolute value changes sign'
+    formula: |-
+      cos(2*(2*pi/3)) - cos(2*pi/3)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['The kink at θ = 2π/3']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-plot-point
+    where: 'Problem 1(d), plot: the two dots, at θ = π/3 = 1.0472 with the value 1.5 and at θ = π/2 = 1.5708 with the value 1'
+    formula: |-
+      (abs(cos(2*1.0472) - cos(1.0472)) + cos(1.0472)) + (abs(cos(2*1.5708) - cos(1.5708)) + cos(1.5708))
+    expected: '2.5'
+    tolerance: 1e-4
+    shown: ['{ x: 1.0472, y: 1.5 }']
+    source: {cite: mit, at: 'Problem 1(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the game
+
+  - id: p2-bar
+    answer: p2-bar
+    where: 'Problem 2(a), answer box: half the squared overlap v₊w₊ + v₋w₋, with v₊w₊ = 1/2 and v₋w₋ = (i/√2)(−i/√2) = 1/2'
+    formula: |-
+      (1/2)*((1/sqrt(2))*(1/sqrt(2)) + 1/2)**2
+    expected: '0.5'
+    tolerance: 1e-12
+    shown: ['id="p2-bar"']
+    source: {cite: mit, at: 'Problem 2(a), eq. (2), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-classical
+    where: 'Problem 2: the plan a = b = 0 wins three of the four equally likely pairs of bits'
+    formula: |-
+      3/4
+    expected: '0.75'
+    tolerance: 1e-12
+    shown: ['so this plan wins with the probability $\frac{3}{4}$']
+    source: {cite: mit, at: 'Problem 2, p. 3'}
+    origin: mit
+
+  - id: p2-count
+    answer: p2-count
+    where: 'Problem 2(b), answer box: for each of the eight sums c₀ + c₁x + c₂y the number of inputs on which it differs from xy is 1 or 3; (3 − that number) is 2 for a sum that wins three inputs and 0 otherwise, and each sum comes from two pairs of functions, so the total is the number of pairs that win three inputs'
+    formula: |-
+      (3 - (abs((1 - cos(pi*(0 + 0*0 + 0*0)))/2 - 0*0) + abs((1 - cos(pi*(0 + 0*0 + 0*1)))/2 - 0*1) + abs((1 - cos(pi*(0 + 0*1 + 0*0)))/2 - 1*0) + abs((1 - cos(pi*(0 + 0*1 + 0*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(0 + 0*0 + 1*0)))/2 - 0*0) + abs((1 - cos(pi*(0 + 0*0 + 1*1)))/2 - 0*1) + abs((1 - cos(pi*(0 + 0*1 + 1*0)))/2 - 1*0) + abs((1 - cos(pi*(0 + 0*1 + 1*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(0 + 1*0 + 0*0)))/2 - 0*0) + abs((1 - cos(pi*(0 + 1*0 + 0*1)))/2 - 0*1) + abs((1 - cos(pi*(0 + 1*1 + 0*0)))/2 - 1*0) + abs((1 - cos(pi*(0 + 1*1 + 0*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(0 + 1*0 + 1*0)))/2 - 0*0) + abs((1 - cos(pi*(0 + 1*0 + 1*1)))/2 - 0*1) + abs((1 - cos(pi*(0 + 1*1 + 1*0)))/2 - 1*0) + abs((1 - cos(pi*(0 + 1*1 + 1*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(1 + 0*0 + 0*0)))/2 - 0*0) + abs((1 - cos(pi*(1 + 0*0 + 0*1)))/2 - 0*1) + abs((1 - cos(pi*(1 + 0*1 + 0*0)))/2 - 1*0) + abs((1 - cos(pi*(1 + 0*1 + 0*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(1 + 0*0 + 1*0)))/2 - 0*0) + abs((1 - cos(pi*(1 + 0*0 + 1*1)))/2 - 0*1) + abs((1 - cos(pi*(1 + 0*1 + 1*0)))/2 - 1*0) + abs((1 - cos(pi*(1 + 0*1 + 1*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(1 + 1*0 + 0*0)))/2 - 0*0) + abs((1 - cos(pi*(1 + 1*0 + 0*1)))/2 - 0*1) + abs((1 - cos(pi*(1 + 1*1 + 0*0)))/2 - 1*0) + abs((1 - cos(pi*(1 + 1*1 + 0*1)))/2 - 1*1))) + (3 - (abs((1 - cos(pi*(1 + 1*0 + 1*0)))/2 - 0*0) + abs((1 - cos(pi*(1 + 1*0 + 1*1)))/2 - 0*1) + abs((1 - cos(pi*(1 + 1*1 + 1*0)))/2 - 1*0) + abs((1 - cos(pi*(1 + 1*1 + 1*1)))/2 - 1*1)))
+    expected: '8'
+    tolerance: 1e-9
+    shown: ['id="p2-count"', '$4\times 2 = 8$']
+    source: {cite: mit, at: 'Problem 2(b), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p2-count-pairs
+    where: 'Problem 2(b): four functions for each player'
+    formula: |-
+      4*4
+    expected: '16'
+    shown: ['$4\times 4 = 16$']
+    source: {cite: mit, at: 'Problem 2(b), p. 3'}
+    origin: mit
+
+  - id: p2-overlap
+    kind: identity
+    where: 'Problem 2(c): the overlap of the matching basis states'
+    formula: |-
+      cos(al/2)*cos(be/2) + sin(al/2)*sin(be/2)
+    equals: |-
+      cos((al - be)/2)
+    samples:
+      al: [0.0, 0.4, 1.1, 1.6, 2.3]
+      be: [0.8, -0.3, 0.5, -1.2, 0.2]
+    tolerance: 1e-12
+    shown: ['<Formula label="The overlaps of the matching basis states"']
+    source: {cite: mit, at: 'Problem 2(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p2-unit
+    kind: identity
+    where: 'Problem 2(c), check: the probabilities of equal and of different answers add up to 1'
+    formula: |-
+      (cos(al/2)*cos(be/2) + sin(al/2)*sin(be/2))**2 + (sin(al/2)*cos(be/2) - cos(al/2)*sin(be/2))**2
+    equals: |-
+      1 + 0*al*be
+    samples:
+      al: [0.0, 0.4, 1.1, 1.6, 2.3]
+      be: [0.8, -0.3, 0.5, -1.2, 0.2]
+    tolerance: 1e-12
+    shown: ['and the two probabilities add up to 1']
+    source: {cite: mit, at: 'Problem 2(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p2-win
+    kind: identity
+    answer: p2-win
+    where: 'Problem 2(d), answer box: the winning probability built from the amplitudes of the basis states: equal answers for three pairs of bits, different answers for x = y = 1'
+    formula: |-
+      (cos((a0-b0)/2)**2 + cos((a0-b1)/2)**2 + cos((a1-b0)/2)**2 + sin((a1-b1)/2)**2)/4
+    equals: |-
+      ((cos(a0/2)*cos(b0/2) + sin(a0/2)*sin(b0/2))**2 + (cos(a0/2)*cos(b1/2) + sin(a0/2)*sin(b1/2))**2 + (cos(a1/2)*cos(b0/2) + sin(a1/2)*sin(b0/2))**2 + (sin(a1/2)*cos(b1/2) - cos(a1/2)*sin(b1/2))**2)/4
+    samples:
+      a0: [0.0, 0.1, 0.25, 0.4, 0.5]
+      a1: [1.0, 1.3, 1.6, 1.8, 2.0]
+      b0: [0.3, 0.5, 0.7, 0.9, 1.0]
+      b1: [-1.0, -0.8, -0.6, -0.4, -0.2]
+    tolerance: 1e-12
+    shown: ['id="p2-win"', '<Formula label="The winning probability of the quantum strategy"']
+    source: {cite: mit, at: 'Problem 2(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p2-mit
+    where: 'Problem 2(d): the winning probability for MIT''s angles 0, π/2, π/4, −π/4, from the general formula'
+    formula: |-
+      (cos((0 - pi/4)/2)**2 + cos((0 + pi/4)/2)**2 + cos((pi/2 - pi/4)/2)**2 + sin((pi/2 + pi/4)/2)**2)/4
+    expected: '0.85355'
+    shown: ['\approx 0.85355', '= 0.85355"']
+    source: {cite: mit, at: 'Problem 2(d), p. 4'}
+    origin: mit
+
+  - id: p2-mit-closed
+    where: 'Problem 2(d): cos²(π/8) and 1/2 + 1/(2√2) are the same number'
+    formula: |-
+      cos(pi/8)**2 - (1/2 + 1/(2*sqrt(2)))
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['\frac{1}{2} + \frac{1}{2\sqrt 2} \approx 0.85355']
+    source: {cite: mit, at: 'Problem 2(d), p. 4'}
+    origin: mit
+
+  - id: p2-gain
+    where: 'Problem 2(d): the gain over the best classical strategy'
+    formula: |-
+      cos(pi/8)**2 - 3/4
+    expected: '0.104'
+    shown: ['$0.85355 - 0.75 = 0.104$']
+    source: {cite: mit, at: 'Problem 2(d), p. 4'}
+    origin: page-own
+
+  - id: p2-num
+    answer: p2-num
+    where: 'Problem 2(d), answer box: the winning probability for the angles 0, π/2, π/6, −π/6'
+    formula: |-
+      (cos((0 - pi/6)/2)**2 + cos((0 + pi/6)/2)**2 + cos((pi/2 - pi/6)/2)**2 + sin((pi/2 + pi/6)/2)**2)/4
+    expected: '0.842'
+    tolerance: 0.001
+    shown: ['id="p2-num"', '= 0.842$']
+    source: {cite: mit, at: 'Problem 2(d), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-num-terms
+    where: 'Problem 2(d): the term cos² 15° of the box above (the other two are cos² 30° = sin² 60° = 0.75)'
+    formula: |-
+      cos(15*pi/180)**2
+    expected: '0.9330'
+    shown: ['$\cos^2 15° = 0.9330$']
+    source: {cite: mit, at: 'Problem 2(d), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-num-terms-b
+    where: 'Problem 2(d): the terms cos² 30° and sin² 60°'
+    formula: |-
+      (cos(30*pi/180)**2 + sin(60*pi/180)**2)/2
+    expected: '0.75'
+    tolerance: 1e-12
+    shown: ['$\cos^2 30° = 0.75$', '$\sin^2 60° = 0.75$']
+    source: {cite: mit, at: 'Problem 2(d), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-equal-angles
+    where: 'Problem 2(d), check: with four equal angles the formula gives the classical 3/4'
+    formula: |-
+      (cos(0)**2 + cos(0)**2 + cos(0)**2 + sin(0)**2)/4
+    expected: '0.75'
+    tolerance: 1e-12
+    shown: ['$P = \frac{1}{4}(1 + 1 + 1 + 0) = \frac{3}{4}$']
+    source: {cite: mit, at: 'Problem 2(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: vector operators
+
+  - id: p3-three
+    answer: p3-three
+    where: 'Problem 3(b), answer box: the commutator [a_k, b_k] = γ δ_kk summed over k = 1, 2, 3'
+    formula: |-
+      1 + 1 + 1
+    expected: '3'
+    shown: ['id="p3-three"']
+    source: {cite: reading2, at: 'Exercise 2, eq. (1.36), p. 6'}
+    origin: page-own
+
+  - id: p3-sum
+    where: 'Problem 3(b): the four extra terms in the special case, in units of γ a·b'
+    formula: |-
+      -1 + 3 - 1 - 0
+    expected: '1'
+    shown: ['(-1 + 3 - 1)']
+    source: {cite: reading2, at: 'Exercise 2, eq. (1.36), p. 6'}
+    origin: page-own
+
+  # ---- Problem 5: the hidden angular momentum
+
+  - id: p5-alpha
+    answer: p5-alpha
+    where: 'Problem 5(a), answer box: J₊ takes n_R to n_R + 1 and n_L to n_L − 1, so the eigenvalue of J_z rises by 2αħ, which must be ħ'
+    inputs: {nR: 3, nL: 2}
+    formula: |-
+      1/(((nR + 1) - (nL - 1)) - (nR - nL))
+    expected: '0.5'
+    tolerance: 1e-12
+    shown: ['id="p5-alpha"']
+    source: {cite: reading2, at: 'eq. (2.13)'}
+    origin: page-own
+
+  - id: p5-beta2
+    answer: p5-beta2
+    where: 'Problem 5(a), answer box: on a basis state J₊J₋ gives β²ħ² n_R(n_L + 1) and J₋J₊ gives β²ħ² n_L(n_R + 1); the difference must be 2ħ J_z = 2αħ²(n_R − n_L) with α = 1/2'
+    inputs: {nR: 3, nL: 2}
+    formula: |-
+      2*(1/2)*(nR - nL)/(nR*(nL + 1) - nL*(nR + 1))
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['id="p5-beta2"']
+    source: {cite: reading2, at: 'eq. (2.8)'}
+    origin: page-own
+
+  - id: p5-j2
+    answer: p5-j2
+    where: 'Problem 5(c), answer box: J₋J₊ + J_z² + ħJ_z on the state with n_R = 3 and n_L = 0, in units of ħ²'
+    inputs: {nR: 3, nL: 0}
+    formula: |-
+      nL*(nR + 1) + ((nR - nL)/2)**2 + (nR - nL)/2
+    expected: '3.75'
+    tolerance: 1e-12
+    shown: ['id="p5-j2"', '= 3.75\,\hbar^2$']
+    source: {cite: reading2, at: 'eq. (2.10)'}
+    origin: page-own
+
+  - id: p5-j2-top
+    where: 'Problem 5(c): j(j + 1) for j = 3/2'
+    formula: |-
+      (3/2)*(5/2)
+    expected: '3.75'
+    tolerance: 1e-12
+    shown: ['$\frac{3}{2}\cdot\frac{5}{2}\,\hbar^2']
+    source: {cite: reading2, at: 'eq. (2.14)'}
+    origin: page-own
+
+  - id: p5-half
+    where: 'Problem 5(c), check: j(j + 1) for j = 1/2'
+    formula: |-
+      (1/2)*(1/2 + 1)
+    expected: '0.75'
+    tolerance: 1e-12
+    shown: ['$\vec J^{\,2} = \frac{3}{4}\hbar^2$']
+    source: {cite: reading2, at: 'eq. (2.14)'}
+    origin: page-own
+
+  - id: p5-j
+    kind: identity
+    answer: p5-j
+    where: 'Problem 5(d), answer box: j from solving j(j + 1) = the eigenvalue of J₋J₊ + J_z² + ħJ_z on a basis state'
+    formula: |-
+      (nR + nL)/2
+    equals: |-
+      (-1 + sqrt(1 + 4*(nL*(nR + 1) + ((nR - nL)/2)**2 + (nR - nL)/2)))/2
+    samples:
+      nR: [1, 2, 3, 4, 2.5]
+      nL: [5, 7, 9, 6, 8.5]
+    tolerance: 1e-12
+    shown: ['id="p5-j"']
+    source: {cite: reading2, at: 'eqs. (2.10) and (2.14)'}
+    origin: page-own
+
+  - id: p5-m
+    kind: identity
+    answer: p5-m
+    where: 'Problem 5(d), answer box: m from lowering the top state, m = j, n_L times'
+    formula: |-
+      (nR - nL)/2
+    equals: |-
+      (nR + nL)/2 - nL
+    samples:
+      nR: [1, 2, 3, 4, 2.5]
+      nL: [5, 7, 9, 6, 8.5]
+    tolerance: 1e-12
+    shown: ['id="p5-m"']
+    source: {cite: mit, at: 'Problem 5(d), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-e
+    kind: identity
+    answer: p5-e
+    where: 'Problem 5(d), answer box: the energy ħω(n_R + n_L + 1) with n_R = j + m and n_L = j − m'
+    formula: |-
+      hbar*w*(2*j + 1)
+    equals: |-
+      hbar*w*((j + mm) + (j - mm) + 1)
+    samples:
+      hbar: [0.5, 0.9, 1.3, 1.7, 2.0]
+      w: [2.0, 1.6, 1.2, 0.8, 0.5]
+      j: [0.5, 1, 1.5, 2.5, 4]
+      mm: [0.5, 0, -1.5, 1.5, -3]
+    tolerance: 1e-12
+    shown: ['id="p5-e"']
+    source: {cite: mit, at: 'Problem 5, p. 4'}
+    origin: page-own
+
+  - id: p5-j2-general
+    kind: identity
+    where: 'Problem 5(d), check: the eigenvalue of J² in units of ħ² is (N/2)(N/2 + 1) with N = n_R + n_L'
+    formula: |-
+      nL*(nR + 1) + ((nR - nL)/2)**2 + (nR - nL)/2
+    equals: |-
+      ((nR + nL)/2)*((nR + nL)/2 + 1)
+    samples:
+      nR: [1, 2, 3, 4, 2.5]
+      nL: [5, 7, 9, 6, 8.5]
+    tolerance: 1e-12
+    shown: ['<Formula label="The square of the hidden angular momentum"']
+    source: {cite: mit, at: 'Problem 5(d), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-j2-h
+    kind: identity
+    where: 'Problem 5(d), check: J² as a function of the Hamiltonian, (ħ²/4)[(H/ħω)² − 1], with H/ħω = N + 1'
+    formula: |-
+      (nn/2)*(nn/2 + 1)
+    equals: |-
+      ((nn + 1)**2 - 1)/4
+    samples:
+      nn: [0, 1, 2, 5, 8]
+    tolerance: 1e-12
+    shown: ['\frac{\hbar^2}{4}\left[\left(\frac{H}{\hbar\omega}\right)^2 - 1\right]']
+    source: {cite: mit, at: 'Problem 5(d), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-commutator
+    kind: identity
+    where: 'Problem 5(a): N_R(N_L + 1) − N_L(N_R + 1) = N_R − N_L on a basis state'
+    formula: |-
+      nR*(nL + 1) - nL*(nR + 1)
+    equals: |-
+      nR - nL
+    samples:
+      nR: [1, 2, 3, 4, 2.5]
+      nL: [5, 7, 9, 6, 8.5]
+    tolerance: 1e-12
+    shown: ['N_R(N_L + 1) - N_L(N_R + 1) = N_R - N_L']
+    source: {cite: mit, at: 'Problem 5(a), p. 5 (our own solution)'}
+    origin: page-own
