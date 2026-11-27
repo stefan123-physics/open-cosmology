@@ -1,0 +1,637 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 integrates the wire's field across the coil and differentiates the flux numerically; Problem 2 integrates the
+# flux of the small loop's dipole field through the large loop's disk (instead of using its field on the axis or the
+# vector potential); Problem 3 solves the condition B_r = 0 by a root search, gets the surface current from the uniform
+# field (2/3)μ₀K₀ that a current K₀ sin θ φ̂ makes inside a sphere, and integrates the pressure over the half-sphere;
+# Problem 4 solves the first-order force balance of part (b) for Δv; Problem 5 takes C and L from the field energies;
+# Problem 6 solves flux conservation by a root search; Problem 7 builds E from the integral of 1/s, integrates the
+# Poynting vector over the gap, and solves the energy balance of the resistor; Problem 8 replaces the delta function by a
+# narrow Gaussian and integrates.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: qe (elementary charge), me (electron mass), a0 (Bohr
+# radius), eps0 (electric constant), mu0 (magnetic constant).
+
+page: content/year-4/8.07/8-07-problem-set-9.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points for Problems 1 to 7, 15 + 15 + 15 + 10 + 15 + 15 + 20'
+    formula: |-
+      15 + 15 + 15 + 10 + 15 + 15 + 20
+    expected: '105'
+    shown: ['105 points in all']
+    source: {cite: mit, at: 'credit note and Problems 1 to 7, pp. 1–2'}
+    origin: mit
+
+  - id: points-extra
+    where: 'How to answer: MIT''s extra credit, 10 for Problem 3(d) and 20 for Problem 8'
+    formula: |-
+      10 + 20
+    expected: '30'
+    shown: ['plus 30 points of extra credit']
+    source: {cite: mit, at: 'credit note, p. 1, Problem 3, p. 1, and Problem 8, p. 2'}
+    origin: mit
+
+  - id: points-p3
+    where: 'Problem 3: MIT''s 15 points for parts (a) to (c) together, split 5 + 4 + 6 here'
+    formula: |-
+      5 + 4 + 6
+    expected: '15'
+    shown: ['MIT gives 15 points to parts (a) to (c) of Problem 3 together']
+    source: {cite: mit, at: 'Problem 3, p. 1'}
+    origin: mit
+
+  # ---- Problem 1: moving coil
+
+  - id: p1-flux
+    kind: identity
+    answer: p1-flux
+    where: 'Problem 1(a), answer box: the flux through one turn, against the field of the wire integrated numerically across the coil'
+    formula: |-
+      mu0*I*a/(2*pi)*log((s + b)/s)
+    equals: |-
+      integrate('mu0*I/(2*pi*r)*a', 'r', s, s + b)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      a: [0.5, 1.2, 2.0, 0.8, 1.6]
+      b: [2.0, 0.5, 1.0, 1.4, 0.7]
+      s: [0.5, 1.0, 2.0, 0.7, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p1-flux"', '<Formula label="The flux through one turn"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-emf
+    kind: identity
+    answer: p1-emf
+    where: 'Problem 1(b), answer box: the emf, against −N v dΦ/ds with the flux differentiated numerically'
+    formula: |-
+      N*mu0*I*a*b*v/(2*pi*s*(s + b))
+    equals: |-
+      -N*v*deriv('mu0*I*a/(2*pi)*log((x + b)/x)', 'x', s)
+    samples:
+      N: [1, 10, 50, 100, 7]
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      a: [0.5, 1.2, 2.0, 0.8, 1.6]
+      b: [2.0, 0.5, 1.0, 1.4, 0.7]
+      s: [0.5, 1.0, 2.0, 0.7, 1.5]
+      v: [0.5, 1.0, 3.0, 2.0, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p1-emf"', '<Formula label="The emf of the moving coil"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-mu0
+    where: 'Problem 1(d), hint: μ₀/2π'
+    formula: |-
+      1.25663706212e-6/(2*pi)
+    expected: 2.00e-7
+    shown: ['$\mu_0/2\pi = 2.00\times10^{-7}$ T m/A']
+    source: {cite: codata, at: 'vacuum magnetic permeability'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(d), answer box: N μ₀ I a b v/(2π s (s + b)) in mV, for N = 50, I = 20.0 A, a = 0.200 m, b = 0.100 m, v = 2.00 m/s, s = 0.100 m'
+    formula: |-
+      50*(4*pi*1e-7)*20.0*0.200*0.100*2.00/(2*pi*0.100*0.200)*1e3
+    expected: '0.400'
+    shown: ['id="p1-num"', 'that is 0.400 mV']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-num-v
+    where: 'Problem 1(d), solution: the emf in volts'
+    formula: |-
+      50*2e-7*20.0*0.200*0.100*2.00/(0.100*0.200)
+    expected: 4.00e-4
+    shown: ['= 4.00\times10^{-4}$ V']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-bnear
+    where: 'Problem 1(d), check: the field at the nearer side, s = 0.100 m'
+    formula: |-
+      2e-7*20.0/0.100
+    expected: 4.00e-5
+    shown: ['The field is $4.00\times10^{-5}$ T at the nearer side']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-bfar
+    where: 'Problem 1(d), check: the field at the farther side, s + b = 0.200 m'
+    formula: |-
+      2e-7*20.0/0.200
+    expected: 2.00e-5
+    shown: ['$2.00\times10^{-5}$ T at the farther side']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-turn
+    where: 'Problem 1(d), check: the motional emf of one turn, v a (B_near − B_far)'
+    formula: |-
+      2.00*0.200*2.00e-5
+    expected: 8.0e-6
+    shown: ['= 8.0\times10^{-6}$ V']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: mutual inductance
+
+  - id: p2-m
+    kind: identity
+    answer: p2-m
+    where: 'Problem 2(a), answer box: M, against the flux of the small loop''s dipole field through the disk of the large loop, integrated numerically, per unit current'
+    formula: |-
+      mu0*pi*a**2*b**2/(2*(b**2 + z**2)**(3/2))
+    equals: |-
+      mu0*pi*a**2/(4*pi)*integrate('(3*z**2/(x**2 + z**2) - 1)/(x**2 + z**2)**1.5*2*pi*x', 'x', 0, b)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      a: [0.1, 0.2, 0.5, 0.3, 0.15]
+      b: [1.0, 1.5, 2.0, 1.2, 1.8]
+      z: [0.5, 1.0, 2.0, 0.8, 1.5]
+    tolerance: 1e-7
+    shown: ['id="p2-m"', '<Formula label="The mutual inductance from the large loop''s field"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-a
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(b), answer box: A_φ on the large loop, against the dipole flux through the large disk divided by its circumference 2πb'
+    formula: |-
+      mu0*I2*a**2*b/(4*(b**2 + z**2)**(3/2))
+    equals: |-
+      mu0*I2*pi*a**2/(4*pi)*integrate('(3*z**2/(x**2 + z**2) - 1)/(x**2 + z**2)**1.5*2*pi*x', 'x', 0, b)/(2*pi*b)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I2: [1.0, 2.0, 3.0, 1.5, 2.5]
+      a: [0.1, 0.2, 0.5, 0.3, 0.15]
+      b: [1.0, 1.5, 2.0, 1.2, 1.8]
+      z: [0.5, 1.0, 2.0, 0.8, 1.5]
+    tolerance: 1e-7
+    shown: ['id="p2-a"', '<Formula label="The dipole''s vector potential on the large loop"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-r
+    where: 'Problem 2(c): the distance √(b² + z²) for b = 0.300 m, z = 0.400 m'
+    formula: |-
+      sqrt(0.300**2 + 0.400**2)
+    expected: '0.500'
+    shown: ['$\sqrt{b^2 + z^2} = 0.500$ m']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-num
+    answer: p2-num
+    where: 'Problem 2(c), answer box: M in nH for a = 0.0200 m, b = 0.300 m, z = 0.400 m'
+    formula: |-
+      (4*pi*1e-7)*pi*0.0200**2*0.300**2/(2*0.500**3)*1e9
+    expected: '0.568'
+    shown: ['id="p2-num"', 'that is 0.568 nH', '= 5.68\times10^{-10}$ H']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-emf
+    where: 'Problem 2(c), check: M times 200 A/s, in μV'
+    formula: |-
+      (4*pi*1e-7)*pi*0.0200**2*0.300**2/(2*0.500**3)*200*1e6
+    expected: '0.114'
+    shown: ['$= 0.114$ μV']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3: superconducting ball
+
+  - id: p3-m
+    kind: identity
+    answer: p3-m
+    where: 'Problem 3(c), answer box: the dipole moment, against a root search of B_r = 0 at r = R'
+    formula: |-
+      -2*pi*R**3*B0/mu0
+    equals: |-
+      solve('B0 + mu0/(4*pi)*2*x/R**3', 'x', -1000, 0)
+    samples:
+      R: [0.5, 1.0, 2.0, 1.4, 0.8]
+      B0: [0.5, 1.0, 2.0, 1.2, 1.7]
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p3-m"', '<Formula label="No radial field at the surface"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-k
+    kind: identity
+    answer: p3-k
+    where: 'Problem 3(c), answer box: K_φ, against the current K₀ sin θ whose uniform field (2/3)μ₀K₀ inside a sphere cancels B₀ (root search for K₀)'
+    formula: |-
+      -3*B0*sin(th)/(2*mu0)
+    equals: |-
+      solve('2/3*mu0*x + B0', 'x', -100, 0)*sin(th)
+    samples:
+      B0: [0.5, 1.0, 2.0, 1.2, 1.7]
+      th: [0.2, 0.8, 1.5708, 2.3, 2.9]
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p3-k"', '<Formula label="The surface current on the superconducting ball"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3d-p
+    answer: p3d-p
+    where: 'Problem 3(d), answer box: the largest pressure 9B₀²/(8μ₀) in kPa, B₀ = 0.200 T'
+    formula: |-
+      9*0.200**2/(8*1.25663706212e-6)/1e3
+    expected: '35.8'
+    shown: ['id="p3d-p"', 'that is 35.8 kPa', '= 3.58\times10^4$ Pa']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3d-f
+    kind: identity
+    answer: p3d-f
+    where: 'Problem 3(d), answer box: the force on the northern half, against the z component of the pressure integrated numerically over 0 ≤ θ ≤ π/2'
+    formula: |-
+      9*pi*R**2*B0**2/(16*mu0)
+    equals: |-
+      integrate('9*B0**2*sin(t)**2/(8*mu0)*cos(t)*2*pi*R**2*sin(t)', 't', 0, pi/2)
+    samples:
+      R: [0.5, 1.0, 2.0, 1.4, 0.8]
+      B0: [0.5, 1.0, 2.0, 1.2, 1.7]
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p3d-f"', '<Formula label="The force pressing the two halves together"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3d-n
+    where: 'Problem 3(d), check: the force for R = 5.00 cm, B₀ = 0.200 T'
+    formula: |-
+      9*pi*0.0500**2*0.200**2/(16*1.25663706212e-6)
+    expected: '141'
+    shown: ['the force is 141 N']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: electron orbit
+
+  - id: p4-dv
+    kind: identity
+    answer: p4-dv
+    where: 'Problem 4(a), answer box: Δv, against a root search of the first-order force balance of part (b), 2mₑvΔv/R = evB'
+    formula: |-
+      e*R*B/(2*me)
+    equals: |-
+      solve('2*me*x/R - e*B', 'x', 0, 100)
+    samples:
+      e: [1.0, 1.3, 1.6, 2.0, 1.1]
+      R: [0.5, 1.0, 2.0, 1.4, 0.8]
+      B: [0.5, 1.0, 2.0, 1.2, 1.7]
+      me: [1.0, 1.5, 2.0, 1.2, 1.8]
+    tolerance: 1e-8
+    shown: ['id="p4-dv"', '<Formula label="The change of the electron''s speed"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-num
+    answer: p4-num
+    where: 'Problem 4(c), answer box: Δv = eRB/(2mₑ) in m/s with the Bohr radius and B = 2.00 T (CODATA 2018 e, mₑ, a₀)'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, a0: 5.29177210903e-11 m, B: 2.00 T}
+    formula: |-
+      qe*a0*B/(2*me)
+    expected: 9.31 m/s
+    shown: ['id="p4-num"', '$= 9.31$ m/s']
+    source: {cite: codata, at: 'elementary charge, electron mass, Bohr radius'}
+    origin: page-own
+
+  - id: p4-v
+    where: 'Problem 4(c), check: the speed on the orbit from mₑv²/R = e²/(4πε₀R²)'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, a0: 5.29177210903e-11 m, eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      sqrt(qe**2/(4*pi*eps0*me*a0))
+    expected: 2.19e6 m/s
+    shown: ['is $2.19\times10^6$ m/s']
+    source: {cite: codata, at: 'elementary charge, electron mass, Bohr radius, vacuum electric permittivity'}
+    origin: page-own
+
+  - id: p4-ratio
+    where: 'Problem 4(c), check: Δv/v'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, a0: 5.29177210903e-11 m, eps0: 8.8541878128e-12 F/m, B: 2.00 T}
+    formula: |-
+      (qe*a0*B/(2*me))/sqrt(qe**2/(4*pi*eps0*me*a0))
+    expected: 4.3e-6
+    shown: ['$4.3\times10^{-6}$ of itself']
+    source: {cite: codata, at: 'elementary charge, electron mass, Bohr radius, vacuum electric permittivity'}
+    origin: page-own
+
+  - id: p4-a0
+    kind: fact
+    where: 'Problem 4(c): the Bohr radius, CODATA 2018, rounded'
+    value: 5.292e-11 m
+    shown: ['$5.292\times10^{-11}$ m']
+    source: {cite: codata, at: 'Bohr radius'}
+    origin: later-data
+
+  - id: p4-e
+    kind: fact
+    where: 'Problem 4(c): the elementary charge, CODATA 2018, rounded'
+    value: 1.602e-19 C
+    shown: ['$e = 1.602\times10^{-19}$ C']
+    source: {cite: codata, at: 'elementary charge'}
+    origin: later-data
+
+  - id: p4-me
+    kind: fact
+    where: 'Problem 4(c): the electron mass, CODATA 2018, rounded'
+    value: 9.109e-31 kg
+    shown: ['$m_e = 9.109\times10^{-31}$ kg']
+    source: {cite: codata, at: 'electron mass'}
+    origin: later-data
+
+  # ---- Problem 5: strip line
+
+  - id: p5-c
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(a), answer box: C per length, against λ²/(2U) with U the electric field energy per length'
+    formula: |-
+      eps0*w/h
+    equals: |-
+      lam**2/(2*(eps0*(lam/(eps0*w))**2/2*w*h))
+    samples:
+      eps0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      w: [1.0, 2.0, 3.0, 1.5, 2.5]
+      h: [0.1, 0.2, 0.5, 0.3, 0.15]
+      lam: [1.0, 0.5, 2.0, 1.5, 3.0]
+    tolerance: 1e-10
+    shown: ['id="p5-c"', '<Formula label="The capacitance per unit length"']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p5-l
+    kind: identity
+    answer: p5-l
+    where: 'Problem 5(b), answer box: L per length, against 2U/I² with U the magnetic field energy per length'
+    formula: |-
+      mu0*h/w
+    equals: |-
+      2*((mu0*I/w)**2/(2*mu0))*w*h/I**2
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      w: [1.0, 2.0, 3.0, 1.5, 2.5]
+      h: [0.1, 0.2, 0.5, 0.3, 0.15]
+      I: [1.0, 0.5, 2.0, 1.5, 3.0]
+    tolerance: 1e-10
+    shown: ['id="p5-l"', '<Formula label="The inductance per unit length"']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p5-z0
+    where: 'Problem 5(c): √(μ₀/ε₀)'
+    formula: |-
+      sqrt(1.25663706212e-6/8.8541878128e-12)
+    expected: '376.7'
+    shown: ['$\sqrt{\mu_0/\varepsilon_0} = 376.7$ Ω']
+    source: {cite: codata, at: 'vacuum magnetic permeability, vacuum electric permittivity'}
+    origin: page-own
+
+  - id: p5-z
+    answer: p5-z
+    where: 'Problem 5(c), answer box: Z = (h/w)√(μ₀/ε₀) in Ω, h = 1.50 mm, w = 12.0 mm'
+    formula: |-
+      (1.50/12.0)*sqrt(1.25663706212e-6/8.8541878128e-12)
+    expected: '47.1'
+    shown: ['id="p5-z"', '= 47.1\ \Omega$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-cnum
+    where: 'Problem 5(c), check: C per length in pF/m'
+    formula: |-
+      8.8541878128e-12*12.0/1.50*1e12
+    expected: '70.8'
+    shown: ['$\mathcal{C} = 70.8$ pF/m']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-lnum
+    where: 'Problem 5(c), check: L per length in nH/m'
+    formula: |-
+      1.25663706212e-6*1.50/12.0*1e9
+    expected: '157'
+    shown: ['$\mathcal{L} = 157$ nH/m']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 6: frozen flux
+
+  - id: p6-b
+    kind: identity
+    answer: p6-b
+    where: 'Problem 6(c), answer box: B′, against a root search of flux conservation B′πr² = BπR²'
+    formula: |-
+      B*R**2/r**2
+    equals: |-
+      solve('x*pi*r**2 - B*pi*R**2', 'x', 0, 1000)
+    samples:
+      B: [0.5, 1.0, 2.0, 1.2, 1.7]
+      R: [2.0, 3.0, 5.0, 4.0, 2.5]
+      r: [0.5, 1.0, 1.5, 0.8, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p6-b"', '<Formula label="The field of a contracted ball"']
+    source: {cite: mit, at: 'Problem 6, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p6-ratio
+    where: 'Problem 6(d): R/r = 7.0e8 m / 1.2e4 m'
+    formula: |-
+      7.0e8/1.2e4
+    expected: 5.83e4
+    shown: ['= 5.83\times10^4$']
+    source: {cite: mit, at: 'Problem 6, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-sq
+    where: 'Problem 6(d): (R/r)²'
+    formula: |-
+      (7.0e8/1.2e4)**2
+    expected: 3.40e9
+    shown: ['whose square is $3.40\times10^9$']
+    source: {cite: mit, at: 'Problem 6, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-num
+    answer: p6-num
+    where: 'Problem 6(d), answer box: B′ = 0.010 T × (R/r)² in units of 1e7 T'
+    formula: |-
+      0.010*(7.0e8/1.2e4)**2/1e7
+    expected: '3.40'
+    shown: ['id="p6-num"', '= 3.40\times10^7$ T']
+    source: {cite: mit, at: 'Problem 6, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 7: Poynting vector
+
+  - id: p7-s
+    kind: identity
+    answer: p7-s
+    where: 'Problem 7(a), answer box: S_z, against E B/μ₀ with E = V/(s ∫ₐᵇ ds′/s′) (the integral done numerically) and B = μ₀I/(2πs)'
+    formula: |-
+      V*I/(2*pi*s**2*log(b/a))
+    equals: |-
+      V/(s*integrate('1/x', 'x', a, b))*(mu0*I/(2*pi*s))/mu0
+    samples:
+      V: [1.0, 2.0, 3.0, 1.5, 2.5]
+      I: [1.0, 0.5, 2.0, 1.5, 3.0]
+      s: [1.2, 1.5, 1.8, 1.3, 1.6]
+      a: [0.5, 1.0, 0.7, 0.9, 0.6]
+      b: [2.0, 3.0, 2.5, 2.2, 2.8]
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p7-s"', '<Formula label="The Poynting vector in the coaxial cable"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p7-power
+    kind: identity
+    where: 'Problem 7(b): the power through the gap, the Poynting vector integrated numerically, equals VI'
+    formula: |-
+      V*I
+    equals: |-
+      integrate('V*I/(2*pi*x**2*log(b/a))*2*pi*x', 'x', a, b)
+    samples:
+      V: [1.0, 2.0, 3.0, 1.5, 2.5]
+      I: [1.0, 0.5, 2.0, 1.5, 3.0]
+      a: [0.5, 1.0, 0.7, 0.9, 0.6]
+      b: [2.0, 3.0, 2.5, 2.2, 2.8]
+    tolerance: 1e-8
+    shown: ['<Formula label="The power carried by the cable"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p7-wire
+    kind: identity
+    answer: p7-wire
+    where: 'Problem 7(c), answer box: |S| at the surface of the resistor, against a root search of the energy balance |S| × 2πaL = I²R'
+    formula: |-
+      I**2*R/(2*pi*a*L)
+    equals: |-
+      solve('x*2*pi*a*L - I**2*R', 'x', 0, 1000)
+    samples:
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      R: [1.0, 3.0, 2.0, 1.5, 2.5]
+      a: [0.5, 1.0, 0.7, 0.9, 0.6]
+      L: [1.0, 3.0, 2.0, 1.5, 2.5]
+    tolerance: 1e-8
+    shown: ['id="p7-wire"', '<Formula label="The Poynting vector at the surface of a resistor"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p7-ln4
+    where: 'Problem 7(d), hint: ln 4'
+    formula: |-
+      log(4)
+    expected: '1.386'
+    shown: ['$\ln 4 = 1.386$']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-i
+    where: 'Problem 7(d): the current V/R'
+    formula: |-
+      12.0/50.0
+    expected: '0.240'
+    shown: ['$I = 12.0/50.0 = 0.240$ A']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-num
+    answer: p7-num
+    where: 'Problem 7(d), answer box: S_z at s = 1.00 mm in kW/m², a = 0.50 mm, b = 2.0 mm, V = 12.0 V, I = 0.240 A'
+    formula: |-
+      12.0*0.240/(2*pi*(1.00e-3)**2*log(2.0/0.50))/1e3
+    expected: '331'
+    shown: ['id="p7-num"', 'that is 331 kW/m²', '= 3.31\times10^5$ W/m², that']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-e
+    where: 'Problem 7(d), check: E at s = 1.00 mm'
+    formula: |-
+      12.0/(1.00e-3*log(4))
+    expected: 8.66e3
+    shown: ['= 8.66\times10^3$ V/m']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-b
+    where: 'Problem 7(d), check: B at s = 1.00 mm'
+    formula: |-
+      2e-7*0.240/1.00e-3
+    expected: 4.80e-5
+    shown: ['= 4.80\times10^{-5}$ T']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-eb
+    where: 'Problem 7(d), check: E B/μ₀ from the two fields'
+    formula: |-
+      (12.0/(1.00e-3*log(4)))*(2e-7*0.240/1.00e-3)/1.25663706212e-6
+    expected: 3.31e5
+    shown: ['$EB/\mu_0 = 3.31\times10^5$ W/m²']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-vi
+    where: 'Problem 7(d), check: the power VI'
+    formula: |-
+      12.0*0.240
+    expected: '2.88'
+    shown: ['$VI = 2.88$ W']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 8: delta functions
+
+  - id: p8-g
+    answer: p8-g
+    where: 'Problem 8(f), answer box: G = [φ(1) + φ(−1)]/2 for φ(x) = exp(−(x − 1/2)²), a = 1'
+    formula: |-
+      (exp(-(1 - 0.5)**2) + exp(-(-1 - 0.5)**2))/2
+    expected: '0.442'
+    shown: ['id="p8-g"', '= 0.442$']
+    source: {cite: mit, at: 'Problem 8(f), p. 3 (our own test function)'}
+    origin: page-own
+
+  - id: p8-g-numeric
+    where: 'Problem 8(f), check: δ(x² − 1) replaced by a Gaussian of width 0.01, integrated numerically around both zeros'
+    formula: |-
+      integrate('exp(-(x - 0.5)**2)*exp(-(x**2 - 1)**2/(2*0.01**2))/(sqrt(2*pi)*0.01)', 'x', 0.9, 1.1) + integrate('exp(-(x - 0.5)**2)*exp(-(x**2 - 1)**2/(2*0.01**2))/(sqrt(2*pi)*0.01)', 'x', -1.1, -0.9)
+    expected: '0.442'
+    shown: ['integrating numerically gives 0.442 too']
+    source: {cite: mit, at: 'Problem 8(f), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p8-e1
+    where: 'Problem 8(f): e^(−1/4)'
+    formula: |-
+      exp(-0.25)
+    expected: '0.7788'
+    shown: ['(0.7788 + 0.1054)']
+    source: {cite: mit, at: 'Problem 8(f), p. 3 (our own test function)'}
+    origin: page-own
+
+  - id: p8-e2
+    where: 'Problem 8(f): e^(−9/4)'
+    formula: |-
+      exp(-2.25)
+    expected: '0.1054'
+    shown: ['0.1054)']
+    source: {cite: mit, at: 'Problem 8(f), p. 3 (our own test function)'}
+    origin: page-own
