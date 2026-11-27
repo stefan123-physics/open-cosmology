@@ -1,0 +1,896 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 integrates the weight 1/r − 1/R numerically and averages z² over the sphere (the page uses the relation);
+# Problem 2 integrates the field numerically; Problem 3 gets the field from the enclosed charge by integration, the
+# potential and both energies by numerical integration; Problem 4 differentiates the stored energy numerically;
+# Problem 5 integrates V dq, checks the capacitance by putting the potentials back into both equations, and inverts
+# the matrix P by the cofactor rule; Problem 6 puts the solution back into the differential equation with numerical
+# second derivatives and checks the current against Gauss's law for the charge in the gap; Problem 7 integrates the
+# defining integrals numerically for Gaussian test functions.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: eps0, qe (elementary charge), me (electron mass).
+
+page: content/year-4/8.07/8-07-problem-set-2.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points for Problems 1 to 6, 15 + 10 + 15 + 10 + 15 + 20'
+    formula: |-
+      15 + 10 + 15 + 10 + 15 + 20
+    expected: '85'
+    shown: ['85 points in all']
+    source: {cite: mit, at: 'grading note and Problems 1 to 6, pp. 1–4'}
+    origin: mit
+
+  - id: points-extra
+    kind: fact
+    where: 'How to answer: MIT''s 20 points of extra credit for Problem 7'
+    value: '20'
+    shown: ['plus 20 points of extra credit for Problem 7']
+    source: {cite: mit, at: 'Problem 7, p. 4'}
+    origin: mit
+
+  - id: constants
+    kind: fact
+    where: 'How to answer and Problem 6(f): CODATA 2018 values, rounded to four figures (8.8541878128e-12 F/m, 1.602176634e-19 C, 9.1093837015e-31 kg)'
+    value: 8.854e-12 F/m, 1.602e-19 C, 9.109e-31 kg
+    shown: ['$\varepsilon_0 = 8.854\times10^{-12}$ F/m (CODATA 2018, rounded)', 'Use $e = 1.602\times10^{-19}$ C and $m = 9.109\times10^{-31}$ kg (CODATA 2018, rounded)']
+    source: {cite: codata, at: 'vacuum electric permittivity, elementary charge, electron mass'}
+    origin: later-data
+
+  # ---- Problem 1: the Laplacian and the average over a sphere
+
+  - id: p1-rho
+    kind: identity
+    answer: p1-rho
+    where: 'Problem 1(c), answer box: V(0) − V̄(R) for ∇²V = −ρ/ε₀, with the weight integrated numerically over shells'
+    formula: |-
+      rho*R**2/(6*eps0)
+    equals: |-
+      rho/(4*pi*eps0)*integrate('(1/s - 1/R)*4*pi*s**2', 's', 0, R)
+    samples:
+      rho: [0.5, 0.9, 1.3, 1.7, 2.0]
+      R: [2.0, 1.5, 1.1, 0.7, 0.5]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p1-rho"', '<Formula label="A uniformly charged region"']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1-laplacian
+    where: 'Problem 1(c), second box: the Laplacian of V = 5 + 2x + 3(x² − y²) + 4z², 6 − 6 + 8, in V/m²'
+    formula: |-
+      deriv('3*s**2', 's', 0.3, 2) + deriv('-3*s**2', 's', 0.3, 2) + deriv('4*s**2', 's', 0.3, 2)
+    expected: '8'
+    tolerance: 1e-6
+    shown: ['$\nabla^2 V = 6 - 6 + 8 = 8$ V/m²']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1-avg
+    answer: p1-avg
+    where: 'Problem 1(c), answer box: the average of V over the sphere R = 0.50 m, directly: 5 + 4R² times the average of cos²θ, by numerical integration (the page uses the relation of the problem)'
+    formula: |-
+      5 + 4*0.50**2*integrate('cos(t)**2*sin(t)/2', 't', 0, pi)
+    expected: '5.33'
+    shown: ['id="p1-avg"', '= 5 + 4\times 0.25/3 = 5.33$ V, the same']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1-avg-relation
+    where: 'Problem 1(c): the same average from the relation, V(0) + (∇²V) R²/6 with ∇²V = 8 and R = 0.50'
+    formula: |-
+      5 + 8*0.25/6
+    expected: '5.33'
+    shown: ['= 5 + 8\times 0.25/6 = 5.33$ V']
+    source: {cite: mit, at: 'Problem 1(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1-check-b
+    kind: identity
+    where: 'Problem 1(b), check: for g = x and f = x², the derivative of g f′ = 2x² is 4x'
+    formula: |-
+      deriv('s*2*s', 's', x)
+    equals: |-
+      1*2*x + x*2
+    samples:
+      x: [0.3, 0.8, 1.4, 2.0]
+    tolerance: 1e-7
+    shown: ['The left side is $\partial_x(x\cdot 2x) = 4x$']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: the cylindrical capacitor
+
+  - id: p2-e
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(a), answer box: the field as minus the slope of the potential −q ln r/(2πε₀ℓ), by a numerical derivative'
+    formula: |-
+      q/(2*pi*eps0*L*r)
+    equals: |-
+      -deriv('-q*log(s)/(2*pi*eps0*L)', 's', r)
+    samples:
+      q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      L: [1.5, 2.0, 3.0, 3.5, 4.0]
+      r: [1.2, 0.9, 0.7, 0.5, 0.3]
+    tolerance: 1e-7
+    shown: ['id="p2-e"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2'}
+    origin: mit
+
+  - id: p2-dv
+    kind: identity
+    answer: p2-dv
+    where: 'Problem 2(b), answer box: V(a) − V(b) as the numerical integral of the field from a to b'
+    formula: |-
+      q*log(b/a)/(2*pi*eps0*L)
+    equals: |-
+      integrate('q/(2*pi*eps0*L*s)', 's', a, b)
+    samples:
+      q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      L: [1.5, 2.0, 3.0, 3.5, 4.0]
+      a: [0.3, 0.4, 0.5, 0.6, 0.8]
+      b: [3.0, 2.5, 2.0, 1.6, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p2-dv"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2'}
+    origin: mit
+
+  - id: p2-c
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box: the capacitance as a unit charge divided by the numerical integral of its field across the gap'
+    formula: |-
+      2*pi*eps0*L/log(b/a)
+    equals: |-
+      1/integrate('1/(2*pi*eps0*L*s)', 's', a, b)
+    samples:
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      L: [1.5, 2.0, 3.0, 3.5, 4.0]
+      a: [0.3, 0.4, 0.5, 0.6, 0.8]
+      b: [3.0, 2.5, 2.0, 1.6, 1.2]
+    tolerance: 1e-8
+    shown: ['id="p2-c"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2'}
+    origin: mit
+
+  - id: p2-ratio
+    where: 'Problem 2(c), the cable: b/a = 1.75 mm / 0.50 mm'
+    inputs: {a: 0.50 mm, b: 1.75 mm}
+    formula: |-
+      b/a
+    expected: '3.5'
+    shown: ['Here $b/a = 3.5$']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ln
+    where: 'Problem 2(c), the cable: ln 3.5'
+    formula: |-
+      log(3.5)
+    expected: '1.253'
+    shown: ['$\ln 3.5 = 1.253$']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-2pieps
+    where: 'Problem 2(c), the cable: 2πε₀'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      2*pi*eps0
+    expected: 5.563e-11 F/m
+    shown: ['With $2\pi\varepsilon_0 = 5.563\times10^{-11}$ F/m']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-num
+    answer: p2-num
+    where: 'Problem 2(c), answer box: the capacitance per metre of the cable, as the charge per metre over the numerically integrated field (the page divides 2πε₀ by ln 3.5)'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      2*pi*eps0/integrate('1/s', 's', 0.50, 1.75)
+    expected: 44.4 pF/m
+    shown: ['id="p2-num"', '= 4.44\times10^{-11}$ F/m, or 44.4 pF/m']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ln11
+    where: 'Problem 2(d): ln 1.1'
+    formula: |-
+      log(1.1)
+    expected: '0.09531'
+    shown: ['$0.1/0.09531 = 1.0492$']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ratio-thin
+    where: 'Problem 2(d): the exact capacitance over ε₀A/d for d = a/10, (d/a)/ln(1 + d/a)'
+    formula: |-
+      0.1/log(1.1)
+    expected: '1.0492'
+    shown: ['close to the exact 1.0492']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-pct
+    answer: p2-pct
+    where: 'Problem 2(d), answer box: the excess of the exact capacitance in per cent, with ln(1.1) as the numerical integral of 1/s from a to 1.1a'
+    formula: |-
+      (0.1/integrate('1/s', 's', 1, 1.1) - 1)*100
+    expected: '4.92'
+    shown: ['id="p2-pct"', 'the exact value is 4.92% larger']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-next-order
+    where: 'Problem 2(d), check: the ratio to next order, 1 + u/2 for u = 0.1'
+    formula: |-
+      1 + 0.1/2
+    expected: '1.05'
+    shown: ['gives the ratio $1 + u/2 = 1.05$ for $u = 0.1$']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: the uniformly charged ball
+
+  - id: p3-ein
+    kind: identity
+    answer: p3-ein
+    where: 'Problem 3(a), answer box: the field inside from the enclosed charge, found by integrating the density over shells'
+    formula: |-
+      Q*r/(4*pi*eps0*R**3)
+    equals: |-
+      integrate('3*Q/(4*pi*R**3)*4*pi*s**2', 's', 0, r)/(4*pi*eps0*r**2)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      R: [1.5, 2.0, 2.4, 2.7, 3.0]
+      r: [1.2, 0.9, 0.7, 0.5, 0.3]
+    tolerance: 1e-8
+    shown: ['id="p3-ein"']
+    source: {cite: mit, at: 'Problem 3(a), p. 3'}
+    origin: mit
+
+  - id: p3-vin
+    kind: identity
+    answer: p3-vin
+    where: 'Problem 3(b), answer box: the potential inside as V(R) plus the numerical integral of the inside field from r to R'
+    formula: |-
+      Q*(3*R**2 - r**2)/(8*pi*eps0*R**3)
+    equals: |-
+      Q/(4*pi*eps0*R) + integrate('Q*s/(4*pi*eps0*R**3)', 's', r, R)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      R: [1.5, 2.0, 2.4, 2.7, 3.0]
+      r: [1.2, 0.9, 0.7, 0.5, 0.3]
+    tolerance: 1e-8
+    shown: ['id="p3-vin"']
+    source: {cite: mit, at: 'Problem 3(b), p. 3'}
+    origin: mit
+
+  - id: p3-centre
+    kind: identity
+    where: 'Problem 3(b), check: V(0) − V(R) = Q/(8πε₀R) equals ρR²/(6ε₀) with ρ = 3Q/(4πR³)'
+    formula: |-
+      Q*(3*R**2 - 0)/(8*pi*eps0*R**3) - Q/(4*pi*eps0*R)
+    equals: |-
+      3*Q/(4*pi*R**3)*R**2/(6*eps0)
+    samples:
+      Q: [0.5, 1.3, 2.0]
+      eps0: [0.6, 1.0, 0.8]
+      R: [1.5, 2.4, 3.0]
+    tolerance: 1e-10
+    shown: ['the difference $V(0) - V(R) = Q/(8\pi\varepsilon_0R)$ equals']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own check)'}
+    origin: page-own
+
+  - id: p3-w
+    kind: identity
+    answer: p3-w
+    where: 'Problem 3(c), answer box: the field energy by numerical integration, inside over r and outside over u = 1/r (so that the range is finite)'
+    formula: |-
+      3*Q**2/(20*pi*eps0*R)
+    equals: |-
+      0.5*eps0*integrate('(Q*s/(4*pi*eps0*R**3))**2*4*pi*s**2', 's', 0, R) + 0.5*eps0*integrate('(Q*u**2/(4*pi*eps0))**2*4*pi/u**4', 'u', 0, 1/R)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      R: [2.0, 1.5, 1.1, 0.7, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p3-w"']
+    source: {cite: mit, at: 'Problem 3(c), eq. (3.1), p. 3'}
+    origin: mit
+
+  - id: p3-coulomb
+    where: 'Problem 3(c), the number: 1/(4πε₀)'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      1/(4*pi*eps0)
+    expected: 8.988e9 m/F
+    shown: ['With $1/(4\pi\varepsilon_0) = 8.988\times10^9$ m/F']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-w0
+    where: 'Problem 3(c), the number: Q²/(4πε₀R) for Q = 30 nC, R = 2.0 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 30 nC, R: 2.0 cm}
+    formula: |-
+      Q**2/(4*pi*eps0*R)
+    expected: 4.044e-4 J
+    shown: ['= 4.044\times10^{-4}$ J']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-wnum
+    answer: p3-wnum
+    where: 'Problem 3(c), answer box: W for Q = 30 nC, R = 2.0 cm, as the sum of the inside and outside field energies (the page takes three fifths of Q²/(4πε₀R))'
+    inputs: {eps0: 8.8541878128e-12 F/m, Q: 30 nC, R: 2.0 cm}
+    formula: |-
+      Q**2/(40*pi*eps0*R) + Q**2/(8*pi*eps0*R)
+    expected: 243 uJ
+    shown: ['id="p3-wnum"', 'three fifths of it is $2.43\times10^{-4}$ J, or 243 μJ']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-rhov
+    kind: identity
+    where: 'Problem 3(d): ½∫ρV d³x by numerical integration over the ball, against the result of part (c)'
+    formula: |-
+      0.5*integrate('3*Q/(4*pi*R**3)*Q*(3*R**2 - s**2)/(8*pi*eps0*R**3)*4*pi*s**2', 's', 0, R)
+    equals: |-
+      3*Q**2/(20*pi*eps0*R)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      R: [2.0, 1.5, 1.1, 0.7, 0.5]
+    tolerance: 1e-8
+    shown: ['<Formula label="The energy from the charge, worked out"']
+    source: {cite: mit, at: 'Problem 3(d), eq. (3.2), p. 3'}
+    origin: mit
+
+  - id: p3-out
+    answer: p3-out
+    where: 'Problem 3(d), answer box: the share of the field energy outside the ball, from the two numerical integrals (Q = R = ε₀ = 1; the page uses 5/40 over 6/40)'
+    formula: |-
+      integrate('(u**2/(4*pi))**2*4*pi/u**4', 'u', 0, 1)/(integrate('(s/(4*pi))**2*4*pi*s**2', 's', 0, 1) + integrate('(u**2/(4*pi))**2*4*pi/u**4', 'u', 0, 1))
+    expected: '0.833'
+    shown: ['id="p3-out"', '= \frac56 = 0.833$']
+    source: {cite: mit, at: 'Problem 3(d), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3-bounds
+    where: 'Problem 3(d), check: the result in units of Q²/(4πε₀R), 3/5, between 0.5 and 0.75'
+    formula: |-
+      3/5
+    expected: '0.6'
+    shown: ['The result, 0.6, does.']
+    source: {cite: mit, at: 'Problem 3(d), p. 3 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: virtual work
+
+  - id: p4-fq
+    kind: identity
+    answer: p4-fq
+    where: 'Problem 4(a), answer box: the force as the slope of the stored energy Q²d/(2ε₀A) with respect to the gap, by a numerical derivative'
+    formula: |-
+      Q**2/(2*eps0*A)
+    equals: |-
+      deriv('Q**2*s/(2*eps0*A)', 's', 0.7)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      A: [2.0, 1.5, 1.1, 0.7, 0.5]
+    tolerance: 1e-7
+    shown: ['id="p4-fq"']
+    source: {cite: mit, at: 'Problem 4(a), p. 3'}
+    origin: mit
+
+  - id: p4-fv
+    kind: identity
+    answer: p4-fv
+    where: 'Problem 4(b), answer box: ½V² times the slope of the capacitance ε₀A/s as the gap shrinks, by a numerical derivative'
+    formula: |-
+      eps0*A*V**2/(2*d**2)
+    equals: |-
+      -0.5*V**2*deriv('eps0*A/s', 's', d)
+    samples:
+      V: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      A: [2.0, 1.5, 1.1, 0.7, 0.5]
+      d: [0.3, 0.4, 0.5, 0.6, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p4-fv"']
+    source: {cite: mit, at: 'Problem 4(b), p. 3'}
+    origin: mit
+
+  - id: p4-num
+    answer: p4-num
+    where: 'Problem 4(b), answer box: the force for A = 400 cm², d = 1.5 mm, V = 300 V'
+    inputs: {eps0: 8.8541878128e-12 F/m, A: 400 cm**2, d: 1.5 mm, V: 300 V}
+    formula: |-
+      eps0*A*V**2/(2*d**2)
+    expected: 7.08 mN
+    shown: ['id="p4-num"', '= 7.08\times10^{-3}$ N, or 7.08 mN']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-weight
+    where: 'Problem 4(b), the number: the mass whose weight is 7.08 mN (g = 9.81 m/s²)'
+    inputs: {F: 7.08 mN, grav: 9.81 m/s**2}
+    formula: |-
+      F/grav
+    expected: 0.7 g
+    shown: ['about the weight of 0.7 g']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-charge
+    where: 'Problem 4(b), check: the charge Q = ε₀AV/d for these numbers'
+    inputs: {eps0: 8.8541878128e-12 F/m, A: 400 cm**2, d: 1.5 mm, V: 300 V}
+    formula: |-
+      eps0*A*V/d
+    expected: 70.8 nC
+    shown: ['$Q = \varepsilon_0AV/d = 70.8$ nC']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-num-q
+    where: 'Problem 4(b), check: the force from the result of part (a), Q²/(2ε₀A), with that charge'
+    inputs: {eps0: 8.8541878128e-12 F/m, A: 400 cm**2, d: 1.5 mm, V: 300 V}
+    formula: |-
+      (eps0*A*V/d)**2/(2*eps0*A)
+    expected: 7.08 mN
+    shown: ['$Q^2/(2\varepsilon_0A) = 7.08$ mN as well']
+    source: {cite: mit, at: 'Problem 4(b), p. 3 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5: the capacitance matrix
+
+  - id: p5-step
+    kind: identity
+    answer: p5-step
+    where: 'Problem 5(a), answer box: the work of the second step as the numerical integral of V_j dq'
+    formula: |-
+      Pji*Qi*Qj + Pjj*Qj**2/2
+    equals: |-
+      integrate('Pji*Qi + Pjj*s', 's', 0, Qj)
+    samples:
+      Pji: [0.5, 0.9, 1.3, 1.7, 2.0]
+      Pjj: [2.0, 1.5, 1.1, 0.7, 0.5]
+      Qi: [0.6, 1.9, 1.0, 1.4, 0.8]
+      Qj: [1.2, 0.5, 2.0, 0.9, 1.6]
+    tolerance: 1e-9
+    shown: ['id="p5-step"']
+    source: {cite: mit, at: 'Problem 5(a), pp. 3–4 (our own addition)'}
+    origin: page-own
+
+  - id: p5-c
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(b), answer box: against 1/(P11 − P12 − P21 + P22), with P the inverse of the matrix C by the cofactor rule'
+    formula: |-
+      (C11*C22 - C12*C21)/(C11 + C12 + C21 + C22)
+    equals: |-
+      1/(C22/(C11*C22 - C12*C21) - (-C12/(C11*C22 - C12*C21)) - (-C21/(C11*C22 - C12*C21)) + C11/(C11*C22 - C12*C21))
+    samples:
+      C11: [2.0, 2.5, 3.0, 3.5, 4.0]
+      C22: [4.5, 4.0, 3.5, 3.0, 2.5]
+      C12: [-1.2, -1.0, -0.8, -0.6, -0.4]
+      C21: [-0.5, -0.7, -0.9, -1.1, -1.4]
+    tolerance: 1e-10
+    shown: ['id="p5-c"']
+    source: {cite: mit, at: 'Problem 5(b), p. 4'}
+    origin: mit
+
+  - id: p5-c-first-equation
+    kind: identity
+    where: 'Problem 5(b), check: the two potentials put back into the first equation give Q (Q = 1)'
+    formula: |-
+      C11*(C22 + C12)/(C11*C22 - C12*C21) + C12*(-(C11 + C21)/(C11*C22 - C12*C21))
+    equals: |-
+      1 + 0*C11
+    samples:
+      C11: [2.0, 2.5, 3.0, 3.5, 4.0]
+      C22: [4.5, 4.0, 3.5, 3.0, 2.5]
+      C12: [-1.2, -1.0, -0.8, -0.6, -0.4]
+      C21: [-0.5, -0.7, -0.9, -1.1, -1.4]
+    tolerance: 1e-10
+    shown: ['Put the potentials back into the first equation']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-c-second-equation
+    kind: identity
+    where: 'Problem 5(b): the two potentials put into the second equation give −Q (Q = 1)'
+    formula: |-
+      C21*(C22 + C12)/(C11*C22 - C12*C21) + C22*(-(C11 + C21)/(C11*C22 - C12*C21))
+    equals: |-
+      -1 + 0*C11
+    samples:
+      C11: [2.0, 2.5, 3.0, 3.5, 4.0]
+      C22: [4.5, 4.0, 3.5, 3.0, 2.5]
+      C12: [-1.2, -1.0, -0.8, -0.6, -0.4]
+      C21: [-0.5, -0.7, -0.9, -1.1, -1.4]
+    tolerance: 1e-10
+    shown: ['<Formula label="The two potentials"']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-c11
+    kind: identity
+    answer: p5-c11
+    where: 'Problem 5(c), answer box: C11 = P22/det P for P11 = 1/(4πε₀a), P12 = P21 = P22 = 1/(4πε₀b)'
+    formula: |-
+      4*pi*eps0*a*b/(b - a)
+    equals: |-
+      (1/(4*pi*eps0*b))/((1/(4*pi*eps0*a))*(1/(4*pi*eps0*b)) - (1/(4*pi*eps0*b))**2)
+    samples:
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      a: [0.3, 0.4, 0.5, 0.6, 0.8]
+      b: [3.0, 2.5, 2.0, 1.6, 1.2]
+    tolerance: 1e-10
+    shown: ['id="p5-c11"']
+    source: {cite: mit, at: 'Problem 5(c), p. 4'}
+    origin: mit
+
+  - id: p5-c22
+    kind: identity
+    answer: p5-c22
+    where: 'Problem 5(c), answer box: C22 = P11/det P for the same matrix P'
+    formula: |-
+      4*pi*eps0*b**2/(b - a)
+    equals: |-
+      (1/(4*pi*eps0*a))/((1/(4*pi*eps0*a))*(1/(4*pi*eps0*b)) - (1/(4*pi*eps0*b))**2)
+    samples:
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      a: [0.3, 0.4, 0.5, 0.6, 0.8]
+      b: [3.0, 2.5, 2.0, 1.6, 1.2]
+    tolerance: 1e-10
+    shown: ['id="p5-c22"']
+    source: {cite: mit, at: 'Problem 5(c), p. 4'}
+    origin: mit
+
+  - id: p5-c22-split
+    kind: identity
+    where: 'Problem 5(c), check: C22 = C11 + 4πε₀b'
+    formula: |-
+      4*pi*eps0*b**2/(b - a)
+    equals: |-
+      4*pi*eps0*a*b/(b - a) + 4*pi*eps0*b
+    samples:
+      eps0: [0.6, 1.9, 1.0, 1.4, 0.8]
+      a: [0.3, 0.4, 0.5, 0.6, 0.8]
+      b: [3.0, 2.5, 2.0, 1.6, 1.2]
+    tolerance: 1e-10
+    shown: ['And $C_{22} = C_{11} + 4\pi\varepsilon_0b$']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own check)'}
+    origin: page-own
+
+  - id: p5-length
+    where: 'Problem 5(c), the number: ab/(b − a) for a = 3.0 cm, b = 5.0 cm'
+    inputs: {a: 3.0 cm, b: 5.0 cm}
+    formula: |-
+      a*b/(b - a)
+    expected: 0.075 m
+    shown: ['$ab/(b - a) = 0.075$ m']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-4pieps
+    where: 'Problem 5(c), the number: 4πε₀'
+    inputs: {eps0: 8.8541878128e-12 F/m}
+    formula: |-
+      4*pi*eps0
+    expected: 1.113e-10 F/m
+    shown: ['$C = 1.113\times10^{-10}\times0.075']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-cnum
+    answer: p5-cnum
+    where: 'Problem 5(c), answer box: C for a = 3.0 cm, b = 5.0 cm, from the potential difference per unit charge, 1/(P11 − P12 − P21 + P22) (the page uses C11)'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 3.0 cm, b: 5.0 cm}
+    formula: |-
+      1/(1/(4*pi*eps0*a) - 1/(4*pi*eps0*b) - 1/(4*pi*eps0*b) + 1/(4*pi*eps0*b))
+    expected: 8.34 pF
+    shown: ['id="p5-cnum"', '= 8.34\times10^{-12}$ F, or 8.34 pF']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-c22num
+    where: 'Problem 5(c), check: C22 for a = 3.0 cm, b = 5.0 cm'
+    inputs: {eps0: 8.8541878128e-12 F/m, a: 3.0 cm, b: 5.0 cm}
+    formula: |-
+      4*pi*eps0*b**2/(b - a)
+    expected: 13.9 pF
+    shown: ['For these radii $C_{22} = 13.9$ pF']
+    source: {cite: mit, at: 'Problem 5(c), p. 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 6: space charge and the Child–Langmuir law (our own problem)
+
+  - id: p6-v
+    kind: identity
+    answer: p6-v
+    where: 'Problem 6(b), answer box: the speed at which ½mv² equals eV, found as a numerical root'
+    formula: |-
+      sqrt(2*e*V/m)
+    equals: |-
+      solve('0.5*m*s**2 - e*V', 's', 0, 10)
+    samples:
+      e: [0.5, 0.9, 1.3, 1.7, 2.0]
+      V: [2.0, 1.5, 1.1, 0.7, 0.5]
+      m: [0.6, 1.9, 1.0, 1.4, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p6-v"']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-speed
+    where: 'Problem 6(b), check: the speed of an electron that has fallen through 200 V'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, V: 200 V}
+    formula: |-
+      sqrt(2*qe*V/me)
+    expected: 8.39e6 m/s
+    shown: ['the speed is $8.39\times10^6$ m/s']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-speed-c
+    where: 'Problem 6(b), check: that speed as a percentage of the speed of light (2.8, under 3)'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, V: 200 V}
+    formula: |-
+      100*sqrt(2*qe*V/me)/c
+    expected: '2.8'
+    shown: ['under 3% of the speed of light']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-rho
+    kind: identity
+    answer: p6-rho
+    where: 'Problem 6(c), answer box: the charge crossing a plane per unit time, |ρ| A v with v the numerical root of ½mv² = eV, must be I'
+    formula: |-
+      I/A*sqrt(m/(2*e*V))
+    equals: |-
+      I/(A*solve('0.5*m*s**2 - e*V', 's', 0, 10))
+    samples:
+      I: [1.2, 0.5, 2.0, 0.9, 1.6]
+      A: [0.7, 1.1, 0.5, 2.0, 1.5]
+      e: [0.5, 0.9, 1.3, 1.7, 2.0]
+      V: [2.0, 1.5, 1.1, 0.7, 0.5]
+      m: [0.6, 1.9, 1.0, 1.4, 0.8]
+    tolerance: 1e-9
+    shown: ['id="p6-rho"']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-beta
+    kind: identity
+    answer: p6-beta
+    where: 'Problem 6(d), answer box: β as |ρ|/ε₀ times √V, with |ρ| = I/(A v) and v the numerical root of ½mv² = eV'
+    formula: |-
+      I/(eps0*A)*sqrt(m/(2*e))
+    equals: |-
+      I/(A*solve('0.5*m*s**2 - e*V', 's', 0, 10))/eps0*sqrt(V)
+    samples:
+      I: [1.2, 0.5, 2.0, 0.9, 1.6]
+      A: [0.7, 1.1, 0.5, 2.0, 1.5]
+      e: [0.5, 0.9, 1.3, 1.7, 2.0]
+      V: [2.0, 1.5, 1.1, 0.7, 0.5]
+      m: [0.6, 1.9, 1.0, 1.4, 0.8]
+      eps0: [1.4, 0.8, 0.6, 1.9, 1.0]
+    tolerance: 1e-9
+    shown: ['id="p6-beta"']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-vx
+    kind: identity
+    answer: p6-vx
+    where: 'Problem 6(e), answer box: against the first integral, solved numerically: V is the root of (4/3)V^(3/4) = 2√β x'
+    formula: |-
+      (9*be/4)**(2/3)*x**(4/3)
+    equals: |-
+      solve('(4/3)*s**0.75 - 2*sqrt(be)*x', 's', 0, 100)
+    samples:
+      be: [0.5, 0.9, 1.3, 1.7, 2.0]
+      x: [2.0, 1.5, 1.1, 0.7, 0.3]
+    tolerance: 1e-9
+    shown: ['id="p6-vx"']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-ode
+    kind: identity
+    where: 'Problem 6(e), check: the solution put back into the equation of part (d): its numerical second derivative equals β V^(−1/2)'
+    formula: |-
+      deriv('(9*be/4)**(2/3)*s**(4/3)', 's', x, 2)
+    equals: |-
+      be*((9*be/4)**(2/3)*x**(4/3))**(-0.5)
+    samples:
+      be: [0.5, 0.9, 1.3, 1.7, 2.0]
+      x: [2.0, 1.5, 1.1, 0.7, 0.4]
+    tolerance: 1e-6
+    shown: ['Put the result back into the equation of part (d)']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-power
+    where: 'Problem 6(e), check: the power p from p − 2 = −p/2, as a numerical root'
+    formula: |-
+      solve('s - 2 + s/2', 's', 0, 3)
+    expected: '1.3333'
+    shown: ['the powers give $p - 2 = -p/2$, so $p = \frac43$']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-half
+    answer: p6-half
+    where: 'Problem 6(e), answer box: V(d/2)/V₀ = 0.5^(4/3)'
+    formula: |-
+      0.5**(4/3)
+    expected: '0.397'
+    shown: ['id="p6-half"', '$V = V_0\times 0.5^{4/3} = 0.397\,V_0$', 'points={[{ x: 0.5, y: 0.397 }]}', 'the dot marks 0.397 at the middle']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-k
+    kind: identity
+    answer: p6-k
+    where: 'Problem 6(f), answer box: by Gauss''s law the charge in the gap is (4/3)ε₀AV₀/d; it must equal the integral of |ρ|A over the gap with I = K V₀^(3/2) and V = V₀(x/d)^(4/3) (substitution x = d u³, which makes the integrand 3d)'
+    formula: |-
+      4*eps0*A/(9*d**2)*sqrt(2*e/m)
+    equals: |-
+      (4/3)*eps0*A*V0/d/(V0**1.5*sqrt(m/(2*e*V0))*integrate('3*d*u**2/(u**3)**(2/3)', 'u', 0, 1))
+    samples:
+      eps0: [1.4, 0.8, 0.6, 1.9, 1.0]
+      A: [0.7, 1.1, 0.5, 2.0, 1.5]
+      d: [0.5, 0.9, 1.3, 1.7, 2.0]
+      e: [0.5, 0.9, 1.3, 1.7, 2.0]
+      m: [0.6, 1.9, 1.0, 1.4, 0.8]
+      V0: [2.0, 1.5, 1.1, 0.7, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p6-k"']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-2em
+    where: 'Problem 6(f), the number: 2e/m in C/kg'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg}
+    formula: |-
+      2*qe/me
+    expected: 3.518e11 C/kg
+    shown: ['\sqrt{3.518\times10^{11}}']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-root
+    where: 'Problem 6(f), the number: √(2e/m) in SI units'
+    inputs: {qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg}
+    formula: |-
+      sqrt(2*qe/me)
+    expected: 5.931e5 C**0.5/kg**0.5
+    shown: ['= 5.931\times10^5$ in SI units']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-knum
+    where: 'Problem 6(f), the number: K for A = 2.0 cm², d = 4.0 mm'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, A: 2.0 cm**2, d: 4.0 mm}
+    formula: |-
+      4*eps0*A/(9*d**2)*sqrt(2*qe/me)
+    expected: 2.917e-5 A/V**1.5
+    shown: ['= 2.917\times10^{-5}$ A/V$^{3/2}$']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-v32
+    where: 'Problem 6(f), the number: 200^(3/2)'
+    formula: |-
+      200**1.5
+    expected: '2828'
+    shown: ['With $200^{3/2} = 2828$']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-inum
+    answer: p6-inum
+    where: 'Problem 6(f), answer box: the current for A = 2.0 cm², d = 4.0 mm, V₀ = 200 V'
+    inputs: {eps0: 8.8541878128e-12 F/m, qe: 1.602176634e-19 C, me: 9.1093837015e-31 kg, A: 2.0 cm**2, d: 4.0 mm, V0: 200 V}
+    formula: |-
+      4*eps0*A/(9*d**2)*sqrt(2*qe/me)*V0**1.5
+    expected: 82.5 mA
+    shown: ['id="p6-inum"', 'the current is $I = 0.0825$ A, or 82.5 mA']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-double
+    where: 'Problem 6(f), check: doubling the voltage multiplies the current by 2^(3/2)'
+    formula: |-
+      2**1.5
+    expected: '2.83'
+    shown: ['multiplies the current by $2^{3/2} = 2.83$']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  - id: p6-anode-field
+    kind: identity
+    where: 'Problem 6(f), check: the slope of V₀(x/d)^(4/3) at the anode is (4/3)V₀/d (numerical derivative)'
+    formula: |-
+      deriv('V0*(s/d)**(4/3)', 's', d)
+    equals: |-
+      (4/3)*V0/d
+    samples:
+      V0: [2.0, 1.5, 1.1, 0.7, 0.5]
+      d: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['$dV/dx$ at the anode is $\frac43V_0/d$']
+    source: {cite: mit, at: 'Problem 6, p. 4 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 7: distributions
+
+  - id: p7-f
+    answer: p7-f
+    where: 'Problem 7(a), answer box: F[f] for f = 3 exp(−r²/b²), from the defining integral (7.11) by numerical integration (b = 1; the tail beyond r = 12 is negligible)'
+    formula: |-
+      integrate('3*(4*s**2 - 6)*exp(-s**2)/s*4*pi*s**2', 's', 0, 12)
+    expected: '-37.7'
+    shown: ['id="p7-f"', '$F = -12\pi = -37.7$']
+    source: {cite: mit, at: 'Problem 7(a), eq. (7.11), p. 6, and p. 7 (our own addition)'}
+    origin: page-own
+
+  - id: p7-f-b
+    where: 'Problem 7(a): the same integral for b = 2.5, to show that the value does not depend on b'
+    formula: |-
+      integrate('3*(4*s**2/2.5**4 - 6/2.5**2)*exp(-s**2/2.5**2)/s*4*pi*s**2', 's', 0, 40)
+    expected: '-37.7'
+    shown: ['whatever $b$ is']
+    source: {cite: mit, at: 'Problem 7(a), p. 7 (our own addition)'}
+    origin: page-own
+
+  - id: p7-moment3
+    where: 'Problem 7(a): the integral of r³ exp(−r²) from 0 to infinity, b⁴/2 with b = 1'
+    formula: |-
+      integrate('s**3*exp(-s**2)', 's', 0, 12)
+    expected: '0.5'
+    tolerance: 1e-8
+    shown: ['$\int_0^\infty r^3e^{-r^2/b^2}dr = b^4/2$']
+    source: {cite: mit, at: 'Problem 7(a), p. 7 (our own addition)'}
+    origin: page-own
+
+  - id: p7-moment1
+    where: 'Problem 7(a): the integral of r exp(−r²) from 0 to infinity, b²/2 with b = 1'
+    formula: |-
+      integrate('s*exp(-s**2)', 's', 0, 12)
+    expected: '0.5'
+    tolerance: 1e-8
+    shown: ['$\int_0^\infty r\,e^{-r^2/b^2}dr = b^2/2$']
+    source: {cite: mit, at: 'Problem 7(a), p. 7 (our own addition)'}
+    origin: page-own
+
+  - id: p7-c
+    answer: p7-c
+    where: 'Problem 7(b), answer box: the number c = 2π, from the defining integral for the test function exp(−r²) (f(0) = 1) by numerical integration'
+    formula: |-
+      integrate('(4*s**2 - 4)*exp(-s**2)*log(s)*2*pi*s', 's', 0, 12)
+    expected: '6.28'
+    shown: ['id="p7-c"', '$c = 2\pi = 6.28$']
+    source: {cite: mit, at: 'Problem 7(b), p. 7 (our own addition)'}
+    origin: page-own
+
+  - id: p7-c-digits
+    where: 'Problem 7(b), check: the same numerical integral to five figures'
+    formula: |-
+      integrate('(4*s**2 - 4)*exp(-s**2)*log(s)*2*pi*s', 's', 0, 12)
+    expected: '6.2832'
+    shown: ['(it gives 6.2832)']
+    source: {cite: mit, at: 'Problem 7(b), p. 7 (our own check)'}
+    origin: page-own

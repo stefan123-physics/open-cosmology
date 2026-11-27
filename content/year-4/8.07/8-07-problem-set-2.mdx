@@ -1,0 +1,1487 @@
+---
+title: "Problem Set 2: The Laplacian and averages, capacitors, electrostatic energy, virtual work and space charge"
+slug: 8-07-problem-set-2
+course: "8.07"
+kind: problems
+set: 2
+lecture: 4
+order: 90
+covers: [3, 4]
+solutions: own
+summary: "Seven problems on electrostatics. Why the Laplacian measures how far a function at a point stands above the average of its surroundings; the cylindrical capacitor; the field, potential and energy of a uniformly charged ball, with the energy found in two ways; the force between capacitor plates by virtual work, at fixed charge and at fixed voltage; the capacitance matrix and the ordinary capacitance; the current that space charge allows through a vacuum diode (the Child–Langmuir law); and, for extra credit, the Laplacian of 1/r as a distribution."
+prerequisites: [integral-form-electrostatics, electrostatic-energy-self-energy, conductor-surface-forces-capacitance, conductors-and-capacitors, divergence-theorem]
+source:
+  title: "MIT 8.07 Problem Set 2 (Fall 2012)"
+  url: https://ocw.mit.edu/courses/8-07-electromagnetism-ii-fall-2012/resources/mit8_07f12_pset02/
+  readings:
+    - title: "8.07 Lecture Notes 4: Conductors: Surface Forces and Capacitance (Guth, September 21, 2012)"
+      url: https://ocw.mit.edu/courses/8-07-electromagnetism-ii-fall-2012/1ffda29d6ddadef8e37e4be9c071b4e7_MIT8_07F12_ln4.pdf
+license: CC BY-NC-SA 4.0
+references:
+  mit802-ch5:
+    title: "8.02T Course Notes, Chapter 5: Capacitance and Dielectrics (Liao, Dourmashkin and Belcher)"
+    url: https://ocw.mit.edu/courses/8-02t-electricity-and-magnetism-spring-2005/resources/chap5capacitance/
+    location: "Section 5.2: Eq. (5.2.4), p. 5 (parallel plates) and Eq. (5.2.11), p. 7 (concentric spheres)"
+  codata:
+    title: "NIST, CODATA 2018 recommended values of the fundamental physical constants"
+    url: https://physics.nist.gov/cuu/Constants/archive2018.html
+    location: "vacuum electric permittivity, elementary charge, electron mass"
+status: reviewed
+---
+
+This set practises the electrostatics of Lecture Notes 3 and 4: [Gauss's law and the potential](/courses/8-07/integral-form-electrostatics), [the energy of a charge distribution](/courses/8-07/electrostatic-energy-self-energy), and [virtual work and the capacitance matrix](/courses/8-07/conductor-surface-forces-capacitance). Problem 1 proves a statement about the Laplacian that the lectures quoted, and Problem 7 returns to the delta function of [Problem Set 1](/courses/8-07/8-07-problem-set-1). The problems follow MIT's Problem Set 2, in our own words. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+Several things differ from MIT's sheet. Its due date, its reading assignment (a textbook chapter) and its long note on how extra credit is graded are left out. MIT's Problem 6 is only a pointer to a problem in a textbook (Griffiths), with a title and two sentences of advice. The textbook is not used here: **Problem 6 is our own problem** on the subject that MIT's title names (space charge in a vacuum diode and the Child–Langmuir law), with MIT's points. Problems 2 and 5 end on MIT's sheet with a comparison to an equation and an example of that textbook; here the comparison is with the same results in the 8.02 course notes. MIT's sketch for Problem 2 is described in words. The scalar function of Problems 1 and 7 is called $f$ here (MIT writes $\varphi$), as in Problem Set 1, so that $\phi$ can stay the azimuthal angle. Most of MIT's parts ask you to show something or to derive a formula. So that there is something to check, some boxes are our additions, each marked as such in its part: the boxes of Problem 1; the number boxes of Problems 2, 3, 4 and 5 and the choice box of Problem 4; the box of Problem 5(a); and the boxes of Problem 7. The other boxes check what MIT asks for. The sheet's pages are numbered: "p. 1" to "p. 7" below are the printed page numbers.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it. A formula box takes plain typing, for example `q/(2*pi*eps0*L*r)`, and accepts every correct way of writing the answer with the letters of that box. Write the symbols exactly as the box names them: `pi` stands for $\pi$, `eps0` for $\varepsilon_0$, `rho` for $\rho$, `L` for the length $\ell$, `be` for $\beta$, `V0` for $V_0$, and `C11`, `Pji`, `Qi` and the like for $C_{11}$, $P_{ji}$, $Q_i$. Type `sqrt(...)` for a square root and `ln(...)` for the natural logarithm. For the number boxes use $\varepsilon_0 = 8.854\times10^{-12}$ F/m (CODATA 2018, rounded).
+
+MIT gives the points per problem: 15 for Problem 1, 10 for Problem 2, 15 for Problem 3, 10 for Problem 4, 15 for Problem 5 and 20 for Problem 6, 85 points in all, plus 20 points of extra credit for Problem 7, which is optional here. The splits between parts are ours. Parts that ask you to show something have no box, or only a small one: open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The notation is that of the lecture notes. The potential $V$ is zero at infinity unless a problem says otherwise, and $\vec E = -\nabla V$. An index $i$ or $j$ on a coordinate or a derivative runs over 1, 2, 3, and an index that appears twice in one term is summed (the summation convention); $\partial_i$ is short for $\partial/\partial x_i$. In spherical coordinates $r$ is the distance from the origin, $\theta$ the angle from the $z$ axis and $\phi$ the azimuthal angle. In Problem 2 only, $r$ is the distance from the axis of the cylinders, as on MIT's sheet.
+
+## Problem 1
+
+<Exercise id="p1" title="The Laplacian as the anti-lumpiness operator" points={15} mit="Problem 1">
+
+Let $f(\vec r)$ be any smooth scalar function of position. This problem compares its value at a point with its average over a sphere centred on that point. The point can be any point, so choose the coordinates so that it is the origin. The relation to prove is
+
+<Formula label="The value at the centre and the average over a sphere" tex="f(\vec 0) - \bar f(R) = -\frac{1}{4\pi}\int_{r<R} d^3x\,\left(\frac1r - \frac1R\right)\nabla^2 f" cite="mit" at="Problem 1, eq. (1.1), p. 1" />
+
+The integral runs over the inside of a sphere of radius $R$ centred on the origin, and $\bar f(R)$ is the average of $f$ over the surface of that sphere:
+
+<Formula label="The average over the sphere" tex="\bar f(R) = \frac{1}{4\pi}\int_0^{2\pi}\!\!\int_0^{\pi} f(R, \theta, \phi)\,\sin\theta\,d\theta\,d\phi" cite="mit" at="Problem 1, eq. (1.2), p. 1" />
+
+Guth's picture: think of $f$ as the density of a pudding. The factor $1/r - 1/R$ is positive inside the sphere. So if $\nabla^2 f = 0$ everywhere inside, the value at the centre equals the average over the sphere, and the pudding has no lump there. If $\nabla^2 f < 0$ inside, the centre is above the average of its surroundings: a lump. The Laplacian measures lumpiness with a minus sign, hence the title.
+
+<Part label="a" points={4}>
+
+Write, for short,
+
+<Formula label="The weight function" tex="g(r) \equiv \frac1r - \frac1R" cite="mit" at="Problem 1(a), eq. (1.3), p. 2" />
+
+Use the divergence theorem to show that
+
+<Formula label="A vanishing integral" tex="\int_{r<R} d^3x\;\nabla\cdot\left(g\,\nabla f\right) = 0" cite="mit" at="Problem 1(a), eq. (1.4), p. 2" />
+
+The box is our addition.
+
+<Hint>
+
+The divergence theorem turns the volume integral into the flux of $g\,\nabla f$ through the boundary. What is $g$ on the sphere $r = R$?
+
+</Hint>
+
+<Hint>
+
+The vector field $g\,\nabla f$ is not smooth at the origin, where $g$ grows without limit. To be safe, cut out a small ball of radius $\epsilon$ and see what its surface contributes as $\epsilon \to 0$. Compare how fast $g$ grows with how fast the area of the small sphere shrinks.
+
+</Hint>
+
+<Answer id="p1-why" label="The flux through the outer sphere $r = R$ vanishes because" choices={["the gradient of f is zero on the sphere", "f is constant on the sphere", "the weight g is zero on the sphere", "the outward and inward parts of the flux cancel"]} answer={2} />
+
+<Solution>
+
+**The idea.** The integrand is a divergence, so only the boundary matters, and the weight $g$ was built to vanish there.
+
+<Step title="The outer boundary">
+
+By the divergence theorem the integral equals the flux of $g\,\nabla f$ out through the sphere $r = R$. On that sphere $g(R) = 1/R - 1/R = 0$, so the flux is zero, whatever $f$ is.
+
+</Step>
+
+<Step title="The origin">
+
+The divergence theorem needs a smooth vector field, and $g$ is infinite at the origin. So apply it to the region $\epsilon < r < R$, which has a second boundary, the small sphere $r = \epsilon$. On it $|g\,\nabla f|$ is at most $(1/\epsilon)$ times the largest value of $|\nabla f|$ nearby, which is finite because $f$ is smooth. The area is $4\pi\epsilon^2$. So the flux through the small sphere is at most of the order of
+
+<Formula label="The flux through the small sphere" tex="\frac{1}{\epsilon}\cdot 4\pi\epsilon^2\cdot\left|\nabla f\right|_{\max} = 4\pi\epsilon\left|\nabla f\right|_{\max} \;\to\; 0 \quad\text{as } \epsilon \to 0" cite="mit" at="Problem 1(a), p. 2 (our own solution)" />
+
+The volume integral over the ball that was cut out vanishes in the same limit: part (b) shows that its integrand grows no faster than $1/r^2$ near the origin, while the volume element is $4\pi r^2\,dr$. So the integral over the whole ball $r < R$ is zero.
+
+</Step>
+
+<Step title="Check the result">
+
+Take $f = z$, so $\nabla f = \hat z$. Then $\nabla\cdot(g\,\hat z) = \partial g/\partial z = -z/r^3$, which is odd in $z$: its integral over the ball is zero, as it must be.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Use index notation, in which the gradient has the components $\partial_i$, to show that for any two smooth scalar functions $g(\vec r)$ and $f(\vec r)$
+
+<Formula label="The divergence of a function times a gradient" tex="\nabla\cdot\left(g\,\nabla f\right) = \nabla g\cdot\nabla f + g\,\nabla^2 f" cite="mit" at="Problem 1(b), eq. (1.5), p. 2" />
+
+<Hint>
+
+Component $i$ of $g\,\nabla f$ is $g\,\partial_i f$. The divergence applies $\partial_i$ and sums over $i$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** With indices this is the product rule and nothing more.
+
+<Step title="The product rule">
+
+<Formula label="The identity with indices" tex="\nabla\cdot\left(g\,\nabla f\right) = \partial_i\left(g\,\partial_i f\right) = \left(\partial_i g\right)\left(\partial_i f\right) + g\,\partial_i\partial_i f" cite="mit" at="Problem 1(b), p. 2 (our own solution)" />
+
+The first term is the dot product of the two gradients. In the second, $\partial_i\partial_i f$ is the sum of the three second derivatives, which is $\nabla^2 f$.
+
+</Step>
+
+<Step title="Check the result">
+
+Take $g = x$ and $f = x^2$. The left side is $\partial_x(x\cdot 2x) = 4x$. The right side is $1\cdot 2x + x\cdot 2 = 4x$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={8}>
+
+Use the identity of part (b) to split the integral of part (a) into two integrals, and work out the one with $\nabla g\cdot\nabla f$ in spherical coordinates. Show that the result of part (a) then becomes the relation at the top of this problem.
+
+The two boxes are our addition. First, apply the relation to a potential $V$ in a region filled with a uniform charge density $\rho$, where $\nabla^2 V = -\rho/\varepsilon_0$: give $V(\vec 0) - \bar V(R)$. Second, a potential is $V = 5 + 2x + 3(x^2 - y^2) + 4z^2$, in volts with the coordinates in metres: give its average over the sphere of radius 0.50 m centred on the origin.
+
+<Hint>
+
+The function $g$ depends on $r$ only, so its gradient points along $\hat r$. What is the component of $\nabla f$ along $\hat r$?
+
+</Hint>
+
+<Hint>
+
+In spherical coordinates the volume element carries a factor $r^2$. See what it does to the integrand, and do the integral over $r$ first, at fixed angles.
+
+</Hint>
+
+<Hint>
+
+For the second box you do not need to integrate over the sphere: find $\nabla^2 V$, which is a constant, and use your first box.
+
+</Hint>
+
+<Answer id="p1-rho" label="$V(\vec 0) - \bar V(R) =$" expr="rho*R^2/(6*eps0)"
+  vars={{ rho: [0.5, 2], R: [0.5, 2], eps0: [0.5, 2] }}
+  names={{ rho: "\\rho", R: "R", eps0: "\\varepsilon_0" }}
+  mistakes={[
+    { expr: "-rho*R^2/(6*eps0)", hint: "The sign is reversed. Positive charge makes the Laplacian of V negative, so the centre lies above the average of its surroundings: a lump." },
+    { expr: "rho*R^2/(2*eps0)", hint: "That keeps only the 1/r part of the weight, which gives R²/2. The −1/R part takes R²/3 away from it." },
+    { expr: "rho*R^2/(3*eps0)", hint: "That is the size of the −1/R part alone. The 1/r part gives R²/2 and the 1/R part R²/3; the answer is their difference." }
+  ]} />
+
+<Answer id="p1-avg" label="Average of $V$ over the sphere, in volts:" value="5.33" tolerance="1%" calc="p1-avg" />
+
+<Solution>
+
+**The idea.** After the split, the integral with the two gradients can be done exactly, because the $r^2$ of the volume element cancels the $1/r^2$ of $\nabla g$ and leaves a total derivative in $r$.
+
+<Step title="Split the integral">
+
+By parts (a) and (b),
+
+<Formula label="The two pieces" tex="0 = \int_{r<R} d^3x\;\nabla g\cdot\nabla f + \int_{r<R} d^3x\;g\,\nabla^2 f" cite="mit" at="Problem 1(c), p. 2 (our own solution)" />
+
+The second piece is already the integral in the relation we want.
+
+</Step>
+
+<Step title="The piece with the gradients">
+
+Since $g = 1/r - 1/R$, its gradient is $\nabla g = -\hat r/r^2$, and $\hat r\cdot\nabla f = \partial f/\partial r$. With $d^3x = r^2\,dr\,\sin\theta\,d\theta\,d\phi$,
+
+<Formula label="The gradient piece in spherical coordinates" tex="\int_{r<R} d^3x\;\nabla g\cdot\nabla f = -\int\sin\theta\,d\theta\,d\phi\int_0^R \frac{\partial f}{\partial r}\,dr = -\int\sin\theta\,d\theta\,d\phi\,\left[f(R, \theta, \phi) - f(\vec 0)\right]" cite="mit" at="Problem 1(c), p. 2 (our own solution)" />
+
+The integral over the angles of $f(R, \theta, \phi)$ is $4\pi\bar f(R)$, by the definition of the average, and the integral of the constant $f(\vec 0)$ is $4\pi f(\vec 0)$. So this piece equals $4\pi\left[f(\vec 0) - \bar f(R)\right]$.
+
+</Step>
+
+<Step title="Put the pieces together">
+
+<Formula label="The relation, proved" tex="4\pi\left[f(\vec 0) - \bar f(R)\right] = -\int_{r<R} d^3x\;g\,\nabla^2 f \quad\Longrightarrow\quad f(\vec 0) - \bar f(R) = -\frac{1}{4\pi}\int_{r<R} d^3x\left(\frac1r - \frac1R\right)\nabla^2 f" cite="mit" at="Problem 1(c), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="The two boxes">
+
+For $\nabla^2 V = -\rho/\varepsilon_0$, a constant, the integral over the ball is
+
+<Formula label="A uniformly charged region" tex="V(\vec 0) - \bar V(R) = \frac{\rho}{4\pi\varepsilon_0}\int_0^R\left(\frac1r - \frac1R\right)4\pi r^2\,dr = \frac{\rho}{\varepsilon_0}\left(\frac{R^2}{2} - \frac{R^2}{3}\right) = \frac{\rho R^2}{6\varepsilon_0}" cite="mit" at="Problem 1(c), p. 2 (our own addition)" />
+
+For the second box, $\nabla^2 V = 6 - 6 + 8 = 8$ V/m², which plays the part of $-\rho/\varepsilon_0$. So $\bar V(R) = V(\vec 0) + 8R^2/6 = 5 + 8\times 0.25/6 = 5.33$ V.
+
+</Step>
+
+<Step title="Check the result">
+
+The second box can be done directly. On a sphere the averages of $x$ and of $x^2 - y^2$ are zero, and the average of $z^2$ is $R^2/3$. So $\bar V = 5 + 4R^2/3 = 5 + 4\times 0.25/3 = 5.33$ V, the same. The first box reappears in Problem 3: for a uniformly charged ball of radius $R$ the potential at the centre exceeds the potential at the surface by exactly $\rho R^2/(6\varepsilon_0)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Capacitance of a cylindrical capacitor" points={10} mit="Problem 2">
+
+A long conducting cylinder of radius $a$ and length $\ell$ carries a total charge $+q$. Around it, on the same axis, is a thin conducting cylindrical shell of radius $b$ and the same length, with total charge $-q$. (MIT's sketch shows the cross section: a filled circle of radius $a$ inside a thin ring of radius $b$, both centred on the origin of the $xy$ plane.) The cylinders are long enough for the effects of their ends to be neglected. In this problem $r$ is the distance from the axis.
+
+<Part label="a" points={3}>
+
+Use Gauss's law to find the electric field between the cylinders, $a < r < b$. The field points straight away from the axis; give its magnitude.
+
+<Hint>
+
+Choose a closed surface on which the field has the same magnitude everywhere it crosses: a cylinder of radius $r$ on the same axis. Which parts of it does the field cross?
+
+</Hint>
+
+<Hint>
+
+How much charge does a piece of length $h$ of the inner cylinder carry, if the charge $q$ is spread evenly over the length $\ell$?
+
+</Hint>
+
+<Answer id="p2-e" label="$E(r) =$" expr="q/(2*pi*eps0*L*r)"
+  vars={{ q: [0.5, 2], eps0: [0.5, 2], L: [1.5, 4], r: [0.3, 1.2] }}
+  names={{ q: "q", eps0: "\\varepsilon_0", L: "\\ell", r: "r" }}
+  mistakes={[
+    { expr: "q/(4*pi*eps0*r^2)", hint: "That is the field of a point charge. Here the charge is spread along a line, and the Gauss surface is a cylinder, whose side has an area proportional to r, not to r²." },
+    { expr: "q/(2*pi*eps0*r)", hint: "That has the units of a potential, not of a field. Gauss's law needs the charge per unit length of the inner cylinder, q/ℓ." },
+    { expr: "q/(pi*eps0*L*r)", hint: "A factor of 2 is missing below: the side of a cylinder of radius r and length h has the area 2πrh." }
+  ]} />
+
+<Solution>
+
+**The idea.** For a long cylinder the field can only point away from the axis and depend on $r$, so a coaxial cylinder is the natural Gauss surface.
+
+<Step title="Gauss's law">
+
+Take a cylinder of radius $r$ and length $h$ on the same axis, with $a < r < b$. The field is parallel to its two flat ends, so only the curved side, of area $2\pi rh$, carries flux. The charge inside is the charge on a length $h$ of the inner cylinder, $qh/\ell$. So
+
+<Formula label="Gauss's law for the coaxial surface" tex="E(r)\cdot 2\pi r h = \frac{1}{\varepsilon_0}\,\frac{q\,h}{\ell} \quad\Longrightarrow\quad \vec E = \frac{q}{2\pi\varepsilon_0\,\ell\,r}\,\hat r" cite="mit" at="Problem 2(a), p. 2 (our own solution)" />
+
+where $\hat r$ here points straight away from the axis.
+
+</Step>
+
+<Step title="Check the result">
+
+The length $h$ has dropped out, as it should. The units are those of a charge over $\varepsilon_0$ times an area, which is a field. Inside the inner cylinder the field is zero (a conductor), and outside the shell the enclosed charge is $q - q = 0$, so the field is zero there as well: it lives in the gap only.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+From the field of part (a), find the potential difference between the outer shell and the inner cylinder. The inner cylinder is at the higher potential: give $V(a) - V(b)$, which is positive for positive $q$. (MIT's sheet does not fix the sign of $\Delta V$; taken as $V(b) - V(a)$, as in the 8.02 notes, it is minus this.)
+
+<Hint>
+
+The potential difference is a line integral of the field. Go straight outwards from $r = a$ to $r = b$, along the field.
+
+</Hint>
+
+<Answer id="p2-dv" label="$V(a) - V(b) =$" expr="q*log(b/a)/(2*pi*eps0*L)"
+  vars={{ q: [0.5, 2], eps0: [0.5, 2], L: [1.5, 4], a: [0.3, 0.8], b: [1.2, 3] }}
+  names={{ q: "q", eps0: "\\varepsilon_0", L: "\\ell", a: "a", b: "b" }}
+  mistakes={[
+    { expr: "q*log(a/b)/(2*pi*eps0*L)", hint: "The sign is reversed: ln(a/b) is negative. The field points from the positive inner cylinder to the shell, so the potential falls on the way out and V(a) is the larger." },
+    { expr: "q*(1/a - 1/b)/(2*pi*eps0*L)", hint: "That integrates 1/r² instead of 1/r. The field of a line of charge falls off as 1/r, and its integral is a logarithm." },
+    { expr: "q*(b - a)/(2*pi*eps0*L*a)", hint: "That treats the field as constant across the gap, with its value at r = a. It holds only for a thin gap, which is part (d)." }
+  ]} />
+
+<Solution>
+
+**The idea.** Integrate the field along a radial line.
+
+<Step title="The line integral">
+
+<Formula label="The potential difference across the gap" tex="V(a) - V(b) = \int_a^b E(r)\,dr = \frac{q}{2\pi\varepsilon_0\,\ell}\int_a^b\frac{dr}{r} = \frac{q}{2\pi\varepsilon_0\,\ell}\,\ln\frac{b}{a}" cite="mit" at="Problem 2(b), p. 2 (our own solution)" />
+
+So $\Delta V = V(b) - V(a) = -\dfrac{q}{2\pi\varepsilon_0\,\ell}\ln\dfrac{b}{a}$: the shell is at the lower potential.
+
+</Step>
+
+<Step title="Check the result">
+
+The logarithm takes a ratio, a pure number, so the units are those of $q/(\varepsilon_0\ell)$: a charge over $\varepsilon_0$ times a length, which is a potential. For $b = a$ the difference is zero.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Find the capacitance of this capacitor in terms of the given quantities, and its capacitance per unit length.
+
+The number box is our addition. A cable has an inner wire of radius 0.50 mm and a shell of radius 1.75 mm, with empty space between: give its capacitance per metre.
+
+<Hint>
+
+The capacitance is the charge on one conductor divided by the size of the potential difference between the two.
+
+</Hint>
+
+<Answer id="p2-c" label="$C =$" expr="2*pi*eps0*L/log(b/a)"
+  vars={{ eps0: [0.5, 2], L: [1.5, 4], a: [0.3, 0.8], b: [1.2, 3] }}
+  names={{ eps0: "\\varepsilon_0", L: "\\ell", a: "a", b: "b" }}
+  mistakes={[
+    { expr: "2*pi*eps0/log(b/a)", hint: "That is the capacitance per unit length. The box asks for the capacitance of the whole capacitor, of length ℓ." },
+    { expr: "log(b/a)/(2*pi*eps0*L)", hint: "That is upside down: it is the potential difference per unit charge. The capacitance is the charge per unit potential difference." },
+    { expr: "2*pi*eps0*L/log(a/b)", hint: "That is negative, because ln(a/b) is negative. A capacitance uses the size of the potential difference." }
+  ]} />
+
+<Answer id="p2-num" label="Capacitance per metre, in pF/m:" value="44.4" tolerance="1%" calc="p2-num" />
+
+<Solution>
+
+**The idea.** Divide the charge by the potential difference of part (b); the charge cancels.
+
+<Step title="The capacitance">
+
+<Formula label="The cylindrical capacitor" tex="C = \frac{q}{V(a) - V(b)} = \frac{2\pi\varepsilon_0\,\ell}{\ln(b/a)}, \qquad \frac{C}{\ell} = \frac{2\pi\varepsilon_0}{\ln(b/a)}" cite="mit" at="Problem 2(c), p. 2 (our own solution)" />
+
+It depends on the geometry only, and on the radii only through their ratio.
+
+</Step>
+
+<Step title="The cable">
+
+Here $b/a = 3.5$ and $\ln 3.5 = 1.253$. With $2\pi\varepsilon_0 = 5.563\times10^{-11}$ F/m, the capacitance per metre is $5.563\times10^{-11}/1.253 = 4.44\times10^{-11}$ F/m, or 44.4 pF/m.
+
+</Step>
+
+<Step title="Check the result">
+
+The capacitance grows with the length, as it should for more plate area, and it grows without limit as $b \to a$, when the gap closes.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+Let the gap $d = b - a$ be small compared with the radii. Show that the capacitance of part (c) then becomes that of a parallel-plate capacitor,
+
+<Formula label="The parallel-plate capacitor" tex="C = \frac{\varepsilon_0 A}{d}" cite="mit802-ch5" at="Section 5.2, Eq. (5.2.4), p. 5" />
+
+with $A$ the area of a plate. (MIT's sheet points to this result in a textbook; here it is quoted from the 8.02 course notes, and it is in the lesson [Conductors, capacitors and stored energy](/courses/8-02/conductors-and-capacitors).)
+
+The number box is our addition. For $d = a/10$, by how many per cent is the exact capacitance larger than $\varepsilon_0 A/d$, if $A$ is the area of the inner cylinder?
+
+<Hint>
+
+Write $b/a = 1 + d/a$ and use the first term of the series of $\ln(1 + u)$ for small $u$.
+
+</Hint>
+
+<Answer id="p2-pct" label="Excess of the exact $C$, in per cent:" value="4.92" tolerance="1%" calc="p2-pct" />
+
+<Solution>
+
+**The idea.** A thin gap is nearly flat: the logarithm becomes the ratio of the gap to the radius.
+
+<Step title="Expand the logarithm">
+
+For $d \ll a$, $\ln(b/a) = \ln(1 + d/a) \approx d/a$. Then
+
+<Formula label="The thin-gap limit" tex="C \approx \frac{2\pi\varepsilon_0\,\ell\,a}{d} = \frac{\varepsilon_0 A}{d}, \qquad A = 2\pi a\,\ell" cite="mit" at="Problem 2(d), p. 2 (our own solution)" />
+
+and $A = 2\pi a\ell$ is the area of the curved surface of the inner cylinder (to this accuracy, of the shell as well): the two cylinders are the plates.
+
+</Step>
+
+<Step title="The number">
+
+The ratio of the exact capacitance to $\varepsilon_0 A/d$, with $A = 2\pi a\ell$, is $(d/a)/\ln(1 + d/a)$. For $d/a = 0.1$ this is $0.1/0.09531 = 1.0492$: the exact value is 4.92% larger.
+
+</Step>
+
+<Step title="Check the result">
+
+The next term of the series, $\ln(1 + u) \approx u - u^2/2$, gives the ratio $1 + u/2 = 1.05$ for $u = 0.1$, close to the exact 1.0492. It also says what the best choice of $A$ is: the area of a cylinder halfway between the two.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="The electric field, potential and energy of a uniform sphere of charge" points={15} mit="Problem 3">
+
+A ball of radius $R$ carries a total charge $Q$, spread uniformly through its volume. In this problem $r$ is again the distance from the centre.
+
+<Part label="a" points={3}>
+
+Use Gauss's law to find the electric field everywhere. The field is radial; the box asks for its radial component inside the ball, $r < R$.
+
+<Hint>
+
+A sphere of radius $r < R$ encloses only part of the charge. For a uniform density, the part is the ratio of two volumes.
+
+</Hint>
+
+<Answer id="p3-ein" label="$E(r)$ for $r < R$:" expr="Q*r/(4*pi*eps0*R^3)"
+  vars={{ Q: [0.5, 2], eps0: [0.5, 2], R: [1.5, 3], r: [0.3, 1.2] }}
+  names={{ Q: "Q", eps0: "\\varepsilon_0", R: "R", r: "r" }}
+  mistakes={[
+    { expr: "Q/(4*pi*eps0*r^2)", hint: "That is the field outside the ball. Inside, a sphere of radius r encloses only the fraction r³/R³ of the charge." },
+    { expr: "Q*r^2/(4*pi*eps0*R^3)", hint: "Check the powers of r: the enclosed charge grows as r³ and the area of the Gauss sphere as r², which leaves one power of r." },
+    { expr: "Q*r/(4*pi*eps0*R^2)", hint: "That does not have the units of a field: charge over ε₀ must be divided by a length squared. The enclosed fraction is r³/R³, with R cubed." }
+  ]} />
+
+<Solution>
+
+**The idea.** By symmetry the field is radial and depends on $r$ only, so Gauss's law on a concentric sphere gives it at once.
+
+<Step title="Outside and inside">
+
+For a sphere of radius $r$, the flux is $E(r)\cdot 4\pi r^2$. Outside the ball it encloses all of $Q$; inside it encloses $Q\,r^3/R^3$. So
+
+<Formula label="The field of the uniformly charged ball" tex="\vec E = \frac{Q}{4\pi\varepsilon_0\,r^2}\,\hat r \;\text{ for } r > R, \qquad \vec E = \frac{Q\,r}{4\pi\varepsilon_0\,R^3}\,\hat r \;\text{ for } r < R" cite="mit" at="Problem 3(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The two forms agree at $r = R$, where both give $Q/(4\pi\varepsilon_0R^2)$: there is no surface charge, so the field has no jump. At the centre the field is zero, as the symmetry demands.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+From the field of part (a), find the potential everywhere, with $V = 0$ at infinity. The box asks for the potential inside the ball.
+
+<Hint>
+
+Outside, the field is that of a point charge, and so is the potential. Inside, continue the line integral of the field from the surface inwards.
+
+</Hint>
+
+<Hint>
+
+The potential must be continuous at $r = R$: start the inside integral from the value $V(R)$ you found outside.
+
+</Hint>
+
+<Answer id="p3-vin" label="$V(r)$ for $r < R$:" expr="Q*(3*R^2 - r^2)/(8*pi*eps0*R^3)"
+  vars={{ Q: [0.5, 2], eps0: [0.5, 2], R: [1.5, 3], r: [0.3, 1.2] }}
+  names={{ Q: "Q", eps0: "\\varepsilon_0", R: "R", r: "r" }}
+  mistakes={[
+    { expr: "Q/(4*pi*eps0*R)", hint: "That is the potential at the surface. It would hold all the way in only if the field inside were zero, as in a conductor; here the field inside is not zero." },
+    { expr: "-Q*r^2/(8*pi*eps0*R^3)", hint: "The dependence on r is right, but a constant is missing: this potential does not join the outside potential Q/(4πε₀R) at r = R." },
+    { expr: "Q*(R^2 + r^2)/(8*pi*eps0*R^3)", hint: "This joins the outside potential at r = R, but it rises with r. The field points outwards, so the potential must fall as r grows." },
+    { expr: "Q/(4*pi*eps0*r)", hint: "That is the potential outside the ball. Inside, it would be infinite at the centre, while the field there is zero and the potential finite." }
+  ]} />
+
+<Solution>
+
+**The idea.** $V(r)$ is the line integral of the field from $r$ out to infinity, done in two stretches.
+
+<Step title="Outside">
+
+For $r > R$ the field is that of a point charge, so $V(r) = Q/(4\pi\varepsilon_0 r)$, and at the surface $V(R) = Q/(4\pi\varepsilon_0R)$.
+
+</Step>
+
+<Step title="Inside">
+
+<Formula label="The potential inside the ball" tex="V(r) = V(R) + \int_r^R\frac{Q\,r'}{4\pi\varepsilon_0R^3}\,dr' = \frac{Q}{4\pi\varepsilon_0R} + \frac{Q\left(R^2 - r^2\right)}{8\pi\varepsilon_0R^3} = \frac{Q\left(3R^2 - r^2\right)}{8\pi\varepsilon_0R^3}" cite="mit" at="Problem 3(b), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+At $r = R$ this gives $2QR^2/(8\pi\varepsilon_0R^3) = Q/(4\pi\varepsilon_0R)$, the outside value. Its slope, $-Qr/(4\pi\varepsilon_0R^3)$, is minus the field of part (a). At the centre $V(0) = \frac32 V(R)$, and the difference $V(0) - V(R) = Q/(8\pi\varepsilon_0R)$ equals $\rho R^2/(6\varepsilon_0)$ with $\rho = 3Q/(4\pi R^3)$: the first box of Problem 1(c).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+The total work needed to assemble a charge distribution can be written as an integral over the field,
+
+<Formula label="The energy from the field" tex="W = \frac12\,\varepsilon_0\int_{\text{all space}}\left|\vec E\right|^2\,d^3x" cite="mit" at="Problem 3(c), eq. (3.1), p. 3" />
+
+Calculate $W$ for the ball from this expression.
+
+The number box is our addition: give $W$ for a ball of radius 2.0 cm with a charge of 30 nC.
+
+<Hint>
+
+The field depends on $r$ only, so integrate over thin shells of volume $4\pi r^2\,dr$. There are two integrals, one for inside and one for outside.
+
+</Hint>
+
+<Answer id="p3-w" label="$W =$" expr="3*Q^2/(20*pi*eps0*R)"
+  vars={{ Q: [0.5, 2], eps0: [0.5, 2], R: [0.5, 2] }}
+  names={{ Q: "Q", eps0: "\\varepsilon_0", R: "R" }}
+  mistakes={[
+    { expr: "Q^2/(8*pi*eps0*R)", hint: "That is the energy of the field outside the ball only, which is also the energy of a charged shell. The field inside the ball stores energy too." },
+    { expr: "Q^2/(40*pi*eps0*R)", hint: "That is the energy of the field inside the ball only. The integral runs over all space, and most of the energy lies outside." },
+    { expr: "3*Q^2/(10*pi*eps0*R)", hint: "A factor of 2 too large: check the ½ in front of the integral." }
+  ]} />
+
+<Answer id="p3-wnum" label="$W$, in microjoules:" value="243" tolerance="1%" calc="p3-wnum" />
+
+<Solution>
+
+**The idea.** Square the field of part (a) and integrate it shell by shell, inside and outside.
+
+<Step title="Inside the ball">
+
+<Formula label="The field energy inside" tex="W_{\text{in}} = \frac12\,\varepsilon_0\int_0^R\left(\frac{Q\,r}{4\pi\varepsilon_0R^3}\right)^2 4\pi r^2\,dr = \frac{Q^2}{8\pi\varepsilon_0R^6}\cdot\frac{R^5}{5} = \frac{Q^2}{40\pi\varepsilon_0R}" cite="mit" at="Problem 3(c), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Outside the ball">
+
+<Formula label="The field energy outside" tex="W_{\text{out}} = \frac12\,\varepsilon_0\int_R^\infty\left(\frac{Q}{4\pi\varepsilon_0r^2}\right)^2 4\pi r^2\,dr = \frac{Q^2}{8\pi\varepsilon_0}\int_R^\infty\frac{dr}{r^2} = \frac{Q^2}{8\pi\varepsilon_0R}" cite="mit" at="Problem 3(c), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The total">
+
+<Formula label="The energy of the uniformly charged ball" tex="W = W_{\text{in}} + W_{\text{out}} = \frac{Q^2}{\pi\varepsilon_0R}\left(\frac{1}{40} + \frac{5}{40}\right) = \frac{3\,Q^2}{20\pi\varepsilon_0R} = \frac35\,\frac{Q^2}{4\pi\varepsilon_0R}" cite="mit" at="Problem 3(c), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The number">
+
+With $1/(4\pi\varepsilon_0) = 8.988\times10^9$ m/F, $Q^2/(4\pi\varepsilon_0R) = 8.988\times10^9\times(30\times10^{-9})^2/0.020 = 4.044\times10^{-4}$ J, and three fifths of it is $2.43\times10^{-4}$ J, or 243 μJ.
+
+</Step>
+
+<Step title="Check the result">
+
+The units are a charge squared over $\varepsilon_0$ times a length: an energy. The result is larger than the $Q^2/(8\pi\varepsilon_0R)$ of a shell of the same charge and radius (Lecture Notes 4), as it should be: the outside fields are the same, and the ball has a field inside as well.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+The same work can be written as an integral over the charge,
+
+<Formula label="The energy from the charge and the potential" tex="W = \frac12\int_{\text{all space}}\rho\,V\,d^3x" cite="mit" at="Problem 3(d), eq. (3.2), p. 3" />
+
+where $\rho$ is the charge density. Calculate $W$ again from this expression and show that it agrees with part (c).
+
+The number box is our addition. The integrand of this second expression is zero outside the ball. What fraction of the first integral, the one over the field in part (c), comes from outside the ball?
+
+<Hint>
+
+The density is constant inside the ball and zero outside, so only the inside potential of part (b) is needed.
+
+</Hint>
+
+<Answer id="p3-out" label="Fraction of the field energy outside the ball:" value="0.833" tolerance="1%" calc="p3-out" />
+
+<Solution>
+
+**The idea.** Only the ball itself contributes, with its constant density and the potential of part (b).
+
+<Step title="The integral">
+
+Inside the ball $\rho = 3Q/(4\pi R^3)$. With the potential of part (b),
+
+<Formula label="The energy from the charge, worked out" tex="W = \frac12\cdot\frac{3Q}{4\pi R^3}\cdot\frac{Q}{8\pi\varepsilon_0R^3}\int_0^R\left(3R^2 - r^2\right)4\pi r^2\,dr = \frac{3\,Q^2}{16\pi\varepsilon_0R^6}\left(R^5 - \frac{R^5}{5}\right) = \frac{3\,Q^2}{20\pi\varepsilon_0R}" cite="mit" at="Problem 3(d), p. 3 (our own solution)" />
+
+the same as in part (c).
+
+</Step>
+
+<Step title="Where the energy sits">
+
+From part (c), $W_{\text{out}}/W = \frac{5}{40}\big/\frac{6}{40} = \frac56 = 0.833$. The two expressions give the same total, but they spread it over space quite differently: the first puts five sixths of it outside the ball, the second puts all of it inside. Only the total has a meaning in electrostatics.
+
+</Step>
+
+<Step title="Check the result">
+
+A rough estimate of the second integral: the potential inside lies between $V(R)$ and $\frac32V(R)$, so $W = \frac12 Q\times$ (an average potential) must lie between $\frac12QV(R)$ and $\frac34QV(R)$, that is between 0.5 and 0.75 times $Q^2/(4\pi\varepsilon_0R)$. The result, 0.6, does.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Calculating forces using virtual work" points={10} mit="Problem 4">
+
+A parallel-plate capacitor has plates of area $A$ a distance $d$ apart, with $d$ small enough for the field to be uniform between the plates and zero outside. Find the force with which the plates attract each other by the method of virtual work of [Lecture Notes 4](/courses/8-07/conductor-surface-forces-capacitance): let one plate move by a very small amount, use conservation of energy to find the work this takes, and read off the force. Do it in two ways.
+
+<Part label="a" points={5}>
+
+Keep the charges $\pm Q$ on the plates fixed (the plates are isolated). Give the magnitude of the attractive force.
+
+<Hint>
+
+Write the stored energy in terms of $Q$ and the gap $d$. If the gap grows by a small amount while $Q$ stays the same, by how much does the energy change, and who supplies it?
+
+</Hint>
+
+<Hint>
+
+With the plates isolated, the only energy that enters is the work done by whoever pulls the plate, against the electric force.
+
+</Hint>
+
+<Answer id="p4-fq" label="$F =$" expr="Q^2/(2*eps0*A)"
+  vars={{ Q: [0.5, 2], eps0: [0.5, 2], A: [0.5, 2], d: [0.3, 0.8] }}
+  names={{ Q: "Q", eps0: "\\varepsilon_0", A: "A", d: "d" }}
+  mistakes={[
+    { expr: "Q^2/(eps0*A)", hint: "That is the charge times the full field between the plates. A plate does not feel its own field: it feels only the field of the other plate, which is half of the total." },
+    { expr: "Q^2*d/(2*eps0*A)", hint: "That is the stored energy, not the force. The force is the rate at which this energy changes with the gap." }
+  ]} />
+
+<Solution>
+
+**The idea.** At fixed charge nothing but the hand that moves the plate exchanges energy with the capacitor, so the work of the hand equals the change of the field energy.
+
+<Step title="The energy at fixed charge">
+
+The field between the plates is $E = Q/(\varepsilon_0A)$, whatever the gap, and it fills the volume $Ad$. So
+
+<Formula label="The stored energy in terms of the charge" tex="W = \frac12\,\varepsilon_0E^2\cdot A\,d = \frac{Q^2\,d}{2\,\varepsilon_0A}" cite="mit" at="Problem 4(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Virtual work">
+
+Pull the plates apart by a small amount, from $d$ to $d + \delta$. The energy rises by $Q^2\delta/(2\varepsilon_0A)$. The hand supplied it, by pulling with a force equal and opposite to the electric force over the distance $\delta$. So
+
+<Formula label="The force at fixed charge" tex="F\,\delta = \frac{Q^2}{2\,\varepsilon_0A}\,\delta \quad\Longrightarrow\quad F = \frac{Q^2}{2\,\varepsilon_0A}" cite="mit" at="Problem 4(a), p. 3 (our own solution)" />
+
+The energy rises when the gap grows, so the electric force opposes the growth: the plates attract.
+
+</Step>
+
+<Step title="Check the result">
+
+The force per unit area is $F/A = \sigma^2/(2\varepsilon_0)$ with $\sigma = Q/A$: the pressure $\frac12\sigma E$ on a conductor's surface that Lecture Notes 4 found for a sphere. The force does not depend on the gap, as expected for a uniform field.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Now keep the voltage $V$ between the plates fixed (a battery stays connected). Give the magnitude of the attractive force in terms of $V$.
+
+The choice box and the number box are our addition. For the number box: the plates have an area of 400 cm² and are 1.5 mm apart, with 300 V between them.
+
+<Hint>
+
+At fixed voltage the charge on the plates changes when the gap changes. The battery moves that charge through the voltage $V$, so it does work as well: there are now three terms in the energy balance.
+
+</Hint>
+
+<Hint>
+
+Write the stored energy and the charge in terms of the capacitance $C$ and $V$. When $C$ changes by a small amount, compare the change of the stored energy with the work done by the battery.
+
+</Hint>
+
+<Answer id="p4-batt" label="When the gap shrinks a little at fixed voltage, the stored energy" choices={["falls, and the fall is the work done by the electric force", "rises, and the battery supplies twice that rise", "stays the same, because the voltage is fixed", "rises, and the electric force supplies all of that rise"]} answer={1} />
+
+<Answer id="p4-fv" label="$F =$" expr="eps0*A*V^2/(2*d^2)"
+  vars={{ V: [0.5, 2], eps0: [0.5, 2], A: [0.5, 2], d: [0.3, 0.8] }}
+  names={{ V: "V", eps0: "\\varepsilon_0", A: "A", d: "d" }}
+  mistakes={[
+    { expr: "eps0*A*V^2/(2*d)", hint: "That is the stored energy, not the force. The force comes from how the energy changes with the gap, which brings in another factor 1/d." },
+    { expr: "eps0*A*V^2/d^2", hint: "A factor ½ is missing. Of the work V²·dC that the battery does, half goes into the field; only the other half is mechanical work." }
+  ]} />
+
+<Answer id="p4-num" label="$F$, in millinewtons:" value="7.08" tolerance="1%" calc="p4-num" />
+
+<Solution>
+
+**The idea.** At fixed voltage the battery takes part in the energy balance. It supplies twice the rise of the field energy, and the other half is the mechanical work.
+
+<Step title="Energy, charge and capacitance">
+
+With $C = \varepsilon_0A/d$, the stored energy is $W = \frac12CV^2$ and the charge is $Q = CV$. Let the gap change by a small amount, so that the capacitance changes by $dC$. Then at fixed $V$
+
+<Formula label="The changes at fixed voltage" tex="dW = \frac12\,V^2\,dC, \qquad dQ = V\,dC, \qquad dW_{\text{battery}} = V\,dQ = V^2\,dC" cite="mit" at="Problem 4(b), p. 3 (our own solution)" />
+
+The battery does the work $V\,dQ$ because it lifts the charge $dQ$ through the potential difference $V$.
+
+</Step>
+
+<Step title="The balance">
+
+The work of the battery goes into the field and into mechanical work done by the electric force on the plate:
+
+<Formula label="The mechanical work at fixed voltage" tex="dW_{\text{mech}} = dW_{\text{battery}} - dW = V^2\,dC - \frac12\,V^2\,dC = \frac12\,V^2\,dC" cite="mit" at="Problem 4(b), p. 3 (our own solution)" />
+
+When the gap shrinks, $C$ grows, so $dW_{\text{mech}}$ is positive: the electric force does positive work on a plate that moves towards the other. The force is attractive again. For a gap that shrinks by $\delta$, $dC = \varepsilon_0A\,\delta/d^2$, so
+
+<Formula label="The force at fixed voltage" tex="F\,\delta = \frac12\,V^2\,\frac{\varepsilon_0A}{d^2}\,\delta \quad\Longrightarrow\quad F = \frac{\varepsilon_0A\,V^2}{2\,d^2}" cite="mit" at="Problem 4(b), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The number">
+
+$F = 8.854\times10^{-12}\times0.040\times300^2/(2\times0.0015^2) = 7.08\times10^{-3}$ N, or 7.08 mN, about the weight of 0.7 g.
+
+</Step>
+
+<Step title="Check the result">
+
+The two parts must agree, because the force on a plate depends on the charges present at that moment and not on what would be held fixed. Put $V = Qd/(\varepsilon_0A)$ into the result: $\varepsilon_0A\,Q^2d^2/(2d^2\varepsilon_0^2A^2) = Q^2/(2\varepsilon_0A)$, the result of part (a). In numbers: the charge is $Q = \varepsilon_0AV/d = 70.8$ nC, and $Q^2/(2\varepsilon_0A) = 7.08$ mN as well. Had the battery been forgotten, the rising energy would have suggested that the plates repel.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Mutual capacitance" points={15} mit="Problem 5">
+
+For $n$ conductors, with the potential zero at infinity, the charges and the potentials are related linearly:
+
+<Formula label="The capacitance matrix" tex="Q_i = \sum_{j=1}^{n} C_{ij}\,V_j, \qquad i, j = 1, 2, \ldots, n" cite="mit" at="Problem 5, eq. (5.1), p. 3" />
+
+Here $Q_i$ is the charge on conductor $i$ and $V_i$ its potential. Lecture Notes 4 reach this relation by inverting the one that gives the potentials in terms of the charges,
+
+<Formula label="The potentials in terms of the charges" tex="V_i = \sum_j P_{ij}\,Q_j, \qquad C = P^{-1}" cite="reading1" at="eqs. (4.15) and (4.17), pp. 4–5" />
+
+where the numbers $P_{ij}$ depend on the shapes and positions of the conductors only.
+
+<Part label="a" points={6}>
+
+Prove that $C_{ij} = C_{ji}$.
+
+MIT's hint: start with all conductors uncharged, put a charge $Q_i$ on conductor $i$, and then a charge $Q_j$ on conductor $j$; find the energy this takes. Then do it again in the opposite order, and compare.
+
+The box is our addition. In the first order, give the work needed for the second step alone: adding the charge $Q_j$ to conductor $j$ while conductor $i$ already carries $Q_i$ and all the other conductors are uncharged. Write it with $P_{ji}$ and $P_{jj}$.
+
+<Hint>
+
+It is easier to work with the matrix $P_{ij}$ than with $C_{ij}$, because the steps are described by their charges. A small charge $dq$ brought from infinity to a conductor at potential $V$ takes the work $V\,dq$.
+
+</Hint>
+
+<Hint>
+
+While the charge on conductor $j$ grows from 0 to $Q_j$, its potential has two parts: one from the charge already on conductor $i$, which stays the same, and one from its own charge so far, which grows.
+
+</Hint>
+
+<Hint>
+
+The final state is the same for both orders, and electrostatic forces are conservative. Once you have a statement about $P_{ij}$, ask what it means for the inverse matrix.
+
+</Hint>
+
+<Answer id="p5-step" label="Work of the second step:" expr="Pji*Qi*Qj + Pjj*Qj^2/2"
+  vars={{ Pji: [0.5, 2], Pjj: [0.5, 2], Qi: [0.5, 2], Qj: [0.5, 2] }}
+  names={{ Pji: "P_{ji}", Pjj: "P_{jj}", Qi: "Q_i", Qj: "Q_j" }}
+  mistakes={[
+    { expr: "Pjj*Qj^2/2", hint: "That is the work to charge conductor j when all the others are uncharged. Here conductor i already carries Q_i, which raises the potential of conductor j before any charge arrives there." },
+    { expr: "Pji*Qi*Qj + Pjj*Qj^2", hint: "The second term needs a factor ½: the conductor's own part of its potential grows from zero as the charge arrives, so on average it is half its final value." },
+    { expr: "Pji*Qi*Qj/2 + Pjj*Qj^2/2", hint: "The first term has no factor ½: the potential that Q_i makes at conductor j is there in full from the start, for every bit of charge that arrives." }
+  ]} />
+
+<Solution>
+
+**The idea.** The energy of the final state cannot depend on the order in which the charges were brought in. Working out the energy for both orders gives two expressions that differ in one term only.
+
+<Step title="First i, then j">
+
+With only conductor $i$ charged, to an amount $q$, its potential is $P_{ii}\,q$. Bringing in the next $dq$ takes the work $P_{ii}\,q\,dq$, so the first step takes $\frac12P_{ii}Q_i^2$. In the second step conductor $j$ carries $q$, growing from 0 to $Q_j$, and its potential is $V_j = P_{ji}Q_i + P_{jj}\,q$. So
+
+<Formula label="The work of the second step" tex="\int_0^{Q_j}\left(P_{ji}\,Q_i + P_{jj}\,q\right)dq = P_{ji}\,Q_i\,Q_j + \frac12\,P_{jj}\,Q_j^2" cite="mit" at="Problem 5(a), pp. 3–4 (our own solution)" />
+
+and the total is
+
+<Formula label="The energy, first order" tex="W = \frac12\,P_{ii}\,Q_i^2 + \frac12\,P_{jj}\,Q_j^2 + P_{ji}\,Q_i\,Q_j" cite="mit" at="Problem 5(a), pp. 3–4 (our own solution)" />
+
+(No sum over $i$ or $j$ is meant in this part: they are two fixed conductors.)
+
+</Step>
+
+<Step title="First j, then i">
+
+The same steps with the two conductors exchanged give
+
+<Formula label="The energy, opposite order" tex="W' = \frac12\,P_{jj}\,Q_j^2 + \frac12\,P_{ii}\,Q_i^2 + P_{ij}\,Q_j\,Q_i" cite="mit" at="Problem 5(a), pp. 3–4 (our own solution)" />
+
+</Step>
+
+<Step title="Compare">
+
+Both orders end in the same state: the same charges on the same conductors, and so (the charges on conductors arrange themselves in one way only) the same field. The energy of a state is $\frac12\varepsilon_0\int|\vec E|^2\,d^3x$, fixed by the field. So $W = W'$, and since $Q_i$ and $Q_j$ are arbitrary,
+
+<Formula label="The matrix P is symmetric" tex="P_{ij} = P_{ji}" cite="mit" at="Problem 5(a), pp. 3–4 (our own solution)" />
+
+</Step>
+
+<Step title="From P to C">
+
+$C$ is the inverse of $P$, and the inverse of a symmetric matrix is symmetric: taking the transpose of $PC = 1$ gives $C^{T}P^{T} = C^{T}P = 1$, so $C^{T}$ is also the inverse of $P$, and an inverse is unique. Hence $C^{T} = C$, that is $C_{ij} = C_{ji}$.
+
+</Step>
+
+<Step title="Check the result">
+
+The concentric shells of part (c) are an example: there $P_{12} = P_{21} = 1/(4\pi\varepsilon_0b)$. The result says something that is not obvious: the potential that a charge on conductor $i$ makes on conductor $j$ equals the potential that the same charge on $j$ would make on $i$, whatever the two shapes.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Now take two conductors used as a capacitor: they carry the charges $Q_1 = Q$ and $Q_2 = -Q$, and the ordinary capacitance $C$ is defined with the potential difference between them,
+
+<Formula label="The ordinary capacitance" tex="Q = C\,V, \qquad V = V_1 - V_2" cite="reading1" at="eq. (4.18), p. 5" />
+
+Find $C$ in terms of $C_{11}$, $C_{12}$, $C_{21}$ and $C_{22}$. Keep $C_{12}$ and $C_{21}$ as separate letters in the box, as MIT asks, even though part (a) shows that they are equal.
+
+<Hint>
+
+Write the capacitance-matrix relation as two equations for the two unknown potentials $V_1$ and $V_2$, with $Q$ and $-Q$ on the left.
+
+</Hint>
+
+<Hint>
+
+Solve the pair of linear equations for $V_1$ and $V_2$, and take the difference.
+
+</Hint>
+
+<Answer id="p5-c" label="$C =$" expr="(C11*C22 - C12*C21)/(C11 + C12 + C21 + C22)"
+  vars={{ C11: [2, 4], C22: [2.5, 4.5], C12: [-1.2, -0.4], C21: [-1.4, -0.5] }}
+  names={{ C11: "C_{11}", C12: "C_{12}", C21: "C_{21}", C22: "C_{22}" }}
+  mistakes={[
+    { expr: "C11", hint: "C₁₁ is the charge on conductor 1 per unit of its potential when conductor 2 is at zero potential. With the charge −Q on conductor 2 its potential is in general not zero, so the other elements come in too." },
+    { expr: "(C11 + C12 + C21 + C22)/(C11*C22 - C12*C21)", hint: "That is upside down: it is (V₁ − V₂)/Q. The capacitance is Q/(V₁ − V₂)." },
+    { expr: "(C11*C22 - C12*C21)/(C11 - C12 - C21 + C22)", hint: "Check the signs when you subtract V₂ from V₁ with Q₂ = −Q: all four elements enter the sum with a plus sign." },
+    { expr: "-C12", hint: "That holds only when conductor 2 encloses conductor 1, as in part (c). For two conductors in general all four elements are needed." }
+  ]} />
+
+<Solution>
+
+**The idea.** Two linear equations, two unknown potentials; the capacitance is the charge divided by their difference.
+
+<Step title="Solve for the potentials">
+
+The equations are $Q = C_{11}V_1 + C_{12}V_2$ and $-Q = C_{21}V_1 + C_{22}V_2$. With the determinant $D = C_{11}C_{22} - C_{12}C_{21}$,
+
+<Formula label="The two potentials" tex="V_1 = \frac{\left(C_{22} + C_{12}\right)Q}{D}, \qquad V_2 = -\frac{\left(C_{11} + C_{21}\right)Q}{D}" cite="mit" at="Problem 5(b), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The capacitance">
+
+<Formula label="The ordinary capacitance from the matrix" tex="C = \frac{Q}{V_1 - V_2} = \frac{C_{11}\,C_{22} - C_{12}\,C_{21}}{C_{11} + C_{12} + C_{21} + C_{22}}" cite="mit" at="Problem 5(b), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Put the potentials back into the first equation: $C_{11}(C_{22} + C_{12}) - C_{12}(C_{11} + C_{21}) = C_{11}C_{22} - C_{12}C_{21} = D$, so the right side is $Q$. The units fit too: a capacitance squared over a capacitance. In terms of the other matrix the result is simpler: $V_1 - V_2 = (P_{11} - P_{12} - P_{21} + P_{22})\,Q$, so $1/C = P_{11} - P_{12} - P_{21} + P_{22}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Two thin concentric conducting spherical shells have the radii $a$ and $b$, with $a < b$. The inner shell is conductor 1 and the outer shell conductor 2. Find the matrix $C_{ij}$, and from it and part (b) the ordinary capacitance $C$. (MIT's sheet asks you to compare with an example in a textbook; compare instead with the spherical capacitor of the 8.02 course notes, quoted in the solution.)
+
+The number box is our addition: give $C$ for $a = 3.0$ cm and $b = 5.0$ cm.
+
+<Hint>
+
+Start with the potentials for given charges, which are easy: a charged shell acts on the outside like a point charge at its centre, and makes a constant potential inside itself.
+
+</Hint>
+
+<Hint>
+
+That gives the matrix $P_{ij}$. Invert the 2 × 2 matrix to get $C_{ij}$.
+
+</Hint>
+
+<Answer id="p5-c11" label="$C_{11} =$" expr="4*pi*eps0*a*b/(b - a)"
+  vars={{ eps0: [0.5, 2], a: [0.3, 0.8], b: [1.2, 3] }}
+  names={{ eps0: "\\varepsilon_0", a: "a", b: "b" }}
+  mistakes={[
+    { expr: "4*pi*eps0*a", hint: "That is the capacitance of the inner shell alone in empty space. C₁₁ is defined with the outer shell present and held at zero potential, which draws more charge onto the inner shell." },
+    { expr: "4*pi*eps0*b^2/(b - a)", hint: "That is C₂₂, the element of the outer shell." }
+  ]} />
+
+<Answer id="p5-c22" label="$C_{22} =$" expr="4*pi*eps0*b^2/(b - a)"
+  vars={{ eps0: [0.5, 2], a: [0.3, 0.8], b: [1.2, 3] }}
+  names={{ eps0: "\\varepsilon_0", a: "a", b: "b" }}
+  mistakes={[
+    { expr: "4*pi*eps0*a*b/(b - a)", hint: "That is C₁₁. The outer shell held at unit potential, with the inner one at zero, carries charge on its inner face and on its outer face." },
+    { expr: "4*pi*eps0*b", hint: "That is the capacitance of the outer shell alone. With the inner shell held at zero potential there is a field in the gap as well, and extra charge on the inner face of the outer shell." }
+  ]} />
+
+<Answer id="p5-cnum" label="$C$, in picofarads:" value="8.34" tolerance="1%" calc="p5-cnum" />
+
+<Solution>
+
+**The idea.** Find $P_{ij}$ from the potentials of charged shells, invert it, and use part (b).
+
+<Step title="The matrix P">
+
+A charge $Q_1$ on the inner shell gives the potential $Q_1/(4\pi\varepsilon_0a)$ on itself and $Q_1/(4\pi\varepsilon_0b)$ at the outer shell. A charge $Q_2$ on the outer shell makes no field inside itself, so it raises both shells to $Q_2/(4\pi\varepsilon_0b)$. So
+
+<Formula label="The matrix P for two concentric shells" tex="P_{11} = \frac{1}{4\pi\varepsilon_0\,a}, \qquad P_{12} = P_{21} = P_{22} = \frac{1}{4\pi\varepsilon_0\,b}" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="Invert it">
+
+The determinant of $P$ is $\dfrac{1}{(4\pi\varepsilon_0)^2}\left(\dfrac{1}{ab} - \dfrac{1}{b^2}\right) = \dfrac{b - a}{(4\pi\varepsilon_0)^2\,a\,b^2}$. The inverse of a 2 × 2 matrix swaps the diagonal elements, changes the sign of the others and divides by the determinant:
+
+<Formula label="The capacitance matrix of two concentric shells" tex="C_{11} = \frac{4\pi\varepsilon_0\,a\,b}{b - a}, \qquad C_{12} = C_{21} = -\frac{4\pi\varepsilon_0\,a\,b}{b - a}, \qquad C_{22} = \frac{4\pi\varepsilon_0\,b^2}{b - a}" cite="mit" at="Problem 5(c), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The ordinary capacitance">
+
+In the formula of part (b) the sum of the four elements is $C_{22} - C_{11} = 4\pi\varepsilon_0\,b$, and the determinant is $C_{11}C_{22} - C_{11}^2 = C_{11}\cdot 4\pi\varepsilon_0\,b$. So $C = C_{11}$:
+
+<Formula label="The spherical capacitor" tex="C = 4\pi\varepsilon_0\,\frac{a\,b}{b - a}" cite="mit802-ch5" at="Section 5.2, Eq. (5.2.11), p. 7" />
+
+which is the spherical capacitor of the 8.02 course notes. For $a = 3.0$ cm and $b = 5.0$ cm, $ab/(b - a) = 0.075$ m and $C = 1.113\times10^{-10}\times0.075 = 8.34\times10^{-12}$ F, or 8.34 pF.
+
+</Step>
+
+<Step title="Check the result">
+
+The matrix is symmetric, as part (a) requires. $C_{12} = -C_{11}$ says that when the inner shell is held at a potential and the outer shell at zero, the outer shell carries exactly the opposite charge: all field lines from the inner shell end on it. And $C_{22} = C_{11} + 4\pi\varepsilon_0b$: the outer shell at unit potential carries the charge of the gap capacitor on its inner face, plus the charge $4\pi\varepsilon_0b$ of an isolated sphere on its outer face. For these radii $C_{22} = 13.9$ pF.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="Space charge, vacuum diodes and the Child–Langmuir law (our own problem)" points={20} mit="Problem 6">
+
+This is our own problem. MIT's sheet gives for this problem only a pointer to a textbook, the title above, and the advice used in part (e).
+
+A vacuum diode has two flat parallel metal plates of area $A$, a small distance $d$ apart, in a vacuum. The cathode, at $x = 0$, is heated so that electrons leave it freely, with a speed that can be taken as zero. It is at the potential $V = 0$. The anode, at $x = d$, is held at the potential $V_0 > 0$. The electrons (charge $-e$, mass $m$) are pulled across, and after a short time a steady state is reached, in which a current of magnitude $I$ flows and nothing depends on time. The gap then contains a cloud of moving electrons, the **space charge**, whose own field matters. The gap is narrow, so everything depends on $x$ only: the potential $V(x)$, the charge density $\rho(x)$, which is negative, and the speed $v(x)$ of the electrons.
+
+<Part label="a" points={2}>
+
+In the steady state, which of these has the same value at every $x$ between the plates?
+
+<Hint>
+
+In a steady state the amount of charge between any two planes does not change with time. What does that say about the charge that enters and the charge that leaves per second?
+
+</Hint>
+
+<Answer id="p6-const" label="The same at every $x$:" choices={["the charge density of the cloud of electrons", "the speed of the electrons", "the electric field", "the charge that crosses a plane per second"]} answer={3} />
+
+<Solution>
+
+**The idea.** Conservation of charge in a steady state.
+
+<Step title="Charge cannot pile up">
+
+Take the slab between two planes $x_1$ and $x_2$. If more charge entered per second than left, the charge in the slab would grow, and the state would not be steady. So the same charge per second crosses every plane: the current $I$ is the same at every $x$. The electrons speed up on their way, so their density must thin out to keep the current the same; neither $v$ nor $\rho$ is constant. And since $\rho \neq 0$, Gauss's law says the field changes with $x$ too.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Find the speed of an electron at a point where the potential is $V$.
+
+<Hint>
+
+The electron starts at rest where $V = 0$. Its potential energy at a point of potential $V$ is its charge times $V$.
+
+</Hint>
+
+<Answer id="p6-v" label="$v =$" expr="sqrt(2*e*V/m)"
+  vars={{ e: [0.5, 2], V: [0.5, 2], m: [0.5, 2] }}
+  names={{ e: "e", V: "V", m: "m" }}
+  mistakes={[
+    { expr: "sqrt(e*V/m)", hint: "A factor 2 is missing under the root: the kinetic energy is ½mv², with a half." },
+    { expr: "2*e*V/m", hint: "That is v², the square of the speed." }
+  ]} />
+
+<Solution>
+
+**The idea.** Conservation of energy for one electron.
+
+<Step title="Energy">
+
+The potential energy of the electron is $-eV$. It starts with zero kinetic and zero potential energy, so
+
+<Formula label="The speed of an electron" tex="\frac12\,m\,v^2 - e\,V = 0 \quad\Longrightarrow\quad v = \sqrt{\frac{2\,e\,V}{m}}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+</Step>
+
+<Step title="Check the result">
+
+$eV$ is an energy, and an energy over a mass is a speed squared. For $V = 200$ V the speed is $8.39\times10^6$ m/s, under 3% of the speed of light, so Newtonian mechanics is good enough for voltages of this size.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Relate the charge density to the current and the speed, and use part (b) to give the size $|\rho|$ of the charge density at a point where the potential is $V$, in terms of $I$, $A$, $e$, $m$ and $V$.
+
+<Hint>
+
+In one second the electrons within a distance $v$ of a plane cross it. How much charge is that, for a plane of area $A$?
+
+</Hint>
+
+<Answer id="p6-rho" label="$|\rho| =$" expr="I/A*sqrt(m/(2*e*V))"
+  vars={{ I: [0.5, 2], A: [0.5, 2], e: [0.5, 2], V: [0.5, 2], m: [0.5, 2] }}
+  names={{ I: "I", A: "A", e: "e", V: "V", m: "m" }}
+  mistakes={[
+    { expr: "I/A*sqrt(2*e*V/m)", hint: "That multiplies the current per area by the speed. For a fixed current, faster electrons mean a thinner cloud: divide by the speed." },
+    { expr: "I*sqrt(m/(2*e*V))", hint: "That is the charge per unit length of the gap. The charge density is per unit volume: divide by the area A as well." },
+    { expr: "I/A", hint: "That is the current density, the charge crossing per second and per unit area. Divide by the speed to get the charge per unit volume." }
+  ]} />
+
+<Solution>
+
+**The idea.** Current is charge density times speed times area.
+
+<Step title="The current">
+
+In a time $dt$ the charge in a slab of thickness $v\,dt$ crosses a plane: $|\rho|\,A\,v\,dt$. So
+
+<Formula label="Current, density and speed" tex="I = |\rho|\,A\,v \quad\Longrightarrow\quad |\rho| = \frac{I}{A\,v} = \frac{I}{A}\sqrt{\frac{m}{2\,e\,V}}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The units: amperes over square metres over metres per second is coulombs per cubic metre. The cloud is densest where the electrons are slowest, near the cathode, and the formula even gives an infinite density at $V = 0$. Part (e) shows that the total charge in the gap is finite all the same.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+The potential obeys Poisson's equation, which in one dimension reads $d^2V/dx^2 = -\rho/\varepsilon_0$. Show that it takes the form
+
+<Formula label="The equation for the potential in the gap" tex="\frac{d^2V}{dx^2} = \beta\,V^{-1/2}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+with a constant $\beta$, and give $\beta$.
+
+<Hint>
+
+The charge density is negative, so $-\rho = |\rho|$. Put in the result of part (c) and collect everything that does not depend on $x$.
+
+</Hint>
+
+<Answer id="p6-beta" label="$\beta =$" expr="I/(eps0*A)*sqrt(m/(2*e))"
+  vars={{ I: [0.5, 2], A: [0.5, 2], e: [0.5, 2], eps0: [0.5, 2], m: [0.5, 2] }}
+  names={{ I: "I", A: "A", e: "e", eps0: "\\varepsilon_0", m: "m" }}
+  mistakes={[
+    { expr: "I/A*sqrt(m/(2*e))", hint: "The ε₀ of Poisson's equation is missing: the right side is the charge density divided by ε₀." },
+    { expr: "-I/(eps0*A)*sqrt(m/(2*e))", hint: "The sign is reversed. The charge density is negative, so −ρ/ε₀ is positive: the graph of V against x curves upwards." },
+    { expr: "I/(eps0*A)*sqrt(2*e/m)", hint: "The square root is upside down. The density is the current per area divided by the speed, and the speed has e/m under the root." }
+  ]} />
+
+<Solution>
+
+**The idea.** Parts (b) and (c) give the charge density in terms of the potential itself, so Poisson's equation becomes an equation for $V$ alone.
+
+<Step title="Poisson's equation">
+
+With $-\rho = |\rho|$ from part (c),
+
+<Formula label="Poisson's equation with the space charge" tex="\frac{d^2V}{dx^2} = \frac{|\rho|}{\varepsilon_0} = \frac{I}{\varepsilon_0A}\sqrt{\frac{m}{2\,e}}\;V^{-1/2}, \qquad \beta = \frac{I}{\varepsilon_0A}\sqrt{\frac{m}{2\,e}}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+</Step>
+
+<Step title="Check the result">
+
+$\beta$ is positive, so $V(x)$ curves upwards: it lies below the straight line of an empty gap, as it should with negative charge in between. With no current, $\beta = 0$ and $V$ is the straight line $V_0x/d$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={6}>
+
+Solve the equation of part (d). Two conditions hold at the cathode. The first is $V(0) = 0$. The second is special to this problem: the cathode can supply as many electrons as are asked for, and the cloud grows until its own field cancels the field at the cathode's surface, so that $dV/dx = 0$ at $x = 0$. (With a field left there, still more electrons would be pulled out.) The current is then said to be space-charge limited.
+
+MIT's advice for this step: either guess a solution and show that it works, or find a first integral, in the way that mechanics goes from Newton's second-order equation of motion to the first-order equation of energy conservation.
+
+Give $V(x)$ in terms of $\beta$ and $x$. Then give the potential halfway across the gap as a fraction of $V_0$.
+
+<Hint>
+
+To guess: try a power, $V = c\,x^p$, and compare the powers of $x$ on the two sides of the equation.
+
+</Hint>
+
+<Hint>
+
+For a first integral: multiply both sides by $dV/dx$. Each side is then the derivative of something with respect to $x$.
+
+</Hint>
+
+<Hint>
+
+The first integral leaves a first-order equation in which $V$ and $x$ can be separated. Use the two conditions at the cathode to fix the two constants of integration.
+
+</Hint>
+
+<Answer id="p6-vx" label="$V(x) =$" expr="(9*be/4)^(2/3)*x^(4/3)"
+  vars={{ be: [0.5, 2], x: [0.3, 2] }}
+  names={{ be: "\\beta", x: "x" }}
+  mistakes={[
+    { expr: "(9*be/4)^(2/3)*x^(2/3)", hint: "Compare the powers of x: two derivatives lower the power p by 2, and that must equal −p/2, the power of V^(−1/2)." },
+    { expr: "(3*be/2)^(2/3)*x^(4/3)", hint: "The power of x is right, but not the constant. In the first integral, (dV/dx)² equals 4β times the square root of V; check that factor." },
+    { expr: "be*x^2/2", hint: "That solves d²V/dx² = β, with a constant right side. Here the right side depends on V." }
+  ]} />
+
+<Answer id="p6-half" label="$V(d/2)/V_0 =$" value="0.397" tolerance="1%" calc="p6-half" />
+
+<Solution>
+
+**The idea.** The equation has the form of Newton's law for a "position" $V$ at "time" $x$ with a force that depends on position only. Multiplying by the "velocity" $dV/dx$ gives its energy equation.
+
+<Step title="The first integral">
+
+Multiply by $dV/dx$. The left side becomes the derivative of $\frac12(dV/dx)^2$ and the right side the derivative of $2\beta V^{1/2}$:
+
+<Formula label="The first integral" tex="\frac{d}{dx}\left[\frac12\left(\frac{dV}{dx}\right)^2\right] = \frac{d}{dx}\left[2\,\beta\,V^{1/2}\right] \quad\Longrightarrow\quad \frac12\left(\frac{dV}{dx}\right)^2 = 2\,\beta\,V^{1/2}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+The constant of integration is zero, because both $V$ and $dV/dx$ vanish at the cathode.
+
+</Step>
+
+<Step title="Separate and integrate">
+
+Take the positive root (the potential rises towards the anode): $dV/dx = 2\beta^{1/2}V^{1/4}$. Then
+
+<Formula label="The second integration" tex="\int_0^V u^{-1/4}\,du = 2\,\beta^{1/2}\,x \quad\Longrightarrow\quad \frac43\,V^{3/4} = 2\,\beta^{1/2}\,x" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+where $u$ is the variable of integration, and the lower limit uses $V(0) = 0$. Solving for $V$,
+
+<Formula label="The potential in the gap" tex="V(x) = \left(\frac{9\,\beta}{4}\right)^{2/3} x^{4/3}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+</Step>
+
+<Step title="In terms of the anode voltage">
+
+At $x = d$ the potential is $V_0$, so $V_0 = (9\beta/4)^{2/3}d^{4/3}$ and
+
+<Formula label="The potential in terms of the anode voltage" tex="V(x) = V_0\left(\frac{x}{d}\right)^{4/3}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+Halfway, $V = V_0\times 0.5^{4/3} = 0.397\,V_0$, less than the half of an empty gap.
+
+<Plot variable="x" domain={[0, 1]} range={[0, 1]} xLabel="x / d" yLabel="V / V₀"
+  curves={[
+    { expr: "x^(4/3)", label: "with space charge" },
+    { expr: "x", label: "empty gap", dash: true }
+  ]}
+  points={[{ x: 0.5, y: 0.397 }]}
+  caption="Computed from V/V₀ = (x/d)^(4/3) (solid) and from the straight line V/V₀ = x/d of a gap without charge (dashed). The space charge lowers the potential everywhere inside the gap; the dot marks 0.397 at the middle. The solid curve starts with zero slope: no field at the cathode." />
+
+</Step>
+
+<Step title="Check the result">
+
+Put the result back into the equation of part (d). Two derivatives of $x^{4/3}$ give $\frac43\cdot\frac13\,x^{-2/3} = \frac49x^{-2/3}$, so the left side is $\frac49\left(\frac{9\beta}{4}\right)^{2/3}x^{-2/3}$. The right side is $\beta\left(\frac{9\beta}{4}\right)^{-1/3}x^{-2/3}$. Their ratio is $\frac49\cdot\frac{9\beta}{4}\cdot\frac1\beta = 1$. The guess $V = c\,x^p$ leads to the same: the powers give $p - 2 = -p/2$, so $p = \frac43$. The charge density goes as $V^{-1/2}$, that is as $x^{-2/3}$: infinite at the cathode, but its integral over $x$ from 0 is finite, as part (c) promised.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="f" points={4}>
+
+Show that the current is proportional to the 3/2 power of the voltage,
+
+<Formula label="The Child–Langmuir law" tex="I = K\,V_0^{3/2}" cite="mit" at="Problem 6, p. 4 (our own problem; the name of the law is in MIT's title)" />
+
+and give the constant $K$ in terms of $\varepsilon_0$, $A$, $d$, $e$ and $m$. Then give the current for plates of area 2.0 cm², 4.0 mm apart, with 200 V between them. Use $e = 1.602\times10^{-19}$ C and $m = 9.109\times10^{-31}$ kg (CODATA 2018, rounded).
+
+<Hint>
+
+Part (e) gave two expressions for $V(x)$. Setting them equal at $x = d$ fixes $\beta$ in terms of $V_0$ and $d$, and part (d) relates $\beta$ to the current.
+
+</Hint>
+
+<Answer id="p6-k" label="$K =$" expr="4*eps0*A/(9*d^2)*sqrt(2*e/m)"
+  vars={{ eps0: [0.5, 2], A: [0.5, 2], d: [0.5, 2], e: [0.5, 2], m: [0.5, 2] }}
+  names={{ eps0: "\\varepsilon_0", A: "A", d: "d", e: "e", m: "m" }}
+  mistakes={[
+    { expr: "4*eps0*A/(9*d^2)*sqrt(m/(2*e))", hint: "The square root is upside down. Lighter particles move faster and carry more current, so the mass belongs below." },
+    { expr: "4*eps0*A/(9*d)*sqrt(2*e/m)", hint: "Check the power of d: β equals (4/9)·V₀^(3/2)/d², with d squared." },
+    { expr: "9*eps0*A/(4*d^2)*sqrt(2*e/m)", hint: "The factor 9/4 is upside down: from V₀ = (9β/4)^(2/3)·d^(4/3), β is 4/9 of V₀^(3/2)/d²." }
+  ]} />
+
+<Answer id="p6-inum" label="$I$, in milliamperes:" value="82.5" tolerance="1%" calc="p6-inum" />
+
+<Solution>
+
+**The idea.** The condition at the anode ties $\beta$, and with it the current, to the voltage.
+
+<Step title="From β to the current">
+
+From part (e), $(9\beta/4)^{2/3}d^{4/3} = V_0$, so $\beta = \frac49V_0^{3/2}/d^2$. From part (d), $I = \varepsilon_0A\,\beta\sqrt{2e/m}$. So
+
+<Formula label="The current through the diode" tex="I = \frac{4\,\varepsilon_0\,A}{9\,d^2}\sqrt{\frac{2\,e}{m}}\;V_0^{3/2}, \qquad K = \frac{4\,\varepsilon_0\,A}{9\,d^2}\sqrt{\frac{2\,e}{m}}" cite="mit" at="Problem 6, p. 4 (our own problem)" />
+
+</Step>
+
+<Step title="The number">
+
+$\sqrt{2e/m} = \sqrt{3.518\times10^{11}} = 5.931\times10^5$ in SI units. Then $K = 4\times8.854\times10^{-12}\times2.0\times10^{-4}/(9\times0.0040^2)\times5.931\times10^5 = 2.917\times10^{-5}$ A/V$^{3/2}$. With $200^{3/2} = 2828$, the current is $I = 0.0825$ A, or 82.5 mA.
+
+</Step>
+
+<Step title="Check the result">
+
+The diode does not obey Ohm's law: doubling the voltage multiplies the current by $2^{3/2} = 2.83$, not by 2. The reason is in parts (b) and (c): a higher voltage both speeds the electrons up and lets the gap hold more of them. A second check uses Gauss's law. The total charge in the gap is $-\varepsilon_0A$ times the difference of $dV/dx$ between anode and cathode, and $dV/dx$ at the anode is $\frac43V_0/d$. So the cloud holds the charge $-\frac43\varepsilon_0AV_0/d$, a finite amount, and the field at the anode is 4/3 of the field of the empty gap.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 7
+
+<Exercise id="p7" title="The Laplacian of 1/r in the language of distributions" points={20} mit="Problem 7" optional>
+
+This problem is extra credit on MIT's sheet. It comes with a long introduction, because the approach was treated in lecture and not in the course's textbook. Here is that introduction in short.
+
+**The trouble with limits.** In Problem 5 of [Problem Set 1](/courses/8-07/8-07-problem-set-1) the function $1/r$ was smoothed to $1/\sqrt{r^2 + a^2}$, and $g_a(r) \equiv -\nabla^2\left(1/(4\pi\sqrt{r^2 + a^2})\right)$ was shown to have the integral 1 over all space for every $a > 0$, and to go to zero at every $r \neq 0$ as $a \to 0$. That is the intuition behind
+
+<Formula label="The relation to be made precise" tex="-\nabla^2\,\frac{1}{4\pi r} = \delta^3(\vec r)" cite="mit" at="Problem 7, eq. (7.1), p. 4" />
+
+But the order of the limits matters. Integrating first and then letting $a \to 0$ gives 1. Taking the limit first gives a function that is zero everywhere except at one point, and the integral of such a function, as an area under a curve, is zero. So $g_a$ does not tend to a function that acts as a delta function: no ordinary function does. One must integrate first and take the limit afterwards.
+
+**Distributions.** Mathematicians therefore treat the delta function as a **distribution** (or generalized function). What is generalized is integration. An ordinary integral $\int_{-\infty}^{\infty}f(x)\,dx$ turns a function $f$ into a number, and it does so linearly. A distribution is any linear rule that turns each smooth **test function** $f(x)$ into a number; the test functions are also required to fall off rapidly at large $|x|$. The delta function is the rule that gives the value of the test function at one point:
+
+<Formula label="The delta function as a rule" tex="\int f(x)\,\delta(x - x_0)\,dx \equiv f(x_0)" cite="mit" at="Problem 7, eq. (7.6), p. 5" />
+
+The integral sign here is not an area under a curve. It is only a way of writing the rule.
+
+**Derivatives.** The derivative of a distribution is defined so that integration by parts keeps working. There are no boundary terms, because the test function vanishes fast enough far away:
+
+<Formula label="The derivative of the delta function" tex="\int f(x)\,\frac{d}{dx}\delta(x - x_0)\,dx \equiv -\int\frac{df}{dx}\,\delta(x - x_0)\,dx = -\frac{df}{dx}(x_0)" cite="mit" at="Problem 7, eq. (7.7), p. 6" />
+
+**The function 1/r as a distribution.** As a function, $\nabla^2(1/r)$ is not defined at $r = 0$, where $1/r$ cannot be differentiated. But $1/r$ itself is a perfectly good distribution: the rule that sends a test function $f(\vec r)$ to the ordinary integral $\int f(\vec r)\,(1/r)\,d^3x$, which converges because $d^3x/r = r\,dr\,\sin\theta\,d\theta\,d\phi$. Its Laplacian is then defined by moving the two derivatives onto the test function, by two integrations by parts:
+
+<Formula label="The Laplacian of 1/r as a distribution" tex="\int f(\vec r)\,\nabla^2\!\left(\frac1r\right)d^3x \;\equiv\; -\int\partial_i f(\vec r)\;\partial_i\!\left(\frac1r\right)d^3x \;\equiv\; \int\nabla^2 f(\vec r)\,\left(\frac1r\right)d^3x" cite="mit" at="Problem 7, eqs. (7.10a) to (7.10c), p. 6" />
+
+The last form is an ordinary integral. It defines a number for each test function, which MIT calls $F[f]$; the square brackets say that $F$ is a functional, a function of a function:
+
+<Formula label="The functional F" tex="F[f] \equiv \int\nabla^2 f(\vec r)\,\left(\frac1r\right)d^3x" cite="mit" at="Problem 7, eq. (7.11), p. 6" />
+
+<Part label="a" points={12}>
+
+Evaluate $F[f]$ for an arbitrary smooth test function that falls off rapidly at large $r$, and show that
+
+<Formula label="The value of the functional" tex="F[f] = -4\pi\,f(\vec 0)" cite="mit" at="Problem 7(a), eq. (7.12), p. 7" />
+
+Since the three-dimensional delta function is the rule $\int f(\vec r)\,\delta^3(\vec r)\,d^3x = f(\vec 0)$, this is the same as
+
+<Formula label="The Laplacian of 1/r" tex="\nabla^2\!\left(\frac1r\right) = -4\pi\,\delta^3(\vec r)" cite="mit" at="Problem 7(a), eq. (7.14), p. 7" />
+
+in the sense of distributions.
+
+MIT's hint: although the last form above is the definition, nothing stops you from integrating by parts once, back to the middle form with one derivative on each factor. Write that integral in spherical coordinates.
+
+The box is our addition: give $F[f]$ for the test function $f = 3\,e^{-r^2/b^2}$, with $b$ a constant length.
+
+<Hint>
+
+In the middle form you need $\partial_i(1/r)$, the gradient of $1/r$. It points along $\hat r$. What does its dot product with $\nabla f$ pick out?
+
+</Hint>
+
+<Hint>
+
+The integral is the one of Problem 1(c), with the upper limit at infinity. The volume element supplies exactly the factor that the gradient of $1/r$ lacks.
+
+</Hint>
+
+<Hint>
+
+To be careful about the point $r = 0$: integrate by parts over the region $r > \epsilon$ and show that the surface term on the small sphere goes to zero with $\epsilon$.
+
+</Hint>
+
+<Answer id="p7-f" label="$F[f]$ for $f = 3\,e^{-r^2/b^2}$:" value="-37.7" tolerance="1%" calc="p7-f" />
+
+<Solution>
+
+**The idea.** One integration by parts gives an integrand that is a total derivative in $r$, just as in Problem 1(c); the only thing that survives is the value of $f$ at the origin.
+
+<Step title="Back to the middle form, with care">
+
+$F[f]$ is an ordinary convergent integral, so it is the limit of the integral over $r > \epsilon$. On that region everything is smooth, and by the identity of Problem 1(b) with $g = 1/r$,
+
+<Formula label="One integration by parts" tex="\int_{r>\epsilon}\frac1r\,\nabla^2 f\,d^3x = \int_{r>\epsilon}\nabla\cdot\left(\frac1r\,\nabla f\right)d^3x - \int_{r>\epsilon}\nabla\!\left(\frac1r\right)\cdot\nabla f\,d^3x" cite="mit" at="Problem 7(a), p. 7 (our own solution)" />
+
+The first integral on the right is a surface term. At infinity it vanishes because $f$ falls off rapidly. On the small sphere it is at most $(1/\epsilon)\cdot4\pi\epsilon^2\cdot|\nabla f|_{\max}$, which goes to zero with $\epsilon$.
+
+</Step>
+
+<Step title="Spherical coordinates">
+
+With $\nabla(1/r) = -\hat r/r^2$ and $d^3x = r^2\,dr\,\sin\theta\,d\theta\,d\phi$,
+
+<Formula label="The remaining integral" tex="-\int_{r>\epsilon}\nabla\!\left(\frac1r\right)\cdot\nabla f\,d^3x = \int\sin\theta\,d\theta\,d\phi\int_\epsilon^\infty\frac{\partial f}{\partial r}\,dr = -\int\sin\theta\,d\theta\,d\phi\;f(\epsilon, \theta, \phi)" cite="mit" at="Problem 7(a), p. 7 (our own solution)" />
+
+because $f$ vanishes at infinity. As $\epsilon \to 0$, $f(\epsilon, \theta, \phi) \to f(\vec 0)$ in every direction, and the integral over the angles gives $4\pi$. So $F[f] = -4\pi f(\vec 0)$.
+
+</Step>
+
+<Step title="The box, and a check">
+
+For $f = 3e^{-r^2/b^2}$, $f(\vec 0) = 3$ and $F = -12\pi = -37.7$, whatever $b$ is. Check it from the definition. For a function of $r$ alone, $\nabla^2f = f'' + 2f'/r$, which here is $3\left(4r^2/b^4 - 6/b^2\right)e^{-r^2/b^2}$. Then
+
+<Formula label="The functional for a Gaussian, directly" tex="F = \int_0^\infty 3\left(\frac{4r^2}{b^4} - \frac{6}{b^2}\right)e^{-r^2/b^2}\,\frac1r\,4\pi r^2\,dr = 12\pi\left(\frac{4}{b^4}\cdot\frac{b^4}{2} - \frac{6}{b^2}\cdot\frac{b^2}{2}\right) = 12\pi\,(2 - 3) = -12\pi" cite="mit" at="Problem 7(a), p. 7 (our own addition)" />
+
+using $\int_0^\infty r^3e^{-r^2/b^2}dr = b^4/2$ and $\int_0^\infty r\,e^{-r^2/b^2}dr = b^2/2$. The ordinary integral feels the whole function, yet its value depends on $f(\vec 0)$ alone: that is what it means for $\nabla^2(1/r)$ to be a delta function.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={8}>
+
+Use the language of distributions to evaluate $\nabla^2\ln r$ in two dimensions, where $r = \sqrt{x^2 + y^2}$. (Problem 6(d) of [Problem Set 1](/courses/8-07/8-07-problem-set-1) found the answer by a different route.)
+
+The box is our addition: the result has the form $\nabla^2\ln r = c\,\delta^2(\vec r)$; give the number $c$.
+
+<Hint>
+
+Define the functional in the same way, with the two derivatives on a test function $f(x, y)$ and with $d^2x = r\,dr\,d\phi$ in polar coordinates. Is the integral of $\ln r$ times a smooth function finite near $r = 0$?
+
+</Hint>
+
+<Hint>
+
+Integrate by parts once, as in part (a). The gradient of $\ln r$ is $\hat r/r$, and the area element carries a factor $r$.
+
+</Hint>
+
+<Answer id="p7-c" label="$c =$" value="6.28" tolerance="1%" calc="p7-c" />
+
+<Solution>
+
+**The idea.** The same steps as in part (a), one dimension lower: $\ln r$ takes the place of $1/r$, and a circle the place of the sphere.
+
+<Step title="The definition">
+
+$\ln r$ is a good distribution in two dimensions: $\int f\,\ln r\;r\,dr\,d\phi$ converges at $r = 0$, since $r\ln r \to 0$ there. Its Laplacian is the rule
+
+<Formula label="The Laplacian of ln r as a distribution" tex="\int f\,\nabla^2\ln r\;d^2x \;\equiv\; \int\nabla^2 f\;\ln r\;d^2x" cite="mit" at="Problem 7(b), p. 7 (our own solution)" />
+
+</Step>
+
+<Step title="One integration by parts">
+
+On the region $r > \epsilon$, $\int\ln r\,\nabla^2 f\,d^2x = \int\nabla\cdot(\ln r\,\nabla f)\,d^2x - \int\nabla\ln r\cdot\nabla f\,d^2x$. The first term is a boundary term. Far away it vanishes; on the small circle it is at most $|\ln\epsilon|\cdot2\pi\epsilon\cdot|\nabla f|_{\max}$, which goes to zero with $\epsilon$. In the second, $\nabla\ln r = \hat r/r$:
+
+<Formula label="The remaining integral in two dimensions" tex="-\int_{r>\epsilon}\frac1r\,\frac{\partial f}{\partial r}\;r\,dr\,d\phi = -\int_0^{2\pi}d\phi\int_\epsilon^\infty\frac{\partial f}{\partial r}\,dr = \int_0^{2\pi}f(\epsilon, \phi)\,d\phi \;\to\; 2\pi\,f(\vec 0)" cite="mit" at="Problem 7(b), p. 7 (our own solution)" />
+
+</Step>
+
+<Step title="The result">
+
+The rule sends every test function to $2\pi$ times its value at the origin, so
+
+<Formula label="The Laplacian of ln r in two dimensions" tex="\nabla^2\ln r = 2\pi\,\delta^2(\vec r)" cite="mit" at="Problem 7(b), p. 7 (our own solution)" />
+
+and $c = 2\pi = 6.28$.
+
+</Step>
+
+<Step title="Check the result">
+
+Try $f = e^{-r^2}$, for which $f(\vec 0) = 1$. In two dimensions $\nabla^2f = f'' + f'/r = (4r^2 - 4)e^{-r^2}$, and $\int_0^\infty(4r^2 - 4)e^{-r^2}\ln r\;2\pi r\,dr = 2\pi$, as a numerical integration confirms (it gives 6.2832). The result also agrees with Problem Set 1, and with electrostatics: $-\ln r/(2\pi\varepsilon_0)$ times $\lambda$ is the potential of a line charge $\lambda$ per unit length, and its Laplacian must be $-\lambda\,\delta^2(\vec r)/\varepsilon_0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
