@@ -1,0 +1,1069 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-11.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# numerical derivatives of the parametric solution (Problem 1(a)), the proper-time integral done numerically (1(d), 1(e)),
+# the areal radius of the light ray (1(f)), numerical derivatives of the potential of the uniform cluster and of the
+# Schwarzschild exterior (Problem 2), a numerical integral of dΦ/dr (2(d)), root finding on the effective potential
+# (Problem 3(b)), and a second form of the orbit integral (3(c)).
+# Problem 1 and 2: c = 1, G kept. Problem 3: GM = 1 (lengths and times in units of GM), except the units of 3(a).
+# The numerical orbit integrations of Problem 3 (SciPy solve_ivp, RK45, rtol = atol = 1e-12, on the second-order
+# equation of 3(a)) were run outside this file while writing; their results are the `kind: fact` entries, and where
+# a result can be found another way (turning points, the advance), that other way is checked here.
+# Short names in the samples: Rstar = R*, R0 = R_0, eta = the cycloid parameter, E = Ê; in Problem 2, M and R are the
+# mass and radius of the uniform cluster, r the radius of the orbit, m = M r³/R³, Phi = Φ(r) of the uniform cluster,
+# rho = 3M/(4πR³); q is the variable of a numerical derivative, integral or root.
+
+page: content/year-5/8.962/8-962-problem-set-11.mdx
+calcs:
+  # ---- Problem 1(a): the closed dust solution
+
+  - id: p1a-rho0
+    kind: identity
+    answer: p1a-rho0
+    where: 'Problem 1(a), answer box: ρ0 = 3/(8πG R0²) against ρ0 = 3a/(8πG) (ȧ² + 1/R0²), the first Friedmann equation solved for ρ0, with ȧ from numerical derivatives of the parametric a(η) and τ(η)'
+    formula: 3/(8*pi*G*R0**2)
+    equals: 3*(1 + cos(eta))/2/(8*pi*G)*((deriv('(1 + cos(q))/2', 'q', eta)/deriv('R0/2*(q + sin(q))', 'q', eta))**2 + 1/R0**2)
+    samples:
+      G: [1, 0.7, 1.5, 1.2]
+      R0: [3, 7.9, 1.5, 12]
+      eta: [0.3, 1.1, 2.0, 2.9]
+    tolerance: 1e-6
+    shown: ['id="p1a-rho0"', '\qquad\Longleftrightarrow\qquad \rho_0 = \frac{3}{8\pi G R_0^2}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-lhs
+    kind: identity
+    where: 'Problem 1(a), solution: ȧ² = sin²η/(4R0²a²) = (1 − a)/(R0² a), with a = (1 + cos η)/2'
+    formula: sin(eta)**2/(4*R0**2*((1 + cos(eta))/2)**2)
+    equals: (1 - (1 + cos(eta))/2)/(R0**2*(1 + cos(eta))/2)
+    samples:
+      R0: [3, 7.9, 1.5, 12]
+      eta: [0.3, 1.1, 2.0, 2.9]
+    tolerance: 1e-12
+    shown: ['\dot a^2 = \frac{\sin^2\eta}{4R_0^2a^2} = \frac{1 - a}{R_0^2\,a} = \frac{1}{R_0^2\,a} - \frac{1}{R_0^2}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-f2
+    kind: identity
+    where: 'Problem 1(a), solution: ä = −1/(2R0²a²) (numerical derivative of ȧ = −tan(η/2)/R0 over dτ/dη) equals −(4πG/3) ρ a with ρ = ρ0/a³ and ρ0 = 3/(8πG R0²)'
+    formula: deriv('-tan(q/2)/R0', 'q', eta)/(R0*(1 + cos(eta))/2)
+    equals: -4*pi*G/3*(3/(8*pi*G*R0**2))/((1 + cos(eta))/2)**2
+    samples:
+      G: [1, 0.7, 1.5, 1.2]
+      R0: [3, 7.9, 1.5, 12]
+      eta: [0.3, 1.1, 2.0, 2.9]
+    tolerance: 1e-6
+    shown: ['\ddot a = \frac{d\dot a/d\eta}{d\tau/d\eta} = -\frac{1}{2R_0 a}\cdot\frac{1}{R_0 a} = -\frac{1}{2R_0^2a^2}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(c), (d), (e): the surface from outside
+
+  - id: p1c-turn
+    kind: identity
+    answer: p1c-turn
+    where: 'Problem 1(c), answer box: R = 2GM/(1 − Ê²) against the root of 1 − 2GM/q − Ê² found numerically'
+    formula: 2*G*M/(1 - E**2)
+    equals: solve('1 - 2*G*M/q - E**2', 'q', 2*G*M, 1e6)
+    samples:
+      G: [1, 0.7, 1.5, 0.5]
+      M: [1, 2, 1.3, 1.8]
+      E: [0.3, 0.6, 0.85, 0.5]
+    tolerance: 1e-9
+    shown: ['id="p1c-turn"', 'R = \frac{2GM}{1 - \hat E^2}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-tau
+    kind: identity
+    where: 'Problem 1(d), statement and solution: √(R*³/(8GM)) (η + sin η) against the integral of 1/√(2GM/q − 2GM/R*) from r(η) = (R*/2)(1 + cos η) to R*, done numerically'
+    formula: sqrt(Rstar**3/(8*G*M))*(eta + sin(eta))
+    equals: integrate('1/sqrt(2*G*M/q - 2*G*M/Rstar)', 'q', Rstar/2*(1 + cos(eta)), Rstar)
+    samples:
+      G: [1, 0.7, 1.5, 1]
+      M: [1, 2, 1.3, 1]
+      Rstar: [5, 12, 20, 8]
+      eta: [0.4, 1.2, 2.2, 3.0]
+    tolerance: 1e-6
+    shown: ['\tau = \sqrt{\frac{R_*^3}{8GM}}\left(\eta + \sin\eta\right)']
+    source: {cite: mit, at: 'Problem 1(d), p. 2'}
+    origin: mit
+
+  - id: p1d-sub
+    kind: identity
+    where: 'Problem 1(d), solution: 2GM/r − 2GM/R* = (2GM/R*) tan²(η/2) for r = (R*/2)(1 + cos η)'
+    formula: 2*G*M/(Rstar/2*(1 + cos(eta))) - 2*G*M/Rstar
+    equals: 2*G*M/Rstar*tan(eta/2)**2
+    samples:
+      G: [1, 0.7, 1.5]
+      M: [1, 2, 1.3]
+      Rstar: [5, 12, 20]
+      eta: [0.4, 1.2, 2.2]
+    tolerance: 1e-12
+    shown: ['= \frac{2GM}{R_*}\tan^2\frac{\eta}{2}']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-tc
+    kind: identity
+    answer: p1d-tc
+    where: 'Problem 1(d), answer box: π√(R*³/(8GM)) against the proper-time integral from 0 to R*, done numerically'
+    formula: pi*sqrt(Rstar**3/(8*G*M))
+    equals: integrate('1/sqrt(2*G*M/q - 2*G*M/Rstar)', 'q', 0, Rstar)
+    samples:
+      G: [1, 0.7, 1.5, 1]
+      M: [1, 2, 1.3, 1]
+      Rstar: [5, 12, 20, 8]
+    tolerance: 1e-6
+    shown: ['id="p1d-tc"', '\tau = \pi\sqrt{\frac{R_*^3}{8GM}} \quad \text{at } r = 0']
+    source: {cite: mit, at: 'Problem 1(d) (our own addition)'}
+    origin: page-own
+
+  - id: p1d-newton
+    kind: identity
+    where: 'Problem 1(d), check: π√(R*³/(8GM)) is the Newtonian free-fall time (π/2)√(R*³/(2GM))'
+    formula: pi*sqrt(Rstar**3/(8*G*M))
+    equals: pi/2*sqrt(Rstar**3/(2*G*M))
+    samples:
+      G: [1, 0.7]
+      M: [1, 2]
+      Rstar: [5, 12]
+    tolerance: 1e-12
+    shown: ['$\frac{\pi}{2}\sqrt{R_*^3/(2GM)}$']
+    source: {cite: mit, at: 'Problem 1(d) (our own check)'}
+    origin: page-own
+
+  - id: p1e-r0
+    kind: identity
+    answer: p1e-r0
+    where: 'Problem 1(e), answer box: R0 = √(R*³/(2GM)) against 2τ/(η + sin η), τ from the numerical proper-time integral (the interior τ is (R0/2)(η + sin η))'
+    formula: sqrt(Rstar**3/(2*G*M))
+    equals: 2*integrate('1/sqrt(2*G*M/q - 2*G*M/Rstar)', 'q', Rstar/2*(1 + cos(eta)), Rstar)/(eta + sin(eta))
+    samples:
+      G: [1, 0.7, 1.5, 1]
+      M: [1, 2, 1.3, 1]
+      Rstar: [5, 12, 20, 8]
+      eta: [0.4, 1.2, 2.2, 3.0]
+    tolerance: 1e-6
+    shown: ['id="p1e-r0"', 'R_0 = 2\sqrt{\frac{R_*^3}{8GM}} = \sqrt{\frac{R_*^3}{2GM}}']
+    source: {cite: mit, at: 'Problem 1(e) (our own solution)'}
+    origin: page-own
+
+  - id: p1e-chi
+    kind: identity
+    answer: p1e-chi
+    where: 'Problem 1(e), answer box: χs = arcsin √(2GM/R*) against arcsin(R*/R0), R0 from the numerical proper-time integral'
+    formula: asin(sqrt(2*G*M/Rstar))
+    equals: asin(Rstar*(eta + sin(eta))/(2*integrate('1/sqrt(2*G*M/q - 2*G*M/Rstar)', 'q', Rstar/2*(1 + cos(eta)), Rstar)))
+    samples:
+      G: [1, 0.7, 1.5, 1]
+      M: [1, 2, 1.3, 1]
+      Rstar: [5, 12, 20, 8]
+      eta: [0.4, 1.2, 2.2, 3.0]
+    tolerance: 1e-6
+    shown: ['id="p1e-chi"', '\chi_s = \arcsin\sqrt{\frac{2GM}{R_*}}']
+    source: {cite: mit, at: 'Problem 1(e) (our own solution)'}
+    origin: page-own
+
+  - id: p1e-rho
+    kind: identity
+    where: 'Problem 1(e), check: ρ0 = 3/(8πG R0²) with R0² = R*³/(2GM) is 3M/(4πR*³)'
+    formula: 3/(8*pi*G*(Rstar**3/(2*G*M)))
+    equals: 3*M/(4*pi*Rstar**3)
+    samples:
+      G: [1, 0.7]
+      M: [1, 2]
+      Rstar: [5, 12]
+    tolerance: 1e-12
+    shown: ['= \frac{3M}{4\pi R_*^3}$']
+    source: {cite: mit, at: 'Problem 1(e) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 1(f), (g): R* = 5GM, in units of GM
+
+  - id: p1f-r0
+    where: 'Problem 1(f), solution: R0 = √(125/2) GM'
+    formula: sqrt(125/2)
+    expected: '7.906'
+    shown: ['R_0 = \sqrt{125/2}\,GM = 7.906\,GM']
+    source: {cite: mit, at: 'Problem 1(f) (our own solution)'}
+    origin: page-own
+
+  - id: p1f-chis
+    where: 'Problem 1(f), solution: χs = arcsin √(2/5)'
+    formula: asin(sqrt(2/5))
+    expected: '0.6847'
+    shown: ['\chi_s = \arcsin\sqrt{2/5} = 0.6847']
+    source: {cite: mit, at: 'Problem 1(f) (our own solution)'}
+    origin: page-own
+
+  - id: p1f-etah
+    where: 'Problem 1(f), solution: the surface is at r = 2GM when cos η = −1/5'
+    formula: acos(-1/5)
+    expected: '1.7722'
+    shown: ['\cos\eta_h = -\frac{1}{5}, \qquad \eta_h = 1.7722']
+    source: {cite: mit, at: 'Problem 1(f) (our own solution)'}
+    origin: page-own
+
+  - id: p1f-eta
+    answer: p1f-eta
+    where: 'Problem 1(f), answer box: ηe = ηh − χs'
+    formula: acos(-1/5) - asin(sqrt(2/5))
+    expected: '1.087'
+    shown: ['id="p1f-eta"', '\eta_e = \eta_h - \chi_s = 1.7722 - 0.6847 = 1.0874']
+    source: {cite: mit, at: 'Problem 1(f) (our own addition)'}
+    origin: page-own
+
+  - id: p1f-eta-areal
+    kind: identity
+    where: 'Problem 1(f), check: ηe against the root of R0 a(ηh) sin(ηh − q) = 2 (the ray reaches areal radius 2GM at ηh)'
+    formula: acos(-1/5) - asin(sqrt(2/5))
+    equals: solve('sqrt(125/2)*(1 + cos(acos(-1/5)))/2*sin(acos(-1/5) - q) - 2', 'q', 0.5, 1.5)
+    samples: {dummy: [1]}
+    tolerance: 1e-9
+    shown: ['Check at the surface: the ray''s areal radius there']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1f-sin
+    where: 'Problem 1(f), solution: R0/2 and sin ηe'
+    formula: sin(acos(-1/5) - asin(sqrt(2/5)))
+    expected: '0.8854'
+    shown: ['3.9528 \times \left(1.0874 + 0.8854\right)GM']
+    source: {cite: mit, at: 'Problem 1(f) (our own solution)'}
+    origin: page-own
+
+  - id: p1f-half
+    where: 'Problem 1(f), solution and graph: R0/2 = √(125/2)/2'
+    formula: sqrt(125/2)/2
+    expected: '3.9528'
+    shown: ['3.9528 \times \left(1.0874', 'y: "3.952847*(s + sin(s))", range: [0, 3.14159]']
+    source: {cite: mit, at: 'Problem 1(f) (our own solution)'}
+    origin: page-own
+
+  - id: p1f-tau
+    answer: p1f-tau
+    where: 'Problem 1(f), answer box: τe = (R0/2)(ηe + sin ηe), in units of GM'
+    formula: sqrt(125/2)/2*(acos(-1/5) - asin(sqrt(2/5)) + sin(acos(-1/5) - asin(sqrt(2/5))))
+    expected: '7.80'
+    shown: ['id="p1f-tau"', '= 7.80\,GM']
+    source: {cite: mit, at: 'Problem 1(f) (our own solution)'}
+    origin: page-own
+
+  - id: p1f-tauh
+    where: 'Problem 1(f), check: τ when the surface crosses r = 2GM'
+    formula: sqrt(125/2)/2*(acos(-1/5) + sin(acos(-1/5)))
+    expected: '10.88'
+    shown: ['\tau_h = 3.9528\times(1.7722 + 0.9798)\,GM = 10.88\,GM', 'at τ = 10.88GM']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1f-sinh
+    where: 'Problem 1(f), check: sin ηh = √(1 − 1/25)'
+    formula: sqrt(1 - 1/25)
+    expected: '0.9798'
+    shown: ['(1.7722 + 0.9798)']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1f-tauc
+    where: 'Problem 1(f), check and graph: τ at the crunch, π R0/2'
+    formula: pi*sqrt(125/2)/2
+    expected: '12.42'
+    shown: ['\tau = \pi R_0/2 = 12.42\,GM', 'reaches r = 0 at τ = 12.42GM']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1f-lead
+    where: 'Problem 1(f), check: the horizon starts τh − τe before the surface reaches r = 2GM'
+    formula: sqrt(125/2)/2*(acos(-1/5) + sin(acos(-1/5))) - sqrt(125/2)/2*(acos(-1/5) - asin(sqrt(2/5)) + sin(acos(-1/5) - asin(sqrt(2/5))))
+    expected: '3.08'
+    shown: ['$3.08\,GM$ of proper time']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1f-rsurf
+    where: 'Problem 1(f), check: the surface radius 2.5(1 + cos ηe) GM when the ray leaves the centre'
+    formula: 2.5*(1 + cos(acos(-1/5) - asin(sqrt(2/5))))
+    expected: '3.66'
+    shown: ['= 3.66\,GM$)']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1f-areal
+    where: 'Problem 1(f), check: the areal radius R* a(ηh) = 5 × 0.4 GM'
+    formula: 5*(1 + (-1/5))/2
+    expected: '2'
+    shown: ['= 5 \times 0.4\,GM$, is $2GM$']
+    source: {cite: mit, at: 'Problem 1(f) (our own check)'}
+    origin: page-own
+
+  - id: p1g-plot
+    kind: fact
+    where: 'Problem 1(g), graph: the constants of the curves are R0/2 = 3.952847, ηe = 1.087435, ηh = 1.772154 and τh = 10.878 (entries p1f-half, p1f-eta, p1f-etah, p1f-tauh to more digits), and π'
+    shown: ['range: [1.087435, 1.772154]', 'range: [10.878, 16]', 'range: [0, 3.14159]']
+    source: {cite: mit, at: 'Problem 1(g) (our own graph)'}
+    origin: page-own
+
+  - id: p1g-eta-digits
+    where: 'Problem 1(g), graph: ηe to six decimals'
+    formula: acos(-1/5) - asin(sqrt(2/5))
+    expected: '1.087435'
+    shown: ['sin(s - 1.087435)']
+    source: {cite: mit, at: 'Problem 1(g) (our own graph)'}
+    origin: page-own
+
+  - id: p1g-etah-digits
+    where: 'Problem 1(g), graph: ηh to six decimals'
+    formula: acos(-1/5)
+    expected: '1.772154'
+    shown: ['1.772154]']
+    source: {cite: mit, at: 'Problem 1(g) (our own graph)'}
+    origin: page-own
+
+  - id: p1g-half-digits
+    where: 'Problem 1(g), graph: R0/2 to six decimals'
+    formula: sqrt(125/2)/2
+    expected: '3.952847'
+    shown: ['3.952847*sin(s - 1.087435)']
+    source: {cite: mit, at: 'Problem 1(g) (our own graph)'}
+    origin: page-own
+
+  - id: p1g-start
+    where: 'Problem 1(g), graph caption: the horizon leaves the centre at τe'
+    formula: sqrt(125/2)/2*(acos(-1/5) - asin(sqrt(2/5)) + sin(acos(-1/5) - asin(sqrt(2/5))))
+    expected: '7.80'
+    shown: ['leaves the centre at τ = 7.80GM']
+    source: {cite: mit, at: 'Problem 1(g) (our own graph)'}
+    origin: page-own
+
+  # ---- Problem 2: the cluster. Samples of the uniform cluster (m = M r³/R³, Φ from Problem 2(d), ρ = 3M/(4πR³)).
+
+  - id: p2a-e2l
+    kind: identity
+    answer: p2a-e2l
+    where: 'Problem 2(a), answer box: e^(2Λ) = 1/(1 − 2Gm/r) against r(1 − e^(−2Λ)) = ∫ 8πGρ q² dq, done numerically for the uniform cluster'
+    formula: 1/(1 - 2*G*m/r)
+    equals: 1/(1 - integrate('8*pi*G*rho*q**2', 'q', 0, r)/r)
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      m: [0.125, 0.592592592592593, 0.012, 0.800655976676385]
+      r: [5, 8, 3, 6.5]
+      rho: [0.000238732414637843, 0.000276310665090096, 0.000106103295394597, 0.000696012870664265]
+    tolerance: 1e-9
+    shown: ['id="p2a-e2l"', 'e^{2\Lambda} = \frac{1}{1 - 2Gm/r}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-dphi
+    kind: identity
+    answer: p2a-dphi
+    where: 'Problem 2(a), answer box: dΦ/dr = Gm/(r(r − 2Gm)) against the numerical derivative of the exterior Φ = ½ ln(1 − 2Gm/q) at fixed m'
+    formula: G*m/(r*(r - 2*G*m))
+    equals: deriv('0.5*log(1 - 2*G*m/q)', 'q', r)
+    samples:
+      G: [1, 0.7, 1.2, 0.5]
+      m: [0.5, 1, 0.8, 2]
+      r: [10, 15, 4, 20]
+    tolerance: 1e-7
+    shown: ['id="p2a-dphi"', '\frac{d\Phi}{dr} = \frac{Gm}{r\left(r - 2Gm\right)}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-ang
+    kind: identity
+    answer: p2b-ang
+    where: 'Problem 2(b), answer box: L̂ = r√(Gm/(r − 3Gm)) against L̂² = r³Φ''/(1 − rΦ''), Φ'' a numerical derivative of the uniform-cluster Φ(q)'
+    formula: r*sqrt(G*m/(r - 3*G*m))
+    equals: sqrt(r**3*deriv('0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)', 'q', r)/(1 - r*deriv('0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)', 'q', r)))
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+      m: [0.125, 0.592592592592593, 0.012, 0.800655976676385]
+    tolerance: 1e-7
+    shown: ['id="p2b-ang"', '\hat L^2 = \frac{Gm\,r^2}{r - 3Gm}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-flat
+    kind: identity
+    where: 'Problem 2(b), solution: with the L̂ of the box, the potential e^(2Φ(q))(1 + L̂²/q²) of the uniform cluster is flat at q = r (numerical derivative; 1 + 0 = 1)'
+    formula: '1'
+    equals: 1 + deriv('exp(2*(0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)))*(1 + G*(M*r**3/R**3)*r**2/(r - 3*G*(M*r**3/R**3))/q**2)', 'q', r)
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+    tolerance: 1e-8
+    shown: ['$dV_\text{eff}/dr = e^{2\Phi}\left[2\Phi''\left(1 + \hat L^2/r^2\right) - 2\hat L^2/r^3\right] = 0$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-en
+    kind: identity
+    answer: p2b-en
+    where: 'Problem 2(b), answer box: Ê = e^Φ √((r − 2Gm)/(r − 3Gm)) against √(e^(2Φ)(1 + L̂²/r²)) with L̂² = r³Φ''/(1 − rΦ''), Φ'' numerical, for the uniform cluster'
+    formula: exp(Phi)*sqrt((r - 2*G*m)/(r - 3*G*m))
+    equals: sqrt(exp(2*Phi)*(1 + r*deriv('0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)', 'q', r)/(1 - r*deriv('0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)', 'q', r))))
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+      m: [0.125, 0.592592592592593, 0.012, 0.800655976676385]
+      Phi: [-0.15453433988877, -0.171906316089332, -0.203416040013369, -0.181645489161546]
+    tolerance: 1e-7
+    shown: ['id="p2b-en"', '\hat E^2 = V_\text{eff} = e^{2\Phi}\,\frac{r - 2Gm}{r - 3Gm}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-phi-samples
+    kind: identity
+    where: 'Problem 2, samples: the Φ values used above are Φ(r) of the uniform cluster, Problem 2(d)'
+    formula: Phi
+    equals: 0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*r**2/R**3)
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+      Phi: [-0.15453433988877, -0.171906316089332, -0.203416040013369, -0.181645489161546]
+    tolerance: 1e-12
+    shown: ['e^{2\Phi(r)} = \frac{\left(1 - 2GM/R\right)^{3/2}}{\sqrt{1 - 2GMr^2/R^3}}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-om
+    kind: identity
+    answer: p2b-om
+    where: 'Problem 2(b), answer box: Ω = e^Φ √(Gm/(r²(r − 2Gm))) against Ω² = e^(2Φ) Φ''/r with Φ'' numerical, for the uniform cluster'
+    formula: exp(Phi)*sqrt(G*m/(r**2*(r - 2*G*m)))
+    equals: sqrt(exp(2*Phi)*deriv('0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)', 'q', r)/r)
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+      m: [0.125, 0.592592592592593, 0.012, 0.800655976676385]
+      Phi: [-0.15453433988877, -0.171906316089332, -0.203416040013369, -0.181645489161546]
+    tolerance: 1e-7
+    shown: ['id="p2b-om"', '\Omega = e^{\Phi}\sqrt{\frac{Gm}{r^2\left(r - 2Gm\right)}}, \qquad \Omega^2 = \frac{e^{2\Phi}}{r}\,\frac{d\Phi}{dr}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-schw
+    kind: identity
+    where: 'Problem 2(b), check: with e^(2Φ) = 1 − 2GM/r and m = M, Ê and Ω become the Schwarzschild values (1 − 2GM/r)/√(1 − 3GM/r) and √(GM/r³)'
+    formula: sqrt(1 - 2*G*M/r)*sqrt((r - 2*G*M)/(r - 3*G*M)) + sqrt(1 - 2*G*M/r)*sqrt(G*M/(r**2*(r - 2*G*M)))
+    equals: (1 - 2*G*M/r)/sqrt(1 - 3*G*M/r) + sqrt(G*M/r**3)
+    samples:
+      G: [1, 0.7]
+      M: [1, 2]
+      r: [8, 12]
+    tolerance: 1e-12
+    shown: ['\hat E = \frac{1 - 2GM/r}{\sqrt{1 - 3GM/r}}, \qquad \Omega = \sqrt{\frac{GM}{r^3}}']
+    source: {cite: reading4, at: 'transcript pp. 8–10'}
+    origin: mit
+
+  - id: p2b-v2
+    kind: identity
+    where: 'Problem 2(b), check: v² = r² e^(−2Φ) Ω² = rΦ'' = Gm/(r − 2Gm), which is 1 at r = 3Gm'
+    formula: r**2*exp(-2*Phi)*(exp(Phi)*sqrt(G*m/(r**2*(r - 2*G*m))))**2
+    equals: G*m/(r - 2*G*m)
+    samples:
+      G: [1, 0.7, 1]
+      m: [0.125, 0.6, 1]
+      r: [5, 8, 3]
+      Phi: [-0.15, -0.17, -0.3]
+    tolerance: 1e-12
+    shown: ['$v^2 = r\Phi'' = Gm/(r - 2Gm)$']
+    source: {cite: mit, at: 'Problem 2(b) (our own check)'}
+    origin: page-own
+
+  - id: p2c-vpp
+    kind: identity
+    where: 'Problem 2(c), solution: the formula for d²V_eff/dr² at a circular orbit against a numerical second derivative of e^(2Φ(q))(1 + L̂²/q²) for the uniform cluster, L̂² of the circular orbit at r'
+    formula: 2*G*exp(2*Phi)*(m*r - 6*G*m**2 + 4*pi*r**4*rho)/(r**2*(r - 2*G*m)*(r - 3*G*m))
+    equals: deriv('exp(2*(0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)))*(1 + G*(M*r**3/R**3)*r**2/(r - 3*G*(M*r**3/R**3))/q**2)', 'q', r, 2)
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+      m: [0.125, 0.592592592592593, 0.012, 0.800655976676385]
+      Phi: [-0.15453433988877, -0.171906316089332, -0.203416040013369, -0.181645489161546]
+      rho: [0.000238732414637843, 0.000276310665090096, 0.000106103295394597, 0.000696012870664265]
+    tolerance: 1e-5
+    shown: ['\frac{d^2V_\text{eff}}{dr^2} = \frac{2G\,e^{2\Phi}\left(m\,r - 6Gm^2 + 4\pi r^4\rho\right)}{r^2\left(r - 2Gm\right)\left(r - 3Gm\right)}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-bound
+    kind: identity
+    answer: p2c-bound
+    where: 'Problem 2(c), answer box: X = 4πr³ρ/m in Gm/r < (1 + X)/6, against 6(Gm/r + V'''' r(r − 2Gm)(r − 3Gm)/(12G e^(2Φ) m)) − 1, with V'''' the numerical second derivative for the uniform cluster (V'''' is proportional to (1 + X)/6 − Gm/r)'
+    formula: 4*pi*r**3*rho/m
+    equals: 6*(G*m/r + deriv('exp(2*(0.75*log(1 - 2*G*M/R) - 0.25*log(1 - 2*G*M*q**2/R**3)))*(1 + G*(M*r**3/R**3)*r**2/(r - 3*G*(M*r**3/R**3))/q**2)', 'q', r, 2)*r*(r - 2*G*m)*(r - 3*G*m)/(12*G*exp(2*Phi)*m)) - 1
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 6.5]
+      m: [0.125, 0.592592592592593, 0.012, 0.800655976676385]
+      Phi: [-0.15453433988877, -0.171906316089332, -0.203416040013369, -0.181645489161546]
+      rho: [0.000238732414637843, 0.000276310665090096, 0.000106103295394597, 0.000696012870664265]
+    tolerance: 1e-5
+    shown: ['id="p2c-bound"', '\frac{Gm}{r} < \frac{1}{6}\left(1 + \frac{4\pi r^3\rho}{m}\right) = \frac{1}{6}\left(1 + \frac{d\ln m}{d\ln r}\right)']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-explicit
+    kind: identity
+    where: 'Problem 2(c), solution: the bound solved for x = Gm/r, (1 + √(1 + 96πGρr²))/12, against the root of x − (1 + 4πr³ρ/m)/6 with m = r x/G, found numerically'
+    formula: (1 + sqrt(1 + 96*pi*G*rho*r**2))/12
+    equals: solve('q - (1 + 4*pi*r**3*rho/(r*q/G))/6', 'q', 0.05, 1)
+    samples:
+      G: [1, 0.7, 1.2]
+      r: [5, 8, 3]
+      rho: [0.000238732414637843, 0.001, 0.003]
+    tolerance: 1e-9
+    shown: ['x < \left(1 + \sqrt{1 + 96\pi G\rho r^2}\right)/12']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-e2phi
+    kind: identity
+    answer: p2d-e2phi
+    where: 'Problem 2(d), answer box: e^(2Φ(r)) against exp(2(Φ(R) − ∫_r^R dΦ/dq dq)), with dΦ/dq = Gm/(q(q − 2Gm)), m = Mq³/R³, integrated numerically, and Φ(R) = ½ ln(1 − 2GM/R)'
+    formula: (1 - 2*G*M/R)**(3/2)/sqrt(1 - 2*G*M*r**2/R**3)
+    equals: exp(2*(0.5*log(1 - 2*G*M/R) - integrate('G*(M*q**3/R**3)/(q*(q - 2*G*(M*q**3/R**3)))', 'q', r, R)))
+    samples:
+      G: [1, 0.7, 1.2, 1]
+      M: [1, 2, 1.5, 1]
+      R: [10, 12, 15, 7]
+      r: [5, 8, 3, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p2d-e2phi"']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-inside
+    kind: identity
+    where: 'Problem 2(d), solution: inside the uniform cluster 4πr³ρ/m = 3, so the bound of part (c) is 2/3'
+    formula: (1 + 4*pi*r**3*(3*M/(4*pi*R**3))/(M*r**3/R**3))/6
+    equals: 2/3
+    samples:
+      M: [1, 2]
+      R: [10, 12]
+      r: [5, 8]
+    tolerance: 1e-12
+    shown: ['Inside, $4\pi r^3\rho/m = 3$, so part (c) asks $Gm/r < 2/3$']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-max
+    answer: p2d-max
+    where: 'Problem 2(d), answer box: 1 over the radius (GM = 1) where the second derivative of the Schwarzschild potential at a circular orbit, −4/q³ + 6L̂²/q⁴ − 24L̂²/q⁵ with L̂² = q²/(q − 3), is zero'
+    formula: 1/solve('-4/q**3 + 6*(q**2/(q - 3))/q**4 - 24*(q**2/(q - 3))/q**5', 'q', 4, 10)
+    expected: '0.1667'
+    shown: ['id="p2d-max"', '\frac{GM}{R} < \frac{1}{6}, \qquad R > 6GM']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-zs
+    answer: p2e-zs
+    where: 'Problem 2(e), answer box: z at the surface, e^(−Φ(R)) − 1 for 2GM/R = 1/3'
+    formula: exp(-0.5*log(1 - 1/3)) - 1
+    expected: '0.225'
+    shown: ['id="p2e-zs"', '\text{surface: } 1 + z = \left(\tfrac{2}{3}\right)^{-1/2} = 1.225', '$z = 0.225$ at the surface']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-zc
+    answer: p2e-zc
+    where: 'Problem 2(e), answer box: z at the centre, e^(−Φ(0)) − 1 with Φ(0) = ¾ ln(1 − 2GM/R), 2GM/R = 1/3'
+    formula: exp(-0.75*log(1 - 1/3)) - 1
+    expected: '0.355'
+    shown: ['id="p2e-zc"', '\text{centre: } 1 + z = \left(\tfrac{2}{3}\right)^{-3/4} = 1.355', '$0.355$ at the centre']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-centre-phi
+    kind: identity
+    where: 'Problem 2(e), solution: at the centre e^(2Φ) = (1 − 2GM/R)^(3/2), from the box formula of 2(d) at r = 0, here (2/3)^(3/2)'
+    formula: (1 - 2*G*M/R)**(3/2)/sqrt(1 - 2*G*M*0**2/R**3)
+    equals: (2/3)**(3/2)
+    samples:
+      G: [1]
+      M: [1]
+      R: [6]
+    tolerance: 1e-12
+    shown: ['at the centre $e^{2\Phi} = (2/3)^{3/2}$']
+    source: {cite: mit, at: 'Problem 2(e) (our own solution)'}
+    origin: page-own
+
+  - id: p2e-doppler
+    where: 'Problem 2(e), check: 1 + z = Ê e^(−2Φ) = e^(−Φ)√((r − 2Gm)/(r − 3Gm)) at the surface of the cluster with GM/R = 1/6'
+    formula: (1 - 1/3)**(-1/2)*sqrt((1 - 1/3)/(1 - 1/2)) - 1
+    expected: '0.414'
+    shown: ['\sqrt{3/2}\cdot\sqrt{4/3} = \sqrt2$, so $z = 0.414$']
+    source: {cite: mit, at: 'Problem 2(e) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3: GM = 1
+
+  - id: p3a-t
+    answer: p3a-t
+    where: 'Problem 3(a), answer box: GM/c³ for M = 10 solar masses, in microseconds'
+    formula: 10*1.32712e20/299792458**3*1e6
+    expected: '49.25'
+    shown: ['id="p3a-t"', 'that is, 49.25 μs and 14.77 km']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3a-t5
+    where: 'Problem 3(a), solution: GM/c³ in units of 10^-5 s'
+    formula: 10*1.32712e20/299792458**3*1e5
+    expected: '4.925'
+    shown: ['= 4.925\times 10^{-5}\ \text{s}']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3a-l
+    answer: p3a-l
+    where: 'Problem 3(a), answer box: GM/c² for M = 10 solar masses, in kilometres'
+    formula: 10*1.32712e20/299792458**2/1000
+    expected: '14.77'
+    shown: ['id="p3a-l"', 'that is, 49.25 μs and 14.77 km']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3a-l4
+    where: 'Problem 3(a), solution: GM/c² in units of 10^4 m'
+    formula: 10*1.32712e20/299792458**2/1e4
+    expected: '1.4766'
+    shown: ['= 1.4766\times 10^{4}\ \text{m}']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3a-gm
+    where: 'Problem 3(a), solution: 10 GM_sun in m³/s², in units of 10^21'
+    formula: 10*1.32712e20/1e21
+    expected: '1.32712'
+    shown: ['1.32712\times 10^{21}\ \text{m}^3/\text{s}^2']
+    source: {cite: nasasun, at: 'Bulk parameters: GM'}
+    origin: page-own
+
+  - id: p3a-horizon
+    where: 'Problem 3(a), check: 2GM/c² for ten solar masses, in km, and per solar mass'
+    formula: 2*10*1.32712e20/299792458**2/1000
+    expected: '29.5'
+    shown: ['The horizon radius $2GM$ is 29.5 km']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3a-horizon1
+    where: 'Problem 3(a), check: 2GM_sun/c² in km'
+    formula: 2*1.32712e20/299792458**2/1000
+    expected: '2.95'
+    shown: ['about 2.95 km per solar mass']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3a-rdd
+    kind: identity
+    answer: p3a-rdd
+    where: 'Problem 3(a), answer box: d²r/dτ² = −1/r² + L̂²/r³ − 3L̂²/r⁴ against −½ dV_eff/dr, a numerical derivative'
+    formula: -1/r**2 + L**2/r**3 - 3*L**2/r**4
+    equals: -0.5*deriv('(1 - 2/q)*(1 + L**2/q**2)', 'q', r)
+    samples:
+      r: [5, 10, 3.5, 20]
+      L: [3, 4.5, 4.95, 6]
+    tolerance: 1e-8
+    shown: ['id="p3a-rdd"', '\frac{d^2r}{d\tau^2} = -\frac{1}{r^2} + \frac{\hat L^2}{r^3} - \frac{3\hat L^2}{r^4}']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-method
+    kind: fact
+    where: 'Problem 3, introduction and runs: our own integration method (SciPy solve_ivp, RK45, rtol = atol = 1e-12), on the second-order equation of 3(a) with dφ/dτ and dt/dτ'
+    shown: ['solved with SciPy''s `solve_ivp` (method RK45, relative and absolute tolerance $10^{-12}$)']
+    source: {cite: mit, at: 'Problem 3 (our own choice)'}
+    origin: page-own
+
+  - id: p3b-r
+    answer: p3b-r
+    where: 'Problem 3(b), answer box: the radius of the unstable circular orbit with Ê² = 1.21, a root of (1 − 2/q)²/(1 − 3/q) = 1.21'
+    formula: solve('(1 - 2/q)**2/(1 - 3/q) - 1.21', 'q', 3.01, 6)
+    expected: '3.571'
+    shown: ['id="p3b-r"', 'whose root above $3$ is $r = 25/7 = 3.571$']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-exact
+    kind: identity
+    where: 'Problem 3(b), solution: r = 25/7 solves (r − 2)² = 1.21 r(r − 3)'
+    formula: (25/7 - 2)**2
+    equals: 1.21*25/7*(25/7 - 3)
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['$(r - 2)^2 = 1.21\,r(r - 3)$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-lc
+    answer: p3b-lc
+    where: 'Problem 3(b), answer box: L̂c = √(r²/(r − 3)) at r = 25/7'
+    formula: sqrt((25/7)**2/(25/7 - 3))
+    expected: '4.725'
+    shown: ['id="p3b-lc"', '\hat L_c^2 = \frac{r^2}{r - 3} = \frac{(25/7)^2}{4/7} = \frac{625}{28}, \qquad \hat L_c = 4.725']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-peak
+    kind: identity
+    where: 'Problem 3(b), graph: with L̂² = 625/28 the potential is 1.21 at r = 25/7 and flat there (numerical derivative)'
+    formula: 1.21 + 0
+    equals: (1 - 2/(25/7))*(1 + 625/28/(25/7)**2) + deriv('(1 - 2/q)*(1 + 625/28/q**2)', 'q', 25/7)
+    samples: {dummy: [1]}
+    tolerance: 1e-8
+    shown: ['Its peak touches the line Ê² = 1.21 at r = 25/7 = 3.571']
+    source: {cite: mit, at: 'Problem 3(b) (our own graph)'}
+    origin: page-own
+
+  - id: p3b-plotL
+    where: 'Problem 3(b), graph: L̂² = 625/28'
+    formula: 625/28
+    expected: '22.3214'
+    shown: ['22.3214/x^2', 'L̂² = 625/28 = 22.32']
+    source: {cite: mit, at: 'Problem 3(b) (our own graph)'}
+    origin: page-own
+
+  - id: p3b-peri101
+    where: 'Problem 3(b), table: turning point for L̂ = 1.01 L̂c, the largest root of Ê² = V_eff (independent of the integration)'
+    formula: solve('1.21 - (1 - 2/q)*(1 + 1.01**2*625/28/q**2)', 'q', 25/7 + 1e-6, 10)
+    expected: '4.029'
+    shown: ['| 1.01 | escapes | 4.029 |']
+    source: {cite: mit, at: 'Problem 3(b) (our own runs)'}
+    origin: page-own
+
+  - id: p3b-peri1001
+    where: 'Problem 3(b), table: turning point for L̂ = 1.001 L̂c'
+    formula: solve('1.21 - (1 - 2/q)*(1 + 1.001**2*625/28/q**2)', 'q', 25/7 + 1e-6, 10)
+    expected: '3.705'
+    shown: ['| 1.001 | escapes | 3.705 |']
+    source: {cite: mit, at: 'Problem 3(b) (our own runs)'}
+    origin: page-own
+
+  - id: p3b-peri10001
+    where: 'Problem 3(b), table: turning point for L̂ = 1.0001 L̂c'
+    formula: solve('1.21 - (1 - 2/q)*(1 + 1.0001**2*625/28/q**2)', 'q', 25/7 + 1e-6, 10)
+    expected: '3.613'
+    shown: ['| 1.0001 | escapes | 3.613 |']
+    source: {cite: mit, at: 'Problem 3(b) (our own runs)'}
+    origin: page-own
+
+  - id: p3b-runs
+    kind: fact
+    where: 'Problem 3(b), table: our numerical runs (start r = 200 moving inward, Ê = 1.1; stop at r = 2.05 or r = 250). Smallest r 4.0292, 3.7049, 3.6125 (escapes), capture for 0.9999 L̂c; φ swept 1.36, 1.80, 2.25 turns'
+    shown: ['| 0.9999 | captured | (crosses $r = 2.05$) |', 'about 2.25 turns for $1.0001\,\hat L_c$']
+    source: {cite: mit, at: 'Problem 3(b) (our own runs)'}
+    origin: page-own
+
+  - id: p3b-limit4
+    where: 'Problem 3(b), check: for Ê = 1 the borderline radius is 4GM'
+    formula: solve('(1 - 2/q)**2/(1 - 3/q) - 1', 'q', 3.5, 5.9)
+    expected: '4'
+    shown: ['As $\hat E \to 1$ the borderline radius tends to $4GM$']
+    source: {cite: reading4, at: 'transcript p. 8 (our own check)'}
+    origin: page-own
+
+  - id: p3c-pe
+    kind: identity
+    where: 'Problem 3(c), solution: p = 2 rp ra/(rp + ra) = 50/3 and e = (ra − rp)/(ra + rp) = 2/3 for rp = 10, ra = 50'
+    formula: 2*10*50/(10 + 50) + (50 - 10)/(50 + 10)
+    equals: 50/3 + 2/3
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['(here $p = 50/3$, $e = 2/3$)']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-ang
+    answer: p3c-ang
+    where: 'Problem 3(c), answer box: L̂ = √(p²/(p − 3 − e²))'
+    formula: sqrt((50/3)**2/(50/3 - 3 - (2/3)**2))
+    expected: '4.583'
+    shown: ['id="p3c-ang"', 'so $\hat L = 4.583$']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-ang-check
+    kind: identity
+    where: 'Problem 3(c), check: L̂² from p and e equals the L̂² that makes V_eff(10) = V_eff(50), found by solving that linear equation directly'
+    formula: (50/3)**2/(50/3 - 3 - (2/3)**2)
+    equals: ((1 - 2/50) - (1 - 2/10))/((1 - 2/10)/100 - (1 - 2/50)/2500)
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['\hat L^2 = \frac{p^2}{p - 3 - e^2}']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-en
+    answer: p3c-en
+    where: 'Problem 3(c), answer box: Ê² = ((p − 2)² − 4e²)/(p(p − 3 − e²))'
+    formula: sqrt(((50/3 - 2)**2 - 4*(2/3)**2)/(50/3*(50/3 - 3 - (2/3)**2)))
+    expected: '0.9839'
+    shown: ['id="p3c-en"', '$\hat E = 0.9839$']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-v
+    where: 'Problem 3(c), check: V_eff(10) with the L̂² of the orbit, equal to Ê²'
+    formula: (1 - 2/10)*(1 + (50/3)**2/(50/3 - 3 - (2/3)**2)/100)
+    expected: '0.96807'
+    shown: ['$V_\text{eff}(10) = V_\text{eff}(50) = 0.96807 = \hat E^2$']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3c-adv
+    answer: p3c-adv
+    where: 'Problem 3(c), answer box: the advance per radial cycle, ∫₀^2π √(p/(p − 6 − 2e cos χ)) dχ − 360°, in degrees'
+    formula: integrate('sqrt((50/3)/(50/3 - 6 - 2*(2/3)*cos(q)))', 'q', 0, 2*pi)*180/pi - 360
+    expected: '91.3'
+    shown: ['id="p3c-adv"', '\Delta\phi - 360^\circ = 91.3^\circ']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-total
+    where: 'Problem 3(c), solution: the total angle per radial cycle, in degrees'
+    formula: integrate('sqrt((50/3)/(50/3 - 6 - 2*(2/3)*cos(q)))', 'q', 0, 2*pi)*180/pi
+    expected: '451.3'
+    shown: ['d\chi = 451.3^\circ']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-adv-r
+    kind: identity
+    where: 'Problem 3(c), check: the χ integral against 2∫ L̂/(r²√(Ê² − V_eff)) dr from 10 to 50, written with r = 30 − 20 cos ψ: Ê² − V_eff = (1 − Ê²)(r − 10)(50 − r)(r − r3)/r³ with r3 = 2L̂²/((1 − Ê²)·500), which removes the end-point singularities'
+    formula: integrate('sqrt((50/3)/(50/3 - 6 - 2*(2/3)*cos(q)))', 'q', 0, 2*pi)
+    equals: 2*integrate('sqrt(2500/119)/sqrt(30 - 20*cos(q))/sqrt((1 - 0.9680672268907563)*(30 - 20*cos(q) - 2*(2500/119)/((1 - 0.9680672268907563)*500)))', 'q', 0, pi)
+    samples: {dummy: [1]}
+    tolerance: 1e-6
+    shown: ['$d\phi/d\chi = \sqrt{p/(p - 6 - 2e\cos\chi)}$']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3c-e2-digits
+    kind: identity
+    where: 'Problem 3(c), check above: Ê² = 0.9680672268907563 and L̂² = 2500/119 for this orbit'
+    formula: ((50/3 - 2)**2 - 4*(2/3)**2)/(50/3*(50/3 - 3 - (2/3)**2)) + (50/3)**2/(50/3 - 3 - (2/3)**2)
+    equals: 0.9680672268907563 + 2500/119
+    samples: {dummy: [1]}
+    tolerance: 1e-12
+    shown: ['\hat E^2 = \frac{(p - 2)^2 - 4e^2}{p\left(p - 3 - e^2\right)}']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-run
+    kind: fact
+    where: 'Problem 3(c), solution: our numerical run from r = 10, dr/dτ = 0: advance 91.32975° per cycle for four cycles, turning points 10 and 50 to eight digits, radial period 1105.83 GM of proper time'
+    shown: ['gives the same advance, $91.33°$ per cycle', 'One radial cycle takes $1106\,GM$ of proper time']
+    source: {cite: mit, at: 'Problem 3(c) (our own run)'}
+    origin: page-own
+
+  - id: p3c-weak
+    where: 'Problem 3(c), check: the weak-field advance 6πGM/p in degrees'
+    formula: 6*pi/(50/3)*180/pi
+    expected: '64.8'
+    shown: ['here $64.8°$']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  - id: p3c-limit
+    kind: identity
+    where: 'Problem 3(c), solution: the peak of V_eff with height 1 is at r = 4 with L̂ = 4 (V = 1 and V'' = 0 there)'
+    formula: 1 + 0
+    equals: (1 - 2/4)*(1 + 16/16) + deriv('(1 - 2/q)*(1 + 16/q**2)', 'q', 4)
+    samples: {dummy: [1]}
+    tolerance: 1e-8
+    shown: ['the peak with height 1 sits at $r = 4GM$ ($\hat L = 4GM$)']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3d-ang
+    answer: p3d-ang
+    where: 'Problem 3(d), answer box: L̂ = √(r²/(r − 3)) at r = 10'
+    formula: sqrt(10**2/(10 - 3))
+    expected: '3.780'
+    shown: ['id="p3d-ang"', '\sqrt{100/7} = 3.780']
+    source: {cite: reading4, at: 'transcript p. 8 (our own numbers)'}
+    origin: page-own
+
+  - id: p3d-en
+    answer: p3d-en
+    where: 'Problem 3(d), answer box: Ê = (1 − 2/r)/√(1 − 3/r) at r = 10'
+    formula: (1 - 2/10)/sqrt(1 - 3/10)
+    expected: '0.9562'
+    shown: ['id="p3d-en"', '0.8/\sqrt{0.7} = 0.9562']
+    source: {cite: reading4, at: 'transcript pp. 8–9 (our own numbers)'}
+    origin: page-own
+
+  - id: p3d-circ
+    kind: identity
+    where: 'Problem 3(d), check: at r = 10 with L̂² = 100/7, V_eff is flat and equals Ê² (numerical derivative)'
+    formula: (1 - 2/10)**2/(1 - 3/10) + 0
+    equals: (1 - 2/10)*(1 + 100/7/100) + deriv('(1 - 2/q)*(1 + 100/7/q**2)', 'q', 10)
+    samples: {dummy: [1]}
+    tolerance: 1e-8
+    shown: ['On a circular orbit $V_\text{eff}'' = 0$ and $\hat E^2 = V_\text{eff}$']
+    source: {cite: mit, at: 'Problem 3(d) (our own check)'}
+    origin: page-own
+
+  - id: p3d-tgm
+    where: 'Problem 3(d), solution: the period 2π r^(3/2) in units of GM'
+    formula: 2*pi*10**1.5
+    expected: '198.7'
+    shown: ['$2\pi\cdot 10^{3/2} = 198.7$ time units']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3d-period
+    answer: p3d-period
+    where: 'Problem 3(d), answer box: the period in ms for M = 10 solar masses'
+    formula: 2*pi*10**1.5*10*1.32712e20/299792458**3*1000
+    expected: '9.79'
+    shown: ['id="p3d-period"', '$198.7\times 49.25$ μs $= 9.79$ ms']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3d-run
+    kind: fact
+    where: 'Problem 3(d): our numerical run from r = 10, dr/dτ = 0 held r = 10 for ten orbits (largest deviation 0 in floating point)'
+    shown: ['our integrator kept $r$ at 10 for ten orbits']
+    source: {cite: mit, at: 'Problem 3(d) (our own run)'}
+    origin: page-own
+
+  - id: p3e-ang
+    where: 'Problem 3(e), solution: L̂ at r = 3.5, √24.5'
+    formula: sqrt(3.5**2/(3.5 - 3))
+    expected: '4.950'
+    shown: ['$\hat L^2 = r^2/(r - 3) = 24.5$, $\hat L = 4.950$']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-en
+    answer: p3e-en
+    where: 'Problem 3(e), answer box: Ê = (1 − 2/r)/√(1 − 3/r) at r = 3.5'
+    formula: (1 - 2/3.5)/sqrt(1 - 3/3.5)
+    expected: '1.134'
+    shown: ['id="p3e-en"', '\sqrt{1 - 3/3.5} = 1.134$']
+    source: {cite: mit, at: 'Problem 3(e) (our own addition)'}
+    origin: page-own
+
+  - id: p3e-vpp
+    where: 'Problem 3(e), solution: V_eff'''' at r = 3.5 with L̂² = 24.5'
+    formula: -4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5
+    expected: '-0.2332'
+    shown: ['= -0.2332$ at $r = 3.5$']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-vpp-num
+    kind: identity
+    where: 'Problem 3(e), check: the formula for V_eff'''' against a numerical second derivative of (1 − 2/q)(1 + 24.5/q²)'
+    formula: -4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5
+    equals: deriv('(1 - 2/q)*(1 + 24.5/q**2)', 'q', 3.5, 2)
+    samples: {dummy: [1]}
+    tolerance: 1e-7
+    shown: ['V_\text{eff}'''' = -\frac{4}{r^3} + \frac{6\hat L^2}{r^4} - \frac{24\hat L^2}{r^5}']
+    source: {cite: mit, at: 'Problem 3(e) (our own check)'}
+    origin: page-own
+
+  - id: p3e-lam
+    where: 'Problem 3(e), solution: λ = √(−V_eff''''/2)'
+    formula: sqrt(-0.5*(-4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5))
+    expected: '0.3415'
+    shown: ['\lambda = \sqrt{-\tfrac{1}{2}V_\text{eff}''''} = 0.3415']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-tau
+    answer: p3e-tau
+    where: 'Problem 3(e), answer box: the growth time 1/λ in units of GM'
+    formula: 1/sqrt(-0.5*(-4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5))
+    expected: '2.93'
+    shown: ['id="p3e-tau"', '\frac{1}{\lambda} = 2.93\,GM']
+    source: {cite: mit, at: 'Problem 3(e) (our own addition)'}
+    origin: page-own
+
+  - id: p3e-round
+    where: 'Problem 3(e), solution: rounding errors of 1e-16 grow to order one after ln(2 × 10^16)/λ'
+    formula: log(2e16)/sqrt(-0.5*(-4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5))
+    expected: '110'
+    shown: ['roughly $110\,GM$ of proper time']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-efold
+    where: 'Problem 3(e), solution: ln(10^16), the number of e-foldings for rounding errors of 1e-16'
+    formula: log(1e16)
+    expected: '37'
+    shown: ['in about $37$ e-foldings']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-pred
+    where: 'Problem 3(e), solution: predicted time for a displacement of 1e-6 to pass 0.1, ln(2 × 0.1/10^-6)/λ'
+    formula: log(2*0.1/1e-6)/sqrt(-0.5*(-4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5))
+    expected: '35.7'
+    shown: ['= 35.7$ agrees']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-runs
+    kind: fact
+    where: 'Problem 3(e), table: our numerical runs. Unperturbed start held r = 3.5 to τ = 400 (computed acceleration zero); start 3.5 + 1e-6 escaped to r = 100, |r − 3.5| > 0.1 at τ = 35.9; start 3.5 − 1e-6 crossed r = 2.05, |r − 3.5| > 0.1 at τ = 35.6'
+    shown: ['| $3.5 + 10^{-6}$ | escapes (reaches $r = 100$) | 35.9 |', '| $3.5 - 10^{-6}$ | plunges (crosses $r = 2.05$) | 35.6 |', 'held the orbit for the whole run ($\tau = 400$)']
+    source: {cite: mit, at: 'Problem 3(e) (our own runs)'}
+    origin: page-own
+
+  - id: p3e-orbit
+    where: 'Problem 3(e), check: one orbit at r = 3.5 takes 2π r²/L̂ of proper time'
+    formula: 2*pi*3.5**2/sqrt(24.5)
+    expected: '15.6'
+    shown: ['= 15.6\,GM$ of proper time']
+    source: {cite: mit, at: 'Problem 3(e) (our own check)'}
+    origin: page-own
+
+  - id: p3e-ms
+    where: 'Problem 3(e), check: 1/λ for ten solar masses, in ms'
+    formula: 1/sqrt(-0.5*(-4/3.5**3 + 6*24.5/3.5**4 - 24*24.5/3.5**5))*10*1.32712e20/299792458**3*1000
+    expected: '0.144'
+    shown: ['$= 0.144$ ms']
+    source: {cite: nasasun, at: 'Bulk parameters: GM (our own arithmetic)'}
+    origin: page-own
+
+  - id: p3e-graph
+    kind: identity
+    where: 'Problem 3(e), graph: with L̂² = 24.5 the potential is 9/7 at r = 3.5 and flat there, and flat again at r = 21 (numerical derivatives)'
+    formula: 9/7 + 0 + 0
+    equals: (1 - 2/3.5)*(1 + 24.5/3.5**2) + deriv('(1 - 2/q)*(1 + 24.5/q**2)', 'q', 3.5) + deriv('(1 - 2/q)*(1 + 24.5/q**2)', 'q', 21)
+    samples: {dummy: [1]}
+    tolerance: 1e-8
+    shown: ['Its peak at r = 3.5 has the height 9/7 = 1.286', 'The minimum at r = 21']
+    source: {cite: mit, at: 'Problem 3(e) (our own graph)'}
+    origin: page-own
+
+  - id: p3e-ninesevenths
+    where: 'Problem 3(e), graph: 9/7 to the digits of the dashed line'
+    formula: 9/7
+    expected: '1.285714'
+    shown: ['expr: "1.285714"']
+    source: {cite: mit, at: 'Problem 3(e) (our own graph)'}
+    origin: page-own

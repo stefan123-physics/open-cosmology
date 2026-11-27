@@ -1,0 +1,1106 @@
+---
+title: "Problem Set 11: A star collapses to a black hole, a star cluster on circular orbits, and orbits around a black hole computed numerically"
+slug: 8-962-problem-set-11
+course: "8.962"
+kind: problems
+set: 11
+lecture: 23
+order: 90
+covers: [18, 20, 21, 22, 23]
+solutions: own
+summary: "Three problems on black holes and compact bodies. A ball of pressureless dust collapses: inside it is a piece of a closed Robertson–Walker universe, outside it is the Schwarzschild spacetime, and matching the two shows when and where the event horizon forms, before the surface reaches r = 2GM. A static cluster of stars on circular orbits: field equations like the TOV equations but with no radial pressure, an effective potential, the stability of the orbits, and the largest redshift such a cluster can give. Finally the orbits of a test body around a Schwarzschild black hole, integrated numerically: units for a ten-solar-mass hole, a fly-by, a precessing bound orbit, and stable and unstable circular orbits."
+prerequisites: [frw-cosmology-from-symmetry, schwarzschild-birkhoff-tov, buchdahl-equations-of-state-schwarzschild, event-horizons-kruskal-kerr, schwarzschild-orbits-photon-ring]
+source:
+  title: "MIT 8.962 Problem Set 11 (Spring 2020)"
+  url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/resources/mit8_962s20_pset11/
+  readings:
+    - title: "8.962 Lecture 18 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/4a374ede6b01ec89d1962085190fc1e5_wBvXOb59l-k.pdf
+    - title: "8.962 Lecture 20 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/96fab1aa22da86fbde1c5abc5b6b8c7e_PVYTNKZDHBo.pdf
+    - title: "8.962 Lecture 22 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/9cb27977551aade8f7121d257bfe82da_ZqF-7bjnzCU.pdf
+    - title: "8.962 Lecture 23 transcript"
+      url: https://ocw.mit.edu/courses/8-962-general-relativity-spring-2020/7ed0f53936bf28b5578be29776d6bb9c_uNWqE3LS1E.pdf
+license: CC BY-NC-SA 4.0
+references:
+  nasasun:
+    title: "NASA Space Science Data Coordinated Archive, Sun Fact Sheet"
+    url: https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
+    location: "Bulk parameters: GM"
+  nist:
+    title: "NIST, Fundamental Physical Constants: CODATA 2018 values"
+    url: https://physics.nist.gov/cuu/Constants/archive2018.html
+    location: "Speed of light in vacuum (exact)"
+status: reviewed
+---
+
+This set practises five lessons: [the Robertson–Walker metric and the Friedmann equations](/courses/8-962/frw-cosmology-from-symmetry), [the Schwarzschild metric and the TOV equations](/courses/8-962/schwarzschild-birkhoff-tov), [constant-density stars and radial infall](/courses/8-962/buchdahl-equations-of-state-schwarzschild), [the event horizon and Kruskal coordinates](/courses/8-962/event-horizons-kruskal-kerr) and [orbits around a black hole](/courses/8-962/schwarzschild-orbits-photon-ring). The problems follow MIT's Problem Set 11, in our own words. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+A few things to know about the source. The sheet's header reads "8.962 Spring 2006": for the 2020 course MIT reused an older sheet, and our source is the 2020 course's page for it. The sheet has printed page numbers, used below as "p. 1" to "p. 4". The lecture transcripts have no printed page numbers, so a transcript page below is a page of the PDF. A transcript records what was said, not what was written on the board, so a formula cited to a transcript page is printed here in the form of the lesson for that lecture. The sheet has no figure. Problem 1(g) asks for a sketch; we give a graph computed from the formulas instead.
+
+Some details of the sheet are handled as follows. The sheet writes the energy and angular momentum per unit mass as $E$ in Problem 1 and as $\hat E$, $\hat L$ in Problems 2 and 3; we write $\hat E$ and $\hat L$ throughout, as the lesson for Lecture 23 does. Problem 1(d) of the sheet refers to the relation between $E$ and $R$ "found in (b)"; it was found in part (c). We keep $G$ everywhere in Problems 1 and 2, as the sheet does; Problem 3 sets $GM = 1$, as the sheet asks.
+
+Some choices are ours, each marked where it appears:
+
+- the form of the effective potential in Problem 2(b) (the sheet asks us to define one);
+- in Problem 2(c), the exact local condition, with the density term; the sufficient condition $Gm/r < 1/6$, needed wherever there is no matter, is discussed in the solution;
+- in Problem 2(d), reading "all orbits stable" to include a star at the very edge of the cluster that is pushed slightly outward, into the empty space around the cluster;
+- in Problem 2(e), the redshift of light from a source at rest in the cluster (the gravitational redshift); a word on the motion of the stars is added as a check;
+- in Problem 3, every orbit we construct: $\hat E = 1.1$ for the fly-by of part (b), turning points $10\,GM$ and $50\,GM$ for the bound orbit of part (c), $r = 10\,GM$ for the stable circular orbit of part (d) and $r = 3.5\,GM$ for the unstable one of part (e);
+- in Problem 3, the way we integrate: the second-order equation of part (a), solved with SciPy's `solve_ivp` (method RK45, relative and absolute tolerance $10^{-12}$). The tables of numerical results come from those runs.
+
+Some boxes are our additions, each marked where it appears: the box for the collapse time in Problem 1(d), the box of Problem 1(b), the departure parameter in Problem 1(f), and every box of Problem 3 except the units of part (a).
+
+## How to answer
+
+Work each problem on paper (or, for Problem 3, on your computer) first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit named in the question. A formula box takes plain typing, for example `2*G*M/r^2`, and accepts every correct way of writing the answer. It treats its letters as independent, so each question says which letters to type: `Rstar` for $R_*$, `R0` for $R_0$, `rho0` for $\rho_0$, `rho` for $\rho$, `E` for $\hat E$, `L` for $\hat L$ and `Phi` for $\Phi$.
+
+MIT's set gives no points. The points here, and their split between parts, are ours. Several parts ask you to show something. Those parts have no box, or only a small one: open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The conventions are those of the lessons. The speed of light is 1, the metric has the signature $(-,+,+,+)$, and $d\Omega^2 = d\theta^2 + \sin^2\theta\,d\phi^2$. An overdot is a derivative with respect to the time named in the problem.
+
+## Problem 1
+
+<Exercise id="p1" title="Formation of a black hole" points={40} mit="Problem 1">
+
+The Schwarzschild black hole of the lectures exists for all time. Here we see how one can form from something ordinary: a spherical star of pressureless dust that collapses. The star starts at rest with radius $R_*$ and mass $M$, and its dust is spread evenly. By Birkhoff's theorem the spacetime outside the star is the Schwarzschild spacetime:
+
+<Formula label="Problem 1: the exterior" tex="ds^2 = -\left(1 - \frac{2GM}{r}\right)dt^2 + \frac{dr^2}{1 - 2GM/r} + r^2\,d\Omega^2 \qquad (r > R_*)" cite="mit" at="Problem 1, p. 1" />
+
+Inside, the dust looks the same everywhere and in every direction, so a Robertson–Walker metric describes it. The star must fall in under its own weight, so we take the closed one:
+
+<Formula label="Problem 1: the interior" tex="ds^2 = -d\tau^2 + a^2(\tau)\,R_0^2\left(d\chi^2 + \sin^2\chi\,d\Omega^2\right) \qquad (r < R_*)" cite="mit" at="Problem 1, p. 1" />
+
+Two different times appear. Outside, $t$ is Schwarzschild time, the time of distant observers. Inside, $\tau$ is the proper time of each grain of dust.
+
+<Part label="a" points={6}>
+
+For a closed Robertson–Walker spacetime filled with pressureless dust, the scale factor has a closed-form solution, given with a parameter $\eta$:
+
+<Formula label="Problem 1(a): the parametric solution" tex="a = \frac{a_{\text{max}}}{2}\left(1 + \cos\eta\right), \qquad \tau = \frac{a_{\text{max}}R_0}{2}\left(\eta + \sin\eta\right), \qquad 0 \le \eta \le \pi" cite="mit" at="Problem 1(a), p. 1" />
+
+Show that it solves the Friedmann equations for $k = 1$ with dust. Since $a$ always appears multiplied by $R_0$, you may set $a_{\text{max}} = 1$. Then find the density $\rho_0$ at the start, $\eta = 0$, in terms of $R_0$ (type `R0` and `G`).
+
+<Hint>
+
+With the line element above, the curvature term of the first Friedmann equation is $1/(a^2R_0^2)$. Dust keeps $\rho a^3$ fixed, so $\rho = \rho_0/a^3$ with $a_{\text{max}} = 1$.
+
+</Hint>
+
+<Hint>
+
+Compute $da/d\tau$ as $(da/d\eta)/(d\tau/d\eta)$, and write $\sin^2\eta$ as $(1 - \cos\eta)(1 + \cos\eta)$.
+
+</Hint>
+
+<Answer id="p1a-rho0" label="$\rho_0 =$" expr="3/(8*pi*G*R0^2)"
+  vars={{ G: [0.5, 2], R0: [1, 10] }} names={{ R0: "R_0" }}
+  mistakes={[
+    { expr: "1/(8*pi*G*R0^2)", hint: "The first Friedmann equation has 8πGρ/3: the factor 3 of the denominator has been lost on the way." },
+    { expr: "sqrt(3/(8*pi*G))/R0", hint: "That is the square root of the answer: ρ₀ goes as 1/R₀², since Gρ has the unit of 1/time², which is 1/length² with c = 1." }
+  ]} />
+
+<Solution>
+
+**The idea.** Put the parametric $a$ and $da/d\tau$ into the first Friedmann equation. Every term then varies as $1/a$ or is constant, and both kinds match only if $\rho_0$ and $R_0$ are tied.
+
+<Step title="The Friedmann equations">
+
+For the closed metric written with $R_0$ the lesson's equations read
+
+<Formula label="The Friedmann equations" tex="\left(\frac{\dot a}{a}\right)^2 = \frac{8\pi G}{3}\,\rho - \frac{1}{a^2R_0^2}, \qquad \frac{\ddot a}{a} = -\frac{4\pi G}{3}\left(\rho + 3P\right)" cite="reading1" at="transcript p. 13" />
+
+with $P = 0$ for dust and $\rho = \rho_0/a^3$. (The lesson writes the curvature term as $\kappa/a^2$; here $\kappa = 1/R_0^2$.)
+
+</Step>
+
+<Step title="The first equation">
+
+$da/d\eta = -\frac12\sin\eta$ and $d\tau/d\eta = \frac{R_0}{2}(1 + \cos\eta) = R_0\,a$, so $\dot a = -\sin\eta/(2R_0a)$. With $\sin^2\eta = (1 - \cos\eta)(1 + \cos\eta) = 2a(1 - \cos\eta)$ and $1 - \cos\eta = 2 - 2a$:
+
+<Formula label="Problem 1(a): the left side" tex="\dot a^2 = \frac{\sin^2\eta}{4R_0^2a^2} = \frac{1 - a}{R_0^2\,a} = \frac{1}{R_0^2\,a} - \frac{1}{R_0^2}" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+The Friedmann equation times $a^2$ is $\dot a^2 = \frac{8\pi G\rho_0}{3a} - \frac{1}{R_0^2}$. The constant terms agree; the $1/a$ terms agree when
+
+<Formula label="Problem 1(a): density and length scale" tex="\frac{8\pi G\rho_0}{3} = \frac{1}{R_0^2} \qquad\Longleftrightarrow\qquad \rho_0 = \frac{3}{8\pi G R_0^2}" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="The second equation">
+
+For dust the second equation follows from the first (differentiate it and use $\dot\rho = -3\rho\,\dot a/a$), but it can be checked directly. Since $\dot a = -\tan(\eta/2)/R_0$ and $\cos^2(\eta/2) = a$, $\ddot a = \frac{d\dot a/d\eta}{d\tau/d\eta} = -\frac{1}{2R_0 a}\cdot\frac{1}{R_0 a} = -\frac{1}{2R_0^2a^2}$, and $-\frac{4\pi G}{3}\rho\,a = -\frac{4\pi G\rho_0}{3a^2} = -\frac{1}{2R_0^2a^2}$. They agree.
+
+</Step>
+
+<Step title="Check the result">
+
+Units: with $c = 1$, $G\rho$ is 1 over a time squared, which is 1 over a length squared, like $1/R_0^2$. At $\eta = 0$ the dust is at rest ($\dot a = 0$), as the problem requires, and the curvature radius $R_0$ is the one for which a closed universe of density $\rho_0$ just stops expanding there. In our calculation file the relation is checked at other values of $\eta$ with numerical derivatives of the parametric solution.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+The solution for the interior time is good only up to $\tau = \pi R_0/2$. What happens to the interior after that? The box is our addition.
+
+<Hint>
+
+Look at $a$ at $\eta = \pi$, and at what that does to $\rho = \rho_0/a^3$.
+
+</Hint>
+
+<Answer id="p1b-end" label="At $\tau = \pi R_0/2$:" choices={["a passes through zero smoothly, and the dust streams out through the centre to re-expand on the far side", "a stops shrinking at a small but finite size, set by how fast the dust was falling, and the star settles there", "a reaches zero: all the dust arrives at r = 0 together, and density and curvature become infinite", "a keeps shrinking but never reaches zero, which takes an infinite proper time of the dust"]} answer={2} />
+
+<Solution>
+
+**The idea.** At $\eta = \pi$ the scale factor reaches zero, at the same proper time for every grain.
+
+<Step title="The crunch">
+
+$\eta = \pi$ gives $\tau = \pi R_0/2$ and $a = 0$. The proper size of the star, $a R_0 \sin\chi$ in circumference over $2\pi$, is then zero: all the dust is at $r = 0$ at once, and $\rho = \rho_0/a^3$ is infinite. The curvature of a Robertson–Walker spacetime grows with $\rho$, so this is a true singularity, like the big crunch of a closed universe. The geodesics of the dust end there; the metric has no continuation, and the cycloid formula for $\eta > \pi$ (a re-expansion) does not describe anything physical.
+
+</Step>
+
+<Step title="Check the result">
+
+The proper time to reach the crunch, $\pi R_0/2$, is finite: the dust gets there in its own time. Part (d) finds the same time from the outside, for the grains at the surface.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+Next we look at the star's surface from outside.
+
+<Part label="c" points={5}>
+
+Take a purely radial orbit in the Schwarzschild spacetime ($\hat L = 0$) with energy per unit mass $\hat E$. Find the radius $R$ at which the radial velocity is zero, in terms of $G$, $M$ and $\hat E$ (type `E`). This defines the energy of a grain of dust at the surface of the star as it starts to fall.
+
+<Hint>
+
+The radial equation of the lesson for Lecture 23 holds for any $\hat L$. Set $\hat L = 0$ and $dr/d\tau = 0$.
+
+</Hint>
+
+<Answer id="p1c-turn" label="$R =$" expr="2*G*M/(1 - E^2)"
+  vars={{ G: [0.5, 2], M: [1, 2], E: [0.2, 0.9] }} names={{ E: "\\hat E" }}
+  mistakes={[
+    { expr: "2*G*M/(1 - E)", hint: "The radial equation holds the square of the energy: the turning point is where 1 − 2GM/R equals Ê²." },
+    { expr: "2*G*M*(1 - E^2)", hint: "Solve 1 − 2GM/R = Ê² for R: 2GM is divided by 1 − Ê², not multiplied by it." }
+  ]} />
+
+<Solution>
+
+**The idea.** With $\hat L = 0$ the effective potential is $1 - 2GM/r$, and the body turns where it equals $\hat E^2$.
+
+<Step title="The radial equation">
+
+The lesson gives
+
+<Formula label="Radial equation of a Schwarzschild geodesic" tex="\left(\frac{dr}{d\tau}\right)^2 = \hat E^2 - V_\text{eff}(r), \qquad V_\text{eff} = \left(1 - \frac{2GM}{r}\right)\left(1 + \frac{\hat L^2}{r^2}\right)" cite="reading4" at="transcript p. 5" />
+
+</Step>
+
+<Step title="The turning point">
+
+With $\hat L = 0$, $dr/d\tau = 0$ where $1 - 2GM/R = \hat E^2$:
+
+<Formula label="Problem 1(c): the radius of rest" tex="R = \frac{2GM}{1 - \hat E^2}, \qquad \hat E^2 = 1 - \frac{2GM}{R}" cite="mit" at="Problem 1(c), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+$\hat E < 1$ gives $R > 2GM$: a bound body falling from rest outside the horizon. As $\hat E \to 1$, $R \to \infty$: a body that falls from rest at infinity has $\hat E = 1$. Far away, $\hat E^2 \approx 1 - 2GM/R$ says $\hat E \approx 1 - GM/R$: rest energy plus the Newtonian potential energy per unit mass.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={7}>
+
+Use the radial equation and the relation of part (c), with $R = R_*$, to write the proper time $\tau$ that a grain at the surface takes to fall from $R_*$ to $r$. You should find
+
+<Formula label="Problem 1(d): the proper time as an integral" tex="\tau = -\int_{R_*}^{r}\frac{dr'}{\sqrt{2GM/r' - 2GM/R_*}}" cite="mit" at="Problem 1(d), p. 2" />
+
+(the minus sign because the surface moves inward). With $r = \frac{R_*}{2}(1 + \cos\eta)$, $0 \le \eta \le \pi$, show that
+
+<Formula label="Problem 1(d): the proper time in closed form" tex="\tau = \sqrt{\frac{R_*^3}{8GM}}\left(\eta + \sin\eta\right)" cite="mit" at="Problem 1(d), p. 2" />
+
+Our box asks for the proper time the surface takes to reach $r = 0$ (type `Rstar` for $R_*$).
+
+<Hint>
+
+Express $2GM/r - 2GM/R_*$ in terms of $\eta$: it is $2GM/R_*$ times a function of $\eta$ that half-angle formulas make simple.
+
+</Hint>
+
+<Hint>
+
+$1 + \cos\eta = 2\cos^2(\eta/2)$, $1 - \cos\eta = 2\sin^2(\eta/2)$ and $\sin\eta = 2\sin(\eta/2)\cos(\eta/2)$.
+
+</Hint>
+
+<Answer id="p1d-tc" label="Proper time from $R_*$ to $r = 0$:" expr="pi*sqrt(Rstar^3/(8*G*M))"
+  vars={{ G: [0.5, 2], M: [1, 2], Rstar: [5, 20] }} names={{ Rstar: "R_*" }}
+  mistakes={[
+    { expr: "pi/2*sqrt(Rstar^3/(8*G*M))", hint: "The factor is η + sin η at η = π, which is π, not π/2: the surface reaches r = 0 at η = π." },
+    { expr: "sqrt(Rstar^3/(8*G*M))", hint: "At r = 0 the parameter is η = π, so η + sin η = π: the factor π is missing." }
+  ]} />
+
+<Solution>
+
+**The idea.** For $\hat L = 0$ the radial equation gives $dr/d\tau$ directly. The cycloid parameter turns the integrand into $\cos^2(\eta/2)$.
+
+<Step title="The integral">
+
+With $\hat E^2 = 1 - 2GM/R_*$ from part (c), the radial equation with $\hat L = 0$ is $(dr/d\tau)^2 = 2GM/r - 2GM/R_*$. The surface falls, so $dr/d\tau$ is the negative root, and $d\tau = -dr/\sqrt{2GM/r - 2GM/R_*}$, which integrates to the formula of the statement.
+
+</Step>
+
+<Step title="The substitution">
+
+With $r = \frac{R_*}{2}(1 + \cos\eta)$:
+
+<Formula label="Problem 1(d): the integrand in terms of η" tex="\frac{2GM}{r} - \frac{2GM}{R_*} = \frac{2GM}{R_*}\cdot\frac{1 - \cos\eta}{1 + \cos\eta} = \frac{2GM}{R_*}\tan^2\frac{\eta}{2}, \qquad dr = -R_*\sin\frac{\eta}{2}\cos\frac{\eta}{2}\,d\eta" cite="mit" at="Problem 1(d), p. 2 (our own solution)" />
+
+So $d\tau = \sqrt{\frac{R_*}{2GM}}\,R_*\cos^2\frac{\eta}{2}\,d\eta = \sqrt{\frac{R_*^3}{2GM}}\cdot\frac{1 + \cos\eta}{2}\,d\eta$, and integrating from $\eta = 0$ (where $r = R_*$) gives $\tau = \sqrt{R_*^3/(8GM)}\,(\eta + \sin\eta)$.
+
+</Step>
+
+<Step title="The collapse time">
+
+The surface reaches $r = 0$ at $\eta = \pi$:
+
+<Formula label="Problem 1(d): the time to collapse" tex="\tau = \pi\sqrt{\frac{R_*^3}{8GM}} \quad \text{at } r = 0" cite="mit" at="Problem 1(d), p. 2 (our own addition)" />
+
+</Step>
+
+<Step title="Check the result">
+
+This is exactly the Newtonian free-fall time of a uniform ball, $\frac{\pi}{2}\sqrt{R_*^3/(2GM)}$. Measured by the falling dust, relativity changes nothing in this time; the difference shows up in the Schwarzschild time $t$, in which the surface never quite reaches $r = 2GM$ (the lesson for Lecture 21 plots both). The same parametric form appears in that lesson for a rock dropped from rest.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+Now match the inside and the outside. Two conditions: the circumference of the star must be the same in both descriptions for every $\eta$, and the two expressions for the proper time of a grain on the surface must agree for every $\eta$.
+
+<Part label="e" points={7}>
+
+From these two conditions, find the length scale $R_0$ and the Robertson–Walker radius $\chi_s$ of the star's surface, in terms of $G$, $M$ and $R_*$ (type `Rstar`).
+
+<Hint>
+
+The interior circumference at the surface is $2\pi\,a(\eta)\,R_0\sin\chi_s$; the exterior one is $2\pi r$, with the $r(\eta)$ of part (d).
+
+</Hint>
+
+<Answer id="p1e-r0" label="$R_0 =$" expr="sqrt(Rstar^3/(2*G*M))"
+  vars={{ G: [0.5, 2], M: [1, 2], Rstar: [10, 20] }} names={{ Rstar: "R_*" }}
+  mistakes={[
+    { expr: "sqrt(Rstar^3/(8*G*M))", hint: "That is the factor in front of (η + sin η) outside. Inside the factor is R₀/2, so R₀ is twice it." },
+    { expr: "Rstar", hint: "R₀ sin χ, not R₀ itself, equals R*: the star is only part of the closed space, and the proper-time condition fixes R₀." }
+  ]} />
+
+<Answer id="p1e-chi" label="$\chi_s =$" expr="asin(sqrt(2*G*M/Rstar))"
+  vars={{ G: [0.5, 2], M: [1, 2], Rstar: [10, 20] }} names={{ Rstar: "R_*" }}
+  mistakes={[
+    { expr: "asin(2*G*M/Rstar)", hint: "sin χ is R*/R₀, and R*/R₀ is the square root of 2GM/R*." }
+  ]} />
+
+<Solution>
+
+**The idea.** The proper times are both a constant times $(\eta + \sin\eta)$, which fixes $R_0$. The circumferences are both a constant times $(1 + \cos\eta)$, which then fixes $\sin\chi_s$.
+
+<Step title="Proper time">
+
+Inside, $\tau = \frac{R_0}{2}(\eta + \sin\eta)$; outside, $\tau = \sqrt{R_*^3/(8GM)}\,(\eta + \sin\eta)$. Equal for all $\eta$:
+
+<Formula label="Problem 1(e): the length scale" tex="R_0 = 2\sqrt{\frac{R_*^3}{8GM}} = \sqrt{\frac{R_*^3}{2GM}}" cite="mit" at="Problem 1(e), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Circumference">
+
+Inside, the circumference at $\chi_s$ is $2\pi\cdot\frac{1 + \cos\eta}{2}\,R_0\sin\chi_s$; outside it is $2\pi\cdot\frac{R_*}{2}(1 + \cos\eta)$. Equal for all $\eta$: $R_0\sin\chi_s = R_*$, so
+
+<Formula label="Problem 1(e): the radius of the star in the interior coordinates" tex="\sin\chi_s = \frac{R_*}{R_0} = \sqrt{\frac{2GM}{R_*}}, \qquad \chi_s = \arcsin\sqrt{\frac{2GM}{R_*}}" cite="mit" at="Problem 1(e), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Part (a) gives the density: $\rho_0 = \frac{3}{8\pi G R_0^2} = \frac{3}{8\pi G}\cdot\frac{2GM}{R_*^3} = \frac{3M}{4\pi R_*^3}$, the mass divided by $\frac{4\pi}{3}R_*^3$. (That is the volume counted with the areal radius, as $m(r)$ is in the lesson for Lecture 20; the proper volume of the curved interior is larger, and the difference is the binding energy.) $\sin\chi_s < 1$ needs $R_* > 2GM$: the star starts outside its own horizon. For $R_* \gg GM$, $\chi_s$ is small and the star is a small cap of the closed space.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+For the rest of the problem take $R_* = 5\,GM$. The horizon of a Schwarzschild black hole is a null surface, made of light rays that stay at $r = 2GM$. The horizon of a hole that forms in collapse is made of the outgoing light ray that leaves the centre of the star at just the right moment to reach the surface as the surface passes $r = 2GM$. From then on, by Birkhoff's theorem, the ray stays at $r = 2GM$.
+
+<Part label="f" points={8}>
+
+Find the proper time $\tau$ (of the dust) at which this light ray leaves the centre of the star, in units of $GM$. The sheet's hint: with the parametric solution the interior metric is
+
+<Formula label="Problem 1(f): the interior metric with η as time" tex="ds^2 = a(\eta)^2R_0^2\left(-d\eta^2 + d\chi^2 + \sin^2\chi\,d\Omega^2\right)" cite="mit" at="Problem 1(f), p. 2" />
+
+so an outgoing radial light ray has $d\chi/d\eta = 1$. Integrate back from the moment the surface crosses $r = 2GM$ to the centre, then convert to $\tau$. The box for $\eta$ at that moment is our addition.
+
+<Hint>
+
+First find $\eta$ where the surface crosses $r = 2GM$, from $r = \frac{R_*}{2}(1 + \cos\eta)$, and $\chi_s$ for $R_* = 5\,GM$.
+
+</Hint>
+
+<Hint>
+
+The ray covers the coordinate distance $\chi_s$ from the centre to the surface, and $d\chi = d\eta$ along it.
+
+</Hint>
+
+<Answer id="p1f-eta" label="$\eta$ when the ray leaves the centre (in radians, as a decimal):" value="1.087" tolerance="1%" calc="p1f-eta" />
+
+<Answer id="p1f-tau" label="$\tau$ when the ray leaves the centre, in units of $GM$:" value="7.80" unit="GM" tolerance="1%" calc="p1f-tau" />
+
+<Solution>
+
+**The idea.** In $(\eta, \chi)$ the interior is conformally flat, so radial light moves at 45°. The ray reaches $\chi_s$ at the crossing parameter; it left the centre a parameter interval $\chi_s$ earlier.
+
+<Step title="The numbers of the star">
+
+For $R_* = 5\,GM$: $R_0 = \sqrt{125/2}\,GM = 7.906\,GM$ and $\chi_s = \arcsin\sqrt{2/5} = 0.6847$. The surface is at $r = 2GM$ when $1 + \cos\eta = 4/5$:
+
+<Formula label="Problem 1(f): the surface crosses r = 2GM" tex="\cos\eta_h = -\frac{1}{5}, \qquad \eta_h = 1.7722" cite="mit" at="Problem 1(f), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Back along the ray">
+
+$d\chi/d\eta = 1$ from $\chi = 0$ to $\chi = \chi_s$ gives the departure parameter $\eta_e = \eta_h - \chi_s = 1.7722 - 0.6847 = 1.0874$, and
+
+<Formula label="Problem 1(f): when the horizon starts" tex="\tau_e = \frac{R_0}{2}\left(\eta_e + \sin\eta_e\right) = 3.9528 \times \left(1.0874 + 0.8854\right)GM = 7.80\,GM" cite="mit" at="Problem 1(f), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The surface itself crosses $r = 2GM$ at $\tau_h = 3.9528\times(1.7722 + 0.9798)\,GM = 10.88\,GM$ and reaches $r = 0$ at $\tau = \pi R_0/2 = 12.42\,GM$. So the horizon is born at the centre $3.08\,GM$ of proper time before the surface reaches $r = 2GM$, while the star is still well outside its Schwarzschild radius (at $\eta_e$ the surface is at $r = 2.5\,(1 + \cos\eta_e)\,GM = 3.66\,GM$). Check at the surface: the ray's areal radius there, $R_0\sin\chi_s\,a(\eta_h) = R_*\,a(\eta_h) = 5 \times 0.4\,GM$, is $2GM$, as it should be.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="g" points={3}>
+
+On a spacetime diagram, sketch how the star's surface and the event horizon evolve. Mark yourself.
+
+<Hint>
+
+Inside the star a grain at fixed $\chi$ has areal radius $r = R_0\,a(\eta)\sin\chi$. Use $r$ across and $\tau$ up, and draw both curves with $\eta$ as the parameter.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Use the areal radius $r$ across and the proper time $\tau$ of the dust up. The surface follows $r = R_*\,a(\eta)$; the horizon generator follows $\chi = \eta - \eta_e$, so $r = R_0\,a(\eta)\sin(\eta - \eta_e)$.
+
+<Step title="The diagram">
+
+<Plot variable="x" domain={[0, 6]} range={[0, 16]} xLabel="r (units of GM)" yLabel="τ (units of GM)"
+  curves={[
+    { x: "2.5*(1 + cos(s))", y: "3.952847*(s + sin(s))", range: [0, 3.14159], label: "surface" },
+    { x: "3.952847*sin(s - 1.087435)*(1 + cos(s))", y: "3.952847*(s + sin(s))", range: [1.087435, 1.772154], label: "horizon" },
+    { x: "2 + 0*s", y: "s", range: [10.878, 16], label: "r = 2GM", dash: true }
+  ]}
+  caption="The collapse of a dust star that starts at rest with R* = 5GM, computed from the parametric formulas: across, the areal radius r; up, the proper time τ of the dust. The surface falls from r = 5GM and reaches r = 0 at τ = 12.42GM. The event horizon leaves the centre at τ = 7.80GM and grows until it meets the surface at r = 2GM, at τ = 10.88GM. After that the horizon is outside the star and stays at r = 2GM; there τ is no longer a time coordinate, so the dashed line only marks that radius." />
+
+Outside the horizon curve, light from the collapsing dust can still escape for a while (until the surface crosses it); every event inside the region it bounds is trapped. The horizon forms first at the centre, where nothing has yet happened locally: the density there is still finite and nothing marks the event. Whether an event is inside the horizon depends on the whole future of the spacetime, which is why the horizon is a global notion.
+
+</Step>
+
+<Step title="Check the result">
+
+The horizon curve starts at $r = 0$ and ends on the surface at exactly $r = 2GM$ (see part (f)). It never runs faster than light: in the conformally flat $(\eta, \chi)$ form, it is a 45° line.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="A star cluster with every star on a circular orbit" points={30} mit="Problem 2">
+
+A static, spherical cluster of stars, in which every star moves on a circular orbit. The stars do not collide: treat them as non-interacting dust, and treat their number as so large that a continuous density $\rho(r)$ describes them. Use Schwarzschild-type coordinates with $r = 0$ at the centre, and write the metric as
+
+<Formula label="Problem 2: the metric of the cluster" tex="ds^2 = -e^{2\Phi}dt^2 + e^{2\Lambda}dr^2 + r^2\,d\Omega^2, \qquad \Phi = \Phi(r), \quad \Lambda = \Lambda(r)" cite="mit" at="Problem 2, p. 3" />
+
+with the mass function
+
+<Formula label="Problem 2: the mass function" tex="m(r) = \int_0^r 4\pi\rho\,r'^2\,dr'" cite="mit" at="Problem 2(a), p. 3" />
+
+<Part label="a" points={6}>
+
+Find $e^{2\Lambda}$ and $d\Phi/dr$ in terms of $m$ and $r$. The sheet's hint: the result is like the TOV equations, with one crucial difference.
+
+<Hint>
+
+The $tt$ and $rr$ field equations of the lesson for Lecture 20 do not care whether the matter is a fluid. What they need is $T^t{}_t$ and $T^r{}_r$. What is the radial pressure of stars that all move on circles?
+
+</Hint>
+
+<Answer id="p2a-e2l" label="$e^{2\Lambda} =$" expr="1/(1 - 2*G*m/r)"
+  vars={{ G: [0.5, 1], m: [0.5, 1], r: [10, 20] }}
+  mistakes={[
+    { expr: "1 - 2*G*m/r", hint: "That is e^(−2Λ). The box asks for e^(2Λ), its inverse." }
+  ]} />
+
+<Answer id="p2a-dphi" label="$d\Phi/dr =$" expr="G*m/(r*(r - 2*G*m))"
+  vars={{ G: [0.5, 1], m: [0.5, 1], r: [10, 20], rho: [0.001, 0.01] }} names={{ rho: "\\rho" }}
+  mistakes={[
+    { expr: "G*m/r^2", hint: "That is the Newtonian field. The rr field equation adds the factor 1/(1 − 2Gm/r)." },
+    { expr: "G*(m + 4*pi*r^3*rho)/(r*(r - 2*G*m))", hint: "That is the TOV form with the density in place of the pressure. The rr field equation holds the radial pressure, and stars on circles have none." }
+  ]} />
+
+<Solution>
+
+**The idea.** The $tt$ equation fixes $\Lambda$ through $m$, exactly as for a star. The $rr$ equation holds the radial pressure, which is zero here, because no star moves radially. The pressure is all tangential.
+
+<Step title="The tt equation">
+
+The lesson's $tt$ equation, with $T^t{}_t = -\rho$ ($\rho$ the energy density measured by a static observer, kinetic energy of the stars included):
+
+<Formula label="The tt field equation" tex="G^{t}{}_{t} = -\frac{1}{r^2}\,\frac{d}{dr}\left[r\left(1 - e^{-2\Lambda}\right)\right] = -8\pi G\rho" cite="reading2" at="transcript pp. 11–12" />
+
+Integrating from $r = 0$: $r(1 - e^{-2\Lambda}) = 2Gm$, so $e^{2\Lambda} = \left(1 - 2Gm/r\right)^{-1}$.
+
+</Step>
+
+<Step title="The rr equation">
+
+The lesson's $rr$ equation holds the radial pressure $P_r = T^r{}_r$:
+
+<Formula label="The rr field equation" tex="G^{r}{}_{r} = e^{-2\Lambda}\left(\frac{2}{r}\,\frac{d\Phi}{dr} + \frac{1}{r^2}\right) - \frac{1}{r^2} = 8\pi G P_r" cite="reading2" at="transcript pp. 13–14" />
+
+Each star moves along $\phi$ (in a plane of its own), never along $r$, so the flux of radial momentum is zero: $P_r = 0$. Then
+
+<Formula label="Problem 2(a): the field equations of the cluster" tex="e^{2\Lambda} = \frac{1}{1 - 2Gm/r}, \qquad \frac{d\Phi}{dr} = \frac{Gm}{r\left(r - 2Gm\right)}" cite="mit" at="Problem 2(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The crucial difference">
+
+The TOV equation for $d\Phi/dr$ has $m + 4\pi r^3P$; here the pressure term is gone. And there is no equation $dP/dr = -(\rho + P)\,d\Phi/dr$ of hydrostatic equilibrium. What holds the cluster up is not a pressure gradient but the orbital motion: a tangential stress $P_t$. The radial part of $\nabla_\mu T^{\mu\nu} = 0$ for an anisotropic stress reads $dP_r/dr = -(\rho + P_r)\Phi' + 2(P_t - P_r)/r$, which with $P_r = 0$ gives $P_t = \frac12\rho\,r\,\Phi'$.
+
+</Step>
+
+<Step title="Check the result">
+
+Outside the cluster $m = M$ and the two results give the Schwarzschild metric: $\frac{d}{dr}\left[\frac12\ln\left(1 - \frac{2GM}{r}\right)\right] = \frac{GM}{r(r - 2GM)}$. Far from strong fields, $d\Phi/dr \approx Gm/r^2$, Newton's field.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={8}>
+
+Define a suitable effective potential $V_\text{eff}(r)$ and use it to find the energy per unit mass $\hat E$ and angular momentum per unit mass $\hat L$ of a star in the cluster, in terms of $r$, $m(r)$ and $\Phi(r)$. Then find the orbital frequency $\Omega \equiv d\phi/dt = (d\phi/d\tau)/(dt/d\tau)$. Type `Phi` for $\Phi$; give $\hat L$ as a positive number.
+
+<Hint>
+
+The metric does not depend on $t$ or $\phi$, so $\hat E = e^{2\Phi}\,dt/d\tau$ and $\hat L = r^2\,d\phi/d\tau$ are conserved. Put them into the normalization of the four-velocity, in the plane $\theta = \pi/2$.
+
+</Hint>
+
+<Hint>
+
+A circular orbit sits where the effective potential is flat and equals $\hat E^2$. Use part (a) for $d\Phi/dr$.
+
+</Hint>
+
+<Answer id="p2b-ang" label="$\hat L =$" expr="r*sqrt(G*m/(r - 3*G*m))"
+  vars={{ G: [0.5, 1], m: [0.5, 1], r: [10, 20] }}
+  mistakes={[
+    { expr: "sqrt(G*m*r)", hint: "That is the Newtonian angular momentum. The relativistic value has the extra factor 1/√(1 − 3Gm/r)." }
+  ]} />
+
+<Answer id="p2b-en" label="$\hat E =$" expr="exp(Phi)*sqrt((r - 2*G*m)/(r - 3*G*m))"
+  vars={{ G: [0.5, 1], m: [0.5, 1], r: [10, 20], Phi: [-0.5, -0.2] }} names={{ Phi: "\\Phi" }}
+  mistakes={[
+    { expr: "sqrt((r - 2*G*m)/(r - 3*G*m))", hint: "The factor e^Φ is missing: Ê² equals the effective potential, which holds e^(2Φ)." },
+    { expr: "(1 - 2*G*m/r)/sqrt(1 - 3*G*m/r)", hint: "That is the Schwarzschild result, which uses e^(2Φ) = 1 − 2Gm/r. Inside the cluster Φ is not fixed by m at the same radius." }
+  ]} />
+
+<Answer id="p2b-om" label="$\Omega =$" expr="exp(Phi)*sqrt(G*m/(r^2*(r - 2*G*m)))"
+  vars={{ G: [0.5, 1], m: [0.5, 1], r: [10, 20], Phi: [-0.5, -0.2] }} names={{ Phi: "\\Phi" }}
+  mistakes={[
+    { expr: "sqrt(G*m/r^3)", hint: "That is Kepler's law, which is also the Schwarzschild result outside the cluster. Inside, e^(2Φ) differs from 1 − 2Gm/r." }
+  ]} />
+
+<Solution>
+
+**The idea.** As for Schwarzschild, the conserved $\hat E$ and $\hat L$ turn the normalization of the four-velocity into an energy equation for $r$. Circular orbits are where the potential is flat.
+
+<Step title="The effective potential">
+
+In the plane $\theta = \pi/2$, $-e^{2\Phi}\dot t^2 + e^{2\Lambda}\dot r^2 + r^2\dot\phi^2 = -1$ (dots are $d/d\tau$). With $\dot t = \hat E e^{-2\Phi}$ and $\dot\phi = \hat L/r^2$, multiplied by $e^{2\Phi}$:
+
+<Formula label="Problem 2(b): the radial equation and our effective potential" tex="e^{2(\Phi + \Lambda)}\left(\frac{dr}{d\tau}\right)^2 = \hat E^2 - V_\text{eff}(r), \qquad V_\text{eff} = e^{2\Phi}\left(1 + \frac{\hat L^2}{r^2}\right)" cite="mit" at="Problem 2(b), p. 3 (our own solution)" />
+
+This form is our choice: it reduces to the potential of the lesson for Lecture 23 outside the cluster, and the factor in front of $(dr/d\tau)^2$ is positive, so the star can move only where $V_\text{eff} \le \hat E^2$.
+
+</Step>
+
+<Step title="Circular orbits">
+
+$dV_\text{eff}/dr = e^{2\Phi}\left[2\Phi'\left(1 + \hat L^2/r^2\right) - 2\hat L^2/r^3\right] = 0$ gives $\hat L^2 = r^3\Phi'/(1 - r\Phi')$. With $r\Phi' = Gm/(r - 2Gm)$ from part (a), $1 - r\Phi' = (r - 3Gm)/(r - 2Gm)$, and
+
+<Formula label="Problem 2(b): angular momentum and energy" tex="\hat L^2 = \frac{Gm\,r^2}{r - 3Gm}, \qquad \hat E^2 = V_\text{eff} = e^{2\Phi}\,\frac{r - 2Gm}{r - 3Gm}" cite="mit" at="Problem 2(b), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The frequency">
+
+$\Omega = \frac{\hat L/r^2}{\hat E e^{-2\Phi}}$, and the factors $\sqrt{r - 3Gm}$ cancel:
+
+<Formula label="Problem 2(b): the orbital frequency" tex="\Omega = e^{\Phi}\sqrt{\frac{Gm}{r^2\left(r - 2Gm\right)}}, \qquad \Omega^2 = \frac{e^{2\Phi}}{r}\,\frac{d\Phi}{dr}" cite="mit" at="Problem 2(b), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+Outside the cluster, $e^{2\Phi} = 1 - 2GM/r$, and these become the lesson's results:
+
+<Formula label="Circular orbits of Schwarzschild" tex="\hat L = \frac{\sqrt{GMr}}{\sqrt{1 - 3GM/r}}, \qquad \hat E = \frac{1 - 2GM/r}{\sqrt{1 - 3GM/r}}, \qquad \Omega = \sqrt{\frac{GM}{r^3}}" cite="reading4" at="transcript pp. 8–10" />
+
+A static observer sees the star pass at the speed $v = r\,e^{-\Phi}\,\Omega$, so $v^2 = r\Phi' = Gm/(r - 2Gm)$. That is below 1 only if $r > 3Gm$, which is also where $\hat L$ is finite: a cluster with $Gm/r \ge 1/3$ anywhere cannot be built of stars on circular orbits. The tangential stress of part (a), $P_t = \frac12\rho v^2$, is what one expects: half the stars' motion is along each of the two directions across $\hat r$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={6}>
+
+Use $V_\text{eff}$ to study the stability of the orbits of single stars. The circular orbits at $r$ turn out to be stable when $Gm/r < \frac{1}{6}(1 + X)$. Give $X$ in terms of $r$, $m$ and $\rho$ (type `rho`).
+
+<Hint>
+
+An orbit is stable if $V_\text{eff}$ has a minimum there. Differentiate $V_\text{eff}$ twice at fixed $\hat L$, use $\Phi'$ from part (a), and remember that $m$ depends on $r$: $dm/dr = 4\pi r^2\rho$.
+
+</Hint>
+
+<Hint>
+
+At the circular orbit, put in the $\hat L^2$ of part (b). The sign of $V_\text{eff}''$ is then the sign of a simple polynomial in $m$, $r$ and $\rho$, as long as $r > 3Gm$.
+
+</Hint>
+
+<Answer id="p2c-bound" label="$X =$" expr="4*pi*r^3*rho/m"
+  vars={{ m: [0.5, 1], r: [10, 20], rho: [0.0001, 0.001] }} names={{ rho: "\\rho" }}
+  mistakes={[
+    { expr: "0", hint: "That gives the bound 1/6, which holds where the density is zero. Inside the cluster a star moved outward has more mass inside its orbit, which adds a term with ρ." }
+  ]} />
+
+<Solution>
+
+**The idea.** The second derivative of $V_\text{eff}$ at the circular orbit has two parts: the Schwarzschild one, which changes sign at $Gm/r = 1/6$, and a part from the density, which helps.
+
+<Step title="The second derivative">
+
+Differentiating twice, with $\Phi'' = d\Phi'/dr$ from part (a) (where $dm/dr = 4\pi r^2\rho$ enters) and $\hat L^2$ from part (b):
+
+<Formula label="Problem 2(c): the curvature of the potential at a circular orbit" tex="\frac{d^2V_\text{eff}}{dr^2} = \frac{2G\,e^{2\Phi}\left(m\,r - 6Gm^2 + 4\pi r^4\rho\right)}{r^2\left(r - 2Gm\right)\left(r - 3Gm\right)}" cite="mit" at="Problem 2(c), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The condition">
+
+For $r > 3Gm$ the denominator is positive, so the orbit is stable when $m r - 6Gm^2 + 4\pi r^4\rho > 0$. Divided by $6mr$:
+
+<Formula label="Problem 2(c): stability" tex="\frac{Gm}{r} < \frac{1}{6}\left(1 + \frac{4\pi r^3\rho}{m}\right) = \frac{1}{6}\left(1 + \frac{d\ln m}{d\ln r}\right)" cite="mit" at="Problem 2(c), p. 3 (our own solution)" />
+
+So $X = 4\pi r^3\rho/m$. Because $m$ is $r/G$ times $Gm/r$, the condition can also be solved for $Gm/r$: with $x = Gm/r$ it reads $6x^2 - x - 4\pi G\rho r^2 < 0$, that is $x < \left(1 + \sqrt{1 + 96\pi G\rho r^2}\right)/12$. Since $\rho \ge 0$, $Gm/r < 1/6$ is enough everywhere; where the density is zero it is also needed.
+
+</Step>
+
+<Step title="Check the result">
+
+With $\rho = 0$ the condition is $r > 6Gm$: the innermost stable circular orbit of the lesson for Lecture 23, $r_\text{ms} = 6GM$ (transcript p. 11). The density term makes sense: a star pushed outward has more mass inside its orbit, so the pull back grows. In our calculation file the formula for $d^2V_\text{eff}/dr^2$ is compared with a numerical second derivative of $V_\text{eff}$ for the uniform cluster of part (d).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={5}>
+
+Apply this to a uniform cluster of total mass $M$ and radius $R$: $\rho$ constant, so $m(r) = M(r/R)^3$ for $r \le R$. Solve for $\Phi(r)$ inside, and give $e^{2\Phi(r)}$ in terms of $G$, $M$, $R$ and $r$. Then find the largest $GM/R$ for which all orbits are stable, as a decimal. Our reading (our choice): the stars at the very edge count too, including their response to a small push outward, into the empty space around the cluster.
+
+<Hint>
+
+Integrate $d\Phi/dr$ of part (a) from $r$ to $R$, and use the Schwarzschild value of $\Phi$ at $R$, where the inside meets the outside.
+
+</Hint>
+
+<Hint>
+
+Inside, $4\pi r^3\rho/m = 3$. Just outside the edge, $\rho = 0$.
+
+</Hint>
+
+<Answer id="p2d-e2phi" label="$e^{2\Phi(r)} =$" expr="(1 - 2*G*M/R)^(3/2)/sqrt(1 - 2*G*M*r^2/R^3)"
+  vars={{ G: [0.5, 1], M: [1, 2], R: [20, 40], r: [1, 15] }}
+  mistakes={[
+    { expr: "1 - 2*G*M*r^2/R^3", hint: "That is e^(−2Λ), which is 1 − 2Gm/r. Inside the matter Φ is not −Λ: it has to be integrated." },
+    { expr: "(1 - 2*G*M/R)^(1/2)/sqrt(1 - 2*G*M*r^2/R^3)", hint: "Check the value at r = R: it must be 1 − 2GM/R, and this gives the square root of that." }
+  ]} />
+
+<Answer id="p2d-max" label="Largest $GM/R$ (as a decimal):" value="0.1667" tolerance="1%" calc="p2d-max" />
+
+<Solution>
+
+**The idea.** Inside the uniform cluster the density term of part (c) makes every orbit stable that exists. The limit comes from the edge, where outside the matter the Schwarzschild condition applies.
+
+<Step title="The potential">
+
+With $m = Mr^3/R^3$, $\frac{d\Phi}{dr} = \frac{GMr/R^3}{1 - 2GMr^2/R^3}$, which integrates to $-\frac14\ln\left(1 - 2GMr^2/R^3\right)$ plus a constant. At $r = R$, $e^{2\Phi} = 1 - 2GM/R$ (the exterior), so
+
+<Formula label="Problem 2(d): the potential inside the uniform cluster" tex="e^{2\Phi(r)} = \frac{\left(1 - 2GM/R\right)^{3/2}}{\sqrt{1 - 2GMr^2/R^3}}" cite="mit" at="Problem 2(d), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Stability inside">
+
+Inside, $4\pi r^3\rho/m = 3$, so part (c) asks $Gm/r < 2/3$. But circular orbits exist only for $Gm/r < 1/3$ (part (b)), so every orbit that exists inside is stable.
+
+</Step>
+
+<Step title="Stability at the edge">
+
+A star at $r = R$ pushed slightly outward moves into empty space, where $\rho = 0$, and the condition of part (c) becomes the Schwarzschild one, $GM/R < 1/6$. (Pushed inward, it meets the density term and is held.) So all orbits are stable only if
+
+<Formula label="Problem 2(d): the most compact stable cluster" tex="\frac{GM}{R} < \frac{1}{6}, \qquad R > 6GM" cite="mit" at="Problem 2(d), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+The surface of the most compact cluster sits at the innermost stable circular orbit of its own exterior, which is reasonable: a star just outside it is on a Schwarzschild orbit. $Gm/r = GMr^2/R^3$ grows outward, so the edge is also where the cluster is most compact. Without the edge condition the limit would be the existence bound $GM/R < 1/3$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={5}>
+
+For the cluster with the largest $GM/R$, find the redshift $z$ of light emitted at the surface and at the centre (our choice: by a source at rest there, so the redshift is the gravitational one). When quasars were discovered, their typical redshift was about $z \sim 0.3$. Could a cluster like this explain it? The sheet adds that quasars are now seen with redshifts of about 6.5: how well does the cluster explain those?
+
+<Hint>
+
+For a static emitter and a static observer far away, $1 + z = e^{-\Phi}$ at the emitter, as in the lesson for Lecture 22. You need $\Phi$ at $r = R$ and at $r = 0$ for $GM/R = 1/6$.
+
+</Hint>
+
+<Answer id="p2e-zs" label="$z$ from the surface:" value="0.225" tolerance="1%" calc="p2e-zs" />
+
+<Answer id="p2e-zc" label="$z$ from the centre:" value="0.355" tolerance="1%" calc="p2e-zc" />
+
+<Answer id="p2e-q" label="Quasar redshifts:" choices={["neither: even the centre gives z well below 0.3", "about 0.3 is within reach for light from deep inside, about 6.5 is far out of reach", "both: a cluster slightly more compact than the limit gives any redshift", "about 6.5 is within reach for light from the centre, about 0.3 only from the surface"]} answer={1} />
+
+<Solution>
+
+**The idea.** The redshift to infinity is $e^{-\Phi}$ at the emitter. Part (d) gives $\Phi$ at the surface and the centre.
+
+<Step title="The redshift formula">
+
+The lesson for Lecture 22 gives, for Schwarzschild,
+
+<Formula label="Redshift to infinity" tex="\frac{E_\infty}{E_r} = \sqrt{1 - \frac{2GM}{r}}" cite="reading3" at="transcript pp. 4–5" />
+
+which is $e^{\Phi(r)}$. The same argument (a conserved $p_t$ for the photon, a static emitter with $U^t = e^{-\Phi}$) gives $1 + z = e^{-\Phi}$ for any static metric.
+
+</Step>
+
+<Step title="The numbers">
+
+With $2GM/R = 1/3$: at the surface $e^{2\Phi} = 2/3$; at the centre $e^{2\Phi} = (2/3)^{3/2}$. So
+
+<Formula label="Problem 2(e): the largest redshifts" tex="\text{surface: } 1 + z = \left(\tfrac{2}{3}\right)^{-1/2} = 1.225, \qquad \text{centre: } 1 + z = \left(\tfrac{2}{3}\right)^{-3/4} = 1.355" cite="mit" at="Problem 2(e), p. 3 (our own solution)" />
+
+$z = 0.225$ at the surface and $0.355$ at the centre.
+
+</Step>
+
+<Step title="Quasars">
+
+A redshift of about 0.3 needs light from deep inside the most compact stable cluster: possible, but only at the very limit of stability and for light from the inner part. A redshift of about 6.5 is far beyond any such cluster: even without the stability limit, circular orbits need $GM/R < 1/3$, and the redshift stays of order one. Quasar redshifts are cosmological, as the lessons on the Robertson–Walker metric describe.
+
+</Step>
+
+<Step title="Check the result">
+
+The stars themselves move. Light sent towards us by a star that crosses our line of sight is shifted further by the time dilation of its motion: $1 + z = \hat E\,e^{-2\Phi}$, which at the surface is $\sqrt{3/2}\cdot\sqrt{4/3} = \sqrt2$, so $z = 0.414$ (our addition). This does not change the conclusion.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Orbits around a black hole, computed numerically" points={30} mit="Problem 3">
+
+The lesson for Lecture 23 showed that a test body around a Schwarzschild black hole obeys
+
+<Formula label="Problem 3: the equations of motion" tex="\left(\frac{dr}{d\tau}\right)^2 = \hat E^2 - V_\text{eff}(r), \qquad V_\text{eff} = \left(1 - \frac{2GM}{r}\right)\left(1 + \frac{\hat L^2}{r^2}\right), \qquad \frac{d\phi}{d\tau} = \frac{\hat L}{r^2}, \qquad \frac{dt}{d\tau} = \frac{\hat E}{1 - 2GM/r}" cite="mit" at="Problem 3, p. 4" />
+
+Here you integrate these equations on a computer. The equation for $r$ has an awkward feature: at a turning point $dr/d\tau$ changes sign, and the square root would have to switch branches. The sheet's advice: take one more derivative of both sides. Use units with $GM = 1$, that is, measure $r$, $t$ and $\tau$ in units of $GM$ and $\hat L$ in units of $GM$ (with $c = 1$).
+
+<Part label="a" points={5}>
+
+In these units, what are the unit of time and the unit of length if $M = 10$ solar masses? Use $GM_\odot = 1.32712\times 10^{20}$ m³/s² (NASA's Sun fact sheet) and $c = 299\,792\,458$ m/s (exact, CODATA 2018). Give the time unit in microseconds and the length unit in kilometres.
+
+Our box: the second-order equation for $r$ that the derivative gives, with $GM = 1$ (type `L` for $\hat L$).
+
+<Hint>
+
+The units are $GM/c^3$ and $GM/c^2$.
+
+</Hint>
+
+<Hint>
+
+Differentiate $(dr/d\tau)^2 = \hat E^2 - V_\text{eff}$ with respect to $\tau$, and divide by $dr/d\tau$.
+
+</Hint>
+
+<Answer id="p3a-t" label="Unit of time:" value="49.25" unit="μs" tolerance="1%" calc="p3a-t" />
+
+<Answer id="p3a-l" label="Unit of length:" value="14.77" unit="km" tolerance="1%" calc="p3a-l" />
+
+<Answer id="p3a-rdd" label="$d^2r/d\tau^2 =$" expr="-1/r^2 + L^2/r^3 - 3*L^2/r^4"
+  vars={{ r: [5, 20], L: [3, 6] }} names={{ L: "\\hat L" }}
+  mistakes={[
+    { expr: "-2/r^2 + 2*L^2/r^3 - 6*L^2/r^4", hint: "That is −dV_eff/dr. The derivative of (dr/dτ)² is 2(dr/dτ)(d²r/dτ²): divide by 2." },
+    { expr: "-1/r^2 + L^2/r^3", hint: "That is Newton's equation. The term −2L̂²/r³ of V_eff (with GM = 1) adds −3L̂²/r⁴." }
+  ]} />
+
+<Solution>
+
+**The idea.** $GM$ has the unit m³/s²; dividing by $c^3$ or $c^2$ turns it into a time or a length. Differentiating the energy equation removes the square root.
+
+<Step title="The units">
+
+$GM = 10\times 1.32712\times 10^{20}$ m³/s², so
+
+<Formula label="Problem 3(a): the units for a ten-solar-mass hole" tex="\frac{GM}{c^3} = \frac{1.32712\times 10^{21}\ \text{m}^3/\text{s}^2}{\left(2.99792458\times 10^{8}\ \text{m/s}\right)^3} = 4.925\times 10^{-5}\ \text{s}, \qquad \frac{GM}{c^2} = 1.4766\times 10^{4}\ \text{m}" cite="nasasun" at="GM of the Sun; c from the CODATA 2018 values (our own arithmetic)" />
+
+that is, 49.25 μs and 14.77 km.
+
+</Step>
+
+<Step title="The second-order equation">
+
+$\frac{d}{d\tau}\left(\dot r^2\right) = 2\dot r\ddot r = -V_\text{eff}'(r)\,\dot r$, so $\ddot r = -\frac12 V_\text{eff}'$. With $V_\text{eff} = 1 - \frac{2}{r} + \frac{\hat L^2}{r^2} - \frac{2\hat L^2}{r^3}$:
+
+<Formula label="Problem 3(a): the equation we integrate" tex="\frac{d^2r}{d\tau^2} = -\frac{1}{r^2} + \frac{\hat L^2}{r^3} - \frac{3\hat L^2}{r^4}, \qquad \frac{d\phi}{d\tau} = \frac{\hat L}{r^2}, \qquad \frac{dt}{d\tau} = \frac{\hat E}{1 - 2/r}" cite="mit" at="Problem 3, p. 4 (our own solution)" />
+
+This has no square root and passes smoothly through turning points. $\hat E$ now enters only through the starting value of $dr/d\tau$, $\pm\sqrt{\hat E^2 - V_\text{eff}(r_0)}$, and the energy equation becomes a check on the accuracy: $\dot r^2 + V_\text{eff}$ must stay equal to $\hat E^2$.
+
+</Step>
+
+<Step title="Check the result">
+
+The horizon radius $2GM$ is 29.5 km, as it should be for ten solar masses (about 2.95 km per solar mass). The first two terms are Newton's gravity plus the centrifugal term; the third is the relativistic term that makes the plunge possible.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+Now build examples of the following kinds of orbit.
+
+<Part label="b" points={7}>
+
+An unbound orbit: it comes in from infinity, passes near the hole and goes back out. How close can it come without being captured? The numbers are ours: take $\hat E = 1.1$, and give the largest $\hat L$ that leads to capture and the smallest radius an escaping body can reach, both in units of $GM$. The choice box is our addition.
+
+<Hint>
+
+The body is captured if $\hat E^2$ is above the peak of $V_\text{eff}$. The borderline case has the peak exactly at $\hat E^2$, and the peak is an unstable circular orbit.
+
+</Hint>
+
+<Hint>
+
+On an unstable circular orbit, $\hat E$ is given by the formula of the lesson for Lecture 23 as a function of $r$. Solve it for $r$ with $\hat E = 1.1$.
+
+</Hint>
+
+<Answer id="p3b-lc" label="Critical $\hat L$:" value="4.725" unit="GM" tolerance="1%" calc="p3b-lc" />
+
+<Answer id="p3b-r" label="Smallest radius without capture:" value="3.571" unit="GM" tolerance="1%" calc="p3b-r" />
+
+<Answer id="p3b-lim" label="For larger and larger $\hat E$, the smallest radius without capture approaches:" choices={["6GM, the innermost stable circular orbit", "4GM, the unstable orbit of a body with Ê = 1", "2GM, the horizon itself", "3GM, the circular orbit of light"]} answer={3} />
+
+<Solution>
+
+**The idea.** Capture or escape is decided by the peak of $V_\text{eff}$. At the borderline the body spirals around the unstable circular orbit at the peak, so the peak radius is the smallest periapsis.
+
+<Step title="The borderline orbit">
+
+The lesson's energy of a circular orbit is $\hat E^2 = (1 - 2/r)^2/(1 - 3/r)$ (with $GM = 1$). Setting it equal to $1.21$ gives a quadratic, $(r - 2)^2 = 1.21\,r(r - 3)$, whose root above $3$ is $r = 25/7 = 3.571$. There
+
+<Formula label="Problem 3(b): the critical angular momentum" tex="\hat L_c^2 = \frac{r^2}{r - 3} = \frac{(25/7)^2}{4/7} = \frac{625}{28}, \qquad \hat L_c = 4.725" cite="mit" at="Problem 3(b), p. 4 (our own solution)" />
+
+</Step>
+
+<Step title="The potential">
+
+<Plot variable="x" domain={[2.5, 20]} range={[0.85, 1.3]} xLabel="r (units of GM)" yLabel="V_eff"
+  curves={[
+    { expr: "(1 - 2/x)*(1 + 22.3214/x^2)", label: "V_eff for the critical L" },
+    { expr: "1.21", label: "Ê² = 1.21", dash: true }
+  ]}
+  points={[{ x: 3.5714, y: 1.21, label: "peak, r = 25/7" }]}
+  caption="The effective potential (1 − 2/r)(1 + L̂²/r²) for the critical angular momentum L̂² = 625/28 = 22.32, computed from the formula, with GM = 1. Its peak touches the line Ê² = 1.21 at r = 25/7 = 3.571. With a slightly larger L̂ the peak rises above the line and a body coming in from the right turns back just outside it; with a smaller L̂ the body passes over the peak and falls in." />
+
+</Step>
+
+<Step title="Our numerical runs">
+
+We started each run at $r = 200$ moving inward, with $\hat E = 1.1$:
+
+| $\hat L/\hat L_c$ | outcome | smallest $r$ (units of $GM$) |
+|---|---|---|
+| 1.01 | escapes | 4.029 |
+| 1.001 | escapes | 3.705 |
+| 1.0001 | escapes | 3.613 |
+| 0.9999 | captured | (crosses $r = 2.05$) |
+
+The closer $\hat L$ is to $\hat L_c$, the closer the body gets to $25/7$ and the more times it winds around the hole first (about 2.25 turns for $1.0001\,\hat L_c$). Each smallest $r$ agrees with the turning point found by solving $\hat E^2 = V_\text{eff}(r)$ directly.
+
+</Step>
+
+<Step title="Check the result">
+
+As $\hat E \to 1$ the borderline radius tends to $4GM$; as $\hat E \to \infty$ the body behaves like light, and the peak tends to $3GM$, the photon ring of the lesson. So an unbound body can never pass closer than $3GM$ and come back, and our value lies between the two limits.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={7}>
+
+A bound "elliptical" orbit. You will soon see that such orbits are not closed ellipses, as in Newton's theory, but at best precessing ellipses. Try to make an orbit whose innermost and outermost radii are as far apart as possible. Our example: turning points at $r = 10\,GM$ and $r = 50\,GM$. Give $\hat E$, $\hat L$ (in units of $GM$) and the angle, in degrees, by which the innermost point advances in one radial cycle. The choice box is our addition.
+
+<Hint>
+
+At both turning points $V_\text{eff}(r) = \hat E^2$. Two equations, two unknowns; subtracting them gives $\hat L^2$ first.
+
+</Hint>
+
+<Hint>
+
+The total angle swept from one innermost point to the next is $2\int \frac{\hat L}{r^2}\,\frac{dr}{\sqrt{\hat E^2 - V_\text{eff}}}$ between the turning points. Your integrator gives it directly; so does the integral, after a substitution that removes the square-root singularities at the ends.
+
+</Hint>
+
+<Answer id="p3c-en" label="$\hat E$:" value="0.9839" tolerance="0.1%" calc="p3c-en" />
+
+<Answer id="p3c-ang" label="$\hat L$:" value="4.583" unit="GM" tolerance="1%" calc="p3c-ang" />
+
+<Answer id="p3c-adv" label="Advance per radial cycle:" value="91.3" unit="degrees" tolerance="1%" calc="p3c-adv" />
+
+<Answer id="p3c-lim" label="For bound orbits, the innermost point can come as close as:" choices={["6GM, since a bound orbit cannot reach inside the innermost stable circular orbit", "3GM, the circular orbit of light", "4GM, approached as Ê tends to 1 and the outermost point moves away", "2GM, the horizon, approached as L̂ tends to zero"]} answer={2} />
+
+<Solution>
+
+**The idea.** The two turning points fix $\hat E$ and $\hat L$. The angle per radial cycle is more than $360°$ because the relativistic term pulls the body in near the innermost point.
+
+<Step title="Energy and angular momentum">
+
+With $p$ and $e$ defined by $r_p = p/(1 + e)$, $r_a = p/(1 - e)$ (here $p = 50/3$, $e = 2/3$), the two conditions give, with $GM = 1$,
+
+<Formula label="Problem 3(c): energy and angular momentum of a bound orbit" tex="\hat L^2 = \frac{p^2}{p - 3 - e^2}, \qquad \hat E^2 = \frac{(p - 2)^2 - 4e^2}{p\left(p - 3 - e^2\right)}" cite="mit" at="Problem 3(c), p. 4 (our own solution)" />
+
+so $\hat L = 4.583$ and $\hat E = 0.9839$. (A direct check: $V_\text{eff}(10) = V_\text{eff}(50) = 0.96807 = \hat E^2$.)
+
+</Step>
+
+<Step title="The advance">
+
+With $u = 1/r = (1 + e\cos\chi)/p$ the orbit equation becomes $d\phi/d\chi = \sqrt{p/(p - 6 - 2e\cos\chi)}$, smooth at the turning points ($\chi = 0$ and $\pi$). One radial cycle is $\chi$ from $0$ to $2\pi$:
+
+<Formula label="Problem 3(c): the angle per radial cycle" tex="\Delta\phi = \int_0^{2\pi}\sqrt{\frac{p}{p - 6 - 2e\cos\chi}}\;d\chi = 451.3^\circ, \qquad \Delta\phi - 360^\circ = 91.3^\circ" cite="mit" at="Problem 3(c), p. 4 (our own solution)" />
+
+Our numerical run (started at $r = 10$ with $dr/d\tau = 0$) gives the same advance, $91.33°$ per cycle, cycle after cycle, with turning points at 10 and 50 to eight digits. One radial cycle takes $1106\,GM$ of proper time.
+
+</Step>
+
+<Step title="As far apart as possible">
+
+The outermost point can be pushed as far out as one likes by taking $\hat E$ closer to 1. The innermost point is limited: for a bound orbit ($\hat E < 1$) the peak of $V_\text{eff}$ must stay above $\hat E^2$, and the peak with height 1 sits at $r = 4GM$ ($\hat L = 4GM$). So the innermost radius can approach $4GM$, but not reach it, while the outermost tends to infinity.
+
+</Step>
+
+<Step title="Check the result">
+
+For a wide orbit the weak-field advance is $6\pi GM/p$ per cycle, here $64.8°$. Our orbit comes in to $10\,GM$, where the weak-field formula underestimates: the exact $91.3°$ is larger, as expected for a strong field.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+A stable circular orbit. Our example: $r = 10\,GM$. Give $\hat L$ (in units of $GM$), $\hat E$, and the orbital period seen from far away, in milliseconds, for $M = 10$ solar masses.
+
+<Hint>
+
+Use the circular-orbit formulas of the lesson for Lecture 23, and the time unit of part (a). The period far away is $2\pi/\Omega$.
+
+</Hint>
+
+<Answer id="p3d-ang" label="$\hat L$:" value="3.780" unit="GM" tolerance="1%" calc="p3d-ang" />
+
+<Answer id="p3d-en" label="$\hat E$:" value="0.9562" tolerance="0.1%" calc="p3d-en" />
+
+<Answer id="p3d-period" label="Period far away:" value="9.79" unit="ms" tolerance="1%" calc="p3d-period" />
+
+<Solution>
+
+**The idea.** On a circular orbit $V_\text{eff}' = 0$ and $\hat E^2 = V_\text{eff}$. With these starting values the integrator should keep $r$ fixed.
+
+<Step title="The numbers">
+
+With $GM = 1$ and $r = 10$: $\hat L = \sqrt{r^2/(r - 3)} = \sqrt{100/7} = 3.780$, $\hat E = (1 - 2/r)/\sqrt{1 - 3/r} = 0.8/\sqrt{0.7} = 0.9562$, and $\Omega = r^{-3/2}$, so the period is $2\pi\cdot 10^{3/2} = 198.7$ time units, that is $198.7\times 49.25$ μs $= 9.79$ ms.
+
+</Step>
+
+<Step title="Our numerical run">
+
+Started at $r = 10$ with $dr/d\tau = 0$, our integrator kept $r$ at 10 for ten orbits; the computed acceleration is zero there to rounding, and the orbit is stable, so small errors only make $r$ oscillate slightly about 10.
+
+</Step>
+
+<Step title="Check the result">
+
+$r = 10\,GM$ is outside the innermost stable orbit at $6\,GM$, so the orbit is stable. Its frequency obeys Kepler's law $\Omega^2 = GM/r^3$ exactly, in Schwarzschild time.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={7}>
+
+An unstable circular orbit. How long can your integrator hold it at fixed $r$? If it holds it for a long time, perturb the energy or angular momentum slightly and watch what happens. Can you drive it into both outcomes of the instability, a plunge into the hole and an escape to infinity? Our example: $r = 3.5\,GM$. Give $\hat E$, and the time in which a small displacement grows by a factor $e$, in units of $GM$ of proper time. The choice box is our addition.
+
+<Hint>
+
+Near the circular orbit $d^2r/d\tau^2 \approx -\frac12 V_\text{eff}''(r)\,\delta r$. With $V_\text{eff}'' < 0$ the displacement grows exponentially.
+
+</Hint>
+
+<Hint>
+
+Escape to infinity needs $\hat E \ge 1$. Compare $\hat E$ of circular orbits with 1.
+
+</Hint>
+
+<Answer id="p3e-en" label="$\hat E$:" value="1.134" tolerance="0.5%" calc="p3e-en" />
+
+<Answer id="p3e-tau" label="Growth time (factor $e$):" value="2.93" unit="GM" tolerance="1%" calc="p3e-tau" />
+
+<Answer id="p3e-both" label="Both a plunge and an escape are possible from the unstable circular orbits with:" choices={["3GM < r ≤ 4GM, the ones with Ê ≥ 1", "4GM < r < 6GM, where Ê < 1", "every unstable radius, 3GM < r < 6GM", "no radius: an unstable orbit always plunges"]} answer={0} />
+
+<Solution>
+
+**The idea.** At the peak of $V_\text{eff}$ the linearized equation has an exponentially growing solution. Which way the body goes depends on the sign of the push; whether it can reach infinity depends on whether $\hat E \ge 1$.
+
+<Step title="Energy and angular momentum">
+
+At $r = 3.5$: $\hat L^2 = r^2/(r - 3) = 24.5$, $\hat L = 4.950$, and $\hat E = (1 - 2/3.5)/\sqrt{1 - 3/3.5} = 1.134$. Since $\hat E > 1$, a body that leaves outward has enough energy to reach infinity.
+
+</Step>
+
+<Step title="The growth time">
+
+$V_\text{eff}'' = -\frac{4}{r^3} + \frac{6\hat L^2}{r^4} - \frac{24\hat L^2}{r^5} = -0.2332$ at $r = 3.5$, so $\delta\ddot r = \lambda^2\delta r$ with
+
+<Formula label="Problem 3(e): the growth rate at the unstable orbit" tex="\lambda = \sqrt{-\tfrac{1}{2}V_\text{eff}''} = 0.3415, \qquad \frac{1}{\lambda} = 2.93\,GM" cite="mit" at="Problem 3(e), p. 4 (our own solution)" />
+
+A displacement $\epsilon$ from rest grows as $\epsilon\cosh\lambda\tau$, so it reaches a size $\Delta$ after about $\ln(2\Delta/\epsilon)/\lambda$. Rounding errors of $10^{-16}$ in double precision would grow to order one in about $37$ e-foldings, roughly $110\,GM$ of proper time.
+
+</Step>
+
+<Step title="Our numerical runs">
+
+Started exactly at $r = 3.5$ with $dr/d\tau = 0$, our integrator held the orbit for the whole run ($\tau = 400$): the computed acceleration at the starting point was zero, so there was nothing to grow. With the start moved by $\pm 10^{-6}$ (which changes $\hat E$ very slightly):
+
+| start | outcome | $\tau$ at which $|r - 3.5|$ passes 0.1 |
+|---|---|---|
+| $3.5 + 10^{-6}$ | escapes (reaches $r = 100$) | 35.9 |
+| $3.5 - 10^{-6}$ | plunges (crosses $r = 2.05$) | 35.6 |
+
+The estimate $\ln(2\times 0.1/10^{-6})/\lambda = 35.7$ agrees.
+
+</Step>
+
+<Step title="Which orbits allow both outcomes">
+
+Unstable circular orbits lie between $3GM$ and $6GM$. Their $\hat E$ is 1 at $r = 4GM$, above 1 inside and below 1 outside. So from $3GM < r \le 4GM$ a push outward leads to escape (at $r = 4GM$ exactly, only just) and a push inward to a plunge. From $4GM < r < 6GM$ a push inward still leads to a plunge, but a push outward cannot lead to escape: the body makes a bound excursion and comes back towards the peak (whether it then falls in depends on whether the push left its $\hat E^2$ above or below the peak).
+
+<Plot variable="x" domain={[2.5, 25]} range={[0.85, 1.35]} xLabel="r (units of GM)" yLabel="V_eff"
+  curves={[
+    { expr: "(1 - 2/x)*(1 + 24.5/x^2)", label: "V_eff, L̂² = 24.5" },
+    { expr: "1.285714", label: "Ê² = 9/7", dash: true }
+  ]}
+  caption="The effective potential (1 − 2/r)(1 + L̂²/r²) with L̂² = 24.5 and GM = 1, computed from the formula. Its peak at r = 3.5 has the height 9/7 = 1.286, the Ê² of the unstable circular orbit there; that line lies above 1, the value of the potential far away, so the body can escape. The minimum at r = 21 is the stable circular orbit with the same L̂." />
+
+</Step>
+
+<Step title="Check the result">
+
+Units: $\lambda$ is a rate per unit proper time; for $M = 10$ solar masses, $1/\lambda = 2.93\times 49.25$ μs $= 0.144$ ms. The instability is fast: one orbit at $r = 3.5$ takes $2\pi r^2/\hat L = 15.6\,GM$ of proper time, about five growth times.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
