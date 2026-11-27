@@ -1,0 +1,569 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 takes the condensate density as the root of the numerical derivative of the uniform free energy, the
+# extra free energy as a numerical integral over the strip, the best length as the root of a numerical derivative, and
+# compares the trial cost with the exact tanh profile integrated numerically; Problem 2 takes the chemical potential
+# from the exact number integral solved numerically at low temperature, and the energy from the notes' heat capacity
+# integrated over T; Problem 3 takes the density of states as the derivative of the count of states and the chemical
+# potential from the number integral solved numerically; Problem 4 takes the radius as the root of the numerical
+# derivative of the energy of the star, written with the density in place of N/R³, and the proton fraction from the
+# equilibrium condition solved numerically.
+# Constants: hbar, G, c, M_sun from calcs/constants.yaml; particle masses and hbar*c (CODATA 2018) as inputs.
+# Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-9.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 20 + 15 + 15 + 20'
+    formula: |-
+      20 + 15 + 15 + 20
+    expected: '70'
+    shown: ['and 20 for Problem 4, 70 points in all']
+    source: {cite: mit, at: 'Problems 1 to 4, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1: a condensate next to a hard wall
+
+  - id: p1-amp
+    kind: identity
+    answer: p1-amp
+    where: 'Problem 1(a), answer box: |ψ(+∞)|, against the square root of the root of the numerical derivative of the uniform free energy (a/2)ρ + (b/4)ρ²'
+    formula: |-
+      sqrt(a0*(1 - T/Tc)/b)
+    equals: |-
+      sqrt(solve("deriv('a0*(T/Tc - 1)/2*u + b/4*u**2', 'u', x)", 'x', 1e-9, 100))
+    samples:
+      a0: [0.5, 1.0, 2.0, 1.3]
+      b: [0.5, 2.0, 1.0, 0.7]
+      T: [0.1, 0.5, 0.9, 0.4]
+      Tc: [1.0, 2.0, 1.5, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p1-amp"', '<Formula label="Condensate far from the wall"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-da
+    kind: identity
+    answer: p1-da
+    where: 'Problem 1(b), answer box: ΔA(ξ), against the numerical integral over the strip 0 < x < ξ of the free energy density of the trial profile minus that of the uniform condensate, −a²/4b'
+    formula: |-
+      -a/(2*m*b*xi) + 2*a**2*xi/(15*b)
+    equals: |-
+      integrate('1/(2*m)*(-a/b)/xi**2 + a/2*(-a/b)*(u/xi)**2 + b/4*(a/b)**2*(u/xi)**4 + a**2/(4*b)', 'u', 0, xi)
+    samples:
+      a: [-2.0, -0.5, -1.0, -1.7]
+      b: [0.5, 2.0, 1.0, 1.3]
+      m: [0.5, 2.0, 1.0, 0.8]
+      xi: [0.5, 3.0, 1.0, 2.2]
+    tolerance: 1e-8
+    shown: ['id="p1-da"', '<Formula label="Free energy of the trial profile, measured from the uniform condensate"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-xi
+    kind: identity
+    answer: p1-xi
+    where: 'Problem 1(c) (MIT''s part (b), continued), answer box: the best ξ, against the root of the numerical derivative of ΔA(ξ)'
+    formula: |-
+      sqrt(-15/(4*m*a))
+    equals: |-
+      solve("deriv('-a/(2*m*b*u) + 2*a**2*u/(15*b)', 'u', x)", 'x', 0.01, 100)
+    samples:
+      a: [-2.0, -0.5, -1.0, -1.7]
+      b: [0.5, 2.0, 1.0, 1.3]
+      m: [0.5, 2.0, 1.0, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p1-xi"', '<Formula label="The best trial length"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-min
+    where: 'Problem 1(c), solution: the smallest cost 2/√15 = 0.516 in units of |a|^(3/2)/(b√m), from the minimum of ΔA found numerically (m = b = 1, a = −1)'
+    formula: |-
+      integrate('1/2*1/(15/4) + (-1)/2*u**2/(15/4) + 1/4*u**4/(15/4)**2 + 1/4', 'u', 0, sqrt(15/4))
+    expected: '0.516'
+    shown: ['= 0.516\,\dfrac{|a|^{3/2}}{b\sqrt m}$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-exact
+    where: 'Problem 1(c), solution: the exact tanh profile costs √2/3 = 0.471 in units of |a|^(3/2)/(b√m): (1/m) times the integral of ψ′², numerically, with m = b = 1, a = −1, w = √2'
+    formula: |-
+      integrate('(1/2)/cosh(u/sqrt(2))**4', 'u', 0, 60)
+    expected: '0.471'
+    shown: ['= 0.471\,\dfrac{|a|^{3/2}}{b\sqrt m}$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-ratio
+    where: 'Problem 1(c), solution: the trial cost over the exact cost, √(6/5) = 1.095'
+    formula: |-
+      (2/sqrt(15))/(sqrt(2)/3)
+    expected: '1.095'
+    shown: ['a factor $\sqrt{6/5} = 1.095$ more']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-width
+    where: 'Problem 1(c), solution: the trial ξ over the exact width w, √(15/4)/√2 = 1.37'
+    formula: |-
+      sqrt(15/4)/sqrt(2)
+    expected: '1.37'
+    shown: ['its $\xi$ is $1.37$ times $w$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-nu
+    answer: p1-nu
+    where: 'Problem 1(d) (MIT''s part (c)), answer box: ν in MIT''s form ξ ∝ |T_c − T|^ν, from the best ξ at two temperatures close to T_c (a₀ = m = T_c = 1)'
+    formula: |-
+      log(sqrt(15/(4*(1 - 0.99)))/sqrt(15/(4*(1 - 0.98))))/log(0.01/0.02)
+    expected: '-0.5'
+    tolerance: '0.01'
+    shown: ['id="p1-nu"', '|T_c - T|^{-1/2}, \qquad \nu = -\frac12']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution; our part (d))'}
+    origin: page-own
+
+  # ---- Problem 2: the chemical potential of a warm Fermi gas
+
+  - id: p2-mu
+    kind: identity
+    answer: p2-mu
+    where: 'Problem 2(b), answer box: μ(T), against the root of the exact number integral with D ∝ ε^(1/2), solved numerically at k_BT/ε_F ≤ 0.05 (the dropped T⁴ term is below 1e-5)'
+    formula: |-
+      eF*(1 - pi**2/12*(kB*T/eF)**2)
+    equals: |-
+      solve("integrate('sqrt(u)/(exp((u - x)/(kB*T)) + 1)', 'u', 0, 2*eF) - 2/3*eF**1.5", 'x', 0.8*eF, 1.1*eF)
+    samples:
+      eF: [1.0, 2.0, 1.5]
+      kB: [1.0, 1.0, 0.5]
+      T: [0.05, 0.06, 0.1]
+    tolerance: 2e-5
+    shown: ['id="p2-mu"', '<Formula label="Chemical potential of the warm 3D Fermi gas"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-u
+    kind: identity
+    answer: p2-u
+    where: 'Problem 2(c), answer box: E(T), against E(0) = (3/5)Nε_F plus the integral over T of the notes'' heat capacity C = (π²/2)Nk_B(k_BT/ε_F), reading 2, p. 87 (numerical)'
+    formula: |-
+      3/5*N*eF + pi**2/4*N*(kB*T)**2/eF
+    equals: |-
+      3/5*N*eF + integrate('pi**2/2*N*kB*(kB*s/eF)', 's', 0, T)
+    samples:
+      N: [1, 100, 30]
+      eF: [1.0, 2.0, 1.5]
+      kB: [0.5, 1.5, 1.0]
+      T: [0.02, 0.2, 0.1]
+    tolerance: 1e-8
+    shown: ['id="p2-u"', '<Formula label="Energy of the warm Fermi gas"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-shift
+    answer: p2-shift
+    where: 'Problem 2(d), answer box: (ε_F − μ)/ε_F = (π²/12)(0.1)² at T = 0.1 T_F'
+    formula: |-
+      pi**2/12*0.1**2
+    expected: '0.00822'
+    shown: ['id="p2-shift"', '\frac{\pi^2}{12}\times 0.01 = 0.00822$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-shift-exact
+    where: 'Problem 2(d), solution check: the exact shift at T = 0.1 T_F, from the number integral solved numerically (ε_F = 1)'
+    formula: |-
+      1 - solve("integrate('sqrt(u)/(exp((u - x)/0.1) + 1)', 'u', 0, 5) - 2/3", 'x', 0.8, 1.1)
+    expected: '0.00836'
+    shown: ['gives $0.00836$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-check-exact
+    where: 'Problem 2(b), solution check: μ/ε_F at k_BT = 0.05 ε_F from the number integral solved numerically'
+    formula: |-
+      solve("integrate('sqrt(u)/(exp((u - x)/0.05) + 1)', 'u', 0, 3) - 2/3", 'x', 0.8, 1.1)
+    expected: '0.99794'
+    shown: ['gives $\mu = 0.99794\,\epsilon_F$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-check-formula
+    where: 'Problem 2(b), solution check: the formula at k_BT = 0.05 ε_F'
+    formula: |-
+      1 - pi**2/12*0.05**2
+    expected: '0.99794'
+    shown: ['the formula gives $0.99794\,\epsilon_F$ too']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3: an ideal Fermi gas in two dimensions
+
+  - id: p3-dos
+    kind: identity
+    answer: p3-dos
+    where: 'Problem 3(a), answer box: D(ε), against the numerical derivative of the count of states 2 × S/(2π)² × πk², k² = 2mε/ħ², at ε = 1'
+    formula: |-
+      S*m/(pi*hbar**2)
+    equals: |-
+      deriv('2*S/(2*pi)**2*pi*(2*m*u/hbar**2)', 'u', 1.0)
+    samples:
+      S: [1, 10, 4]
+      m: [0.5, 2.0, 1.0]
+      hbar: [0.5, 1.5, 1.0]
+    tolerance: 1e-8
+    shown: ['id="p3-dos"', '<Formula label="Density of states in two dimensions"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ef
+    kind: identity
+    answer: p3-ef
+    where: 'Problem 3(b), answer box: ε_F, against the root of N = ∫₀^ε_F D dε solved numerically (area 1)'
+    formula: |-
+      pi*hbar**2*n/m
+    equals: |-
+      solve("integrate('m/(pi*hbar**2)', 'u', 0, x) - n", 'x', 0, 1000)
+    samples:
+      n: [1, 10, 4]
+      m: [0.5, 2.0, 1.0]
+      hbar: [0.5, 1.5, 1.0]
+    tolerance: 1e-8
+    shown: ['id="p3-ef"', '<Formula label="Fermi energy in two dimensions"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-mu
+    kind: identity
+    answer: p3-mu
+    where: 'Problem 3(c), answer box: μ(T), against the root of ∫ n_F dε = ε_F (constant D) solved numerically'
+    formula: |-
+      kB*T*log(exp(eF/(kB*T)) - 1)
+    equals: |-
+      solve("integrate('1/(exp((u - x)/(kB*T)) + 1)', 'u', 0, eF + 60*kB*T) - eF", 'x', -30, 2*eF)
+    samples:
+      eF: [1.0, 2.0, 1.5, 1.0]
+      kB: [0.5, 1.5, 1.0, 1.0]
+      T: [0.5, 2.0, 1.0, 0.3]
+    tolerance: 1e-7
+    shown: ['id="p3-mu"', '<Formula label="Exact chemical potential in two dimensions"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-num
+    answer: p3-num
+    where: 'Problem 3(d), answer box: μ/ε_F = ln(e − 1) at T = T_F'
+    formula: |-
+      log(e - 1)
+    expected: '0.5413'
+    shown: ['id="p3-num"', '$\mu/\epsilon_F = \ln(e - 1) = 0.5413$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p3-zero
+    where: 'Problem 3(d), solution: μ = 0 at k_BT = ε_F/ln 2'
+    formula: |-
+      1/log(2)
+    expected: '1.443'
+    shown: ['$k_BT = \epsilon_F/\ln 2 = 1.443\,\epsilon_F$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: a neutron star
+
+  - id: p4-r
+    kind: identity
+    answer: p4-r
+    where: 'Problem 4(a), answer box: R, against the root of the numerical derivative of the energy (3/5)N ħ²(3π²n)^(2/3)/2m_n − (3/5)GM²/R with n = N/(4πR³/3), N = M/m_n'
+    formula: |-
+      (9*pi/4)**(2/3)*hbar**2/(G*mn**(8/3)*M**(1/3))
+    equals: |-
+      solve("deriv('3/5*(M/mn)*hbar**2*(3*pi**2*(M/mn)/(4/3*pi*u**3))**(2/3)/(2*mn) - 3/5*G*M**2/u', 'u', x)", 'x', 0.01, 1000)
+    samples:
+      hbar: [0.5, 1.5, 1.0, 1.2]
+      G: [0.5, 1.5, 1.0, 0.7]
+      mn: [0.5, 1.5, 1.0, 1.1]
+      M: [1, 10, 3, 7]
+    tolerance: 1e-6
+    shown: ['id="p4-r"', '<Formula label="Radius of the model neutron star"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-factor
+    where: 'Problem 4(a), solution check: (9π/4)^(2/3)'
+    formula: |-
+      (9*pi/4)**(2/3)
+    expected: '3.68'
+    shown: ['times $(9\pi/4)^{2/3} = 3.68$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-rnum
+    answer: p4-rnum
+    where: 'Problem 4(b), answer box: R for M = 1.4 M_sun, in km'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: |-
+      (9*pi/4)**(2/3)*hbar**2/(G*m_n**(8/3)*(1.4*M_sun)**(1/3))
+    expected: 11.0 km
+    shown: ['id="p4-rnum"', 'and times $3.68$, $R = 11.0$ km']
+    source: {cite: codata, at: 'neutron mass, ħ, G (our own numbers)'}
+    origin: page-own
+
+  - id: p4-wen
+    where: 'Problem 4(b), solution: the notes'' combination ħ²/(G m_n^(8/3) M^(1/3)) for M = 1.4 M_sun'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: |-
+      hbar**2/(G*m_n**(8/3)*(1.4*M_sun)**(1/3))
+    expected: 2.99 km
+    shown: ['= 2.99$ km for $M = 1.4\,M_\odot$']
+    source: {cite: codata, at: 'neutron mass, ħ, G (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dens
+    where: 'Problem 4(b), solution check: mean neutron density 3N/(4πR³) of the model star, per fm³'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: |-
+      3*(1.4*M_sun/m_n)/(4*pi*((9*pi/4)**(2/3)*hbar**2/(G*m_n**(8/3)*(1.4*M_sun)**(1/3)))**3)
+    expected: 0.30 fm**-3
+    shown: ['$n_n = 3N/(4\pi R^3) = 0.30$ neutrons per fm³']
+    source: {cite: codata, at: 'neutron mass, ħ, G (our own numbers)'}
+    origin: page-own
+
+  - id: p4-nuclear
+    kind: fact
+    where: 'Problem 4(b) and (e): the neutron density 0.16 per fm³ that part (e) takes (our value, an input)'
+    value: '0.16'
+    shown: ['about twice the value $0.16$ fm⁻³ that part (e) takes (our value)', 'Take a neutron density $n_n = 0.16$ fm⁻³ (our value)']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own value)'}
+    origin: page-own
+
+  - id: p4-pf
+    where: 'Problem 4(b), solution check: Fermi momentum ħk_n over m_n c at the mean density'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: |-
+      hbar*(3*pi**2*3*(1.4*M_sun/m_n)/(4*pi*((9*pi/4)**(2/3)*hbar**2/(G*m_n**(8/3)*(1.4*M_sun)**(1/3)))**3))**(1/3)/(m_n*c)
+    expected: '0.43'
+    shown: ['$\hbar k_n = 0.43\,m_nc$']
+    source: {cite: codata, at: 'neutron mass, ħ, G, c (our own numbers)'}
+    origin: page-own
+
+  - id: p4-rs
+    where: 'Problem 4(c), solution: Schwarzschild radius 2GM/c² for 1.4 M_sun, in km'
+    formula: |-
+      2*G*1.4*M_sun/c**2
+    expected: 4.13 km
+    shown: ['$2GM/c^2 = 4.13$ km for $1.4\,M_\odot$']
+    source: {cite: codata, at: 'G, c (our own numbers)'}
+    origin: page-own
+
+  - id: p4-rratio
+    where: 'Problem 4(c), solution and choice: R over the Schwarzschild radius, 11.0/4.13'
+    formula: |-
+      11.0/4.13
+    expected: '2.7'
+    shown: ['$R/(2GM/c^2) = 11.0/4.13 = 2.7$', 'is about 2.7 times its Schwarzschild radius']
+    source: {cite: codata, at: 'G, c (our own numbers)'}
+    origin: page-own
+
+  - id: p4-kn
+    where: 'Problem 4(e), solution: neutron Fermi wave number at 0.16 fm⁻³, in fm⁻¹'
+    formula: |-
+      (3*pi**2*0.16)**(1/3)
+    expected: '1.6795'
+    shown: ['fm⁻¹ $= 1.6795$ fm⁻¹']
+    source: {cite: codata, at: 'our own numbers'}
+    origin: page-own
+
+  - id: p4-en
+    where: 'Problem 4(e), solution: neutron Fermi kinetic energy (ħc k_n)²/2m_nc², in MeV'
+    formula: |-
+      (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565)
+    expected: '58.45'
+    shown: ['/(2 \times 939.565)$ MeV $= 58.45$ MeV']
+    source: {cite: codata, at: 'neutron rest energy, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dm
+    where: 'Problem 4(e), solution: (m_n − m_p)c², in MeV'
+    formula: |-
+      939.565 - 938.272
+    expected: '1.293'
+    shown: ['$\mu_n - m_pc^2 = 1.293 + 58.45 = 59.74$ MeV']
+    source: {cite: codata, at: 'neutron and proton rest energies'}
+    origin: page-own
+
+  - id: p4-mun
+    where: 'Problem 4(e), solution: μ_n − m_pc², in MeV'
+    formula: |-
+      939.565 - 938.272 + (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565)
+    expected: '59.74'
+    shown: ['$\mu_n - m_pc^2 = 1.293 + 58.45 = 59.74$ MeV']
+    source: {cite: codata, at: 'rest energies, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-kp
+    where: 'Problem 4(e), solution: proton Fermi wave number from μ_p + μ_e = μ_n, solved numerically, in fm⁻¹'
+    formula: |-
+      solve("(197.327*x)**2/(2*938.272) + sqrt((197.327*x)**2 + 0.511**2) - (939.565 - 938.272 + (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565))", 'x', 0.01, 1)
+    expected: '0.2937'
+    shown: ['so $k_p = 0.2937$ fm⁻¹']
+    source: {cite: codata, at: 'rest energies, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-hckp
+    where: 'Problem 4(e), solution: ħc k_p, in MeV'
+    formula: |-
+      197.327*solve("(197.327*x)**2/(2*938.272) + sqrt((197.327*x)**2 + 0.511**2) - (939.565 - 938.272 + (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565))", 'x', 0.01, 1)
+    expected: '57.95'
+    shown: ['$\hbar ck_p = 57.95$ MeV']
+    source: {cite: codata, at: 'rest energies, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-pke
+    where: 'Problem 4(e), solution: the protons'' kinetic energy (ħc k_p)²/2m_pc², "about 1.8 MeV"'
+    formula: |-
+      57.95**2/(2*938.272)
+    expected: '1.8'
+    shown: ['The proton term is small (about 1.8 MeV)']
+    source: {cite: codata, at: 'proton rest energy (our own numbers)'}
+    origin: page-own
+
+  - id: p4-x
+    answer: p4-x
+    where: 'Problem 4(e), answer box: n_p/n_n = (k_p/k_n)³, with k_p from μ_p + μ_e = μ_n solved numerically'
+    formula: |-
+      (solve("(197.327*x)**2/(2*938.272) + sqrt((197.327*x)**2 + 0.511**2) - (939.565 - 938.272 + (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565))", 'x', 0.01, 1)/(3*pi**2*0.16)**(1/3))**3
+    expected: '0.00535'
+    tolerance: '1%'
+    shown: ['id="p4-x"', '(0.2937/1.6795)^3 = 0.00535$']
+    source: {cite: codata, at: 'rest energies, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-per
+    where: 'Problem 4(e), solution: about one proton for every 190 neutrons'
+    formula: |-
+      1/0.00535
+    expected: '190'
+    tolerance: '2%'
+    shown: ['about one proton (and one electron) for every 190 neutrons']
+    source: {cite: codata, at: 'our own numbers'}
+    origin: page-own
+
+  - id: p4-ultra
+    where: 'Problem 4(e), solution check: with ultrarelativistic electrons (μ_e = ħc k_p) the ratio is the same to three figures'
+    formula: |-
+      (solve("(197.327*x)**2/(2*938.272) + 197.327*x - (939.565 - 938.272 + (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565))", 'x', 0.01, 1)/(3*pi**2*0.16)**(1/3))**3
+    expected: '0.00535'
+    shown: ['the result is the same to three figures']
+    source: {cite: codata, at: 'rest energies, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-noke
+    where: 'Problem 4(e), solution check: leaving out the protons'' kinetic energy, with ultrarelativistic electrons'
+    formula: |-
+      ((939.565 - 938.272 + (197.327*(3*pi**2*0.16)**(1/3))**2/(2*939.565))/197.327/(3*pi**2*0.16)**(1/3))**3
+    expected: '0.00586'
+    shown: ['gives $0.00586$, ten percent more']
+    source: {cite: codata, at: 'rest energies, ħc (our own numbers)'}
+    origin: page-own
+
+  - id: p4-erest
+    where: 'Problem 4(e), solution check: each electron carries about 58 MeV, more than a hundred times its rest energy'
+    formula: |-
+      57.95/0.511
+    expected: '113'
+    tolerance: '1%'
+    shown: ['Each electron here carries about $58$ MeV, more than a hundred times its rest energy']
+    source: {cite: codata, at: 'electron rest energy (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: the constants the statement lists (our values, rounded from calcs/constants.yaml and CODATA 2018)
+
+  - id: p4-const-hbar
+    where: 'Problem 4, statement: ħ = 1.0546e-34 J s'
+    formula: |-
+      hbar
+    expected: 1.0546e-34 J*s
+    shown: ['Use $\hbar = 1.0546 \times 10^{-34}$ J s']
+    source: {cite: codata, at: 'reduced Planck constant'}
+    origin: page-own
+
+  - id: p4-const-G
+    where: 'Problem 4, statement: G = 6.6743e-11 m³ kg⁻¹ s⁻²'
+    formula: |-
+      G
+    expected: 6.6743e-11 m**3/(kg*s**2)
+    shown: ['$G = 6.6743 \times 10^{-11}$ m³ kg⁻¹ s⁻²']
+    source: {cite: codata, at: 'Newtonian constant of gravitation'}
+    origin: page-own
+
+  - id: p4-const-mn
+    where: 'Problem 4, statement: m_n = 1.6749e-27 kg'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: |-
+      m_n
+    expected: 1.6749e-27 kg
+    shown: ['$m_n = 1.6749 \times 10^{-27}$ kg']
+    source: {cite: codata, at: 'neutron mass'}
+    origin: page-own
+
+  - id: p4-const-c
+    where: 'Problem 4, statement: c = 2.9979e8 m/s'
+    formula: |-
+      c
+    expected: 2.9979e8 m/s
+    shown: ['$c = 2.9979 \times 10^8$ m/s']
+    source: {cite: codata, at: 'speed of light'}
+    origin: page-own
+
+  - id: p4-const-msun
+    where: 'Problem 4, statement: M_sun = 1.9884e30 kg (calcs/constants.yaml: the IAU 2015 nominal GM divided by the CODATA 2018 G)'
+    formula: |-
+      M_sun
+    expected: 1.9884e30 kg
+    shown: ['$M_\odot = 1.9884 \times 10^{30}$ kg']
+    source: {cite: codata, at: 'Newtonian constant of gravitation (with the IAU 2015 nominal solar GM)'}
+    origin: page-own
+
+  - id: p4-const-mnc2
+    where: 'Problem 4(e), statement: m_n c² = 939.565 MeV'
+    inputs: {m_n: 1.67492749804e-27 kg}
+    formula: |-
+      m_n*c**2
+    expected: 939.565 MeV
+    shown: ['Use $m_nc^2 = 939.565$ MeV']
+    source: {cite: codata, at: 'neutron mass energy equivalent in MeV'}
+    origin: page-own
+
+  - id: p4-const-mpc2
+    where: 'Problem 4(e), statement: m_p c² = 938.272 MeV'
+    inputs: {m_p: 1.67262192369e-27 kg}
+    formula: |-
+      m_p*c**2
+    expected: 938.272 MeV
+    shown: ['$m_pc^2 = 938.272$ MeV']
+    source: {cite: codata, at: 'proton mass energy equivalent in MeV'}
+    origin: page-own
+
+  - id: p4-const-mec2
+    where: 'Problem 4(e), statement: m_e c² = 0.511 MeV'
+    inputs: {m_e: 9.1093837015e-31 kg}
+    formula: |-
+      m_e*c**2
+    expected: 0.511 MeV
+    shown: ['$m_ec^2 = 0.511$ MeV']
+    source: {cite: codata, at: 'electron mass energy equivalent in MeV'}
+    origin: page-own
+
+  - id: p4-const-hbarc
+    where: 'Problem 4(e), statement: ħc = 197.327 MeV fm'
+    formula: |-
+      hbar*c
+    expected: 197.327 MeV*fm
+    shown: ['$\hbar c = 197.327$ MeV fm']
+    source: {cite: codata, at: 'reduced Planck constant times c in MeV fm'}
+    origin: page-own
