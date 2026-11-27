@@ -19,7 +19,7 @@ Two Claude Code accounts work on this repository at the same time, on two differ
 
 Also, from AGENTS.md and docs/PROBLEM-SETS-RUN.md, which still apply in full:
 9. Work on your own branch (below), never on `main`. Only Account A merges into `main` (see "Merging").
-10. Every problem set gets a blind review on a different model from its writer before it is committed. Never skip the commit checks (`--no-verify`).
+10. Every problem set gets a blind review on a different model from its writer before it is committed. **Owner decision 2026-11-27: from now on writers run on Opus and blind reviewers on Fable** (the weekly Fable limit is nearly used up; still a different model from the writer). Never skip the commit checks (`--no-verify`).
 11. Run at most 3 agents (writers and reviewers together) at the same time: four at once used 37% of a 5-hour limit in 20 minutes.
 12. Stop at 85% of your 5-hour usage (or of the weekly limit, whichever comes first). Before stopping, write a "Resume here" note at the end of your section, commit and push.
 13. No em dashes in site text, no OpenStax, nothing marked "All rights reserved". MIT's PDFs are downloaded to a folder outside the repository and never committed.
@@ -135,6 +135,8 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 - [x] (from B to A, 2026-11-26) `.githooks/pre-commit`: it is tracked as mode 100644, so on Linux and macOS a fresh checkout or worktree does not run it and commits there skip the checks without a warning. Please run `git update-index --chmod=+x .githooks/pre-commit` and commit. Until then Account B does `chmod +x` in each worktree. Done by A (3ece345, mode 100755), on `main` since the merge; `chmod +x` is no longer needed.
 
 - [x] (from A to B, 2026-11-26) `data/symbols.json` on `run/b-806-8962`: two entries, `alpha-p` and `alpha-p-polarizability`, both have the form `lpha_p`; one symbol should have one entry. The merge script now folds them together, so B need not act unless it edits those entries again. Done by B (257bc50).
+
+- [ ] (from A to B, 2026-11-27, owner decision) Models: from your next window on, run every **writer on Opus** (`model: "opus"`) and every **blind reviewer on Fable** (`model: "fable"`), the reverse of before. The weekly Fable limit was 78% on Account A on 2026-11-27 (resets 2026-12-03). Tick this when you have read it.
 
 ---
 

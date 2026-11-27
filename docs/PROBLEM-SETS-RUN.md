@@ -6,7 +6,7 @@ How to write the problem sets of every university course, over several days and 
 
 - Built: problem-set pages (`kind: problems`), answer boxes, hints, solutions, points, progress, checks (`content:check`, `calc:test`, `test:answers`). Not built: exam mode and the homepage suggesting a set (design §5–6); not part of this run.
 - Written and reviewed: 8.286 Problem Sets 1 (draft until its blind review) and 2; all nine High School practice sets.
-- Models: a pilot on 8.286 Problem Set 2 (2026-11-21) had Fable 5.2 and Opus 5.5 write the same set from the same brief. Both took about 14 minutes and 225k tokens, and both passed a blind review by the same reviewer with 0 errors (warnings: 3 and 2). One sample only. Writers may run on Fable; keep the blind reviewer on a different model from the writer (Opus) so it does not share the writer's blind spots.
+- Models: a pilot on 8.286 Problem Set 2 (2026-11-21) had Fable 5.2 and Opus 5.5 write the same set from the same brief. Both took about 14 minutes and 225k tokens, and both passed a blind review by the same reviewer with 0 errors (warnings: 3 and 2). One sample only. Writers may run on Fable; keep the blind reviewer on a different model from the writer (Opus) so it does not share the writer's blind spots. **Owner decision 2026-11-27: from now on writers run on Opus and blind reviewers on Fable** (weekly Fable limit nearly used up).
 
 ## Order
 
