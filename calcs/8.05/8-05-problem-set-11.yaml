@@ -1,0 +1,666 @@
+# Calculations on content/year-3/8.05/8-05-problem-set-11.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 uses the ladder-operator factor and the normalized eigenvector; Problem 2 computes the energy and the
+# normalization of the ground state by numerical integration; Problem 3 integrates the overlap numerically;
+# Problem 4 solves the two equations numerically (threshold, crossings, the deep-well limit) and builds the natural
+# energy from the one length of the theory; Problem 5 rescales term by term and evaluates the effective potential;
+# Problem 6 builds the matrix entries from the spin eigenvalues, solves the characteristic equation numerically
+# and compares the first-order mixing with the exact eigenvector at small fields.
+
+page: content/year-3/8.05/8-05-problem-set-11.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points, 10 + 10 + 5 + 20 + 10 + 10'
+    formula: |-
+      10 + 10 + 5 + 20 + 10 + 10
+    expected: '65'
+    shown: ['65 points in all']
+    source: {cite: mit, at: 'Problems 1 to 6, pp. 1–5'}
+    origin: mit
+
+  # ---- Problem 1: angular momentum one
+
+  - id: p1-l1
+    answer: p1-l1
+    where: 'Problem 1(a), answer box: ⟨1,1|L₁|1,0⟩ in units of ħ, half the ladder factor √(l(l+1) − m(m+1)) for l = 1, m = 0'
+    formula: |-
+      sqrt(1*2 - 0*1)/2
+    expected: '0.707'
+    tolerance: 0.0005
+    shown: ['id="p1-l1"', '$\frac{\hbar}{\sqrt{2}} = 0.707\,\hbar$']
+    source: {cite: reading1, at: 'eqs. (2.26)–(2.29)'}
+    origin: page-own
+
+  - id: p1-lsq-row1
+    where: 'Problem 1(a), check: first diagonal entry of L₁² + L₂² + L₃² in units of ħ²'
+    formula: |-
+      (1/2)*(1 + 1) + 1
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['$\frac{\hbar^2}{2}(1 + 1) + \hbar^2 = 2\hbar^2$ in the first row']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-lsq-row2
+    where: 'Problem 1(a), check: second diagonal entry of L₁² + L₂² + L₃² in units of ħ²'
+    formula: |-
+      (1/2)*(2 + 2) + 0
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['$\frac{\hbar^2}{2}(2 + 2) + 0 = 2\hbar^2$ in the second']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-amp
+    answer: p1-amp
+    where: 'Problem 1(c), answer box: the middle amplitude of the eigenvector (1, √2, 1) of L₁ after normalization'
+    formula: |-
+      sqrt(2)/sqrt(1**2 + sqrt(2)**2 + 1**2)
+    expected: '0.707'
+    tolerance: 0.0005
+    shown: ['id="p1-amp"', 'is $\frac{\sqrt{2}}{2} = 0.707$']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-p0
+    answer: p1-p0
+    where: 'Problem 1(d), answer box: probability of L₃ = 0, the squared middle amplitude of the normalized eigenvector (1, √2, 1)'
+    formula: |-
+      sqrt(2)**2/(1**2 + sqrt(2)**2 + 1**2)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['id="p1-p0"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-p1
+    answer: p1-p1
+    where: 'Problem 1(d), answer box: probability of L₃ = ħ, the squared first amplitude of the normalized eigenvector (1, √2, 1)'
+    formula: |-
+      1**2/(1**2 + sqrt(2)**2 + 1**2)
+    expected: '0.25'
+    tolerance: 1e-9
+    shown: ['id="p1-p1"']
+    source: {cite: mit, at: 'Problem 1(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-e0
+    answer: p1-e0
+    where: 'Problem 1(e), answer box: probability of m₁ = 0 in the state |1, −1⟩, the squared last amplitude of the normalized eigenvector (1, 0, −1)'
+    formula: |-
+      (-1)**2/(1**2 + 0**2 + (-1)**2)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['id="p1-e0"']
+    source: {cite: mit, at: 'Problem 1(e), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the factorized hydrogen Hamiltonian
+
+  - id: p2-beta
+    kind: identity
+    answer: p2-beta
+    where: 'Problem 2(a), answer box: β from the ground state it leads to, ψ₀ ∝ exp(−βr/ħ): ħ times minus the logarithmic derivative of exp(−r/a₀)'
+    formula: |-
+      hbar/a0
+    equals: |-
+      -hbar*deriv('log(exp(-s/a0))', 's', 0.7)
+    samples:
+      hbar: [0.5, 0.9, 1.3, 1.7, 2.0]
+      a0: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-6
+    shown: ['id="p2-beta"', '<Formula label="The two constants of the factorized Hamiltonian"']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-gamma
+    kind: identity
+    answer: p2-gamma
+    where: 'Problem 2(a), answer box: γ as the energy expectation value in ψ₀ = exp(−r/a₀)/√(πa₀³), kinetic plus potential, by numerical integration, with ħ²/m = e²a₀'
+    formula: |-
+      -e2/(2*a0)
+    equals: |-
+      e2*a0/2*integrate('4*s**2*exp(-2*s/a0)/a0**5', 's', 0, 60) - e2*integrate('4*s*exp(-2*s/a0)/a0**3', 's', 0, 60)
+    samples:
+      e2: [0.5, 0.9, 1.3, 1.7, 2.0]
+      a0: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-6
+    shown: ['id="p2-gamma"', '<Formula label="The ground state of hydrogen"']
+    source: {cite: mit, at: 'Problem 2, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-norm
+    kind: identity
+    answer: p2-norm
+    where: 'Problem 2(b), answer box: N from the normalization integral of exp(−r/a₀), done numerically'
+    formula: |-
+      1/sqrt(pi*a0**3)
+    equals: |-
+      1/sqrt(integrate('4*pi*s**2*exp(-2*s/a0)', 's', 0, 60))
+    samples:
+      a0: [0.5, 0.8, 1.2, 1.6, 2.0]
+    tolerance: 1e-6
+    shown: ['id="p2-norm"', '<Formula label="The normalization of the hydrogen ground state"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-ev
+    kind: fact
+    where: 'Problem 2(a), check: the natural energy of hydrogen and half of it, as quoted in the lecture notes'
+    shown: ['The value of $\gamma$ is $-13.6$ eV, half the natural energy $e^2/a_0 = 27.2$ eV']
+    source: {cite: reading1, at: 'eq. (7.77) and the lines after eq. (7.78)'}
+    origin: mit
+
+  # ---- Problem 3: tritium
+
+  - id: p3-ground
+    answer: p3-ground
+    where: 'Problem 3(a), answer box: the squared overlap of the ground states for Z = 1 and Z = 2, by numerical integration with a₀ = 1'
+    formula: |-
+      integrate('4*pi*s**2*sqrt(8)/pi*exp(-3*s)', 's', 0, 40)**2
+    expected: '0.702'
+    tolerance: 0.0005
+    shown: ['id="p3-ground"', '= \frac{512}{729} = 0.702']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-fraction
+    where: 'Problem 3(a): (16√2/27)² as a fraction'
+    formula: |-
+      (16*sqrt(2)/27)**2 - 512/729
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['= \frac{16\sqrt{2}}{27}']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-general
+    where: 'Problem 3(a), check: the general overlap (2√(Z₁Z₂)/(Z₁+Z₂))³ for Z₁ = 1, Z₂ = 2 against the numerical integral'
+    formula: |-
+      (2*sqrt(1*2)/(1 + 2))**3 - integrate('4*pi*s**2*sqrt(8)/pi*exp(-3*s)', 's', 0, 40)
+    expected: '0'
+    tolerance: 1e-8
+    shown: ['the overlap is $\left(\frac{2\sqrt{Z_1Z_2}}{Z_1 + Z_2}\right)^3$']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-rest
+    where: 'Problem 3(b), check: the probability not in the ground state'
+    formula: |-
+      1 - 512/729
+    expected: '0.298'
+    tolerance: 0.0005
+    shown: ['$1 - \frac{512}{729} = 0.298$']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-2s
+    where: 'Problem 3(b), check: squared overlap with the n = 2, l = 0 state of the helium ion, (1 − r) exp(−r)/√π for a₀ = 1, by numerical integration'
+    formula: |-
+      integrate('4*pi*s**2*(1 - s)*exp(-s)/sqrt(pi)*exp(-s)/sqrt(pi)', 's', 0, 60)**2
+    expected: '0.25'
+    tolerance: 1e-6
+    shown: ['gives the probability $\frac{1}{4}$']
+    source: {cite: mit, at: 'Problem 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the finite spherical well
+
+  - id: p4-thr
+    answer: p4-thr
+    where: 'Problem 4(a), answer box: the first zero of cos v₀, found numerically'
+    formula: |-
+      solve('cos(x)', 'x', 1, 2)
+    expected: '1.571'
+    tolerance: 0.0005
+    shown: ['id="p4-thr"', '$v_0 = \frac{\pi}{2} = 1.571$', 'these are $1.571$ and $4.712$']
+    source: {cite: mit, at: 'Problem 4(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-thr2
+    where: 'Problem 4(c): the second threshold, the second zero of cos v₀'
+    formula: |-
+      solve('cos(x)', 'x', 4, 5)
+    expected: '4.712'
+    tolerance: 0.0005
+    shown: ['these are $1.571$ and $4.712$']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-count
+    answer: p4-count
+    where: 'Problem 4(c), answer box: how many of π/2, 3π/2, 5π/2 lie below v₀ = 5 (each term is +1 if below, −1 if above)'
+    formula: |-
+      ((5 - pi/2)/abs(5 - pi/2) + (5 - 3*pi/2)/abs(5 - 3*pi/2) + (5 - 5*pi/2)/abs(5 - 5*pi/2) + 3)/2
+    expected: '2'
+    tolerance: 1e-9
+    shown: ['id="p4-count"', '$4.712$: two states']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-corr
+    kind: identity
+    answer: p4-corr
+    where: 'Problem 4(c), answer box: η² for n = 1 with the first correction, against the numerical solution of −η cot η = √(v₀² − η²) for very deep wells, where the next term (of order 1/v₀²) is below the tolerance'
+    formula: |-
+      pi**2*(1 - 2/v0)
+    equals: |-
+      solve('-x/tan(x) - sqrt(v0**2 - x**2)', 'x', 3.0, 3.1415)**2
+    samples:
+      v0: [1000, 2000, 4000, 6000, 8000]
+    tolerance: 1e-4
+    shown: ['id="p4-corr"', '<Formula label="The lowest level of a deep well, with the first correction"']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p4-eta20
+    where: 'Problem 4(c), check: η of the lowest state for v₀ = 20, numerically'
+    formula: |-
+      solve('-x/tan(x) - sqrt(400 - x**2)', 'x', 2.5, 3.1)
+    expected: '2.991'
+    tolerance: 0.0005
+    shown: ['give $\eta = 2.991$']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-eta20sq
+    where: 'Problem 4(c), check: η² for v₀ = 20'
+    formula: |-
+      solve('-x/tan(x) - sqrt(400 - x**2)', 'x', 2.5, 3.1)**2
+    expected: '8.949'
+    tolerance: 0.0005
+    shown: ['$\eta^2 = 8.949$']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-approx20
+    where: 'Problem 4(c), check: the formula with the first correction for v₀ = 20'
+    formula: |-
+      pi**2*(1 - 2/20)
+    expected: '8.883'
+    tolerance: 0.0005
+    shown: ['= 8.883$']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-pisq
+    where: 'Problem 4(c), check: the infinite-well value π²'
+    formula: |-
+      pi**2
+    expected: '9.870'
+    tolerance: 0.0005
+    shown: ['$\pi^2 = 9.870$']
+    source: {cite: reading1, at: 'eq. (5.44)'}
+    origin: page-own
+
+  - id: p4-err-first
+    where: 'Problem 4(c), check: relative error of the corrected formula for v₀ = 20, in per cent'
+    formula: |-
+      100*(solve('-x/tan(x) - sqrt(400 - x**2)', 'x', 2.5, 3.1)**2 - pi**2*(1 - 2/20))/solve('-x/tan(x) - sqrt(400 - x**2)', 'x', 2.5, 3.1)**2
+    expected: '0.7'
+    tolerance: 0.05
+    shown: ['off by 0.7 per cent']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-err-zero
+    where: 'Problem 4(c), check: relative error of the infinite-well value for v₀ = 20, in per cent'
+    formula: |-
+      100*(pi**2 - solve('-x/tan(x) - sqrt(400 - x**2)', 'x', 2.5, 3.1)**2)/solve('-x/tan(x) - sqrt(400 - x**2)', 'x', 2.5, 3.1)**2
+    expected: '10'
+    tolerance: 0.5
+    shown: ['is off by 10 per cent']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dot3-eta
+    where: 'Problem 4(c), graph: the crossing for v₀ = 3, η'
+    formula: |-
+      solve('-x/tan(x) - sqrt(9 - x**2)', 'x', 1.6, 2.99)
+    expected: '2.279'
+    tolerance: 0.0005
+    shown: ['{ x: 2.279, y: 1.951 }']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dot3-xi
+    where: 'Problem 4(c), graph: the crossing for v₀ = 3, ξ'
+    formula: |-
+      sqrt(9 - solve('-x/tan(x) - sqrt(9 - x**2)', 'x', 1.6, 2.99)**2)
+    expected: '1.951'
+    tolerance: 0.0005
+    shown: ['{ x: 2.279, y: 1.951 }']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dot6a-eta
+    where: 'Problem 4(c), graph: the first crossing for v₀ = 6, η'
+    formula: |-
+      solve('-x/tan(x) - sqrt(36 - x**2)', 'x', 1.6, 3.1)
+    expected: '2.679'
+    tolerance: 0.0005
+    shown: ['{ x: 2.679, y: 5.369 }']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dot6a-xi
+    where: 'Problem 4(c), graph: the first crossing for v₀ = 6, ξ'
+    formula: |-
+      sqrt(36 - solve('-x/tan(x) - sqrt(36 - x**2)', 'x', 1.6, 3.1)**2)
+    expected: '5.369'
+    tolerance: 0.0005
+    shown: ['{ x: 2.679, y: 5.369 }']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dot6b-eta
+    where: 'Problem 4(c), graph: the second crossing for v₀ = 6, η'
+    formula: |-
+      solve('-x/tan(x) - sqrt(36 - x**2)', 'x', 4.75, 5.99)
+    expected: '5.226'
+    tolerance: 0.0005
+    shown: ['{ x: 5.226, y: 2.948 }']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-dot6b-xi
+    where: 'Problem 4(c), graph: the second crossing for v₀ = 6, ξ'
+    formula: |-
+      sqrt(36 - solve('-x/tan(x) - sqrt(36 - x**2)', 'x', 4.75, 5.99)**2)
+    expected: '2.948'
+    tolerance: 0.0005
+    shown: ['{ x: 5.226, y: 2.948 }']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-nat
+    kind: identity
+    answer: p4-nat
+    where: 'Problem 4(d), answer box: the natural energy as ħ²/m over the square of the only length of the theory, mG/ħ² with G = V₀L³'
+    formula: |-
+      hbar**6/(m**3*G**2)
+    equals: |-
+      (hbar**2/m)/(m*G/hbar**2)**2
+    samples:
+      hbar: [0.6, 0.9, 1.2, 1.5, 1.8]
+      m: [1.8, 1.5, 1.2, 0.9, 0.6]
+      G: [0.6, 1.8, 0.9, 1.5, 1.2]
+    tolerance: 1e-12
+    shown: ['id="p4-nat"', '<Formula label="The natural energy of the delta function potential"']
+    source: {cite: mit, at: 'Problem 4(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-powers
+    where: 'Problem 4(d): the powers p = 3, q = −2 solve p + q = 1 and 2p + 3q = 0'
+    formula: |-
+      abs(3 + (-2) - 1) + abs(2*3 + 3*(-2))
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['So $q = -2$ and $p = 3$']
+    source: {cite: mit, at: 'Problem 4(d), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: the Yukawa potential
+
+  - id: p5-gp
+    kind: identity
+    answer: p5-gp
+    where: 'Problem 5(a), answer box: g′ as the potential strength gα in units of the energy ħ²α²/(2m)'
+    formula: |-
+      2*m*g/(hbar**2*al)
+    equals: |-
+      (g*al)/(hbar**2*al**2/(2*m))
+    samples:
+      m: [0.5, 0.9, 1.3, 1.7, 2.0]
+      g: [2.0, 1.6, 1.2, 0.8, 0.5]
+      hbar: [0.6, 0.9, 1.2, 1.5, 1.8]
+      al: [0.5, 2.0, 0.9, 1.6, 1.2]
+    tolerance: 1e-12
+    shown: ['id="p5-gp"', '<Formula label="The scaled constants of the Yukawa problem"']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-lam
+    kind: identity
+    answer: p5-lam
+    where: 'Problem 5(a), answer box: λ as the energy in units of ħ²α²/(2m)'
+    formula: |-
+      2*m*E/(hbar**2*al**2)
+    equals: |-
+      E/(hbar**2*al**2/(2*m))
+    samples:
+      m: [0.5, 0.9, 1.3, 1.7, 2.0]
+      E: [-2.0, -1.6, -1.2, -0.8, -0.5]
+      hbar: [0.6, 0.9, 1.2, 1.5, 1.8]
+      al: [0.5, 2.0, 0.9, 1.6, 1.2]
+    tolerance: 1e-12
+    shown: ['id="p5-lam"']
+    source: {cite: mit, at: 'Problem 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-min
+    answer: p5-min
+    where: 'Problem 5(b), answer box: l(l+1) for l = 2 divided by the largest value of x exp(−x), which is at x = 1'
+    formula: |-
+      2*3/(1*exp(-1))
+    expected: '16.3'
+    tolerance: 0.05
+    shown: ['id="p5-min"', 'the limit is $6e = 16.3$']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-max
+    where: 'Problem 5(b): x exp(−x) has zero slope at x = 1'
+    formula: |-
+      deriv('s*exp(-s)', 's', 1.0)
+    expected: '0'
+    tolerance: 1e-7
+    shown: ['reached at $x = 1$']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p5-well40
+    where: 'Problem 5(b), graph caption: V_eff for l = 2, g′ = 40 at its minimum near x = 0.31'
+    formula: |-
+      6/0.3124**2 - 40*exp(-0.3124)/0.3124
+    expected: '-32'
+    tolerance: 0.5
+    shown: ['a well of depth 32 near x = 0.31']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-well40-min
+    where: 'Problem 5(b), graph caption: the slope of V_eff for g′ = 40 vanishes at x = 0.3124'
+    formula: |-
+      deriv('6/s**2 - 40*exp(-s)/s', 's', 0.3124)
+    expected: '0'
+    tolerance: 0.05
+    shown: ['a well of depth 32 near x = 0.31']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-well80
+    where: 'Problem 5(b), graph caption: V_eff for l = 2, g′ = 80 at its minimum near x = 0.15'
+    formula: |-
+      6/0.1516**2 - 80*exp(-0.1516)/0.1516
+    expected: '-192'
+    tolerance: 0.5
+    shown: ['a well of depth 192 near x = 0.15']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-well80-min
+    where: 'Problem 5(b), graph caption: the slope of V_eff for g′ = 80 vanishes at x = 0.1516'
+    formula: |-
+      deriv('6/s**2 - 80*exp(-s)/s', 's', 0.1516)
+    expected: '0'
+    tolerance: 1
+    shown: ['a well of depth 192 near x = 0.15']
+    source: {cite: mit, at: 'Problem 5(b), p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-numerics
+    kind: fact
+    where: 'Problem 5(b) and (c), checks: our own numerical solution of the scaled radial equation for l = 2 (finite differences, 8000 points on 0 < x < 40): first bound state at g′ = 21.9 (new states at 21.89, 34.42, 49.97, 68.57, 90.25), 0 bound states at g′ = 20, 1 at g′ = 25, 4 at g′ = 80 (λ = −107.4, −38.0, −11.3, −1.6); second level at g′ = 80: node at x = 0.31, extrema at x = 0.175 and 0.565, ratio of sizes 1.51, √(−λ) = 6.16'
+    shown: ['finds the first bound state at $g'' \approx 21.9$', 'four bound states for $68.6 < g'' < 90.2$, for example at $g'' = 80$', 'its node at $x = 0.31$, its bumps at $x = 0.18$ and $x = 0.57$']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own numerical solution, not on the sheet)'}
+    origin: page-own
+
+  - id: p5-nodes
+    answer: p5-nodes
+    where: 'Problem 5(c), answer box: the second bound state of a one-dimensional problem has 2 − 1 nodes'
+    formula: |-
+      2 - 1
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['id="p5-nodes"']
+    source: {cite: mit, at: 'Problem 5(c), pp. 4–5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-model-in
+    where: 'Problem 5(c), check: the model curve at x = 0.175'
+    formula: |-
+      1000*0.175**3*(1 - 0.175/0.31)*exp(-6.16*0.175)/(1 + (0.175/0.26)**2)
+    expected: '0.55'
+    tolerance: 0.005
+    shown: ['$u = 0.55$ at $x = 0.175$']
+    source: {cite: mit, at: 'Problem 5(c), pp. 4–5 (our own model curve)'}
+    origin: page-own
+
+  - id: p5-model-out
+    where: 'Problem 5(c), check: the model curve at x = 0.57'
+    formula: |-
+      1000*0.57**3*(1 - 0.57/0.31)*exp(-6.16*0.57)/(1 + (0.57/0.26)**2)
+    expected: '-0.80'
+    tolerance: 0.005
+    shown: ['$u = -0.80$ at $x = 0.57$']
+    source: {cite: mit, at: 'Problem 5(c), pp. 4–5 (our own model curve)'}
+    origin: page-own
+
+  - id: p5-model-ratio
+    where: 'Problem 5(c), check: ratio of the sizes of the two bumps of the model curve'
+    formula: |-
+      abs(1000*0.57**3*(1 - 0.57/0.31)*exp(-6.16*0.57)/(1 + (0.57/0.26)**2))/(1000*0.175**3*(1 - 0.175/0.31)*exp(-6.16*0.175)/(1 + (0.175/0.26)**2))
+    expected: '1.5'
+    tolerance: 0.05
+    shown: ['a ratio of $1.5$']
+    source: {cite: mit, at: 'Problem 5(c), pp. 4–5 (our own model curve)'}
+    origin: page-own
+
+  # ---- Problem 6: hyperfine levels in a magnetic field
+
+  - id: p6-diag
+    kind: identity
+    answer: p6-diag
+    where: 'Problem 6(a), answer box: the entry for |↑↓⟩ from the eigenvalues of S_ez (+ħ/2) and S_pz (−ħ/2): (2ε/ħ)(ħ/2) + (4ε′/ħ²)(ħ/2)(−ħ/2)'
+    formula: |-
+      eps - epp
+    equals: |-
+      2*eps*(1/2) + 4*epp*(1/2)*(-1/2)
+    samples:
+      eps: [0.5, 0.9, 1.3, 1.7, 2.0]
+      epp: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-12
+    shown: ['id="p6-diag"', '<Formula label="The Hamiltonian in the uncoupled basis"']
+    source: {cite: mit, at: 'Problem 6(a), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-off
+    kind: identity
+    answer: p6-off
+    where: 'Problem 6(a), answer box: the flip entry, (4ε′/ħ²) times ½ times the two ladder factors ħ each'
+    formula: |-
+      2*epp
+    equals: |-
+      4*epp*(1/2)*1*1
+    samples:
+      epp: [0.5, 0.8, 1.2, 1.6, 2.0]
+    tolerance: 1e-12
+    shown: ['id="p6-off"']
+    source: {cite: reading2, at: 'eqs. (2.20) and (2.21)'}
+    origin: page-own
+
+  - id: p6-low
+    kind: identity
+    answer: p6-low
+    where: 'Problem 6(a), answer box: the negative root of the characteristic equation of the 2 × 2 block, found numerically'
+    formula: |-
+      -epp - sqrt(eps**2 + 4*epp**2)
+    equals: |-
+      solve('(eps - epp - x)*(-eps - epp - x) - 4*epp**2', 'x', -100, 0)
+    samples:
+      eps: [0.5, 0.9, 1.3, 1.7, 2.0]
+      epp: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p6-low"', '<Formula label="The four energies of the hyperfine levels in a field"']
+    source: {cite: mit, at: 'Problem 6(a), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-coupled-block
+    kind: identity
+    where: 'Problem 6(b): the coupled block with the diagonal ε′, −3ε′ and the off-diagonal ε has the same lower eigenvalue (root of its characteristic equation, numerically)'
+    formula: |-
+      -epp - sqrt(eps**2 + 4*epp**2)
+    equals: |-
+      solve('(epp - x)*(-3*epp - x) - eps**2', 'x', -100, -1.5)
+    samples:
+      eps: [0.5, 0.9, 1.3, 1.7, 2.0]
+      epp: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-8
+    shown: ['the same $E_2$ and $E_4$ as in part (a)']
+    source: {cite: mit, at: 'Problem 6(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-mixel
+    kind: identity
+    answer: p6-mixel
+    where: 'Problem 6(b), answer box: ⟨1,0|(2ε/ħ)S_ez|0,0⟩ from the two halves of the states: (2ε)(1/√2)(1/√2)(½ + ½)'
+    formula: |-
+      eps
+    equals: |-
+      2*eps*(1/sqrt(2))*(1/sqrt(2))*(1/2 + 1/2)
+    samples:
+      eps: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-12
+    shown: ['id="p6-mixel"', '<Formula label="The Hamiltonian in the coupled basis"']
+    source: {cite: mit, at: 'Problem 6(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-trace
+    where: 'Problem 6(a), check: the four energies add up to zero (ε = 0.7, ε′ = 1)'
+    formula: |-
+      (1 + 0.7) + (-1 + sqrt(0.7**2 + 4)) + (1 - 0.7) + (-1 - sqrt(0.7**2 + 4))
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['The four energies add up to zero']
+    source: {cite: mit, at: 'Problem 6(a), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-mix
+    kind: identity
+    answer: p6-mix
+    where: 'Problem 6(d), answer box: the first-order mixing against the exact ratio (ρ − 2ε′)/ε of the eigenvector, at very weak fields where the next term (of order ε³) is below the tolerance'
+    formula: |-
+      eps/(4*epp)
+    equals: |-
+      (sqrt(eps**2 + 4*epp**2) - 2*epp)/eps
+    samples:
+      eps: [0.0005, 0.001, 0.002, 0.003, 0.004]
+      epp: [2.0, 1.6, 1.2, 0.8, 1.0]
+    tolerance: 1e-5
+    shown: ['id="p6-mix"', '<Formula label="The eigenstates to first order in the field"']
+    source: {cite: mit, at: 'Problem 6(d), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p6-rho-first
+    where: 'Problem 6(d): ρ = √(ε² + 4ε′²) has no term of first order in ε (slope at ε = 0, with ε′ = 1)'
+    formula: |-
+      deriv('sqrt(s**2 + 4)', 's', 0)
+    expected: '0'
+    tolerance: 1e-7
+    shown: ['with no term of first order']
+    source: {cite: mit, at: 'Problem 6(d), p. 5 (our own solution)'}
+    origin: page-own
