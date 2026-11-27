@@ -1,0 +1,645 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 adds the Coulomb fields by explicit components and integrates the stress over the mid-plane numerically;
+# Problem 2 multiplies the momentum density by the volume and takes the cross product by components; Problem 3 integrates
+# the moment and the field at the centre (ring by ring) over the shell, takes the induced field from the vector potential,
+# integrates the torque over the shell and the energy and angular momentum of the fields over space (with x = R/r for
+# the radial integrals); Problem 5 averages the stress over a period numerically; Problem 6 solves the boundary conditions
+# for the transmitted amplitude by a root search.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs written out: eps0 (electric constant).
+
+page: content/year-4/8.07/8-07-problem-set-10.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points for Problems 1 to 6, 15 + 15 + 25 + 10 + 15 + 15'
+    formula: |-
+      15 + 15 + 25 + 10 + 15 + 15
+    expected: '95'
+    shown: ['95 points in all']
+    source: {cite: mit, at: 'credit note and Problems 1 to 6, pp. 1–2'}
+    origin: mit
+
+  - id: points-extra
+    kind: fact
+    where: 'How to answer: MIT''s 15 points of extra credit for Problem 7'
+    value: '15'
+    shown: ['plus 15 points of extra credit for Problem 7']
+    source: {cite: mit, at: 'credit note, p. 1, and Problem 7, p. 2'}
+    origin: mit
+
+  # ---- Problem 1: the stress tensor between two charges
+
+  - id: p1-e
+    kind: identity
+    answer: p1-e
+    where: 'Problem 1(a), answer box: the field on the mid-plane, against the sum of the two Coulomb fields by components (charges at z = ±d, field point (s, 0, 0))'
+    formula: |-
+      q*s/(2*pi*eps0*(s**2 + d**2)**(3/2))
+    equals: |-
+      sqrt((q/(4*pi*eps0)*s/(s**2 + d**2)**1.5 + q/(4*pi*eps0)*s/(s**2 + d**2)**1.5)**2 + (q/(4*pi*eps0)*(0 - d)/(s**2 + d**2)**1.5 + q/(4*pi*eps0)*(0 + d)/(s**2 + d**2)**1.5)**2)
+    samples:
+      q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      s: [0.2, 1.0, 3.0, 0.7, 1.9]
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+    tolerance: 1e-10
+    shown: ['id="p1-e"', '<Formula label="The field on the mid-plane, equal charges"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-f
+    kind: identity
+    answer: p1-f
+    where: 'Problem 1(b), answer box: the force on the upper charge, against a numerical integral of ε₀E²/2 over the mid-plane (out to 1000 d) with the field of part (a)'
+    formula: |-
+      q**2/(16*pi*eps0*d**2)
+    equals: |-
+      integrate('eps0/2*(q*u/(2*pi*eps0*(u**2 + d**2)**1.5))**2*2*pi*u', 'u', 0, 1000*d)
+    samples:
+      q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+    tolerance: 1e-4
+    shown: ['id="p1-f"', '<Formula label="The force on the upper charge"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-integral
+    kind: identity
+    where: 'Problem 1(b): the integral of s³/(s² + d²)³ from 0 to infinity is 1/(4d²), against the integral with s = d tan v'
+    formula: |-
+      1/(4*d**2)
+    equals: |-
+      integrate('sin(v)**3*cos(v)', 'v', 0, pi/2)/d**2
+    samples:
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['The integral is $1/(4d^2)$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-fopp
+    kind: identity
+    answer: p1-fopp
+    where: 'Problem 1(c), answer box: the force for opposite charges, against minus the numerical integral of ε₀E_z²/2 over the mid-plane, with E_z from the two Coulomb fields by components'
+    formula: |-
+      -q**2/(16*pi*eps0*d**2)
+    equals: |-
+      -integrate('eps0/2*(q/(4*pi*eps0)*(0 - d)/(u**2 + d**2)**1.5 - q/(4*pi*eps0)*(0 + d)/(u**2 + d**2)**1.5)**2*2*pi*u', 'u', 0, 1000*d)
+    samples:
+      q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+    tolerance: 1e-6
+    shown: ['id="p1-fopp"', '<Formula label="The force on the upper charge, opposite charges"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 2: momentum in a capacitor
+
+  - id: p2-p
+    kind: identity
+    answer: p2-p
+    where: 'Problem 2(a), answer box: the field momentum Q B d, against ε₀ (E × B)_y times the volume A d with E = Q/(ε₀A) along z and B along x, by components'
+    formula: |-
+      Q*B*d
+    equals: |-
+      eps0*((Q/(eps0*A))*B - 0*0)*A*d
+    samples:
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      B: [0.5, 1.7, 2.0, 1.0, 0.9]
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+      A: [3.0, 10.0, 7.5, 4.0, 20.0]
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+    tolerance: 1e-10
+    shown: ['id="p2-p"', '<Formula label="The momentum stored in the capacitor"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-q
+    where: 'Problem 2(a): the charge Q = ε₀AV/d'
+    inputs: {eps0: 8.8541878128e-12 F/m, A: 0.0100 m**2, V: 1000 V, d: 1.00e-3 m}
+    formula: |-
+      eps0*A*V/d
+    expected: 8.854e-8 C
+    shown: ['= 8.854\times10^{-8}$ C']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-num
+    answer: p2-num
+    where: 'Problem 2(a), answer box: the momentum Q B d in units of 1e-10 kg m/s (SI numbers: ε₀ = 8.854e-12 F/m, A = 0.0100 m², V = 1000 V, d = 1.00e-3 m, B = 2.00 T)'
+    formula: |-
+      8.8541878128e-12*0.0100*1000/1.00e-3*2.00*1.00e-3/1e-10
+    expected: '1.771'
+    shown: ['id="p2-num"', '= 1.771\times10^{-10}\ \text{kg m/s}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-density
+    where: 'Problem 2(a), check: ε₀ E B times the volume A d, with E = V/d = 1e6 V/m'
+    inputs: {eps0: 8.8541878128e-12 F/m, E: 1.0e6 V/m, B: 2.00 T, vol: 1.00e-5 m**3}
+    formula: |-
+      eps0*E*B*vol
+    expected: 1.771e-10 kg*m/s
+    shown: ['= 1.771\times10^{-10}$ kg m/s']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-f
+    kind: identity
+    answer: p2-f
+    where: 'Problem 2(b), answer box: the y component of I L × B with L = (0, 0, d) and B = (B, 0, 0), by components (L_z B_x − L_x B_z)'
+    formula: |-
+      I*B*d
+    equals: |-
+      I*(d*B - 0*0)
+    samples:
+      I: [0.5, 1.0, 2.0, 1.3, 0.8]
+      B: [0.5, 1.7, 2.0, 1.0, 0.9]
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-12
+    shown: ['id="p2-f"', '<Formula label="The force on the wire"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-off
+    kind: identity
+    where: 'Problem 2(c): the impulse −Q d ΔB with ΔB = −B, against a numerical time integral of Q (E_y(0) − E_y(d)) for B(t) = B(1 − t) on 0 ≤ t ≤ 1 (E_y = Ḃ z)'
+    formula: |-
+      Q*B*d
+    equals: |-
+      integrate('Q*(0 - (-B)*d)', 't', 0, 1)
+    samples:
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      B: [0.5, 1.7, 2.0, 1.0, 0.9]
+      d: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-10
+    shown: ['<Formula label="The force while the field changes"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: the spinning shell
+
+  - id: p3-m
+    kind: identity
+    answer: p3-m
+    where: 'Problem 3(a), answer box: the moment QωR²/3, against ½ ∫ (r × K)_z da = ½ ∫ σωR² sin²θ R² dΩ integrated numerically'
+    formula: |-
+      Q*w*R**2/3
+    equals: |-
+      0.5*integrate('(Q/(4*pi*R**2))*w*R**2*sin(t)**2*R**2*2*pi*sin(t)', 't', 0, pi)
+    samples:
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      w: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p3-m"', '<Formula label="The moment of the spinning shell"']
+    source: {cite: reading2, at: 'p. 4 (boxed), applied to the shell (our own solution)'}
+    origin: page-own
+
+  - id: p3-bin
+    kind: identity
+    answer: p3-bin
+    where: 'Problem 3(a), answer box: the field inside, against the field at the centre summed ring by ring (ring of current K R dθ, radius R sin θ, at distance R from the centre: μ₀ dI (R sin θ)²/(2R³))'
+    formula: |-
+      mu0*Q*w/(6*pi*R)
+    equals: |-
+      integrate('mu0*(Q/(4*pi*R**2))*w*R*sin(t)*R*(R*sin(t))**2/(2*R**3)', 't', 0, pi)
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      w: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p3-bin"', '<Formula label="The field inside the shell"']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-k-jump
+    kind: identity
+    where: 'Problem 3(a), check: the jump 3μ₀m sin θ/(4πR³) of the tangential field equals μ₀σωR sin θ'
+    formula: |-
+      3*mu0*(Q*w*R**2/3)*sin(t)/(4*pi*R**3)
+    equals: |-
+      mu0*(Q/(4*pi*R**2))*w*R*sin(t)
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      w: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+      t: [0.3, 1.0, 1.3, 2.0, 2.8]
+    tolerance: 1e-10
+    shown: ['a jump of $\frac{3\mu_0 m}{4\pi R^3}\sin\theta = \mu_0\sigma\omega R\sin\theta = \mu_0 K$']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ephi
+    kind: identity
+    answer: p3-ephi
+    where: 'Problem 3(b), answer box: the induced field, against −∂A_φ/∂t with A_φ = ½ B_in R sin θ at the surface (vector potential of the uniform inner field)'
+    formula: |-
+      -mu0*Q*wd*sin(th)/(12*pi)
+    equals: |-
+      -0.5*(mu0*Q*wd/(6*pi*R))*R*sin(th)
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      wd: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+      th: [0.3, 0.6, 1.3, 0.9, 1.1]
+    tolerance: 1e-10
+    shown: ['id="p3-ephi"', '<Formula label="The induced field on the surface"']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-tau
+    kind: identity
+    answer: p3-tau
+    where: 'Problem 3(b), answer box: the torque, against the numerical integral of R sin θ E_φ σ 2πR² sin θ dθ over the shell'
+    formula: |-
+      -mu0*Q**2*R*wd/(18*pi)
+    equals: |-
+      integrate('R*sin(t)*(-mu0*Q*wd*sin(t)/(12*pi))*(Q/(4*pi*R**2))*2*pi*R**2*sin(t)', 't', 0, pi)
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      wd: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p3-tau"', '<Formula label="The torque of the induced field"']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-sin3
+    where: 'Problem 3(b): the integral of sin³θ from 0 to π'
+    formula: |-
+      integrate('sin(t)**3', 't', 0, pi)
+    expected: '4/3'
+    shown: ['using $\int_0^\pi\sin^3\theta\,d\theta = 4/3$']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-imag
+    kind: identity
+    answer: p3-imag
+    where: 'Problem 3(c), answer box: I_mag, against 2 U_mag/ω² with the field energy integrated numerically (inside: uniform field times the volume; outside: dipole field over angle and over x = R/r)'
+    formula: |-
+      mu0*Q**2*R/(18*pi)
+    equals: |-
+      2*((mu0*Q/(6*pi*R))**2/(2*mu0)*4*pi*R**3/3 + integrate('(1/(2*mu0))*(mu0*(Q*R**2/3)/(4*pi))**2*(3*cos(t)**2 + 1)*2*pi*sin(t)', 't', 0, pi)*integrate('x**2', 'x', 0, 1)/R**3)
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p3-imag"', '<Formula label="The rotation with the induced torque"']
+    source: {cite: mit, at: 'Problem 3(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-u
+    kind: identity
+    answer: p3-u
+    where: 'Problem 3(d), answer box: the total magnetic energy, against the numerical integral of B²/2μ₀ (uniform inside; dipole outside over angle and over x = R/r)'
+    formula: |-
+      mu0*Q**2*w**2*R/(36*pi)
+    equals: |-
+      (mu0*Q*w/(6*pi*R))**2/(2*mu0)*4*pi*R**3/3 + integrate('(1/(2*mu0))*(mu0*(Q*w*R**2/3)/(4*pi))**2*(3*cos(t)**2 + 1)*2*pi*sin(t)', 't', 0, pi)*integrate('x**2', 'x', 0, 1)/R**3
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      w: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p3-u"', '<Formula label="The total magnetic energy"']
+    source: {cite: mit, at: 'Problem 3(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-thirds
+    kind: identity
+    where: 'Problem 3(d): the energy outside is half the energy inside (inside two thirds, outside one third), from the numerical outer integral'
+    formula: |-
+      0.5
+    equals: |-
+      (integrate('(1/(2*mu0))*(mu0*(Q*w*R**2/3)/(4*pi))**2*(3*cos(t)**2 + 1)*2*pi*sin(t)', 't', 0, pi)*integrate('x**2', 'x', 0, 1)/R**3)/((mu0*Q*w/(6*pi*R))**2/(2*mu0)*4*pi*R**3/3)
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      w: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['<Formula label="The energy outside"', 'That is half of $U_{\text{in}}$']
+    source: {cite: mit, at: 'Problem 3(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-angle8pi
+    where: 'Problem 3(d): the angular integral of 3cos²θ + 1 over all directions'
+    formula: |-
+      integrate('(3*cos(t)**2 + 1)*2*pi*sin(t)', 't', 0, pi)/pi
+    expected: '8'
+    shown: ['= 4\pi + 4\pi = 8\pi$']
+    source: {cite: mit, at: 'Problem 3(d), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-sin2
+    where: 'Problems 3(a) and 3(e): the integral of sin²θ over all directions is 8π/3'
+    formula: |-
+      integrate('sin(t)**2*2*pi*sin(t)', 't', 0, pi)/pi
+    expected: '8/3'
+    shown: ['\frac12\,\sigma\omega R^4\cdot\frac{8\pi}{3}', '\cdot\frac1R\cdot\frac{8\pi}{3}']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-l
+    kind: identity
+    answer: p3-l
+    where: 'Problem 3(e), answer box: the field angular momentum, against the numerical integral of r sin θ ε₀|E × B| over space (angle numerically, radius with x = R/r), with E and the θ component of the dipole field written out'
+    formula: |-
+      mu0*Q**2*w*R/(18*pi)
+    equals: |-
+      integrate('eps0*(Q/(4*pi*eps0))*(mu0*(Q*w*R**2/3)/(4*pi))*sin(t)*sin(t)*2*pi*sin(t)', 't', 0, pi)*integrate('1', 'x', 0, 1)/R
+    samples:
+      mu0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      eps0: [1.0, 2.0, 0.5, 0.7, 1.5]
+      Q: [0.5, 1.0, 2.0, 1.3, 0.8]
+      w: [0.5, 1.7, 2.0, 1.0, 0.9]
+      R: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-8
+    shown: ['id="p3-l"', '<Formula label="The angular momentum of the fields"']
+    source: {cite: mit, at: 'Problem 3(e), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the pressure of sunlight
+
+  - id: p4-solar
+    kind: fact
+    where: 'Problem 4: the intensity of sunlight at the Earth''s mean distance, NASA''s value'
+    value: '1361'
+    shown: ['$I = 1361$ W/m²']
+    source: {cite: earthfact, at: 'Bulk parameters: solar irradiance 1361.0 W/m²'}
+    origin: later-data
+
+  - id: p4-earth-radius
+    kind: fact
+    where: 'Problem 4(c): the mean radius of the Earth, NASA''s value'
+    value: '6371'
+    shown: ['$R_\oplus = 6371$ km']
+    source: {cite: earthfact, at: 'Bulk parameters: volumetric mean radius 6371.000 km'}
+    origin: later-data
+
+  - id: p4-abs
+    answer: p4-abs
+    where: 'Problem 4(a), answer box: I/c in μPa (I = 1361 W/m², c = 299792458 m/s)'
+    formula: |-
+      1361/299792458/1e-6
+    expected: '4.540'
+    shown: ['id="p4-abs"', '= 4.540\times10^{-6}\ \text{Pa} = 4.540\ \mu\text{Pa}']
+    source: {cite: mit802-ch13, at: 'Eq. (13.7.4), p. 21, with our numbers'}
+    origin: page-own
+
+  - id: p4-atm
+    where: 'Problem 4(a), check: the pressure as a fraction of 1.013e5 Pa (the standard atmosphere, 101325 Pa)'
+    inputs: {I: 1361 W/m**2, patm: 101325 Pa}
+    formula: |-
+      I/c/patm
+    expected: '4.5e-11'
+    tolerance: 0.02
+    shown: ['so this is about $4.5\times10^{-11}$ of it']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-ref
+    answer: p4-ref
+    where: 'Problem 4(b), answer box: 2I/c in μPa'
+    formula: |-
+      2*1361/299792458/1e-6
+    expected: '9.080'
+    shown: ['id="p4-ref"', '$P = 2I/c = 2 \times 4.540$ μPa $= 9.080$ μPa']
+    source: {cite: mit802-ch13, at: 'Eq. (13.7.5), p. 21, with our numbers'}
+    origin: page-own
+
+  - id: p4-area
+    where: 'Problem 4(c): the area of the Earth''s disk, π R²'
+    inputs: {R: 6.371e6 m}
+    formula: |-
+      pi*R**2
+    expected: 1.275e14 m**2
+    shown: ['$\pi(6.371\times10^6)^2 = 1.275\times10^{14}$ m²']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-earth
+    answer: p4-earth
+    where: 'Problem 4(c), answer box: the force (I/c) π R² in units of 1e8 N'
+    formula: |-
+      1361/299792458*pi*(6.371e6)**2/1e8
+    expected: '5.789'
+    shown: ['id="p4-earth"', '= 5.789\times10^8\ \text{N}']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-power
+    where: 'Problem 4(c): the power intercepted by the Earth, I π R²'
+    inputs: {I: 1361 W/m**2, R: 6.371e6 m}
+    formula: |-
+      I*pi*R**2
+    expected: 1.735e17 W
+    shown: ['I\,\pi R_\oplus^2 = 1.735\times10^{17}\ \text{W}']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-fc
+    where: 'Problem 4(c), check: the force times c gives the power back'
+    inputs: {F: 5.789e8 N}
+    formula: |-
+      F*c
+    expected: 1.735e17 W
+    shown: ['$5.789\times10^8 \times 2.998\times10^8 = 1.735\times10^{17}$ W']
+    source: {cite: mit, at: 'Problem 4, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: c-shown
+    where: 'Problems 4 and 5: the speed of light as written, 2.998e8 m/s'
+    formula: |-
+      c
+    expected: 2.998e8 m/s
+    shown: ['\frac{1361}{2.998\times10^8}']
+    source: {cite: reading1, at: 'slide 10 (c = 1/√(μ₀ε₀)); value exact by the SI definition'}
+    origin: page-own
+
+  # ---- Problem 5: the stress tensor of a plane wave
+
+  - id: p5-tzz
+    kind: identity
+    answer: p5-tzz
+    where: 'Problem 5(a), answer box: ⟨T_zz⟩, against the numerical time average over one period of −ε₀E²/2 − B²/2μ₀ with B = E/c and c = 1/√(μ₀ε₀)'
+    formula: |-
+      -eps0*E0**2/2
+    equals: |-
+      integrate('-(eps0/2*(E0*cos(t))**2 + (E0*cos(t)*sqrt(mu0*eps0))**2/(2*mu0))', 't', 0, 2*pi)/(2*pi)
+    samples:
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      mu0: [1.0, 2.0, 0.5, 0.7, 1.5]
+      E0: [0.5, 1.0, 2.0, 1.3, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p5-tzz"', '<Formula label="The averaged stress"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-txx
+    kind: identity
+    where: 'Problem 5(a): T_xx = ε₀E²/2 − B²/2μ₀ vanishes for B = E√(μ₀ε₀) (the choice box)'
+    formula: |-
+      0
+    equals: |-
+      eps0/2*E0**2 - (E0*sqrt(mu0*eps0))**2/(2*mu0)
+    samples:
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      mu0: [1.0, 2.0, 0.5, 0.7, 1.5]
+      E0: [0.5, 1.0, 2.0, 1.3, 0.8]
+    tolerance: 1e-12
+    shown: ['<Formula label="The stress tensor of the plane wave"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-f
+    kind: identity
+    answer: p5-f
+    where: 'Problem 5(b), answer box: the force on the black screen, against the intensity ½cε₀E₀² divided by c times the area, with c = 1/√(μ₀ε₀)'
+    formula: |-
+      eps0*E0**2*A/2
+    equals: |-
+      (0.5*(1/sqrt(mu0*eps0))*eps0*E0**2)*sqrt(mu0*eps0)*A
+    samples:
+      eps0: [1.0, 0.5, 2.0, 1.2, 0.9]
+      mu0: [1.0, 2.0, 0.5, 0.7, 1.5]
+      E0: [0.5, 1.0, 2.0, 1.3, 0.8]
+      A: [0.5, 1.0, 2.0, 1.4, 0.6]
+    tolerance: 1e-10
+    shown: ['id="p5-f"', '<Formula label="The average force on the absorbing screen"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-num
+    answer: p5-num
+    where: 'Problem 5(c), answer box: ½ε₀E₀² in μPa for E₀ = 1000 V/m'
+    formula: |-
+      0.5*8.8541878128e-12*1000**2/1e-6
+    expected: '4.427'
+    shown: ['id="p5-num"', '= 4.427\times10^{-6}\ \text{Pa} = 4.427\ \mu\text{Pa}']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-intensity
+    where: 'Problem 5(c), check: the intensity c times the momentum flux'
+    inputs: {p: 4.427e-6 Pa}
+    formula: |-
+      c*p
+    expected: 1327 W/m**2
+    shown: ['$1327$ W/m²']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 6: reflection and transmission
+
+  - id: p6-r
+    kind: identity
+    answer: p6-r
+    where: 'Problem 6(a), answer box: R, against the square of t − 1, where t solves 2 = (1 + β)t (the two boundary conditions added), by a root search'
+    formula: |-
+      ((1 - b)/(1 + b))**2
+    equals: |-
+      (solve('2 - (1 + b)*x', 'x', 0, 5) - 1)**2
+    samples:
+      b: [1.5, 2.0, 3.0, 4.0, 2.7]
+    tolerance: 1e-8
+    shown: ['id="p6-r"', '<Formula label="The reflection coefficient"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-t
+    kind: identity
+    answer: p6-t
+    where: 'Problem 6(b), answer box: T = β t², with t from the same root search'
+    formula: |-
+      4*b/(1 + b)**2
+    equals: |-
+      b*solve('2 - (1 + b)*x', 'x', 0, 5)**2
+    samples:
+      b: [1.5, 2.0, 3.0, 4.0, 2.7]
+    tolerance: 1e-8
+    shown: ['id="p6-t"', '<Formula label="The transmission coefficient"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-sum
+    kind: identity
+    where: 'Problem 6(b): R + T = 1, with both from the root search'
+    formula: |-
+      1
+    equals: |-
+      (solve('2 - (1 + b)*x', 'x', 0, 5) - 1)**2 + b*solve('2 - (1 + b)*x', 'x', 0, 5)**2
+    samples:
+      b: [1.5, 2.0, 3.0, 4.0, 0.3]
+    tolerance: 1e-8
+    shown: ['<Formula label="Reflected plus transmitted"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p6-n
+    where: 'Problem 6(c): the index √(4.00 × 9.00)'
+    formula: |-
+      sqrt(4.00*9.00)
+    expected: '6.00'
+    shown: ['so the index is $n_2 = 6.00$']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-beta
+    where: 'Problem 6(c): β = μ₀c/(4.00 μ₀ × c/6.00)'
+    formula: |-
+      1/(4.00/sqrt(4.00*9.00))
+    expected: '1.50'
+    shown: ['c/6.00) = 1.50$ and']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-num
+    answer: p6-num
+    where: 'Problem 6(c), answer box: R for β = 1.50'
+    formula: |-
+      ((1 - 1/(4.00/sqrt(4.00*9.00)))/(1 + 1/(4.00/sqrt(4.00*9.00))))**2
+    expected: '0.0400'
+    shown: ['id="p6-num"', 'R = \left(\frac{1 - 1.50}{1 + 1.50}\right)^2 = 0.0400']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-tnum
+    where: 'Problem 6(c): T for β = 1.50'
+    formula: |-
+      4*1.50/2.50**2
+    expected: '0.960'
+    shown: ['T = \frac{4 \times 1.50}{2.50^2} = 0.960']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-glass
+    where: 'Problem 6(c), check: glass with n = 1.50 and μ = μ₀ reflects (0.50/2.50)² = 4%'
+    formula: |-
+      100*((1.50 - 1.00)/(1.50 + 1.00))**2
+    expected: '4'
+    shown: ['reflects the same 4%']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p6-nonmag
+    where: 'Problem 6(c), check: with μ₂ = μ₀ and ε₂ = 9.00 ε₀, β = 3.00 and R = 0.25'
+    formula: |-
+      ((1 - sqrt(9.00))/(1 + sqrt(9.00)))**2
+    expected: '0.25'
+    shown: ['$\beta$ would be 3.00 and $R = 0.25$']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own numbers)'}
+    origin: page-own
