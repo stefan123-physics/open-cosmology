@@ -115,7 +115,7 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 - 8.09 Set 10: a complete draft staged but **not committed** in worktree `.claude/worktrees/ps-809-10` (branch `ps-809-10` from f70bd1c; local only). Commit it there first ("8.09 Problem Set 10 (draft)"), check `order` (91 if it shares `lecture: 7.6` with Set 9), then blind review.
 - 8.902 Sets 1–3 (Account B), after 8.09.
 - The 8.09 writers' course note, the 8.902 sheet texts and the Chapter 7 notes are kept in `.claude/worktrees/_notes/` (gitignored, survives a reboot).
-- **Pacing from 2026-11-28 (owner decision): Account B (this PC) runs only one agent at a time** (writer or reviewer); three at once slowed every commit check to 25 minutes. Account A may run up to three.
+- **Pacing from 2026-11-28 (owner decision, revised 2026-11-27 evening): Account B (this PC) runs two agents at most: one writer and one reviewer**, so only one commit check (the full calc suite, about 18 minutes here under load) runs at a time; three agents slowed every commit check. **Account A's PC is faster, so A may run up to three agents (rule 11) and should take the larger share when work is divided in future** (for example more sets per course, or the sets with heavy numerics).
 
 **Merge status (Account B, 2026-11-27, end of fifth window): merge now** (head of `run/b-806-8962` = this TASKS.md commit). New since the fourth merge (9cc346e): 8.09 Set 8 (`status: reviewed`) and the 8.902 course notes. Sets 9 and 10 are not on the run branch: do not merge `ps-809-9` or `ps-809-10`. Merge with `merge-symbols.py` for `data/symbols.json` (see "Merging").
 
