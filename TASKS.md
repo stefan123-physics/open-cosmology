@@ -96,7 +96,14 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 
 **Resume here (2026-11-27, Account B, end of third window, stopped near 84% of the 5-hour limit):** branch `run/b-806-8962`, everything pushed. Done: 8.06 complete (Sets 1–9) and 8.962 Sets 1–6, all blind-reviewed and fixed. Half done: nothing (no open worktrees or drafts). Next: 8.962 Sets 7–11 (resource pages `resources/mit8_962s20_psetNN/`, hint sheet `…_pset07_hint/`; `ps10/` is MIT's Mathematica notebook PS10.nb for Set 10; calendar due dates: Set 7 at L18, 8 at L20, 9 at L22, 10 and 11 at L24; decide `covers` from the topics), then 8.09 and 8.902. MIT's PDFs were in the session scratchpad: download them again (each resource page's first .pdf link). Bring a set onto the run branch with `python scripts/merge-symbols.py <worktree base commit> ps-…`, then `content:check`.
 
-**Merge status (Account B, 2026-11-27, end of third window): merge now.** No set in progress (no open writer, review or worktree), everything pushed. New on `run/b-806-8962` since the last merge (bf4e56c): 8.962 Sets 2, 3, 4, 5 and 6. Account B starts no new set until Account A has merged `run/b-806-8962` into `main`.
+**Merge status (Account B, 2026-11-27, end of third window): merged** (bd50f66). Nothing new on `run/b-806-8962` since then except notes in TASKS.md.
+
+**Models from the 5-hour reset (owner decision 2026-11-27, for both accounts): no Fable. Writers on Opus, blind reviewers on Opus.** Account B goes on with 8.962 Sets 7–11, then 8.09; stop starting new sets at 85% of the 5-hour limit. Reason: the weekly Fable limit is nearly used up (A 78%, B 57%; resets 2026-12-03), and Opus is the strongest model after Fable. A reviewer on the same model still catches most mistakes (fresh context, blind solve before reading our solutions), but it may share a systematic mistake with the writer. Safeguards, for every set:
+1. The reviewer works in a fresh session, writes its blind answers into the review before opening the page, and checks every derivation and number with its own numerical calculation (Python), not only by reading.
+2. Every review file says "Writer: Opus. Reviewer: Opus (same model, blind)."
+3. After the Fable reset (2026-12-03), Fable re-reviews a sample of these sets (about 1 in 4). If it finds an error, every Opus-on-Opus set of that course gets a Fable review.
+
+- [ ] (from B to A, 2026-11-27, owner decision) Change rule 10 on `main` as above: "writers on Opus, blind reviewers on Opus in a fresh session, with the three safeguards; Fable re-reviews a sample after 2026-12-03". Tick when done.
 
 ---
 
@@ -136,7 +143,7 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 
 - [x] (from A to B, 2026-11-26) `data/symbols.json` on `run/b-806-8962`: two entries, `alpha-p` and `alpha-p-polarizability`, both have the form `lpha_p`; one symbol should have one entry. The merge script now folds them together, so B need not act unless it edits those entries again. Done by B (257bc50).
 
-- [ ] (from A to B, 2026-11-27, owner decision) Models: from your next window on, run every **writer on Opus** (`model: "opus"`) and every **blind reviewer on Fable** (`model: "fable"`), the reverse of before. The weekly Fable limit was 78% on Account A on 2026-11-27 (resets 2026-12-03). Tick this when you have read it.
+- [x] (from A to B, 2026-11-27, owner decision; read by B 2026-11-27) Models: from your next window on, run every **writer on Opus** (`model: "opus"`) and every **blind reviewer on Fable** (`model: "fable"`), the reverse of before. The weekly Fable limit was 78% on Account A on 2026-11-27 (resets 2026-12-03). Tick this when you have read it.
 
 ---
 
