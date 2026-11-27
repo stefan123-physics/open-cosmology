@@ -1,0 +1,744 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# numerical derivatives of the metric (connection coefficients, the forces of Problem 4), the de Sitter solution
+# (Problem 2), a numerical solution of the normalisation of the 4-velocity (Problem 4(b)), a sample potential
+# (Problem 3(c)), or plain arithmetic with the sheet's values (Problem 5, in cgs units, written out as numbers).
+# The speed of light is 1 and G is kept, except in Problem 3(d) and Problem 5.
+# Outside this file, while writing (NumPy): the connection coefficients and the full Ricci scalar of a sample metric
+# e^(2φ)η with φ depending on all four coordinates, by finite differences of the metric, compared with
+# Γ = δ∂φ + δ∂φ − ηη∂φ and with R = −6 e^(−2φ)(□φ + ∂φ·∂φ) (Problem 3(a), (b)); the Ricci scalar 12H² of
+# −dt² + e^(2Ht)(dx² + dy² + dz²) the same way (Problem 2); the metric of Problem 4(c) as a matrix product, and the
+# tetrad of Problem 4(d), both choices, put into E^T g E = η to first order in φ. The page says so where it mentions
+# these checks.
+# Short names in the samples: F = φ at the body, A and k = size and wave number of a sample φ, L = ∇²φ.
+
+page: content/year-5/8.962/8-962-problem-set-6.mdx
+calcs:
+  # ---- Introduction and Problem 5, statement: the sheet's values
+
+  - id: sheet-msun
+    kind: fact
+    where: "Problem 5, statement: the mass of the Sun on MIT's sheet"
+    shown: ['$M_\odot = 1.99\times 10^{33}$ g']
+    source: {cite: mit, at: 'Problem 5, p. 4'}
+    origin: mit
+
+  - id: sheet-g
+    kind: fact
+    where: "Problem 5, statement: Newton's constant on MIT's sheet"
+    shown: ['$G = 6.67\times 10^{-8}$ cm³ g⁻¹ s⁻²']
+    source: {cite: mit, at: 'Problem 5, p. 4'}
+    origin: mit
+
+  - id: sheet-c
+    kind: fact
+    where: "Problem 5, statement: the speed of light on MIT's sheet"
+    shown: ['$c = 3.00\times 10^{10}$ cm/s']
+    source: {cite: mit, at: 'Problem 5, p. 4'}
+    origin: mit
+
+  - id: sheet-msun-time-printed
+    kind: fact
+    where: "Introduction and Problem 5, statement: the value MIT's sheet prints for the mass of the Sun as a time"
+    shown: ['is printed as $4.93\times 10^{-6}$ s', '(the sheet prints $4.93\times 10^{-6}$ s)']
+    source: {cite: mit, at: 'Problem 5, p. 4'}
+    origin: mit
+
+  - id: sheet-msun-time
+    where: "Introduction and Problem 5, statement: GM/c³ with the sheet's three values, in units of 10^-6 s"
+    formula: 6.67e-8*1.99e33/(3.00e10)**3*1e6
+    expected: '4.92'
+    shown: ['multiply out to $4.92\times 10^{-6}$ s', 'the mass of the Sun is $4.92\times 10^{-6}$ s']
+    source: {cite: mit, at: 'Problem 5, p. 4 (our own arithmetic)'}
+    origin: page-own
+
+  - id: sheet-values-p5
+    kind: fact
+    where: "Problem 5(a) to (f), statements: the quantities MIT's sheet gives to convert"
+    shown: ['$M_\oplus = 5.98\times 10^{27}$ g', '$\bar\rho = 10^{15}$ g/cm³', '$\bar P = 10^{34}$ g s⁻² cm⁻¹', '$g = 9.8$ m/s², in inverse seconds', '$L = 10^{53}$ erg/s', '$\hbar = 1.05\times 10^{-27}$ erg s']
+    source: {cite: mit, at: 'Problem 5(a) to (f), p. 4'}
+    origin: mit
+
+  # ---- Problem 2: the two boxes against the de Sitter solution, s(t) = exp(Ht) with H² = Λ/3
+
+  # The trace of G − (a/2) g = 0 is −R − 2a = 0, so a = −R/2; for de Sitter R = 12H², with H the numerical derivative of the scale factor at t = 0.
+  - id: p2-a
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2, answer box: a = −R/2 = −6H² for the de Sitter solution, H from a numerical derivative of exp(sqrt(Λ/3) t)'
+    formula: -2*Lambda
+    equals: -6*deriv('exp(sqrt(Lambda/3)*q)', 'q', 0)**2
+    samples:
+      Lambda: [0.5, 1, 1.7, 2.4, 3]
+    tolerance: 1e-6
+    shown: ['id="p2-a"', 'a = -2\Lambda, \qquad S = \int']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  # R of a flat expanding universe is 6(s''/s + s'²/s²) (a standard formula, not printed on the page), with numerical derivatives of s = exp(sqrt(Λ/3) t) at t = 0, where s = 1.
+  - id: p2-r
+    kind: identity
+    answer: p2-r
+    where: 'Problem 2, answer box: against R = 6(s″/s + s′²/s²) of the de Sitter solution, with numerical derivatives of the scale factor'
+    formula: 4*Lambda
+    equals: 6*(deriv('exp(sqrt(Lambda/3)*q)', 'q', 0, 2) + deriv('exp(sqrt(Lambda/3)*q)', 'q', 0)**2)
+    samples:
+      Lambda: [0.5, 1, 1.7, 2.4, 3]
+    tolerance: 1e-5
+    shown: ['id="p2-r"', '<Formula label="Problem 2: the Ricci scalar in empty space" tex="R = 4\Lambda"']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-desitter-r
+    kind: identity
+    where: 'Problem 2, check: the Ricci scalar 12H² of exp(Ht), from 6(s″/s + s′²/s²) with numerical derivatives (the full Ricci scalar of the metric was also computed outside this file)'
+    formula: 12*H**2
+    equals: 6*(deriv('exp(H*q)', 'q', 0, 2) + deriv('exp(H*q)', 'q', 0)**2)
+    samples:
+      H: [0.3, 0.7, 1, 1.5, 2]
+    tolerance: 1e-5
+    shown: ['the Ricci scalar of this metric is $12H^2$']
+    source: {cite: mit, at: 'Problem 2 (our own check)'}
+    origin: page-own
+
+  - id: p2-check-a
+    kind: identity
+    where: 'Problem 2, check: −6H² with H² = Λ/3 is −2Λ'
+    formula: -6*(Lambda/3)
+    equals: -2*Lambda
+    samples:
+      Lambda: [0.5, 1, 1.7, 2.4, 3]
+    tolerance: 1e-12
+    shown: ['$a = -R/2 = -6H^2 = -2\Lambda$']
+    source: {cite: mit, at: 'Problem 2 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3(a): connection coefficients of e^(2φ)η, each from a numerical derivative of the metric, for φ = A sin(kq)
+
+  - id: p3a-gamma-itt
+    kind: identity
+    where: 'Problem 3(a), formula "the coefficients with two lower time indices": Γ^z_tt = ∂_zφ against −(1/2) g^zz ∂_z g_tt, for φ = A sin(kz)'
+    formula: A*k*cos(k*z)
+    equals: -0.5*exp(-2*A*sin(k*z))*deriv('-exp(2*A*sin(k*q))', 'q', z)
+    samples:
+      A: [0.01, 0.1, 0.3, 0.5, 1]
+      k: [1, 0.5, 2, 1.3, 0.7]
+      z: [0.2, 1, 0.4, 2, 3]
+    tolerance: 1e-6
+    shown: ['\Gamma^i_{tt} = \partial_i\phi']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-gamma-ttt
+    kind: identity
+    where: 'Problem 3(a), same formula: Γ^t_tt = ∂_tφ against (1/2) g^tt ∂_t g_tt, for φ = A sin(kt)'
+    formula: A*k*cos(k*t)
+    equals: 0.5*(-exp(-2*A*sin(k*t)))*deriv('-exp(2*A*sin(k*q))', 'q', t)
+    samples:
+      A: [0.01, 0.1, 0.3, 0.5, 1]
+      k: [1, 0.5, 2, 1.3, 0.7]
+      t: [0.2, 1, 0.4, 2, 3]
+    tolerance: 1e-6
+    shown: ['\Gamma^t_{tt} = \partial_t\phi']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-gamma-tti
+    kind: identity
+    where: 'Problem 3(a), same formula: Γ^t_tz = ∂_zφ against (1/2) g^tt ∂_z g_tt, for φ = A sin(kz)'
+    formula: A*k*cos(k*z)
+    equals: 0.5*(-exp(-2*A*sin(k*z)))*deriv('-exp(2*A*sin(k*q))', 'q', z)
+    samples:
+      A: [0.01, 0.1, 0.3, 0.5, 1]
+      k: [1, 0.5, 2, 1.3, 0.7]
+      z: [0.2, 1, 0.4, 2, 3]
+    tolerance: 1e-6
+    shown: ['\Gamma^t_{ti} = \partial_i\phi']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-gtt
+    kind: limit
+    where: 'Problem 3(a), check: g_tt = −e^(2φ) is −(1 + 2φ) to first order; (e^(2φ) − 1)/φ goes to 2'
+    formula: (exp(2*F) - 1)/F
+    limit: '2'
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['$g_{tt} = -e^{2\phi} \approx -(1 + 2\phi)$']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3(b): the Ricci scalar
+
+  - id: p3b-trace
+    where: 'Problem 3(b), solution: the trace of h = 2φη is 2 × 4 = 8 times φ'
+    formula: 2*4
+    expected: '8'
+    shown: ['$h = \eta^{\mu\nu}h_{\mu\nu} = 8\phi$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # A route that does not use the linearized formula of the solution: for a metric Ω²η in four dimensions R = −6 Ω⁻³ □Ω.
+  # Sample: φ = L (x² + y² + z²)/6, so ∇²φ = L, at the origin, where φ = 0 and Ω = e^φ = 1; the three second derivatives of Ω are numerical.
+  - id: p3b-r
+    kind: identity
+    answer: p3b-r
+    where: 'Problem 3(b), answer box: against R = −6 Ω⁻³ ∇²Ω with Ω = exp(φ), φ = L r²/6, at the origin, with numerical second derivatives'
+    formula: -6*L
+    equals: -6*3*deriv('exp(L*q**2/6)', 'q', 0, 2)
+    samples:
+      L: [0.5, 1, 1.7, 2.4, 3]
+    tolerance: 1e-5
+    shown: ['id="p3b-r"', '\approx -6\,\nabla^2\phi']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-pieces
+    where: 'Problem 3(b), solution: 2 − 8 = −6'
+    formula: 2 - 8
+    expected: '-6'
+    shown: ['The first term is $2\,\eta^{\alpha\mu}\partial_\alpha\partial_\mu\phi = 2\,\Box\phi$ and the second is $-8\,\Box\phi$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # The exact formula for φ = A sin z (static): R/A = −6 e^(−2A sin z)(−sin z + A cos² z), which goes to +6 sin z = −6 ∇²φ/A.
+  - id: p3b-exact-limit
+    kind: limit
+    where: 'Problem 3(b), check: the exact Ricci scalar goes to −6∇²φ for small φ, for φ = A sin z'
+    inputs: {z: 1}
+    formula: -6*exp(-2*A*sin(z))*(-A*sin(z) + A**2*cos(z)**2)/A
+    limit: 6*sin(z)
+    vary:
+      A: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['<Formula label="Problem 3(b): the exact Ricci scalar"']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3(c): κ from the potential inside a ball of uniform density (ρ = 1): R = −6∇²Φ must equal −κρ
+
+  - id: p3c-kappa
+    kind: identity
+    answer: p3c-kappa
+    where: 'Problem 3(c), answer box: 6 times the numerical Laplacian of Φ = (2/3)πGρ r² with ρ = 1 (three equal second derivatives)'
+    formula: 24*pi*G
+    equals: 6*3*deriv('2*pi*G*q**2/3', 'q', 0.4, 2)
+    samples:
+      G: [0.5, 1, 1.3, 2, 0.8]
+    tolerance: 1e-5
+    shown: ['id="p3c-kappa"', 'tex="\kappa = 24\pi G"']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-ball
+    kind: identity
+    where: 'Problem 3(c), check: the Laplacian of (2/3)πGρ r² is 4πGρ'
+    formula: 4*pi*G*rho
+    equals: 3*deriv('2*pi*G*rho*q**2/3', 'q', 0.4, 2)
+    samples:
+      G: [0.5, 1, 1.3, 2, 0.8]
+      rho: [1, 0.3, 2, 0.7, 1.5]
+    tolerance: 1e-5
+    shown: ['$\Phi = \tfrac23\pi G\rho\,(x^2 + y^2 + z^2)$ plus a constant']
+    source: {cite: mit, at: 'Problem 3(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3(d)
+
+  - id: p3d-inputs
+    kind: fact
+    where: 'Problem 3(d), statement: the height of the tower (our own number) and the values of g and c used'
+    shown: ['$h = 20$ m (our own number), with $g = 9.8$ m/s² and $c = 3.00\times 10^8$ m/s']
+    source: {cite: mit, at: 'Problem 3(d) (our own addition); g and c as in Problem 5, p. 4'}
+    origin: page-own
+
+  - id: p3d-shift
+    answer: p3d-shift
+    where: 'Problem 3(d), answer box: gh/c² in units of 10^-15'
+    formula: 9.8*20/(3.00e8)**2*1e15
+    expected: '2.18'
+    shown: ['id="p3d-shift"', '$gh/c^2 = 9.8 \times 20/(3.00\times 10^8)^2 = 2.18\times 10^{-15}$']
+    source: {cite: mit, at: 'Problem 3(d) (our own addition)'}
+    origin: page-own
+
+  - id: p3d-expansion
+    kind: limit
+    where: 'Problem 3(d), solution: e^(−x) is 1 − x to first order; (e^(−x) − 1)/x goes to −1'
+    formula: (exp(-x) - 1)/x
+    limit: '-1'
+    vary:
+      x: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['e^{-\left(\phi_t - \phi_b\right)} \approx 1 - \left(\phi_t - \phi_b\right)']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3(e): the momentum of the ray obeys dp/dλ = −2 (dφ/dλ) p, for φ(λ) = A sin λ
+
+  - id: p3e-momentum
+    kind: identity
+    where: 'Problem 3(e), formula "the momentum of a ray": the numerical derivative of e^(−2[φ(λ) − φ(0)]) against −2 φ′ e^(−2[φ − φ(0)])'
+    formula: deriv('exp(-2*A*sin(q))', 'q', lam)
+    equals: -2*A*cos(lam)*exp(-2*A*sin(lam))
+    samples:
+      A: [0.01, 0.1, 0.3, 0.5, 1]
+      lam: [0.2, 1, 0.4, 2, 3]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 3(e): the momentum of a ray"']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-angles
+    kind: fact
+    where: 'Problem 3(e), statement and check: the angle 4GM/b of general relativity and its two halves of 2GM/b, as found in Problem 2 of Problem Set 5'
+    shown: ['found the angle $4GM/b$', 'each gave half of the angle $4GM/b$', 'bends the ray by $2GM/b$ towards the Sun']
+    source: {cite: mit, at: 'Problem 3(e) (our own check); Problem Set 5, Problem 2'}
+    origin: page-own
+
+  # ---- Problem 4(a): the force on the body at rest, from numerical derivatives of the metric with φ(z) = F − g z
+
+  - id: p4a-gamma
+    kind: identity
+    where: 'Problem 4(a), formula "the connection coefficient": Γ^z_tt = g/(1 + 2φ) against −(1/2) g^zz ∂_z g_tt'
+    formula: g/(1 + 2*F)
+    equals: -0.5/(1 + 2*F)*deriv('-(1 - 2*(F - g*q))', 'q', 0)
+    samples:
+      g: [0.5, 1, 1.3, 2, 0.8]
+      F: [0.001, 0.01, 0.05, 0.1, 0.2]
+    tolerance: 1e-7
+    shown: ['<Formula label="Problem 4(a): the connection coefficient"']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # F^z = m Γ^z_tt (u^t)², with (u^t)² = 1/(1 − 2φ); the terms dropped on the page vanish as φ → 0 at the body.
+  - id: p4a-fz
+    kind: limit
+    answer: p4a-fz
+    where: 'Problem 4(a), answer box: against m Γ^z_tt (u^t)² with a numerical derivative of g_tt, as φ at the body goes to zero'
+    inputs: {m: 1.3, g: 0.7}
+    formula: m*g
+    limit: m*(-0.5/(1 + 2*F))*deriv('-(1 - 2*(F - g*q))', 'q', 0)/(1 - 2*F)
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['id="p4a-fz"']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-ut
+    kind: limit
+    where: 'Problem 4(a), solution: u^t = (1 − 2φ)^(−1/2) is 1 + φ to first order'
+    formula: ((1 - 2*F)**(-0.5) - 1)/F
+    limit: '1'
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['$u^t = (1 - 2\phi)^{-1/2} \approx 1 + \phi$']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4(b)
+
+  # V^t as the numerical root of the normalisation g_tt V^t² + g_xx (v V^t)² + 1 = 0.
+  - id: p4b-vt
+    kind: identity
+    answer: p4b-vt
+    where: 'Problem 4(b), answer box: against the numerical root of g_tt q² + g_xx v² q² + 1 = 0'
+    formula: 1/sqrt(1 - v**2 - 2*phi*(1 + v**2))
+    equals: solve('-(1 - 2*phi)*q**2 + (1 + 2*phi)*v**2*q**2 + 1', 'q', 0.5, 6)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.8]
+      phi: [0.01, 0.05, 0.02, 0.03, 0.04]
+    tolerance: 1e-6
+    shown: ['id="p4b-vt"']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-vt-first-order
+    kind: limit
+    where: 'Problem 4(b), formula "the time component": (V^t − γ)/φ goes to γ³(1 + v²)'
+    inputs: {v: 0.6}
+    formula: (1/sqrt(1 - v**2 - 2*F*(1 + v**2)) - 1/sqrt(1 - v**2))/F
+    limit: (1 + v**2)/(1 - v**2)**1.5
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['\approx \gamma\left[1 + \phi\,\gamma^2\left(1 + v^2\right)\right]']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-gamma-xx
+    kind: identity
+    where: 'Problem 4(b), formula "the second connection coefficient": Γ^z_xx = g/(1 + 2φ) against −(1/2) g^zz ∂_z g_xx'
+    formula: g/(1 + 2*F)
+    equals: -0.5/(1 + 2*F)*deriv('1 + 2*(F - g*q)', 'q', 0)
+    samples:
+      g: [0.5, 1, 1.3, 2, 0.8]
+      F: [0.001, 0.01, 0.05, 0.1, 0.2]
+    tolerance: 1e-7
+    shown: ['<Formula label="Problem 4(b): the second connection coefficient"']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  # F^z = m (Γ^z_tt + Γ^z_xx v²)(V^t)², all from the metric: numerical derivatives of g_tt and g_xx, and the exact (V^t)².
+  - id: p4b-fz
+    kind: limit
+    answer: p4b-fz
+    where: 'Problem 4(b), answer box: against m (Γ^z_tt + Γ^z_xx v²)(V^t)² with numerical derivatives of the metric, as φ at the body goes to zero'
+    inputs: {m: 1.3, g: 0.7, v: 0.6}
+    formula: m*g*(1 + v**2)/(1 - v**2)
+    limit: m*(-0.5/(1 + 2*F))*(deriv('-(1 - 2*(F - g*q))', 'q', 0) + v**2*deriv('1 + 2*(F - g*q)', 'q', 0))/(1 - v**2 - 2*F*(1 + v**2))
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['id="p4b-fz"', 'F^z = m g\,\gamma^2\left(1 + v^2\right) = m g\,\frac{1 + v^2}{1 - v^2}']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-light
+    where: 'Problem 4(b), check: the factor 1 + v² at v = 1'
+    formula: 1 + 1**2
+    expected: '2'
+    shown: ['For $v \to 1$ it is 2']
+    source: {cite: mit, at: 'Problem 4(b) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4(c): the metric in the barred coordinates, from g' = Λ^T g Λ with t = γ(t̄ + v x̄), x = γ(x̄ + v t̄)
+
+  - id: p4c-gtx
+    kind: identity
+    answer: p4c-gtx
+    where: 'Problem 4(c), answer box: against (∂t/∂t̄)(∂t/∂x̄) g_tt + (∂x/∂t̄)(∂x/∂x̄) g_xx'
+    formula: 4*phi*v/(1 - v**2)
+    equals: (1/sqrt(1 - v**2))*(v/sqrt(1 - v**2))*(-(1 - 2*phi)) + (v/sqrt(1 - v**2))*(1/sqrt(1 - v**2))*(1 + 2*phi)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.8]
+      phi: [0.01, 0.05, 0.02, 0.03, 0.04]
+    tolerance: 1e-9
+    shown: ['id="p4c-gtx"', 'g_{\bar t\bar x} = 4\phi\,\gamma^2 v']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-gtt
+    kind: identity
+    where: 'Problem 4(c), formula "the metric in the barred coordinates": g_t̄t̄ against (∂t/∂t̄)² g_tt + (∂x/∂t̄)² g_xx'
+    formula: -1 + 2*phi*(1 + v**2)/(1 - v**2)
+    equals: (1/(1 - v**2))*(-(1 - 2*phi)) + (v**2/(1 - v**2))*(1 + 2*phi)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.8]
+      phi: [0.01, 0.05, 0.02, 0.03, 0.04]
+    tolerance: 1e-9
+    shown: ['g_{\bar t\bar t} = -1 + 2\phi\,\gamma^2\left(1 + v^2\right)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-gxx
+    kind: identity
+    where: 'Problem 4(c), same formula: g_x̄x̄ against (∂t/∂x̄)² g_tt + (∂x/∂x̄)² g_xx'
+    formula: 1 + 2*phi*(1 + v**2)/(1 - v**2)
+    equals: (v**2/(1 - v**2))*(-(1 - 2*phi)) + (1/(1 - v**2))*(1 + 2*phi)
+    samples:
+      v: [0.1, 0.3, 0.5, 0.7, 0.8]
+      phi: [0.01, 0.05, 0.02, 0.03, 0.04]
+    tolerance: 1e-9
+    shown: ['g_{\bar x\bar x} = 1 + 2\phi\,\gamma^2\left(1 + v^2\right)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # Part (a) repeated in the barred coordinates: Γ^z̄_t̄t̄ = −(1/2) g^zz ∂_z g_t̄t̄ with a numerical derivative, as φ → 0.
+  - id: p4c-rest-check
+    kind: limit
+    where: 'Problem 4(c), check: −(1/2) g^zz ∂_z g_t̄t̄ against g γ²(1 + v²), as φ at the body goes to zero'
+    inputs: {g: 0.7, v: 0.6}
+    formula: -0.5/(1 + 2*F)*deriv('-1 + 2*(F - g*q)*(1 + v**2)/(1 - v**2)', 'q', 0)
+    limit: g*(1 + v**2)/(1 - v**2)
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['= g\,\gamma^2(1 + v^2)$, and $u^{\bar t} \approx 1$']
+    source: {cite: mit, at: 'Problem 4(c) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4(d): A^t̄_t̂ from a second tetrad, the one whose time vector is the 4-velocity of the body at rest
+  # in the barred coordinates: u^t̄ = (−g_t̄t̄)^(−1/2) = 1 + φ A^t̄_t̂ to first order. The diagonal entries of A are
+  # the same for every choice of tetrad.
+
+  - id: p4d-att
+    kind: limit
+    answer: p4d-att
+    where: 'Problem 4(d), answer box: (u^t̄ − 1)/φ for the body at rest in the barred coordinates, as φ goes to zero'
+    inputs: {v: 0.6}
+    formula: (1 + v**2)/(1 - v**2)
+    limit: (1/sqrt(1 - 2*F*(1 + v**2)/(1 - v**2)) - 1)/F
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['id="p4d-att"', 'A^{\bar t}{}_{\hat t} = \gamma^2\left(1 + v^2\right)']
+    source: {cite: mit, at: 'Problem 4(d) (our own solution)'}
+    origin: page-own
+
+  # The norm of e_t̂ = (1 + φS_tt) e_t̄ − 2φγ²v e_x̄ in the barred metric, plus 1, divided by φ: it must go to zero.
+  - id: p4d-norm
+    kind: limit
+    where: 'Problem 4(d), check: the square of the basis vector e_t̂ of the symmetric choice is −1 to first order in φ'
+    inputs: {v: 0.6}
+    formula: ((-1 + 2*F*(1 + v**2)/(1 - v**2))*(1 + F*(1 + v**2)/(1 - v**2))**2 + 2*(4*F*v/(1 - v**2))*(1 + F*(1 + v**2)/(1 - v**2))*(-2*F*v/(1 - v**2)) + (1 + 2*F*(1 + v**2)/(1 - v**2))*(2*F*v/(1 - v**2))**2 + 1)/F + 1
+    limit: '1'
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['- 2\phi\gamma^2(1 + v^2) = -1$, as it must be']
+    source: {cite: mit, at: 'Problem 4(d) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: conversions with the sheet's values, in cgs units
+
+  - id: p5a
+    answer: p5a
+    where: 'Problem 5(a), answer box: G M/c² for the Earth, in cm'
+    formula: 6.67e-8*5.98e27/(3.00e10)**2
+    expected: '0.443'
+    shown: ['id="p5a"', '\text{cm} = 0.443\ \text{cm}']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-mm
+    where: 'Problem 5(a), check: the same length in mm'
+    formula: 6.67e-8*5.98e27/(3.00e10)**2*10
+    expected: '4.4'
+    shown: ['The Earth is 4.4 mm of mass']
+    source: {cite: mit, at: 'Problem 5(a) (our own check)'}
+    origin: page-own
+
+  - id: p5a-sun
+    where: "Problem 5(a), check: G M/c² for the Sun with the sheet's values, in km"
+    formula: 6.67e-8*1.99e33/(3.00e10)**2/1e5
+    expected: '1.47'
+    shown: ['The Sun is 1.47 km of mass']
+    source: {cite: mit, at: 'Problem 5(a) (our own check)'}
+    origin: page-own
+
+  - id: p5a-sun-lesson
+    kind: fact
+    where: 'Problem 5(a), check: GM/c² of the Sun as the lesson for Lecture 12 quotes it'
+    shown: ['the lesson quotes 1.477 km']
+    source: {cite: reading4, at: 'transcript p. 18 (value as printed in the lesson)'}
+    origin: mit
+
+  - id: p5a-ratio
+    where: 'Problem 5(a), check: the ratio of the masses of the Earth and the Sun, in units of 10^-6'
+    formula: 5.98e27/1.99e33*1e6
+    expected: '3'
+    shown: ['about $3\times 10^{-6}$']
+    source: {cite: mit, at: 'Problem 5(a) (our own check)'}
+    origin: page-own
+
+  - id: p5-c2
+    where: 'Problem 5(b), solution: c² in units of 10^20 cm²/s²'
+    formula: (3.00e10)**2/1e20
+    expected: '9.00'
+    shown: ['{9.00\times 10^{20}}']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b
+    answer: p5b
+    where: 'Problem 5(b), answer box: G ρ/c², in units of 10^-14 cm^-2'
+    formula: 6.67e-8*1e15/(3.00e10)**2*1e14
+    expected: '7.41'
+    shown: ['id="p5b"', '= 7.41\times 10^{-14}\ \text{cm}^{-2}']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-length
+    where: 'Problem 5(b), check: one over the square root of G ρ/c², in units of 10^6 cm'
+    formula: 1/sqrt(6.67e-8*1e15/(3.00e10)**2)/1e6
+    expected: '3.7'
+    shown: ['$3.7\times 10^6$ cm or 37 km']
+    source: {cite: mit, at: 'Problem 5(b) (our own check)'}
+    origin: page-own
+
+  - id: p5-c4
+    where: 'Problem 5(c), solution: c⁴ in units of 10^41'
+    formula: (3.00e10)**4/1e41
+    expected: '8.10'
+    shown: ['{8.10\times 10^{41}}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c
+    answer: p5c
+    where: 'Problem 5(c), answer box: G P/c⁴, in units of 10^-16 cm^-2'
+    formula: 6.67e-8*1e34/(3.00e10)**4*1e16
+    expected: '8.23'
+    shown: ['id="p5c"', '= 8.23\times 10^{-16}\ \text{cm}^{-2}']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-ratio
+    where: 'Problem 5(c), check: the pressure as a percentage of the density, both in cm^-2'
+    formula: (1e34/(3.00e10)**2)/1e15*100
+    expected: '1'
+    shown: ['The pressure is about 1% of the density']
+    source: {cite: mit, at: 'Problem 5(c) (our own check)'}
+    origin: page-own
+
+  - id: p5d-s
+    answer: p5d-s
+    where: 'Problem 5(d), answer box: g/c with g = 980 cm/s², in units of 10^-8 per second'
+    formula: 980/3.00e10*1e8
+    expected: '3.27'
+    shown: ['id="p5d-s"', '= 3.27\times 10^{-8}\ \text{s}^{-1}']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-yr
+    answer: p5d-yr
+    where: 'Problem 5(d), answer box: g/c per year of 365.25 days'
+    formula: 980/3.00e10*365.25*86400
+    expected: '1.03'
+    shown: ['id="p5d-yr"', '= 1.03\ \text{yr}^{-1}']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-year
+    where: 'Problem 5(d), solution: the seconds in a year of 365.25 days, in units of 10^7 s'
+    formula: 365.25*86400/1e7
+    expected: '3.156'
+    shown: ['the $3.156\times 10^7$ seconds of a year']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c5
+    where: 'Problem 5(e), solution: c⁵ in units of 10^52'
+    formula: (3.00e10)**5/1e52
+    expected: '2.43'
+    shown: ['{2.43\times 10^{52}}']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5e
+    answer: p5e
+    where: 'Problem 5(e), answer box: G L/c⁵, in units of 10^-7'
+    formula: 6.67e-8*1e53/(3.00e10)**5*1e7
+    expected: '2.74'
+    shown: ['id="p5e"', '= 2.74\times 10^{-7}"']
+    source: {cite: mit, at: 'Problem 5(e) (our own solution)'}
+    origin: page-own
+
+  - id: p5e-unit
+    where: 'Problem 5(e), check: c⁵/G in units of 10^59 erg/s'
+    formula: (3.00e10)**5/6.67e-8/1e59
+    expected: '3.6'
+    shown: ['$c^5/G = 3.6\times 10^{59}$ erg/s']
+    source: {cite: mit, at: 'Problem 5(e) (our own check)'}
+    origin: page-own
+
+  - id: p5-c3
+    where: 'Problem 5(f), solution: c³ in units of 10^31'
+    formula: (3.00e10)**3/1e31
+    expected: '2.70'
+    shown: ['{2.70\times 10^{31}}']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f
+    answer: p5f
+    where: 'Problem 5(f), answer box: G ħ/c³, in units of 10^-66 cm²'
+    formula: 6.67e-8*1.05e-27/(3.00e10)**3*1e66
+    expected: '2.59'
+    shown: ['id="p5f"', '= 2.59\times 10^{-66}\ \text{cm}^2']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-lp
+    where: 'Problem 5(f), solution: the Planck length, in units of 10^-33 cm'
+    formula: sqrt(6.67e-8*1.05e-27/(3.00e10)**3)*1e33
+    expected: '1.61'
+    shown: ['= 1.61\times 10^{-33}\ \text{cm}']
+    source: {cite: mit, at: 'Problem 5(f) (our own solution)'}
+    origin: page-own
+
+  - id: p5f-powers
+    where: 'Problem 5(f), check: log10 of the ratio of the Earth as a length to the Planck length'
+    formula: log10((6.67e-8*5.98e27/(3.00e10)**2)/sqrt(6.67e-8*1.05e-27/(3.00e10)**3))
+    expected: '32'
+    shown: ['by more than 32 powers of ten']
+    source: {cite: mit, at: 'Problem 5(f) (our own check)'}
+    origin: page-own
+
+  - id: p5g-ev
+    where: 'Problem 5(g), statement: one electron volt in erg, in units of 10^-12 (1.602176634 × 10^-19 J, exact in the 2019 SI, rounded; 1 J = 10^7 erg)'
+    formula: 1.602176634e-19*1e7*1e12
+    expected: '1.602'
+    shown: ['1 eV = $1.602\times 10^{-12}$ erg']
+    source: {cite: mit, at: 'Problem 5(g) (our own addition; the sheet gives no value)'}
+    origin: page-own
+
+  - id: p5g-m
+    answer: p5g-m
+    where: 'Problem 5(g), answer box: the Planck mass sqrt(ħc/G), in units of 10^-5 g'
+    formula: sqrt(1.05e-27*3.00e10/6.67e-8)*1e5
+    expected: '2.17'
+    shown: ['id="p5g-m"', '= 2.17\times 10^{-5}\ \text{g}']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  # The same mass by the route of the statement: the Planck length times c²/G.
+  - id: p5g-m-route
+    where: 'Problem 5(g), solution: l_p c²/G, in units of 10^-5 g'
+    formula: sqrt(6.67e-8*1.05e-27/(3.00e10)**3)*(3.00e10)**2/6.67e-8*1e5
+    expected: '2.17'
+    shown: ['m_p = \frac{l_p\,c^2}{G} = \sqrt{\frac{\hbar c}{G}}']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  - id: p5g-erg
+    where: 'Problem 5(g), solution: the Planck energy in units of 10^16 erg'
+    formula: sqrt(1.05e-27*3.00e10/6.67e-8)*(3.00e10)**2/1e16
+    expected: '1.96'
+    shown: ['which is $1.96\times 10^{16}$ erg']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  - id: p5g-e
+    answer: p5g-e
+    where: 'Problem 5(g), answer box: the Planck energy in units of 10^28 eV, with 1 eV = 1.602 × 10^-12 erg'
+    formula: sqrt(1.05e-27*3.00e10/6.67e-8)*(3.00e10)**2/1.602e-12/1e28
+    expected: '1.22'
+    shown: ['id="p5g-e"', 'that is $1.22\times 10^{28}$ eV', 'The Planck energy is $1.22\times 10^{19}$ GeV']
+    source: {cite: mit, at: 'Problem 5(g) (our own solution)'}
+    origin: page-own
+
+  - id: p5g-ratio
+    where: 'Problem 5(g), solution: the Planck energy over 10^13 eV, in units of 10^15'
+    formula: sqrt(1.05e-27*3.00e10/6.67e-8)*(3.00e10)**2/1.602e-12/1e13/1e15
+    expected: '1.2'
+    shown: ['by a factor of about $1.2\times 10^{15}$']
+    source: {cite: mit, at: 'Problem 5(g) (our own addition)'}
+    origin: page-own
+
+  - id: p5g-collider
+    kind: fact
+    where: 'Problem 5(g), statement: the round collision energy used for the comparison (our own choice, not a measured value)'
+    shown: ['take $10^{13}$ eV, which is 10 TeV, as a round number']
+    source: {cite: mit, at: 'Problem 5(g) (our own addition)'}
+    origin: page-own
+
+  - id: p5g-micrograms
+    where: 'Problem 5(g), check: the Planck mass in micrograms'
+    formula: sqrt(1.05e-27*3.00e10/6.67e-8)*1e6
+    expected: '22'
+    shown: ['about 22 micrograms']
+    source: {cite: mit, at: 'Problem 5(g) (our own check)'}
+    origin: page-own
+
+  - id: p5g-gj
+    where: 'Problem 5(g), check: the Planck energy in GJ (1 erg = 10^-7 J)'
+    formula: sqrt(1.05e-27*3.00e10/6.67e-8)*(3.00e10)**2*1e-7/1e9
+    expected: '2'
+    shown: ['the Planck energy is about 2 GJ']
+    source: {cite: mit, at: 'Problem 5(g) (our own check)'}
+    origin: page-own
