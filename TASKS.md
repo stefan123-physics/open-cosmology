@@ -44,7 +44,7 @@ This window:
 - [x] 8.05 (Fall 2013): 11 sets (Sets 1–4 done 2026-11-26; second window started 2026-11-27 from `main` 0b71a1d: Sets 5–9 done (0 errors each); third window 2026-11-27 from `main` bf4e56c: Sets 10 and 11 done; 8.05 complete), `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
 
 Later windows:
-- [~] 8.07 (Fall 2012): 10 sets (no rights notices, no solutions on OCW: `solutions: own`; Griffiths-only problems become our own problems, marked; Sets 1–4 done 2026-11-27; fourth window 2026-11-27: Sets 5–7 being written (Opus writers, Opus blind reviewers), then Sets 8–10), `resources/mit8_07f12_pset01/` …
+- [~] 8.07 (Fall 2012): 10 sets (no rights notices, no solutions on OCW: `solutions: own`; Griffiths-only problems become our own problems, marked; Sets 1–4 done 2026-11-27; fourth window 2026-11-27: Sets 5–7 done (Opus writers, Opus blind reviewers; all three landed in one commit, ea15543, named after Set 5), Sets 8–10 being written), `resources/mit8_07f12_pset01/` …
 - [ ] 8.08 (Spring 2005): 12 sets, `resources/prb1/` … `prb12/`
 - [ ] Glossary: review the "First explained in" links that may be passing mentions (`npm run glossary:intro`).
 - [x] Trial merge after Account B's first one or two reviewed sets (done 2026-11-26 with B's 8.06 Sets 1–3: 0 errors after `merge-symbols.py` was taught to fold a new entry into an existing entry with the same form; both accounts had added `V_b`, `P_+`, `P_-` under different ids): in a scratch worktree, merge `main`, `run/a-8044-805` and `origin/run/b-806-8962`, run `merge-symbols.py` and `content:check`, then throw the worktree away (nothing is pushed). Write any problem found under "Change requests".
