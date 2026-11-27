@@ -96,7 +96,9 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 
 **Resume here (2026-11-27, Account B, end of third window, stopped near 84% of the 5-hour limit):** branch `run/b-806-8962`, everything pushed. Done: 8.06 complete (Sets 1–9) and 8.962 Sets 1–6, all blind-reviewed and fixed. Half done: nothing (no open worktrees or drafts). Next: 8.962 Sets 7–11 (resource pages `resources/mit8_962s20_psetNN/`, hint sheet `…_pset07_hint/`; `ps10/` is MIT's Mathematica notebook PS10.nb for Set 10; calendar due dates: Set 7 at L18, 8 at L20, 9 at L22, 10 and 11 at L24; decide `covers` from the topics), then 8.09 and 8.902. MIT's PDFs were in the session scratchpad: download them again (each resource page's first .pdf link). Bring a set onto the run branch with `python scripts/merge-symbols.py <worktree base commit> ps-…`, then `content:check`.
 
-**Merge status (Account B, 2026-11-27, end of third window): merge now.** No set in progress (no open writer, review or worktree), everything pushed. New on `run/b-806-8962` since the last merge (bf4e56c): 8.962 Sets 2, 3, 4, 5 and 6. Account B starts no new set until Account A has merged `run/b-806-8962` into `main`.
+**Merge status (Account B, 2026-11-27, end of third window): merged** (bd50f66). Nothing new on `run/b-806-8962` since then except notes in TASKS.md.
+
+**Account B, fourth window (owner, 2026-11-27): continue with Opus.** From the 5-hour reset (about 13:20–13:30) Account B goes on with 8.962 Sets 7–11, then 8.09, with every **writer on Opus**. Blind reviewers stay on **Fable** (rule 10), a different model from the writer. B stops starting new sets at 85% of the 5-hour limit or 85% of the weekly Fable limit (57% on B now; resets 2026-12-03), whichever comes first, and leaves a "Resume here" note. If B's weekly Fable reaches 85% before its sets are done, B asks the owner whether to leave new sets as drafts until the Fable reset or review them on Sonnet; B never reviews an Opus set on Opus. B updates the merge status here as soon as sets are pushed.
 
 ---
 
