@@ -41,7 +41,7 @@ Status marks: `- [ ]` to do, `- [~]` in progress, `- [x]` done.
 This window:
 - [x] 8.044 Set 9: blind review of the draft on branch `ps-8044-9` (worktree `.claude/worktrees/ps-8044-9` on Account A's computer), fix, bring onto `run/a-8044-805`.
 - [x] 8.044 Sets 10 and 11 (MIT `resources/mit8_044s13_psN/`, solutions `…_pssN/`, `solutions: mit`).
-- [~] 8.05 (Fall 2013): 11 sets (Sets 1–4 done 2026-11-26; second window started 2026-11-27 from `main` 0b71a1d: Sets 5–9 done (0 errors each); third window 2026-11-27 from `main` bf4e56c: Sets 10 and 11 in progress), `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
+- [~] 8.05 (Fall 2013): 11 sets (Sets 1–4 done 2026-11-26; second window started 2026-11-27 from `main` 0b71a1d: Sets 5–9 done (0 errors each); third window 2026-11-27 from `main` bf4e56c: Sets 10 and 11 writers started and paused at 89% before the reset; nothing written yet, worktrees `.claude/worktrees/ps-805-10` and `-11` on 0539112 ready; 8.07 sheets downloaded, no rights notices, no solutions on OCW, course note in Account A's scratchpad `807/`), `resources/assignment-1/` … `assignment-11/`. First check every PDF for rights notices and whether solutions are on OCW.
 
 Later windows:
 - [ ] 8.07 (Fall 2012): 10 sets, `resources/mit8_07f12_pset01/` …
