@@ -1,0 +1,691 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the energy built from x = a tan θ and Pythagoras (Problem 1(a)), the expansion as a numerical small-amplitude
+# limit (Problems 1(b), 2(a)), the curvature of the potential in x (Problem 1(b)), the standard frequency shift of an
+# oscillator with an x⁴ term and a numerical period of the full potential (Problem 1(c)), numerical integrals of the
+# rates and numerical averages over a period (Problem 2), the exact frequency of the pendulum from the complete
+# elliptic integral (Problem 2(d)), Bernoulli and continuity solved numerically and the projectile's motion in time
+# (Problem 3), the flux tensor built from T_ij (Problem 4(a)) and zero vorticity of the vortex (Problem 4(b)).
+# Short names in the samples: z, u and s are variables of a numerical derivative, integral or root; th for θ,
+# w for ω, w1 for θ̇₁, Js a small action used for a limit.
+
+page: content/year-4/8.09/8-09-problem-set-7.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1a-h
+    kind: identity
+    answer: p1a-h
+    where: 'Problem 1(a), answer box: H against ½mẋ² + 2·½k(ℓ − b)² with x = a tan θ, ẋ = (dx/dθ)θ̇, θ̇ = p_θ/(m (dx/dθ)²) and the spring length ℓ = √(a² + x²) (Pythagoras)'
+    formula: p**2*cos(theta)**4/(2*m*a**2) + k*(a/cos(theta) - b)**2
+    equals: m/2*(deriv('a*tan(z)', 'z', theta)*p/(m*deriv('a*tan(z)', 'z', theta)**2))**2 + 2*(k/2)*(sqrt(a**2 + (a*tan(theta))**2) - b)**2
+    samples:
+      theta: [0.15, 0.35, 0.55]
+      p: [0.6, 1.2, 1.9]
+      m: [0.7, 1.3, 1.8]
+      a: [2.1, 2.5, 2.9]
+      k: [0.6, 1.1, 1.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p1a-h"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-dh
+    kind: identity
+    answer: p1b-dh
+    where: 'Problem 1(b), answer box: ΔH against [H − H₀](sθ, sp_θ)/s⁴ at s = 0.02 (the fourth-order part, by a numerical small-amplitude limit)'
+    formula: -theta**2*p**2/(m*a**2) + k*a*(8*a - 5*b)*theta**4/12
+    equals: (((0.02*p)**2*cos(0.02*theta)**4/(2*m*a**2) + k*(a/cos(0.02*theta) - b)**2) - (k*(a - b)**2 + (0.02*p)**2/(2*m*a**2) + k*a*(a - b)*(0.02*theta)**2))/0.02**4
+    samples:
+      theta: [0.15, 0.35, 0.55]
+      p: [0.6, 1.2, 1.9]
+      m: [0.7, 1.3, 1.8]
+      a: [2.1, 2.5, 2.9]
+      k: [0.6, 1.1, 1.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-4
+    shown: ['id="p1b-dh"', '\Delta H = -\frac{\theta^2p_\theta^2}{ma^2} + \frac{ka(8a - 5b)}{12}\,\theta^4']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-coef
+    kind: identity
+    where: 'Problem 1(b), solution: a²/4 + 5a(a − b)/12 = a(8a − 5b)/12'
+    formula: a**2/4 + 5*a*(a - b)/12
+    equals: a*(8*a - 5*b)/12
+    samples:
+      a: [2.1, 2.5, 2.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-12
+    shown: ['a^2/4 + 5a(a - b)/12 = a(8a - 5b)/12']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-w0
+    kind: identity
+    answer: p1b-w0
+    where: 'Problem 1(b), answer box: ω₀² against the curvature of V(x) = k(√(a² + x²) − b)² at x = 0, divided by m'
+    formula: 2*k*(a - b)/(m*a)
+    equals: deriv('k*(sqrt(a**2 + z**2) - b)**2', 'z', 0, 2)/m
+    samples:
+      m: [0.7, 1.3, 1.8]
+      a: [2.1, 2.5, 2.9]
+      k: [0.6, 1.1, 1.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-5
+    shown: ['id="p1b-w0"', 'whose curvature at $x = 0$ is $2k(1 - b/a)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-bracket
+    kind: identity
+    where: 'Problem 1(c), solution: the bracket of ΔH averages to −1/8 + 3(8a − 5b)/(192(a − b)) = 3b/(64(a − b)), by a numerical average over the angle'
+    formula: 3*b/(64*(a - b))
+    equals: integrate('-sin(z)**2*cos(z)**2 + (8*a - 5*b)/(24*(a - b))*sin(z)**4', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      a: [2.1, 2.5, 2.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-9
+    shown: ['-\frac18 + \frac{3(8a - 5b)}{192(a - b)} = \frac{3b}{64(a - b)}']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-dh-aa
+    kind: identity
+    where: 'Problem 1(c), solution: ΔH in action-angle variables equals ΔH(θ, p_θ) with θ = √(J/(πIω₀)) sin φ, p_θ = √(IJω₀/π) cos φ'
+    formula: J**2/(pi**2*m*a**2)*(-sin(z)**2*cos(z)**2 + (8*a - 5*b)/(24*(a - b))*sin(z)**4)
+    equals: -(J/(pi*m*a**2*sqrt(2*k*(a - b)/(m*a)))*sin(z)**2)*(m*a**2*J*sqrt(2*k*(a - b)/(m*a))/pi*cos(z)**2)/(m*a**2) + k*a*(8*a - 5*b)/12*(J/(pi*m*a**2*sqrt(2*k*(a - b)/(m*a)))*sin(z)**2)**2
+    samples:
+      J: [0.6, 1.2, 1.8]
+      z: [0.4, 1.3, 2.6]
+      m: [0.7, 1.3, 1.8]
+      a: [2.1, 2.5, 2.9]
+      k: [0.6, 1.1, 1.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-9
+    shown: ['\Delta H = \frac{J^2}{\pi^2 I}\left[-\sin^2\phi\cos^2\phi + \frac{8a - 5b}{24(a - b)}\,\sin^4\phi\right]']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-dnu
+    kind: identity
+    answer: p1c-dnu
+    where: 'Problem 1(c), answer box: the frequency shift against the standard first-order shift of an oscillator with a λx⁴ term, Δω/ω₀ = 3λA²/(2mω₀²), with λ = kb/(4a³) from the potential in x, A² = 2E/(mω₀²) and E = νJ₀ (a route that does not use action-angle variables)'
+    formula: 3*b*J/(32*pi**2*m*a**2*(a - b))
+    equals: sqrt(2*k*(a - b)/(m*a))/(2*pi)*3*(k*b/(4*a**3))*(2*(sqrt(2*k*(a - b)/(m*a))/(2*pi)*J)/(m*2*k*(a - b)/(m*a)))/(2*m*2*k*(a - b)/(m*a))
+    samples:
+      J: [0.6, 1.2, 1.8]
+      m: [0.7, 1.3, 1.8]
+      a: [2.1, 2.5, 2.9]
+      k: [0.6, 1.1, 1.9]
+      b: [0.6, 1.0, 1.4]
+    tolerance: 1e-9
+    shown: ['id="p1c-dnu"', '\Delta\omega/\omega_0 = 3\lambda A^2/(2m\omega_0^2)']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-rel
+    kind: identity
+    answer: p1c-rel
+    where: 'Problem 1(c), answer box: the relative shift against the exact period of the full potential V(x) = k(√(a² + x²) − b)² − k(a − b)² at the small energy 0.001, scaled linearly in E. With x = A sin u (A the turning point, a numerical root of V(A) = E) the period is T = 4∫₀^{π/2} √(m(S₁ + S₂)/(2k(S₁ + S₂ − 2b))) du, S₁ = √(a² + A²), S₂ = √(a² + A² sin²u), an exact rewriting of 4∫dx/ẋ that has no singular end point; tolerance for the neglected E² terms'
+    formula: 3*b*E/(16*k*a*(a - b)**2)
+    equals: E*((1/(4*integrate('sqrt(m*(sqrt(a**2 + solve("k*(sqrt(a**2 + s**2) - b)**2 - k*(a - b)**2 - 0.001", "s", 0, 10)**2) + sqrt(a**2 + (solve("k*(sqrt(a**2 + s**2) - b)**2 - k*(a - b)**2 - 0.001", "s", 0, 10)*sin(u))**2))/(2*k*(sqrt(a**2 + solve("k*(sqrt(a**2 + s**2) - b)**2 - k*(a - b)**2 - 0.001", "s", 0, 10)**2) + sqrt(a**2 + (solve("k*(sqrt(a**2 + s**2) - b)**2 - k*(a - b)**2 - 0.001", "s", 0, 10)*sin(u))**2) - 2*b)))', 'u', 0, pi/2))/(sqrt(2*k*(a - b)/(m*a))/(2*pi)) - 1)/0.001)
+    samples:
+      E: [0.6, 1.4]
+      m: [1.3, 1.3]
+      a: [2.5, 2.5]
+      k: [1.1, 1.1]
+      b: [1.0, 1.0]
+    tolerance: 1e-2
+    shown: ['id="p1c-rel"', 'A numerical period of the full potential at small energy gives the same relative shift']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2a-dh1
+    kind: identity
+    answer: p2a-dh1
+    where: 'Problem 2(a), answer box: ΔH₁ against the θ⁴ part of −Iω² cos θ − (−Iω² + Iω²θ²/2), by a numerical small-angle limit at θ scaled by 0.1'
+    formula: -I*omega**2*theta**4/24
+    equals: (-I*omega**2*cos(0.1*theta) - (-I*omega**2 + I*omega**2*(0.1*theta)**2/2))/0.1**4
+    samples:
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+      theta: [0.15, 0.3, 0.45]
+    tolerance: 1e-4
+    shown: ['id="p2a-dh1"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-dh2
+    kind: identity
+    answer: p2a-dh2
+    where: 'Problem 2(a), answer box: ΔH₂ against the θ⁶ part of −Iω² cos θ minus the terms through θ⁴, at small θ (0.1 to 0.2; the θ⁸ term is below 0.1%)'
+    formula: I*omega**2*theta**6/720
+    equals: (-I*omega**2*cos(theta) - (-I*omega**2 + I*omega**2*theta**2/2 - I*omega**2*theta**4/24))
+    samples:
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+      theta: [0.1, 0.15, 0.2]
+    tolerance: 1e-3
+    shown: ['id="p2a-dh2"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-nu1
+    kind: identity
+    answer: p2b-nu1
+    where: 'Problem 2(b), answer box: ν₁ against the average over one period of the first-order rate −J₀ sin⁴(ωt)/(12π²I), integrated numerically'
+    formula: -J/(32*pi**2*I)
+    equals: integrate('-J/(12*pi**2*I)*sin(z)**4', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p2b-nu1"', '\nu_1 = -\frac{J_0}{32\pi^2 I}, \qquad \beta_1(t)']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-beta1
+    kind: identity
+    answer: p2b-beta1
+    where: 'Problem 2(b), answer box: β₁(t) against ∫₀ᵗ [β̇⁽¹⁾ − ν₁] dt′, integrated numerically'
+    formula: J/(384*pi**2*I*omega)*(8*sin(2*omega*t) - sin(4*omega*t))
+    equals: integrate('-J/(12*pi**2*I)*sin(omega*z)**4 + J/(32*pi**2*I)', 'z', 0, t)
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+      t: [0.3, 0.8, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p2b-beta1"']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-j1
+    kind: identity
+    answer: p2b-j1
+    where: 'Problem 2(b), answer box: J₁(t) against ∫₀ᵗ J₀² sin³(ωt′) cos(ωt′)/(3πI) dt′, integrated numerically'
+    formula: J**2*sin(omega*t)**4/(12*pi*I*omega)
+    equals: integrate('J**2/(3*pi*I)*sin(omega*z)**3*cos(omega*z)', 'z', 0, t)
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+      t: [0.3, 0.8, 1.1]
+    tolerance: 1e-8
+    shown: ['id="p2b-j1"']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-sin4
+    kind: identity
+    where: 'Problem 2(b), solution: sin⁴x = 3/8 − cos 2x/2 + cos 4x/8'
+    formula: sin(z)**4
+    equals: 3/8 - cos(2*z)/2 + cos(4*z)/8
+    samples:
+      z: [0.3, 1.1, 2.4]
+    tolerance: 1e-12
+    shown: ['\sin^4 x = \frac38 - \frac12\cos 2x + \frac18\cos 4x']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-betab
+    kind: identity
+    answer: p2c-betab
+    where: 'Problem 2(c), answer box: the average of ∂ΔH₂/∂J over a period, with the derivative in J and the average both taken numerically'
+    formula: J**2/(768*pi**3*I**2*omega)
+    equals: integrate('deriv("z2**3/(720*pi**3*I**2*omega)*sin(z)**6", "z2", J)', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+    tolerance: 1e-6
+    shown: ['id="p2c-betab"', '\overline{\dot\beta^{(2)}_b} = \frac{5}{16}\cdot\frac{J_0^2}{240\pi^3 I^2\omega} = \frac{J_0^2}{768\pi^3 I^2\omega}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-jb
+    kind: identity
+    where: 'Problem 2(c), choice box: the average of J̇_b⁽²⁾ = −J₀³ sin⁵ cos/(60π²I²ω) over a period is zero (checked as 1 + average = 1)'
+    formula: 1
+    equals: 1 + integrate('-J**3/(60*pi**2*I**2*omega)*sin(z)**5*cos(z)', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      J: [0.6, 1.8]
+      I: [0.6, 1.9]
+      omega: [0.7, 1.8]
+    tolerance: 1e-9
+    shown: ['\overline{\dot J^{(2)}_b} = 0']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-ratio
+    kind: identity
+    where: 'Problem 2(c), check: the ratio of the second-order drift to ν₁'
+    formula: -J/(24*pi*I*omega)
+    equals: (J**2/(768*pi**3*I**2*omega))/(-J/(32*pi**2*I))
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+    tolerance: 1e-12
+    shown: ['-\frac{J_0}{24\pi I\omega}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-betaa
+    kind: identity
+    answer: p2d-betaa
+    where: 'Problem 2(d), answer box: the new J₀² term of the average of β̇_a⁽²⁾, against a numerical average of the expanded rate minus its J₀ sin⁴ part, with J₁ and β₁ from part (b)'
+    formula: -23*J**2/(6144*pi**3*I**2*omega)
+    equals: integrate('-1/(12*pi**2*I)*(J**2*sin(z)**4/(12*pi*I*omega)*sin(z)**4 + 8*pi*J*J/(384*pi**2*I*omega)*(8*sin(2*z) - sin(4*z))*sin(z)**3*cos(z))', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+    tolerance: 1e-8
+    shown: ['id="p2d-betaa"', '\nu_1 - \frac{23J_0^2}{6144\pi^3 I^2\omega}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-avgs
+    kind: identity
+    where: 'Problem 2(d), hint and solution: the averages of sin⁸, sin⁴cos², sin⁴cos⁴, sin⁶cos² (35/128, 1/16, 3/128, 5/128), checked as one weighted sum'
+    formula: 35/128 + 2*(1/16) + 3*(3/128) + 4*(5/128)
+    equals: integrate('sin(z)**8 + 2*sin(z)**4*cos(z)**2 + 3*sin(z)**4*cos(z)**4 + 4*sin(z)**6*cos(z)**2', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['\overline{\sin^8} = 35/128', '\overline{\sin^4\cos^2} = 1/16', '\overline{\sin^4\cos^4} = 3/128', '\overline{\sin^6\cos^2} = 5/128']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-sincos
+    kind: identity
+    where: 'Problem 2(d), solution: the averages of sin³cos·sin 2Φ (1/8) and sin³cos·sin 4Φ (−1/16), checked as one weighted sum'
+    formula: 1/8 + 3*(-1/16)
+    equals: integrate('sin(z)**3*cos(z)*sin(2*z) + 3*sin(z)**3*cos(z)*sin(4*z)', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['average $\frac18$', 'average $-\frac1{16}$']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-terms
+    kind: identity
+    where: 'Problem 2(d), solution: 35/1536 + 34/1536 = 23/512, and 17/768 = 34/1536'
+    formula: 35/1536 + 17/768
+    equals: 23/512
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-12
+    shown: ['\left(\frac{35}{1536} + \frac{34}{1536}\right) = \frac{23J_0^2}{512\pi I\omega}', '\frac{17J_0^2}{768\pi I\omega}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-beta
+    kind: identity
+    answer: p2d-beta
+    where: 'Problem 2(d), answer box: the total second-order shift ν₂ against the exact frequency of the pendulum, ν π/(2K(κ)) with κ² = J₀/(4πIω) and K by numerical integration, at the small action Js = 0.002: ν₂ ≈ (ν_exact − ν − ν₁)/Js² · J₀²; tolerance for the neglected third-order term'
+    formula: -5*J**2/(2048*pi**3*I**2*omega)
+    equals: J**2*((omega/(2*pi))*pi/(2*integrate('1/sqrt(1 - 0.002/(4*pi*I*omega)*sin(z)**2)', 'z', 0, pi/2)) - omega/(2*pi) + 0.002/(32*pi**2*I))/0.002**2
+    samples:
+      J: [0.6, 1.8]
+      I: [0.6, 1.3]
+      omega: [0.7, 1.8]
+    tolerance: 1e-2
+    shown: ['id="p2d-beta"', 'A numerical check at small $J_0$ agrees']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-sum
+    kind: identity
+    where: 'Problem 2(d), solution: −23/6144 + 8/6144 = −15/6144 = −5/2048, and 1/768 = 8/6144'
+    formula: -23/6144 + 1/768
+    equals: -5/2048
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-12
+    shown: ['\nu_2 = -\frac{15J_0^2}{6144\pi^3 I^2\omega} = -\frac{5J_0^2}{2048\pi^3 I^2\omega}', '\frac{8J_0^2}{6144\pi^3 I^2\omega}']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-ja
+    kind: identity
+    where: 'Problem 2(d), choice box: the average of the expanded J̇_a⁽²⁾ over a period is zero (checked as 1 + average = 1)'
+    formula: 1
+    equals: 1 + integrate('1/(3*pi*I)*((J**2 + 2*J*J**2*sin(z)**4/(12*pi*I*omega))*sin(z)**3*cos(z) + 2*pi*J**2*J/(384*pi**2*I*omega)*(8*sin(2*z) - sin(4*z))*(3*sin(z)**2*cos(z)**2 - sin(z)**4))', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      J: [0.6, 1.8]
+      I: [0.6, 1.9]
+      omega: [0.7, 1.8]
+    tolerance: 1e-9
+    shown: ['So its average over a period is zero']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-series
+    kind: identity
+    where: 'Problem 2(d), check: with κ² = u/2 the series 1 − κ²/4 − 5κ⁴/64 equals 1 − u/8 − 5u²/256'
+    formula: 1 - u/8 - 5*u**2/256
+    equals: 1 - (u/2)/4 - 5*(u/2)**2/64
+    samples:
+      u: [0.01, 0.1, 0.3]
+    tolerance: 1e-12
+    shown: ['1 - u/8 - 5u^2/256', '1 - \kappa^2/4 - 5\kappa^4/64']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-relative
+    kind: identity
+    where: 'Problem 2(d), check: ν₁/ν = −u/8 and ν₂/ν = −5u²/256 with u = J₀/(2πIω)'
+    formula: (-J/(32*pi**2*I) - 5*J**2/(2048*pi**3*I**2*omega))/(omega/(2*pi))
+    equals: -(J/(2*pi*I*omega))/8 - 5*(J/(2*pi*I*omega))**2/256
+    samples:
+      J: [0.6, 1.2, 1.8]
+      I: [0.6, 1.3, 1.9]
+      omega: [0.7, 1.2, 1.8]
+    tolerance: 1e-12
+    shown: ['$u = E/(I\omega^2) = J_0/(2\pi I\omega)$']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3a-ve
+    kind: identity
+    answer: p3a-ve
+    where: 'Problem 3(a), answer box: v_e against the root of Bernoulli from the surface to the exit, ½v² − gH₁ = 0, solved numerically'
+    formula: sqrt(2*g*H1)
+    equals: solve('z**2/2 - g*H1', 'z', 0, 100)
+    samples:
+      g: [9.2, 9.81, 9.2]
+      H1: [0.6, 1.0, 1.8]
+    tolerance: 1e-9
+    shown: ['id="p3a-ve"']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3a-number
+    where: 'Problem 3(a), check: v_e for H₁ = 1 m, in m/s'
+    formula: sqrt(2*9.81*1)
+    expected: '4.4'
+    shown: ['For $H_1 = 1$ m it is $4.4$ m/s']
+    source: {cite: mit, at: 'Problem 3(a) (our own check)'}
+    origin: page-own
+
+  - id: p3b-v
+    kind: identity
+    answer: p3b-v
+    where: 'Problem 3(b), answer box: the speed at the top equals v_e by continuity, A_T v_top = A_T v_e, solved numerically for v_top'
+    formula: sqrt(2*g*H1)
+    equals: solve('z - sqrt(2*g*H1)', 'z', 0, 100) + 0*H2
+    samples:
+      g: [9.2, 9.81, 9.2]
+      H1: [0.6, 1.0, 1.8]
+      H2: [0.7, 1.5, 0.7]
+    tolerance: 1e-9
+    shown: ['id="p3b-v"']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-p
+    kind: identity
+    answer: p3b-p
+    where: 'Problem 3(b), answer box: the pressure at the top against Bernoulli between the top and the exit (P_top + ρgH₂ = P_a − ρgH₁, equal speeds), the route of the check'
+    formula: Pa - rho*g*(H1 + H2)
+    equals: solve('z + rho*g*H2 + rho*2*g*H1/2 - (Pa - rho*g*H1 + rho*2*g*H1/2)', 'z', -200000, 200000)
+    samples:
+      g: [9.2, 9.81]
+      H1: [0.6, 1.8]
+      H2: [0.7, 1.5]
+      rho: [950, 1050]
+      Pa: [95000, 105000]
+    tolerance: 1e-9
+    shown: ['id="p3b-p"', 'P_{\text{top}} + \rho gH_2 = P_a - \rho gH_1']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-head
+    where: 'Problem 3(b), solution: P_a/(ρg) for water, in metres'
+    formula: 101325/(1000*9.81)
+    expected: '10.33'
+    shown: ['101\,325/(1000 \times 9.81) = 10.33']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-h2max
+    answer: p3b-h2max
+    where: 'Problem 3(b), answer box: the highest top of the siphon, P_a/(ρg) − H₁ with H₁ = 1.00 m, in metres'
+    formula: 101325/(1000*9.81) - 1.00
+    expected: '9.33'
+    shown: ['id="p3b-h2max"', '$H_2 = 10.33 - 1.00 = 9.33$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-h2max-root
+    kind: identity
+    where: 'Problem 3(b), check: the same height as the root of P_top(H₂) = 0, solved numerically'
+    formula: 101325/(1000*9.81) - 1.00
+    equals: solve('101325 - 1000*9.81*(1.00 + z)', 'z', 0, 50)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['$P_{\text{top}}$ reaches zero when $H_1 + H_2 = P_a/(\rho g)']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-data
+    kind: fact
+    where: 'Problem 3(b), statement: our own numbers for the highest siphon'
+    shown: ['$\rho = 1000$ kg/m³', '$P_a = 101\,325$ Pa', '$g = 9.81$ m/s²', '$H_1 = 1.00$ m']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-area
+    kind: identity
+    answer: p3c-area
+    where: 'Problem 3(c), answer box: A(y) against the flux A_T v_e divided by the speed at height y, with v_e and v(y) each a numerical root of Bernoulli (g = 9.81)'
+    formula: AT*sqrt(H1/(H1 - y))
+    equals: AT*solve('z**2/2 - 9.81*H1', 'z', 0, 100)/solve('z**2/2 + 9.81*y - 9.81*H1', 'z', 0, 100)
+    samples:
+      AT: [0.6, 1.5, 0.6]
+      H1: [2.1, 2.8, 2.1]
+      y: [0.2, 0.9, 1.4]
+    tolerance: 1e-9
+    shown: ['id="p3c-area"']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3d-h3
+    kind: identity
+    answer: p3d-h3
+    where: 'Problem 3(d), answer box: H₃ against the top of the projectile path y(t) = v_e sin θ t − gt²/2, at the time where ẏ = 0 found numerically (g = 9.81)'
+    formula: H1*sin(theta)**2
+    equals: sqrt(2*9.81*H1)*sin(theta)*solve('sqrt(2*9.81*H1)*sin(theta) - 9.81*z', 'z', 0, 10) - 9.81*solve('sqrt(2*9.81*H1)*sin(theta) - 9.81*z', 'z', 0, 10)**2/2
+    samples:
+      H1: [0.6, 1.2, 1.9]
+      theta: [0.3, 0.8, 1.1]
+    tolerance: 1e-9
+    shown: ['id="p3d-h3"']
+    source: {cite: mit, at: 'Problem 3(d) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-path
+    kind: identity
+    answer: p3e-path
+    where: 'Problem 3(e), answer box: y(x) against the motion in time, y(t) at the time t = x/(v_e cos θ), with v_e = √(2gH₁) (g = 9.81)'
+    formula: x*tan(theta) - x**2/(4*H1*cos(theta)**2)
+    equals: sqrt(2*9.81*H1)*sin(theta)*(x/(sqrt(2*9.81*H1)*cos(theta))) - 9.81*(x/(sqrt(2*9.81*H1)*cos(theta)))**2/2
+    samples:
+      x: [0.3, 1.0, 1.7]
+      H1: [1.2, 2.5, 1.2]
+      theta: [0.3, 0.8, 1.1]
+    tolerance: 1e-9
+    shown: ['id="p3e-path"']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  - id: p3e-top
+    kind: identity
+    where: 'Problem 3(e), check: the top of the parabola, at x = 2H₁ sin θ cos θ, has y = H₁ sin²θ'
+    formula: H1*sin(theta)**2
+    equals: (2*H1*sin(theta)*cos(theta))*tan(theta) - (2*H1*sin(theta)*cos(theta))**2/(4*H1*cos(theta)**2)
+    samples:
+      H1: [1.2, 2.5, 1.2]
+      theta: [0.3, 0.8, 1.1]
+    tolerance: 1e-12
+    shown: ['$x = 2H_1\sin\theta\cos\theta$, where $y = H_1\sin^2\theta$']
+    source: {cite: mit, at: 'Problem 3(e) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4a-jxy
+    kind: identity
+    answer: p4a-jxy
+    where: 'Problem 4(a), answer box: J_xy built directly from its definition J_ij = ε_ikl x_k T_lj as y T_zy − z T_yy, with T_ij = Pδ_ij + ρv_iv_j'
+    formula: -z*P + rho*(y*vz - z*vy)*vy
+    equals: y*(rho*vz*vy) - z*(P + rho*vy**2) + 0*x + 0*vx
+    samples:
+      x: [0.6, 1.7]
+      y: [0.7, 1.4]
+      z: [0.6, 1.9]
+      P: [0.8, 1.6]
+      rho: [0.7, 1.5]
+      vx: [0.6, 1.3]
+      vy: [0.9, 1.8]
+      vz: [0.5, 1.2]
+    tolerance: 1e-12
+    shown: ['id="p4a-jxy"', 'J_{xy} = \epsilon_{xky}x_kP + \ell_xv_y = -zP + \rho(yv_z - zv_y)v_y']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-w
+    kind: identity
+    answer: p4b-w
+    where: 'Problem 4(b), answer box: θ̇(r) = θ̇₁r₁²/r² against zero vorticity, (1/r) d(r v_θ)/dr = 0 with v_θ = rθ̇, taken numerically (checked as θ̇ + derivative)'
+    formula: w1*r1**2/r**2
+    equals: w1*r1**2/r**2 + deriv('z*(z*w1*r1**2/z**2)', 'z', r)/r
+    samples:
+      w1: [0.6, 1.8]
+      r1: [0.6, 0.9]
+      r: [1.6, 2.7]
+    tolerance: 1e-6
+    shown: ['id="p4b-w"', '(\nabla\times\vec v)_z = \frac1r\frac{d}{dr}(rv_\theta) = 0']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-c
+    kind: identity
+    answer: p4c-c
+    where: 'Problem 4(c), answer box: C = ℓ_z/ρ against r²θ̇ with ℓ_z = ρ(x v_y − y v_x) for a point at radius r and the circular velocity v_θ = rθ̇ (θ̇ = ℓ_z/(ρr²) solved back)'
+    formula: lz/rho
+    equals: (1.3**2)*solve('rho*(1.3*(1.3*z)) - lz', 'z', -100, 100)
+    samples:
+      lz: [0.6, 1.4, 1.9]
+      rho: [0.7, 1.6, 0.7]
+    tolerance: 1e-9
+    shown: ['id="p4c-c"']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-const
+    where: 'Problem 4(c), solution: C = 0.50 m × 0.20 m/s, in m²/s'
+    formula: 0.50*0.20
+    expected: '0.10'
+    shown: ['$C = 0.50 \times 0.20 = 0.10$ m²/s']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-num
+    answer: p4c-num
+    where: 'Problem 4(c), answer box: θ̇ = C/r² at r = 0.020 m, in rad/s'
+    formula: 0.50*0.20/0.020**2
+    expected: '250'
+    tolerance: 1e-6
+    shown: ['id="p4c-num"', '\dot\theta = 0.10/0.020^2 = 250$ rad/s']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-speed
+    where: 'Problem 4(c), solution: the speed rθ̇ at r = 0.020 m, in m/s'
+    formula: 0.020*0.50*0.20/0.020**2
+    expected: '5.0'
+    shown: ['round at $5.0$ m/s']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-data
+    kind: fact
+    where: 'Problem 4(c), statement: our own numbers for the tank'
+    shown: ['a tank of radius $0.50$ m at its rim moving round at $0.20$ m/s', 'at $r = 2.0$ cm from the axis']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  # ---- further numbers in the solutions
+
+  - id: p1b-sec-series
+    kind: limit
+    where: 'Problem 1(b), solution: 1/cos θ = 1 + θ²/2 + 5θ⁴/24 + …, checked as [1/cos θ − 1 − θ²/2]/θ⁴ → 5/24'
+    formula: (1/cos(th) - 1 - th**2/2)/th**4
+    limit: 5/24
+    vary: {th: [0.1, 0.03, 0.01]}
+    inputs: {}
+    tolerance: 1e-3
+    shown: ['With $1/\cos\theta = 1 + \theta^2/2 + 5\theta^4/24 + \ldots$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-cos4-series
+    kind: limit
+    where: 'Problem 1(b), solution: cos⁴θ = 1 − 2θ² + …, checked as (cos⁴θ − 1)/θ² → −2'
+    formula: (cos(th)**4 - 1)/th**2
+    limit: -2
+    vary: {th: [0.1, 0.03, 0.01]}
+    inputs: {}
+    tolerance: 1e-3
+    shown: ['With $\cos^4\theta = 1 - 2\theta^2 + \ldots$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-nu-relation
+    kind: identity
+    where: 'Problem 2(b), check: 24π²Iν = 12πIω with ν = ω/2π'
+    formula: 24*pi**2*I*(w/(2*pi))
+    equals: 12*pi*I*w
+    samples:
+      I: [0.6, 1.3]
+      w: [0.7, 1.8]
+    tolerance: 1e-12
+    shown: ['$24\pi^2 I\nu = 12\pi I\omega$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-near0
+    kind: limit
+    where: 'Problem 2(b), check: near t = 0, β₁/t → J₀/(32π²I) = −ν₁ (J₀ = 1.2, I = 0.8, ω = 1.5)'
+    formula: 1.2/(384*pi**2*0.8*1.5)*(8*sin(2*1.5*tt) - sin(4*1.5*tt))/tt
+    limit: 1.2/(32*pi**2*0.8)
+    vary: {tt: [1e-2, 1e-3, 1e-4]}
+    inputs: {}
+    tolerance: 1e-6
+    shown: ['$\beta_1 \approx J_0t/(32\pi^2 I) = -\nu_1 t$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-sin6
+    kind: identity
+    where: 'Problem 2(c), hint and solution: the average of sin⁶ over a period is 5/16'
+    formula: 5/16
+    equals: integrate('sin(z)**6', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['$\overline{\sin^6} = 5/16$, and']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
