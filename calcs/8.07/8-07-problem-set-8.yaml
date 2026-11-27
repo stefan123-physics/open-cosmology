@@ -1,0 +1,559 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 2 integrates the Biot–Savart law along one side of the square numerically; Problem 4 integrates the curl
+# equation and differentiates m · B numerically; Problem 5 adds up the rings of the bound surface current by numerical
+# integration and integrates the magnetization over the volume; Problem 6 integrates the free current inside a circle
+# and differentiates s M_φ numerically; Problem 7 differentiates the energy numerically and finds the gaps by root
+# searches (for three magnets, the middle balance is solved for x₂ inside the root search for the top balance).
+# Constants not in calcs/constants.yaml: mu0 (CODATA 2018 magnetic constant) and the standard g = 9.81 m/s² the page uses.
+
+page: content/year-4/8.07/8-07-problem-set-8.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-page
+    where: 'How to answer: MIT''s points for Problems 2 to 7, 15 + 10 + 15 + 20 + 15 + 15'
+    formula: |-
+      15 + 10 + 15 + 20 + 15 + 15
+    expected: '90'
+    shown: ['90 points in all', 'with 90 of the sheet''s 115 points']
+    source: {cite: mit, at: 'Problems 2 to 7, pp. 1–2'}
+    origin: mit
+
+  - id: points-sheet
+    where: 'Introduction: the sheet''s 115 points are the 90 here plus the 25 of the held-over Problem 1'
+    formula: |-
+      90 + 25
+    expected: '115'
+    shown: ['MIT''s sheet has 115, with the 25 of its Problem 1', '25 points) is held over from Problem Set 7']
+    source: {cite: mit, at: 'credit note and Problem 1, p. 1'}
+    origin: mit
+
+  # ---- Problem 2: square loop
+
+  - id: p2-axis
+    kind: identity
+    answer: p2-axis
+    where: 'Problem 2(a), answer box: the field on the axis of the square, against four times the Biot–Savart integral along one side, done numerically'
+    formula: |-
+      mu0*I*a**2/(2*pi*(z**2 + a**2/4)*sqrt(z**2 + a**2/2))
+    equals: |-
+      4*mu0*I/(4*pi)*integrate('(a/2)/(y**2 + z**2 + a**2/4)**1.5', 'y', -a/2, a/2)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      a: [0.5, 2.0, 1.2, 1.0, 0.8]
+      z: [0.0, 0.5, 1.0, 2.4, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p2-axis"', '<Formula label="The field on the axis of a square loop"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-centre
+    where: 'Problem 2(a), check: the field at the centre, 2√2/π in units of μ₀I/a'
+    formula: |-
+      2*sqrt(2)/pi
+    expected: '0.900'
+    shown: ['= 0.900\,\mu_0 I/a']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-circ-out
+    where: 'Problem 2(a), check: a circle through the corners, μ₀I/(2R) with R = a/√2, in units of μ₀I/a'
+    formula: |-
+      1/(2/sqrt(2))
+    expected: '0.707'
+    shown: ['= 0.707\,\mu_0 I/a']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-far
+    kind: identity
+    answer: p2-far
+    where: 'Problem 2(b), answer box: the far field on the axis, against the field of the dipole m = I a² on its axis, (μ₀/4π) 2m/z³'
+    formula: |-
+      mu0*I*a**2/(2*pi*z**3)
+    equals: |-
+      mu0/(4*pi)*2*(I*a**2)/z**3
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      a: [0.5, 2.0, 1.2, 1.0, 0.8]
+      z: [3.0, 3.5, 4.0, 5.0, 6.0]
+    tolerance: 1e-10
+    shown: ['id="p2-far"', '<Formula label="The far field on the axis"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-far-limit
+    kind: identity
+    where: 'Problem 2(b): the exact field of part (a) times z³ tends to μ₀Ia²/(2π) for z ≫ a (z = 10⁴ a)'
+    formula: |-
+      mu0*I*a**2/(2*pi*(z**2 + a**2/4)*sqrt(z**2 + a**2/2))*z**3
+    equals: |-
+      mu0*I*a**2/(2*pi)
+    samples:
+      mu0: [1.0, 1.3, 1.6]
+      I: [1.0, 2.0, 3.0]
+      a: [0.5, 2.0, 1.2]
+      z: [5000.0, 20000.0, 12000.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="The far field on the axis"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p2-ratio
+    answer: p2-ratio
+    where: 'Problem 2(c), answer box: exact field over dipole field at z = 2a (a = 1), the exact field from the numerical Biot–Savart integral'
+    formula: |-
+      (4/(4*pi)*integrate('0.5/(y**2 + 4 + 0.25)**1.5', 'y', -0.5, 0.5))/(1/(2*pi*8))
+    expected: '0.887'
+    shown: ['id="p2-ratio"', '= \frac{8}{4.25 \times \sqrt{4.5}} = 0.887']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-too-large
+    where: 'Problem 2(c): the dipole formula is 13% too large at z = 2a'
+    formula: |-
+      100*((4.25*sqrt(4.5))/8 - 1)
+    expected: '13'
+    shown: ['the dipole formula is still 13% too large']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-approx
+    where: 'Problem 2(c), check: the estimate 1 − a²/(2z²) at z = 2a'
+    formula: |-
+      1 - 1/(2*4)
+    expected: '0.875'
+    shown: ['which gives $0.875$ at $z = 2a$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-one-percent
+    where: 'Problem 2(c), check: 1 − a²/(2z²) = 0.99 at z = √50 a'
+    formula: |-
+      sqrt(50)
+    expected: '7.1'
+    shown: ['z = \sqrt{50}\,a \approx 7.1a']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 4: slab of current
+
+  - id: p4-in
+    kind: identity
+    answer: p4-in
+    where: 'Problem 4(a), answer box: B_y inside the slab, against integrating dB_y/dz = −μ₀J from 0 numerically'
+    formula: |-
+      -mu0*J*z
+    equals: |-
+      integrate('-mu0*J + 0*t', 't', 0, z)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      J: [0.5, 1.0, 2.0, 1.5, 0.8]
+      z: [-1.0, -0.4, 0.2, 0.7, 1.0]
+    tolerance: 1e-8
+    shown: ['id="p4-in"', '<Formula label="The field inside the slab"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-out
+    kind: identity
+    answer: p4-out
+    where: 'Problem 4(a), answer box: B_y above the slab, against the field −μ₀K/2 of a sheet with K = 2Jb'
+    formula: |-
+      -mu0*J*b
+    equals: |-
+      -mu0*(integrate('J + 0*t', 't', -b, b))/2
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      J: [0.5, 1.0, 2.0, 1.5, 0.8]
+      b: [0.5, 1.0, 2.0, 0.7, 1.4]
+    tolerance: 1e-8
+    shown: ['id="p4-out"', 'so $B_y = -\mu_0 J b$ for $z > b$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-f
+    kind: identity
+    answer: p4-f
+    where: 'Problem 4(b), answer box: F_z = ∂(m B_y)/∂z for m along y, by a numerical derivative at a height z inside the slab'
+    formula: |-
+      -mu0*J*m
+    equals: |-
+      deriv('m*(-mu0*J*t)', 't', z)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      J: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [0.5, 1.0, 2.0, 1.2, 0.7]
+      z: [-0.5, 0.0, 0.3, 0.6, -0.2]
+    tolerance: 1e-6
+    shown: ['id="p4-f"', 'so $\vec F = \nabla(\vec m \cdot \vec B) = -\mu_0 J m\,\hat z$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p4-loop
+    kind: identity
+    where: 'Problem 4(c): the net force on a square of side ℓ in the xz plane, I ℓ [B_y(z₀ + ℓ/2) − B_y(z₀ − ℓ/2)], equals −μ₀J m with m = Iℓ²'
+    formula: |-
+      I*l*((-mu0*J*(z + l/2)) - (-mu0*J*(z - l/2)))
+    equals: |-
+      -mu0*J*(I*l**2)
+    samples:
+      mu0: [1.0, 1.3, 1.6]
+      J: [0.5, 1.0, 2.0]
+      I: [1.0, 2.0, 0.5]
+      l: [0.01, 0.1, 0.05]
+      z: [0.2, -0.3, 0.0]
+    tolerance: 1e-10
+    shown: ['so the net force is $-\mu_0 J I\ell^2\,\hat z = -\mu_0 J m\,\hat z$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 5: bar magnet
+
+  - id: p5-b
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(a), answer box: B_z on the axis, against the sum of the rings of the bound surface current M₀ dz′, integrated numerically (each ring μ₀ M₀ dz′ a²/(2(a² + (z − z′)²)^(3/2)))'
+    formula: |-
+      mu0*M0/2*((z + L/2)/sqrt((z + L/2)**2 + a**2) - (z - L/2)/sqrt((z - L/2)**2 + a**2))
+    equals: |-
+      integrate('mu0*M0*a**2/(2*(a**2 + (z - t)**2)**1.5)', 't', -L/2, L/2)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      M0: [0.5, 1.0, 2.0, 1.5, 0.8]
+      L: [2.0, 3.0, 6.0, 5.0, 4.0]
+      a: [0.5, 1.5, 1.0, 1.0, 0.7]
+      z: [-3.0, 0.0, 1.0, 2.5, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p5-b"', '<Formula label="B on the axis of the bar magnet"']
+    source: {cite: mit, at: 'Problem 5(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-hin
+    kind: identity
+    answer: p5-hin
+    where: 'Problem 5(a), answer box: H_z inside the magnet, against the numerically integrated B_z/μ₀ minus M₀'
+    formula: |-
+      M0/2*((z + L/2)/sqrt((z + L/2)**2 + a**2) - (z - L/2)/sqrt((z - L/2)**2 + a**2)) - M0
+    equals: |-
+      integrate('M0*a**2/(2*(a**2 + (z - t)**2)**1.5)', 't', -L/2, L/2) - M0
+    samples:
+      M0: [0.5, 1.0, 2.0, 1.5, 0.8]
+      L: [2.0, 3.0, 6.0, 5.0, 4.0]
+      a: [0.5, 1.5, 1.0, 1.0, 0.7]
+      z: [-0.9, 0.0, 0.5, 0.9, -0.3]
+    tolerance: 1e-8
+    shown: ['id="p5-hin"', '<Formula label="H inside the magnet"']
+    source: {cite: mit, at: 'Problem 5(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-bracket-c
+    where: 'Problem 5(b): the bracket at the centre for L/a = 5, 2 × 2.5/√(2.5² + 1)'
+    formula: |-
+      2*2.5/sqrt(2.5**2 + 1)
+    expected: '1.857'
+    shown: ['$2 \times 2.5/\sqrt{2.5^2 + 1} = 1.857$']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-bc
+    answer: p5-bc
+    where: 'Problem 5(b), answer box: B_z/μ₀M₀ at the centre for L/a = 5, by numerical integration of the rings (a = 1)'
+    formula: |-
+      integrate('1/(2*(1 + t**2)**1.5)', 't', -2.5, 2.5)
+    expected: '0.928'
+    shown: ['id="p5-bc"', 'so $B_z/\mu_0 M_0 = 0.928$', 'largest at the centre (0.928, top dot)']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-hc
+    where: 'Problem 5(b): H_z/M₀ at the centre, 0.928 − 1'
+    formula: |-
+      integrate('1/(2*(1 + t**2)**1.5)', 't', -2.5, 2.5) - 1
+    expected: '-0.072'
+    shown: ['$H_z/M_0 = 0.928 - 1 = -0.072$', 'small at the centre (0.072, bottom dot)']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-bracket-end
+    where: 'Problem 5(b): the bracket at an end face, 5/√26'
+    formula: |-
+      5/sqrt(26)
+    expected: '0.981'
+    shown: ['the bracket is $5/\sqrt{26} - 0 = 0.981$']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-bend
+    where: 'Problem 5(b): B_z/μ₀M₀ at an end face, and |H|/M₀ just outside it'
+    formula: |-
+      integrate('1/(2*(1 + t**2)**1.5)', 't', 0, 5)
+    expected: '0.490'
+    shown: ['so $B_z/\mu_0 M_0 = 0.490$ on both sides', 'and just outside it is $0.490$', 'where it has fallen to 0.490 (right dot)']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-hend
+    answer: p5-hend
+    where: 'Problem 5(b), answer box: |H|/M₀ just inside an end face, 1 − B_z/μ₀M₀ there'
+    formula: |-
+      1 - integrate('1/(2*(1 + t**2)**1.5)', 't', 0, 5)
+    expected: '0.510'
+    shown: ['id="p5-hend"', 'so $|\vec H|/M_0 = 0.510$', 'from −0.510 just inside']
+    source: {cite: mit, at: 'Problem 5(b), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-ampere-turns
+    where: 'Problem 5(c), check: the total bound current M₀ L for M₀ = 10⁶ A/m and L = 5 cm'
+    inputs: {M0: 1e6 A/m, L: 5 cm}
+    formula: |-
+      M0*L
+    expected: 5e4 A
+    shown: ['equivalent to $5 \times 10^4$ ampere-turns']
+    source: {cite: mit, at: 'Problem 5(c), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-m
+    kind: identity
+    answer: p5-m
+    where: 'Problem 5(d), answer box: the moment, against the magnetization integrated over the cylinder in shells'
+    formula: |-
+      pi*a**2*L*M0
+    equals: |-
+      integrate('2*pi*s*L*M0', 's', 0, a)
+    samples:
+      a: [0.5, 2.0, 1.2, 1.0, 0.8]
+      L: [1.0, 5.0, 2.0, 3.0, 4.5]
+      M0: [0.5, 1.0, 2.0, 1.5, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p5-m"', '<Formula label="The moment of the bar magnet"']
+    source: {cite: mit, at: 'Problem 5(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p5-far
+    kind: identity
+    where: 'Problem 5(d), check: the field of part (a) times z³ tends to μ₀M₀a²L/2 far away (z = 300 to 500, with L and a below 3)'
+    formula: |-
+      mu0*M0/2*((z + L/2)/sqrt((z + L/2)**2 + a**2) - (z - L/2)/sqrt((z - L/2)**2 + a**2))*z**3
+    equals: |-
+      mu0*M0*a**2*L/2
+    samples:
+      mu0: [1.0, 1.3, 1.6]
+      M0: [0.5, 1.0, 2.0]
+      L: [2.0, 3.0, 1.0]
+      a: [0.5, 1.5, 1.0]
+      z: [300.0, 400.0, 500.0]
+    tolerance: 1e-3
+    shown: ['so $B_z \to \mu_0 M_0 a^2 L/(2z^3)$']
+    source: {cite: mit, at: 'Problem 5(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6: magnetized wire
+
+  - id: p6-b
+    kind: identity
+    answer: p6-b
+    where: 'Problem 6(a), answer box: B_φ inside, against μ₀(1 + χ_m) times the free current inside radius s (integrated numerically) over 2πs'
+    formula: |-
+      mu0*(1 + chi)*I*s/(2*pi*R**2)
+    equals: |-
+      mu0*(1 + chi)*integrate('2*pi*t*I/(pi*R**2)', 't', 0, s)/(2*pi*s)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      chi: [0.1, 0.5, 2.0, 1.0, 0.3]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      s: [0.1, 0.5, 0.9, 0.3, 0.7]
+      R: [1.0, 2.0, 1.5, 1.2, 1.8]
+    tolerance: 1e-8
+    shown: ['id="p6-b"', '<Formula label="B inside the wire"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-jb
+    kind: identity
+    answer: p6-jb
+    where: 'Problem 6(b), answer box: J_b,z = (1/s) d(s M_φ)/ds, by a numerical derivative'
+    formula: |-
+      chi*I/(pi*R**2)
+    equals: |-
+      deriv('t*chi*I*t/(2*pi*R**2)', 't', s)/s
+    samples:
+      chi: [0.1, 0.5, 2.0, 1.0, 0.3]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      R: [1.0, 2.0, 1.5, 1.2, 1.8]
+      s: [0.2, 0.5, 0.9, 0.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p6-jb"', '<Formula label="The bound volume current"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p6-kb
+    kind: identity
+    answer: p6-kb
+    where: 'Problem 6(b), answer box: K_b,z, against the jump of B_φ at s = R found in part (a), divided by μ₀ (outside minus inside)'
+    formula: |-
+      -chi*I/(2*pi*R)
+    equals: |-
+      (mu0*I/(2*pi*R) - mu0*(1 + chi)*I*R/(2*pi*R**2))/mu0
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      chi: [0.1, 0.5, 2.0, 1.0, 0.3]
+      I: [1.0, 2.0, 3.0, 1.5, 2.5]
+      R: [1.0, 2.0, 1.5, 1.2, 1.8]
+    tolerance: 1e-10
+    shown: ['id="p6-kb"', '<Formula label="The bound surface current"']
+    source: {cite: mit, at: 'Problem 6, p. 2 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 7: ring magnets
+
+  - id: p7-f
+    kind: identity
+    answer: p7-f
+    where: 'Problem 7(a), answer box: the repulsion, against minus the numerical derivative of the energy μ₀m²/(2πx³)'
+    formula: |-
+      3*mu0*m**2/(2*pi*x**4)
+    equals: |-
+      -deriv('mu0*m**2/(2*pi*t**3)', 't', x)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      m: [0.5, 1.0, 2.0, 1.2, 0.7]
+      x: [0.5, 1.0, 2.0, 0.8, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p7-f"', '<Formula label="The force between two coaxial dipoles"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p7-x
+    kind: identity
+    answer: p7-x
+    where: 'Problem 7(b), answer box: the gap, against a root search of F(x) = W'
+    formula: |-
+      (3*mu0*m**2/(2*pi*W))**(1/4)
+    equals: |-
+      solve('3*mu0*m**2/(2*pi*t**4) - W', 't', 0.01, 100)
+    samples:
+      mu0: [1.0, 1.3, 1.6, 2.0, 1.1]
+      m: [0.5, 1.0, 2.0, 1.2, 0.7]
+      W: [0.5, 1.0, 2.0, 0.8, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p7-x"', '<Formula label="The gap above one magnet"']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p7-weight
+    where: 'Problem 7(b): the weight of 20.0 g'
+    inputs: {mass: 20.0 g, grav: 9.81 m/s**2}
+    formula: |-
+      mass*grav
+    expected: 0.196 N
+    shown: ['$W = 0.0200 \times 9.81 = 0.196$ N']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-k
+    where: 'Problem 7(b): 3μ₀m²/(2πW) for m = 0.80 A m² and W = 0.196 N'
+    inputs: {mu0: 1.25663706212e-6 N/A**2, m: 0.80 A*m**2, W: 0.1962 N}
+    formula: |-
+      3*mu0*m**2/(2*pi*W)
+    expected: 1.96e-6 m**4
+    shown: ['= 1.96\times10^{-6}$ m⁴']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-xnum
+    answer: p7-xnum
+    where: 'Problem 7(b), answer box: the gap in cm, by a root search of F(x) = W (SI numbers, x in metres)'
+    formula: |-
+      100*solve('3*1.25663706212e-6*0.64/(2*pi*t**4) - 0.0200*9.81', 't', 0.001, 1)
+    expected: '3.74'
+    shown: ['id="p7-xnum"', 'Its fourth root is $x = 0.0374$ m $= 3.74$ cm', '$x_1 = 3.74$ cm and $x_2 = 3.15$ cm: the lower gap']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-double
+    where: 'Problem 7(b), check: doubling the weight changes the gap by 2^(−1/4) = 0.84, a 16% drop'
+    formula: |-
+      2**(-0.25)
+    expected: '0.84'
+    shown: ['by a factor $2^{-1/4} = 0.84$, by 16%']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-double-pct
+    where: 'Problem 7(b), check: the 16% drop'
+    formula: |-
+      100*(1 - 2**(-0.25))
+    expected: '16'
+    shown: ['by a factor $2^{-1/4} = 0.84$, by 16%']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-ratio
+    answer: p7-ratio
+    where: 'Problem 7(c), answer box: x₂/x₁ with neighbours only, from root searches of F(x₁) = W and F(x₂) = 2W (F = 1/x⁴, W = 1)'
+    formula: |-
+      solve('1/t**4 - 2', 't', 0.1, 10)/solve('1/t**4 - 1', 't', 0.1, 10)
+    expected: '0.841'
+    shown: ['id="p7-ratio"', '= 2^{-1/4} = 0.841']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p7-x2-nn
+    where: 'Problem 7(c), check: the lower gap 3.74 cm × 2^(−1/4)'
+    formula: |-
+      100*solve('3*1.25663706212e-6*0.64/(2*pi*t**4) - 2*0.0200*9.81', 't', 0.001, 1)
+    expected: '3.15'
+    shown: ['$x_1 = 3.74$ cm and $x_2 = 3.15$ cm: the lower gap']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-far-pair
+    where: 'Problem 7(d): the force of the far pair relative to that of neighbours, (3.74/6.89)⁴, about 9%'
+    formula: |-
+      (3.74/(3.74 + 3.15))**4
+    expected: '0.087'
+    shown: ['$F(x_1 + x_2)/F(x_1) = (3.74/6.89)^4 = 0.087$', 'much less than the 9% of the extra force']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-x1
+    answer: p7-x1
+    where: 'Problem 7(d), answer box: the top gap with the far pair included. For each trial x₁ the middle balance gives x₂ = (K/(W + K/x₁⁴))^(1/4) with K = 3μ₀m²/(2π); a root search solves the top balance K/x₁⁴ − K/(x₁ + x₂)⁴ = W (SI numbers, metres)'
+    formula: |-
+      100*solve('3*1.25663706212e-6*0.64/(2*pi*t**4) - 3*1.25663706212e-6*0.64/(2*pi*(t + (3*1.25663706212e-6*0.64/(2*pi)/(0.0200*9.81 + 3*1.25663706212e-6*0.64/(2*pi*t**4)))**0.25)**4) - 0.0200*9.81', 't', 0.01, 0.1)
+    expected: '3.66'
+    shown: ['id="p7-x1"', '$x_1 = 3.66$ cm and $x_2 = 3.11$ cm']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-x2-full
+    where: 'Problem 7(d): the lower gap with the far pair included, from the middle balance at x₁ = 3.658 cm'
+    formula: |-
+      100*(3*1.25663706212e-6*0.64/(2*pi)/(0.0200*9.81 + 3*1.25663706212e-6*0.64/(2*pi*0.036578**4)))**0.25
+    expected: '3.11'
+    shown: ['$x_1 = 3.66$ cm and $x_2 = 3.11$ cm']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-shrink-top
+    where: 'Problem 7(d), check: the top gap shrinks by 2% (3.658 against 3.740 cm)'
+    formula: |-
+      100*(1 - 3.658/3.740)
+    expected: '2'
+    shown: ['The top gap shrinks by 2%']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p7-shrink-low
+    where: 'Problem 7(d), check: the lower gap shrinks by 1% (3.110 against 3.145 cm)'
+    formula: |-
+      100*(1 - 3.110/3.145)
+    expected: '1'
+    shown: ['the lower one by 1%']
+    source: {cite: mit, at: 'Problem 7, p. 2 (our own numbers)'}
+    origin: page-own
