@@ -1,0 +1,679 @@
+# Calculations on content/year-3/8.06/8-06-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1(a) uses wavefunctions whose integrals can be done numerically (two displaced Gaussians for the product
+# state; the oscillator's ground and first excited state in the relative coordinate for the exchange terms);
+# Problem 1(b) adds the three components of the spin difference one by one for the product state, keeps the ladder
+# form unsimplified for the exchange term, and compares with numbers from explicit spin matrices (numpy, spins 1/2
+# to 2); Problem 2 evaluates S1·S2 on |++> and on the singlet term by term, tests the splitting 2X on a contact
+# interaction in a one-dimensional well, and finds J with a root finder; Problem 3 counts each level directly and
+# checks the totals with binomial counts and the average energy (every count also checked by listing all states).
+
+page: content/year-3/8.06/8-06-problem-set-9.mdx
+calcs:
+  # ---- Given data
+
+  - id: given-mit
+    kind: fact
+    where: 'Problem 2(e), solution: the size of the direct magnetic interaction in a solid, from the note on MIT''s sheet'
+    shown: ['about a hundred times weaker']
+    source: {cite: mit, at: 'Problem 2, closing note, p. 3'}
+    origin: mit
+
+  # ---- Problem 1(a): positions
+
+  # Independent route: two Gaussians exp(-(x-c)²/(2 sig²)) centred at c1 and c2. Each position has variance sig²/2,
+  # so the difference x1 − x2 has a Gaussian density with mean c1 − c2 and variance sig²; its second moment is
+  # integrated numerically. The samples give ⟨x²⟩ = c² + sig²/2 and ⟨x⟩ = c for each state as numbers.
+  - id: p1a-dd
+    kind: identity
+    answer: p1a-dd
+    where: 'Problem 1(a), answer box: mean square separation in a product state, for two displaced Gaussians, from the density of the difference'
+    formula: |-
+      x2a + x2b - 2*xa*xb
+    equals: |-
+      integrate('y**2*exp(-(y - (c1 - c2))**2/(2*sig**2))', 'y', -30, 30)/integrate('exp(-(y - (c1 - c2))**2/(2*sig**2))', 'y', -30, 30)
+    samples:
+      c1: [1, 0.5, -0.8, 2]
+      c2: [0.3, -1.2, 0.6, 2.5]
+      sig: [1, 0.8, 1.5, 0.6]
+      xa: [1, 0.5, -0.8, 2]
+      xb: [0.3, -1.2, 0.6, 2.5]
+      x2a: [1.5, 0.57, 1.765, 4.18]
+      x2b: [0.59, 1.76, 1.485, 6.43]
+    tolerance: 1e-5
+    shown: ['id="p1a-dd"', '<Formula label="Mean square separation in the product state"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # Independent route: the oscillator's ground and first excited state with length b. In the relative coordinate
+  # y = (x1 − x2)/sqrt(2) the symmetric state is a ground state, density exp(-y²/b²), and (x1 − x2)² = 2y².
+  # D_D is the sum of the single-particle averages of x² (both averages of x vanish). xab = b/sqrt(2) as numbers.
+  - id: p1a-ds
+    kind: identity
+    answer: p1a-ds
+    where: 'Problem 1(a), answer box: D_S − D_D for the oscillator states, D_S from the relative coordinate, D_D from the single-particle integrals'
+    formula: |-
+      -2*xab**2
+    equals: |-
+      2*integrate('y**2*exp(-y**2/b**2)', 'y', -12*b, 12*b)/integrate('exp(-y**2/b**2)', 'y', -12*b, 12*b) - (integrate('y**2*exp(-y**2/b**2)', 'y', -12*b, 12*b)/integrate('exp(-y**2/b**2)', 'y', -12*b, 12*b) + integrate('y**4*exp(-y**2/b**2)', 'y', -12*b, 12*b)/integrate('y**2*exp(-y**2/b**2)', 'y', -12*b, 12*b))
+    samples:
+      b: [1, 0.7, 1.6]
+      xab: [0.7071067812, 0.4949747468, 1.1313708499]
+    tolerance: 1e-5
+    shown: ['id="p1a-ds"', '<Formula label="The exchange effect on the separation"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The antisymmetric state is a first excited state in the relative coordinate, density y² exp(-y²/b²).
+  - id: p1a-da
+    kind: identity
+    answer: p1a-da
+    where: 'Problem 1(a), answer box: D_A − D_D for the oscillator states, D_A from the relative coordinate, D_D from the single-particle integrals'
+    formula: |-
+      2*xab**2
+    equals: |-
+      2*integrate('y**4*exp(-y**2/b**2)', 'y', -12*b, 12*b)/integrate('y**2*exp(-y**2/b**2)', 'y', -12*b, 12*b) - (integrate('y**2*exp(-y**2/b**2)', 'y', -12*b, 12*b)/integrate('exp(-y**2/b**2)', 'y', -12*b, 12*b) + integrate('y**4*exp(-y**2/b**2)', 'y', -12*b, 12*b)/integrate('y**2*exp(-y**2/b**2)', 'y', -12*b, 12*b))
+    samples:
+      b: [1, 0.7, 1.6]
+      xab: [0.7071067812, 0.4949747468, 1.1313708499]
+    tolerance: 1e-5
+    shown: ['id="p1a-da"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  # The values given in the statement for the oscillator example, in units of b (so b = 1 here).
+  - id: p1a-ho-x2a
+    where: 'Problem 1(a), statement: average of x² in the oscillator ground state, in units of b², by numerical integration'
+    formula: integrate('y**2*exp(-y**2)', 'y', -12, 12)/integrate('exp(-y**2)', 'y', -12, 12)
+    expected: '0.5'
+    tolerance: '0.001'
+    shown: ['$\langle\alpha|x^2|\alpha\rangle = \frac12b^2$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1a-ho-x2b
+    where: 'Problem 1(a), statement: average of x² in the first excited state, in units of b², by numerical integration'
+    formula: integrate('y**4*exp(-y**2)', 'y', -12, 12)/integrate('y**2*exp(-y**2)', 'y', -12, 12)
+    expected: '1.5'
+    tolerance: '0.001'
+    shown: ['$\langle\beta|x^2|\beta\rangle = \frac32b^2$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  # ψ0 = pi^(-1/4) exp(-y²/2) and ψ1 = sqrt(2) y pi^(-1/4) exp(-y²/2): the matrix element of y is sqrt(2)∫y² exp(-y²)dy/sqrt(pi).
+  - id: p1a-ho-xab
+    where: 'Problem 1(a), statement: matrix element of x between the two oscillator states, in units of b: 1/sqrt(2)'
+    formula: sqrt(2)*integrate('y**2*exp(-y**2)', 'y', -12, 12)/sqrt(pi)
+    expected: '0.70711'
+    shown: ['$x_{\alpha\beta} = b/\sqrt2$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1a-ho-dd
+    where: 'Problem 1(a), solution: D_D for the oscillator example, in units of b²'
+    formula: 1/2 + 3/2 - 2*0*0
+    expected: '2'
+    tolerance: '0.001'
+    shown: ['$D_D = \frac12b^2 + \frac32b^2 - 0 = 2b^2$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  # Relative-coordinate route (the page's check): D_S = 2⟨y²⟩ in the ground state of y.
+  - id: p1a-ho-s
+    answer: p1a-ho-s
+    where: 'Problem 1(a), answer box: D_S for the oscillator example in units of b², from the relative coordinate by numerical integration'
+    formula: 2*integrate('y**2*exp(-y**2)', 'y', -12, 12)/integrate('exp(-y**2)', 'y', -12, 12)
+    expected: '1'
+    tolerance: '0.001'
+    shown: ['id="p1a-ho-s"', 'so $D_S = b^2$ and $D_A = 3b^2$']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1a-ho-a
+    answer: p1a-ho-a
+    where: 'Problem 1(a), answer box: D_A for the oscillator example in units of b², from the relative coordinate by numerical integration'
+    formula: 2*integrate('y**4*exp(-y**2)', 'y', -12, 12)/integrate('y**2*exp(-y**2)', 'y', -12, 12)
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['id="p1a-ho-a"', 'that gives $b^2$ and $3b^2$ again']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  # At x1 = x2 the two terms of the symmetric wavefunction are equal: (1 + 1)²/2 times the product-state density.
+  - id: p1a-twice
+    where: 'Problem 1(a), solution: probability density at equal positions in the symmetric state, relative to the product state'
+    formula: (1 + 1)**2/2
+    expected: '2'
+    tolerance: '0.001'
+    shown: ['is twice that of the product state']
+    source: {cite: reading1, at: 'eq. (8.5.15), p. 166, with N = 1'}
+    origin: page-own
+
+  # ---- Problem 1(b): spins (everything in units of ħ²)
+
+  # Independent route: component by component. In a product of S_z eigenstates the x- and y-components of each spin
+  # have zero average and ⟨S_x²⟩ + ⟨S_y²⟩ = ħ²[s(s+1) − m²]; the z-components give (m_a − m_b)².
+  - id: p1b-dd
+    kind: identity
+    answer: p1b-dd
+    where: 'Problem 1(b), answer box: D_D/ħ², from the x-, y- and z-components of the two spins added separately'
+    formula: |-
+      2*(s*(s+1) - ma*mb)
+    equals: |-
+      (s*(s+1) - ma**2) + (s*(s+1) - mb**2) + (ma - mb)**2
+    samples:
+      s: [0.5, 1, 1.5, 2, 1.5, 1]
+      ma: [0.5, 1, 1.5, 1, 0.5, 1]
+      mb: [-0.5, 0, 0.5, 0, -0.5, -1]
+    shown: ['id="p1b-dd"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The same six cases from explicit spin matrices (numpy: build S_x, S_y, S_z for spin s, form (S1 − S2)² on the
+  # product space and take its average in the product state): the numbers in `dnum`.
+  - id: p1b-dd-matrix
+    kind: identity
+    where: 'Problem 1(b), solution: D_D/ħ² against the averages computed with explicit spin matrices'
+    formula: |-
+      2*(s*(s+1) - ma*mb)
+    equals: |-
+      dnum
+    samples:
+      s: [0.5, 1, 1.5, 2, 1.5, 1]
+      ma: [0.5, 1, 1.5, 1, 0.5, 1]
+      mb: [-0.5, 0, 0.5, 0, -0.5, -1]
+      dnum: [2, 4, 6, 12, 8, 6]
+    shown: ['<Formula label="Result for the product state of two spins"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Unsimplified route: direct term minus twice the exchange term, the exchange term kept as the product of the two
+  # square roots of the ladder formula (m_b = m_a + 1, so S1+ S2− connects the two product states).
+  - id: p1b-ds
+    kind: identity
+    answer: p1b-ds
+    where: 'Problem 1(b), answer box: D_S/ħ² for neighbouring m, with the exchange term as the product of the two ladder coefficients'
+    formula: |-
+      s*(s+1) - ma*mb
+    equals: |-
+      2*s*(s+1) - 2*ma*mb - sqrt(s*(s+1) - ma*(ma+1))*sqrt(s*(s+1) - mb*(mb-1))
+    samples:
+      s: [0.5, 1, 1.5, 2, 2, 1.5]
+      ma: [-0.5, 0, 0.5, -2, 0, -0.5]
+      mb: [0.5, 1, 1.5, -1, 1, 0.5]
+    shown: ['id="p1b-ds"', '<Formula label="The exchange term for neighbouring values of m"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-da
+    kind: identity
+    answer: p1b-da
+    where: 'Problem 1(b), answer box: D_A/ħ² for neighbouring m, with the exchange term as the product of the two ladder coefficients'
+    formula: |-
+      3*(s*(s+1) - ma*mb)
+    equals: |-
+      2*s*(s+1) - 2*ma*mb + sqrt(s*(s+1) - ma*(ma+1))*sqrt(s*(s+1) - mb*(mb-1))
+    samples:
+      s: [0.5, 1, 1.5, 2, 2, 1.5]
+      ma: [-0.5, 0, 0.5, -2, 0, -0.5]
+      mb: [0.5, 1, 1.5, -1, 1, 0.5]
+    shown: ['id="p1b-da"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Explicit spin matrices again (numpy), for m_b = m_a − 1 as well as m_a + 1: D_S and D_A in units of ħ².
+  - id: p1b-s-matrix
+    kind: identity
+    where: 'Problem 1(b), solution: D_S/ħ² for neighbouring m against explicit spin matrices, for m_b = m_a − 1 and m_a + 1'
+    formula: |-
+      s*(s+1) - ma*mb
+    equals: |-
+      dsnum
+    samples:
+      s: [0.5, 1, 1.5, 2, 1.5, 1, 2]
+      ma: [0.5, 1, 1.5, 1, 0.5, 0, -2]
+      mb: [-0.5, 0, 0.5, 0, -0.5, 1, -1]
+      dsnum: [1, 2, 3, 6, 4, 2, 4]
+    shown: ['<Formula label="Results for neighbouring values of m"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-a-matrix
+    kind: identity
+    where: 'Problem 1(b), solution: D_A/ħ² for neighbouring m against explicit spin matrices, for m_b = m_a − 1 and m_a + 1'
+    formula: |-
+      3*(s*(s+1) - ma*mb)
+    equals: |-
+      danum
+    samples:
+      s: [0.5, 1, 1.5, 2, 1.5, 1, 2]
+      ma: [0.5, 1, 1.5, 1, 0.5, 0, -2]
+      mb: [-0.5, 0, 0.5, 0, -0.5, 1, -1]
+      danum: [3, 6, 9, 18, 12, 6, 12]
+    shown: ['<Formula label="Results for neighbouring values of m"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Spin 1 with m = 1 and −1 from the explicit matrices: all three averages are 6ħ² = 2[s(s+1) − m_a m_b]ħ².
+  - id: p1b-far
+    where: 'Problem 1(b), choice box: for m values two apart (spin 1, m = 1 and −1) the explicit matrices give 6ħ² for all three states; here the formula for D_D'
+    formula: 2*(1*(1 + 1) - 1*(-1))
+    expected: '6'
+    tolerance: '0.001'
+    shown: ['id="p1b-far"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-bracket32
+    where: 'Problem 1(b), numbers: the bracket s(s+1) − m_a m_b for spin 3/2, m = 1/2 and −1/2'
+    formula: (3/2)*(3/2 + 1) - (1/2)*(-1/2)
+    expected: '4'
+    tolerance: '0.001'
+    shown: ['the bracket is $\frac{15}{4} + \frac14 = 4$']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  # Ladder route for m_b = m_a − 1: the term S1− S2+ has the coefficient sqrt(s(s+1) − m_a(m_a−1)) sqrt(s(s+1) − m_b(m_b+1)).
+  - id: p1b-n-s
+    answer: p1b-n-s
+    where: 'Problem 1(b), answer box: D_S/ħ² for spin 3/2, m = 1/2 and −1/2, direct term minus the ladder coefficients'
+    formula: 2*(3/2)*(5/2) - 2*(1/2)*(-1/2) - sqrt((3/2)*(5/2) - (1/2)*(1/2 - 1))*sqrt((3/2)*(5/2) - (-1/2)*(-1/2 + 1))
+    expected: '4'
+    tolerance: '0.001'
+    shown: ['id="p1b-n-s"', 'so $D_S = 4\hbar^2$, $D_D = 8\hbar^2$ and $D_A = 12\hbar^2$']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1b-n-a
+    answer: p1b-n-a
+    where: 'Problem 1(b), answer box: D_A/ħ² for spin 3/2, m = 1/2 and −1/2, direct term plus the ladder coefficients'
+    formula: 2*(3/2)*(5/2) - 2*(1/2)*(-1/2) + sqrt((3/2)*(5/2) - (1/2)*(1/2 - 1))*sqrt((3/2)*(5/2) - (-1/2)*(-1/2 + 1))
+    expected: '12'
+    tolerance: '0.001'
+    shown: ['id="p1b-n-a"']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p1b-half-bracket
+    where: 'Problem 1(b), check: the bracket for spin 1/2'
+    formula: (1/2)*(1/2 + 1) - (1/2)*(-1/2)
+    expected: '1'
+    tolerance: '0.001'
+    shown: ['The bracket is $\frac34 + \frac14 = 1$']
+    source: {cite: mit, at: 'Problem 1(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Total-spin route for spin 1/2: (S1 − S2)² = 2S1² + 2S2² − S_tot², with S_tot² = S(S+1)ħ².
+  - id: p1b-half-triplet
+    where: 'Problem 1(b), check: D_S/ħ² for spin 1/2 from the total spin 1 of the triplet'
+    formula: 2*(3/4) + 2*(3/4) - 1*(1 + 1)
+    expected: '1'
+    tolerance: '0.001'
+    shown: ['the triplet has $3\hbar^2 - 2\hbar^2 = \hbar^2$']
+    source: {cite: reading4, at: 'eq. (2.19)'}
+    origin: page-own
+
+  - id: p1b-half-singlet
+    where: 'Problem 1(b), check: D_A/ħ² for spin 1/2 from the total spin 0 of the singlet'
+    formula: 2*(3/4) + 2*(3/4) - 0*(0 + 1)
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['the singlet $3\hbar^2 - 0 = 3\hbar^2$']
+    source: {cite: reading4, at: 'eq. (2.19)'}
+    origin: page-own
+
+  # ---- Problem 2: two electrons
+
+  - id: p2a-n
+    answer: p2a-n
+    where: 'Problem 2(a), answer box: number of symmetric spin states, the multiplicity 2S + 1 of total spin 1'
+    formula: 2*1 + 1
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['id="p2a-n"']
+    source: {cite: reading4, at: 'eq. (2.8)'}
+    origin: page-own
+
+  - id: p2a-s2
+    answer: p2a-s2
+    where: 'Problem 2(a), answer box: S_tot² in units of ħ² for total spin 1'
+    formula: 1*(1 + 1)
+    expected: '2'
+    tolerance: '0.001'
+    shown: ['id="p2a-s2"', '$\vec S_{\text{tot}}^{\,2} = \hbar^2\cdot1\cdot(1 + 1) = 2\hbar^2$']
+    source: {cite: mit, at: 'Problem 2(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-s2
+    answer: p2b-s2
+    where: 'Problem 2(b), answer box: S_tot² in units of ħ² for total spin 0'
+    formula: 0*(0 + 1)
+    expected: '0'
+    tolerance: '0.001'
+    shown: ['id="p2b-s2"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-count
+    where: 'Problem 2(b), check: states without the Pauli principle, two spatial product states times four spin states'
+    formula: 2*4
+    expected: '8'
+    tolerance: '0.001'
+    shown: ['Without the Pauli principle there would be eight']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: act on |++> term by term. The ladder terms give zero, S1z S2z gives (ħ/2)(ħ/2).
+  - id: p2c-trip
+    kind: identity
+    answer: p2c-trip
+    where: 'Problem 2(c), answer box: shift of the triplet, from C S1·S2 acting on |++> term by term'
+    formula: |-
+      C*hbar**2/4
+    equals: |-
+      C*(hbar/2)*(hbar/2)
+    samples:
+      C: [1, 0.6, 1.7]
+      hbar: [1, 1.4, 0.8]
+    shown: ['id="p2c-trip"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # On the singlet: S1z S2z gives −(ħ/2)², and the ladder terms turn |+−> into (ħ²/2)|−+> and back, which on the
+  # antisymmetric combination is −ħ²/2.
+  - id: p2c-sing
+    kind: identity
+    answer: p2c-sing
+    where: 'Problem 2(c), answer box: shift of the singlet, from C S1·S2 acting on the singlet term by term'
+    formula: |-
+      -3*C*hbar**2/4
+    equals: |-
+      C*(-(hbar/2)**2 - hbar**2/2)
+    samples:
+      C: [1, 0.6, 1.7]
+      hbar: [1, 1.4, 0.8]
+    shown: ['id="p2c-sing"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The page's route: S1·S2 = (S_tot² − 3ħ²/2)/2 with S_tot² = 2ħ² and 0.
+  - id: p2c-total-spin
+    kind: identity
+    where: 'Problem 2(c), solution: the two energies from the total spin, against the term-by-term values (sum of triplet and singlet shift compared)'
+    formula: |-
+      C*(2*hbar**2 - 3*hbar**2/2)/2 + C*(0 - 3*hbar**2/2)/2
+    equals: |-
+      C*(hbar/2)*(hbar/2) + C*(-(hbar/2)**2 - hbar**2/2)
+    samples:
+      C: [1, 0.6, 1.7]
+      hbar: [1, 1.4, 0.8]
+    shown: ['<Formula label="Energies with the spin-spin interaction"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2c-split
+    answer: p2c-split
+    where: 'Problem 2(c), answer box: triplet shift minus singlet shift in units of Cħ²'
+    formula: 1/4 - (-3/4)
+    expected: '1'
+    tolerance: '0.001'
+    shown: ['id="p2c-split"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2c-trace
+    where: 'Problem 2(c), check: the four shifts add up to zero (units of Cħ²)'
+    formula: 3*(1/4) - 3/4
+    expected: '0'
+    tolerance: '0.001'
+    shown: ['$3\times\frac14 - \frac34 = 0$']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: a contact interaction g δ(x1 − x2) for the two lowest states of a well of width 1,
+  # ψ = sqrt(2) sin(n pi y). Then K = X = g ∫ψ1²ψ2² dy = g (the integral is 1), the antisymmetric state vanishes at
+  # contact and is not shifted, and the symmetric state is shifted by g ∫|φ+(y, y)|² dy. Their difference must be 2X.
+  # The second term of `equals` is the antisymmetric wavefunction at contact, squared, at the sample point y = 0.3: zero.
+  - id: p2d-eps
+    kind: identity
+    answer: p2d-eps
+    where: 'Problem 2(d), answer box: ε = 2X tested on a contact interaction in a one-dimensional well, the two shifts integrated numerically'
+    formula: |-
+      2*X
+    equals: |-
+      g*integrate('(2*sin(pi*y)*sin(2*pi*y) + 2*sin(2*pi*y)*sin(pi*y))**2/2', 'y', 0, 1) - g*(2*sin(pi*0.3)*sin(2*pi*0.3) - 2*sin(2*pi*0.3)*sin(pi*0.3))**2/2
+    samples:
+      g: [1, 0.6, 2.5]
+      X: [1, 0.6, 2.5]
+    tolerance: 1e-5
+    shown: ['id="p2d-eps"', '<Formula label="First-order splitting from the Coulomb repulsion"']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # The same toy model for the two shifts themselves: K + X = 2g for the symmetric state, K − X = 0 for the other.
+  - id: p2d-shift
+    kind: identity
+    where: 'Problem 2(d), solution: the shift K + X of the symmetric state on the contact interaction, with K = X = g ∫ψ1²ψ2² dy integrated numerically'
+    formula: |-
+      g*integrate('4*sin(pi*y)**2*sin(2*pi*y)**2', 'y', 0, 1) + g*integrate('4*sin(pi*y)**2*sin(2*pi*y)**2', 'y', 0, 1)
+    equals: |-
+      g*integrate('(2*sin(pi*y)*sin(2*pi*y) + 2*sin(2*pi*y)*sin(pi*y))**2/2', 'y', 0, 1)
+    samples:
+      g: [1, 0.6, 2.5]
+    tolerance: 1e-5
+    shown: ['<Formula label="First-order Coulomb shift of the two spatial states"']
+    source: {cite: mit, at: 'Problem 2(d), p. 2 (our own solution)'}
+    origin: page-own
+
+  # Independent route: a root finder for the J at which singlet minus triplet, (3/4)Jħ² + (1/4)Jħ², equals ε.
+  - id: p2e-j
+    kind: identity
+    answer: p2e-j
+    where: 'Problem 2(e), answer box: the J for which the Heisenberg Hamiltonian gives the splitting ε, found with a root finder'
+    formula: |-
+      eps/hbar**2
+    equals: |-
+      solve('y*hbar**2*3/4 + y*hbar**2/4 - eps', 'y', 0, 50)
+    samples:
+      eps: [1, 0.5, 2]
+      hbar: [1, 1.4, 0.8]
+    tolerance: 1e-5
+    shown: ['id="p2e-j"', '<Formula label="The exchange constant"']
+    source: {cite: mit, at: 'Problem 2(e), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p2e-const
+    kind: identity
+    where: 'Problem 2(e), solution: the constant K − X/2 minus Jħ²/4 with J = 2X/ħ² gives the triplet shift K − X'
+    formula: |-
+      K - X/2 - (2*X/hbar**2)*hbar**2/4
+    equals: |-
+      K - X
+    samples:
+      K: [2, 1.5, 3]
+      X: [0.5, 0.2, 0.9]
+      hbar: [1, 1.4, 0.8]
+    shown: ['$2E_0 + K - \frac12X - \frac14J\hbar^2 = 2E_0 + K - X$']
+    source: {cite: mit, at: 'Problem 2(e), p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: three particles on three levels (energies in units of ħω)
+  # Every count below was also checked by listing all states (itertools: 3 of the 6 single-particle states for the
+  # electrons, multisets of 3 levels for the bosons, all 27 assignments for the distinguishable particles).
+
+  - id: p3a-total
+    answer: p3a-total
+    where: 'Problem 3(a), answer box: ways to choose 3 of the 6 single-particle states'
+    formula: 6*5*4/(3*2*1)
+    expected: '20'
+    tolerance: '0.001'
+    shown: ['id="p3a-total"', '$\frac{6\cdot5\cdot4}{3\cdot2\cdot1} = 20$']
+    source: {cite: reading1, at: 'eq. (8.4.9), p. 164'}
+    origin: page-own
+
+  - id: p3a-sum
+    where: 'Problem 3(a), check: the five degeneracies add up to the total'
+    formula: 2 + 4 + 8 + 4 + 2
+    expected: '20'
+    tolerance: '0.001'
+    shown: ['$2 + 4 + 8 + 4 + 2 = 20$']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-e0
+    answer: p3a-e0
+    where: 'Problem 3(a), answer box: lowest energy, two electrons in the level 0 and one in the level 1'
+    formula: 2*0 + 1*1
+    expected: '1'
+    tolerance: '0.001'
+    shown: ['id="p3a-e0"']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-g2
+    answer: p3a-g2
+    where: 'Problem 3(a), answer box: states with energy 2: occupations (2,0,1) and (1,2,0), two spin choices each'
+    formula: 2 + 2
+    expected: '4'
+    tolerance: '0.001'
+    shown: ['id="p3a-g2"']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-g3
+    answer: p3a-g3
+    where: 'Problem 3(a), answer box: states with energy 3: occupation (1,1,1), two spin choices for each of three electrons'
+    formula: 2*2*2
+    expected: '8'
+    tolerance: '0.001'
+    shown: ['id="p3a-g3"']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-up
+    answer: p3a-up
+    where: 'Problem 3(a), answer box: energy of the state with all spins up, one electron in each level'
+    formula: 0 + 1 + 2
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['id="p3a-up"']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3a-mean
+    where: 'Problem 3(a), check: average energy of the 20 states'
+    formula: (1*2 + 2*4 + 3*8 + 4*4 + 5*2)/20
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['$(1\cdot2 + 2\cdot4 + 3\cdot8 + 4\cdot4 + 5\cdot2)/20 = 3$']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Three spins 1/2: one multiplet of total spin 3/2 (4 states) and two of total spin 1/2 (2 states each).
+  - id: p3a-multiplets
+    where: 'Problem 3(a), check: the eight states of the middle level as multiplets of total spin'
+    formula: (2*(3/2) + 1) + 2*(2*(1/2) + 1)
+    expected: '8'
+    tolerance: '0.001'
+    shown: ['one set of four states with total spin $\frac32$']
+    source: {cite: mit, at: 'Problem 3(a), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Balls and bars: 3 particles and 2 bars, 5 objects, choose the places of the 2 bars.
+  - id: p3b-total
+    answer: p3b-total
+    where: 'Problem 3(b), answer box: sets of three occupation numbers that add up to 3, counted with balls and bars'
+    formula: 5*4/(2*1)
+    expected: '10'
+    tolerance: '0.001'
+    shown: ['id="p3b-total"', '$1 + 1 + 2 + 2 + 2 + 1 + 1 = 10$']
+    source: {cite: reading1, at: 'section 8.6.3, p. 168'}
+    origin: page-own
+
+  - id: p3b-levels
+    answer: p3b-levels
+    where: 'Problem 3(b), answer box: the energies run from 0 (all in level 0) to 6 (all in level 2) in steps of 1'
+    formula: 3*2 - 3*0 + 1
+    expected: '7'
+    tolerance: '0.001'
+    shown: ['id="p3b-levels"']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3b-g3
+    answer: p3b-g3
+    where: 'Problem 3(b), answer box: states with energy 3: occupations (1,1,1) and (0,3,0)'
+    formula: 1 + 1
+    expected: '2'
+    tolerance: '0.001'
+    shown: ['id="p3b-g3"']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3b-mean
+    where: 'Problem 3(b), check: average energy of the 10 states'
+    formula: (0*1 + 1*1 + 2*2 + 3*2 + 4*2 + 5*1 + 6*1)/10
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['$(0 + 1 + 4 + 6 + 8 + 5 + 6)/10 = 3$']
+    source: {cite: mit, at: 'Problem 3(b), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3c-total
+    answer: p3c-total
+    where: 'Problem 3(c), answer box: three states for each of three distinguishable particles'
+    formula: 3**3
+    expected: '27'
+    tolerance: '0.001'
+    shown: ['id="p3c-total"', 'there are $3^3 = 27$ product states']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3c-sum
+    where: 'Problem 3(c), check: the seven degeneracies add up to the total'
+    formula: 1 + 3 + 6 + 7 + 6 + 3 + 1
+    expected: '27'
+    tolerance: '0.001'
+    shown: ['$1 + 3 + 6 + 7 + 6 + 3 + 1 = 27$']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  # Ways to hand two equal states and one other to three particles: 3·2·1/(2·1·1).
+  - id: p3c-g1
+    answer: p3c-g1
+    where: 'Problem 3(c), answer box: states with energy 1: occupation (2,1,0), the particle in level 1 chosen in 3 ways'
+    formula: 3*2*1/(2*1*1)
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['id="p3c-g1"']
+    source: {cite: reading1, at: 'section 8.6.1, p. 168'}
+    origin: page-own
+
+  - id: p3c-g3
+    answer: p3c-g3
+    where: 'Problem 3(c), answer box: states with energy 3: the 3·2·1 orders of (1,1,1) and the single state (0,3,0)'
+    formula: 3*2*1 + 1
+    expected: '7'
+    tolerance: '0.001'
+    shown: ['id="p3c-g3"']
+    source: {cite: reading1, at: 'section 8.6.1, p. 168'}
+    origin: page-own
+
+  - id: p3c-mean
+    where: 'Problem 3(c), check: average energy of the 27 states'
+    formula: (0*1 + 1*3 + 2*6 + 3*7 + 4*6 + 5*3 + 6*1)/27
+    expected: '3'
+    tolerance: '0.001'
+    shown: ['$(0 + 3 + 12 + 21 + 24 + 15 + 6)/27 = 3$']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3c-mixed
+    where: 'Problem 3(c), check: states of mixed symmetry, 27 minus the 10 symmetric and the 1 antisymmetric'
+    formula: 27 - 10 - 1
+    expected: '16'
+    tolerance: '0.001'
+    shown: ['The other 16 have mixed symmetry']
+    source: {cite: mit, at: 'Problem 3(c), p. 3 (our own solution)'}
+    origin: page-own
