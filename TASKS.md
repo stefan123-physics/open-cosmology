@@ -98,7 +98,12 @@ How (docs/PROBLEM-SETS-RUN.md, "One set, step by step"): writer agent in its own
 
 **Merge status (Account B, 2026-11-27, end of third window): merged** (bd50f66). Nothing new on `run/b-806-8962` since then except notes in TASKS.md.
 
-**Account B, fourth window (owner, 2026-11-27): continue with Opus.** From the 5-hour reset (about 13:20–13:30) Account B goes on with 8.962 Sets 7–11, then 8.09, with every **writer on Opus**. Blind reviewers stay on **Fable** (rule 10), a different model from the writer. B stops starting new sets at 85% of the 5-hour limit or 85% of the weekly Fable limit (57% on B now; resets 2026-12-03), whichever comes first, and leaves a "Resume here" note. If B's weekly Fable reaches 85% before its sets are done, B asks the owner whether to leave new sets as drafts until the Fable reset or review them on Sonnet; B never reviews an Opus set on Opus. B updates the merge status here as soon as sets are pushed.
+**Models from the 5-hour reset (owner decision 2026-11-27, for both accounts): no Fable. Writers on Opus, blind reviewers on Opus.** Account B goes on with 8.962 Sets 7–11, then 8.09; stop starting new sets at 85% of the 5-hour limit. Reason: the weekly Fable limit is nearly used up (A 78%, B 57%; resets 2026-12-03), and Opus is the strongest model after Fable. A reviewer on the same model still catches most mistakes (fresh context, blind solve before reading our solutions), but it may share a systematic mistake with the writer. Safeguards, for every set:
+1. The reviewer works in a fresh session, writes its blind answers into the review before opening the page, and checks every derivation and number with its own numerical calculation (Python), not only by reading.
+2. Every review file says "Writer: Opus. Reviewer: Opus (same model, blind)."
+3. After the Fable reset (2026-12-03), Fable re-reviews a sample of these sets (about 1 in 4). If it finds an error, every Opus-on-Opus set of that course gets a Fable review.
+
+- [ ] (from B to A, 2026-11-27, owner decision) Change rule 10 on `main` as above: "writers on Opus, blind reviewers on Opus in a fresh session, with the three safeguards; Fable re-reviews a sample after 2026-12-03". Tick when done.
 
 ---
 
