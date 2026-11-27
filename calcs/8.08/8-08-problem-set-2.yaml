@@ -1,0 +1,524 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 works from the two Boltzmann weights e^(∓y/2) and takes the susceptibility as the ratio at a tiny field;
+# Problem 2 integrates the Gaussians numerically and differentiates ln Q numerically; Problem 3 computes the entropy
+# as −Σ p ln p of the two probabilities and finds the final temperature by a root search on the entropy; Problem 4
+# integrates the Maxwell distribution numerically and finds its maximum by a root search; Problem 5 differentiates the
+# pressure along a curve of constant entropy, n ∝ T^(1/(γ−1)), numerically.
+# Constants not in calcs/constants.yaml are CODATA 2018 inputs: muB (Bohr magneton), u (atomic mass constant).
+
+page: content/year-4/8.08/8-08-problem-set-2.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-total
+    where: 'How to answer: our points for Problems 1 to 5, 20 + 20 + 25 + 15 + 20'
+    formula: |-
+      20 + 20 + 25 + 15 + 20
+    expected: '100'
+    shown: ['100 points in all']
+    source: {cite: mit, at: 'Problems 1 to 5, p. 1 (our points)'}
+    origin: page-own
+
+  # ---- Problem 1: Curie's law
+
+  - id: p1-up
+    kind: identity
+    answer: p1-up
+    where: 'Problem 1(a), answer box: P(1/2), against the weight e^(−y/2) over the sum of both weights, y = g muB B/kB T'
+    formula: |-
+      1/(exp(g*muB*B/(kB*T)) + 1)
+    equals: |-
+      exp(-g*muB*B/(2*kB*T))/(exp(-g*muB*B/(2*kB*T)) + exp(g*muB*B/(2*kB*T)))
+    samples:
+      g: [1.5, 2.0, 2.5, 1.8, 2.2]
+      muB: [0.5, 1.0, 1.5, 0.7, 1.2]
+      B: [0.5, 1.0, 2.0, 1.4, 0.8]
+      kB: [0.5, 1.0, 1.5, 1.1, 0.6]
+      T: [0.5, 1.0, 2.0, 1.3, 0.7]
+    tolerance: 1e-10
+    shown: ['id="p1-up"', '<Formula label="The probabilities of the two states"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-down
+    kind: identity
+    answer: p1-down
+    where: 'Problem 1(a), answer box: P(−1/2), against the weight e^(+y/2) over the sum of both weights'
+    formula: |-
+      1/(exp(-g*muB*B/(kB*T)) + 1)
+    equals: |-
+      exp(g*muB*B/(2*kB*T))/(exp(-g*muB*B/(2*kB*T)) + exp(g*muB*B/(2*kB*T)))
+    samples:
+      g: [1.5, 2.0, 2.5, 1.8, 2.2]
+      muB: [0.5, 1.0, 1.5, 0.7, 1.2]
+      B: [0.5, 1.0, 2.0, 1.4, 0.8]
+      kB: [0.5, 1.0, 1.5, 1.1, 0.6]
+      T: [0.5, 1.0, 2.0, 1.3, 0.7]
+    tolerance: 1e-10
+    shown: ['id="p1-down"']
+    source: {cite: mit, at: 'Problem 1(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-sz
+    kind: identity
+    answer: p1-sz
+    where: 'Problem 1(b), answer box: <S_z> = −(1/2) tanh(g muB B/2kB T), against (1/2)P(1/2) − (1/2)P(−1/2) from the two weights'
+    formula: |-
+      -tanh(g*muB*B/(2*kB*T))/2
+    equals: |-
+      0.5*(exp(-g*muB*B/(2*kB*T)) - exp(g*muB*B/(2*kB*T)))/(exp(-g*muB*B/(2*kB*T)) + exp(g*muB*B/(2*kB*T)))
+    samples:
+      g: [1.5, 2.0, 2.5, 1.8, 2.2]
+      muB: [0.5, 1.0, 1.5, 0.7, 1.2]
+      B: [0.5, 1.0, 2.0, 1.4, 0.8]
+      kB: [0.5, 1.0, 1.5, 1.1, 0.6]
+      T: [0.5, 1.0, 2.0, 1.3, 0.7]
+    tolerance: 1e-10
+    shown: ['id="p1-sz"', '<Formula label="The average spin"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-chi
+    kind: identity
+    answer: p1-chi
+    where: 'Problem 1(c), answer box: chi = −g muB/(4 kB T), against <S_z>/B at a tiny field B = 1e-7'
+    formula: |-
+      -g*muB/(4*kB*T)
+    equals: |-
+      0.5*(exp(-g*muB*1e-7/(2*kB*T)) - exp(g*muB*1e-7/(2*kB*T)))/(exp(-g*muB*1e-7/(2*kB*T)) + exp(g*muB*1e-7/(2*kB*T)))/1e-7
+    samples:
+      g: [1.5, 2.0, 2.5, 1.8, 2.2]
+      muB: [0.5, 1.0, 1.5, 0.7, 1.2]
+      kB: [0.5, 1.0, 1.5, 1.1, 0.6]
+      T: [0.5, 1.0, 2.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p1-chi"', '<Formula label="Curie''s law for one spin"']
+    source: {cite: mit, at: 'Problem 1(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-x
+    where: 'Problem 1(d): the ratio g muB B/2kB T = muB B/kB T for g = 2.00, B = 1.00 T, T = 1.00 K'
+    inputs: {muB: 9.274e-24 J/T, kB: 1.3806e-23 J/K, B: 1.00 T, T: 1.00 K}
+    formula: |-
+      muB*B/(kB*T)
+    expected: '0.6717'
+    shown: ['= 0.6717$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(d), answer box: |<S_z>| = (1/2) tanh(muB B/kB T), with CODATA 2018 muB'
+    inputs: {muB: 9.2740100783e-24 J/T, B: 1.00 T, T: 1.00 K}
+    formula: |-
+      tanh(muB*B/(k_B*T))/2
+    expected: '0.2931'
+    shown: ['id="p1-num"', '\tanh 0.6717 = 0.2931']
+    source: {cite: codata, at: 'Bohr magneton'}
+    origin: page-own
+
+  - id: p1-lin
+    where: 'Problem 1(d), check: the weak-field value (1/2) x 0.6717'
+    formula: |-
+      0.5*0.6717
+    expected: '0.3359'
+    shown: ['\frac12 \times 0.6717 = 0.3359$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-lin-pct
+    where: 'Problem 1(d), check: the weak-field value is 15% too high'
+    formula: |-
+      100*(0.3359/0.2931 - 1)
+    expected: '15'
+    tolerance: 0.5
+    shown: ['15% too high']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-pol
+    where: 'Problem 1(d), check: the spin is 59% polarised, 0.2931/0.5'
+    formula: |-
+      100*0.2931/0.5
+    expected: '59'
+    tolerance: 0.5
+    shown: ['59% polarised']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: harmonic trap
+
+  - id: p2-q1
+    kind: identity
+    answer: p2-q1
+    where: 'Problem 2(a), answer box: Q1 = (kB T/hbar w)^3, against the momentum and coordinate Gaussians integrated numerically over h = 2 pi hbar (mass m = 1.3, which cancels)'
+    formula: |-
+      (kB*T/(hbar*w))**3
+    equals: |-
+      (integrate('exp(-p**2/(2*1.3*kB*T))', 'p', -40, 40)*integrate('exp(-1.3*w**2*q**2/(2*kB*T))', 'q', -40, 40)/(2*pi*hbar))**3
+    samples:
+      kB: [0.5, 1.0, 1.5, 1.2]
+      T: [0.5, 1.0, 2.0, 1.4]
+      hbar: [0.5, 1.0, 1.5, 0.8]
+      w: [0.5, 1.0, 2.0, 1.6]
+    tolerance: 1e-7
+    shown: ['id="p2-q1"', '<Formula label="The partition function of one atom in the trap"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-e
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(b), answer box: E = 3 N kB T, against −d ln Q/d beta taken numerically, ln Q = N ln Q1 (ln N! does not depend on beta)'
+    formula: |-
+      3*N*kB*T
+    equals: |-
+      -deriv('N*3*log(1/(b*hbar*w))', 'b', 1/(kB*T))
+    samples:
+      N: [1, 4, 10, 7]
+      kB: [0.5, 1.0, 1.5, 1.2]
+      T: [0.5, 1.0, 2.0, 1.4]
+      hbar: [0.5, 1.0, 1.5, 0.8]
+      w: [0.5, 1.0, 2.0, 1.6]
+    tolerance: 1e-6
+    shown: ['id="p2-e"', '<Formula label="Energy and heat capacity of the trapped gas"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-c
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(b), answer box: C = 3 N kB, against kB beta^2 d^2 ln Q/d beta^2 (the energy fluctuation), by a central second difference'
+    formula: |-
+      3*N*kB
+    equals: |-
+      kB/(kB*T)**2*(3*N*log(1/((1/(kB*T) + 1e-3)*hbar*w)) - 2*3*N*log(1/((1/(kB*T))*hbar*w)) + 3*N*log(1/((1/(kB*T) - 1e-3)*hbar*w)))/1e-6
+    samples:
+      N: [1, 4, 10, 7]
+      kB: [0.5, 1.0, 1.5, 1.2]
+      T: [0.5, 1.0, 2.0, 1.4]
+      hbar: [0.5, 1.0, 1.5, 0.8]
+      w: [0.5, 1.0, 2.0, 1.6]
+    tolerance: 1e-5
+    shown: ['id="p2-c"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-equip
+    kind: identity
+    where: 'Problem 2(c): the mean potential energy of one coordinate, the ratio of two integrals done numerically, is kB T/2'
+    formula: |-
+      kB*T/2
+    equals: |-
+      integrate('0.5*m*w**2*q**2*exp(-m*w**2*q**2/(2*kB*T))', 'q', -40, 40)/integrate('exp(-m*w**2*q**2/(2*kB*T))', 'q', -40, 40)
+    samples:
+      kB: [0.5, 1.0, 1.5]
+      T: [0.5, 1.0, 2.0]
+      m: [0.7, 1.0, 2.0]
+      w: [0.5, 1.0, 2.0]
+    tolerance: 1e-7
+    shown: ['<Formula label="Mean potential energy of one coordinate"']
+    source: {cite: mit, at: 'Problem 2(c), p. 1'}
+    origin: mit
+
+  # ---- Problem 3: adiabatic demagnetization
+
+  - id: p3-s
+    kind: identity
+    answer: p3-s
+    where: 'Problem 3(a), answer box: S/N kB = ln(2 cosh x) − x tanh x, against −Σ p ln p of the two probabilities 1/(1 + e^(±2x))'
+    formula: |-
+      log(2*cosh(x)) - x*tanh(x)
+    equals: |-
+      -(1/(1 + exp(2*x)))*log(1/(1 + exp(2*x))) - (1/(1 + exp(-2*x)))*log(1/(1 + exp(-2*x)))
+    samples:
+      x: [0.2, 0.7, 1.5, 3.0]
+    tolerance: 1e-10
+    shown: ['id="p3-s"', '<Formula label="Entropy of N spins in a field"']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-tf
+    kind: identity
+    answer: p3-tf
+    where: 'Problem 3(a), answer box: T_f = T Bf/B, against a root search for the temperature at which the entropy at Bf equals the entropy at B, T (units g muB/kB = 1)'
+    formula: |-
+      T*Bf/B
+    equals: |-
+      solve('log(2*cosh(Bf/(2*t))) - Bf/(2*t)*tanh(Bf/(2*t)) - log(2*cosh(B/(2*T))) + B/(2*T)*tanh(B/(2*T))', 't', 0.01, 10)
+    samples:
+      T: [0.5, 1.0, 2.0, 1.5]
+      B: [1.0, 1.5, 2.0, 1.2]
+      Bf: [0.1, 0.5, 0.9, 0.3]
+    tolerance: 1e-7
+    shown: ['id="p3-tf"', '<Formula label="Temperature after lowering the field"']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-gas
+    answer: p3-gas
+    where: 'Problem 3(b), answer box: T_f/T from (3/2) ln(T_f/T) = −ln 2, by a root search'
+    formula: |-
+      solve('1.5*log(r) + log(2)', 'r', 0.1, 1)
+    expected: '0.630'
+    shown: ['id="p3-gas"', '= 2^{-2/3} = 0.630']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-gas-p
+    where: 'Problem 3(b), check: at fixed pressure, (5/2) ln(T_f/T) = −ln 2'
+    formula: |-
+      solve('2.5*log(r) + log(2)', 'r', 0.1, 1)
+    expected: '0.758'
+    shown: ['$2^{-2/5} = 0.758$']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: Maxwell speeds
+
+  - id: p4-vp
+    kind: identity
+    answer: p4-vp
+    where: 'Problem 4(a), answer box: v_p = sqrt(2 kB T/m), against a root search of d(v^2 e^(−a v^2))/dv = (2v − 2a v^3) e^(−a v^2), a = m/2 kB T'
+    formula: |-
+      sqrt(2*kB*T/m)
+    equals: |-
+      solve('2*v - 2*(m/(2*kB*T))*v**3', 'v', 0.01, 100)
+    samples:
+      kB: [0.5, 1.0, 1.5, 1.2]
+      T: [0.5, 1.0, 2.0, 1.4]
+      m: [0.5, 1.0, 2.0, 0.8]
+    tolerance: 1e-8
+    shown: ['id="p4-vp"', '<Formula label="The most probable speed"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-mean
+    kind: identity
+    answer: p4-mean
+    where: 'Problem 4(b), answer box: <v> = sqrt(8 kB T/pi m), against the ratio of two integrals done numerically'
+    formula: |-
+      sqrt(8*kB*T/(pi*m))
+    equals: |-
+      integrate('v**3*exp(-m*v**2/(2*kB*T))', 'v', 0, 40)/integrate('v**2*exp(-m*v**2/(2*kB*T))', 'v', 0, 40)
+    samples:
+      kB: [0.5, 1.0, 1.5, 1.2]
+      T: [0.5, 1.0, 2.0, 1.4]
+      m: [0.5, 1.0, 2.0, 0.8]
+    tolerance: 1e-7
+    shown: ['id="p4-mean"', '<Formula label="The mean speed"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ratio-mean
+    where: 'Problem 4(b), check: sqrt(8/pi)'
+    formula: |-
+      sqrt(8/pi)
+    expected: '1.596'
+    shown: ['$\sqrt{8/\pi} = 1.596$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ratio-p
+    where: 'Problem 4(b), check: sqrt(2)'
+    formula: |-
+      sqrt(2)
+    expected: '1.414'
+    shown: ['$\sqrt2 = 1.414$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-ratio-rms
+    where: 'Problem 4(b), check: sqrt(3)'
+    formula: |-
+      sqrt(3)
+    expected: '1.732'
+    shown: ['$\sqrt3 = 1.732$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-mass
+    where: 'Problem 4(c): the mass of a nitrogen molecule, 28.0 u'
+    inputs: {M: 28.0, u: 1.6605e-27 kg}
+    formula: |-
+      M*u
+    expected: 4.649e-26 kg
+    shown: ['= 4.649\times10^{-26}$ kg']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-num
+    answer: p4-num
+    where: 'Problem 4(c), answer box: the mean speed of N2 at 300 K, m = 28.0 u (CODATA 2018 u)'
+    inputs: {M: 28.0, u: 1.66053906660e-27 kg, T: 300 K}
+    formula: |-
+      sqrt(8*k_B*T/(pi*M*u))
+    expected: 476.3 m/s
+    shown: ['id="p4-num"', '= 476.3\ \text{m/s}']
+    source: {cite: codata, at: 'atomic mass constant'}
+    origin: page-own
+
+  - id: p4-vp-num
+    where: 'Problem 4(c), check: the most probable speed of N2 at 300 K'
+    inputs: {M: 28.0, u: 1.66053906660e-27 kg, T: 300 K}
+    formula: |-
+      sqrt(2*k_B*T/(M*u))
+    expected: 422.1 m/s
+    shown: ['$422.1$ m/s']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-rms-num
+    where: 'Problem 4(c), check: the root mean square speed of N2 at 300 K'
+    inputs: {M: 28.0, u: 1.66053906660e-27 kg, T: 300 K}
+    formula: |-
+      sqrt(3*k_B*T/(M*u))
+    expected: 517.0 m/s
+    shown: ['$517.0$ m/s']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-sound
+    where: 'Problem 4(c), check: the speed of sound in air at 300 K, sqrt(gamma kB T/m) with gamma = 7/5 and m = 29.0 u, about 350 m/s'
+    inputs: {M: 29.0, u: 1.66053906660e-27 kg, T: 300 K}
+    formula: |-
+      sqrt(1.4*k_B*T/(M*u))
+    expected: 350 m/s
+    tolerance: 2%
+    shown: ['about 350 m/s at this temperature']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-frac
+    answer: p4-frac
+    where: 'Problem 4(d), answer box: the fraction faster than 2 v_p, by numerical integration of (4/sqrt(pi)) t^2 e^(−t^2) from 2 upwards'
+    formula: |-
+      integrate('4/sqrt(pi)*t**2*exp(-t**2)', 't', 2, 30)
+    expected: '0.0460'
+    shown: ['id="p4-frac"', 'F(2) = 0.004678 + 0.041334 = 0.0460']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-erfc2
+    where: 'Problem 4(d): erfc(2)'
+    formula: |-
+      erfc(2)
+    expected: '0.004678'
+    shown: ['\operatorname{erfc}(2) = 0.004678']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-term2
+    where: 'Problem 4(d): (2/sqrt(pi)) 2 e^(−4)'
+    formula: |-
+      2/sqrt(pi)*2*exp(-4)
+    expected: '0.041334'
+    shown: ['0.004678 + 0.041334']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-norm
+    where: 'Problem 4(d), check: F(0) = 1, the distribution (4/sqrt(pi)) t^2 e^(−t^2) is normalised'
+    formula: |-
+      integrate('4/sqrt(pi)*t**2*exp(-t**2)', 't', 0, 30)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['$F(0) = \operatorname{erfc}(0) = 1$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-pct
+    where: 'Problem 4(d), check: about 4.6% faster than 2 v_p'
+    formula: |-
+      100*(erfc(2) + 4/sqrt(pi)*exp(-4))
+    expected: '4.6'
+    shown: ['About 4.6% of the molecules']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5: adiabatic atmosphere
+
+  - id: p5-grad
+    kind: identity
+    answer: p5-grad
+    where: 'Problem 5(a), answer box: dT/dz, against dT/dz = (dP/dz)/(dP/dT) at a temperature t0, with dP/dz = −n m g, n = P/kB T and P = n kB T along n ∝ T^(1/(γ−1)) (constant entropy), dP/dT numerical'
+    formula: |-
+      -(gam - 1)*m*g/(gam*kB)
+    equals: |-
+      -(t0**(1/(gam - 1)))*m*g/deriv('kB*t*t**(1/(gam - 1))', 't', t0)
+    samples:
+      gam: [1.2, 1.4, 1.7, 1.5]
+      m: [0.5, 1.0, 2.0, 1.3]
+      g: [0.5, 1.0, 2.0, 1.6]
+      kB: [0.5, 1.0, 1.5, 1.2]
+      t0: [1.0, 0.7, 2.0, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p5-grad"', '<Formula label="The temperature gradient of the atmosphere"']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-nu
+    kind: identity
+    answer: p5-nu
+    where: 'Problem 5(b), answer box: nu = gam/(gam − 1), against d ln P/d ln T along constant entropy, n ∝ T^(cV/kB) with cV/kB = 1/(gam − 1), derivative numerical at T = 1'
+    formula: |-
+      gam/(gam - 1)
+    equals: |-
+      deriv('log(exp(log(t)/(gam - 1))*t)', 't', 1)
+    samples:
+      gam: [1.2, 1.4, 1.667, 1.7]
+    tolerance: 1e-6
+    shown: ['id="p5-nu"', 'P \propto T^{\gamma/(\gamma - 1)}']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-mono
+    where: 'Problem 5(b), check: for gamma = 5/3 the exponent is 5/2'
+    formula: |-
+      (5/3)/(5/3 - 1)
+    expected: '2.5'
+    shown: ['$\gamma = 5/3$ and $\nu = 5/2$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-const
+    answer: p5-const
+    where: 'Problem 5(c), answer box: (gamma − 1)/gamma for c_V = 5/2 kB, gamma = (7/2)/(5/2)'
+    formula: |-
+      ((3.5/2.5) - 1)/(3.5/2.5)
+    expected: '0.2857'
+    shown: ['id="p5-const"', '= \frac27 = 0.2857']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-mono-const
+    where: 'Problem 5(c), check: a monatomic gas, gamma = 5/3, gives 2/5'
+    formula: |-
+      ((5/3) - 1)/(5/3)
+    expected: '0.4'
+    shown: ['$2/5 = 0.4$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-mg
+    where: 'Problem 5(d): m g/kB for m = 29.0 u'
+    inputs: {M: 29.0, u: 1.6605e-27 kg, gg: 9.81 m/s**2, kB: 1.3806e-23 J/K}
+    formula: |-
+      M*u*gg/kB
+    expected: 0.03422 K/m
+    shown: ['= 0.03422$ K/m']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-lapse
+    answer: p5-lapse
+    where: 'Problem 5(d), answer box: −dT/dz = (2/7) m g/kB in K/km (CODATA 2018 u, exact kB)'
+    inputs: {M: 29.0, u: 1.66053906660e-27 kg, gg: 9.81 m/s**2}
+    formula: |-
+      (2/7)*M*u*gg/k_B
+    expected: 9.78 K/km
+    shown: ['id="p5-lapse"', '= 9.78\ \text{K/km}']
+    source: {cite: codata, at: 'atomic mass constant'}
+    origin: page-own
