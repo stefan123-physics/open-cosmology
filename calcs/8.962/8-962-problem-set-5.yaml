@@ -1,0 +1,1081 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# numerical derivatives of the metric (connection coefficients, tidal terms, the curvature of the sphere and of the
+# two-dimensional spacetime), numerical integrals (the bending of light, the solid angle, the proper distance), or
+# the differential equation that a solution must obey.
+# The speed of light is 1 and G is kept, except in the number entries, which use SI units.
+# Outside this file, while writing (NumPy and SciPy): geodesics of the weak-field metric integrated for the shuttle and
+# the bag (Problem 1(d)) and for the light ray (Problem 2); the transport equations on the sphere solved round a circle
+# of latitude and round a small loop (Problems 3 and 4(b)); the Riemann tensor of Problem 6 by finite differences of
+# the metric, and the flat metric carried back through the change of coordinates of Problem 6(b). The page says so
+# where it mentions these checks.
+# Short names in the samples: F = Φ, K = GM, At and Ap = A^θ and A^φ, f = φ along the circle.
+
+page: content/year-5/8.962/8-962-problem-set-5.mdx
+calcs:
+  # ---- Constants (NASA fact sheets)
+
+  - id: const-gm-earth
+    kind: fact
+    where: 'Problem 1(b), statement: GM of the Earth, 0.39860 × 10^6 km^3/s^2 on the NASA Earth Fact Sheet'
+    shown: ['$GM = 3.9860\times 10^{14}$ m³/s² (NASA']
+    source: {cite: nasaearth, at: 'Bulk parameters: GM'}
+    origin: page-own
+
+  - id: const-r-earth
+    kind: fact
+    where: 'Problem 1(b), statement: the volumetric mean radius of the Earth on the NASA Earth Fact Sheet'
+    shown: ['mean radius of 6371 km']
+    source: {cite: nasaearth, at: 'Bulk parameters: volumetric mean radius'}
+    origin: page-own
+
+  - id: const-gm-sun
+    kind: fact
+    where: 'Problem 2, statement: GM of the Sun, 132,712 × 10^6 km^3/s^2 on the NASA Sun Fact Sheet'
+    shown: ['$GM = 1.32712\times 10^{20}$ m³/s² for the Sun']
+    source: {cite: nasasun, at: 'Bulk parameters: GM'}
+    origin: page-own
+
+  - id: const-r-sun
+    kind: fact
+    where: 'Problem 2, statement: the volumetric mean radius of the Sun on the NASA Sun Fact Sheet'
+    shown: ['$b = 695\,700$ km']
+    source: {cite: nasasun, at: 'Bulk parameters: volumetric mean radius'}
+    origin: page-own
+
+  - id: const-c
+    where: 'Problem 2, statement: the speed of light (exact)'
+    formula: c
+    expected: 299792458 m/s
+    shown: ['$c = 299\,792\,458$ m/s']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: const-arcsec
+    where: 'Problem 2, statement: arcseconds in one radian'
+    formula: 180*3600/pi
+    expected: '206265'
+    shown: ['One radian is 206 265 arcseconds']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 1(a): connection coefficients of the weak-field metric, each from a numerical derivative of the metric
+
+  - id: p1a-gamma
+    kind: identity
+    answer: p1a-gamma
+    where: 'Problem 1(a), answer box: against −(1/2) g^θθ ∂_θ g_φφ with a numerical derivative'
+    formula: -sin(theta)*cos(theta)
+    equals: -0.5/((1 + 2*F)*r**2)*deriv('(1 + 2*F)*r**2*sin(q)**2', 'q', theta)
+    samples:
+      theta: [0.3, 0.7, 1.0, 1.3, 1.5]
+      F: [0.001, 0.01, 0.1, 0.2, 0.05]
+      r: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['id="p1a-gamma"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-gamma-rtheta
+    kind: identity
+    where: 'Problem 1(a), formula "the coefficients with upper index theta": Γ^θ_rθ against (1/2) g^θθ ∂_r g_θθ, with Φ = K/r'
+    formula: (1 + K/r)/(r*(1 + 2*K/r))
+    equals: 0.5/((1 + 2*K/r)*r**2)*deriv('(1 + 2*K/q)*q**2', 'q', r)
+    samples:
+      K: [0.001, 0.01, 0.1, 0.3, 0.05]
+      r: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['<Formula label="Problem 1(a): the coefficients with upper index theta"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-gamma-ttr
+    kind: identity
+    where: 'Problem 1(a), formula "the other connection coefficients": Γ^t_tr against ∂_r g_tt/(2 g_tt)'
+    formula: (K/r)/(r*(1 - 2*K/r))
+    equals: 0.5/(-(1 - 2*K/r))*deriv('-(1 - 2*K/q)', 'q', r)
+    samples:
+      K: [0.001, 0.01, 0.1, 0.3, 0.05]
+      r: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['\Gamma^t_{tr} = \frac{\Phi}{r\left(1 - 2\Phi\right)}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-gamma-rtt
+    kind: identity
+    where: 'Problem 1(a), formula "the other connection coefficients": Γ^r_tt against −∂_r g_tt/(2 g_rr)'
+    formula: (K/r)/(r*(1 + 2*K/r))
+    equals: -0.5/(1 + 2*K/r)*deriv('-(1 - 2*K/q)', 'q', r)
+    samples:
+      K: [0.001, 0.01, 0.1, 0.3, 0.05]
+      r: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['\Gamma^r_{tt} = \frac{\Phi}{r\left(1 + 2\Phi\right)}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-gamma-rrr
+    kind: identity
+    where: 'Problem 1(a), formula "the other connection coefficients": Γ^r_rr against ∂_r g_rr/(2 g_rr)'
+    formula: -(K/r)/(r*(1 + 2*K/r))
+    equals: 0.5/(1 + 2*K/r)*deriv('1 + 2*K/q', 'q', r)
+    samples:
+      K: [0.001, 0.01, 0.1, 0.3, 0.05]
+      r: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['\Gamma^r_{rr} = -\frac{\Phi}{r\left(1 + 2\Phi\right)}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-gamma-rthth
+    kind: identity
+    where: 'Problem 1(a), formula "the other connection coefficients": Γ^r_θθ against −∂_r g_θθ/(2 g_rr)'
+    formula: -r*(1 + K/r)/(1 + 2*K/r)
+    equals: -0.5/(1 + 2*K/r)*deriv('(1 + 2*K/q)*q**2', 'q', r)
+    samples:
+      K: [0.001, 0.01, 0.1, 0.3, 0.05]
+      r: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['\Gamma^r_{\theta\theta} = -\frac{r\left(1 + \Phi\right)}{1 + 2\Phi}']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-gamma-phthph
+    kind: identity
+    where: 'Problem 1(a), formula "the other connection coefficients": Γ^φ_θφ = cot θ against ∂_θ g_φφ/(2 g_φφ)'
+    formula: cos(theta)/sin(theta)
+    equals: 0.5/sin(theta)**2*deriv('sin(q)**2', 'q', theta)
+    samples:
+      theta: [0.3, 0.7, 1.0, 1.3, 1.5]
+    tolerance: 1e-7
+    shown: ['\Gamma^\phi_{r\phi} = \Gamma^\theta_{r\theta}, \quad \Gamma^\phi_{\theta\phi} = \cot\theta']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-first-order
+    kind: limit
+    where: 'Problem 1(a), solution: to first order in Φ, Γ^r_tt is Φ/r'
+    inputs: {r: 1}
+    formula: (F/r)/(r*(1 + 2*F))
+    limit: F/r
+    vary:
+      F: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-4
+    shown: ['\Gamma^t_{tr} \approx \Gamma^r_{tt} \approx \Phi/r = GM/r^2']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(b): the orbital frequency
+
+  # Ω² = −Γ^r_tt/Γ^r_φφ = ∂_r(−g_tt)/∂_r g_φφ at θ = π/2, with numerical derivatives of the metric; for Φ → 0 it is GM/R³.
+  - id: p1b-omega
+    kind: limit
+    answer: p1b-omega
+    where: 'Problem 1(b), answer box: against the ratio of numerical derivatives of g_tt and g_φφ, as Φ = GM/R goes to zero'
+    inputs: {G: 1, R: 1}
+    formula: sqrt(G*M/R**3)
+    limit: sqrt(deriv('1 - 2*G*M/q', 'q', R)/deriv('(1 + 2*G*M/q)*q**2', 'q', R))
+    vary:
+      M: [0.01, 0.001, 0.0001, 0.00001]
+    tolerance: 1e-5
+    shown: ['id="p1b-omega"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-omega-exact
+    kind: identity
+    where: 'Problem 1(b), formula "Kepler''s third law": GM/(R³(1 + Φ)) against the ratio of numerical derivatives of the metric'
+    formula: K/(R**3*(1 + K/R))
+    equals: deriv('1 - 2*K/q', 'q', R)/deriv('(1 + 2*K/q)*q**2', 'q', R)
+    samples:
+      K: [0.001, 0.01, 0.1, 0.3, 0.05]
+      R: [1, 2, 0.5, 3, 7]
+    tolerance: 1e-7
+    shown: ['<Formula label="Problem 1(b): Kepler''s third law"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-radius
+    where: 'Problem 1(b), statement: 400 km above the mean radius, in km'
+    formula: 6371 + 400
+    expected: '6771'
+    shown: ['so $R = 6771$ km']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-omega-number
+    where: 'Problem 1(b), solution: Ω for R = 6771 km'
+    inputs: {GM: 3.9860e14 m**3/s**2, R: 6.771e6 m}
+    formula: sqrt(GM/R**3)
+    expected: 1.133e-3 1/s
+    shown: ['\Omega = \sqrt{3.9860\times 10^{14}/(6.771\times 10^6)^3} = 1.133\times 10^{-3}$ rad/s']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-period-seconds
+    where: 'Problem 1(b), solution: the period in seconds'
+    inputs: {GM: 3.9860e14 m**3/s**2, R: 6.771e6 m}
+    formula: 2*pi*sqrt(R**3/GM)
+    expected: 5545 s
+    shown: ['$2\pi/\Omega = 5545$ s']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-period
+    answer: p1b-period
+    where: 'Problem 1(b), answer box: the period 2π sqrt(R³/GM), in minutes'
+    inputs: {GM: 3.9860e14 m**3/s**2, R: 6.771e6 m}
+    formula: 2*pi*sqrt(R**3/GM)
+    expected: 92.4 min
+    shown: ['id="p1b-period"', 'which is 92.4 minutes']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-speed
+    where: 'Problem 1(b), check: the orbital speed ΩR = sqrt(GM/R)'
+    inputs: {GM: 3.9860e14 m**3/s**2, R: 6.771e6 m}
+    formula: sqrt(GM/R)
+    expected: 7.67 km/s
+    shown: ['$\Omega R = 7.67$ km/s']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-phi
+    where: 'Problem 1(b), check: Φ = GM/(Rc²) on the orbit'
+    inputs: {GM: 3.9860e14 m**3/s**2, R: 6.771e6 m}
+    formula: GM/(R*c**2)
+    expected: '6.55e-10'
+    shown: ['$\Phi = GM/(Rc^2) = 6.55\times 10^{-10}$']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 1(c): the tidal terms, as numerical second derivatives of Φ = GM/r with GM = Ω²R³
+
+  - id: p1c-zz
+    kind: identity
+    answer: p1c-zz
+    where: 'Problem 1(c), answer box: against the numerical second derivative of GM/r along z at the shuttle'
+    formula: -Omega**2
+    equals: deriv('Omega**2*R**3/sqrt(R**2 + q**2)', 'q', 0, 2)
+    samples:
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      R: [1, 2, 0.7, 3, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p1c-zz"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-xx
+    kind: identity
+    answer: p1c-xx
+    where: 'Problem 1(c), answer box: against the numerical second derivative of GM/r along x at the shuttle (R cos Ωt, R sin Ωt, 0)'
+    formula: Omega**2*(3*cos(Omega*t)**2 - 1)
+    equals: deriv('Omega**2*R**3/sqrt(q**2 + (R*sin(Omega*t))**2)', 'q', R*cos(Omega*t), 2)
+    samples:
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      R: [1, 2, 0.7, 3, 1.5]
+      t: [0.2, 0.9, 1.4, 0.3, 2.5]
+    tolerance: 1e-6
+    shown: ['id="p1c-xx"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-yy
+    kind: identity
+    where: 'Problem 1(c), formula "the tidal equations for the garbage": the bracket on ξ^y in the ξ^y equation, against the numerical second derivative along y'
+    formula: Omega**2*(3*sin(Omega*t)**2 - 1)
+    equals: deriv('Omega**2*R**3/sqrt((R*cos(Omega*t))**2 + q**2)', 'q', R*sin(Omega*t), 2)
+    samples:
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      R: [1, 2, 0.7, 3, 1.5]
+      t: [0.2, 0.9, 1.4, 0.3, 2.5]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 1(c): the tidal equations for the garbage"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # The mixed derivative from the second derivative along the diagonal: f'' = (Φ_xx + Φ_yy)/2 + Φ_xy.
+  - id: p1c-xy
+    kind: identity
+    where: 'Problem 1(c), formula "the tidal equations for the garbage": the bracket that couples ξ^x and ξ^y, against a numerical mixed derivative'
+    formula: 3*Omega**2*sin(Omega*t)*cos(Omega*t)
+    equals: deriv('Omega**2*R**3/sqrt((R*cos(Omega*t) + q/sqrt(2))**2 + (R*sin(Omega*t) + q/sqrt(2))**2)', 'q', 0, 2) - 0.5*deriv('Omega**2*R**3/sqrt(q**2 + (R*sin(Omega*t))**2)', 'q', R*cos(Omega*t), 2) - 0.5*deriv('Omega**2*R**3/sqrt((R*cos(Omega*t))**2 + q**2)', 'q', R*sin(Omega*t), 2)
+    samples:
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      R: [1, 2, 0.7, 3, 1.5]
+      t: [0.2, 0.9, 1.4, 0.3, 2.5]
+    tolerance: 1e-5
+    shown: ['3\sin\Omega t\cos\Omega t\;\xi^x + \left(3\sin^2\Omega t - 1\right)\xi^y']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-riemann
+    kind: identity
+    where: 'Problem 1(c), formula "the tidal components of the Riemann tensor": the xx component GM(3x² − r²)/r⁵ against a numerical second derivative of GM/r'
+    formula: K*(3*x**2 - (x**2 + y**2 + z**2))/(x**2 + y**2 + z**2)**2.5
+    equals: deriv('K/sqrt(q**2 + y**2 + z**2)', 'q', x, 2)
+    samples:
+      K: [1, 2, 0.5, 1, 3]
+      x: [1, 0.3, 2, -1.5, 0.8]
+      y: [0.5, 1, -1, 2, 0.1]
+      z: [0.2, -0.7, 1, 0.4, 1.1]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 1(c): the tidal components of the Riemann tensor"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-trace
+    kind: identity
+    where: 'Problem 1(c), check: the three brackets on the diagonal add up to zero'
+    formula: Omega**2*(3*cos(Omega*t)**2 - 1) + Omega**2*(3*sin(Omega*t)**2 - 1) - Omega**2
+    equals: 0*Omega
+    samples:
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      t: [0.2, 0.9, 1.4, 0.3, 2.5]
+    tolerance: 1e-12
+    shown: ['$\Omega^2(3\cos^2\Omega t + 3\sin^2\Omega t - 3) = 0$']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-rates
+    kind: identity
+    where: 'Problem 1(c), check: at t = 0 the stretching rate along x is 2Ω², from the numerical second derivative of GM/r along the radius'
+    formula: 2*Omega**2
+    equals: deriv('Omega**2*R**3/q', 'q', R, 2)
+    samples:
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      R: [1, 2, 0.7, 3, 1.5]
+    tolerance: 1e-6
+    shown: ['with the rate $2\Omega^2$']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(d)
+
+  - id: p1d-xi
+    kind: identity
+    answer: p1d-xi
+    where: 'Problem 1(d), answer box: L cos Ωt obeys the ξ^z equation of part (c), by a numerical second derivative'
+    formula: L*cos(Omega*t)
+    equals: -deriv('L*cos(Omega*q)', 'q', t, 2)/Omega**2
+    samples:
+      L: [1, 0.5, 2, 1.5, 0.7]
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+      t: [0.2, 0.9, 1.4, 0.3, 2.5]
+    tolerance: 1e-6
+    shown: ['id="p1d-xi"']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-xi-start
+    kind: identity
+    where: 'Problem 1(d), formula "the motion of the garbage": the starting value is L and the starting velocity is zero'
+    formula: L*cos(Omega*0) + deriv('L*cos(Omega*q)', 'q', 0)
+    equals: L
+    samples:
+      L: [1, 0.5, 2, 1.5, 0.7]
+      Omega: [0.5, 1, 1.3, 2, 0.8]
+    tolerance: 1e-7
+    shown: ['<Formula label="Problem 1(d): the motion of the garbage"']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-time
+    answer: p1d-time
+    where: 'Problem 1(d), answer box: a quarter of the period of the orbit of part (b), in minutes'
+    inputs: {GM: 3.9860e14 m**3/s**2, R: 6.771e6 m}
+    formula: 2*pi*sqrt(R**3/GM)/4
+    expected: 23.1 min
+    shown: ['id="p1d-time"', 'which is 23.1 minutes']
+    source: {cite: mit, at: 'Problem 1(d) (our own addition)'}
+    origin: page-own
+
+  - id: p1d-time-seconds
+    where: 'Problem 1(d), solution: a quarter of 5545 s'
+    formula: 5545/4
+    expected: '1386'
+    shown: ['$5545/4 = 1386$ s']
+    source: {cite: mit, at: 'Problem 1(d) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # The two halves of the line are integrated apart; the cut-off at |x| = 10⁴ b changes the result by a fraction 5 × 10⁻⁹.
+  - id: p2-angle
+    kind: identity
+    answer: p2-angle
+    where: 'Problem 2, answer box: against the numerical integral of 2 ∂_yΦ along the line y = b'
+    formula: 4*G*M/b
+    equals: 2*G*M*b*(integrate('1/(x**2 + b**2)**1.5', 'x', -10000*b, 0) + integrate('1/(x**2 + b**2)**1.5', 'x', 0, 10000*b))
+    samples:
+      G: [1, 0.5, 2, 1, 1.5]
+      M: [1, 2, 0.5, 1.5, 0.7]
+      b: [1, 2, 3, 4, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p2-angle"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-integral
+    kind: identity
+    where: 'Problem 2, solution: the integral of dx/(x² + b²)^(3/2) over the whole line is 2/b²'
+    formula: 2/b**2
+    equals: integrate('1/(x**2 + b**2)**1.5', 'x', -10000*b, 0) + integrate('1/(x**2 + b**2)**1.5', 'x', 0, 10000*b)
+    samples:
+      b: [1, 2, 3, 4, 1.5]
+    tolerance: 1e-6
+    shown: ['which is $2/b^2$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-half
+    kind: identity
+    where: 'Problem 2, solution: one of the two equal terms alone (the one from g_tt) gives 2GM/b, half of the angle'
+    formula: 2*G*M/b
+    equals: G*M*b*(integrate('1/(x**2 + b**2)**1.5', 'x', -10000*b, 0) + integrate('1/(x**2 + b**2)**1.5', 'x', 0, 10000*b))
+    samples:
+      G: [1, 0.5, 2, 1, 1.5]
+      M: [1, 2, 0.5, 1.5, 0.7]
+      b: [1, 2, 3, 4, 1.5]
+    tolerance: 1e-6
+    shown: ['They are equal: each gives half of the bending.']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-path
+    kind: identity
+    where: 'Problem 2, formula "the path of the ray to first order": its slope against the integral of the sideways kick up to x'
+    formula: deriv('b - 2*K/b*(q + sqrt(q**2 + b**2))', 'q', x)
+    equals: -2*K*b*integrate('1/(q**2 + b**2)**1.5', 'q', -10000*b, x)
+    samples:
+      K: [0.01, 0.02, 0.05, 0.01, 0.03]
+      b: [1, 2, 3, 4, 1.5]
+      x: [-2, 0, 1, 5, -0.5]
+    tolerance: 1e-5
+    shown: ['<Formula label="Problem 2: the path of the ray to first order"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2-gm-c2
+    where: 'Problem 2, solution: GM/c² of the Sun'
+    inputs: {GM: 1.32712e20 m**3/s**2}
+    formula: GM/c**2
+    expected: 1476.6 m
+    shown: ['$GM/c^2 = 1.32712\times 10^{20}/(299\,792\,458)^2 = 1476.6$ m']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-radians
+    where: 'Problem 2, solution: the angle at the edge of the Sun in radians'
+    formula: 4*1476.6/6.957e8
+    expected: '8.49e-6'
+    shown: ['$\Delta\phi = 4 \times 1476.6/(6.957\times 10^8) = 8.49\times 10^{-6}$ rad']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-sun
+    answer: p2-sun
+    where: 'Problem 2, answer box: 4GM/(c²b) at the edge of the Sun, in arcseconds'
+    inputs: {GM: 1.32712e20 m**3/s**2, b: 6.957e8 m}
+    formula: 4*GM/(c**2*b)*180*3600/pi
+    expected: '1.75'
+    shown: ['id="p2-sun"', 'which is 1.75 arcseconds']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-phi-sun
+    where: 'Problem 2, solution: Φ = GM/(c²b) at the edge of the Sun'
+    inputs: {GM: 1.32712e20 m**3/s**2, b: 6.957e8 m}
+    formula: GM/(c**2*b)
+    expected: '2.12e-6'
+    shown: ['There $\Phi = 2.12\times 10^{-6}$']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-plot-coefficient
+    where: 'Problem 2, graph: the coefficient 2GM/b of the curve for GM/b = 0.04, with b = 1'
+    formula: 2*0.04
+    expected: '0.08'
+    shown: ['{ expr: "1 - 0.08*(x + sqrt(x^2 + 1))", label: "light ray" }']
+    source: {cite: mit, at: 'Problem 2 (our own graph)'}
+    origin: page-own
+
+  - id: p2-plot-slope
+    where: 'Problem 2, graph caption: the final slope −4GM/b for GM/b = 0.04'
+    formula: -4*0.04
+    expected: '-0.16'
+    shown: ['leaves with the slope −4GM/b = −0.16']
+    source: {cite: mit, at: 'Problem 2 (our own graph)'}
+    origin: page-own
+
+  - id: p2-plot-ratio
+    where: 'Problem 2, graph caption: GM/b = 0.04 over the value at the edge of the Sun'
+    inputs: {GM: 1.32712e20 m**3/s**2, b: 6.957e8 m}
+    formula: 0.04/(GM/(c**2*b))
+    expected: '19000'
+    shown: ['That is about 19 000 times larger than at the edge of the Sun']
+    source: {cite: mit, at: 'Problem 2 (our own graph)'}
+    origin: page-own
+
+  - id: p2-mit-radar
+    kind: fact
+    where: 'Problem 2, MIT historical note: the fractional precision of the radar measurements quoted on the sheet'
+    shown: ['to a fraction of about $10^{-5}$ (a statement of the 2006 sheet)']
+    source: {cite: mit, at: 'Problem 2, historical note, p. 2'}
+    origin: mit
+
+  # ---- Problem 3: the transported vector obeys both first-order equations and the starting values
+
+  - id: p3-ath
+    kind: identity
+    answer: p3-ath
+    where: 'Problem 3, answer box: A^θ = cos(φ cos θ₀) obeys d²A^θ/dφ² = −cos²θ₀ A^θ, checked at φ = 2π by a numerical second derivative'
+    formula: cos(2*pi*cos(theta0))
+    equals: -deriv('cos(q*cos(theta0))', 'q', 2*pi, 2)/cos(theta0)**2
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p3-ath"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-aph
+    kind: identity
+    answer: p3-aph
+    where: 'Problem 3, answer box: A^φ from the first transport equation, (dA^θ/dφ)/(sin θ₀ cos θ₀), with a numerical derivative at φ = 2π'
+    formula: -sin(2*pi*cos(theta0))/sin(theta0)
+    equals: deriv('cos(q*cos(theta0))', 'q', 2*pi)/(sin(theta0)*cos(theta0))
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p3-aph"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-second-equation
+    kind: identity
+    where: 'Problem 3, formula "the transported vector": the second transport equation, dA^φ/dφ = −cot θ₀ A^θ, at any φ = f'
+    formula: deriv('-sin(q*cos(theta0))/sin(theta0)', 'q', f)
+    equals: -cos(theta0)/sin(theta0)*cos(f*cos(theta0))
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+      f: [0.5, 2, 3.5, 5, 6.2]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 3: the transported vector"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-first-equation
+    kind: identity
+    where: 'Problem 3, formula "the transport equations on the circle": the first equation, dA^θ/dφ = sin θ₀ cos θ₀ A^φ, at any φ = f'
+    formula: deriv('cos(q*cos(theta0))', 'q', f)
+    equals: sin(theta0)*cos(theta0)*(-sin(f*cos(theta0))/sin(theta0))
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+      f: [0.5, 2, 3.5, 5, 6.2]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 3: the transport equations on the circle"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-start
+    kind: identity
+    where: 'Problem 3, solution: the starting values A^θ = 1 and A^φ = 0 at φ = 0 (their sum is 1)'
+    formula: cos(0*cos(theta0)) - sin(0*cos(theta0))/sin(theta0)
+    equals: 1 + 0*theta0
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-12
+    shown: ['has the components $A^\theta = 1$, $A^\phi = 0$, and then']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  - id: p3-mag
+    kind: identity
+    answer: p3-mag
+    where: 'Problem 3, answer box: the magnitude from the final components and the metric of the sphere'
+    formula: a
+    equals: sqrt(a**2*cos(2*pi*cos(theta0))**2 + a**2*sin(theta0)**2*(-sin(2*pi*cos(theta0))/sin(theta0))**2)
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-12
+    shown: ['id="p3-mag"']
+    source: {cite: mit, at: 'Problem 3 (our own solution)'}
+    origin: page-own
+
+  # The angle between the final and the initial vector, from their scalar product (the initial one is e_θ, of length a).
+  - id: p3-angle
+    answer: p3-angle
+    where: 'Problem 3, answer box: the angle from the scalar product of the final vector with e_θ, for θ₀ = 70°, in degrees'
+    formula: acos(cos(2*pi*cos(70*pi/180)))*180/pi
+    expected: '123.1'
+    shown: ['id="p3-angle"']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3-cos70
+    where: 'Problem 3, solution: cos 70°'
+    formula: cos(70*pi/180)
+    expected: '0.3420'
+    shown: ['$\cos\theta_0 = 0.3420$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3-angle-product
+    where: 'Problem 3, solution: 360° × 0.3420'
+    formula: 360*0.3420
+    expected: '123.1'
+    shown: ['$360° \times 0.3420 = 123.1°$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # R^θ_φθφ = ∂_θ Γ^θ_φφ − Γ^θ_φφ Γ^φ_θφ with a numerical derivative, lowered with g_θθ = a².
+  - id: p4a-riemann
+    kind: identity
+    answer: p4a-riemann
+    where: 'Problem 4(a), answer box: against the definition of the Riemann tensor with a numerical derivative of Γ^θ_φφ, lowered with a²'
+    formula: a**2*sin(theta)**2
+    equals: a**2*(deriv('-sin(q)*cos(q)', 'q', theta) + sin(theta)*cos(theta)*cos(theta)/sin(theta))
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p4a-riemann"']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-riemann-second
+    kind: identity
+    where: 'Problem 4(a), check: R^φ_θφθ = −∂_θ cot θ − cot²θ is 1, with a numerical derivative'
+    formula: -deriv('cos(q)/sin(q)', 'q', theta) - (cos(theta)/sin(theta))**2
+    equals: 1 + 0*theta
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-6
+    shown: ['= 0 + 1/\sin^2\theta + 0 - \cot^2\theta = 1$']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-symmetric
+    kind: identity
+    where: 'Problem 4(a), check: R^φ_θφθ lowered with g_φφ equals R^θ_φθφ lowered with g_θθ'
+    formula: a**2*sin(theta)**2*(-deriv('cos(q)/sin(q)', 'q', theta) - (cos(theta)/sin(theta))**2)
+    equals: a**2*(deriv('-sin(q)*cos(q)', 'q', theta) + cos(theta)**2)
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 4(a): the Riemann tensor of the sphere"']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  # Two antisymmetric pairs of indices, each with two orders that are not zero.
+  - id: p4a-count
+    answer: p4a-count
+    where: 'Problem 4(a), answer box: components that are not zero, two orders of the first pair times two of the second'
+    formula: 2*2
+    expected: '4'
+    shown: ['id="p4a-count"', 'that leaves four components']
+    source: {cite: mit, at: 'Problem 4(a) (our own addition)'}
+    origin: page-own
+
+  - id: p4a-sixteen
+    where: 'Problem 4(a), statement: four indices with two values each'
+    formula: 2**4
+    expected: '16'
+    shown: ['how many of the 16 components']
+    source: {cite: mit, at: 'Problem 4(a) (our own addition)'}
+    origin: page-own
+
+  - id: p4a-ricci
+    kind: identity
+    answer: p4a-ricci
+    where: 'Problem 4(a), answer box: g^θθ R^φ_θφθ + g^φφ R^θ_φθφ, both components from numerical derivatives of the connection coefficients'
+    formula: 2/a**2
+    equals: (1/a**2)*(-deriv('cos(q)/sin(q)', 'q', theta) - (cos(theta)/sin(theta))**2) + (1/(a**2*sin(theta)**2))*(deriv('-sin(q)*cos(q)', 'q', theta) + cos(theta)**2)
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-6
+    shown: ['id="p4a-ricci"']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-length
+    kind: identity
+    where: 'Problem 4(b), formula "the length does not change": g_θθ A^θ δA^θ + g_φφ A^φ δA^φ is zero'
+    formula: a**2*At*(-sin(theta)**2*Ap) + a**2*sin(theta)**2*Ap*At
+    equals: 0*a
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+      At: [1, 0, 0.7, -0.3, 2]
+      Ap: [0, 1, -0.4, 0.8, 1.5]
+    tolerance: 1e-12
+    shown: ['<Formula label="Problem 4(b): the length does not change"']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-rotation-theta
+    kind: identity
+    where: 'Problem 4(b), formula "a rotation by the solid angle": a δA^θ equals −sin θ times the unit component a sin θ A^φ (per dθ dφ)'
+    formula: a*(-sin(theta)**2*Ap)
+    equals: -sin(theta)*(a*sin(theta)*Ap)
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+      Ap: [0, 1, -0.4, 0.8, 1.5]
+    tolerance: 1e-12
+    shown: ['\delta\hat A^\theta = -\sin\theta\,d\theta\,d\phi\;\hat A^\phi']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-rotation-phi
+    kind: identity
+    where: 'Problem 4(b), formula "a rotation by the solid angle": a sin θ δA^φ equals sin θ times the unit component a A^θ (per dθ dφ)'
+    formula: a*sin(theta)*At
+    equals: sin(theta)*(a*At)
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.4]
+      At: [1, 0, 0.7, -0.3, 2]
+    tolerance: 1e-12
+    shown: ['\delta\hat A^\phi = \sin\theta\,d\theta\,d\phi\;\hat A^\theta']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-loop-size
+    kind: fact
+    where: 'Problem 4(b), check: the side of the small loop of the numerical run done while writing (not in this file)'
+    shown: ['round a loop with sides of 0.001']
+    source: {cite: mit, at: 'Problem 4(b) (our own check)'}
+    origin: page-own
+
+  - id: p4c-cap
+    kind: identity
+    answer: p4c-cap
+    where: 'Problem 4(c), answer box: against the numerical integral of sin θ over the cap, times 2π'
+    formula: 2*pi*(1 - cos(theta0))
+    equals: 2*pi*integrate('sin(q)', 'q', 0, theta0)
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-9
+    shown: ['id="p4c-cap"']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-compare
+    kind: identity
+    where: 'Problem 4(c), solution: the angle of Problem 3 and the solid angle of the cap add up to 2π'
+    formula: 2*pi*cos(theta0) + 2*pi*integrate('sin(q)', 'q', 0, theta0)
+    equals: 2*pi + 0*theta0
+    samples:
+      theta0: [0.3, 0.6, 0.9, 1.2, 1.4]
+    tolerance: 1e-9
+    shown: ['$2\pi - 2\pi\cos\theta_0 = \Omega$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # The solid angle of the triangle from its three right angles: the sum of the angles minus π.
+  - id: p4c-triangle
+    answer: p4c-triangle
+    where: 'Problem 4(c), answer box: the solid angle of the triangle from its angles, 3 × 90° − 180°, in degrees'
+    formula: (3*pi/2 - pi)*180/pi
+    expected: '90'
+    tolerance: '0.001'
+    shown: ['id="p4c-triangle"']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-eighth
+    where: 'Problem 4(c), solution: one eighth of the sphere, 4π/8, in degrees'
+    formula: (4*pi/8)*180/pi
+    expected: '90'
+    tolerance: '0.001'
+    shown: ['$\Omega = 4\pi/8 = \pi/2$: the vector turns by 90°']
+    source: {cite: mit, at: 'Problem 4(c) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5: the Killing vector ξ = ∂_φ of the sphere
+
+  # ∇_θ ξ^φ by the other route: lower the index (ξ_φ = a² sin²θ), take the covariant derivative of the one-form, raise it.
+  - id: p5-nabla
+    kind: identity
+    answer: p5-nabla
+    where: 'Problem 5, answer box: against the covariant derivative of the one-form ξ_φ = a² sin²θ, raised with g^φφ'
+    formula: cos(theta)/sin(theta)
+    equals: (deriv('a**2*sin(q)**2', 'q', theta) - (cos(theta)/sin(theta))*a**2*sin(theta)**2)/(a**2*sin(theta)**2)
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p5-nabla"']
+    source: {cite: mit, at: 'Problem 5 (our own addition)'}
+    origin: page-own
+
+  - id: p5-killing
+    kind: identity
+    where: 'Problem 5, check: with the index down, ∇_θ ξ_φ = a² sin θ cos θ, from the one-form route'
+    formula: a**2*sin(theta)*cos(theta)
+    equals: deriv('a**2*sin(q)**2', 'q', theta) - (cos(theta)/sin(theta))*a**2*sin(theta)**2
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.3]
+    tolerance: 1e-6
+    shown: ['these are $a^2\sin\theta\cos\theta$ and $-a^2\sin\theta\cos\theta$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-killing-other
+    kind: identity
+    where: 'Problem 5, check: with the index down, ∇_φ ξ_θ = −Γ^φ_φθ ξ_φ = −a² sin θ cos θ, equal to g_θθ times ∇_φ ξ^θ'
+    formula: -(cos(theta)/sin(theta))*a**2*sin(theta)**2
+    equals: a**2*(-sin(theta)*cos(theta))
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.3]
+    tolerance: 1e-12
+    shown: ['$\nabla_\phi\,\xi^\theta = \Gamma^\theta_{\phi\phi} = -\sin\theta\cos\theta$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-second
+    kind: identity
+    where: 'Problem 5, check: ∇_θ∇_θ ξ^φ = ∂_θ cot θ + cot²θ is −1, with a numerical derivative'
+    formula: deriv('cos(q)/sin(q)', 'q', theta) + (cos(theta)/sin(theta))**2
+    equals: -1 + 0*theta
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.3]
+    tolerance: 1e-6
+    shown: ['= -1/\sin^2\theta + \cot^2\theta = -1$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-second-phi
+    kind: identity
+    where: 'Problem 5, check: ∇_φ∇_φ ξ^φ = −Γ^θ_φφ cot θ + Γ^φ_φθ (−sin θ cos θ) is zero'
+    formula: sin(theta)*cos(theta)*cos(theta)/sin(theta) + (cos(theta)/sin(theta))*(-sin(theta)*cos(theta))
+    equals: 0*theta
+    samples:
+      theta: [0.3, 0.6, 0.9, 1.2, 1.3]
+    tolerance: 1e-12
+    shown: ['\Gamma^\phi_{\phi\theta}\left(-\sin\theta\cos\theta\right) = 0$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  - id: p5-box
+    kind: identity
+    where: 'Problem 5, check: the two sides of the second relation, g^θθ(−1) and −g^φφ R_φφ with R_φφ = sin²θ, are both −1/a²'
+    formula: (1/a**2)*(-1)
+    equals: -(1/(a**2*sin(theta)**2))*sin(theta)**2
+    samples:
+      a: [1, 0.5, 2, 3, 1.7]
+      theta: [0.3, 0.6, 0.9, 1.2, 1.3]
+    tolerance: 1e-12
+    shown: ['$-R^\phi{}_\phi\,\xi^\phi = -g^{\phi\phi}R_{\phi\phi} = -1/a^2$']
+    source: {cite: mit, at: 'Problem 5 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  # Independent route: for ds² = −N²dt² + dℓ² the one curvature component is N d²N/dℓ². With φ = p1 x + p2 x²/2 and
+  # ψ = q1 x, the proper distance is ℓ = (1 − e^(−q1 x))/q1, so x = −ln(1 − q1 ℓ)/q1; at x = 0, N = 1 and dℓ = dx.
+  - id: p6a-riemann
+    kind: identity
+    answer: p6a-riemann
+    where: 'Problem 6(a), answer box: against −N d²N/dℓ² at x = 0 for φ = p1 x + p2 x²/2 and ψ = q1 x, with a numerical second derivative in the proper distance'
+    formula: -(p2 + p1**2 + p1*q1)
+    equals: -deriv('exp(p1*(-log(1 - q1*q)/q1) + p2*(-log(1 - q1*q)/q1)**2/2)', 'q', 0, 2)
+    samples:
+      p1: [0.5, 1, 1.5, 2, 0.7]
+      p2: [0.5, 2, 1, 0.8, 1.6]
+      q1: [0.5, 1.2, 2, 0.9, 1.4]
+    tolerance: 1e-5
+    shown: ['id="p6a-riemann"']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  # The same component from the definition of the Riemann tensor, with numerical derivatives of the metric functions.
+  - id: p6a-definition
+    kind: identity
+    where: 'Problem 6(a), formula "one component of the Riemann tensor": −∂_x Γ^t_tx + Γ^t_tx Γ^x_xx − (Γ^t_tx)² at x = 0, the connection coefficients as numerical derivatives of ln|g_tt| and ln g_xx'
+    formula: -(p2 + p1**2 + p1*q1)
+    equals: -0.5*deriv('log(exp(2*(p1*q + p2*q**2/2)))', 'q', 0, 2) + 0.5*deriv('log(exp(2*(p1*q + p2*q**2/2)))', 'q', 0)*0.5*deriv('log(exp(-2*q1*q))', 'q', 0) - (0.5*deriv('log(exp(2*(p1*q + p2*q**2/2)))', 'q', 0))**2
+    samples:
+      p1: [0.5, 1, 1.5, 2, 0.7]
+      p2: [0.5, 2, 1, 0.8, 1.6]
+      q1: [0.5, 1.2, 2, 0.9, 1.4]
+    tolerance: 1e-5
+    shown: ['<Formula label="Problem 6(a): one component of the Riemann tensor"']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6a-gamma-xtt
+    kind: identity
+    where: 'Problem 6(a), formula "the connection coefficients": Γ^x_tt = −∂_x g_tt/(2 g_xx) for φ = p1 x and ψ = q1 x, with a numerical derivative'
+    formula: p1*exp(2*(p1*x + q1*x))
+    equals: 0.5*exp(2*q1*x)*deriv('exp(2*p1*q)', 'q', x)
+    samples:
+      p1: [0.5, 1, 1.5, 2, 0.7]
+      q1: [0.5, 1.2, 2, 0.9, 1.4]
+      x: [0.1, 0.5, -0.3, 0.2, 1]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 6(a): the connection coefficients"']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6a-check
+    kind: identity
+    where: 'Problem 6(a), check: the bracket of R^x_txt computed directly equals the bracket of the answer'
+    formula: p2 + 2*p1*(p1 + q1) - p1**2 - q1*p1
+    equals: p2 + p1**2 + p1*q1
+    samples:
+      p1: [0.5, 1, 1.5, 2, 0.7]
+      p2: [0.5, 2, 1, 0.8, 1.6]
+      q1: [0.5, 1.2, 2, 0.9, 1.4]
+    tolerance: 1e-12
+    shown: ['\left[\phi'''' + 2\phi''\left(\phi'' + \psi''\right) - \phi''^2 - \psi''\phi''\right]$']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-flat
+    kind: identity
+    where: 'Problem 6(b), formula "the curvature vanishes": φ″ + φ′² + φ′ψ′ for φ = ψ = (1/2) ln(g u), with numerical derivatives'
+    formula: deriv('0.5*log(g*q)', 'q', u, 2) + 2*deriv('0.5*log(g*q)', 'q', u)**2
+    equals: 0*u
+    samples:
+      g: [0.5, 1, 2, 3, 1.7]
+      u: [0.2, 0.5, 1, 2, 3]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 6(b): the curvature vanishes"']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-ell
+    kind: identity
+    answer: p6b-ell
+    where: 'Problem 6(b), answer box: against the numerical integral of du/sqrt(g u) from 0 to u'
+    formula: 2*sqrt(u/g)
+    equals: integrate('1/sqrt(g*q)', 'q', 0, u)
+    samples:
+      g: [0.5, 1, 2, 3, 1.7]
+      u: [0.2, 0.5, 1, 2, 3]
+    tolerance: 1e-7
+    shown: ['id="p6b-ell"']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  # The flat metric carried back through the change of coordinates, with numerical derivatives (side x > x₀, g > 0).
+  - id: p6b-gtt
+    kind: identity
+    where: 'Problem 6(b), formula "the change of coordinates": −(∂t̄/∂t)² + (∂x̄/∂t)² equals g_tt = −g u'
+    formula: -deriv('2*sqrt(u/g)*sinh(g*q/2)', 'q', t)**2 + deriv('2*sqrt(u/g)*cosh(g*q/2)', 'q', t)**2
+    equals: -g*u
+    samples:
+      g: [0.5, 1, 2, 3, 1.7]
+      u: [0.2, 0.5, 1, 2, 3]
+      t: [0.3, 1, -0.5, 0.2, 0.8]
+    tolerance: 1e-5
+    shown: ['<Formula label="Problem 6(b): the change of coordinates"']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-gxx
+    kind: identity
+    where: 'Problem 6(b), formula "the proper distance": with the change of coordinates, −(∂t̄/∂x)² + (∂x̄/∂x)² equals g_xx = 1/(g u)'
+    formula: -deriv('2*sqrt(q/g)*sinh(g*t/2)', 'q', u)**2 + deriv('2*sqrt(q/g)*cosh(g*t/2)', 'q', u)**2
+    equals: 1/(g*u)
+    samples:
+      g: [0.5, 1, 2, 3, 1.7]
+      u: [0.2, 0.5, 1, 2, 3]
+      t: [0.3, 1, -0.5, 0.2, 0.8]
+    tolerance: 1e-5
+    shown: ['<Formula label="Problem 6(b): the proper distance"']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-gtx
+    kind: identity
+    where: 'Problem 6(b), solution: the cross terms cancel, −(∂t̄/∂t)(∂t̄/∂x) + (∂x̄/∂t)(∂x̄/∂x) = 0'
+    formula: -deriv('2*sqrt(u/g)*sinh(g*q/2)', 'q', t)*deriv('2*sqrt(q/g)*sinh(g*t/2)', 'q', u) + deriv('2*sqrt(u/g)*cosh(g*q/2)', 'q', t)*deriv('2*sqrt(q/g)*cosh(g*t/2)', 'q', u)
+    equals: 0*u
+    samples:
+      g: [0.5, 1, 2, 3, 1.7]
+      u: [0.2, 0.5, 1, 2, 3]
+      t: [0.3, 1, -0.5, 0.2, 0.8]
+    tolerance: 1e-6
+    shown: ['the cross terms cancel']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-line-element
+    kind: identity
+    where: 'Problem 6(b), formula "the line element in proper distance": (gℓ/2)² with ℓ = 2 sqrt(u/g) equals g u'
+    formula: (g*2*sqrt(u/g)/2)**2
+    equals: g*u
+    samples:
+      g: [0.5, 1, 2, 3, 1.7]
+      u: [0.2, 0.5, 1, 2, 3]
+    tolerance: 1e-12
+    shown: ['<Formula label="Problem 6(b): the line element in proper distance"']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-ell-number
+    where: 'Problem 6(b), solution: ℓ for g = 2 and u = 0.5'
+    formula: 2*sqrt(0.5/2)
+    expected: '1'
+    tolerance: '0.0001'
+    shown: ['$\ell = 2\sqrt{0.5/2} = 1$']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  # x̄ from the numerical integral for ℓ, not from the closed form.
+  - id: p6b-xbar
+    answer: p6b-xbar
+    where: 'Problem 6(b), answer box: x̄ = ℓ cosh(gt/2) with ℓ from the numerical integral of du/sqrt(g u), for g = 2, u = 0.5, t = 1'
+    formula: integrate('1/sqrt(2*q)', 'q', 0, 0.5)*cosh(2*1/2)
+    expected: '1.543'
+    shown: ['id="p6b-xbar"', '$\bar x = \cosh 1 = 1.543$']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  - id: p6b-tbar
+    where: 'Problem 6(b), solution: t̄ = ℓ sinh(gt/2) for g = 2, u = 0.5, t = 1'
+    formula: 2*sqrt(0.5/2)*sinh(2*1/2)
+    expected: '1.175'
+    shown: ['$\bar t = \sinh 1 = 1.175$']
+    source: {cite: mit, at: 'Problem 6(b) (our own addition)'}
+    origin: page-own
+
+  # A body on x̄ = ℓ cosh(τ/ℓ), t̄ = ℓ sinh(τ/ℓ), with τ its proper time: d²x̄/dτ² at τ = 0, where it is at rest, is 1/ℓ.
+  - id: p6b-acceleration
+    kind: identity
+    where: 'Problem 6(b), check: the proper acceleration on the hyperbola x̄² − t̄² = ℓ² is 1/ℓ (written ell here)'
+    formula: deriv('ell*cosh(q/ell)', 'q', 0, 2)
+    equals: 1/ell
+    samples:
+      ell: [0.5, 1, 2, 3, 1.7]
+    tolerance: 1e-6
+    shown: ['constant proper acceleration $1/\ell$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6b-hyperbola
+    kind: identity
+    where: 'Problem 6(b), check: x̄² − t̄² = ℓ² at any t'
+    formula: (ell*cosh(g*t/2))**2 - (ell*sinh(g*t/2))**2
+    equals: ell**2
+    samples:
+      ell: [0.5, 1, 2, 3, 1.7]
+      g: [0.5, 1, 2, 3, 1.7]
+      t: [0.3, 1, -0.5, 0.2, 0.8]
+    tolerance: 1e-9
+    shown: ['$\bar x^2 - \bar t^2 = \ell^2$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
