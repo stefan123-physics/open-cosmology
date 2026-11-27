@@ -1,0 +1,770 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-12.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page
+# where one exists: Problem 1 checks K and the Lorenz number against the unsimplified kinetic formula with an
+# independent Fermi speed (which must cancel), and the heat capacity against the derivative of the Sommerfeld energy;
+# Problems 2 to 4
+# recompute the estimates from the inputs with full-precision constants (the route is the one the page states);
+# Problem 5 takes the power spectra from numerical Fourier integrals of the Gaussian correlation function, and the
+# friction from the numerical integral of the notes' friction formula.
+# Problem 1 (our own): aluminium 2.65e-8 Ohm m at 293 K, measured 237 W/(m K), Lorenz numbers about 2.3e-8 (our values).
+# Inputs given on MIT's sheet: silicon 2.3 g/cm^3, 2200 m/s, 1.5 W/(cm K) at 300 K; copper 8.9 g/cm^3,
+# 1.7e-6 Ohm cm; air at 300 K and 1 atm, a ball of radius 0.1 mm, a drift of 1 mm. Our values: atomic masses
+# (Si 28.0855 u, Cu 63.546 u, air 28.97 u), the molecular diameter of air 0.37 nm, the measured viscosity of air.
+# Constants: k_B and hbar from calcs/constants.yaml; e, m_e and the atomic mass unit (CODATA 2018) as inputs.
+# Choice boxes: none.
+
+page: content/year-4/8.08/8-08-problem-set-12.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 15 + 15 + 15 + 20 + 20'
+    formula: |-
+      15 + 15 + 15 + 20 + 20
+    expected: '85'
+    shown: ['and 20 each for Problems 4 and 5, 85 points in all']
+    source: {cite: mit, at: 'Problems 1 to 5, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1: heat carried by the electrons of a metal (our own problem)
+
+  - id: p1-k
+    kind: identity
+    answer: p1-k
+    where: 'Problem 1(a), answer box: K of the electrons, against (1/3) n vF (vF tau) c_v with c_v = (pi^2/2) kB (kB T/eF) and eF = m vF^2/2 evaluated at an independent vF (which must cancel)'
+    formula: |-
+      pi**2*n*tau*kB**2*T/(3*m)
+    equals: |-
+      1/3*n*vF*(vF*tau)*(pi**2/2)*kB*(kB*T/(m*vF**2/2))
+    samples:
+      n: [1, 10, 3.0, 7.0]
+      tau: [0.5, 2.0, 1.0, 1.3]
+      kB: [0.5, 1.5, 1.0, 0.8]
+      T: [0.5, 2.0, 1.0, 1.7]
+      m: [0.5, 2.0, 1.0, 1.4]
+      vF: [3.0, 0.7, 10.0, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p1-k"', '<Formula label="Thermal conductivity of the electrons"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p1-cv
+    kind: identity
+    where: 'Problem 1, statement: the electronic heat capacity per electron (pi^2/2) kB (kB T/eF), against the numerical derivative with respect to T of the Sommerfeld energy per electron (3/5) eF + (pi^2/4) (kB T)^2/eF'
+    formula: |-
+      pi**2/2*kB*(kB*T/eF)
+    equals: |-
+      deriv('3/5*eF + pi**2/4*(kB*x)**2/eF', 'x', T)
+    samples:
+      kB: [1.0, 0.5, 1.5]
+      T: [0.02, 0.05, 0.1]
+      eF: [1.0, 2.0, 1.5]
+    tolerance: 1e-6
+    shown: ['<Formula label="Heat capacity per electron"']
+    source: {cite: reading2, at: 'p. 87'}
+    origin: mit
+
+  - id: p1-l
+    kind: identity
+    answer: p1-l
+    where: 'Problem 1(b), answer box: L = K/(sigma T), against the ratio of the two independent forms (1/3) n vF^2 tau c_v and e^2 n tau T/m at sample values of n, tau, m and vF (which must cancel)'
+    formula: |-
+      pi**2*kB**2/(3*e**2)
+    equals: |-
+      (1/3*n*vF**2*tau*(pi**2/2)*kB*(kB*T/(m*vF**2/2)))/(e**2*n*tau/m*T)
+    samples:
+      kB: [0.5, 1.5, 1.0]
+      e: [0.5, 1.5, 1.2]
+      n: [2.0, 5.0, 9.0]
+      tau: [0.7, 1.9, 1.0]
+      m: [0.6, 1.8, 1.0]
+      vF: [2.0, 0.9, 5.0]
+      T: [0.3, 1.0, 2.0]
+    tolerance: 1e-9
+    shown: ['id="p1-l"', '<Formula label="Lorenz number of the free-electron model"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-kbe
+    where: 'Problem 1(c), solution: k_B/e in V/K'
+    inputs: {e_ch: 1.602176634e-19 C}
+    formula: |-
+      k_B/e_ch
+    expected: 8.617e-5 V/K
+    shown: ['$k_B/e = 8.617 \times 10^{-5}$ V/K']
+    source: {cite: codata, at: 'k_B, elementary charge'}
+    origin: page-own
+
+  - id: p1-kbe2
+    where: 'Problem 1(c), solution: (k_B/e)^2 in V^2/K^2'
+    inputs: {e_ch: 1.602176634e-19 C}
+    formula: |-
+      (k_B/e_ch)**2
+    expected: 7.426e-9 V**2/K**2
+    shown: ['$(k_B/e)^2 = 7.426 \times 10^{-9}$ V²/K²']
+    source: {cite: codata, at: 'k_B, elementary charge'}
+    origin: page-own
+
+  - id: p1-pi23
+    where: 'Problem 1(c), solution: pi^2/3'
+    formula: |-
+      pi**2/3
+    expected: '3.290'
+    shown: ['$L = 3.290 \times 7.426']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-lnum
+    answer: p1-lnum
+    where: 'Problem 1(c), answer box: L = (pi^2/3)(k_B/e)^2 in units of 1e-8 W Ohm/K^2'
+    inputs: {e_ch: 1.602176634e-19 C}
+    formula: |-
+      pi**2/3*(k_B/e_ch)**2/(1e-8*watt*ohm/kelvin**2)
+    expected: '2.44'
+    shown: ['id="p1-lnum"', '= 2.44 \times 10^{-8}$ W Ω/K²']
+    source: {cite: codata, at: 'k_B, elementary charge (our own solution)'}
+    origin: page-own
+
+  - id: p1-lhalf
+    where: 'Problem 1(c), solution check: with the notes'' 1/6, (pi^2/6)(k_B/e)^2 in W Ohm/K^2'
+    inputs: {e_ch: 1.602176634e-19 C}
+    formula: |-
+      pi**2/6*(k_B/e_ch)**2
+    expected: 1.22e-8 W*ohm/K**2
+    shown: ['it would be half, $1.22 \times 10^{-8}$ W Ω/K²']
+    source: {cite: reading1, at: 'p. 104 (our own check)'}
+    origin: page-own
+
+  - id: p1-lmeasured
+    kind: fact
+    where: 'Problem 1(c), solution check: measured Lorenz numbers of copper, silver and gold near room temperature, about 2.3e-8 W Ohm/K^2 (our values)'
+    value: '2.3e-8 W Ohm/K^2'
+    shown: ['are all about 2.3 in these units (our values)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own values)'}
+    origin: page-own
+
+  - id: p1-al
+    answer: p1-al
+    where: 'Problem 1(d), answer box: K = L T/rho for aluminium, rho = 2.65e-8 Ohm m at 293 K, with L = (pi^2/3)(k_B/e)^2, in W/(m K)'
+    inputs: {e_ch: 1.602176634e-19 C, rho: 2.65e-8 ohm*meter}
+    formula: |-
+      pi**2/3*(k_B/e_ch)**2*293*kelvin/rho/(watt/(meter*kelvin))
+    expected: '270'
+    shown: ['id="p1-al"', 'W/(m K) $= 270$ W/(m K)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-al-rho
+    kind: fact
+    where: 'Problem 1(d): resistivity of aluminium at 293 K (our value)'
+    value: '2.65e-8 Ohm m'
+    shown: ['Aluminium has a resistivity of $2.65 \times 10^{-8}$ Ω m at 293 K (our value)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own value)'}
+    origin: page-own
+
+  - id: p1-al-measured
+    kind: fact
+    where: 'Problem 1(d), solution check: measured thermal conductivity of aluminium near room temperature (our value)'
+    value: '237 W/(m K)'
+    shown: ['The measured value is about 237 W/(m K) (our value)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own value)'}
+    origin: page-own
+
+  - id: p1-al-14
+    where: 'Problem 1(d), solution check: the estimate is 14% above the measured 237 W/(m K)'
+    inputs: {e_ch: 1.602176634e-19 C, rho: 2.65e-8 ohm*meter}
+    formula: |-
+      100*(pi**2/3*(k_B/e_ch)**2*293*kelvin/rho/(237*watt/(meter*kelvin)) - 1)
+    expected: '14'
+    tolerance: '1'
+    shown: ['the estimate is 14% above it']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p1-al-half
+    where: 'Problem 1(d), solution check: with the notes'' 1/6, (pi^2/6)(k_B/e)^2 T/rho, in W/(m K)'
+    inputs: {e_ch: 1.602176634e-19 C, rho: 2.65e-8 ohm*meter}
+    formula: |-
+      pi**2/6*(k_B/e_ch)**2*293*kelvin/rho
+    expected: 135 W/(m*K)
+    shown: ['the estimate would be 135 W/(m K)']
+    source: {cite: reading1, at: 'p. 104 (our own check)'}
+    origin: page-own
+
+  - id: p1-al-ratio
+    where: 'Problem 1(d), solution check: 237 over that estimate, 1.75'
+    inputs: {e_ch: 1.602176634e-19 C, rho: 2.65e-8 ohm*meter}
+    formula: |-
+      237*watt/(meter*kelvin)/(pi**2/6*(k_B/e_ch)**2*293*kelvin/rho)
+    expected: '1.75'
+    shown: ['1.75 times too small']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2: phonons in silicon
+
+  - id: p2-na
+    where: 'Problem 2(a), solution: atoms of silicon per m^3 from 2.3 g/cm^3 and 28.0855 u'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton}
+    formula: |-
+      rho_m/m_Si
+    expected: 4.93e28 m**-3
+    shown: ['m⁻³ $= 4.93 \times 10^{28}$ m⁻³']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-c
+    answer: p2-c
+    where: 'Problem 2(a), answer box: C = 3 n_a k_B, in units of 1e6 J/(m^3 K)'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton}
+    formula: |-
+      3*rho_m/m_Si*k_B/(1e6*joule/(meter**3*kelvin))
+    expected: '2.04'
+    shown: ['id="p2-c"', 'J/(m³ K) $= 2.04 \times 10^6$ J/(m³ K)']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-debye
+    where: 'Problem 2(a), solution check: Debye temperature hbar c_s (6 pi^2 n_a)^(1/3)/k_B with MIT''s c_s = 2200 m/s'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton, c_s: 2200 m/s}
+    formula: |-
+      hbar*c_s*(6*pi**2*rho_m/m_Si)**(1/3)/k_B
+    expected: 240 K
+    shown: ['$\hbar c_s(6\pi^2n_a)^{1/3}/k_B$ is 240 K']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-dulong
+    where: 'Problem 2(a), solution check: 3 N_A k_B per mole'
+    inputs: {N_A: 6.02214076e23 mol**-1}
+    formula: |-
+      3*N_A*k_B
+    expected: 24.9 J/(mol*K)
+    shown: ['$3N_Ak_B = 24.9$ J/(mol K)']
+    source: {cite: codata, at: 'Avogadro constant, k_B'}
+    origin: page-own
+
+  - id: p2-lam
+    answer: p2-lam
+    where: 'Problem 2(b), answer box: phonon mean free path 6K/(C c_s), in nm'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton, c_s: 2200 m/s, K_th: 1.5 W/(cm*kelvin)}
+    formula: |-
+      6*K_th/(3*rho_m/m_Si*k_B*c_s)/nanometer
+    expected: '200'
+    shown: ['id="p2-lam"', '\ \text{m} = 2.0 \times 10^{-7}\ \text{m}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-spacing
+    where: 'Problem 2(b), solution check: atomic spacing n_a^(-1/3), in nm'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton}
+    formula: |-
+      (rho_m/m_Si)**(-1/3)
+    expected: 0.27 nanometer
+    shown: ['$n_a^{-1/3} = 0.27$ nm']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-ratio
+    where: 'Problem 2(b), solution check: mean free path over atomic spacing, some 730'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton, c_s: 2200 m/s, K_th: 1.5 W/(cm*kelvin)}
+    formula: |-
+      6*K_th/(3*rho_m/m_Si*k_B*c_s)/(rho_m/m_Si)**(-1/3)
+    expected: '730'
+    tolerance: '1%'
+    shown: ['That is some 730 times the spacing between atoms']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p2-third
+    where: 'Problem 2(b), solution check: the K = (1/3) C v lambda route gives 100 nm'
+    inputs: {rho_m: 2.3 g/cm**3, m_Si: 28.0855 dalton, c_s: 2200 m/s, K_th: 1.5 W/(cm*kelvin)}
+    formula: |-
+      3*K_th/(3*rho_m/m_Si*k_B*c_s)
+    expected: 100 nanometer
+    shown: ['that route gives half, 100 nm']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 3: electrons in copper
+
+  - id: p3-n
+    answer: p3-n
+    where: 'Problem 3(a), answer box: conduction electrons per m^3 (one per atom), in units of 1e28 m^-3'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton}
+    formula: |-
+      rho_m/m_Cu/(1e28*meter**-3)
+    expected: '8.43'
+    shown: ['id="p3-n"', 'm⁻³ $= 8.43 \times 10^{28}$ m⁻³']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-tau
+    answer: p3-tau
+    where: 'Problem 3(b), answer box: Drude relaxation time m/(rho e^2 n), in units of 1e-14 s'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, rho: 1.7e-6 ohm*cm, e_ch: 1.602176634e-19 C, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      m_e/(rho*e_ch**2*rho_m/m_Cu)/(1e-14*second)
+    expected: '2.47'
+    shown: ['id="p3-tau"', '\ \text{s} = 2.47 \times 10^{-14}\ \text{s}']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-kf
+    where: 'Problem 3(c), solution: k_F = (3 pi^2 n)^(1/3)'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton}
+    formula: |-
+      (3*pi**2*rho_m/m_Cu)**(1/3)
+    expected: 1.36e10 m**-1
+    shown: ['m⁻¹ $= 1.36 \times 10^{10}$ m⁻¹']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-vf
+    where: 'Problem 3(c), solution: v_F = hbar k_F/m'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar*(3*pi**2*rho_m/m_Cu)**(1/3)/m_e
+    expected: 1.57e6 m/s
+    shown: ['$v_F = \hbar k_F/m = 1.57 \times 10^6$ m/s']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ef
+    where: 'Problem 3(c), solution: Fermi energy hbar^2 k_F^2/2m in eV'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar**2*(3*pi**2*rho_m/m_Cu)**(2/3)/(2*m_e)
+    expected: 7.0 eV
+    shown: ['(a Fermi energy of 7.0 eV)']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-lam
+    answer: p3-lam
+    where: 'Problem 3(c), answer box: mean free path v_F tau, in nm'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, rho: 1.7e-6 ohm*cm, e_ch: 1.602176634e-19 C, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar*(3*pi**2*rho_m/m_Cu)**(1/3)/m_e*m_e/(rho*e_ch**2*rho_m/m_Cu)/nanometer
+    expected: '38.9'
+    shown: ['id="p3-lam"', '$\lambda = v_F\tau = 1.57 \times 10^6 \times 2.47 \times 10^{-14}$ m $= 3.89 \times 10^{-8}$ m']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-spacing
+    where: 'Problem 3(c), solution check: spacing n^(-1/3) in nm'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton}
+    formula: |-
+      (rho_m/m_Cu)**(-1/3)
+    expected: 0.23 nanometer
+    shown: ['$n^{-1/3} = 0.23$ nm']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p3-ratio
+    where: 'Problem 3(c), solution check: mean free path over spacing, about 170'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, rho: 1.7e-6 ohm*cm, e_ch: 1.602176634e-19 C, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar*(3*pi**2*rho_m/m_Cu)**(1/3)/(rho*e_ch**2*rho_m/m_Cu)/(rho_m/m_Cu)**(-1/3)
+    expected: '170'
+    tolerance: '1%'
+    shown: ['That is about 170 times the spacing between atoms']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p3-vth
+    where: 'Problem 3(c), solution check: classical thermal speed sqrt(3 k_B T/m) at 300 K'
+    inputs: {m_e: 9.1093837015e-31 kg}
+    formula: |-
+      sqrt(3*k_B*300*kelvin/m_e)
+    expected: 1.2e5 m/s
+    shown: ['$\sqrt{3k_BT/m} = 1.2 \times 10^5$ m/s at 300 K']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p3-lam-classical
+    where: 'Problem 3(c), solution check: the classical path sqrt(3 k_B T/m) tau, in nm'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, rho: 1.7e-6 ohm*cm, e_ch: 1.602176634e-19 C, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      sqrt(3*k_B*300*kelvin/m_e)*m_e/(rho*e_ch**2*rho_m/m_Cu)
+    expected: 2.9 nanometer
+    shown: ['which gives a path of only 2.9 nm']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p3-thirteen
+    where: 'Problem 3(c), solution check: v_F over the classical speed, thirteen'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar*(3*pi**2*rho_m/m_Cu)**(1/3)/m_e/sqrt(3*k_B*300*kelvin/m_e)
+    expected: '13'
+    tolerance: '5%'
+    shown: ['thirteen times shorter']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p3-lam-wen
+    where: 'Problem 3(c), solution check: the path with the notes'' rough speed sqrt(eF/m) = vF/sqrt 2, in nm'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, rho: 1.7e-6 ohm*cm, e_ch: 1.602176634e-19 C, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      sqrt((hbar**2*(3*pi**2*rho_m/m_Cu)**(2/3)/(2*m_e))/m_e)*m_e/(rho*e_ch**2*rho_m/m_Cu)
+    expected: 27.5 nanometer
+    shown: ['is $v_F/\sqrt2$ and gives 27.5 nm']
+    source: {cite: reading1, at: 'p. 106 (our own check)'}
+    origin: page-own
+
+  - id: p3-lam-n13
+    where: 'Problem 3(c), solution check: the path with the speed hbar n^(1/3)/m, in nm'
+    inputs: {rho_m: 8.9 g/cm**3, m_Cu: 63.546 dalton, rho: 1.7e-6 ohm*cm, e_ch: 1.602176634e-19 C, m_e: 9.1093837015e-31 kg}
+    formula: |-
+      hbar*(rho_m/m_Cu)**(1/3)/m_e*m_e/(rho*e_ch**2*rho_m/m_Cu)
+    expected: 12.6 nanometer
+    shown: ['$\hbar n^{1/3}/m$ gives 12.6 nm']
+    source: {cite: reading1, at: 'p. 106 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 4: air and a small ball
+
+  - id: p4-n
+    where: 'Problem 4(a), solution: n = P/k_B T at 1 atm and 300 K'
+    inputs: {P: 101325 pascal}
+    formula: |-
+      P/(k_B*300*kelvin)
+    expected: 2.45e25 m**-3
+    shown: ['m⁻³ $= 2.45 \times 10^{25}$ m⁻³']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-sigma
+    where: 'Problem 4(a), solution: sigma = pi d^2 for d = 0.37 nm'
+    inputs: {d: 0.37 nanometer}
+    formula: |-
+      pi*d**2
+    expected: 4.30e-19 m**2
+    shown: ['m² $= 4.30 \times 10^{-19}$ m²']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own values)'}
+    origin: page-own
+
+  - id: p4-lam
+    answer: p4-lam
+    where: 'Problem 4(a), answer box: mean free path 1/(sigma n), in nm'
+    inputs: {P: 101325 pascal, d: 0.37 nanometer}
+    formula: |-
+      1/(pi*d**2*P/(k_B*300*kelvin))/nanometer
+    expected: '95.0'
+    shown: ['id="p4-lam"', '$\lambda = 1/(\sigma n) = 9.50 \times 10^{-8}$ m, 95 nm']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-spacing
+    where: 'Problem 4(a), solution check: spacing n^(-1/3) in nm'
+    inputs: {P: 101325 pascal}
+    formula: |-
+      (P/(k_B*300*kelvin))**(-1/3)
+    expected: 3.4 nanometer
+    shown: ['$n^{-1/3} = 3.4$ nm']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p4-neighbours
+    where: 'Problem 4(a), solution check: mean free path over spacing, some 28'
+    inputs: {P: 101325 pascal, d: 0.37 nanometer}
+    formula: |-
+      1/(pi*d**2*P/(k_B*300*kelvin))/(P/(k_B*300*kelvin))**(-1/3)
+    expected: '28'
+    tolerance: '2%'
+    shown: ['some 28 neighbours']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p4-sqrt2
+    where: 'Problem 4(a), solution check: the mean free path divided by sqrt 2, in nm'
+    inputs: {P: 101325 pascal, d: 0.37 nanometer}
+    formula: |-
+      1/(sqrt(2)*pi*d**2*P/(k_B*300*kelvin))
+    expected: 67 nanometer
+    shown: ['giving 67 nm']
+    source: {cite: reading1, at: 'p. 93 (our own check)'}
+    origin: page-own
+
+  - id: p4-mass
+    where: 'Problem 4(b), solution: 28.97 u in kg'
+    inputs: {m_air: 28.97 dalton}
+    formula: |-
+      m_air
+    expected: 4.81e-26 kg
+    shown: ['kg $= 4.81 \times 10^{-26}$ kg']
+    source: {cite: codata, at: 'atomic mass unit (our own values)'}
+    origin: page-own
+
+  - id: p4-vbar
+    where: 'Problem 4(b), solution: vbar = sqrt(2 k_B T/m) at 300 K'
+    inputs: {m_air: 28.97 dalton}
+    formula: |-
+      sqrt(2*k_B*300*kelvin/m_air)
+    expected: 415 m/s
+    shown: ['$\bar v = \sqrt{2k_BT/m} = 415$ m/s']
+    source: {cite: reading1, at: 'p. 102 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-nu
+    answer: p4-nu
+    where: 'Problem 4(b) (MIT''s (a), continued), answer box: viscosity (1/6) n m vbar lambda, in units of 1e-6 Pa s'
+    inputs: {P: 101325 pascal, d: 0.37 nanometer, m_air: 28.97 dalton}
+    formula: |-
+      (P/(k_B*300*kelvin))*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2*P/(k_B*300*kelvin))/(1e-6*pascal*second)
+    expected: '7.74'
+    shown: ['id="p4-nu"', '\ \text{Pa s} = 7.7 \times 10^{-6}\ \text{Pa s}']
+    source: {cite: mit, at: 'Problem 4(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-nu-measured
+    kind: fact
+    where: 'Problem 4(b), solution check: measured viscosity of air at 300 K (our value)'
+    value: '1.85e-5 Pa s'
+    shown: ['about $1.85 \times 10^{-5}$ Pa s (our value)']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own value)'}
+    origin: page-own
+
+  - id: p4-nu-ratio
+    where: 'Problem 4(b), solution check: measured over estimated viscosity, 2.4'
+    inputs: {P: 101325 pascal, d: 0.37 nanometer, m_air: 28.97 dalton}
+    formula: |-
+      1.85e-5*pascal*second/(m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2))
+    expected: '2.4'
+    shown: ['2.4 times larger']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p4-fric
+    answer: p4-fric
+    where: 'Problem 4(c) (MIT''s (b)), answer box: 1/eta = 6 pi a nu with the estimated nu, in units of 1e-8 kg/s'
+    inputs: {d: 0.37 nanometer, m_air: 28.97 dalton, a: 0.1 millimeter}
+    formula: |-
+      6*pi*a*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2)/(1e-8*kilogram/second)
+    expected: '1.46'
+    shown: ['id="p4-fric"', '\ \text{kg/s} = 1.46 \times 10^{-8}\ \text{kg/s}']
+    source: {cite: mit, at: 'Problem 4(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-fric-measured
+    where: 'Problem 4(c), solution check: 6 pi a nu with the measured viscosity 1.85e-5 Pa s'
+    inputs: {a: 0.1 millimeter, nu: 1.85e-5 pascal*second}
+    formula: |-
+      6*pi*a*nu
+    expected: 3.5e-8 kg/s
+    shown: ['the coefficient would be $3.5 \times 10^{-8}$ kg/s']
+    source: {cite: mit, at: 'Problem 4(b), p. 1 (our own check)'}
+    origin: page-own
+
+  - id: p4-d
+    where: 'Problem 4(d), solution: D = eta k_B T, and k_B T at 300 K'
+    inputs: {d: 0.37 nanometer, m_air: 28.97 dalton, a: 0.1 millimeter}
+    formula: |-
+      k_B*300*kelvin/(6*pi*a*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2))
+    expected: 2.84e-13 m**2/s
+    shown: ['m²/s $= 2.84 \times 10^{-13}$ m²/s']
+    source: {cite: reading1, at: 'p. 115 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-kt
+    where: 'Problem 4(d), solution: k_B T at 300 K'
+    formula: |-
+      k_B*300*kelvin
+    expected: 4.142e-21 J
+    shown: ['$D = \eta k_BT = 4.142 \times 10^{-21}/1.458 \times 10^{-8}$']
+    source: {cite: codata, at: 'k_B'}
+    origin: page-own
+
+  - id: p4-fric-4fig
+    where: 'Problem 4(d), solution: the friction coefficient to four figures, 1.458e-8 kg/s'
+    inputs: {d: 0.37 nanometer, m_air: 28.97 dalton, a: 0.1 millimeter}
+    formula: |-
+      6*pi*a*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2)
+    expected: 1.458e-8 kg/s
+    shown: ['/1.458 \times 10^{-8}$ m²/s']
+    source: {cite: mit, at: 'Problem 4(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-t
+    answer: p4-t
+    where: 'Problem 4(d) (MIT''s (c)), answer box: t = <r^2>/6D for an rms drift of 1 mm, in units of 1e5 s'
+    inputs: {d: 0.37 nanometer, m_air: 28.97 dalton, a: 0.1 millimeter, L: 1 millimeter}
+    formula: |-
+      L**2/(6*k_B*300*kelvin/(6*pi*a*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2)))/(1e5*second)
+    expected: '5.87'
+    shown: ['id="p4-t"', '\times 10^{-13})$ s $= 5.87 \times 10^5$ s']
+    source: {cite: mit, at: 'Problem 4(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-days
+    where: 'Problem 4(d), solution: the same time in days'
+    inputs: {d: 0.37 nanometer, m_air: 28.97 dalton, a: 0.1 millimeter, L: 1 millimeter}
+    formula: |-
+      L**2/(6*k_B*300*kelvin/(6*pi*a*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2)))
+    expected: 6.8 day
+    shown: ['almost a week (6.8 days)']
+    source: {cite: mit, at: 'Problem 4(c), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-relax
+    where: 'Problem 4(d), solution check: velocity relaxation time M eta for a ball of density 1000 kg/m^3 (our value)'
+    inputs: {d: 0.37 nanometer, m_air: 28.97 dalton, a: 0.1 millimeter, rho_b: 1000 kg/m**3}
+    formula: |-
+      rho_b*4/3*pi*a**3/(6*pi*a*m_air*sqrt(2*k_B*300*kelvin/m_air)/(6*pi*d**2))
+    expected: 0.3 s
+    shown: ['about 0.3 s for a ball of density 1000 kg/m³ (our value)']
+    source: {cite: mit, at: 'Problem 4(c), p. 1 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5: noise with a Gaussian correlation (setup ours)
+
+  - id: p5-pf
+    kind: identity
+    answer: p5-pf
+    where: 'Problem 5(a), answer box: P^F(omega), against the numerical Fourier integral of A exp(-t^2/tau^2) divided by pi'
+    formula: |-
+      A*tau/sqrt(pi)*exp(-omega**2*tau**2/4)
+    equals: |-
+      integrate('A*exp(-u**2/tau**2)*cos(omega*u)', 'u', -30, 30)/pi
+    samples:
+      A: [0.5, 2.0, 1.0, 1.4]
+      tau: [0.5, 2.0, 1.0, 0.8]
+      omega: [0.2, 2.0, 1.0, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p5-pf"', '<Formula label="Power spectrum of the force"']
+    source: {cite: mit, at: 'Problem 5(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-total
+    kind: identity
+    where: 'Problem 5(a), solution check: the integral of P^F over omega from 0 to infinity is A'
+    formula: |-
+      integrate('A*tau/sqrt(pi)*exp(-u**2*tau**2/4)', 'u', 0, 60/tau)
+    equals: |-
+      A
+    samples:
+      A: [0.5, 2.0, 1.0]
+      tau: [0.5, 2.0, 1.0]
+    tolerance: 1e-6
+    shown: ['\cdot\frac{\sqrt\pi}{\tau} = A = \varphi(0)']
+    source: {cite: mit, at: 'Problem 5(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-half
+    answer: p5-half
+    where: 'Problem 5(b), answer box: omega tau where exp(-omega^2 tau^2/4) = 1/2, solved numerically'
+    formula: |-
+      solve('exp(-x**2/4) - 0.5', 'x', 0.1, 5)
+    expected: '1.665'
+    shown: ['id="p5-half"', 'gives $\omega\tau = 2\sqrt{\ln 2} = 1.665$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p5-e4
+    where: 'Problem 5(b), solution: e^(-4), about 0.02'
+    formula: |-
+      exp(-4)
+    expected: '0.02'
+    shown: ['by a factor $e^{-4} \approx 0.02$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p5-fric
+    kind: identity
+    answer: p5-fric
+    where: 'Problem 5(c), answer box: m gamma for gamma tau << 1, against the numerical integral of the notes'' friction formula at gamma = 0'
+    formula: |-
+      sqrt(pi)*A*tau/(2*kB*T)
+    equals: |-
+      integrate('A*exp(-u**2/tau**2)', 'u', 0, 30)/(kB*T)
+    samples:
+      A: [0.5, 2.0, 1.0]
+      tau: [0.5, 2.0, 1.0]
+      kB: [0.5, 1.5, 1.0]
+      T: [0.5, 2.0, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p5-fric"', '<Formula label="Friction for a short correlation time"']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-exact-ratio
+    where: 'Problem 5(c), solution check: at gamma tau = 0.1 the exact integral of exp(-s^2/tau^2 - gamma s) is 5.4% smaller than sqrt(pi) tau/2 (tau = 1), numerically'
+    formula: |-
+      100*(1 - integrate('exp(-u**2 - 0.1*u)', 'u', 0, 30)/(sqrt(pi)/2))
+    expected: '5.4'
+    shown: ['at $\gamma\tau = 0.1$ it is 5.4% smaller']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-exact-erfc
+    kind: identity
+    where: 'Problem 5(c), solution check: the closed form (sqrt(pi)/2) tau e^(gamma^2 tau^2/4) erfc(gamma tau/2), against the numerical integral'
+    formula: |-
+      sqrt(pi)/2*tau*exp(g**2*tau**2/4)*erfc(g*tau/2)
+    equals: |-
+      integrate('exp(-u**2/tau**2 - g*u)', 'u', 0, 40)
+    samples:
+      tau: [0.5, 1.0, 2.0]
+      g: [0.1, 1.0, 0.5]
+    tolerance: 1e-6
+    shown: ['= \frac{\sqrt\pi}{2}\,\tau\,e^{\gamma^2\tau^2/4}\operatorname{erfc}(\gamma\tau/2)$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-pv
+    kind: identity
+    answer: p5-pv
+    where: 'Problem 5(d), answer box: P^v(omega), against K(omega)/(pi m^2 (gamma^2 + omega^2)) with K(omega) the numerical Fourier integral of A exp(-t^2/tau^2) and A fixed by the numerical integral of the friction formula at gamma tau -> 0'
+    formula: |-
+      2*kB*T*gamma*exp(-omega**2*tau**2/4)/(pi*m*(gamma**2 + omega**2))
+    equals: |-
+      kB*T*m*gamma/integrate('exp(-u**2/tau**2)', 'u', 0, 30)*integrate('exp(-u**2/tau**2)*cos(omega*u)', 'u', -30, 30)/(pi*m**2*(gamma**2 + omega**2))
+    samples:
+      kB: [0.5, 1.5, 1.0]
+      T: [0.5, 2.0, 1.1]
+      m: [0.5, 2.0, 1.0]
+      gamma: [0.5, 2.0, 1.0]
+      tau: [0.3, 1.0, 0.6]
+      omega: [0.5, 3.0, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p5-pv"', '<Formula label="Power spectrum of the velocity"']
+    source: {cite: mit, at: 'Problem 5(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p5-equipartition
+    kind: identity
+    where: 'Problem 5(e): with the exact friction, the integral of P^v over omega from 0 to infinity is k_B T/m for any tau (numerical double route: the omega integral of K/(pi m^2 (gamma^2 + omega^2)) with K in closed form, and A fixed by the exact friction integral)'
+    formula: |-
+      kB*T*m*gamma/integrate('exp(-u**2/tau**2 - gamma*u)', 'u', 0, 40)*sqrt(pi)*tau*integrate('exp(-w**2*tau**2/4)/(gamma**2 + w**2)', 'w', 0, 200)/(pi*m**2)
+    equals: |-
+      kB*T/m
+    samples:
+      kB: [1.0, 0.7]
+      T: [1.0, 1.5]
+      m: [1.0, 2.0]
+      gamma: [0.5, 2.0]
+      tau: [0.3, 1.5]
+    tolerance: 1e-5
+    shown: ['so $\int_0^\infty P^v\,d\omega = k_BT/m = \langle v^2\rangle$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5-approx-total
+    kind: identity
+    where: 'Problem 5(e), solution check: with the approximate friction the total is (k_B T/m) e^(gamma^2 tau^2/4) erfc(gamma tau/2), against the numerical omega integral'
+    formula: |-
+      kB*T/m*exp(gamma**2*tau**2/4)*erfc(gamma*tau/2)
+    equals: |-
+      integrate('2*kB*T*gamma*exp(-w**2*tau**2/4)/(pi*m*(gamma**2 + w**2))', 'w', 0, 200)
+    samples:
+      kB: [1.0, 0.7]
+      T: [1.0, 1.5]
+      m: [1.0, 2.0]
+      gamma: [0.5, 2.0]
+      tau: [0.3, 1.5]
+    tolerance: 1e-5
+    shown: ['the total comes out as $(k_BT/m)\,e^{\gamma^2\tau^2/4}\operatorname{erfc}(\gamma\tau/2)$']
+    source: {cite: mit, at: 'Problem 5, p. 1 (our own solution)'}
+    origin: page-own
