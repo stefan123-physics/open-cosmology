@@ -1,0 +1,878 @@
+# Calculations on content/year-4/8.07/8-07-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 adds the potentials of the three charges at a point of the sphere and differentiates the image potential
+# numerically (the page uses Coulomb's law); Problem 2 solves the zero-potential conditions at the top and at the rim
+# of the bulge, checks the four charges on the sphere, and differentiates the image potential; Problem 3 solves for
+# the image from the nearest and farthest points of the cylinder, integrates the field in from infinity for the
+# voltage and differentiates the energy for the force; Problem 4 does the integrals numerically; Problem 5 takes
+# numerical second derivatives, does the Fourier integrals numerically and sums the series (the page uses symmetry).
+# Constants: eps0 = 8.8541878128e-12 F/m (CODATA 2018); the page's rounded 8.988e9, 1.7975e10 and 1.1127e-10 are checked against it.
+
+page: content/year-4/8.07/8-07-problem-set-3.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'How to answer: MIT''s points, 10 + 15 + 15 + 20 + 15'
+    formula: |-
+      10 + 15 + 15 + 20 + 15
+    expected: '75'
+    shown: ['75 points in all']
+    source: {cite: mit, at: 'Problems 1 to 5, pp. 1–2'}
+    origin: mit
+
+  # ---- Problem 1: spheres and image charges (our own problem)
+
+  - id: p1-v0
+    kind: identity
+    answer: p1-v0
+    where: 'Problem 1(a), answer box: the potential at a point of the sphere (angle t from the direction of Q), added up from Q, the image −aQ/R at a²/R and the image +aQ/R at the centre'
+    formula: |-
+      Q/(4*pi*eps0*R)
+    equals: |-
+      Q/(4*pi*eps0*sqrt(a**2 + R**2 - 2*a*R*cos(t))) - (a*Q/R)/(4*pi*eps0*sqrt(a**2 + (a**2/R)**2 - 2*a*(a**2/R)*cos(t))) + (a*Q/R)/(4*pi*eps0*a)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [2.0, 1.6, 1.2, 0.8, 0.5]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      t: [0.0, 0.7, 1.5, 2.4, 3.1]
+    tolerance: 1e-9
+    shown: ['id="p1-v0"', '<Formula label="The potential of the uncharged sphere"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-force
+    kind: identity
+    answer: p1-force
+    where: 'Problem 1(b), answer box: Q times the derivative, at the place of Q, of the potential of the two images (held fixed)'
+    formula: |-
+      Q**2*a**3*(2*R**2 - a**2)/(4*pi*eps0*R**3*(R**2 - a**2)**2)
+    equals: |-
+      Q*deriv('-(a*Q/R)/(4*pi*eps0*(s - a**2/R)) + (a*Q/R)/(4*pi*eps0*s)', 's', R)
+    samples:
+      Q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [2.0, 1.6, 1.2, 0.8, 0.5]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['id="p1-force"', '<Formula label="The force on a charge near an uncharged conducting sphere"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-far
+    where: 'Problem 1(b), check: for R = 100 a the force divided by 2Q²a³/(4πε₀R⁵), which is (2R² − a²)R²/(2(R² − a²)²)'
+    formula: |-
+      (2*100**2 - 1)*100**2/(2*(100**2 - 1)**2)
+    expected: '1'
+    tolerance: 0.001
+    shown: ['the force tends to $2Q^2a^3/(4\pi\varepsilon_0R^5)$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-k
+    where: 'Problem 1(c): 1/(4πε₀) from the CODATA value of ε₀, in units of 10⁹ N m²/C²'
+    formula: |-
+      1/(4*pi*8.8541878128e-12)/1e9
+    expected: '8.988'
+    shown: ['$1/(4\pi\varepsilon_0) = 8.988 \times 10^9\ \text{N m}^2/\text{C}^2$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-image
+    where: 'Problem 1(c): the image charge aQ/R for a = 4.0 cm, R = 10 cm, Q = 6.0 nC, in nC'
+    formula: |-
+      4.0/10*6.0
+    expected: '2.4'
+    shown: ['-(4.0/10) \times 6.0\ \text{nC} = -2.4\ \text{nC}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-d
+    where: 'Problem 1(c): the image distance a²/R, in cm'
+    formula: |-
+      4.0**2/10
+    expected: '1.6'
+    shown: ['$d = 4.0^2/10\ \text{cm} = 1.6\ \text{cm}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-gap
+    where: 'Problem 1(c): the distance from the charge to the image, R − d, in cm'
+    formula: |-
+      10 - 1.6
+    expected: '8.4'
+    shown: ['so $8.4\ \text{cm}$ from the charge']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-fg
+    answer: p1-fg
+    where: 'Problem 1(c), answer box: the force for the grounded sphere from the closed form Q²aR/(4πε₀(R² − a²)²), in µN (the page uses Coulomb''s law with the image)'
+    formula: |-
+      (6.0e-9)**2*0.04*0.10/(4*pi*8.8541878128e-12*(0.10**2 - 0.04**2)**2)*1e6
+    expected: '18.3'
+    shown: ['id="p1-fg"', '0.084^2\ \text{N} = 18.3\ \text{µN}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-push
+    where: 'Problem 1(c): the push of the central image, in µN'
+    formula: |-
+      8.988e9*6.0e-9*2.4e-9/0.10**2*1e6
+    expected: '12.9'
+    shown: ['0.10^2\ \text{N} = 12.9\ \text{µN}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-fn
+    answer: p1-fn
+    where: 'Problem 1(c), answer box: the force for the uncharged sphere from the formula of part (b), in µN (the page subtracts the two image forces)'
+    formula: |-
+      (6.0e-9)**2*0.04**3*(2*0.10**2 - 0.04**2)/(4*pi*8.8541878128e-12*0.10**3*(0.10**2 - 0.04**2)**2)*1e6
+    expected: '5.40'
+    shown: ['id="p1-fn"', '$18.3 - 12.9 = 5.40\ \text{µN}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-fn-difference
+    where: 'Problem 1(c): the same force as the difference of the two image forces with unrounded values, in µN'
+    formula: |-
+      8.988e9*6.0e-9*2.4e-9*(1/0.084**2 - 1/0.10**2)*1e6
+    expected: '5.40'
+    shown: ['(with unrounded values)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-geometry
+    where: 'Problem 1(c), check: a³(2R² − a²)/(R³(R² − a²)²) for a = 0.04 m, R = 0.10 m, in 1/m²'
+    formula: |-
+      0.04**3*(2*0.10**2 - 0.04**2)/(0.10**3*(0.10**2 - 0.04**2)**2)
+    expected: '16.69'
+    shown: ['= 16.69\ \text{m}^{-2}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-triples
+    where: 'Problem 1(c), check: the grounded force divided by the uncharged force'
+    formula: |-
+      0.10**4/(0.04**2*(2*0.10**2 - 0.04**2))
+    expected: '3.4'
+    shown: ['more than triples the pull']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p1-vnum
+    answer: p1-vnum
+    where: 'Problem 1(c), answer box: the potential at the nearest point of the sphere, added up from Q at 6 cm, the image −2.4 nC at 2.4 cm and the image +2.4 nC at 4 cm, in V (the page uses Q/(4πε₀R))'
+    formula: |-
+      (6.0e-9/0.06 - 2.4e-9/0.024 + 2.4e-9/0.04)/(4*pi*8.8541878128e-12)
+    expected: '539'
+    shown: ['id="p1-vnum"', '0.10\ \text{V} = 539\ \text{V}$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own problem)'}
+    origin: page-own
+
+  # ---- Problem 2: a plane with a hemispherical bulge
+
+  - id: p2-qimg
+    kind: identity
+    answer: p2-qimg
+    where: 'Problem 2(a), answer box: the charge s at height a²/z₀ that cancels the potential of q at the top of the bulge, (0, 0, a), solved numerically'
+    formula: |-
+      -q*a/z0
+    equals: |-
+      solve('q/(z0 - a) + s/(a - a**2/z0)', 's', -10, 0)
+    samples:
+      q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      z0: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p2-qimg"', '- $-qa/z_0$ at $(0, 0, a^2/z_0)$,']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-zimg
+    kind: identity
+    answer: p2-zimg
+    where: 'Problem 2(a), answer box: the height s at which the charge −qa/z₀ cancels the potential of q on the rim of the bulge, (a, 0, 0), solved numerically'
+    formula: |-
+      a**2/z0
+    equals: |-
+      solve('1/sqrt(a**2 + z0**2) - (a/z0)/sqrt(a**2 + s**2)', 's', 0.0001, a)
+    samples:
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      z0: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p2-zimg"', 'at $(0, 0, a^2/z_0)$. Since $z_0 > a$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-sphere-zero
+    kind: identity
+    where: 'Problem 2(a): the four charges give V = 0 at every point of the sphere r = a (angle t from the z axis; checked as V + 1 = 1, with q/(4πε₀) = 1)'
+    formula: |-
+      1/sqrt(a**2 + z0**2 - 2*a*z0*cos(t)) - 1/sqrt(a**2 + z0**2 + 2*a*z0*cos(t)) - (a/z0)/sqrt(a**2 + (a**2/z0)**2 - 2*a*(a**2/z0)*cos(t)) + (a/z0)/sqrt(a**2 + (a**2/z0)**2 + 2*a*(a**2/z0)*cos(t)) + 1
+    equals: |-
+      1
+    samples:
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      z0: [1.5, 1.9, 2.3, 2.7, 3.0]
+      t: [0.0, 0.4, 0.8, 1.2, 1.5]
+    tolerance: 1e-10
+    shown: ['Hence $V = 0$ on the whole plane and on the whole sphere']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-plane-zero
+    kind: identity
+    where: 'Problem 2(a): the four charges give V = 0 at every point of the plane z = 0 (distance x from the axis; checked as V + 1 = 1)'
+    formula: |-
+      1/sqrt(x**2 + z0**2) - 1/sqrt(x**2 + (-z0)**2) - (a/z0)/sqrt(x**2 + (a**2/z0)**2) + (a/z0)/sqrt(x**2 + (-a**2/z0)**2) + 1
+    equals: |-
+      1
+    samples:
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      z0: [1.5, 1.9, 2.3, 2.7, 3.0]
+      x: [1.0, 2.5, 0.9, 4.0, 1.7]
+    tolerance: 1e-12
+    shown: ['so each pair gives zero there']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-force
+    kind: identity
+    where: 'Problem 2(b): MIT''s eq. (2.2) in units of q²/(4πε₀), against the derivative along the axis, at z₀, of the potential of the three images'
+    formula: |-
+      1/(4*z0**2) + 4*a**3*z0**3/(z0**4 - a**4)**2
+    equals: |-
+      deriv('-1/(s + z0) - (a/z0)/(s - a**2/z0) + (a/z0)/(s + a**2/z0)', 's', z0)
+    samples:
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      z0: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-6
+    shown: ['<Formula label="The force on the charge above the bulge"']
+    source: {cite: mit, at: 'Problem 2, eq. (2.2), p. 1'}
+    origin: mit
+
+  - id: p2-ratio
+    answer: p2-ratio
+    where: 'Problem 2(b), answer box: for z₀ = 2a (a = 1) the three Coulomb terms of the images, divided by the flat-plate term (the page uses the combined formula)'
+    formula: |-
+      (1/(2*2)**2 + (1/2)/(2 - 1/2)**2 - (1/2)/(2 + 1/2)**2)/(1/(2*2)**2)
+    expected: '3.28'
+    shown: ['id="p2-ratio"', '= 1 + 512/225 = 3.28$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-ratio-terms
+    where: 'Problem 2(b): 16 a³z₀⁵/(z₀⁴ − a⁴)² for z₀ = 2a, as 16 × 32/15²; times 225'
+    formula: |-
+      16*2**5/(2**4 - 1)**2*225
+    expected: '512'
+    shown: ['$1 + 16 \times 32/15^2 = 1 + 512/225']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-close
+    where: 'Problem 2(b), check: for z₀ = a + h with h = 0.001 a, the second term divided by 1/(2h)²'
+    formula: |-
+      4*1.001**3/(1.001**4 - 1)**2*(2*0.001)**2
+    expected: '1'
+    tolerance: 0.005
+    shown: ['the second term tends to $4q^2a^6/(16a^6h^2) = q^2/(2h)^2$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-far
+    kind: identity
+    answer: p2-far
+    where: 'Problem 2(c), answer box: the pull of the induced dipole p = 4πε₀a³E, with E = 2q/(4πε₀z₀²), on the charge q: 2qp/(4πε₀z₀³) (the page expands the exact formula)'
+    formula: |-
+      4*q**2*a**3/(4*pi*eps0*z0**5)
+    equals: |-
+      2*q*(4*pi*eps0*a**3*(2*q/(4*pi*eps0*z0**2)))/(4*pi*eps0*z0**3)
+    samples:
+      q: [0.5, 0.9, 1.3, 1.7, 2.0]
+      a: [1.0, 0.6, 0.8, 0.5, 0.9]
+      z0: [1.5, 1.9, 2.3, 2.7, 3.0]
+      eps0: [2.0, 1.6, 1.2, 0.8, 0.5]
+    tolerance: 1e-10
+    shown: ['id="p2-far"', '<Formula label="The correction far from the bulge"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-far-exact
+    where: 'Problem 2(c): the exact second term for z₀ = 5a, in units of q²/(4πε₀a²)'
+    formula: |-
+      4*5**3/(5**4 - 1)**2
+    expected: '0.001284'
+    shown: ['the exact term is $0.001284\,q^2/(4\pi\varepsilon_0a^2)$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-far-leading
+    where: 'Problem 2(c): the leading form for z₀ = 5a, in the same units'
+    formula: |-
+      4/5**5
+    expected: '0.001280'
+    shown: ['this leading form gives $0.001280$ in the same units']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-far-percent
+    where: 'Problem 2(c): the difference between the two, in percent of the exact term'
+    formula: |-
+      (1 - (4/5**5)/(4*5**3/(5**4 - 1)**2))*100
+    expected: '0.33'
+    tolerance: 0.02
+    shown: ['they agree to a third of a percent']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-dipole-images
+    kind: identity
+    where: 'Problem 2(c): the dipole moment of the two bulge images, (qa/z₀)(2a²/z₀), against 4πε₀a³E with E = 2q/(4πε₀z₀²)'
+    formula: |-
+      (q*a/z0)*(2*a**2/z0)
+    equals: |-
+      4*pi*eps0*a**3*2*q/(4*pi*eps0*z0**2)
+    samples:
+      q: [0.5, 0.9, 1.3]
+      a: [1.0, 0.6, 0.8]
+      z0: [1.5, 1.9, 2.3]
+      eps0: [2.0, 1.6, 1.2]
+    tolerance: 1e-12
+    shown: ['have the moment $2qa^3/z_0^2$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3: a line charge and a conducting cylinder
+
+  - id: p3-d
+    kind: identity
+    answer: p3-d
+    where: 'Problem 3(a), answer box: the distance s of the image from the axis for which the ratio of the distances to the two lines is the same at the nearest and at the farthest point of the cylinder, solved numerically'
+    formula: |-
+      b**2/R
+    equals: |-
+      solve('(b - s)/(R - b) - (b + s)/(R + b)', 's', 0, b)
+    samples:
+      b: [1.0, 0.6, 0.8, 0.5, 0.9]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p3-d"', 'Choose $d = b^2/R$.']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ratio
+    kind: identity
+    where: 'Problem 3(a): the ratio s₂/s₁ at a point of the surface at angle t is b/R'
+    formula: |-
+      sqrt(b**2 + (b**2/R)**2 - 2*b*(b**2/R)*cos(t))/sqrt(b**2 + R**2 - 2*b*R*cos(t))
+    equals: |-
+      b/R
+    samples:
+      b: [1.0, 0.6, 0.8, 0.5, 0.9]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+      t: [0.0, 0.7, 1.5, 2.4, 3.1]
+    tolerance: 1e-12
+    shown: ['so $s_2/s_1 = b/R$ at every point of the surface']
+    source: {cite: mit, at: 'Problem 3(a), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-v0
+    kind: identity
+    answer: p3-v0
+    where: 'Problem 3(b), answer box: the field of the two lines integrated from far away to the point of the cylinder farthest from the real line, along the line through both; with the distance from the axis written as 1/w the integral runs over w from 0 to 1/b'
+    formula: |-
+      -lam/(2*pi*eps0)*log(R/b)
+    equals: |-
+      integrate('lam/(2*pi*eps0)*(b**2/R - R)/((1 + R*w)*(1 + b**2/R*w))', 'w', 0, 1/b)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [2.0, 1.6, 1.2, 0.8, 0.5]
+      b: [1.0, 0.6, 0.8, 0.5, 0.9]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-7
+    shown: ['id="p3-v0"', '<Formula label="The potential of the cylinder"']
+    source: {cite: mit, at: 'Problem 3(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-f
+    kind: identity
+    answer: p3-f
+    where: 'Problem 3(c), answer box: the derivative with respect to R of the energy per unit length, (λ²/4πε₀) ln((R² − b²)/b) (the page uses the field of the image line)'
+    formula: |-
+      lam**2*R/(2*pi*eps0*(R**2 - b**2))
+    equals: |-
+      deriv('lam**2/(4*pi*eps0)*log((s**2 - b**2)/b)', 's', R)
+    samples:
+      lam: [0.5, 0.9, 1.3, 1.7, 2.0]
+      eps0: [2.0, 1.6, 1.2, 0.8, 0.5]
+      b: [1.0, 0.6, 0.8, 0.5, 0.9]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-6
+    shown: ['id="p3-f"', 'it changes with $R$ as $(\lambda^2/4\pi\varepsilon_0)\ln(R^2 - b^2)$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-energy
+    kind: identity
+    where: 'Problem 3(c), check: the energy per unit length, ½λ times the potential of the image at the real line plus ½(−λ) times V₀, is (λ²/4πε₀) ln((R² − b²)/b) (with λ/(2πε₀) = 1, lengths in the same unit)'
+    formula: |-
+      0.5*log(R - b**2/R) - 0.5*log(b/R)
+    equals: |-
+      0.5*log((R**2 - b**2)/b)
+    samples:
+      b: [1.0, 0.6, 0.8, 0.5, 0.9]
+      R: [1.5, 1.9, 2.3, 2.7, 3.0]
+    tolerance: 1e-12
+    shown: ['A second check uses the energy per unit length.']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-const
+    where: 'Problem 3(c): 1/(2πε₀) from the CODATA value of ε₀, in units of 10¹⁰ N m²/C²'
+    formula: |-
+      1/(2*pi*8.8541878128e-12)/1e10
+    expected: '1.7975'
+    shown: ['$1/(2\pi\varepsilon_0) = 1.7975 \times 10^{10}\ \text{N m}^2/\text{C}^2$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-scale
+    where: 'Problem 3(c): λ/(2πε₀) for λ = 20 nC/m, in V'
+    formula: |-
+      1.7975e10*20e-9
+    expected: '359.5'
+    shown: ['\times 20 \times 10^{-9}\ \text{V} = 359.5\ \text{V}$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-ln4
+    where: 'Problem 3(c): ln 4'
+    formula: |-
+      log(12/3.0)
+    expected: '1.386'
+    shown: ['$\ln 4 = 1.386$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-vnum
+    answer: p3-vnum
+    where: 'Problem 3(c), answer box: V₀ = −(λ/2πε₀) ln(R/b) for λ = 20 nC/m, R = 12 cm, b = 3.0 cm, with the CODATA ε₀, in V'
+    formula: |-
+      -20e-9/(2*pi*8.8541878128e-12)*log(0.12/0.03)
+    expected: '-498'
+    shown: ['id="p3-vnum"', '$V_0 = -359.5 \times 1.386\ \text{V} = -498\ \text{V}$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-image-place
+    where: 'Problem 3(c): the image distance b²/R, in cm'
+    formula: |-
+      3.0**2/12
+    expected: '0.75'
+    shown: ['$d = 3.0^2/12\ \text{cm} = 0.75\ \text{cm}$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-gap
+    where: 'Problem 3(c): the distance from the real line to the image, in cm'
+    formula: |-
+      12 - 0.75
+    expected: '11.25'
+    shown: ['$11.25\ \text{cm}$ from the real line']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-fnum
+    answer: p3-fnum
+    where: 'Problem 3(c), answer box: λ²R/(2πε₀(R² − b²)) with the CODATA ε₀, in µN/m (the page divides by the distance to the image)'
+    formula: |-
+      (20e-9)**2*0.12/(2*pi*8.8541878128e-12*(0.12**2 - 0.03**2))*1e6
+    expected: '63.9'
+    shown: ['id="p3-fnum"', '0.1125\ \text{N/m} = 63.9\ \text{µN/m}$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p3-close
+    where: 'Problem 3(c), check: for R = b + h with h = 0.001 b, the force divided by λ²/(4πε₀h), which is 2Rh/(R² − b²)'
+    formula: |-
+      2*1.001*0.001/(1.001**2 - 1)
+    expected: '1'
+    tolerance: 0.001
+    shown: ['the force tends to $\lambda^2/(4\pi\varepsilon_0h)$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4: the capacitance of a single conductor
+
+  - id: p4-sphere
+    kind: identity
+    answer: p4-sphere
+    where: 'Problem 4(a), answer box: ε₀/V₀² times the integral of V₀²R²/r⁴ over the space outside the sphere, done numerically with r = 1/w (so 4πr² dr/r⁴ becomes 4π dw)'
+    formula: |-
+      4*pi*eps0*R
+    equals: |-
+      eps0*R**2*integrate('4*pi + 0*w', 'w', 0, 1/R)
+    samples:
+      eps0: [2.0, 1.6, 1.2, 0.8, 0.5]
+      R: [0.5, 1.1, 1.7, 2.4, 3.0]
+    tolerance: 1e-9
+    shown: ['id="p4-sphere"', '<Formula label="The formula applied to a sphere"']
+    source: {cite: mit, at: 'Problem 4(a), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-trial
+    kind: identity
+    answer: p4-trial
+    where: 'Problem 4(b), answer box: C[Ψ]/C for Ψ = V₀(R/r)ⁿ, the integral of n²R^(2n) r^(−2n) dr from R outwards divided by R, done numerically with r = R/w'
+    formula: |-
+      n**2/(2*n - 1)
+    equals: |-
+      integrate('n**2*w**(2*n - 2)', 'w', 0, 1)
+    samples:
+      n: [1.0, 1.5, 2.0, 3.0, 4.0]
+    tolerance: 1e-7
+    shown: ['id="p4-trial"', '<Formula label="The trial value for a power law outside a sphere"']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-trial-excess
+    kind: identity
+    where: 'Problem 4(b), check: n²/(2n − 1) − 1 = (n − 1)²/(2n − 1)'
+    formula: |-
+      n**2/(2*n - 1) - 1
+    equals: |-
+      (n - 1)**2/(2*n - 1)
+    samples:
+      n: [0.6, 0.8, 1.0, 2.5, 4.0]
+    tolerance: 1e-12
+    shown: ['$n^2/(2n - 1) - 1 = (n - 1)^2/(2n - 1)$']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-trial-2
+    where: 'Problem 4(b), check: the ratio for n = 2, as a multiple of 1/3'
+    formula: |-
+      2**2/(2*2 - 1)*3
+    expected: '4'
+    shown: ['the trial value is $4/3$ of the true capacitance']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-trial-08
+    where: 'Problem 4(b), check: the ratio for n = 0.8'
+    formula: |-
+      0.8**2/(2*0.8 - 1)
+    expected: '1.07'
+    shown: ['for $n = 0.8$ it is $1.07$ times it']
+    source: {cite: mit, at: 'Problem 4(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-alpha
+    answer: p4-alpha
+    where: 'Problem 4(d), answer box: the radius of the largest sphere inside a cube of side 1, the distance from the centre (½, ½, ½) to the middle of a face (½, ½, 0)'
+    formula: |-
+      sqrt((0.5 - 0.5)**2 + (0.5 - 0.5)**2 + (0.5 - 0)**2)
+    expected: '0.5'
+    shown: ['id="p4-alpha"', '$\alpha = \frac12$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2'}
+    origin: mit
+
+  - id: p4-beta
+    answer: p4-beta
+    where: 'Problem 4(d), answer box: the radius of the smallest sphere round a cube of side 1, the distance from the centre (½, ½, ½) to a corner (0, 0, 0)'
+    formula: |-
+      sqrt((0.5 - 0)**2 + (0.5 - 0)**2 + (0.5 - 0)**2)
+    expected: '0.866'
+    shown: ['id="p4-beta"', '$\beta = \frac12\sqrt3 = 0.866$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2'}
+    origin: mit
+
+  - id: p4-numerical
+    kind: fact
+    where: 'Problem 4(d): the numerical capacitance of a cube, 0.661 (4πε₀a), quoted on MIT''s sheet from Hwang and Mascagni, J. Appl. Phys. 95, 3798 (2004); the paper was not read'
+    value: '0.661'
+    shown: ['C_{\text{cube}} \approx 0.661\,(4\pi\varepsilon_0a)$']
+    source: {cite: mit, at: 'Problem 4(d) and its footnote, p. 2'}
+    origin: mit
+
+  - id: p4-middle
+    where: 'Problem 4(d): the middle of the interval between the two limits'
+    formula: |-
+      (0.5 + sqrt(3)/2)/2
+    expected: '0.683'
+    shown: ['a little below the middle of the interval ($0.683$)']
+    source: {cite: mit, at: 'Problem 4(d), p. 2'}
+    origin: page-own
+
+  - id: p4-const
+    where: 'Problem 4(d): 4πε₀ from the CODATA value of ε₀, in units of 10⁻¹⁰ F/m'
+    formula: |-
+      4*pi*8.8541878128e-12*1e10
+    expected: '1.1127'
+    shown: ['$4\pi\varepsilon_0 = 1.1127 \times 10^{-10}\ \text{F/m}$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-unit
+    where: 'Problem 4(d): 4πε₀a for a = 10 cm, in pF'
+    formula: |-
+      1.1127e-10*0.10*1e12
+    expected: '11.13'
+    shown: ['\times 0.10\ \text{F} = 11.13\ \text{pF}$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-pf
+    answer: p4-pf
+    where: 'Problem 4(d), answer box: 0.661 × 4πε₀a for a = 10 cm with the CODATA ε₀, in pF'
+    formula: |-
+      0.661*4*pi*8.8541878128e-12*0.10*1e12
+    expected: '7.35'
+    tolerance: 0.01
+    shown: ['id="p4-pf"', '$0.661 \times 11.13\ \text{pF} = 7.35\ \text{pF}$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-lower-pf
+    where: 'Problem 4(d): the lower limit for the cube of 10 cm, in pF'
+    formula: |-
+      0.5*4*pi*8.8541878128e-12*0.10*1e12
+    expected: '5.56'
+    shown: ['The two limits are $5.56\ \text{pF}$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-upper-pf
+    where: 'Problem 4(d): the upper limit for the cube of 10 cm, in pF'
+    formula: |-
+      sqrt(3)/2*4*pi*8.8541878128e-12*0.10*1e12
+    expected: '9.64'
+    shown: ['and $9.64\ \text{pF}$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p4-equal-volume
+    where: 'Problem 4(d), check: the radius of the sphere with the volume of a cube of side 1'
+    formula: |-
+      (3/(4*pi))**(1/3)
+    expected: '0.620'
+    shown: ['$(3/4\pi)^{1/3}a = 0.620\,a$']
+    source: {cite: mit, at: 'Problem 4(d), p. 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5: Laplace's equation in a box (our own problem)
+
+  - id: p5-gamma
+    kind: identity
+    answer: p5-gamma
+    where: 'Problem 5(a), answer box: γ from the second derivatives of the two sines, taken numerically at a point (x, y): γ² = −(X″/X + Y″/Y)'
+    formula: |-
+      pi*sqrt(1/a**2 + 1/b**2)
+    equals: |-
+      sqrt(-(deriv('sin(pi*s/a)', 's', x, 2)/sin(pi*x/a) + deriv('sin(pi*s/b)', 's', y, 2)/sin(pi*y/b)))
+    samples:
+      a: [0.5, 0.9, 1.3, 1.7, 2.0]
+      b: [2.0, 1.6, 1.2, 0.8, 0.5]
+      x: [0.2, 0.3, 0.7, 0.5, 1.1]
+      y: [0.9, 0.5, 0.4, 0.3, 0.2]
+    tolerance: 1e-5
+    shown: ['id="p5-gamma"', '<Formula label="The equation for Z"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-z
+    kind: identity
+    answer: p5-z
+    where: 'Problem 5(a), answer box: the combination of the two exponentials that vanishes at z = 0 and is 1 at z = c'
+    formula: |-
+      sinh(g*z)/sinh(g*c)
+    equals: |-
+      (exp(g*z) - exp(-g*z))/(exp(g*c) - exp(-g*c))
+    samples:
+      g: [0.5, 0.9, 1.3, 1.7, 2.0]
+      z: [0.2, 0.4, 0.6, 0.8, 1.0]
+      c: [1.0, 1.3, 1.5, 1.8, 2.0]
+    tolerance: 1e-12
+    shown: ['id="p5-z"', '<Formula label="The potential in the box for one mode on the lid"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-laplace
+    kind: identity
+    where: 'Problem 5(a): the Laplacian of sin(πx/a) sin(πy/b) sinh(γz), by numerical second derivatives, vanishes (checked as ∇²V + 1 = 1)'
+    formula: |-
+      deriv('sin(pi*s/a)', 's', x, 2)*sin(pi*y/b)*sinh(pi*sqrt(1/a**2 + 1/b**2)*z) + sin(pi*x/a)*deriv('sin(pi*s/b)', 's', y, 2)*sinh(pi*sqrt(1/a**2 + 1/b**2)*z) + sin(pi*x/a)*sin(pi*y/b)*deriv('sinh(pi*sqrt(1/a**2 + 1/b**2)*s)', 's', z, 2) + 1
+    equals: |-
+      1
+    samples:
+      a: [1.0, 0.9, 1.3, 1.7, 2.0]
+      b: [2.0, 1.6, 1.2, 0.8, 1.0]
+      x: [0.2, 0.3, 0.7, 0.5, 1.1]
+      y: [0.9, 0.5, 0.4, 0.3, 0.2]
+      z: [0.2, 0.4, 0.3, 0.1, 0.5]
+    tolerance: 1e-4
+    shown: ['By the uniqueness theorem this is the potential.']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-gc
+    where: 'Problem 5(b): γc for the cube, π√2'
+    formula: |-
+      pi*sqrt(2)
+    expected: '4.443'
+    shown: ['$\gamma c = \pi\sqrt2 = 4.443$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-gz
+    where: 'Problem 5(b): γz at the centre of the cube'
+    formula: |-
+      pi*sqrt(2)/2
+    expected: '2.221'
+    shown: ['at the centre $\gamma z = 2.221$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-cosh
+    where: 'Problem 5(b): cosh(π/√2)'
+    formula: |-
+      cosh(pi/sqrt(2))
+    expected: '4.665'
+    shown: ['\frac{1}{2\times 4.665}']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-centre
+    answer: p5-centre
+    where: 'Problem 5(b), answer box: the ratio of the two hyperbolic sines at the centre of the cube (the page uses 1/(2 cosh))'
+    formula: |-
+      sinh(pi*sqrt(2)/2)/sinh(pi*sqrt(2))
+    expected: '0.107'
+    shown: ['id="p5-centre"', '\frac{1}{2\times 4.665} = 0.107']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-cnm
+    kind: identity
+    answer: p5-cnm
+    where: 'Problem 5(c), answer box: c_nm/V₀ for odd n and m, 4 times the two integrals of the sines over a side of length 1, done numerically'
+    formula: |-
+      16/(pi**2*n*m)
+    equals: |-
+      4*integrate('sin(n*pi*s)', 's', 0, 1)*integrate('sin(m*pi*s)', 's', 0, 1)
+    samples:
+      n: [1, 3, 5, 7, 1]
+      m: [1, 1, 3, 5, 7]
+    tolerance: 1e-7
+    shown: ['id="p5-cnm"', '<Formula label="The coefficients for a lid at constant potential"']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-even
+    where: 'Problem 5(c): the integral of an even mode over the side vanishes (n = 2; checked as integral + 1)'
+    formula: |-
+      integrate('sin(2*pi*s)', 's', 0, 1) + 1
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['and zero for even $n$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-leibniz
+    where: 'Problem 5(c), check: (4/π)(1 − 1/3 + 1/5 − …) with the series summed as arctan 1'
+    formula: |-
+      4/pi*atan(1)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['= (4/\pi)(\pi/4) = 1$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-sixth
+    answer: p5-sixth
+    where: 'Problem 5(d), answer box: the series at the centre of the cube, summed over the modes (1,1), (1,3), (3,1), (3,3), (1,5), (5,1), (3,5), (5,3), (1,7), (7,1) (the page uses symmetry: 1/6)'
+    formula: |-
+      16/pi**2*(1/(2*cosh(pi*sqrt(2)/2)) - 2/(3*2*cosh(pi*sqrt(10)/2)) + 1/(9*2*cosh(pi*sqrt(18)/2)) + 2/(5*2*cosh(pi*sqrt(26)/2)) - 2/(15*2*cosh(pi*sqrt(34)/2)) - 2/(7*2*cosh(pi*sqrt(50)/2)))
+    expected: '0.1667'
+    tolerance: 0.0001
+    shown: ['id="p5-sixth"', '= \frac16 = 0.1667']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-prefactor
+    where: 'Problem 5(d), check: 16/π²'
+    formula: |-
+      16/pi**2
+    expected: '1.621'
+    shown: ['$1.621 \times 0.1072 = 0.1738$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-b-value
+    where: 'Problem 5(d), check: the value of part (b) to four digits'
+    formula: |-
+      1/(2*cosh(pi/sqrt(2)))
+    expected: '0.1072'
+    shown: ['$1.621 \times 0.1072 = 0.1738$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-first
+    where: 'Problem 5(d), check: the first term of the series at the centre'
+    formula: |-
+      16/pi**2/(2*cosh(pi/sqrt(2)))
+    expected: '0.1738'
+    shown: ['$1.621 \times 0.1072 = 0.1738$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-13
+    where: 'Problem 5(d), check: the term (1, 3) at the centre'
+    formula: |-
+      -16/(3*pi**2)/(2*cosh(pi*sqrt(10)/2))
+    expected: '-0.0038'
+    shown: ['and give $-0.0038$ each']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-three
+    where: 'Problem 5(d), check: the sum of the terms (1,1), (1,3) and (3,1)'
+    formula: |-
+      16/pi**2*(1/(2*cosh(pi*sqrt(2)/2)) - 2/(3*2*cosh(pi*sqrt(10)/2)))
+    expected: '0.1662'
+    shown: ['the sum so far is $0.1662$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-33
+    where: 'Problem 5(d), check: the term (3, 3) at the centre'
+    formula: |-
+      16/(9*pi**2)/(2*cosh(pi*sqrt(18)/2))
+    expected: '0.0002'
+    shown: ['The term $(3, 3)$ adds $0.0002$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-15
+    where: 'Problem 5(d), check: the terms (1, 5) and (5, 1) together, at the centre'
+    formula: |-
+      2*16/(5*pi**2)/(2*cosh(pi*sqrt(26)/2))
+    expected: '0.0002'
+    shown: ['together add another $0.0002$']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
+
+  - id: p5-first-error
+    where: 'Problem 5(d), check: by how much the first term exceeds 1/6, in percent'
+    formula: |-
+      (16/pi**2/(2*cosh(pi/sqrt(2)))*6 - 1)*100
+    expected: '4'
+    tolerance: 0.5
+    shown: ['The first term alone is right to about 4%']
+    source: {cite: mit, at: 'Problem 5, p. 2 (our own problem)'}
+    origin: page-own
