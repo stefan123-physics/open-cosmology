@@ -1,0 +1,925 @@
+# Calculations on content/year-5/8.962/8-962-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# a numerical solve, numerical derivatives of Cartesian functions or of basis vectors, or a second physical argument.
+# The speed of light is 1 throughout, except in the light-year number of Problem 1(c).
+# Problem 3: the reconstruction of F from U, E and B, the identity for the product of two Levi-Civita tensors and
+# a = b = 1 were also checked with random fields and a random observer (NumPy, outside this file; the test fitted
+# a and b by least squares and got 1 and 1 to rounding error).
+
+page: content/year-5/8.962/8-962-problem-set-3.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1a-x
+    kind: identity
+    answer: p1a-x
+    where: 'Problem 1(a), answer box: against a numerical solve of the hyperbola (x + 1/g)² − t² = 1/g² for x'
+    formula: (sqrt(1 + g**2*t**2) - 1)/g
+    equals: solve('(u + 1/g)**2 - t**2 - 1/g**2', 'u', 0, 1000)
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      t: [0.2, 1, 3, 0.7]
+    tolerance: 1e-8
+    shown: ['id="p1a-x"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-hyperbola
+    kind: identity
+    where: 'Problem 1(a), formula "Problem 1(a): the hyperbola": the worldline (sinh, cosh − 1)/g lies on it for every proper time'
+    formula: ((cosh(g*tb) - 1)/g + 1/g)**2 - (sinh(g*tb)/g)**2
+    equals: 1/g**2
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      tb: [0.1, 1, 2, 3.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Problem 1(a): the hyperbola"']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-speed
+    kind: identity
+    where: 'Problem 1(a), solution: the speed dx/dt against a numerical derivative of x(t)'
+    formula: g*t/sqrt(1 + g**2*t**2)
+    equals: deriv('(sqrt(1 + g**2*u**2) - 1)/g', 'u', t)
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      t: [0.2, 1, 3, 0.7]
+    tolerance: 1e-7
+    shown: ['The speed is $dx/dt = g t/\sqrt{1 + g^2t^2}$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-newton
+    kind: limit
+    where: 'Problem 1(a), check: x(t) tends to g t²/2 for small times (g = 1.3)'
+    inputs: {}
+    formula: (sqrt(1 + 1.3**2*t**2) - 1)/1.3
+    limit: 1.3*t**2/2
+    vary: {t: [0.1, 0.01, 0.001]}
+    tolerance: 1e-5
+    shown: ['so $x \approx \tfrac12 g t^2$, Newton''s result']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-late
+    kind: limit
+    where: 'Problem 1(a), check: x(t) tends to t − 1/g for large times (g = 1.3)'
+    inputs: {}
+    formula: (sqrt(1 + 1.3**2*t**2) - 1)/1.3
+    limit: t - 1/1.3
+    vary: {t: [10, 100, 1000, 10000]}
+    tolerance: 1e-6
+    shown: ['For large times $x \approx t - 1/g$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-t
+    kind: identity
+    answer: p1b-t
+    where: 'Problem 1(b), answer box: against a numerical solve of x_astronaut(t) = −d + t'
+    formula: d*(2 - g*d)/(2*(1 - g*d))
+    equals: solve('(sqrt(1 + (g*u)**2) - 1)/g - (u - d)', 'u', 0, 1000)
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      d: [0.4, 0.5, 0.05, 0.3]
+    tolerance: 1e-8
+    shown: ['id="p1b-t"']
+    source: {cite: mit, at: 'Problem 1(b) (our own addition and solution)'}
+    origin: page-own
+
+  - id: p1b-t-minus-x
+    kind: identity
+    where: 'Problem 1(b), formula "Problem 1(b): t − x on the worldline": sinh − cosh + 1 = 1 − e^(−u)'
+    formula: (sinh(g*tb) - cosh(g*tb) + 1)/g
+    equals: (1 - exp(-g*tb))/g
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      tb: [0.1, 1, 2, 3.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Problem 1(b): t − x on the worldline"']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-example-t
+    where: 'Problem 1(b), solution and the graph of part (a): the flash from d = 0.5 with g = 1 arrives at t = 0.75'
+    formula: 0.5*(2 - 1*0.5)/(2*(1 - 1*0.5))
+    expected: '0.75'
+    shown: ['$t = 0.5\times 1.5/(2\times 0.5) = 0.75$', 'reaches the astronaut at t = 0.75', '{ x: 0.25, y: 0.75, label: "flash arrives" }']
+    source: {cite: mit, at: 'Problem 1(b) (our own example)'}
+    origin: page-own
+
+  - id: p1b-example-x
+    where: 'Problem 1(b), solution: the astronaut is then at x = t − d = 0.25, which lies on the hyperbola with g = 1'
+    formula: sqrt(1 + 0.75**2) - 1
+    expected: '0.25'
+    shown: ['the astronaut is then at $x = t - d = 0.25$']
+    source: {cite: mit, at: 'Problem 1(b) (our own example)'}
+    origin: page-own
+
+  - id: p1b-plot-start
+    kind: fact
+    where: 'Problem 1(a), graph: the flash of the example starts at x = −0.5 (d = 0.5 in units of 1/g)'
+    shown: ['a flash of light that leaves x = −0.5 at t = 0', '(x >= -0.5 and x <= 0.25) ? x + 0.5 : NaN']
+    source: {cite: mit, at: 'Problem 1(b) (our own example)'}
+    origin: page-own
+
+  - id: p1b-small-d
+    kind: limit
+    where: 'Problem 1(b), check: for small d the arrival time tends to d(1 + g d/2) (g = 1.3)'
+    inputs: {}
+    formula: d*(2 - 1.3*d)/(2*(1 - 1.3*d)) - d
+    limit: 1.3*d**2/2
+    vary: {d: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 1e-3
+    shown: ['the arrival time is $d\,(1 + \tfrac12 g d + \dots)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-line
+    kind: limit
+    answer: p1c-line
+    where: 'Problem 1(c), answer box: the time at which the astronaut passes x, sqrt((x + 1/g)² − 1/g²), tends to x + 1/g (the asymptote)'
+    inputs: {g: 0.7}
+    formula: x + 1/g
+    limit: sqrt((x + 1/g)**2 - 1/g**2)
+    vary: {x: [10, 100, 1000, 10000]}
+    tolerance: 1e-6
+    shown: ['id="p1c-line"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-xbar
+    kind: identity
+    answer: p1c-xbar
+    where: 'Problem 1(c), answer box: the zero of x + 1/g − t = (1/g + x̄) e^(−g t̄), found numerically'
+    formula: -1/g
+    equals: solve('(1/g + u)*exp(-g*tb)', 'u', -100, 100)
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      tb: [0.1, 1, 2, 0.5]
+    tolerance: 1e-8
+    shown: ['id="p1c-xbar"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-transform
+    kind: identity
+    where: 'Problem 1(c), formula "Problem 1(c): the horizon in the astronaut''s coordinates": x + 1/g − t from the coordinate transformation'
+    formula: ((1/g + xb)*cosh(g*tb) - 1/g) + 1/g - (1/g + xb)*sinh(g*tb)
+    equals: (1/g + xb)*exp(-g*tb)
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      tb: [0.1, 1, 2, 0.5]
+      xb: [-1, 0.5, 2, -0.3]
+    tolerance: 1e-9
+    shown: ['<Formula label="Problem 1(c): the horizon in the astronaut''s coordinates"']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # The line element of the astronaut: −dt² + dx² with the transformation gives −(1 + g x̄)² dt̄² + dx̄².
+  # Checked through the t̄ t̄ component: −(∂t/∂t̄)² + (∂x/∂t̄)² = −(1 + g x̄)².
+  - id: p1-line-element
+    kind: identity
+    where: 'Problem 1, formula "Problem 1: the line element of the astronaut": the coefficient of dt̄², from numerical derivatives of the transformation'
+    formula: -(deriv('(1/g + xb)*sinh(g*u)', 'u', tb))**2 + (deriv('(1/g + xb)*cosh(g*u) - 1/g', 'u', tb))**2
+    equals: -(1 + g*xb)**2
+    samples:
+      g: [0.5, 1, 2, 1.3]
+      tb: [0.1, 1, 2, 0.5]
+      xb: [-1, 0.5, 2, -0.3]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 1: the line element of the astronaut"']
+    source: {cite: pset2, at: 'Problem 6(e), p. 3'}
+    origin: mit
+
+  - id: p1c-g
+    kind: fact
+    where: 'Problem 1(c), statement: the acceleration of the astronaut in our added question, and the constants to use'
+    shown: ['feels $g = 9.81\ \text{m/s}^2$', 'Use $c = 299\,792\,458$ m/s and a year of 365.25 days']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  - id: p1c-light-year
+    where: 'Problem 1(c), solution: a light year in metres (c times 365.25 days)'
+    formula: c*365.25*86400*second
+    expected: 9.4607e15 m
+    shown: ['$299\,792\,458\ \text{m/s} \times 365.25\times 86\,400\ \text{s} = 9.4607\times 10^{15}$ m']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  - id: p1c-metres
+    where: 'Problem 1(c), solution: c²/g in metres for g = 9.81 m/s²'
+    formula: c**2/(9.81*meter/second**2)
+    expected: 9.162e15 m
+    shown: ['9.162\times 10^{15}\ \text{m}']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  - id: p1c-ly
+    answer: p1c-ly
+    where: 'Problem 1(c), answer box: c²/g in light years for g = 9.81 m/s²'
+    formula: c**2/(9.81*meter/second**2)/(365.25*86400*second*c)
+    expected: '0.968'
+    shown: ['id="p1c-ly"', '= 0.968\ \text{light years}']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2a-xy
+    kind: identity
+    answer: p2a-xy
+    where: 'Problem 2(a), answer box: against the determinant of the x-y block, which a rotation keeps at P²(1 + ε) (φ in the first quadrant, so the component is negative)'
+    formula: -eps*P*sin(ph)*cos(ph)
+    equals: -sqrt((cos(ph)**2*P*(1 + eps) + sin(ph)**2*P)*(sin(ph)**2*P*(1 + eps) + cos(ph)**2*P) - P**2*(1 + eps))
+    samples:
+      P: [0.5, 1, 2, 1.3]
+      eps: [0.1, 0.5, 0.3, 0.2]
+      ph: [0.2, 0.7, 1.3, 1]
+    tolerance: 1e-8
+    shown: ['id="p2a-xy"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-xy-sum
+    kind: identity
+    where: 'Problem 2(a), formula "Problem 2(a): the rotated components": T^x′y′ as the sum L L T over the two diagonal components'
+    formula: cos(ph)*(-sin(ph))*P*(1 + eps) + sin(ph)*cos(ph)*P
+    equals: -eps*P*sin(ph)*cos(ph)
+    samples:
+      P: [0.5, 1, 2, 1.3]
+      eps: [0.1, 0.5, 0.3, -0.2]
+      ph: [0.2, 0.7, 1.3, 2.5]
+    tolerance: 1e-9
+    shown: ['<Formula label="Problem 2(a): the rotated components"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-xx
+    kind: identity
+    answer: p2a-xx
+    where: 'Problem 2(a), answer box: against the trace P(2 + ε) of the x-y block minus T^y′y′ computed from the transformation law'
+    formula: P*(1 + eps*cos(ph)**2)
+    equals: P*(2 + eps) - (sin(ph)**2*P*(1 + eps) + cos(ph)**2*P)
+    samples:
+      P: [0.5, 1, 2, 1.3]
+      eps: [0.1, 0.5, 0.3, -0.2]
+      ph: [0.2, 0.7, 1.3, 2.5]
+    tolerance: 1e-9
+    shown: ['id="p2a-xx"']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-yy
+    kind: identity
+    where: 'Problem 2(a), solution: T^y′y′ = P(1 + ε sin²φ) as the sum L L T'
+    formula: sin(ph)**2*P*(1 + eps) + cos(ph)**2*P
+    equals: P*(1 + eps*sin(ph)**2)
+    samples:
+      P: [0.5, 1, 2, 1.3]
+      eps: [0.1, 0.5, 0.3, -0.2]
+      ph: [0.2, 0.7, 1.3, 2.5]
+    tolerance: 1e-9
+    shown: ['In the same way $T^{y''y''} = P\left(1 + \varepsilon\sin^2\phi\right)$']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-determinant
+    kind: identity
+    where: 'Problem 2(a), check: the determinant of the rotated x-y block is P²(1 + ε)'
+    formula: P**2*(1 + eps*cos(ph)**2)*(1 + eps*sin(ph)**2) - eps**2*P**2*sin(ph)**2*cos(ph)**2
+    equals: P**2*(1 + eps)
+    samples:
+      P: [0.5, 1, 2, 1.3]
+      eps: [0.1, 0.5, 0.3, -0.2]
+      ph: [0.2, 0.7, 1.3, 2.5]
+    tolerance: 1e-9
+    shown: ['\varepsilon^2P^2\sin^2\phi\cos^2\phi = P^2(1 + \varepsilon)$, as before']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-angle
+    answer: p2b-angle
+    where: 'Problem 2(b), answer box: the angle in degrees at which sin φ cos φ is largest (zero of its derivative, cos 2φ)'
+    formula: solve('cos(2*u*pi/180)', 'u', 10, 80)
+    expected: '45'
+    shown: ['id="p2b-angle"', 'so at $\phi = 45^\circ$']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2b-half
+    where: 'Problem 2(b), solution: sin φ cos φ at 45° is one half'
+    formula: sin(45*pi/180)*cos(45*pi/180)
+    expected: '0.5'
+    tolerance: 1e-9
+    shown: ['There $T^{x''y''} = -\tfrac12\varepsilon P$']
+    source: {cite: mit, at: 'Problem 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3
+  # The observer of part (d) (speed v along x, field E_0 along y) gives a scalar test of part (c): the ty component
+  # F_ty = −E_0 must equal a (U_t E_y − E_t U_y) + b ε_tyxz U^x B^z = −a γ² E_0 + b γ² v² E_0.
+
+  - id: p3c-a
+    answer: p3c-a
+    where: 'Problem 3(c), answer box a: the ty component for an observer at rest (v = 0, where the b term vanishes), −a E_0 = −E_0, solved for a with E_0 = 1'
+    formula: solve('-u + 1', 'u', 0, 5)
+    expected: '1'
+    shown: ['id="p3c-a"']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-b
+    answer: p3c-b
+    where: 'Problem 3(c), answer box b: the ty component for the observer with v = 0.6 and a = 1, −γ² + b γ² v² = −1, solved for b'
+    formula: solve('-1/(1 - 0.6**2) + u*0.6**2/(1 - 0.6**2) + 1', 'u', 0, 5)
+    expected: '1'
+    shown: ['id="p3c-b"']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  # Part (d) against the formula of part (b), F = U E − E U + ε U B, in two components:
+  # F^ty = γ E^y + γ v B^z = E_0 and F^xy = γ v E^y + γ B^z = 0.
+  - id: p3d-ey
+    kind: identity
+    answer: p3d-ey
+    where: 'Problem 3(d), answer box E^y: solved numerically from the reconstruction formula of part (b), with B^z = −v E^y from F^xy = 0'
+    formula: E0/sqrt(1 - v**2)
+    equals: solve('u/sqrt(1 - v**2) + v*(-v*u)/sqrt(1 - v**2) - E0', 'u', 0, 100)
+    samples:
+      E0: [0.5, 1, 2, 1.3]
+      v: [0.1, 0.6, 0.9, 0.3]
+    tolerance: 1e-8
+    shown: ['id="p3d-ey"']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3d-bz
+    kind: identity
+    answer: p3d-bz
+    where: 'Problem 3(d), answer box B^z: solved numerically from the reconstruction formula of part (b), with E^y = −B^z/v from F^xy = 0'
+    formula: -v*E0/sqrt(1 - v**2)
+    equals: solve('-u/(v*sqrt(1 - v**2)) + v*u/sqrt(1 - v**2) - E0', 'u', -100, 0)
+    samples:
+      E0: [0.5, 1, 2, 1.3]
+      v: [0.1, 0.6, 0.9, 0.3]
+    tolerance: 1e-8
+    shown: ['id="p3d-bz"']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3d-invariant
+    kind: identity
+    where: 'Problem 3(d), check: E·E − B·B = γ² E_0² (1 − v²) = E_0²'
+    formula: (E0/sqrt(1 - v**2))**2 - (v*E0/sqrt(1 - v**2))**2
+    equals: E0**2
+    samples:
+      E0: [0.5, 1, 2, 1.3]
+      v: [0.1, 0.6, 0.9, 0.3]
+    tolerance: 1e-9
+    shown: ['\gamma^2E_0^2\left(1 - v^2\right) = E_0^2$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3d-gamma
+    where: 'Problem 3(d), check: the Lorentz factor for v = 0.6'
+    formula: 1/sqrt(1 - 0.6**2)
+    expected: '1.25'
+    shown: ['For $v = 0.6$: $\gamma = 1.25$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  - id: p3d-bz-number
+    where: 'Problem 3(d), check: B^z/E_0 for v = 0.6 (and E^y/E_0 = γ = 1.25)'
+    formula: -0.6/sqrt(1 - 0.6**2)
+    expected: '-0.75'
+    shown: ['$E^y = 1.25\,E_0$ and $B^z = -0.75\,E_0$']
+    source: {cite: mit, at: 'Problem 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+  # Part (c) against the form of MIT's sheet, −(∂²x^α′/∂x^β∂x^γ)(∂x^β/∂x^β′)(∂x^γ/∂x^γ′), with numerical second
+  # derivatives of r(x, y) and φ(x, y) = atan(y/x) at x = r cos φ, y = r sin φ (first quadrant).
+  # The page's own route is the other form, with second derivatives of x and y.
+
+  - id: p4c-rpp
+    kind: identity
+    answer: p4c-rpp
+    where: 'Problem 4(c), answer box Γ^r_φφ: the form of MIT''s sheet with numerical second derivatives of r = sqrt(x² + y²); ∂x/∂φ = −y, ∂y/∂φ = x'
+    formula: -r
+    equals: >-
+      -(deriv('sqrt(u**2 + (r*sin(ph))**2)', 'u', r*cos(ph), 2)*(r*sin(ph))**2
+      + 2*deriv("deriv('sqrt(u**2 + w**2)', 'u', r*cos(ph))", 'w', r*sin(ph))*(-r*sin(ph))*(r*cos(ph))
+      + deriv('sqrt((r*cos(ph))**2 + u**2)', 'u', r*sin(ph), 2)*(r*cos(ph))**2)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      ph: [0.2, 0.7, 1.3, 1]
+    tolerance: 1e-5
+    shown: ['id="p4c-rpp"']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4c-prp
+    kind: identity
+    answer: p4c-prp
+    where: 'Problem 4(c), answer box Γ^φ_rφ: the form of MIT''s sheet with numerical second derivatives of φ = atan(y/x); ∂x/∂r = cos φ, ∂y/∂r = sin φ'
+    formula: 1/r
+    equals: >-
+      -(deriv('atan(r*sin(ph)/u)', 'u', r*cos(ph), 2)*cos(ph)*(-r*sin(ph))
+      + deriv("deriv('atan(w/u)', 'u', r*cos(ph))", 'w', r*sin(ph))*(cos(ph)*r*cos(ph) + sin(ph)*(-r*sin(ph)))
+      + deriv('atan(u/(r*cos(ph)))', 'u', r*sin(ph), 2)*sin(ph)*r*cos(ph))
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      ph: [0.2, 0.7, 1.3, 1]
+    tolerance: 1e-5
+    shown: ['id="p4c-prp"']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4c-first-form
+    kind: identity
+    where: 'Problem 4(c), formula "Problem 4(c): polar Christoffel symbols from the transformation law": Γ^r_φφ from the first form, with numerical second derivatives of x and y'
+    formula: cos(ph)*deriv('r*cos(u)', 'u', ph, 2) + sin(ph)*deriv('r*sin(u)', 'u', ph, 2)
+    equals: -r
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      ph: [0.2, 0.7, 1.3, 2.5]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 4(c): polar Christoffel symbols from the transformation law"']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4c-first-form-phi
+    kind: identity
+    where: 'Problem 4(c), solution: Γ^φ_rφ from the first form; ∂²x/∂r∂φ = −sin φ and ∂²y/∂r∂φ = cos φ by numerical derivatives'
+    formula: (-sin(ph)/r)*deriv('cos(u)', 'u', ph) + (cos(ph)/r)*deriv('sin(u)', 'u', ph)
+    equals: 1/r
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      ph: [0.2, 0.7, 1.3, 2.5]
+    tolerance: 1e-7
+    shown: ['$\partial^2x/\partial r\,\partial\phi = -\sin\phi$ and $\partial^2y/\partial r\,\partial\phi = \cos\phi$']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  - id: p4c-sheet-form
+    kind: identity
+    where: 'Problem 4(c), check: the sheet''s form written out, −(y⁴ + 2x²y² + x⁴)/r³ = −r'
+    formula: -(y**2*y**2 + 2*x*y*x*y + x**2*x**2)/sqrt(x**2 + y**2)**3
+    equals: -sqrt(x**2 + y**2)
+    samples:
+      x: [0.5, 1, 3, -1.7]
+      y: [0.2, 2, 1.3, 1]
+    tolerance: 1e-9
+    shown: ['\Gamma^r_{\phi\phi} = -\left(y^2\cdot y^2 + 2xy\cdot xy + x^2\cdot x^2\right)/r^3 = -r$']
+    source: {cite: mit, at: 'Problem 4 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5
+  # Christoffel symbols against the definition ∂_β e_α = Γ^μ_βα e_μ, with the Cartesian components of the basis
+  # vectors: e_φ = (−r sin θ sin φ, r sin θ cos φ, 0), e_r = (sin θ cos φ, sin θ sin φ, cos θ),
+  # e_θ = (r cos θ cos φ, r cos θ sin φ, −r sin θ). The page's route is the formula with derivatives of the metric.
+
+  - id: p5a-rpp
+    kind: identity
+    answer: p5a-rpp
+    where: 'Problem 5(a), answer box Γ^r_φφ: the part of ∂_φ e_φ along e_r, by numerical derivatives of the Cartesian components of e_φ'
+    formula: -r*sin(th)**2
+    equals: deriv('-r*sin(th)*sin(u)', 'u', ph)*sin(th)*cos(ph) + deriv('r*sin(th)*cos(u)', 'u', ph)*sin(th)*sin(ph)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+      ph: [0.2, 2, 4, 5.5]
+    tolerance: 1e-7
+    shown: ['id="p5a-rpp"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5a-tpp
+    kind: identity
+    answer: p5a-tpp
+    where: 'Problem 5(a), answer box Γ^θ_φφ: the part of ∂_φ e_φ along e_θ (divided by e_θ·e_θ = r²), by numerical derivatives'
+    formula: -sin(th)*cos(th)
+    equals: (deriv('-r*sin(th)*sin(u)', 'u', ph)*r*cos(th)*cos(ph) + deriv('r*sin(th)*cos(u)', 'u', ph)*r*cos(th)*sin(ph))/r**2
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+      ph: [0.2, 2, 4, 5.5]
+    tolerance: 1e-7
+    shown: ['id="p5a-tpp"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5a-metric-route
+    kind: identity
+    where: 'Problem 5(a), formula "Problem 5(a): Christoffel symbols of spherical coordinates": Γ^r_φφ = −½ ∂_r g_φφ and Γ^φ_θφ = ½ g^φφ ∂_θ g_φφ = cot θ, by numerical derivatives of the metric'
+    formula: -0.5*deriv('(u*sin(th))**2', 'u', r) + 0.5/(r*sin(th))**2*deriv('(r*sin(u))**2', 'u', th)
+    equals: -r*sin(th)**2 + cos(th)/sin(th)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-7
+    shown: ['<Formula label="Problem 5(a): Christoffel symbols of spherical coordinates"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5a-theta-theta
+    kind: identity
+    where: 'Problem 5(a), solution: Γ^r_θθ = −½ ∂_r g_θθ = −r, by a numerical derivative'
+    formula: -0.5*deriv('u**2', 'u', r)
+    equals: -r
+    samples:
+      r: [0.5, 1, 3, 1.7]
+    tolerance: 1e-7
+    shown: ['$\Gamma^r_{\theta\theta} = -\tfrac12\partial_r g_{\theta\theta} = -r$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5a-trick-r
+    kind: identity
+    where: 'Problem 5(a), check: the party trick, ∂_r ln √g = 2/r = Γ^θ_θr + Γ^φ_φr'
+    formula: deriv('log(u**2*sin(th))', 'u', r)
+    equals: 1/r + 1/r
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-7
+    shown: ['$\Gamma^\theta_{\theta r} + \Gamma^\phi_{\phi r} = 2/r$']
+    source: {cite: reading5, at: 'transcript p. 8'}
+    origin: page-own
+
+  - id: p5a-trick-theta
+    kind: identity
+    where: 'Problem 5(a), check: the party trick, ∂_θ ln √g = cot θ'
+    formula: deriv('log(r**2*sin(u))', 'u', th)
+    equals: cos(th)/sin(th)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-7
+    shown: ['$\Gamma^i_{ir} = 2/r$ and $\Gamma^i_{i\theta} = \cot\theta$']
+    source: {cite: reading5, at: 'transcript p. 8'}
+    origin: page-own
+
+  - id: p5a-length
+    kind: identity
+    where: 'Problem 5(a), check: ∂_φ e_φ = (−r sin θ cos φ, −r sin θ sin φ, 0) has the length r sin θ'
+    formula: sqrt((r*sin(th)*cos(ph))**2 + (r*sin(th)*sin(ph))**2)
+    equals: r*sin(th)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+      ph: [0.2, 2, 4, 5.5]
+    tolerance: 1e-9
+    shown: ['a vector of length $r\sin\theta$ that points at the $z$ axis']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5b-div
+    kind: identity
+    answer: p5b-div
+    where: 'Problem 5(b), answer box: against the Cartesian divergence ∂_z(z²) at z = r cos θ, by a numerical derivative'
+    formula: 2*r*cos(th)
+    equals: deriv('u**2', 'u', r*cos(th))
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-7
+    shown: ['id="p5b-div"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5b-sqrt-g
+    kind: identity
+    where: 'Problem 5(b), formula "Problem 5(b): the divergence": (1/√g) ∂_i(√g V^i) by numerical derivatives'
+    formula: (deriv('u**2*sin(th)*u**2*cos(th)**3', 'u', r) + deriv('r**2*sin(u)*(-r*cos(u)**2*sin(u))', 'u', th))/(r**2*sin(th))
+    equals: 2*r*cos(th)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 5(b): the divergence"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5b-christoffel-route
+    kind: identity
+    where: 'Problem 5(b), check: the divergence from the Christoffel symbols, ∂_r V^r + ∂_θ V^θ + (2/r) V^r + cot θ V^θ, by numerical derivatives'
+    formula: deriv('u**2*cos(th)**3', 'u', r) + deriv('-r*cos(u)**2*sin(u)', 'u', th) + (2/r)*r**2*cos(th)**3 + cos(th)/sin(th)*(-r*cos(th)**2*sin(th))
+    equals: 2*r*cos(th)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-6
+    shown: ['2r\cos^3\theta + (2r\cos\theta\sin^2\theta - r\cos^3\theta) + 2r\cos^3\theta - r\cos^3\theta = 2r\cos\theta$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5b-cartesian
+    kind: identity
+    where: 'Problem 5(b), check: the field is z² e_z; its components on the unit vectors, V^r̂ = z² cos θ and V^θ̂ = −z² sin θ'
+    formula: (r*cos(th))**2*cos(th) + (-(r*cos(th))**2*sin(th))
+    equals: r**2*cos(th)**3 + (-r**2*cos(th)**2*sin(th))
+    samples:
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-9
+    shown: ['$V^{\hat r} = r^2\cos^3\theta$ and $V^{\hat\theta} = -r^2\cos^2\theta\sin\theta$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  # The rotating field in Cartesian components is ω(−y, x, 0), with the curl (0, 0, 2ω).
+  - id: p5c-vphi
+    kind: identity
+    answer: p5c-vphi
+    where: 'Problem 5(c), answer box V_φ: the scalar product of the Cartesian field ω(−y, x, 0) with e_φ = (−y, x, 0)'
+    formula: w*r**2*sin(th)**2
+    equals: w*((r*sin(th)*sin(ph))**2 + (r*sin(th)*cos(ph))**2)
+    samples:
+      w: [0.5, 1, 2, 1.3]
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+      ph: [0.2, 2, 4, 5.5]
+    tolerance: 1e-9
+    shown: ['id="p5c-vphi"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5c-curlr
+    kind: identity
+    answer: p5c-curlr
+    where: 'Problem 5(c), answer box: the Cartesian curl (∂_x V_y − ∂_y V_x) e_z, by numerical derivatives, times the r component of e_z, cos θ'
+    formula: 2*w*cos(th)
+    equals: (deriv('w*u', 'u', 1.3) - deriv('-w*u', 'u', 0.7))*cos(th)
+    samples:
+      w: [0.5, 1, 2, 1.3]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-7
+    shown: ['id="p5c-curlr"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5c-curlt
+    kind: identity
+    answer: p5c-curlt
+    where: 'Problem 5(c), answer box: the Cartesian curl, by numerical derivatives, times the θ coordinate component of e_z, −sin θ/r'
+    formula: -2*w*sin(th)/r
+    equals: (deriv('w*u', 'u', 1.3) - deriv('-w*u', 'u', 0.7))*(-sin(th)/r)
+    samples:
+      w: [0.5, 1, 2, 1.3]
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-7
+    shown: ['id="p5c-curlt"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5c-formula
+    kind: identity
+    where: 'Problem 5(c), formula "Problem 5(c): the curl of the rotating field": both components from numerical derivatives of V_φ = ω r² sin²θ'
+    formula: deriv('w*r**2*sin(u)**2', 'u', th)/(r**2*sin(th)) + 10*(-deriv('w*u**2*sin(th)**2', 'u', r)/(r**2*sin(th)))
+    equals: 2*w*cos(th) + 10*(-2*w*sin(th)/r)
+    samples:
+      w: [0.5, 1, 2, 1.3]
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 5(c): the curl of the rotating field"']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p5c-lowered
+    kind: identity
+    where: 'Problem 5(c), check: the θ component with the index down, g_θθ times the upper one'
+    formula: r**2*(-2*w*sin(th)/r)
+    equals: -2*w*r*sin(th)
+    samples:
+      w: [0.5, 1, 2, 1.3]
+      r: [0.5, 1, 3, 1.7]
+      th: [0.3, 0.8, 1.4, 1]
+    tolerance: 1e-9
+    shown: ['g_{\theta\theta}(\mathrm{curl}\,\vec V)^\theta = -2\omega r\sin\theta$']
+    source: {cite: mit, at: 'Problem 5 (our own problem and solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6a-acc
+    kind: identity
+    answer: p6a-acc
+    where: 'Problem 6(a), answer box: Γ^θ_φφ (U^φ)² with Γ^θ_φφ = −½ ∂_θ g_φφ by a numerical derivative of g_φφ = sin²θ'
+    formula: -sin(th)*cos(th)
+    equals: -0.5*deriv('sin(u)**2', 'u', th)
+    samples:
+      th: [0.3, 0.8, 1.4, 1, 2.5]
+    tolerance: 1e-7
+    shown: ['id="p6a-acc"']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  # The two transport equations, each checked with a numerical derivative of the other component.
+  - id: p6b-at
+    kind: identity
+    answer: p6b-at
+    where: 'Problem 6(b), answer box A^θ: from the second transport equation, A^θ = −tan θ₀ dA^φ/dφ, with a numerical derivative'
+    formula: cos(ph*cos(th))
+    equals: -tan(th)*deriv('-sin(u*cos(th))/sin(th)', 'u', ph)
+    samples:
+      ph: [0.3, 1, 3, 5, 6.2]
+      th: [0.3, 0.8, 1.4, 1, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p6b-at"']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6b-ap
+    kind: identity
+    answer: p6b-ap
+    where: 'Problem 6(b), answer box A^φ: from the first transport equation, A^φ = (dA^θ/dφ)/(sin θ₀ cos θ₀), with a numerical derivative'
+    formula: -sin(ph*cos(th))/sin(th)
+    equals: deriv('cos(u*cos(th))', 'u', ph)/(sin(th)*cos(th))
+    samples:
+      ph: [0.3, 1, 3, 5, 6.2]
+      th: [0.3, 0.8, 1.4, 1, 1.2]
+    tolerance: 1e-6
+    shown: ['id="p6b-ap"']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6b-start
+    where: 'Problem 6(b): the solution starts with A^θ = 1 at φ = 0 (and A^φ = −sin 0/sin θ₀ = 0)'
+    formula: cos(0*cos(1.2)) - sin(0*cos(1.2))/sin(1.2)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['With $A^\theta = 1$ and $A^\phi = 0$ (so $dA^\theta/d\phi = 0$) at $\phi = 0$']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6b-length
+    kind: identity
+    where: 'Problem 6(b), check: the length of the transported vector stays 1'
+    formula: cos(ph*cos(th))**2 + sin(th)**2*(-sin(ph*cos(th))/sin(th))**2
+    equals: '1'
+    samples:
+      ph: [0.3, 1, 3, 5, 6.2]
+      th: [0.3, 0.8, 1.4, 1, 1.2]
+    tolerance: 1e-9
+    shown: ['\cos^2(\phi\cos\theta_0) + \sin^2(\phi\cos\theta_0) = 1$']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-angle-given
+    kind: fact
+    where: 'Problem 6(c), statement: the circle of latitude of our example'
+    shown: ['For the circle $\theta_0 = 70^\circ$']
+    source: {cite: mit, at: 'Problem 6 (our own problem)'}
+    origin: page-own
+
+  - id: p6c-cos
+    where: 'Problem 6(c), solution: cos 70°'
+    formula: cos(70*pi/180)
+    expected: '0.34202'
+    shown: ['$\cos 70^\circ = 0.34202$']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-angle-rad
+    where: 'Problem 6(c), solution: the angle 2π cos 70° in radians'
+    formula: 2*pi*cos(70*pi/180)
+    expected: '2.1490'
+    shown: ['$2\pi\times 0.34202 = 2.1490$ rad']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-angle-deg
+    where: 'Problem 6(c), solution: the same angle in degrees'
+    formula: 360*cos(70*pi/180)
+    expected: '123.13'
+    shown: ['or 123.13°']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-at
+    answer: p6c-at
+    where: 'Problem 6(c), answer box: A^θ after a full turn on the circle θ₀ = 70°'
+    formula: cos(2*pi*cos(70*pi/180))
+    expected: '-0.5465'
+    shown: ['id="p6c-at"', '\cos\left(2.1490\right) = -0.5465']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-ap
+    where: 'Problem 6(c), solution: A^φ after a full turn'
+    formula: -sin(2*pi*cos(70*pi/180))/sin(70*pi/180)
+    expected: '-0.8912'
+    shown: ['$A^\phi(2\pi) = -\sin(2.1490)/\sin 70^\circ = -0.8912$']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-length
+    where: 'Problem 6(c), check: the length after the turn, from the rounded components'
+    formula: sqrt(0.5465**2 + (sin(70*pi/180)*0.8912)**2)
+    expected: '1'
+    tolerance: 1e-4
+    shown: ['$\sqrt{0.5465^2 + (\sin 70^\circ\times 0.8912)^2} = 1$']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  - id: p6c-equator
+    where: 'Problem 6(c), check: on the equator the angle 2π cos 90° is zero, so A^θ stays cos 0 = 1'
+    formula: cos(2*pi*cos(90*pi/180))
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['On the equator the angle is $2\pi\cos 90^\circ = 0$']
+    source: {cite: mit, at: 'Problem 6 (our own problem and solution)'}
+    origin: page-own
+
+  # ---- Problem 7
+  # The three checks in plane polar coordinates (g_φφ = r², g^φφ = 1/r², Γ^φ_φr = 1/r), with numerical derivatives.
+
+  - id: p7a-check
+    kind: identity
+    where: 'Problem 7(a), check: ∂_r g_φφ = 2r and 2 Γ_φφr = 2 g_φφ Γ^φ_φr = 2r'
+    formula: deriv('u**2', 'u', r)
+    equals: 2*r**2*(1/r)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+    tolerance: 1e-7
+    shown: ['$2\,\Gamma_{\phi\phi r} = 2\,g_{\phi\phi}\Gamma^\phi_{\phi r} = 2r^2/r = 2r$']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7b-check
+    kind: identity
+    where: 'Problem 7(b), check: g_φφ ∂_r g^φφ = −g^φφ ∂_r g_φφ, by numerical derivatives; both are −2/r'
+    formula: r**2*deriv('1/u**2', 'u', r) + 10*(-(1/r**2)*deriv('u**2', 'u', r))
+    equals: -2/r + 10*(-2/r)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+    tolerance: 1e-7
+    shown: ['the left side is $r^2\,\partial_r(1/r^2) = -2/r$, the right side is $-(1/r^2)\,\partial_r(r^2) = -2/r$']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7c-check
+    kind: identity
+    where: 'Problem 7(c), check: ∂_r g^φφ = −2/r³ = −2 Γ^φ_rφ g^φφ, by a numerical derivative'
+    formula: deriv('1/u**2', 'u', r)
+    equals: -2*(1/r)*(1/r**2)
+    samples:
+      r: [0.5, 1, 3, 1.7]
+    tolerance: 1e-7
+    shown: ['$-2\,\Gamma^\phi_{r\phi}\,g^{\phi\phi} = -2\,(1/r)(1/r^2) = -2/r^3$']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  # Part (f): the box against the Cartesian Laplacian of (x² + y² + z²)^(n/2), with r = sqrt(x² + y² + z²)
+  # (the sample points have r = 3, 7 and 1).
+  - id: p7f-box
+    kind: identity
+    answer: p7f-box
+    where: 'Problem 7(f), answer box: against the sum of the three Cartesian second derivatives of r^n, by numerical derivatives'
+    formula: n*(n + 1)*r**(n - 2)
+    equals: deriv('(u**2 + y**2 + z**2)**(n/2)', 'u', x, 2) + deriv('(x**2 + u**2 + z**2)**(n/2)', 'u', y, 2) + deriv('(x**2 + y**2 + u**2)**(n/2)', 'u', z, 2)
+    samples:
+      n: [2.5, 3, 1.5, 4]
+      r: [3, 7, 1, 3]
+      x: [1, 2, 0.6, 2]
+      y: [2, 3, 0, 1]
+      z: [2, 6, 0.8, 2]
+    tolerance: 1e-5
+    shown: ['id="p7f-box"']
+    source: {cite: mit, at: 'Problem 7(f) (our own addition)'}
+    origin: page-own
+
+  - id: p7f-radial
+    kind: identity
+    where: 'Problem 7(f), formula "Problem 7(f): the box of a power of r": (1/r²) ∂_r(r² ∂_r r^n) by numerical derivatives'
+    formula: deriv('u**2*n*u**(n - 1)', 'u', r)/r**2
+    equals: n*(n + 1)*r**(n - 2)
+    samples:
+      n: [2.5, 3, 1.5, -1]
+      r: [0.5, 1, 2, 1.7]
+    tolerance: 1e-6
+    shown: ['<Formula label="Problem 7(f): the box of a power of r"']
+    source: {cite: mit, at: 'Problem 7(f) (our own addition)'}
+    origin: page-own
+
+  - id: p7f-n2
+    where: 'Problem 7(f), check: n = 2 gives 6, the Cartesian Laplacian 2 + 2 + 2 of x² + y² + z²'
+    formula: 2*(2 + 1)
+    expected: '6'
+    shown: ['$n = 2$ gives 6, and in Cartesian coordinates $\nabla^2(x^2 + y^2 + z^2) = 2 + 2 + 2 = 6$']
+    source: {cite: mit, at: 'Problem 7(f) (our own addition)'}
+    origin: page-own
+
+  - id: p7f-n-minus-1
+    where: 'Problem 7(f), check: n = −1 gives 0 (r = 1.7)'
+    formula: 1 + (-1)*((-1) + 1)*1.7**(-3)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['And $n = -1$ gives 0']
+    source: {cite: mit, at: 'Problem 7(f) (our own addition)'}
+    origin: page-own
