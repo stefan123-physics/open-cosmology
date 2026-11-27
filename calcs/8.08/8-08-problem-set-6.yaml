@@ -1,0 +1,467 @@
+# Calculations on content/year-4/8.08/8-08-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 takes the stiffness as minus the derivative (numerical) of the net force L²(P₁ − P₂) of the two gases, and
+# the fluctuation from the exact distribution x^N (2L − x)^N, integrated numerically for large N; Problem 2 takes the
+# mean energy as k_B T² d(ln Z)/dT and the variance as k_B T² C_V, both by numerical derivatives; Problem 3 takes the
+# variance as −dn̄/dy (numerical) and the black-body ratio by numerical integration; Problem 4 takes the final
+# temperature from the energy of a Planck spectrum whose photon energies are all divided by s (numerical integrals),
+# and the energy ratio from the work ∫P dV (numerical integral).
+# Constants: k_B, hbar, c from calcs/constants.yaml. T_CMB = 2.725 K (calcs/values.yaml, Guth 2013).
+# Choice boxes have no entries: their reasons are in the solutions.
+
+page: content/year-4/8.08/8-08-problem-set-6.mdx
+calcs:
+  # ---- How to answer
+
+  - id: points-total
+    where: 'How to answer: our points, 20 + 15 + 15 + 20'
+    formula: |-
+      20 + 15 + 15 + 20
+    expected: '70'
+    shown: ['and 20 for Problem 4, 70 points in all']
+    source: {cite: mit, at: 'Problems 1 to 4, p. 1 (points are ours)'}
+    origin: page-own
+
+  # ---- Problem 1: the sliding wall
+
+  - id: p1-curv
+    kind: identity
+    answer: p1-curv
+    where: 'Problem 1(a), answer box: curvature of A_tot at x = L, against minus the numerical x-derivative of the net force L²(P₁ − P₂) with P = N k_B T/V'
+    formula: |-
+      2*N*kB*T/L**2
+    equals: |-
+      -deriv('L**2*(N*kB*T/(L**2*u) - N*kB*T/(L**2*(2*L - u)))', 'u', L)
+    samples:
+      N: [1, 10, 100, 7, 50]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+      L: [0.5, 1.0, 2.0, 1.5, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p1-curv"', '<Formula label="Curvature of the free energy of the two gases"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-dx
+    kind: identity
+    answer: p1-dx
+    where: 'Problem 1(b), answer box: Δx = L/√(2N), against the root-mean-square deviation of the exact distribution x^N (2L − x)^N, integrated numerically, for large N (the exact result L/√(2N + 3) differs by less than 0.1%)'
+    formula: |-
+      L/sqrt(2*N)
+    equals: |-
+      sqrt(integrate('(u - L)**2*((u/L)*(2 - u/L))**N', 'u', 0.5*L, 1.5*L)/integrate('((u/L)*(2 - u/L))**N', 'u', 0.5*L, 1.5*L))
+    samples:
+      N: [2000, 5000, 3000]
+      L: [1.0, 0.3, 2.0]
+    tolerance: 1e-3
+    shown: ['id="p1-dx"', '<Formula label="Fluctuation of the wall"']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-exact
+    kind: identity
+    where: 'Problem 1(b), check: the exact variance of x^N (2L − x)^N is L²/(2N + 3) (numerical integrals)'
+    formula: |-
+      L**2/(2*N + 3)
+    equals: |-
+      integrate('(u - L)**2*u**N*(2*L - u)**N', 'u', 0, 2*L)/integrate('u**N*(2*L - u)**N', 'u', 0, 2*L)
+    samples:
+      N: [5, 10, 3]
+      L: [1.0, 0.5, 2.0]
+    tolerance: 1e-6
+    shown: ['its variance is $L^2/(2N + 3)$']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-exact-5
+    where: 'Problem 1(b), check: 2N + 3 for N = 5'
+    inputs: {N: 5}
+    formula: |-
+      2*N + 3
+    expected: '13'
+    shown: ['(for $N = 5$, $L^2/13$)']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-N
+    where: 'Problem 1(c): N = P L³/(k_B T) for L = 10.0 cm, P = 101 325 Pa, T = 300 K'
+    inputs: {L: 10.0 cm, P: 101325 Pa, T: 300 K}
+    formula: |-
+      P*L**3/(k_B*T)
+    expected: '2.45e22'
+    shown: ['= 2.45 \times 10^{22}$ in each half']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-dx-m
+    where: 'Problem 1(c): Δx = L/√(2N) in metres'
+    inputs: {L: 10.0 cm, P: 101325 Pa, T: 300 K}
+    formula: |-
+      L/sqrt(2*P*L**3/(k_B*T))
+    expected: 4.52e-13 m
+    shown: ['m $= 4.52 \times 10^{-13}$ m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-num
+    answer: p1-num
+    where: 'Problem 1(c), answer box: Δx in pm'
+    inputs: {L: 10.0 cm, P: 101325 Pa, T: 300 K}
+    formula: |-
+      L/sqrt(2*P*L**3/(k_B*T))
+    expected: 0.452 pm
+    shown: ['id="p1-num"', 'm $= 0.452$ pm']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-stiff
+    where: 'Problem 1(c), check: the stiffness 2PL'
+    inputs: {L: 10.0 cm, P: 101325 Pa}
+    formula: |-
+      2*P*L
+    expected: 2.03e4 N/m
+    shown: ['$2PL = 2.03 \times 10^4$ N/m']
+    source: {cite: mit, at: 'Problem 1, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2: two-level atoms
+
+  - id: p2-e
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(a), answer box: Ē, against N k_B T² d(ln Z₁)/dT with Z₁ = 1 + e^(−ε/k_BT) (numerical derivative)'
+    formula: |-
+      N*eps/(exp(eps/(kB*T)) + 1)
+    equals: |-
+      N*kB*T**2*deriv('log(1 + exp(-eps/(kB*u)))', 'u', T)
+    samples:
+      N: [1, 10, 100, 7, 50]
+      eps: [0.5, 1.0, 2.0, 1.5, 0.8]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p2-e"', '<Formula label="Average energy of two-level atoms"']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-var
+    kind: identity
+    answer: p2-var
+    where: 'Problem 2(b), answer box: the variance, against k_B T² C_V with C_V the numerical T-derivative of Ē (part (c) route)'
+    formula: |-
+      N*eps**2*exp(eps/(kB*T))/(exp(eps/(kB*T)) + 1)**2
+    equals: |-
+      kB*T**2*deriv('N*eps/(exp(eps/(kB*u)) + 1)', 'u', T)
+    samples:
+      N: [1, 10, 100, 7, 50]
+      eps: [0.5, 1.0, 2.0, 1.5, 0.8]
+      kB: [0.5, 1.0, 1.5, 0.8, 1.2]
+      T: [0.5, 2.0, 1.0, 1.3, 0.7]
+    tolerance: 1e-6
+    shown: ['id="p2-var"', '<Formula label="Energy fluctuation of two-level atoms"']
+    source: {cite: reading1, at: 'p. 46, point ③'}
+    origin: page-own
+
+  - id: p2-peak
+    where: 'Problem 2(c), check: the Schottky heat capacity x² eˣ/(eˣ + 1)², x = ε/k_BT, peaks at k_BT/ε = 1/x (root of its derivative)'
+    inputs: {}
+    formula: |-
+      1/solve("deriv('u**2*exp(u)/(exp(u) + 1)**2', 'u', x)", 'x', 1.5, 3.5)
+    expected: '0.42'
+    shown: ['near $k_BT \approx 0.42\,\varepsilon$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2-p
+    where: 'Problem 2(d): p = 1/(e⁵ + 1)'
+    inputs: {}
+    formula: |-
+      1/(exp(5) + 1)
+    expected: '6.69e-3'
+    shown: ['$p = 1/(e^5 + 1) = 6.69 \times 10^{-3}$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-Np
+    where: 'Problem 2(d): the average number of excited atoms Np for N = 1000'
+    inputs: {}
+    formula: |-
+      1000/(exp(5) + 1)
+    expected: '6.69'
+    shown: ['$Np = 6.69$ atoms are excited']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-1mp
+    where: 'Problem 2(d): 1 − p'
+    inputs: {}
+    formula: |-
+      1 - 1/(exp(5) + 1)
+    expected: '0.9933'
+    shown: ['\sqrt{0.9933/6.69}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-num
+    answer: p2-num
+    where: 'Problem 2(d), answer box: δE/Ē = √(k_B T² C_V)/Ē for N = 1000, ε = 5 k_BT, C_V by a numerical derivative'
+    inputs: {}
+    formula: |-
+      sqrt(deriv('1000*5/(exp(5/u) + 1)', 'u', 1))/(1000*5/(exp(5) + 1))
+    expected: '0.385'
+    shown: ['id="p2-num"', '\sqrt{0.9933/6.69} = 0.385$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-sqrtN
+    where: 'Problem 2(d), check: 1/√1000'
+    inputs: {}
+    formula: |-
+      1/sqrt(1000)
+    expected: '0.032'
+    shown: ['would give $0.032$ for $1000$ atoms']
+    source: {cite: reading1, at: 'p. 46, point ③'}
+    origin: page-own
+
+  - id: p2-times
+    where: 'Problem 2(d), check: 0.385 against 1/√1000, "twelve times larger"'
+    inputs: {}
+    formula: |-
+      sqrt((1 - 1/(exp(5) + 1))/(1000/(exp(5) + 1)))*sqrt(1000)
+    expected: '12'
+    shown: ['the fluctuation here is twelve times larger']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3: Bose occupation fluctuations
+
+  - id: p3-var
+    kind: identity
+    answer: p3-var
+    where: 'Problem 3(a), answer box: n̄(1 + n̄), against −dn̄/dy at y = ln(1 + 1/n̄) (numerical derivative)'
+    formula: |-
+      nbar*(1 + nbar)
+    equals: |-
+      -deriv('1/(exp(u) - 1)', 'u', log(1 + 1/nbar))
+    samples:
+      nbar: [0.1, 0.5, 1.0, 2.5, 5.0]
+    tolerance: 1e-6
+    shown: ['id="p3-var"', '<Formula label="Variance of the number of bosons in one level"']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-y1-nbar
+    where: 'Problem 3(a), check: n̄ at y = 1'
+    inputs: {}
+    formula: |-
+      1/(exp(1) - 1)
+    expected: '0.582'
+    shown: ['$\bar n = 0.582$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-y1-var
+    where: 'Problem 3(a), check: n̄(1 + n̄) at y = 1, as e/(e − 1)²'
+    inputs: {}
+    formula: |-
+      exp(1)/(exp(1) - 1)**2
+    expected: '0.921'
+    shown: ['$\bar n(1 + \bar n) = 0.921$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ratio
+    answer: p3-ratio
+    where: 'Problem 3(b), answer box: ∫x² eˣ/(eˣ − 1)² dx over ∫x²/(eˣ − 1) dx, both integrated numerically'
+    inputs: {}
+    formula: |-
+      integrate('x**2*exp(-x)/(1 - exp(-x))**2', 'x', 1e-9, 80)/integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)
+    expected: '1.368'
+    shown: ['id="p3-ratio"', '= 1.368$.']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-pi2-3
+    where: 'Problem 3(b): the numerator, π²/3, against its numerical integral'
+    inputs: {}
+    formula: |-
+      integrate('x**2*exp(-x)/(1 - exp(-x))**2', 'x', 1e-9, 80)
+    expected: '3.290'
+    shown: ['\frac{\pi^2}{3} = 3.290$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p3-pi2-6
+    where: 'Problem 3(b), statement: the integral of x/(eˣ − 1) divided by π²/6 is 1 (numerical integral)'
+    inputs: {}
+    formula: |-
+      integrate('x/(exp(x) - 1)', 'x', 1e-9, 80)*6/pi**2
+    expected: '1.000000'
+    shown: ['dx/(e^x - 1) = \pi^2/6$']
+    source: {cite: mit, at: 'Problem 3, p. 1 (our own problem)'}
+    origin: page-own
+
+  - id: p3-2zeta3
+    where: 'Problem 3(b), statement: ∫x²/(eˣ − 1) dx = 2ζ(3)'
+    inputs: {}
+    formula: |-
+      integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)
+    expected: '2.404'
+    shown: ['= 2\zeta(3) = 2.404$']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  # ---- Problem 4: photons in an expanding universe
+
+  - id: p4-kappa
+    where: 'Problem 4, statement: κ = (1/π²) ∫x²/(eˣ − 1) dx'
+    inputs: {}
+    formula: |-
+      integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2
+    expected: '0.2436'
+    shown: ['\frac{x^2}{e^x - 1} = 0.2436', 'where the integral gives $0.2436$']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  - id: p4-kappa-notes
+    kind: fact
+    where: 'Problem 4, statement: the notes print κ = 0.23..., a slip for 0.2436'
+    value: '0.23'
+    shown: ['the notes print $\kappa = 0.23\ldots$ on p. 50']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: slip
+
+  - id: p4-t
+    kind: identity
+    answer: p4-t
+    where: 'Problem 4(a), answer box: T_f = T_i/s, against the temperature of the radiation after every photon energy is divided by s: (energy of the stretched spectrum in the volume s³V_i, over σ V_f)^(1/4), in units where k_B = ħc = 1 and V_i = 1, every constant factor cancelling (numerical integrals)'
+    formula: |-
+      Ti/s
+    equals: |-
+      (integrate('(u/s)*u**2/(exp(u/Ti) - 1)', 'u', 1e-9, 80*Ti)/s**3/integrate('u**3/(exp(u) - 1)', 'u', 1e-9, 80))**(1/4)
+    samples:
+      Ti: [1, 3, 10, 5]
+      s: [1.5, 2, 5, 3]
+    tolerance: 1e-6
+    shown: ['id="p4-t"', '<Formula label="Cooling of radiation in a slow expansion"']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-u
+    kind: identity
+    answer: p4-u
+    where: 'Problem 4(b), answer box: U_f/U_i = 1/s, against 1 − (work ∫P dV)/U_i with P = σT⁴/3 and T = T_i (V_i/V)^(1/3), V_i = 1 (numerical integral)'
+    formula: |-
+      1/s
+    equals: |-
+      1 - integrate('(1/3)*v**(-4/3)', 'v', 1, s**3)
+    samples:
+      s: [1.5, 2, 3, 5]
+    tolerance: 1e-6
+    shown: ['id="p4-u"', '$U_f/U_i = (V_f/V_i)(T_f/T_i)^4 = s^3 \times s^{-4} = 1/s$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-n
+    answer: p4-n
+    where: 'Problem 4(c), answer box: N_f/N_i, the ratio of the photon numbers κV(k_BT/ħc)³ before and after, computed for s = 2 with T_f from the stretched-spectrum route of p4-t'
+    inputs: {}
+    formula: |-
+      2**3*((integrate('(u/2)*u**2/(exp(u/3) - 1)', 'u', 1e-9, 240)/8/integrate('u**3/(exp(u) - 1)', 'u', 1e-9, 80))**(1/4)/3)**3
+    expected: '1'
+    tolerance: '1e-6'
+    shown: ['id="p4-n"', '$N_f/N_i = (V_f/V_i)(T_f/T_i)^3 = s^3 \times s^{-3} = 1$']
+    source: {cite: mit, at: 'Problem 4(c), p. 1 (MIT''s question, our own solution)'}
+    origin: page-own
+
+  - id: p4-kTc
+    where: 'Problem 4(d): k_B T/ħc at 2.725 K'
+    inputs: {T: 2.725 K}
+    formula: |-
+      k_B*T/(hbar*c)
+    expected: 1190 1/m
+    shown: ['= 1190$ m⁻¹']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  - id: p4-kTc3
+    where: 'Problem 4(d): (k_B T/ħc)³ at 2.725 K'
+    inputs: {T: 2.725 K}
+    formula: |-
+      (k_B*T/(hbar*c))**3
+    expected: 1.685e9 1/m**3
+    shown: ['Cubed, $1.685 \times 10^9$ m⁻³']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  - id: p4-dens-m3
+    where: 'Problem 4(d): photon density at 2.725 K per m³'
+    inputs: {T: 2.725 K}
+    formula: |-
+      integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 4.105e8 1/m**3
+    shown: ['times $0.2436$, $4.105 \times 10^8$ m⁻³']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  - id: p4-dens
+    answer: p4-dens
+    where: 'Problem 4(d), answer box: photon density at 2.725 K per cm³'
+    inputs: {T: 2.725 K}
+    formula: |-
+      integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 410.5 1/cm**3
+    shown: ['id="p4-dens"', 'or $410.5$ photons per cm³']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  - id: p4-early
+    answer: p4-early
+    where: 'Problem 4(d), answer box: 2.725 K when every length was 1000 times smaller (T ∝ 1/length)'
+    inputs: {T: 2.725 K}
+    formula: |-
+      1000*T
+    expected: 2725 K
+    shown: ['id="p4-early"', '$T = 1000 \times 2.725$ K $= 2725$ K']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-early-dens
+    where: 'Problem 4(d): the photon density then, 10⁹ times today''s, per cm³'
+    inputs: {T: 2725 K}
+    formula: |-
+      integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2*(k_B*T/(hbar*c))**3
+    expected: 4.1e11 1/cm**3
+    shown: ['about $4.1 \times 10^{11}$ per cm³']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
+
+  - id: p4-8286
+    kind: fact
+    where: 'Problem 4(d), check: the 8.286 lesson black-body-radiation gives about 410 photons per cm³'
+    value: '410'
+    shown: ['about 410 photons per cm³ today']
+    source: {cite: mit, at: 'content/year-4/8.286/black-body-radiation.mdx, quiz explanation'}
+    origin: page-own
+
+  - id: p4-s
+    answer: p4-s
+    where: 'Problem 4(e), answer box: S/(N k_B) = (4/3)(π²/15)/κ with κ from the numerical integral'
+    inputs: {}
+    formula: |-
+      (4/3)*(pi**2/15)/(integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/pi**2)
+    expected: '3.602'
+    shown: ['id="p4-s"', '\frac{2\pi^4}{45\,\zeta(3)} = 3.602', 'a fixed entropy of $3.602\,k_B$']
+    source: {cite: mit, at: 'Problem 4, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p4-zeta3
+    where: 'Problem 4(e), statement: ζ(3) = 1.202 (half the integral ∫x²/(eˣ − 1) dx)'
+    inputs: {}
+    formula: |-
+      integrate('x**2/(exp(x) - 1)', 'x', 1e-9, 80)/2
+    expected: '1.202'
+    shown: ['Use $\zeta(3) = 1.202$']
+    source: {cite: reading2, at: 'p. 50'}
+    origin: page-own
