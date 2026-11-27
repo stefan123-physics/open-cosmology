@@ -1,0 +1,741 @@
+# Calculations on content/year-3/8.05/8-05-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this problem set, so every answer is checked here by a route independent of the page:
+# Problem 1 lets the commutator of the two exponents act on a test wavefunction; Problem 2 differentiates the Gaussian
+# numerically and does the Fourier integrals of x ψ(x) numerically; Problem 3 counts conditions; Problem 4 finds the
+# direction of largest stretch with a root finder; Problem 5 uses the characteristic polynomial of the original matrix,
+# the trace and the determinant; Problem 6 integrates in position space and in momentum space; Problem 8 integrates the
+# trial energy, finds the minima with a root finder and checks the ground state in the Schrödinger equation; Problem 9
+# lets the matrices act on the vectors entry by entry and checks traces of the matrices and of their squares.
+# The test wavefunction is exp(-(y - 1)²/3).
+
+page: content/year-3/8.05/8-05-problem-set-5.mdx
+calcs:
+  # ---- Introduction
+
+  - id: points-mit
+    where: 'Introduction: MIT''s points, 5 + 5 + 10 + 10 + 5 + 5 + 7 + 8 + 10 over its nine problems'
+    formula: |-
+      5 + 5 + 10 + 10 + 5 + 5 + 7 + 8 + 10
+    expected: '65'
+    shown: ['7 of MIT''s 65 points']
+    source: {cite: mit, at: 'Problems 1 to 9, pp. 1–4'}
+    origin: page-own
+
+  - id: points-page
+    where: 'The points of the eight problems on the page: MIT''s 65 without the 7 of Problem 7'
+    formula: |-
+      5 + 5 + 10 + 10 + 5 + 5 + 8 + 10
+    expected: '58'
+    tolerance: 1e-12
+    shown: ['which leaves 58']
+    source: {cite: mit, at: 'Problems 1 to 9, pp. 1–4'}
+    origin: page-own
+
+  # ---- Problem 1: translations. On wavefunctions of y, A = −i p̂ x/ħ acts as −x d/dy and B = i p x̂/ħ multiplies by i p y/ħ.
+
+  - id: p1-theta
+    kind: identity
+    answer: p1-theta
+    where: 'Problem 1(b), answer box: θ = c/i, where c = [A, B] is found by letting the commutator act on the test wavefunction, (−x (p y ψ/ħ)′ + (p y/ħ) x ψ′)/ψ'
+    formula: |-
+      -x*p/hbar
+    equals: |-
+      (-x*deriv('p*y/hbar*exp(-(y - 1)**2/3)', 'y', y0) + p*y0/hbar*x*deriv('exp(-(y - 1)**2/3)', 'y', y0))/exp(-(y0 - 1)**2/3)
+    samples:
+      x: [0.5, 0.9, 1.3, 1.7, 2.0]
+      p: [2.0, 0.5, 1.1, 0.7, 1.6]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      y0: [-1.2, 0.4, 1.1, -0.3, 0.8]
+    tolerance: 1e-6
+    shown: ['id="p1-theta"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-phase-wavefunction
+    kind: identity
+    where: 'Problem 1(b), check: the plane-wave phase at the point y0 after multiplying and then shifting by x, minus the phase after shifting and then multiplying'
+    formula: |-
+      -x*p/hbar
+    equals: |-
+      p*(y0 - x)/hbar - p*y0/hbar
+    samples:
+      x: [0.5, 0.9, 1.3, 1.7, 2.0]
+      p: [2.0, 0.5, 1.1, 0.7, 1.6]
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      y0: [-1.2, 0.4, 1.1, -0.3, 0.8]
+    tolerance: 1e-12
+    shown: ['which changes its phase by $-xp/\hbar$']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-condition
+    where: 'Problem 1(b): the smallest positive product xp for which the translations commute, in units of ħ, is 2π; the phase factor is then 1'
+    formula: |-
+      cos(2*pi)
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['<Formula label="The condition for the translations to commute"']
+    source: {cite: mit, at: 'Problem 1(b), p. 1 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: position and momentum representations
+
+  - id: p2-g
+    kind: identity
+    answer: p2-g
+    where: 'Problem 2(a), answer box: g = −ħ² ψ″/ψ for ψ = exp(−y²/(2s²)), by numerical differentiation'
+    formula: |-
+      hbar**2*(1/s**2 - x**2/s**4)
+    equals: |-
+      -hbar**2*deriv('exp(-y**2/(2*s**2))', 'y', x, 2)/exp(-x**2/(2*s**2))
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      s: [0.5, 0.9, 1.3, 1.7, 2.0]
+      x: [0.3, 0.6, 0.9, 1.2, 1.5]
+    tolerance: 1e-5
+    shown: ['id="p2-g"']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-p2-mean
+    kind: identity
+    where: 'Problem 2(a), check: the average of g over the state, ∫ g ψ² / ∫ ψ², is ħ²/(2s²)'
+    formula: |-
+      hbar**2/(2*s**2)
+    equals: |-
+      integrate('hbar**2*(1/s**2 - y**2/s**4)*exp(-y**2/s**2)', 'y', -30, 30)/integrate('exp(-y**2/s**2)', 'y', -30, 30)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      s: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['$\langle\hat p^{\,2}\rangle = \hbar^2/(2s^2)$']
+    source: {cite: mit, at: 'Problem 2(a), p. 1 (our own addition)'}
+    origin: page-own
+
+  - id: p2-w
+    kind: identity
+    answer: p2-w
+    where: 'Problem 2(b), answer box: ⟨p|x̂|ψ⟩ is the Fourier integral of y ψ(y), whose value is −i ∫ y sin(py/ħ) ψ dy (up to the common constant); divided by ψ̃ = ∫ cos(py/ħ) ψ dy and by i'
+    formula: |-
+      -p*s**2/hbar
+    equals: |-
+      -integrate('y*sin(p*y/hbar)*exp(-y**2/(2*s**2))', 'y', -40, 40)/integrate('cos(p*y/hbar)*exp(-y**2/(2*s**2))', 'y', -40, 40)
+    samples:
+      p: [0.5, 0.8, 1.1, 1.4, 1.0]
+      s: [0.5, 1.0, 0.8, 1.2, 2.0]
+      hbar: [0.5, 1.0, 2.0, 1.5, 1.0]
+    tolerance: 1e-6
+    shown: ['id="p2-w"']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-momentum-gaussian
+    kind: identity
+    where: 'Problem 2(b): the momentum wavefunction of exp(−y²/(2s²)) is a constant times exp(−p²s²/(2ħ²)): the ratio of the Fourier integral at p to its value at p = 0'
+    formula: |-
+      exp(-p**2*s**2/(2*hbar**2))
+    equals: |-
+      integrate('cos(p*y/hbar)*exp(-y**2/(2*s**2))', 'y', -40, 40)/integrate('exp(-y**2/(2*s**2))', 'y', -40, 40)
+    samples:
+      p: [0.5, 0.8, 1.1, 1.4, 1.0]
+      s: [0.5, 1.0, 0.8, 1.2, 2.0]
+      hbar: [0.5, 1.0, 2.0, 1.5, 1.0]
+    tolerance: 1e-7
+    shown: ['$\tilde\psi(p) = C\,e^{-p^2s^2/(2\hbar^2)}$ with a constant $C$']
+    source: {cite: mit, at: 'Problem 2(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p2-commutator
+    kind: identity
+    where: 'Problem 2(c): (d/dq (q f) − q f′)/f = 1 for the test function f(q) = exp(−(q − 1)²/3), so the commutator acts as iħ times 1'
+    formula: |-
+      1
+    equals: |-
+      (deriv('y*exp(-(y - 1)**2/3)', 'y', y0) - y0*deriv('exp(-(y - 1)**2/3)', 'y', y0))/exp(-(y0 - 1)**2/3)
+    samples:
+      y0: [-1.2, 0.4, 1.1, -0.3, 0.8]
+    tolerance: 1e-6
+    shown: ['<Formula label="The commutator in the momentum representation"']
+    source: {cite: mit, at: 'Problem 2(c), p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: the quadratic forms
+
+  - id: p3-s21
+    answer: p3-s21
+    where: 'Problem 3(a), answer box: S21 = −S12 for S12 = 2.5'
+    inputs: {s12: 2.5}
+    formula: |-
+      -s12
+    expected: '-2.5'
+    tolerance: 1e-12
+    shown: ['id="p3-s21"', 'the other entry is $S_{21} = -2.5$']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p3-real-form
+    kind: identity
+    where: 'Problem 3(a): the real quadratic form of the antisymmetric matrix with S12 = s, S21 = −s vanishes for every vector (u1, u2)'
+    formula: |-
+      0
+    equals: |-
+      u1*(s*u2) + u2*(-s*u1)
+    samples:
+      s: [2.5, 1.0, -0.7, 3.1, 0.4]
+      u1: [1.0, -0.3, 2.2, 0.9, -1.5]
+      u2: [0.5, 1.7, -0.8, 2.4, 1.1]
+    tolerance: 1e-12
+    shown: ['<Formula label="What is left of S"']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-complex-check
+    where: 'Problem 3(a), check: for the matrix with rows (0, 1), (−1, 0) and v = (1, i), (v, Tv) = 1·i + (−i)(−1) = 2i; the number that multiplies i'
+    formula: |-
+      1*1 + (-1)*(-1)
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['$(v, Tv) = 1\cdot i + (-i)(-1) = 2i$']
+    source: {cite: mit, at: 'Problem 3(a), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p3-count
+    kind: identity
+    answer: p3-count
+    where: 'Problem 3(b), answer box: all n² entries minus the independent conditions (n diagonal entries set to zero and n(n − 1)/2 pairs tied)'
+    formula: |-
+      n*(n - 1)/2
+    equals: |-
+      n**2 - n - n*(n - 1)/2
+    samples:
+      n: [2, 3, 4, 5, 8]
+    tolerance: 1e-12
+    shown: ['id="p3-count"']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p3-count-3
+    where: 'Problem 3(b), check: the count for n = 3'
+    inputs: {n: 3}
+    formula: |-
+      n*(n - 1)/2
+    expected: '3'
+    tolerance: 1e-12
+    shown: ['For $n = 3$ it is 3']
+    source: {cite: mit, at: 'Problem 3(b), p. 2 (our own addition)'}
+    origin: page-own
+
+  - id: p3-symmetric-eigenvalues
+    where: 'Problem 3(c), check: the eigenvalues of the symmetric matrix with rows (2, −1), (−1, 2) are 2 ± 1; the larger one'
+    formula: |-
+      2 + sqrt((-1)*(-1))
+    expected: '3'
+    tolerance: 1e-12
+    shown: ['($\pm 1$, and 1 and 3)']
+    source: {cite: mit, at: 'Problem 3(c), p. 2 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4: P = [[1, t], [0, 0]]
+
+  - id: p4-max
+    kind: identity
+    answer: p4-max
+    where: 'Problem 4(c), answer box: |Pv|/|v| for the unit vector (cos f, sin f) is |cos f + t sin f|; its largest value, at the angle found by a root finder from the derivative'
+    formula: |-
+      sqrt(1 + t**2)
+    equals: |-
+      cos(solve('t*cos(f) - sin(f)', 'f', 0.01, 1.56)) + t*sin(solve('t*cos(f) - sin(f)', 'f', 0.01, 1.56))
+    samples:
+      t: [0.5, 1.0, 1.6, 2.3, 3.0]
+    tolerance: 1e-8
+    shown: ['id="p4-max"']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-example
+    where: 'Problem 4(c): for t = 1 the vector (1, 1) becomes (2, 0), of length 2, longer than √2'
+    inputs: {t: 1}
+    formula: |-
+      1 + t*1
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['becomes $Pv = (2, 0)$ of length 2']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p4-square
+    kind: identity
+    where: 'Problem 4(c): the top-right entry of P² for P with rows (1, t), (0, 0) is t again'
+    formula: |-
+      t
+    equals: |-
+      1*t + t*0
+    samples:
+      t: [0.5, 1.0, 1.6, 2.3, 3.0]
+    tolerance: 1e-12
+    shown: ['<Formula label="The square of the matrix"']
+    source: {cite: mit, at: 'Problem 4(c), p. 3 (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 5: A2 has rows (2, 1, 1), (1, 0, −1), (1, −1, 2); u1 = (1, 0, 1)/√2, u2 = (−1, 0, 1)/√2, u3 = (0, 1, 0)
+
+  - id: p5-m11
+    where: 'Problem 5: ⟨u1|A2|u1⟩, the entry 3 that MIT prints'
+    formula: |-
+      (1*(2*1 + 1*0 + 1*1) + 0 + 1*(1*1 + (-1)*0 + 2*1))/2
+    expected: '3'
+    tolerance: 1e-12
+    shown: ['The first is $3\,|u_1\rangle$']
+    source: {cite: mit, at: 'Problem 5, eq. (1), p. 3'}
+    origin: mit
+
+  - id: p5-m22
+    answer: p5-m22
+    where: 'Problem 5(a), answer box: ⟨u2|A2|u2⟩'
+    formula: |-
+      ((-1)*(2*(-1) + 1*0 + 1*1) + 0 + 1*(1*(-1) + (-1)*0 + 2*1))/2
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['id="p5-m22"']
+    source: {cite: mit, at: 'Problem 5, eq. (1), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-m32
+    answer: p5-m32
+    where: 'Problem 5(a), answer box: ⟨u3|A2|u2⟩, the second row of A2 times (−1, 0, 1)/√2'
+    formula: |-
+      (1*(-1) + 0*0 + (-1)*1)/sqrt(2)
+    expected: '-1.414'
+    shown: ['id="p5-m32"', '$-\sqrt 2 \approx -1.414$']
+    source: {cite: mit, at: 'Problem 5, eq. (1), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-m33
+    answer: p5-m33
+    where: 'Problem 5(a), answer box: ⟨u3|A2|u3⟩, the middle entry of A2'
+    formula: |-
+      0*(1*0) + 1*(0*1) + 0*((-1)*0)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['id="p5-m33"']
+    source: {cite: mit, at: 'Problem 5, eq. (1), p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-min
+    answer: p5-min
+    where: 'Problem 5(b), answer box: the smaller root of λ² − λ − 2 = 0'
+    formula: |-
+      (1 - sqrt(1 + 8))/2
+    expected: '-1'
+    tolerance: 1e-12
+    shown: ['id="p5-min"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-mid
+    answer: p5-mid
+    where: 'Problem 5(b), answer box: the larger root of λ² − λ − 2 = 0'
+    formula: |-
+      (1 + sqrt(1 + 8))/2
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['id="p5-mid"']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-charpoly-minus1
+    where: 'Problem 5(b), independent check: det(A2 − L) for the original 3 × 3 matrix vanishes at L = −1'
+    inputs: {L: -1}
+    formula: |-
+      (2 - L)*((0 - L)*(2 - L) - (-1)*(-1)) - 1*(1*(2 - L) - (-1)*1) + 1*(1*(-1) - (0 - L)*1)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['So the eigenvalues of $A_2$ are 3, 2 and $-1$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-charpoly-2
+    where: 'Problem 5(b), independent check: det(A2 − L) vanishes at L = 2'
+    inputs: {L: 2}
+    formula: |-
+      (2 - L)*((0 - L)*(2 - L) - (-1)*(-1)) - 1*(1*(2 - L) - (-1)*1) + 1*(1*(-1) - (0 - L)*1)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['So the eigenvalues of $A_2$ are 3, 2 and $-1$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-charpoly-3
+    where: 'Problem 5(b), independent check: det(A2 − L) vanishes at L = 3'
+    inputs: {L: 3}
+    formula: |-
+      (2 - L)*((0 - L)*(2 - L) - (-1)*(-1)) - 1*(1*(2 - L) - (-1)*1) + 1*(1*(-1) - (0 - L)*1)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['So the eigenvalues of $A_2$ are 3, 2 and $-1$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-trace
+    where: 'Problem 5, checks: the trace of A2, equal to 3 + 1 + 0 in the new basis and to 3 + 2 − 1, the sum of the eigenvalues'
+    formula: |-
+      2 + 0 + 2
+    expected: '4'
+    tolerance: 1e-12
+    shown: ['$2 + 0 + 2 = 4$ and $3 + 1 + 0 = 4$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p5-det
+    where: 'Problem 5(b), check: the determinant of A2, equal to the product 3 · 2 · (−1) of the eigenvalues'
+    formula: |-
+      2*(0 - 1) - 1*(2 + 1) + 1*(-1 - 0)
+    expected: '-6'
+    tolerance: 1e-12
+    shown: ['$2\,(0 - 1) - 1\,(2 + 1) + 1\,(-1 - 0) = -6$']
+    source: {cite: mit, at: 'Problem 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6: the Gaussian exp(−y²/(2D²)), with the mean momentum set to zero
+
+  - id: p6-gamma
+    kind: identity
+    answer: p6-gamma
+    where: 'Problem 6(a), answer box: γ = (p̂ψ)/(i x ψ) = −ħ ψ′/(x ψ) for the Gaussian with zero mean momentum, by numerical differentiation'
+    formula: |-
+      hbar/D**2
+    equals: |-
+      -hbar*deriv('exp(-y**2/(2*D**2))', 'y', x)/(x*exp(-x**2/(2*D**2)))
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      D: [0.5, 0.9, 1.3, 1.7, 2.0]
+      x: [0.3, 0.6, 0.9, 1.2, 1.5]
+    tolerance: 1e-6
+    shown: ['id="p6-gamma"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p6-dx
+    kind: identity
+    answer: p6-dx
+    where: 'Problem 6(b), answer box: Δx from the integral of y² over the density exp(−y²/D²)'
+    formula: |-
+      D/sqrt(2)
+    equals: |-
+      sqrt(integrate('y**2*exp(-y**2/D**2)', 'y', -30, 30)/integrate('exp(-y**2/D**2)', 'y', -30, 30))
+    samples:
+      D: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['id="p6-dx"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p6-dp
+    kind: identity
+    answer: p6-dp
+    where: 'Problem 6(b), answer box: Δp from the momentum-space density, which is proportional to exp(−q²D²/ħ²) (the square of the Fourier transform of the Gaussian)'
+    formula: |-
+      hbar/(sqrt(2)*D)
+    equals: |-
+      sqrt(integrate('q**2*exp(-q**2*D**2/hbar**2)', 'q', -60, 60)/integrate('exp(-q**2*D**2/hbar**2)', 'q', -60, 60))
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      D: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['id="p6-dp"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p6-dp-position-space
+    kind: identity
+    where: 'Problem 6(b): Δp again, from −ħ² ∫ ψ ψ″ / ∫ ψ² in position space'
+    formula: |-
+      hbar/(sqrt(2)*D)
+    equals: |-
+      hbar*sqrt(-integrate('(y**2/D**4 - 1/D**2)*exp(-y**2/D**2)', 'y', -30, 30)/integrate('exp(-y**2/D**2)', 'y', -30, 30))
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      D: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['<Formula label="The momentum uncertainty of the Gaussian"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own addition)'}
+    origin: page-own
+
+  - id: p6-product
+    kind: identity
+    where: 'Problem 6(b): the product of the two uncertainties is ħ/2 whatever D is'
+    formula: |-
+      hbar/2
+    equals: |-
+      D/sqrt(2)*hbar/(sqrt(2)*D)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      D: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-12
+    shown: ['<Formula label="The product of the uncertainties"']
+    source: {cite: mit, at: 'Problem 6, p. 3 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 8: the oscillator. q stands for a² or (Δx)² in the root finder.
+
+  - id: p8-h
+    kind: identity
+    answer: p8-h
+    where: 'Problem 8(a), answer box: the trial energy by numerical integration, (ħ²/2m) ∫ ψ′² + (k/2) ∫ y² ψ², over ∫ ψ², for ψ = exp(−y²/(2a²))'
+    formula: |-
+      hbar**2/(4*m*a**2) + k*a**2/4
+    equals: |-
+      (hbar**2/(2*m)*integrate('(y/a**2)**2*exp(-y**2/a**2)', 'y', -30, 30) + k/2*integrate('y**2*exp(-y**2/a**2)', 'y', -30, 30))/integrate('exp(-y**2/a**2)', 'y', -30, 30)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+      a: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['id="p8-h"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-a2
+    kind: identity
+    answer: p8-a2
+    where: 'Problem 8(a), answer box: the root of the derivative of the trial energy with respect to q = a²'
+    formula: |-
+      hbar/sqrt(m*k)
+    equals: |-
+      solve('-hbar**2/(4*m*q**2) + k/4', 'q', 0.05, 20)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p8-a2"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-upper
+    kind: identity
+    where: 'Problem 8(a): the trial energy at the best width, a² = ħ/√(mk)'
+    formula: |-
+      hbar/2*sqrt(k/m)
+    equals: |-
+      hbar**2/(4*m*(hbar/sqrt(m*k))) + k*(hbar/sqrt(m*k))/4
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+    tolerance: 1e-12
+    shown: ['<Formula label="The upper bound"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-f
+    kind: identity
+    answer: p8-f
+    where: 'Problem 8(b), answer box: the bound is reached by a Gaussian of variance d², exp(−y²/(4d²)), whose energy is found by numerical integration; so the bound cannot be raised'
+    formula: |-
+      hbar**2/(8*m*d**2) + k*d**2/2
+    equals: |-
+      (hbar**2/(2*m)*integrate('(y/(2*d**2))**2*exp(-y**2/(2*d**2))', 'y', -40, 40) + k/2*integrate('y**2*exp(-y**2/(2*d**2))', 'y', -40, 40))/integrate('exp(-y**2/(2*d**2))', 'y', -40, 40)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+      d: [0.5, 0.9, 1.3, 1.7, 2.0]
+    tolerance: 1e-7
+    shown: ['id="p8-f"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-d2
+    kind: identity
+    answer: p8-d2
+    where: 'Problem 8(b), answer box: the root of the derivative of the bound with respect to q = (Δx)²'
+    formula: |-
+      hbar/(2*sqrt(m*k))
+    equals: |-
+      solve('-hbar**2/(8*m*q**2) + k/2', 'q', 0.02, 20)
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+    tolerance: 1e-8
+    shown: ['id="p8-d2"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-lower
+    kind: identity
+    where: 'Problem 8(b): the bound at its minimum, (Δx)² = ħ/(2√(mk)); also twice the square root of the product of the coefficients'
+    formula: |-
+      2*sqrt(hbar**2/(8*m)*k/2)
+    equals: |-
+      hbar**2/(8*m*(hbar/(2*sqrt(m*k)))) + k*(hbar/(2*sqrt(m*k)))/2
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+    tolerance: 1e-12
+    shown: ['<Formula label="The lower bound"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-e
+    kind: identity
+    answer: p8-e
+    where: 'Problem 8(c), answer box: the Gaussian exp(−√(mk) y²/(2ħ)) solves the Schrödinger equation of the oscillator; (Hψ)/ψ at a sample point, with the second derivative taken numerically'
+    formula: |-
+      hbar/2*sqrt(k/m)
+    equals: |-
+      (-hbar**2/(2*m)*deriv('exp(-sqrt(m*k)*y**2/(2*hbar))', 'y', x, 2) + k*x**2/2*exp(-sqrt(m*k)*x**2/(2*hbar)))/exp(-sqrt(m*k)*x**2/(2*hbar))
+    samples:
+      hbar: [0.5, 1.0, 2.0, 1.5, 0.8]
+      m: [2.0, 0.5, 1.1, 0.7, 1.6]
+      k: [0.6, 1.9, 0.5, 1.2, 1.5]
+      x: [0.3, 0.6, 0.9, 1.2, 0.5]
+    tolerance: 1e-5
+    shown: ['id="p8-e"']
+    source: {cite: mit, at: 'Problem 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p8-quartic-bound
+    kind: fact
+    where: 'Problem 8(c): the lower bound for the quartic potential, quoted from the lesson of Lecture 11'
+    shown: ['the number 0.4724']
+    source: {cite: reading3, at: 'eq. (4.61)'}
+    origin: mit
+
+  - id: p8-quartic-exact
+    kind: fact
+    where: 'Problem 8(c): the true ground-state energy of the quartic potential in the same units, quoted from the lesson of Lecture 11'
+    shown: ['has 0.668']
+    source: {cite: reading3, at: 'below eq. (4.61)'}
+    origin: mit
+
+  # ---- Problem 9: A1 has rows (1, 1, 0, −1), (1, 1, −1, 0), (0, −1, 1, 1), (−1, 0, 1, 1);
+  #      A2 has rows (1, ½, −1, ½), (½, 1, ½, −1), (−1, ½, 1, ½), (½, −1, ½, 1)
+
+  - id: p9-max
+    answer: p9-max
+    where: 'Problem 9(a), answer box: the first row of A1 times (1, 1, −1, −1), divided by the first component 1'
+    formula: |-
+      1*1 + 1*1 + 0*(-1) + (-1)*(-1)
+    expected: '3'
+    tolerance: 1e-12
+    shown: ['id="p9-max"']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-max-row2
+    where: 'Problem 9(a): the second row of A1 times (1, 1, −1, −1) gives 3 as well'
+    formula: |-
+      1*1 + 1*1 + (-1)*(-1) + 0*(-1)
+    expected: '3'
+    tolerance: 1e-12
+    shown: ['<Formula label="The two eigenvectors outside the plane"']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-lowest
+    where: 'Problem 9(a): the first row of A1 times (1, −1, −1, 1): the eigenvalue −1'
+    formula: |-
+      1*1 + 1*(-1) + 0*(-1) + (-1)*1
+    expected: '-1'
+    tolerance: 1e-12
+    shown: ['<Formula label="The two eigenvectors outside the plane"']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-twice
+    answer: p9-twice
+    where: 'Problem 9(a), answer box: the two remaining eigenvalues are equal and add up to the trace minus 3 and minus (−1)'
+    formula: |-
+      (1 + 1 + 1 + 1 - 3 - (-1))/2
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['id="p9-twice"']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-a1-squares
+    where: 'Problem 9(a), independent check: the sum of the squares of all entries of A1 (three entries ±1 in each of four rows) equals the sum of the squares of its eigenvalues, 9 + 1 + 1 + 1'
+    formula: |-
+      4*3 - (3**2 + 1**2 + 1**2 + (-1)**2)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['the eigenvalues of $A_1$ are $3$, $1$, $1$ and $-1$']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-a1-trace
+    where: 'Problem 9(a), check: the sum of the eigenvalues of A1 is its trace'
+    formula: |-
+      3 + 1 + 1 - 1
+    expected: '4'
+    tolerance: 1e-12
+    shown: ['The sum $3 + 1 + 1 - 1 = 4$ is the trace of $A_1$']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-a2top
+    answer: p9-a2top
+    where: 'Problem 9(b), answer box: the first row of A2 times (1, 1, −1, −1)'
+    formula: |-
+      1*1 + 0.5*1 + (-1)*(-1) + 0.5*(-1)
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['id="p9-a2top"']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-a2low
+    answer: p9-a2low
+    where: 'Problem 9(b), answer box: the first row of A2 times (1, −1, −1, 1)'
+    formula: |-
+      1*1 + 0.5*(-1) + (-1)*(-1) + 0.5*1
+    expected: '2'
+    tolerance: 1e-12
+    shown: ['id="p9-a2low"']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-plane-plus
+    where: 'Problem 9(b): the first row of A2 times (1, 1, 1, 1): the eigenvalue 1'
+    formula: |-
+      1 + 0.5 - 1 + 0.5
+    expected: '1'
+    tolerance: 1e-12
+    shown: ['So their sum is an eigenvector with $a_2 = 1$ and their difference one with $a_2 = -1$']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-plane-minus
+    where: 'Problem 9(b): the first row of A2 times (1, −1, 1, −1): the eigenvalue −1'
+    formula: |-
+      1 - 0.5 - 1 - 0.5
+    expected: '-1'
+    tolerance: 1e-12
+    shown: ['So their sum is an eigenvector with $a_2 = 1$ and their difference one with $a_2 = -1$']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-a2-squares
+    where: 'Problem 9(b), independent check: the sum of the squares of all entries of A2 (1 + ¼ + 1 + ¼ in each of four rows) equals the sum of the squares of its eigenvalues, 4 + 4 + 1 + 1'
+    formula: |-
+      4*(1 + 0.25 + 1 + 0.25) - (2**2 + 2**2 + 1**2 + (-1)**2)
+    expected: '0'
+    tolerance: 1e-12
+    shown: ['The eigenvalues of $A_2$ are $2$, $2$, $1$ and $-1$, with the sum 4']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p9-a2-trace
+    where: 'Problem 9(b), check: the sum of the eigenvalues of A2 is its trace, 1 + 1 + 1 + 1'
+    formula: |-
+      2 + 2 + 1 - 1
+    expected: '4'
+    tolerance: 1e-12
+    shown: ['The eigenvalues of $A_2$ are $2$, $2$, $1$ and $-1$, with the sum 4']
+    source: {cite: mit, at: 'Problem 9, p. 4 (our own solution)'}
+    origin: page-own
