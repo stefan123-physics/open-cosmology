@@ -1,0 +1,1092 @@
+---
+title: "Problem Set 2: inverses, A = LU, permutations and subspaces"
+slug: 18-06-problem-set-2
+course: "18.06"
+kind: problems
+set: 2
+lecture: 5
+order: 90
+covers: [3, 4, 5]
+solutions: own
+summary: "Seven problems of our own on Lectures 3, 4 and 5: inverses by Gauss–Jordan elimination, the inverse of a product, the factorization A = LU and A = LDU, the elimination matrix E against L, the cost of elimination, row exchanges with PA = LU, permutation matrices, transposes and symmetric products, vector spaces, subspaces and the column space."
+prerequisites: [multiplication-and-inverse-matrices, factorization-a-lu, transposes-permutations-vector-spaces]
+source:
+  title: "MIT 18.06 Lecture 5: Transposes, permutations, spaces Rⁿ"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-5-transposes-permutations-spaces-r-n/
+  readings:
+    - title: "18.06 Lecture 3 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/07f82f7a07458fb3d79d1ba5cf53fa1e_FX4C-JpTFgY.pdf
+    - title: "18.06 Lecture 4 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/bcac89b9054d2f1b8efc7b8c1a859068_MsIvs_6vC38.pdf
+    - title: "18.06 Lecture 5 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/c69adb4aa79fccdc5d4225163689471e_JibVXBElKL0.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: draft
+---
+
+This set practises three lessons: the inverse part of [matrix multiplication and inverse matrices](/courses/18-06/multiplication-and-inverse-matrices) (Lecture 3), the [factorization A = LU](/courses/18-06/factorization-a-lu) (Lecture 4) and [transposes, permutations and vector spaces](/courses/18-06/transposes-permutations-vector-spaces) (Lecture 5). The ways of multiplying matrices in Lecture 3 belong to Problem Set 1.
+
+MIT's 18.06 problem sets assign exercises from a textbook that is not openly licensed, so this set is made of our own problems on the same lectures, in MIT's lecture order. No MIT or textbook problem is used: every matrix and every number below is ours, and so are the hints and the solutions. The formulas come from the lessons and from the lecture transcripts they cite.
+
+## How to answer
+
+Work each problem on paper first. Then type or choose your result in the answer box and press Check.
+
+A number box wants a decimal number, not a fraction: write $0.75$, not $3/4$. Every number box accepts any value within $0.01$ of the exact one, so give at least two decimal places when the answer is not a whole number (Problem 4 says its own tolerance). A matrix cannot be typed: a box asks for one of its entries, or you choose from a list. Entries are numbered by row, then column, starting from 1: the $(2, 3)$ entry is in the second row, third column.
+
+A formula box takes plain typing, for example `(2*t - 1)/(t + 3)`, and accepts every correct way of writing the answer. Type the multiplier $\ell_{21}$ as `l21`, and likewise `l31` and `l32`.
+
+Some parts ask you to show something. They have no answer box: write your argument, then open the solution and mark yourself. MIT gives no points for these problems: the points here (100 in all) and their split between the parts are ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+## What you need from the lessons
+
+**Inverses** (Lecture 3). A square matrix $A$ is invertible when some matrix $A^{-1}$ gives
+
+<Formula label="The inverse" tex="A^{-1}A = I = AA^{-1}" cite="reading1" at="p. 12" />
+
+If $Ax = 0$ for some nonzero $x$, there is no inverse (pp. 14–16). **Gauss–Jordan** finds $A^{-1}$ by eliminating on the augmented matrix $[A\;\; I]$: downwards as usual, then upwards, then dividing each row by its pivot, until the left half is $I$ (pp. 19–22). All the steps together are one matrix $E$, and $EA = I$ says $E = A^{-1}$:
+
+<Formula label="Why Gauss–Jordan works" tex="E\,[A\;\; I] = [EA\;\; E] = [I\;\; A^{-1}]" cite="reading1" at="pp. 23–24" />
+
+**Products, transposes and A = LU** (Lecture 4). Inverses and transposes of a product come in reverse order, and inverting and transposing can be done in either order:
+
+<Formula label="Inverse of a product" tex="(AB)^{-1} = B^{-1}A^{-1}, \qquad (A^{-1})^T = (A^T)^{-1}" cite="reading2" at="pp. 1–3" />
+
+Elimination without row exchanges is $E_{32}E_{31}E_{21}A = U$, where $E_{21}$ subtracts the multiplier $\ell_{21}$ times row 1 from row 2, $E_{31}$ subtracts $\ell_{31}$ times row 1 from row 3, and $E_{32}$ subtracts $\ell_{32}$ times row 2 from row 3. Taking the inverses across, in reverse order, gives
+
+<Formula label="A = LU" tex="A = E_{21}^{-1}E_{31}^{-1}E_{32}^{-1}\,U = LU" cite="reading2" at="p. 8" />
+
+$L$ is lower triangular with ones on its diagonal and the multipliers below it, untouched; the forward product $E = E_{32}E_{31}E_{21}$ mixes them (pp. 9–12). $U$ has the pivots on its diagonal; dividing each row of $U$ by its pivot gives $A = LDU$, with the pivots in the diagonal matrix $D$ (pp. 6–7). Elimination on a full $n \times n$ matrix costs about
+
+<Formula label="Cost of elimination" tex="n^2 + (n - 1)^2 + \cdots + 2^2 + 1^2 \approx \tfrac13n^3" cite="reading2" at="pp. 17–18" />
+
+operations (a multiply and a subtract each), and each right-hand side afterwards about $n^2$ (p. 19).
+
+**Permutations and transposes** (Lecture 5). A permutation matrix $P$ is the identity with its rows reordered; there are $n!$ of size $n \times n$ (p. 4). With row exchanges, elimination is $PA = LU$, and every permutation has $P^TP = I$:
+
+<Formula label="Row exchanges and permutations" tex="PA = LU, \qquad P^{-1} = P^T" cite="reading3" at="pp. 2–4" />
+
+The transpose flips a matrix across its diagonal, $(A^T)_{ij} = A_{ji}$; $A$ is **symmetric** when $A^T = A$, and $R^TR$ is symmetric for every rectangular $R$ (pp. 5–9).
+
+**Vector spaces** (Lecture 5). A vector space is closed under addition and under multiplication by every real number, so every linear combination stays inside; every vector space and every subspace contains the zero vector (pp. 10–16). The subspaces of $\mathrm{R}^3$ are $\mathrm{R}^3$, the planes and the lines through the origin, and the zero vector alone (p. 17). The **column space** $C(A)$ is the set of all combinations of the columns of $A$ (pp. 18–20).
+
+## Problem 1
+
+<Exercise id="p1" title="Inverses by Gauss–Jordan" points={18}>
+
+Take
+
+<Formula label="A matrix to invert" tex="A = \begin{pmatrix} 1 & 1 & 0 \\ 2 & 3 & 1 \\ 1 & 2 & 2 \end{pmatrix}" cite="mit" at="Problem 1 (our own problem)" />
+
+<Part label="a" points={8}>
+
+Find $A^{-1}$ by Gauss–Jordan elimination on $[A\;\; I]$. Give its $(1, 1)$, $(1, 2)$ and $(2, 3)$ entries.
+
+<Hint>
+
+Clear the first column below the first pivot, then the second column below the second pivot. Apply every row operation to all six columns of $[A\;\; I]$.
+
+</Hint>
+
+<Hint>
+
+When the left half is upper triangular, go upwards: use row 3 to clear the entry above the third pivot, then row 2 to clear the entry above the second pivot. Here every pivot is $1$, so no division is needed at the end.
+
+</Hint>
+
+<Answer id="p1-a-11" label="The $(1, 1)$ entry of $A^{-1}$ is" value="4" tolerance="0.01" calc="p1-a-11" />
+
+<Answer id="p1-a-12" label="The $(1, 2)$ entry of $A^{-1}$ is" value="-2" tolerance="0.01" calc="p1-a-12" />
+
+<Answer id="p1-a-23" label="The $(2, 3)$ entry of $A^{-1}$ is" value="-1" tolerance="0.01" calc="p1-a-23" />
+
+<Solution>
+
+**The idea.** Elimination that turns $A$ into $I$ turns $I$ into $A^{-1}$, because all the steps together are $E = A^{-1}$.
+
+<Step title="Downwards">
+
+Subtract $2$ times row 1 from row 2 and $1$ times row 1 from row 3; then subtract row 2 from row 3:
+
+<Formula label="Elimination downwards" tex="\left(\begin{array}{cccccc} 1 & 1 & 0 & 1 & 0 & 0 \\ 2 & 3 & 1 & 0 & 1 & 0 \\ 1 & 2 & 2 & 0 & 0 & 1 \end{array}\right) \to \left(\begin{array}{cccccc} 1 & 1 & 0 & 1 & 0 & 0 \\ 0 & 1 & 1 & -2 & 1 & 0 \\ 0 & 1 & 2 & -1 & 0 & 1 \end{array}\right) \to \left(\begin{array}{cccccc} 1 & 1 & 0 & 1 & 0 & 0 \\ 0 & 1 & 1 & -2 & 1 & 0 \\ 0 & 0 & 1 & 1 & -1 & 1 \end{array}\right)" cite="reading1" at="pp. 19–21 (the method; the numbers are our own)" />
+
+The pivots are $1$, $1$ and $1$.
+
+</Step>
+
+<Step title="Upwards">
+
+Subtract row 3 from row 2, then row 2 from row 1:
+
+<Formula label="Elimination upwards" tex="\to \left(\begin{array}{cccccc} 1 & 1 & 0 & 1 & 0 & 0 \\ 0 & 1 & 0 & -3 & 2 & -1 \\ 0 & 0 & 1 & 1 & -1 & 1 \end{array}\right) \to \left(\begin{array}{cccccc} 1 & 0 & 0 & 4 & -2 & 1 \\ 0 & 1 & 0 & -3 & 2 & -1 \\ 0 & 0 & 1 & 1 & -1 & 1 \end{array}\right)" cite="reading1" at="pp. 21–22 (the method; the numbers are our own)" />
+
+So
+
+<Formula label="The inverse" tex="A^{-1} = \begin{pmatrix} 4 & -2 & 1 \\ -3 & 2 & -1 \\ 1 & -1 & 1 \end{pmatrix}" cite="mit" at="Problem 1(a) (our own solution)" />
+
+The $(1, 1)$ entry is $4$, the $(1, 2)$ entry $-2$ and the $(2, 3)$ entry $-1$.
+
+</Step>
+
+<Step title="Check">
+
+Multiply back. Row 1 of $A$ times the columns of $A^{-1}$: $4 - 3 = 1$, $-2 + 2 = 0$, $1 - 1 = 0$. Row 2: $8 - 9 + 1 = 0$, $-4 + 6 - 1 = 1$, $2 - 3 + 1 = 0$. Row 3: $4 - 6 + 2 = 0$, $-2 + 4 - 2 = 0$, $1 - 2 + 2 = 1$. So $AA^{-1} = I$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Use $A^{-1}$ to solve $Ax = b$ for $b = (1, 0, 2)$. Give $x_2$, the second component of $x$.
+
+<Hint>
+
+Multiply both sides of $Ax = b$ by $A^{-1}$ on the left. Only row 2 of $A^{-1}$ is needed for $x_2$.
+
+</Hint>
+
+<Answer id="p1-b" label="$x_2 =$" value="-5" tolerance="0.01" calc="p1-b" />
+
+<Solution>
+
+**The idea.** $x = A^{-1}b$: each component of $x$ is a row of $A^{-1}$ times $b$.
+
+<Step title="Multiply">
+
+<Formula label="The solution by the inverse" tex="x = A^{-1}b = \begin{pmatrix} 4 & -2 & 1 \\ -3 & 2 & -1 \\ 1 & -1 & 1 \end{pmatrix}\begin{pmatrix} 1 \\ 0 \\ 2 \end{pmatrix} = \begin{pmatrix} 4 + 2 \\ -3 - 2 \\ 1 + 2 \end{pmatrix} = \begin{pmatrix} 6 \\ -5 \\ 3 \end{pmatrix}" cite="mit" at="Problem 1(b) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+$Ax = (6 - 5,\; 12 - 15 + 3,\; 6 - 10 + 6) = (1, 0, 2) = b$. For a single right-hand side, elimination on $[A\;\; b]$ is cheaper than finding $A^{-1}$ first; the inverse pays off only when it is already known.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={6}>
+
+For a number $t$, take
+
+<Formula label="A matrix with a parameter" tex="B = \begin{pmatrix} 1 & t \\ 2 & 5 \end{pmatrix}" cite="mit" at="Problem 1(c) (our own problem)" />
+
+Run Gauss–Jordan on $[B\;\; I]$. For which $t$ does it break down, so that $B$ has no inverse? For the other values of $t$, give the $(1, 1)$ entry of $B^{-1}$ as a formula in $t$.
+
+<Hint>
+
+After the first step the second pivot is a formula in $t$. Gauss–Jordan breaks down when it is zero.
+
+</Hint>
+
+<Hint>
+
+Divide row 2 by the second pivot, then subtract $t$ times row 2 from row 1. Put the two terms of the $(1, 1)$ entry over one denominator.
+
+</Hint>
+
+<Answer id="p1-c-t" label="$B$ has no inverse for $t =$" value="2.5" tolerance="0.01" calc="p1-c-t" />
+
+<Answer id="p1-c-11" label="The $(1, 1)$ entry of $B^{-1}$ is" expr="5/(5 - 2*t)"
+  vars={{ t: [0.5, 1.5] }} names={{ t: "t" }}
+  mistakes={[
+    { expr: "1/(5 - 2*t)", hint: "That is the (2, 2) entry of B⁻¹. After row 2 is divided by its pivot, t times row 2 must still be taken off row 1." },
+    { expr: "5/(5 + 2*t)", hint: "Row 2 minus 2 times row 1 leaves 5 − 2t in the pivot position, not 5 + 2t." }
+  ]} />
+
+<Solution>
+
+**The idea.** The second pivot decides everything: if it is zero there is no inverse, and otherwise Gauss–Jordan runs to the end.
+
+<Step title="The second pivot">
+
+Subtract $2$ times row 1 from row 2:
+
+<Formula label="First step" tex="\left(\begin{array}{cccc} 1 & t & 1 & 0 \\ 2 & 5 & 0 & 1 \end{array}\right) \to \left(\begin{array}{cccc} 1 & t & 1 & 0 \\ 0 & 5 - 2t & -2 & 1 \end{array}\right)" cite="reading1" at="pp. 21–22 (the method; the matrix is our own)" />
+
+The second pivot $5 - 2t$ is zero for $t = 2.5$. Then the columns $(1, 2)$ and $(2.5, 5)$ lie on one line, and $B(2.5, -1) = (0, 0)$: a nonzero solution of $Bx = 0$, so $B$ has no inverse (Lecture 3 transcript, pp. 14–16).
+
+</Step>
+
+<Step title="Upwards">
+
+For $t \neq 2.5$, divide row 2 by $5 - 2t$, then subtract $t$ times it from row 1:
+
+<Formula label="The inverse with a parameter" tex="B^{-1} = \begin{pmatrix} 1 + \dfrac{2t}{5 - 2t} & \dfrac{-t}{5 - 2t} \\ \dfrac{-2}{5 - 2t} & \dfrac{1}{5 - 2t} \end{pmatrix} = \frac{1}{5 - 2t}\begin{pmatrix} 5 & -t \\ -2 & 1 \end{pmatrix}" cite="mit" at="Problem 1(c) (our own solution)" />
+
+The $(1, 1)$ entry is $5/(5 - 2t)$.
+
+</Step>
+
+<Step title="Check">
+
+For $t = 0$ the matrix is lower triangular and the formula gives the $(1, 1)$ entry $5/5 = 1$, as it must. For $t = 2$: $B^{-1} = \begin{pmatrix} 5 & -2 \\ -2 & 1 \end{pmatrix}$, and row 1 of $B$ times its columns gives $5 - 4 = 1$ and $-2 + 2 = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="The inverse of a product" points={14}>
+
+Take
+
+<Formula label="Two matrices" tex="A = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}, \qquad B = \begin{pmatrix} 1 & 0 \\ 3 & 1 \end{pmatrix}" cite="mit" at="Problem 2 (our own problem)" />
+
+<Part label="a" points={6}>
+
+Find $A^{-1}$ and $B^{-1}$, and from them $(AB)^{-1}$. Give its $(2, 1)$ and $(2, 2)$ entries.
+
+<Hint>
+
+$B$ is an elimination matrix: its inverse undoes its one row operation. $A^{-1}$ comes from Gauss–Jordan on a $2 \times 2$ matrix.
+
+</Hint>
+
+<Hint>
+
+The order of the factors matters: undo the factor that acted last first.
+
+</Hint>
+
+<Answer id="p2-a-21" label="The $(2, 1)$ entry of $(AB)^{-1}$ is" value="-4" tolerance="0.01" calc="p2-a-21" />
+
+<Answer id="p2-a-22" label="The $(2, 2)$ entry of $(AB)^{-1}$ is" value="5" tolerance="0.01" calc="p2-a-22" />
+
+<Solution>
+
+**The idea.** $(AB)^{-1} = B^{-1}A^{-1}$, in reverse order.
+
+<Step title="The two inverses">
+
+$B$ adds $3$ times row 1 to row 2, so $B^{-1}$ subtracts it: $B^{-1} = \begin{pmatrix} 1 & 0 \\ -3 & 1 \end{pmatrix}$. For $A$, Gauss–Jordan subtracts $\frac12$ of row 1 from row 2, which leaves the second pivot $\frac12$, and ends with
+
+<Formula label="The inverse of A" tex="A^{-1} = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}" cite="mit" at="Problem 2(a) (our own solution)" />
+
+Check: $AA^{-1} = \begin{pmatrix} 2 - 1 & -2 + 2 \\ 1 - 1 & -1 + 2 \end{pmatrix} = I$.
+
+</Step>
+
+<Step title="Reverse order">
+
+<Formula label="The inverse of AB" tex="(AB)^{-1} = B^{-1}A^{-1} = \begin{pmatrix} 1 & 0 \\ -3 & 1 \end{pmatrix}\begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix} = \begin{pmatrix} 1 & -1 \\ -4 & 5 \end{pmatrix}" cite="reading2" at="pp. 1–2 (the rule; the numbers are our own)" />
+
+The $(2, 1)$ entry is $-4$ and the $(2, 2)$ entry $5$.
+
+</Step>
+
+<Step title="Check">
+
+$AB = \begin{pmatrix} 2 + 3 & 1 \\ 1 + 3 & 1 \end{pmatrix} = \begin{pmatrix} 5 & 1 \\ 4 & 1 \end{pmatrix}$, and $AB$ times our answer is $\begin{pmatrix} 5 - 4 & -5 + 5 \\ 4 - 4 & -4 + 5 \end{pmatrix} = I$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Now find $(BA)^{-1}$. Give its $(1, 1)$ and $(2, 1)$ entries.
+
+<Hint>
+
+Apply the same rule to $BA$: whose inverse comes first?
+
+</Hint>
+
+<Answer id="p2-b-11" label="The $(1, 1)$ entry of $(BA)^{-1}$ is" value="4" tolerance="0.01" calc="p2-b-11" />
+
+<Answer id="p2-b-21" label="The $(2, 1)$ entry of $(BA)^{-1}$ is" value="-7" tolerance="0.01" calc="p2-b-21" />
+
+<Solution>
+
+**The idea.** $(BA)^{-1} = A^{-1}B^{-1}$: the matrix that a wrong order would give for $(AB)^{-1}$.
+
+<Step title="Multiply">
+
+<Formula label="The inverse of BA" tex="(BA)^{-1} = A^{-1}B^{-1} = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}\begin{pmatrix} 1 & 0 \\ -3 & 1 \end{pmatrix} = \begin{pmatrix} 4 & -1 \\ -7 & 2 \end{pmatrix}" cite="reading2" at="pp. 1–2 (the rule; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+$BA = \begin{pmatrix} 2 & 1 \\ 6 + 1 & 3 + 1 \end{pmatrix} = \begin{pmatrix} 2 & 1 \\ 7 & 4 \end{pmatrix}$, and $BA$ times our answer is $\begin{pmatrix} 8 - 7 & -2 + 2 \\ 28 - 28 & -7 + 8 \end{pmatrix} = I$. $AB$ and $BA$ are different matrices, so their inverses are different too.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Show that if $A$, $B$ and $C$ are invertible $n \times n$ matrices, then $(ABC)^{-1} = C^{-1}B^{-1}A^{-1}$. Show also that the inverse of an invertible symmetric matrix is symmetric.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+For the first claim, multiply $ABC$ by the proposed inverse and move the parentheses.
+
+</Hint>
+
+<Hint>
+
+For the second, use $(A^{-1})^T = (A^T)^{-1}$ together with $A^T = A$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The inverse is checked by multiplying; the transpose rule reverses order just as the inverse rule does.
+
+<Step title="Three factors">
+
+<Formula label="Inverse of three factors" tex="(ABC)(C^{-1}B^{-1}A^{-1}) = AB(CC^{-1})B^{-1}A^{-1} = A(BB^{-1})A^{-1} = AA^{-1} = I" cite="mit" at="Problem 2(c) (our own solution)" />
+
+The innermost pair cancels first, then the next. The product in the other order gives $I$ in the same way, so $C^{-1}B^{-1}A^{-1}$ is the inverse.
+
+</Step>
+
+<Step title="Symmetric inverse">
+
+Let $A^T = A$. Then $(A^{-1})^T = (A^T)^{-1} = A^{-1}$ (Lecture 4 transcript, p. 3): $A^{-1}$ equals its own transpose.
+
+</Step>
+
+<Step title="Check">
+
+The $A$ of this problem is symmetric, and its inverse $\begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}$ from part (a) is symmetric too. $B$ is not symmetric, and neither is $B^{-1}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="A = LU for a 3 × 3 matrix" points={20}>
+
+Take
+
+<Formula label="A matrix to factor" tex="A = \begin{pmatrix} 2 & 1 & 1 \\ 4 & 5 & 3 \\ -2 & 5 & 5 \end{pmatrix}" cite="mit" at="Problem 3 (our own problem)" />
+
+No row exchanges are needed.
+
+<Part label="a" points={7}>
+
+Eliminate to find $U$ and the multipliers $\ell_{21}$, $\ell_{31}$ and $\ell_{32}$, as in "What you need". Give $\ell_{31}$, $\ell_{32}$ and the third pivot.
+
+<Hint>
+
+A multiplier is the entry to be cleared divided by the pivot above it. A negative multiplier means a row is added, not subtracted.
+
+</Hint>
+
+<Hint>
+
+Compute $\ell_{32}$ from the new row 2 and the new row 3, after the first column has been cleared, not from the original rows.
+
+</Hint>
+
+<Answer id="p3-a-l31" label="$\ell_{31} =$" value="-1" tolerance="0.01" calc="p3-a-l31" />
+
+<Answer id="p3-a-l32" label="$\ell_{32} =$" value="2" tolerance="0.01" calc="p3-a-l32" />
+
+<Answer id="p3-a-piv" label="The third pivot is" value="4" tolerance="0.01" calc="p3-a-piv" />
+
+<Solution>
+
+**The idea.** Clear column 1 with the first pivot, then column 2 with the second; the multipliers go straight into $L$.
+
+<Step title="Column 1">
+
+$\ell_{21} = 4/2 = 2$: row 2 minus $2$ times row 1 is $(0, 3, 1)$. $\ell_{31} = -2/2 = -1$: row 3 minus $(-1)$ times row 1, that is row 3 plus row 1, is $(0, 6, 6)$.
+
+</Step>
+
+<Step title="Column 2">
+
+$\ell_{32} = 6/3 = 2$: $(0, 6, 6) - 2(0, 3, 1) = (0, 0, 4)$. So
+
+<Formula label="The factors" tex="L = \begin{pmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ -1 & 2 & 1 \end{pmatrix}, \qquad U = \begin{pmatrix} 2 & 1 & 1 \\ 0 & 3 & 1 \\ 0 & 0 & 4 \end{pmatrix}" cite="reading2" at="pp. 11–12 (the multipliers go into L; the numbers are our own)" />
+
+The pivots are $2$, $3$ and $4$.
+
+</Step>
+
+<Step title="Check">
+
+Multiply back, a row at a time: row 2 of $LU$ is $2(2, 1, 1) + (0, 3, 1) = (4, 5, 3)$, and row 3 is $-(2, 1, 1) + 2(0, 3, 1) + (0, 0, 4) = (-2, 5, 5)$. Both are rows of $A$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+The forward product $E = E_{32}E_{31}E_{21}$ takes $A$ to $U$. Find its $(3, 1)$ entry for this $A$. Then find the $(3, 1)$ entry of $E$ for any multipliers $\ell_{21}$, $\ell_{31}$, $\ell_{32}$, as a formula.
+
+<Hint>
+
+Follow what happens to row 3: first $\ell_{31}$ times row 1 is taken off it, then $\ell_{32}$ times the new row 2, which itself is row 2 minus $\ell_{21}$ times row 1.
+
+</Hint>
+
+<Hint>
+
+The $(3, 1)$ entry of $E$ is the coefficient of the original row 1 in the final row 3.
+
+</Hint>
+
+<Answer id="p3-b-num" label="For this $A$, the $(3, 1)$ entry of $E$ is" value="5" tolerance="0.01" calc="p3-b-num" />
+
+<Answer id="p3-b-gen" label="In general, the $(3, 1)$ entry of $E$ is" expr="l21*l32 - l31"
+  vars={{ l21: [0.5, 3], l31: [0.5, 3], l32: [0.5, 3] }} names={{ l21: "\\ell_{21}", l31: "\\ell_{31}", l32: "\\ell_{32}" }}
+  mistakes={[
+    { expr: "-l31", hint: "That is the (3, 1) entry of E only when ℓ₂₁ℓ₃₂ = 0: row 1 also reaches row 3 through the new row 2." },
+    { expr: "l21*l32 + l31", hint: "E₃₁ subtracts ℓ₃₁ times row 1 from row 3, so ℓ₃₁ enters with a minus sign." }
+  ]} />
+
+<Solution>
+
+**The idea.** $E$ is $L^{-1}$, and in the forward order the multipliers interfere: row 1 reaches row 3 twice, directly and through row 2.
+
+<Step title="Follow row 3">
+
+After the three steps, row 3 is
+
+<Formula label="The final row 3" tex="r_3 - \ell_{31}r_1 - \ell_{32}(r_2 - \ell_{21}r_1) = (\ell_{21}\ell_{32} - \ell_{31})\,r_1 - \ell_{32}\,r_2 + r_3" cite="mit" at="Problem 3(b) (our own solution)" />
+
+where $r_1, r_2, r_3$ are the rows of $A$. Its coefficients form row 3 of $E$. The $(3, 1)$ entry is $\ell_{21}\ell_{32} - \ell_{31}$, and for this $A$ it is $2 \cdot 2 - (-1) = 5$.
+
+</Step>
+
+<Step title="Check">
+
+So $E = \begin{pmatrix} 1 & 0 & 0 \\ -2 & 1 & 0 \\ 5 & -2 & 1 \end{pmatrix}$, and $EL = I$: row 3 of $E$ times the columns of $L$ gives $5 - 4 - 1 = 0$, $-2 + 2 = 0$ and $1$. With $\ell_{31} = 0$ the formula gives $\ell_{21}\ell_{32}$: the $10$ that the lesson finds in $E$ for the multipliers $2$ and $5$ (Lecture 4 transcript, pp. 9–10).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Write $A = LDU'$, where $D$ is diagonal and $U'$ is upper triangular with ones on its diagonal. Give the $(2, 3)$ entry of $U'$.
+
+<Hint>
+
+$D$ holds the pivots. Divide each row of $U$ by its pivot.
+
+</Hint>
+
+<Answer id="p3-c" label="The $(2, 3)$ entry of $U'$ is" value="0.3333" tolerance="0.01" calc="p3-c" />
+
+<Solution>
+
+**The idea.** Pulling the pivots out of $U$ leaves ones on its diagonal.
+
+<Step title="Divide by the pivots">
+
+<Formula label="A = LDU'" tex="U = \begin{pmatrix} 2 & 0 & 0 \\ 0 & 3 & 0 \\ 0 & 0 & 4 \end{pmatrix}\begin{pmatrix} 1 & 0.5 & 0.5 \\ 0 & 1 & 1/3 \\ 0 & 0 & 1 \end{pmatrix} = DU'" cite="reading2" at="pp. 6–7 (the method; the numbers are our own)" />
+
+The $(2, 3)$ entry of $U'$ is $1/3 \approx 0.3333$.
+
+</Step>
+
+<Step title="Check">
+
+Row 2 of $DU'$ is $3(0, 1, 1/3) = (0, 3, 1)$, row 2 of $U$. $A$ is not symmetric, so $U'$ is not $L^T$: $L$ has $\ell_{21} = 2$ where $U'$ has $0.5$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={5}>
+
+Solve $Ax = b$ for $b = (3, 5, 3)$ in two triangular steps: first $Lc = b$, then $Ux = c$. Give $c_3$, the third component of $c$, and $x_2$.
+
+<Hint>
+
+$Lc = b$ is solved from the top down: $c_1$ first, then $c_2$, then $c_3$. $Ux = c$ is solved from the bottom up.
+
+</Hint>
+
+<Answer id="p3-d-c3" label="$c_3 =$" value="8" tolerance="0.01" calc="p3-d-c3" />
+
+<Answer id="p3-d-x2" label="$x_2 =$" value="-1" tolerance="0.01" calc="p3-d-x2" />
+
+<Solution>
+
+**The idea.** $L$ does to $b$ in reverse what elimination did to $A$; after that only back substitution is left. Each step costs about $n^2$ operations, which is why one factorization serves many right-hand sides.
+
+<Step title="Forward">
+
+$c_1 = 3$; $c_2 = 5 - 2 \cdot 3 = -1$; $c_3 = 3 - (-1) \cdot 3 - 2 \cdot (-1) = 3 + 3 + 2 = 8$.
+
+</Step>
+
+<Step title="Back">
+
+$4x_3 = 8$ gives $x_3 = 2$; $3x_2 + x_3 = -1$ gives $x_2 = -1$; $2x_1 + x_2 + x_3 = 3$ gives $x_1 = 1$:
+
+<Formula label="The two triangular solves" tex="c = \begin{pmatrix} 3 \\ -1 \\ 8 \end{pmatrix}, \qquad x = \begin{pmatrix} 1 \\ -1 \\ 2 \end{pmatrix}" cite="mit" at="Problem 3(d) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+$Ax = (2 - 1 + 2,\; 4 - 5 + 6,\; -2 - 5 + 10) = (3, 5, 3) = b$. And $c$ is what elimination does to $b$: $c = Eb$, whose third component is $5 \cdot 3 - 2 \cdot 5 + 3 = 8$, with row 3 of $E$ from part (b).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="The cost of elimination" points={10}>
+
+Count one operation as one multiplication together with one subtraction, as in the lecture.
+
+<Part label="a" points={3}>
+
+For $n = 100$, add up the exact count $n^2 + (n - 1)^2 + \cdots + 1^2$. By how many operations does it exceed the estimate $\frac13n^3$? Give the difference to the nearest whole number (this box accepts any value within $1$).
+
+<Hint>
+
+The sum of the first $n$ squares is $n(n + 1)(2n + 1)/6$.
+
+</Hint>
+
+<Answer id="p4-a" label="The exact count exceeds $\frac13n^3$ by" value="5017" tolerance="1" calc="p4-a" />
+
+<Solution>
+
+**The idea.** The estimate $\frac13n^3$ is the integral; the sum is a little larger, by a term of order $n^2$.
+
+<Step title="The sum">
+
+<Formula label="The exact count for n = 100" tex="\sum_{k=1}^{100}k^2 = \frac{100 \cdot 101 \cdot 201}{6} = 338\,350, \qquad \tfrac13 \cdot 100^3 \approx 333\,333.3" cite="reading2" at="pp. 17–18 (the count; the sum is our own)" />
+
+The difference is $5016.7$, about $5017$ operations.
+
+</Step>
+
+<Step title="Check">
+
+$n(n + 1)(2n + 1)/6 = \frac13n^3 + \frac12n^2 + \frac16n$, and $\frac12 \cdot 100^2 + \frac16 \cdot 100 = 5000 + 16.7$: the extra is only $1.5$ per cent of the count, which is why the lecture keeps $\frac13n^3$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+A computer does $10^9$ operations per second. Using the estimates $\frac13n^3$ for the factorization and $n^2$ for each right-hand side, how many seconds does it take to factor a full matrix with $n = 3000$, and how many right-hand sides can it solve in the time of one factorization? (The second box accepts any value within $1$.)
+
+<Hint>
+
+$3000^3 = 2.7 \times 10^{10}$. For the second box, divide the two estimates before putting in numbers.
+
+</Hint>
+
+<Answer id="p4-b-t" label="The factorization takes this many seconds:" value="9" tolerance="0.01" calc="p4-b-t" />
+
+<Answer id="p4-b-k" label="The number of right-hand sides in the same time is" value="1000" tolerance="1" calc="p4-b-k" />
+
+<Solution>
+
+**The idea.** The factorization costs $n^3/3$, a right-hand side $n^2$: the ratio is $n/3$.
+
+<Step title="Factor">
+
+$\frac13 \cdot 2.7 \times 10^{10} = 9 \times 10^9$ operations, so $9$ seconds.
+
+</Step>
+
+<Step title="Right-hand sides">
+
+<Formula label="Right-hand sides per factorization" tex="\frac{\frac13n^3}{n^2} = \frac{n}{3} = \frac{3000}{3} = 1000" cite="reading2" at="pp. 18–19 (the two costs; the ratio is our own)" />
+
+Each right-hand side takes $9 \times 10^6$ operations, $0.009$ seconds.
+
+</Step>
+
+<Step title="Check">
+
+$1000 \times 0.009 = 9$ seconds, the time of the factorization.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+If $n$ doubles, by what factor does the time for the factorization grow?
+
+<Hint>
+
+Only the leading power of $n$ matters.
+
+</Hint>
+
+<Answer id="p4-c" label="The factor is" choices={["4", "16", "8", "2"]} answer={2} />
+
+<Solution>
+
+**The idea.** The cost goes like $n^3$, and $2^3 = 8$.
+
+<Step title="Check">
+
+For $n = 6000$, $\frac13 \cdot 6000^3 = 7.2 \times 10^{10}$ operations, $72$ seconds: $8$ times the $9$ seconds of part (b). Each right-hand side grows only by $4$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Row exchanges and permutation matrices" points={16}>
+
+<Part label="a" points={7}>
+
+Take
+
+<Formula label="A matrix that needs a row exchange" tex="A = \begin{pmatrix} 1 & 2 & 1 \\ 2 & 4 & 3 \\ 3 & 7 & 5 \end{pmatrix}" cite="mit" at="Problem 5(a) (our own problem)" />
+
+Start elimination. Which row exchange is needed, and when? Then factor $PA = LU$, with $P$ the permutation that does that exchange before elimination starts. Give the $(2, 1)$ entry of $L$ and the $(2, 3)$ entry of $U$.
+
+<Hint>
+
+Clear the first column and look at the new $(2, 2)$ position.
+
+</Hint>
+
+<Hint>
+
+Apply $P$ to $A$ first and eliminate $PA$ from the start. The multipliers belong to the rows of $PA$, not of $A$.
+
+</Hint>
+
+<Answer id="p5-a-swap" label="The exchange needed is"
+  choices={["rows 1 and 2, at the first pivot", "rows 1 and 3, at the first pivot", "rows 2 and 3, at the second pivot", "no exchange: A = LU with P = I"]} answer={2} />
+
+<Answer id="p5-a-l21" label="The $(2, 1)$ entry of $L$ is" value="3" tolerance="0.01" calc="p5-a-l21" />
+
+<Answer id="p5-a-u23" label="The $(2, 3)$ entry of $U$ is" value="2" tolerance="0.01" calc="p5-a-u23" />
+
+<Solution>
+
+**The idea.** A zero in a pivot position is cured by exchanging with a lower row that has a nonzero entry there; $P$ does that exchange in advance.
+
+<Step title="Where it stops">
+
+Row 2 minus $2$ times row 1 is $(0, 0, 1)$; row 3 minus $3$ times row 1 is $(0, 1, 2)$. The $(2, 2)$ position holds $0$, and row 3 has a $1$ below it: exchange rows 2 and 3.
+
+</Step>
+
+<Step title="PA = LU">
+
+With $P$ exchanging rows 2 and 3, $PA$ has the rows $(1, 2, 1)$, $(3, 7, 5)$, $(2, 4, 3)$. Its multipliers are $\ell_{21} = 3$ and $\ell_{31} = 2$, after which row 2 is $(0, 1, 2)$ and row 3 is $(0, 0, 1)$, so $\ell_{32} = 0$:
+
+<Formula label="The factorization with a row exchange" tex="PA = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & 1 \\ 0 & 1 & 0 \end{pmatrix}\begin{pmatrix} 1 & 2 & 1 \\ 2 & 4 & 3 \\ 3 & 7 & 5 \end{pmatrix} = \begin{pmatrix} 1 & 0 & 0 \\ 3 & 1 & 0 \\ 2 & 0 & 1 \end{pmatrix}\begin{pmatrix} 1 & 2 & 1 \\ 0 & 1 & 2 \\ 0 & 0 & 1 \end{pmatrix} = LU" cite="reading3" at="p. 2 (PA = LU; the numbers are our own)" />
+
+The $(2, 1)$ entry of $L$ is $3$, and the $(2, 3)$ entry of $U$ is $2$. The multipliers $2$ and $3$ of the first attempt have changed places along with their rows.
+
+</Step>
+
+<Step title="Check">
+
+Row 2 of $LU$ is $3(1, 2, 1) + (0, 1, 2) = (3, 7, 5)$, row 3 is $2(1, 2, 1) + (0, 0, 1) = (2, 4, 3)$: the rows of $PA$. The pivots $1, 1, 1$ are all nonzero, so $A$ is invertible.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Let $Q$ be the $3 \times 3$ permutation matrix that moves row 1 to row 2, row 2 to row 3 and row 3 to row 1:
+
+<Formula label="A cyclic permutation" tex="Q = \begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}" cite="mit" at="Problem 5(b) (our own problem)" />
+
+What is the smallest power $k \geq 1$ with $Q^k = I$? And how many of the $4 \times 4$ permutation matrices are their own inverse?
+
+<Hint>
+
+Follow one row: where is row 1 after one, two, three applications of $Q$?
+
+</Hint>
+
+<Hint>
+
+$P^{-1} = P$ means that doing $P$ twice changes nothing. Such a permutation can only swap rows in pairs, or leave them alone. Count those of size 4 by how many pairs they swap.
+
+</Hint>
+
+<Answer id="p5-b-k" label="The smallest $k$ is" value="3" tolerance="0.01" calc="p5-b-k" />
+
+<Answer id="p5-b-inv" label="The number of $4 \times 4$ permutation matrices equal to their own inverse is" value="10" tolerance="0.01" calc="p5-b-inv" />
+
+<Solution>
+
+**The idea.** A cycle of three rows returns after three steps; a permutation that is its own inverse is made of swaps that do not overlap.
+
+<Step title="The cycle">
+
+$Q$ takes row 1 to position 2, $Q^2$ to position 3, $Q^3$ back to position 1, and the same for every row. So $Q^3 = I$ and no smaller power works: $Q^2$ moves row 1 to row 3. So $Q^{-1} = Q^2$, which equals $Q^T$, as $P^{-1} = P^T$ requires (Lecture 5 transcript, pp. 3–4).
+
+</Step>
+
+<Step title="Counting">
+
+Of the $4! = 24$ permutations of four rows, those equal to their own inverse are the identity, the single swaps and the double swaps:
+
+<Formula label="Permutations that are their own inverse" tex="1 + 6 + 3 = 10" cite="mit" at="Problem 5(b) (our own solution)" />
+
+One swap: choose $2$ of the $4$ rows, $6$ ways. Two swaps: row 1 is paired with one of the other $3$ rows, and the last two rows pair with each other, $3$ ways.
+
+</Step>
+
+<Step title="Check">
+
+The other $14$ are the $8$ cycles of three rows (choose the row left alone, $4$ ways, and one of $2$ directions) and the $6$ cycles of four rows; $10 + 8 + 6 = 24$. For $3 \times 3$ the same count gives $1 + 3 = 4$ of the $6$, leaving the two cycles, $Q$ and $Q^2$; the lecture lists all six (Lecture 4 transcript, pp. 20–22).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Show that a permutation matrix $P$ is its own inverse exactly when it is symmetric.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+You know a second formula for $P^{-1}$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** For a permutation $P^{-1} = P^T$, so $P^{-1} = P$ and $P^T = P$ say the same thing.
+
+<Step title="Both directions">
+
+<Formula label="Own inverse means symmetric" tex="P^{-1} = P \iff P^T = P, \qquad \text{since } P^{-1} = P^T" cite="reading3" at="pp. 3–4 (P⁻¹ = Pᵀ; the rest is our own)" />
+
+</Step>
+
+<Step title="Check">
+
+The exchange of rows 2 and 3 in part (a) is symmetric and is its own inverse. The cycle $Q$ of part (b) is not symmetric, and $Q^{-1} = Q^2 \neq Q$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="Transposes and symmetric matrices" points={10}>
+
+Take the $2 \times 3$ matrix
+
+<Formula label="A rectangular matrix" tex="R = \begin{pmatrix} 1 & 0 & 2 \\ 2 & 1 & 1 \end{pmatrix}" cite="mit" at="Problem 6 (our own problem)" />
+
+<Part label="a" points={5}>
+
+Compute $RR^T$ and $R^TR$. Give the $(1, 2)$ entry of $RR^T$, the $(2, 3)$ entry of $R^TR$ and the sum of the diagonal entries of $R^TR$.
+
+<Hint>
+
+The $(i, j)$ entry of $RR^T$ is row $i$ of $R$ times row $j$ of $R$. The $(i, j)$ entry of $R^TR$ is column $i$ of $R$ times column $j$ of $R$.
+
+</Hint>
+
+<Answer id="p6-a-12" label="The $(1, 2)$ entry of $RR^T$ is" value="4" tolerance="0.01" calc="p6-a-12" />
+
+<Answer id="p6-a-23" label="The $(2, 3)$ entry of $R^TR$ is" value="1" tolerance="0.01" calc="p6-a-23" />
+
+<Answer id="p6-a-tr" label="The sum of the diagonal entries of $R^TR$ is" value="11" tolerance="0.01" calc="p6-a-tr" />
+
+<Solution>
+
+**The idea.** Both products are made of inner products: of rows for $RR^T$, of columns for $R^TR$.
+
+<Step title="The two products">
+
+<Formula label="Two symmetric products" tex="RR^T = \begin{pmatrix} 1 + 0 + 4 & 2 + 0 + 2 \\ 2 + 0 + 2 & 4 + 1 + 1 \end{pmatrix} = \begin{pmatrix} 5 & 4 \\ 4 & 6 \end{pmatrix}, \qquad R^TR = \begin{pmatrix} 5 & 2 & 4 \\ 2 & 1 & 1 \\ 4 & 1 & 5 \end{pmatrix}" cite="reading3" at="pp. 6–7 (the products; the numbers are our own)" />
+
+In $R^TR$, the $(2, 3)$ entry is column 2 times column 3, $0 \cdot 2 + 1 \cdot 1 = 1$, and the diagonal adds up to $5 + 1 + 5 = 11$.
+
+</Step>
+
+<Step title="Check">
+
+Both products are symmetric, as the lecture proves. The diagonal sums agree, $5 + 6 = 11$: each is the sum of the squares of all six entries of $R$, $1 + 0 + 4 + 4 + 1 + 1 = 11$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+For every square matrix $A$, which of these matrices is always symmetric?
+
+<Hint>
+
+Transpose each candidate, using $(A^T)^T = A$ and the reverse-order rule, and see whether it comes back unchanged.
+
+</Hint>
+
+<Answer id="p6-b" label="Always symmetric:"
+  choices={["$A - A^T$", "$A^2$", "$A + A^T$", "$A^TA^2$"]} answer={2} />
+
+<Solution>
+
+**The idea.** Transposing a sum transposes each term; transposing a product reverses it.
+
+<Step title="Transpose each">
+
+$(A + A^T)^T = A^T + A$, the same matrix. $(A - A^T)^T = A^T - A = -(A - A^T)$, which changes sign. $(A^2)^T = (A^T)^2$ and $(A^TA^2)^T = (A^T)^2A$, which are new matrices when $A$ is not symmetric.
+
+</Step>
+
+<Step title="Check">
+
+For $A = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}$: $A + A^T = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$ is symmetric, $A - A^T = \begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix}$ is not, and $A^2 = 0$ is symmetric here only by accident: for $A = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}$, $A^2 = \begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix}$ is not.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Show that if $S$ is a symmetric $n \times n$ matrix and $A$ is any $n \times m$ matrix, then $A^TSA$ is symmetric.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Transpose the product of three factors: reverse the order and transpose each.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The same argument as for $R^TR$, with $S$ in the middle.
+
+<Step title="Transpose">
+
+<Formula label="A symmetric product of three" tex="(A^TSA)^T = A^TS^T(A^T)^T = A^TSA" cite="reading3" at="pp. 8–9 (the argument for RᵀR; this product is our own)" />
+
+using $S^T = S$ and $(A^T)^T = A$. The product is $m \times m$.
+
+</Step>
+
+<Step title="Check">
+
+With $S = I$ this is the lecture's $A^TA$. With $S = \begin{pmatrix} 2 & 0 \\ 0 & 1 \end{pmatrix}$ and $A = R$: $R^TSR$ has the $(1, 2)$ entry $2 \cdot 1 \cdot 0 + 1 \cdot 2 \cdot 1 = 2$ and the $(2, 1)$ entry $2 \cdot 0 \cdot 1 + 1 \cdot 1 \cdot 2 = 2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 7
+
+<Exercise id="p7" title="Vector spaces and subspaces" points={12}>
+
+<Part label="a" points={4}>
+
+Which of these sets of vectors $x = (x_1, x_2, x_3)$ in $\mathrm{R}^3$ are subspaces?
+
+- $S_1$: all $x$ with $x_1 + 2x_2 - x_3 = 0$.
+- $S_2$: all $x$ with $x_1 + x_2 + x_3 = 1$.
+- $S_3$: all $x$ with $x_1x_2 = 0$.
+- $S_4$: all $x$ with $x_1 = 2x_2$ and $x_3 = 0$.
+
+<Hint>
+
+First test whether the zero vector is in the set. If it is, try adding two vectors of the set, and multiplying one by $-1$ or by $2$.
+
+</Hint>
+
+<Hint>
+
+$x_1x_2 = 0$ means that $x_1 = 0$ or $x_2 = 0$: two planes together.
+
+</Hint>
+
+<Answer id="p7-a-1" label="$S_1$ is a subspace:" choices={["Yes", "No"]} answer={0} />
+
+<Answer id="p7-a-2" label="$S_2$ is a subspace:" choices={["Yes", "No"]} answer={1} />
+
+<Answer id="p7-a-3" label="$S_3$ is a subspace:" choices={["Yes", "No"]} answer={1} />
+
+<Answer id="p7-a-4" label="$S_4$ is a subspace:" choices={["Yes", "No"]} answer={0} />
+
+<Solution>
+
+**The idea.** A subspace must contain zero and keep every sum and every multiple inside.
+
+<Step title="Each set">
+
+$S_1$: if $x$ and $y$ satisfy the equation, so do $x + y$ and every multiple of $x$, because the left side is linear: a plane through the origin. $S_2$ does not contain $(0, 0, 0)$, since $0 \neq 1$: a plane that misses the origin. $S_3$ contains zero and all multiples, but $(1, 0, 0) + (0, 1, 0) = (1, 1, 0)$ has $x_1x_2 = 1$: not closed under addition. $S_4$: two linear equations, both kept by sums and multiples; it is the line through $(2, 1, 0)$.
+
+</Step>
+
+<Step title="Check">
+
+The two subspaces are a plane and a line through the origin, two of the four kinds of subspace of $\mathrm{R}^3$ (Lecture 5 transcript, p. 17). $S_3$ is like the lecture's two lines in $\mathrm{R}^2$ taken together: multiples stay inside, sums do not.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Let $A$ have the columns $(1, 0, 2)$ and $(0, 1, -1)$. For which number $s$ is $b = (2, 3, s)$ in the column space $C(A)$? And what is the column space of the matrix with columns $(1, 0, 2)$ and $(2, 0, 4)$?
+
+<Hint>
+
+$b$ is in $C(A)$ when $b = x_1(1, 0, 2) + x_2(0, 1, -1)$ for some numbers $x_1, x_2$. The first two components fix $x_1$ and $x_2$.
+
+</Hint>
+
+<Hint>
+
+For the second matrix, compare the two columns.
+
+</Hint>
+
+<Answer id="p7-b-s" label="$s =$" value="1" tolerance="0.01" calc="p7-b-s" />
+
+<Answer id="p7-b-line" label="The column space of the second matrix is"
+  choices={["the plane through the origin containing both columns", "the line through the origin and the point (1, 0, 2)", "the whole space of vectors with three components", "the set containing only the zero vector"]} answer={1} />
+
+<Solution>
+
+**The idea.** $b$ is in $C(A)$ exactly when $Ax = b$ can be solved.
+
+<Step title="Solve for the combination">
+
+The first components give $x_1 = 2$, the second $x_2 = 3$. Then the third component must be
+
+<Formula label="The third component" tex="2 \cdot 2 + 3 \cdot (-1) = 1" cite="mit" at="Problem 7(b) (our own solution)" />
+
+so $b$ is in $C(A)$ only for $s = 1$. $C(A)$ is a plane through the origin, and for any other $s$ the point $b$ is off it.
+
+</Step>
+
+<Step title="The second matrix">
+
+$(2, 0, 4) = 2(1, 0, 2)$: the columns lie on one line, so all their combinations are the multiples of $(1, 0, 2)$, a line through the origin (Lecture 5 transcript, p. 20).
+
+</Step>
+
+<Step title="Check">
+
+$2(1, 0, 2) + 3(0, 1, -1) = (2, 3, 4 - 3) = (2, 3, 1)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Let $V$ and $W$ be subspaces of $\mathrm{R}^3$. Show that their intersection (the vectors in both) is a subspace. Then give an example where their union (the vectors in at least one of them) is not.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Take $x$ and $y$ in both $V$ and $W$. Where are $x + y$ and the multiples of $x$?
+
+</Hint>
+
+<Hint>
+
+For the union, try two different lines through the origin.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Closure is tested separately in each subspace; a union breaks when a sum leaves both.
+
+<Step title="The intersection">
+
+If $x$ and $y$ are in $V$ and in $W$, then $x + y$ and every multiple of $x$ are in $V$ (a subspace) and in $W$ (a subspace), so in both. The zero vector is in both too. So the intersection is a subspace.
+
+</Step>
+
+<Step title="The union">
+
+Let $V$ be the line of multiples of $(1, 0, 0)$ and $W$ the line of multiples of $(0, 1, 0)$. Both vectors are in the union, but their sum $(1, 1, 0)$ is on neither line. This is the set $S_3$ of part (a) cut down to two lines.
+
+</Step>
+
+<Step title="Check">
+
+Two planes through the origin meet in a line through the origin or are the same plane: a subspace either way. In part (a), $S_4$ is the intersection of the plane $x_3 = 0$ with the plane $x_1 = 2x_2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
