@@ -140,3 +140,5 @@ COUNTS: errors=0 warnings=6 info=2
 - Info 7: the Problem 7 note now says the book prints α(φ) for α(θ) on the left of Eq. (2.22).
 - Info 8: the γ meaning for this page now says the book also uses γ for the factor Problem 2 calls α (the α meaning already said so).
 - Outside this page: the gravitational-lensing lesson note on Eq. (2.34) is left for a separate follow-up.
+
+- Follow-up by the page author (same day): the W1 paragraph in the 2(a) check no longer prints the isothermal sphere density, its mass formula or the factor 2, which together gave away the Problem 5(c) box; it now names the self-gravitating isothermal sphere and the surface term only. Calcs entry p2-a-sis removed.
