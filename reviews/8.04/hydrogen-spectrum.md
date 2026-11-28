@@ -87,3 +87,7 @@ All formula citations were checked against the PDF, with the printed footer page
 5. The callout now says 13.6 eV "sets the scale" for when the universe turned neutral, at about 4,000 K.
 
 Status set to `reviewed`.
+
+## Change (2026-11-28, by Account A)
+
+The intro sentence about the virial theorem, circular orbits and eccentricity now links to the new Lecture 23 page `rydberg-atoms-virial-theorem` (written and reviewed by Account B) instead of saying they are not covered. No other change.
