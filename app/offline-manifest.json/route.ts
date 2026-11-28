@@ -22,7 +22,7 @@ export function GET() {
   const glossaryLetters = [...entriesByLetter().keys()].sort().map((l) => `/glossary/${l}`);
   // The panel's "More" text, one file per letter (app/glossary-more/[letter]/route.ts).
   const glossaryMore = [...entriesByLetter().keys()].sort().map((l) => `/glossary-more/${l}`);
-  const shell = ["/", "/courses", "/highschool", "/symbols", ...symbolYears, "/symbols-usage.json", "/glossary", ...glossaryLetters, "/glossary-usage.json", ...glossaryMore, "/review", "/about", "/accessibility", "/wonder", "/offline", "/search-index.json", "/flashcards.json", "/manifest.webmanifest"];
+  const shell = ["/", "/courses", "/highschool", "/symbols", ...symbolYears, "/symbols-usage.json", "/glossary", ...glossaryLetters, "/glossary-usage.json", ...glossaryMore, "/review", "/about", "/accessibility", "/wonder", "/offline", "/search-index.json", "/flashcards.json", "/set-units.json", "/manifest.webmanifest"];
   const courses = site.courses.map((c) => {
     const pages = c.pages.map((p) => p.href);
     const phet = [...new Set(c.pages.map((p) => (p.phet ? localSim(p.phet) : undefined)).filter((s) => !!s))];

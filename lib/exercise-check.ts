@@ -22,6 +22,7 @@ import type { Page } from "./content";
 import katex from "katex";
 import { auditFormula, numberTolerance, parseFormula, parseNumber } from "./answers";
 import { speechGaps, texToSpeech } from "./speech";
+import { setUnits } from "./set-units";
 
 /** What is wrong with the preview of one typed formula (empty when it is fine). */
 export function previewProblems(expr: string, vars: Record<string, unknown>, names: Record<string, string> = {}): string[] {
@@ -42,7 +43,7 @@ export function previewProblems(expr: string, vars: Record<string, unknown>, nam
 }
 
 type Props = Record<string, any> & { children?: ReactNode };
-type Ex = { props: Props; solutions: number; partPoints: number[]; answers: Props[] };
+type Ex = { props: Props; solutions: number; partPoints: number[]; answers: Props[]; parts: { label: string; points?: number; answers: string[] }[] };
 
 const TAGS = /<(Exercise|Part|Hint|Solution|Answer)\b/;
 const OTHERS = ["Formula", "Plot", "PhET", "WorkedExample", "Step", "Problem", "VectorDiagram", "Callout", "ExpansionDiagram", "ParallaxDiagram", "Hint"];
@@ -61,6 +62,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   const errors: string[] = [];
   const done: Ex[] = [];
   let current: Ex | null = null;
+  let currentPart: Ex["parts"][number] | null = null;
   const [{ evaluate }, { default: remarkMath }, { default: remarkGfm }] = await Promise.all([
     import("@mdx-js/mdx"),
     import("remark-math"),
@@ -77,14 +79,22 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   };
   components.Exercise = (props: Props) => {
     if (current) errors.push(`<Exercise id="${props.id}"> sits inside another <Exercise>`);
-    current = { props, solutions: 0, partPoints: [], answers: [] };
+    current = { props, solutions: 0, partPoints: [], answers: [], parts: [] };
     return createElement(Fragment, null, props.children ?? null, createElement(End));
   };
   components.Part = (props: Props) => {
     if (!current) errors.push(`<Part label="${props.label}"> outside an <Exercise>`);
     else if (typeof props.points === "number") current.partPoints.push(props.points);
     if (!props.label) errors.push("<Part> needs a label");
-    return passThrough(props);
+    if (!current) return passThrough(props);
+    const part = { label: String(props.label ?? ""), points: typeof props.points === "number" ? props.points : undefined, answers: [] as string[] };
+    current.parts.push(part);
+    const PartEnd = () => {
+      if (currentPart === part) currentPart = null;
+      return null;
+    };
+    currentPart = part;
+    return createElement(Fragment, null, props.children ?? null, createElement(PartEnd));
   };
   components.Solution = (props: Props) => {
     if (current) current.solutions++;
@@ -94,6 +104,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   components.Answer = (props: Props) => {
     if (current) current.answers.push(props);
     else errors.push(`<Answer id="${props.id}"> outside an <Exercise>`);
+    if (currentPart) currentPart.answers.push(String(props.id));
     return null;
   };
   try {
@@ -102,6 +113,20 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
     return { errors: [`exercises could not be read: ${(e as Error).message.slice(0, 200)}`], warnings: [], exercises: 0 };
   }
 
+  // The homepage scores a set from its source (lib/set-units.ts): it must find the same units as the page.
+  if (page.kind === "problems") {
+    const rendered = done.flatMap((ex) => {
+      const scored = ex.parts.filter((p) => p.points !== undefined);
+      return scored.length
+        ? scored.map((p) => ({ id: `${ex.props.id}-${p.label}`, points: p.points!, optional: !!ex.props.optional, answers: p.answers }))
+        : [{ id: String(ex.props.id), points: Number(ex.props.points) || 0, optional: !!ex.props.optional, answers: ex.answers.map((a) => String(a.id)) }];
+    });
+    const fromSource = setUnits(page.body);
+    if (JSON.stringify(fromSource) !== JSON.stringify(rendered)) {
+      const i = Math.max(0, rendered.findIndex((u, k) => JSON.stringify(u) !== JSON.stringify(fromSource[k])));
+      errors.push(`lib/set-units.ts reads this set's points or answer boxes differently from the page (the homepage score depends on it): unit ${i}, page ${JSON.stringify(rendered[i])}, source ${JSON.stringify(fromSource[i])}`);
+    }
+  }
   const ids = new Set<string>();
   const unique = (what: string, id: unknown) => {
     if (typeof id !== "string" || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(id)) return void errors.push(`${what} needs an id of lowercase words and hyphens (got ${JSON.stringify(id)})`);

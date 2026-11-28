@@ -3,6 +3,7 @@ import { getSite, HIGHSCHOOL_YEAR, isLesson, orderedPages, yearHref } from "@/li
 import { LinkBar } from "@/components/LinkBar";
 import { HeroImage } from "@/components/HeroImage";
 import { ContinueCard } from "@/components/progress/ContinueCard";
+import { pathSets } from "@/lib/path-sets";
 import { yearName } from "@/lib/roman";
 
 export default function Home() {
@@ -65,6 +66,7 @@ export default function Home() {
 
       <ContinueCard
         pages={orderedPages(site).filter(isLesson).map((p) => ({ slug: p.slug, title: p.title, href: p.href, course: p.course, prerequisites: p.prerequisites.filter((s) => site.pageBySlug.has(s)) }))}
+        sets={pathSets(site, orderedPages(site))}
       />
 
       <section id="cosmology" className="home-section">

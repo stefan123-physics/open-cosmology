@@ -1,6 +1,6 @@
 # Problem sets and exams: design (2026-11-18)
 
-**Status (2026-11-18): the pilot of §11 is built** (8.286 Problem Set 1, a draft until its blind-solve review). Not built: exam mode (§6) and the homepage suggesting a set (§5). How it was built: AGENTS.md "Problem sets". This document turns ROADMAP.md §2–3 into the specification the pilot followed. Decisions for the owner are in §12.
+**Status (2026-11-18): the pilot of §11 is built** (8.286 Problem Set 1, a draft until its blind-solve review). Not built: exam mode (§6; owner decision 2026-11-28: no exams). The homepage suggesting a set (§5) was built on 2026-11-28 (AGENTS.md "Problem sets"). How it was built: AGENTS.md "Problem sets". This document turns ROADMAP.md §2–3 into the specification the pilot followed. Decisions for the owner are in §12.
 
 ## 1. What was found first
 

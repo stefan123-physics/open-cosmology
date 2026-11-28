@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getSite, HIGHSCHOOL_YEAR, isLesson, orderedPages, yearHref } from "@/lib/content";
 import { shareMetadata } from "@/lib/share";
 import { ContinueCard } from "@/components/progress/ContinueCard";
+import { pathSets } from "@/lib/path-sets";
 import { ProgressTick } from "@/components/progress/ProgressTick";
 import { HeroImage } from "@/components/HeroImage";
 
@@ -64,6 +65,7 @@ export default function HighSchool() {
       {ordered.length > 0 && (
         <ContinueCard
           pages={ordered.filter(isLesson).map((p) => ({ slug: p.slug, title: p.title, href: p.href, course: p.course, prerequisites: p.prerequisites.filter((s) => site.pageBySlug.has(s)) }))}
+          sets={pathSets(site, ordered)}
         />
       )}
 
