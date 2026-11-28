@@ -1,0 +1,353 @@
+# Calculations on content/year-5/8.902/8-902-problem-set-2.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# Problem 1 in units v_c = r_a = 1 (E = 1/8, L = 1/2): the pericentre by a root search, the radial period and the
+# angle by integrals over r with their 1/√ end-point singularities (SciPy quad never evaluates the ends); the
+# acceleration against a numerical gradient of Φ. Our own orbit integrations (SciPy solve_ivp, DOP853, rtol = atol =
+# 1e-12, start x = 1, y = 0, ẋ = 0, ẏ = 1/2; our leapfrog runs) are recorded as facts. Problem 2: the circular speed,
+# the epicycle frequency, the angular derivatives and the surface density against numerical derivatives of the
+# Mestel potential, written as Φ = v_c² ln[(√(R² + z²) + |z|)/(2 r_ref)] with r_ref = 1.
+# Short names: q, s are variables of a root, integral or derivative; vc for v_c, ra for r_a.
+
+page: content/year-5/8.902/8-902-problem-set-2.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1a-l
+    kind: identity
+    answer: p1a-l
+    where: 'Problem 1(a), answer box: L = r_a v_a with v_a = v_c/2, against |x ẏ − y ẋ| at the start x = r_a, y = 0, ẋ = 0, ẏ = v_c/2'
+    formula: ra*vc/2
+    equals: ra*(vc/2) - 0*0
+    samples:
+      ra: [1.5, 8, 17]
+      vc: [80, 200, 270]
+    tolerance: 1e-12
+    shown: ['id="p1a-l"', 'L = r_a v_a = \frac{r_a v_c}{2}']
+    source: {cite: mit, at: 'Problem 1, our part (a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-acc
+    kind: identity
+    answer: p1a-acc
+    where: 'Problem 1(a), answer box: ẍ = −∂Φ/∂x for Φ = v_c² ln(√(x² + y²)/r_ref), by a numerical derivative (r_ref = 1)'
+    formula: -vc**2*x/(x**2 + y**2)
+    equals: -deriv('vc**2*log(sqrt(s**2 + y**2))', 's', x)
+    samples:
+      vc: [1.2, 2, 2.8]
+      x: [0.4, 0.9, 1.4]
+      y: [0.35, 0.8, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p1a-acc"', '\ddot x = -\frac{v_c^2\,x}{x^2 + y^2}']
+    source: {cite: mit, at: 'Problem 1, our part (a) (our own solution)'}
+    origin: page-own
+
+  - id: p1a-E
+    where: 'Problem 1(a), solution: E = ½ (1/2)² + ln 1 in units v_c = r_a = 1'
+    formula: 0.5*0.25 + log(1)
+    expected: '0.125'
+    shown: ['E = \frac12\cdot\frac14 + \ln 1 = \frac18']
+    source: {cite: mit, at: 'Problem 1, our part (a) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-rp
+    answer: p1b-rp
+    where: 'Problem 1(b), answer box: the pericentre, the root of 1/(8q²) + ln q = 1/8 between 0.1 and 0.9 (units of r_a)'
+    formula: solve('1/(8*q**2) + log(q) - 1/8', 'q', 0.1, 0.9)
+    expected: '0.3109'
+    shown: ['id="p1b-rp"', '$r_p = 0.3109\,r_a$']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-tr
+    answer: p1b-tr
+    where: 'Problem 1(b), answer box: T_r = 2 ∫ dr/√(2(1/8 − ln r) − 1/(4r²)) from r_p = 0.310885223518 to 1 (units r_a/v_c)'
+    formula: 2*integrate('1/sqrt(2*(0.125 - log(q)) - 0.25/q**2)', 'q', 0.310885223518, 1)
+    expected: '2.985'
+    shown: ['id="p1b-tr"', '$T_r = 2.985\,r_a/v_c$']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-dpsi-rad
+    where: 'Problem 1(b), solution: Δψ = 2 ∫ (L/r²) dr/ṙ in radians'
+    formula: 2*integrate('0.5/q**2/sqrt(2*(0.125 - log(q)) - 0.25/q**2)', 'q', 0.310885223518, 1)
+    expected: '4.326'
+    shown: ['$\Delta\psi = 4.326$ rad']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-dpsi
+    answer: p1b-dpsi
+    where: 'Problem 1(b), answer box: Δψ in degrees'
+    formula: 2*integrate('0.5/q**2/sqrt(2*(0.125 - log(q)) - 0.25/q**2)', 'q', 0.310885223518, 1)*180/pi
+    expected: '247.9'
+    shown: ['id="p1b-dpsi"', '$= 247.9°$']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-step
+    where: 'Problem 1(b), solution: one fiftieth of the radial period'
+    formula: 2.98489/50
+    expected: '0.060'
+    shown: ['one fiftieth of the radial period is about $0.060\,r_a/v_c$']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-epicycle-angle
+    where: 'Problem 1(b), check: 2π Ω/κ = 360°/√2 for κ = √2 Ω'
+    formula: 360/sqrt(2)
+    expected: '254.6'
+    shown: ['$2\pi\,\Omega/\kappa = 360°/\sqrt2 = 254.6°$']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own solution)'}
+    origin: page-own
+
+  - id: p1b-unit-time
+    where: 'Problem 1(b), check: r_a/v_c for 10 kpc and 200 km/s, in Myr (1 kpc = 3.0857e19 m, 1 Myr = 3.156e13 s)'
+    formula: 10*3.0857e19/2e5/3.156e13
+    expected: '48.9'
+    shown: ['$r_a/v_c = 48.9$ Myr']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-tr-myr
+    where: 'Problem 1(b), check: T_r = 2.985 × 48.89 Myr'
+    formula: 2.98489*10*3.0857e19/2e5/3.156e13
+    expected: '146'
+    shown: ['$T_r = 146$ Myr']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-rp-kpc
+    where: 'Problem 1(b), check: r_p = 0.3109 × 10 kpc'
+    formula: 0.310885*10
+    expected: '3.1'
+    shown: ['$r_p = 3.1$ kpc']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own addition)'}
+    origin: page-own
+
+  - id: p1b-numbers
+    kind: fact
+    where: 'Problem 1(b), check: our own numbers for a galaxy'
+    shown: ['$v_c = 200$ km/s and $r_a = 10$ kpc (our numbers)']
+    source: {cite: mit, at: 'Problem 1, our part (b) (our own addition)'}
+    origin: page-own
+
+  - id: p1c-run
+    kind: fact
+    where: 'Problem 1(c), solution: our DOP853 run (rtol = atol = 1e-12) over 100 radial periods from x = 1, y = 0, ẋ = 0, ẏ = 0.5: largest |E − 1/8| = 8.8e-11, largest |L − 1/2| = 4.6e-11; r between 0.310885 and 1.000000'
+    shown: ['$E$ and $L$ stayed constant to $10^{-10}$, and the radius stayed between $0.3109$ and $1$']
+    source: {cite: mit, at: 'Problem 1, our part (c) (our own computation)'}
+    origin: page-own
+
+  - id: p1c-leapfrog
+    kind: fact
+    where: 'Problem 1(c), solution: our leapfrog (kick-drift-kick) runs for 100 radial periods with 50, 200 and 1000 steps per radial period: largest |E − 1/8| = 6.45e-3, 4.05e-4, 1.62e-5'
+    shown: ['| 50 | $6.5\times10^{-3}$ |', '| 200 | $4.1\times10^{-4}$ |', '| 1000 | $1.6\times10^{-5}$ |']
+    source: {cite: mit, at: 'Problem 1, our part (c) (our own computation)'}
+    origin: page-own
+
+  - id: p1c-leapfrog-frac
+    where: 'Problem 1(c), solution: the energy error with 50 steps as a fraction of E'
+    formula: 6.45e-3/0.125
+    expected: '0.05'
+    shown: ['With 50 steps per period it is 5% of $E$']
+    source: {cite: mit, at: 'Problem 1, our part (c) (our own computation)'}
+    origin: page-own
+
+  - id: p1c-shortfall
+    where: 'Problem 1(c), solution: 360° − 247.9°'
+    formula: 360 - 247.9
+    expected: '112.1'
+    shown: ['(247.9° = 360° − 112.1°)']
+    source: {cite: mit, at: 'Problem 1, our part (c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-turns
+    answer: p1c-turns
+    where: 'Problem 1(c), answer box: turns after 100 radial periods, 100 Δψ/2π from the integral (our DOP853 run gives 68.8557 as well)'
+    formula: 100*2*integrate('0.5/q**2/sqrt(2*(0.125 - log(q)) - 0.25/q**2)', 'q', 0.310885223518, 1)/(2*pi)
+    expected: '68.86'
+    shown: ['id="p1c-turns"', '$100\times247.9°/360° = 68.86$ times; our integration gives the same, 68.86']
+    source: {cite: mit, at: 'Problem 1, our part (c) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-frac
+    answer: p1d-frac
+    where: 'Problem 1(d), answer box: fraction of the time with r > (r_p + r_a)/2 = 0.655442611759, the integral of dr/ṙ over the outer half divided by the integral over the whole range'
+    formula: integrate('1/sqrt(2*(0.125 - log(q)) - 0.25/q**2)', 'q', 0.655442611759, 1)/integrate('1/sqrt(2*(0.125 - log(q)) - 0.25/q**2)', 'q', 0.310885223518, 1)
+    expected: '0.639'
+    shown: ['id="p1d-frac"', 'gives a fraction $0.639$ of the time in the outer half']
+    source: {cite: mit, at: 'Problem 1, our part (d) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-mid
+    where: 'Problem 1(d), solution: the middle radius (r_p + r_a)/2'
+    formula: (0.310885 + 1)/2
+    expected: '0.6554'
+    shown: ['$\bar r = (r_p + r_a)/2 = 0.6554\,r_a$']
+    source: {cite: mit, at: 'Problem 1, our part (d) (our own choice)'}
+    origin: page-own
+
+  - id: p1d-dots
+    kind: fact
+    where: 'Problem 1(d), solution: our DOP853 run with 5001 dots 0.06 apart (300 r_a/v_c, 100.51 radial periods): dots per unit area in ten rings of equal width from r_p to r_a, relative to the average: 2.25, 1.00, 0.78, 0.70, 0.66, 0.64, 0.67, 0.72, 0.86, 1.95; fraction of dots outside the middle radius 0.6397. With dots exactly T_r/50 apart (5000 dots, 100 periods) the fraction is 0.62 (31 of every 50)'
+    shown: ['5001 dots, one every $0.06\,r_a/v_c$, for about 100.5 radial periods', 'about 2.3 times the average in the innermost ring, about 2.0 times in the outermost, and about 0.65 times near the middle', 'Our dots agree: 64.0% of them lie outside $\bar r$', 'Exactly $T_r/50$ gave us only 62% of the dots in the outer half']
+    source: {cite: mit, at: 'Problem 1, our part (d) (our own computation)'}
+    origin: page-own
+
+  - id: p1d-tr50
+    where: 'Problem 1(d), solution: T_r/50 to four decimals'
+    formula: 2.9848861/50
+    expected: '0.0597'
+    shown: ['$T_r/50 = 0.0597$']
+    source: {cite: mit, at: 'Problem 1, our part (d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2a-v
+    kind: identity
+    where: 'Problem 2(A), solution: v² = R ∂Φ/∂R in the plane equals v_c², by a numerical derivative of the Mestel potential at z = 0'
+    formula: vc**2
+    equals: R*deriv('vc**2*log(s/2)', 's', R)
+    samples:
+      vc: [1.1, 2.3, 1.7]
+      R: [0.5, 3, 12]
+    tolerance: 1e-6
+    shown: ['= v_c^2" cite="mit" at="Problem 2(A), p. 1 (our own solution)"']
+    source: {cite: mit, at: 'Problem 2(A) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-kappa
+    kind: identity
+    answer: p2a-kappa
+    where: 'Problem 2(A), answer box: κ against √(R dΩ²/dR + 4Ω²) with Ω = v_c/R, by a numerical derivative'
+    formula: sqrt(2)*vc/R
+    equals: sqrt(R*deriv('vc**2/s**2', 's', R) + 4*vc**2/R**2)
+    samples:
+      vc: [120, 220, 290]
+      R: [1.5, 8, 18]
+    tolerance: 1e-6
+    shown: ['id="p2a-kappa"', '\kappa = \frac{\sqrt2\,v_c}{R}']
+    source: {cite: mit, at: 'Problem 2(A) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-dphi
+    kind: identity
+    answer: p2b-dphi
+    where: 'Problem 2(B), answer box: ∂Φ/∂θ above the plane against a numerical derivative of v_c² ln((1 + cos θ)/2)'
+    formula: -vc**2*sin(theta)/(1 + cos(theta))
+    equals: deriv('vc**2*log((1 + cos(s))/2)', 's', theta)
+    samples:
+      vc: [1.2, 2.5, 1.8]
+      theta: [0.3, 0.8, 1.3]
+    tolerance: 1e-6
+    shown: ['id="p2b-dphi"', '\frac{\partial\Phi}{\partial\theta} = -\frac{v_c^2\sin\theta}{1 + \cos\theta}']
+    source: {cite: reading1, at: 'eq. (93), p. 24'}
+    origin: mit
+
+  - id: p2b-bracket
+    kind: identity
+    where: 'Problem 2(B), solution: (cos θ/sin θ) ∂φ₀/∂θ + ∂²φ₀/∂θ² = −1 above the plane, by numerical derivatives of φ₀ = ln((1 + cos θ)/2), so that ∇²Φ = 0 off the plane'
+    formula: -1
+    equals: cos(theta)/sin(theta)*deriv('log((1 + cos(s))/2)', 's', theta) + deriv('log((1 + cos(s))/2)', 's', theta, 2)
+    samples:
+      theta: [0.3, 0.7, 1.1, 1.4]
+    tolerance: 1e-5
+    shown: ['= -v_c^2(1 + \cos\theta)^2/(1 + \cos\theta)^2 = -v_c^2$']
+    source: {cite: reading1, at: 'eq. (94), p. 24'}
+    origin: mit
+
+  - id: p2b-below
+    kind: identity
+    where: 'Problem 2(B), solution: below the plane ∂Φ/∂θ = v_c² sin θ/(1 − cos θ), numerical derivative of v_c² ln((1 − cos θ)/2) for π/2 < θ < π'
+    formula: vc**2*sin(theta)/(1 - cos(theta))
+    equals: deriv('vc**2*log((1 - cos(s))/2)', 's', theta)
+    samples:
+      vc: [1.2, 2.5, 1.8]
+      theta: [1.8, 2.4, 2.9]
+    tolerance: 1e-6
+    shown: ['\partial\Phi/\partial\theta = v_c^2\sin\theta/(1 - \cos\theta)$, it tends to $+v_c^2$']
+    source: {cite: mit, at: 'Problem 2(B) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-cyl
+    kind: identity
+    where: 'Problem 2(B), check: ln(r/r_ref) + ln((1 + |cos θ|)/2) = ln((r + |z|)/(2 r_ref)) with z = r cos θ (r_ref = 1)'
+    formula: log(r) + log((1 + abs(cos(theta)))/2)
+    equals: log((r + abs(r*cos(theta)))/2)
+    samples:
+      r: [0.5, 2, 7, 3]
+      theta: [0.4, 1.2, 2.0, 2.8]
+    tolerance: 1e-12
+    shown: ['$\Phi = v_c^2\ln[(r + |z|)/(2r_\text{ref})]$, smooth everywhere']
+    source: {cite: mit, at: 'Problem 2(B) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-dz
+    kind: identity
+    where: 'Problem 2(C), solution: ∂Φ/∂z just above the plane tends to v_c²/R (numerical derivative at z = 1e-7 R of v_c² ln((√(R² + z²) + z)/2))'
+    formula: vc**2/R
+    equals: deriv('vc**2*log((sqrt(R**2 + s**2) + s)/2)', 's', 1e-7*R)
+    samples:
+      vc: [1.3, 2.2, 1.6]
+      R: [0.7, 2, 9]
+    tolerance: 1e-5
+    shown: ['\partial\Phi/\partial z = v_c^2(z/r + 1)/(r + z) \to v_c^2/R$']
+    source: {cite: mit, at: 'Problem 2(C) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-G
+    where: 'Problem 2(C), statement: G in M☉, pc and km/s'
+    formula: 6.674e-11*1.989e30/3.0857e16/1e6
+    expected: '4.30e-3'
+    shown: ['$G = 4.30\times10^{-3}$ pc (km/s)²/M☉']
+    source: {cite: mit, at: 'Problem 2(C) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-numbers
+    kind: fact
+    where: 'Problem 2(C), statement: our numbers for the disc'
+    shown: ['$v_c = 220$ km/s and $R = 8$ kpc (our numbers)']
+    source: {cite: mit, at: 'Problem 2(C) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-denominator
+    where: 'Problem 2(C), solution: 2π × 4.30e-3 × 8000'
+    formula: 2*pi*4.30e-3*8000
+    expected: '216.1'
+    shown: ['= 48\,400/216.1 = 224$ M☉/pc²']
+    source: {cite: mit, at: 'Problem 2(C) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-sigma
+    answer: p2c-sigma
+    where: 'Problem 2(C), answer box: Σ = v_c²/(2πGR) for 220 km/s and 8000 pc, in M☉/pc²'
+    formula: 220**2/(2*pi*4.30e-3*8000)
+    expected: '224'
+    shown: ['id="p2c-sigma"', '$\Sigma = (220)^2/(2\pi\times4.30\times10^{-3}\times8000)']
+    source: {cite: mit, at: 'Problem 2(C) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-mass
+    kind: identity
+    answer: p2c-mass
+    where: 'Problem 2(C), answer box: M(<R) against the numerical integral of 2πR′ Σ(R′) = 2πR′ v_c²/(2πGR′) from 0 to R'
+    formula: vc**2*R/G
+    equals: integrate('2*pi*s*vc**2/(2*pi*G*s)', 's', 0, R)
+    samples:
+      vc: [120, 250, 180]
+      R: [2, 8, 15]
+      G: [0.003, 0.0043, 0.0055]
+    tolerance: 1e-9
+    shown: ['id="p2c-mass"', '= \frac{v_c^2R}{G}" cite="mit"']
+    source: {cite: mit, at: 'Problem 2(C) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-mass-number
+    where: 'Problem 2(C), solution: M(<8 kpc) = 220² × 8000/4.30e-3 in M☉'
+    formula: 220**2*8000/4.30e-3
+    expected: '9.0e10'
+    shown: ['$M(<8\text{ kpc}) = 48\,400\times8000/(4.30\times10^{-3}) = 9.0\times10^{10}$ M☉']
+    source: {cite: mit, at: 'Problem 2(C) (our own addition)'}
+    origin: page-own

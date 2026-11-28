@@ -1,0 +1,555 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page:
+# the shear stress as the weight of the water above (Problem 1), numerical derivatives of sin θ at the fixed points,
+# energy conservation, and numerical roots of the characteristic equations (Problem 2), numerical derivatives of the
+# Lorenz flow and numerical roots of the fixed-point and eigenvalue equations (Problem 3), numerical roots and
+# derivatives of the one-dimensional flows (Problem 5). Problem 4 is a numerical experiment (our own SciPy runs,
+# DOP853, rtol 1e-10 for the sweeps and 1e-12 for the separations); its results are recorded as facts.
+# Short names in the samples: z and s are variables of a numerical derivative, integral or root; psi for ψ, w for
+# the angular velocity, qc for q_c, phi for the drive phase, patm for the atmospheric pressure.
+
+page: content/year-4/8.09/8-09-problem-set-9.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1c-v
+    kind: identity
+    answer: p1c-v
+    where: 'Problem 1(c), answer box: vₓ(y) against the integral of the shear rate dvₓ/dy = g sin θ (h − y)/ν, which says that the shear stress at height y holds up the weight along the slope of the water above it (and vanishes at the open surface); vₓ(0) = 0'
+    formula: g*sin(theta)*y*(2*h - y)/(2*nu)
+    equals: integrate('g*sin(theta)*(h - s)/nu', 's', 0, y)
+    samples:
+      g: [9.2, 9.81, 9.6]
+      theta: [0.15, 0.35, 0.55]
+      nu: [0.6, 1.1, 1.8]
+      h: [1.1, 1.5, 1.9]
+      y: [0.2, 0.6, 0.85]
+    tolerance: 1e-9
+    shown: ['id="p1c-v"', '\vec v = \frac{g\sin\theta}{2\nu}\,y(2h - y)\,\hat x']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-v-ode
+    kind: identity
+    where: 'Problem 1(c), check: ν d²vₓ/dy² + g sin θ = 0 for the page formula, by a numerical second derivative'
+    formula: 0
+    equals: nu*deriv('g*sin(theta)*z*(2*h - z)/(2*nu)', 'z', y, 2) + g*sin(theta)
+    samples:
+      g: [9.2, 9.81]
+      theta: [0.15, 0.55]
+      nu: [0.6, 1.8]
+      h: [1.1, 1.9]
+      y: [0.2, 0.85]
+    tolerance: 1e-5
+    shown: ['$0 = \nu\frac{d^2v_x}{dy^2} + g\sin\theta$']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-p
+    kind: identity
+    answer: p1c-p
+    where: 'Problem 1(c), answer box: p(y) against p_atm plus the integral of ρg cos θ from y up to the surface (the weight per unit area of the water above, perpendicular to the plane)'
+    formula: patm + rho*g*cos(theta)*(h - y)
+    equals: patm + integrate('rho*g*cos(theta)', 's', y, h)
+    samples:
+      patm: [0.9, 1.0, 1.1]
+      rho: [0.6, 1.2, 1.9]
+      g: [9.2, 9.81, 9.6]
+      theta: [0.15, 0.35, 0.55]
+      h: [1.1, 1.5, 1.9]
+      y: [0.2, 0.6, 0.85]
+    tolerance: 1e-9
+    shown: ['id="p1c-p"', 'p(y) = p_\text{atm} + \rho g\cos\theta\,(h - y)']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1c-data
+    kind: fact
+    where: 'Problem 1(c), statement: our own numbers for the water film'
+    shown: ['$h = 0.50$ mm deep on a plane tilted at $\theta = 10°$, with $\nu = 1.0\times10^{-6}$ m²/s (water near room temperature) and $g = 9.81$ m/s²']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  - id: p1c-sin10
+    where: 'Problem 1(c), solution: sin 10°'
+    formula: sin(10*pi/180)
+    expected: '0.1736'
+    shown: ['9.81 \times 0.1736 \times']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  - id: p1c-us
+    answer: p1c-us
+    where: 'Problem 1(c), answer box: the surface speed g sin θ h²/(2ν) for h = 0.50 mm, θ = 10°, ν = 1.0e-6 m²/s, in m/s'
+    formula: 9.81*sin(10*pi/180)*(0.50e-3)**2/(2*1.0e-6)
+    expected: '0.213'
+    shown: ['id="p1c-us"', '(0.50\times10^{-3})^2/(2.0\times10^{-6}) = 0.213$ m/s']
+    source: {cite: mit, at: 'Problem 1(c) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2a-even
+    kind: identity
+    answer: p2a-even
+    where: 'Problem 2(a), answer box: ẇ near n even against −w/q − (d sin θ/dθ at θ = 0)ψ, by a numerical derivative'
+    formula: -w/q - psi
+    equals: -w/q - deriv('sin(z)', 'z', 0)*psi
+    samples:
+      w: [-0.6, 0.3, 0.8]
+      psi: [0.15, 0.5, 0.9]
+      q: [0.7, 2.0, 4.5]
+    tolerance: 1e-6
+    shown: ['id="p2a-even"']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-odd
+    kind: identity
+    answer: p2a-odd
+    where: 'Problem 2(a), answer box: ẇ near n odd against −w/q − (d sin θ/dθ at θ = π)ψ, by a numerical derivative'
+    formula: -w/q + psi
+    equals: -w/q - deriv('sin(z)', 'z', pi)*psi
+    samples:
+      w: [-0.6, 0.3, 0.8]
+      psi: [0.15, 0.5, 0.9]
+      q: [0.7, 2.0, 4.5]
+    tolerance: 1e-6
+    shown: ['id="p2a-odd"', '\dot w = -\frac{1}{q}\,w - (-1)^n\,\psi']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-w
+    kind: identity
+    answer: p2b-w
+    where: 'Problem 2(b), answer box: w(t) against energy conservation of the linear oscillator, w² + ψ² = ψ₀², with ψ = ψ₀ cos t and w negative for 0 < t < π'
+    formula: -psi0*sin(t)
+    equals: -sqrt(psi0**2 - (psi0*cos(t))**2)
+    samples:
+      psi0: [0.08, 0.3, 0.45]
+      t: [0.3, 1.4, 2.8]
+    tolerance: 1e-9
+    shown: ['id="p2b-w"', 'so $w = -\psi_0\sin t$']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-decay
+    kind: identity
+    answer: p2c-decay
+    where: 'Problem 2(c), answer box: the amplitude decay rate as minus the common real part of the complex pair, half the sum of the roots, (1/q)/2'
+    formula: 1/(2*q)
+    equals: (1/q)/2
+    samples:
+      q: [0.7, 2.0, 4.5]
+    tolerance: 1e-12
+    shown: ['id="p2c-decay"']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-freq
+    kind: identity
+    answer: p2c-freq
+    where: 'Problem 2(c), answer box: Ω_q as the root of the real part of λ² + λ/q + 1 = 0 at λ = −1/(2q) + iΩ, that is 1/(4q²) − Ω² − 1/(2q²) + 1 = 0, solved numerically'
+    formula: sqrt(1 - 1/(4*q**2))
+    equals: solve('1/(4*q**2) - z**2 - 1/(2*q**2) + 1', 'z', 0, 2)
+    samples:
+      q: [0.7, 2.0, 4.5]
+    tolerance: 1e-9
+    shown: ['id="p2c-freq"', '\Omega_q = \sqrt{1 - 1/(4q^2)}']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-slow
+    kind: identity
+    answer: p2c-slow
+    where: 'Problem 2(c), answer box: the slower rate as the root between 0 and 1 of s² − s/q + 1 = 0 (s = −λ; the roots multiply to 1, so the slower one is below 1), solved numerically'
+    formula: 1/(2*q) - sqrt(1/(4*q**2) - 1)
+    equals: solve('z**2 - z/q + 1', 'z', 0, 1)
+    samples:
+      q: [0.15, 0.3, 0.45]
+    tolerance: 1e-9
+    shown: ['id="p2c-slow"']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2c-q02-slow
+    where: 'Problem 2(c), check: the slower rate for q = 0.2'
+    formula: 2.5 - sqrt(5.25)
+    expected: '0.209'
+    shown: ['that is $0.209$ and $4.79$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-q02-fast
+    where: 'Problem 2(c), check: the faster rate for q = 0.2'
+    formula: 2.5 + sqrt(5.25)
+    expected: '4.79'
+    shown: ['$s_\pm = 2.5 \pm \sqrt{5.25}$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-kappa
+    kind: identity
+    answer: p2d-kappa
+    where: 'Problem 2(d), answer box: κ as the positive root of λ² + λ/q − 1 = 0, solved numerically'
+    formula: sqrt(1 + 1/(4*q**2)) - 1/(2*q)
+    equals: solve('z**2 + z/q - 1', 'z', 0, 5)
+    samples:
+      q: [0.25, 1.0, 4.5]
+    tolerance: 1e-9
+    shown: ['id="p2d-kappa"']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-angle
+    kind: identity
+    answer: p2d-angle
+    where: 'Problem 2(d), answer box: the angle of the growing eigenvector (1, κ) of the matrix [[0, 1], [1, −1/q]] to the θ axis, with κ the numerical root'
+    formula: atan(sqrt(1 + 1/(4*q**2)) - 1/(2*q))
+    equals: atan(solve('z**2 + z/q - 1', 'z', 0, 5))
+    samples:
+      q: [0.25, 1.0, 4.5]
+    tolerance: 1e-9
+    shown: ['id="p2d-angle"']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-kappa1
+    where: 'Problem 2(d), solution: κ at q = 1'
+    formula: sqrt(5)/2 - 1/2
+    expected: '0.618'
+    shown: ['$\kappa = \sqrt{5}/2 - 1/2 = 0.618$']
+    source: {cite: mit, at: 'Problem 2(d) (our own addition)'}
+    origin: page-own
+
+  - id: p2d-rad
+    where: 'Problem 2(d), solution: the angle at q = 1 in radians'
+    formula: atan(solve('z**2 + z - 1', 'z', 0, 5))
+    expected: '0.554'
+    shown: ['$\arctan 0.618 = 0.554$ rad']
+    source: {cite: mit, at: 'Problem 2(d) (our own addition)'}
+    origin: page-own
+
+  - id: p2d-deg
+    answer: p2d-deg
+    where: 'Problem 2(d), answer box: the angle at q = 1 in degrees, from the numerical root of λ² + λ − 1 = 0'
+    formula: atan(solve('z**2 + z - 1', 'z', 0, 5))*180/pi
+    expected: '31.7'
+    shown: ['id="p2d-deg"', 'rad $= 31.7°$']
+    source: {cite: mit, at: 'Problem 2(d) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3a-div
+    kind: identity
+    answer: p3a-div
+    where: 'Problem 3(a), answer box: the divergence as the sum of three numerical partial derivatives of the Lorenz right-hand sides at a sample point (x, y, z) = (0.3, 0.5, 0.7), r = 7'
+    formula: -(sigma + 1 + b)
+    equals: deriv('sigma*0.5 - sigma*z', 'z', 0.3) + deriv('7*0.3 - z - 0.3*0.7', 'z', 0.5) + deriv('-b*z + 0.3*0.5', 'z', 0.7)
+    samples:
+      sigma: [2, 10, 14]
+      b: [0.7, 2.6667, 4.5]
+    tolerance: 1e-6
+    shown: ['id="p3a-div"', '= -\sigma - 1 - b']
+    source: {cite: reading2, at: 'Section 7.6.1, p. 190'}
+    origin: mit
+
+  - id: p3a-rate
+    answer: p3a-rate
+    where: 'Problem 3(a), answer box: σ + 1 + b for σ = 10, b = 8/3'
+    formula: 10 + 1 + 8/3
+    expected: '13.67'
+    shown: ['id="p3a-rate"', '$\sigma + 1 + b = 10 + 1 + 8/3 = 13.67$']
+    source: {cite: mit, at: 'Problem 3(a) (our own addition)'}
+    origin: page-own
+
+  - id: p3a-million
+    where: 'Problem 3(a), solution: e^(−41/3), about a millionth'
+    formula: exp(-41/3)
+    expected: '1.2e-6'
+    tolerance: 0.2e-6
+    shown: ['a volume shrinks by $e^{-13.67}$, about a millionth']
+    source: {cite: mit, at: 'Problem 3(a) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-x2
+    kind: identity
+    answer: p3b-x2
+    where: 'Problem 3(b), answer box: x² against the square of the positive root of ẏ = rx − x − x·(x²/b) = 0 (y = x from ẋ = 0, z = x²/b from ż = 0), solved numerically'
+    formula: b*(r - 1)
+    equals: solve('r*z - z - z*(z**2/b)', 'z', 0.01, 100)**2
+    samples:
+      b: [0.7, 2.6667, 4.5]
+      r: [1.8, 10, 28]
+    tolerance: 1e-8
+    shown: ['id="p3b-x2"', 'so $x^2 = b(r - 1)$, which needs $r > 1$']
+    source: {cite: reading2, at: 'Section 7.6.1, p. 189'}
+    origin: mit
+
+  - id: p3b-z
+    kind: identity
+    answer: p3b-z
+    where: 'Problem 3(b), answer box: z against the root of ẏ = 0 with x = y = √(bz) (from ẋ = 0 and ż = 0), solved numerically'
+    formula: r - 1
+    equals: solve('r*sqrt(b*z) - sqrt(b*z) - sqrt(b*z)*z', 'z', 0.01, 100)
+    samples:
+      b: [0.7, 2.6667, 4.5]
+      r: [1.8, 10, 28]
+    tolerance: 1e-8
+    shown: ['id="p3b-z"']
+    source: {cite: reading2, at: 'Section 7.6.1, p. 189'}
+    origin: mit
+
+  - id: p3b-num
+    answer: p3b-num
+    where: 'Problem 3(b), answer box: √(b(r − 1)) for r = 28, b = 8/3'
+    formula: sqrt(8/3*27)
+    expected: '8.49'
+    shown: ['id="p3b-num"', '$x = \sqrt{(8/3)(27)} = \sqrt{72} = 8.49$']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3b-check
+    kind: identity
+    where: 'Problem 3(b), check: ẏ = 28x − x − x(27) vanishes at x = √72'
+    formula: 0
+    equals: 28*sqrt(72) - sqrt(72) - sqrt(72)*27
+    samples:
+      dummy: [1.0]
+    tolerance: 1e-9
+    shown: ['$\dot y = 28(8.49) - 8.49 - 8.49(27) = 0$']
+    source: {cite: mit, at: 'Problem 3(b) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-lam
+    kind: identity
+    answer: p3c-lam
+    where: 'Problem 3(c), answer box: λ₊ against the larger root of det(M − λ) = (λ + σ)(λ + 1) − σr = 0, solved numerically to the right of the vertex −(σ + 1)/2'
+    formula: (-(sigma + 1) + sqrt((sigma - 1)**2 + 4*sigma*r))/2
+    equals: solve('(z + sigma)*(z + 1) - sigma*r', 'z', -(sigma + 1)/2, 200)
+    samples:
+      sigma: [2, 10, 14]
+      r: [0.3, 1.7, 28]
+    tolerance: 1e-8
+    shown: ['id="p3c-lam"', '\lambda_\pm = \frac{-(\sigma + 1) \pm \sqrt{(\sigma - 1)^2 + 4\sigma r}}{2}']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3c-root
+    where: 'Problem 3(c), solution: √1201'
+    formula: sqrt(81 + 1120)
+    expected: '34.66'
+    shown: ['(-11 + 34.66)/2']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-num
+    answer: p3c-num
+    where: 'Problem 3(c), answer box: λ₊ for σ = 10, r = 28, by a numerical root of (λ + 10)(λ + 1) − 280 = 0'
+    formula: solve('(z + 10)*(z + 1) - 280', 'z', -5.5, 200)
+    expected: '11.83'
+    shown: ['id="p3c-num"', '= 11.83$']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-minus
+    where: 'Problem 3(c), check: λ₋ for σ = 10, r = 28'
+    formula: (-11 - sqrt(1201))/2
+    expected: '-22.83'
+    shown: ['$11.83 + (-22.83) + (-2.67) = -13.67$']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  - id: p3c-trace
+    where: 'Problem 3(c), check: the three eigenvalues at the origin add up to the divergence −(σ + 1 + b) of (a)'
+    formula: (-11 + sqrt(1201))/2 + (-11 - sqrt(1201))/2 + (-8/3)
+    expected: '-13.67'
+    shown: ['= -13.67$, the rate of (a)']
+    source: {cite: mit, at: 'Problem 3(c) (our own addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4a-vdot
+    kind: identity
+    answer: p4a-vdot
+    where: 'Problem 4(a), answer box: v̇ against ẍ solved from ẍ + ẋ/q_c + x³ = B cos(ω_D t) with ẋ = v and φ = ω_D t'
+    formula: -v/qc - x**3 + B*cos(phi)
+    equals: B*cos(phi) - (v/qc + x**3)
+    samples:
+      v: [-1.5, 0.4, 1.8]
+      x: [0.3, 1.1, 1.9]
+      qc: [2, 10, 18]
+      B: [2, 7, 11]
+      phi: [0.5, 2.5, 5.5]
+    tolerance: 1e-12
+    shown: ['id="p4a-vdot"']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-map-q
+    where: 'Problem 4(a), solution: the factor that maps 0 < q < 4 onto 0 < q_c < 20'
+    formula: 20/4
+    expected: '5'
+    shown: ['$q_c = 5q$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4a-map-b
+    where: 'Problem 4(a), solution: the factor that maps 0 < a < 2 onto 0 < B < 12'
+    formula: 12/2
+    expected: '6'
+    shown: ['$B = 6a$']
+    source: {cite: mit, at: 'Problem 4 (our own solution)'}
+    origin: page-own
+
+  - id: p4-method
+    kind: fact
+    where: 'Problem 4, statement: how our numbers were computed (SciPy solve_ivp, DOP853, rtol 1e-10, atol 1e-12; start x = ẋ = 0 at t = 0; 400 drive periods discarded; strobe at t = 2πk/ω_D)'
+    shown: ['after discarding the first 400 periods of the drive']
+    source: {cite: mit, at: 'Problem 4 (our own computation)'}
+    origin: page-own
+
+  - id: p4a-table
+    kind: fact
+    where: 'Problem 4(a), solution: our sweep, ω_D = 2/3, q_c = 10, start (0, 0), 64 strobe samples after 400 periods (300 in the coarse sweep), periods found by comparing x of samples k and k + p to 1e-5; distinct values counted after rounding x to 3 decimals. 6.0: 1 point; 7.6: 58 distinct; 8.5: 1 (x = 0.675); 9.6: 2 (x = 1.898, 2.527); 9.87: 4 (1.623, 1.817, 2.529, 2.572); 10.3: 62 distinct; 10.8: 3 (0.647, 1.633, 2.830)'
+    shown: ['| 7.6 | 58 of 64 different | chaos |', '| 9.87 | 4 | four times the period |', '| 10.3 | 62 of 64 different | chaos |', '| 10.8 | 3 | three times the period |']
+    source: {cite: mit, at: 'Problem 4(a) (our own computation)'}
+    origin: page-own
+
+  - id: p4a-sweep
+    kind: fact
+    where: 'Problem 4(a), solution: the coarse sweep (steps of 0.1, 300 periods discarded) gave period 1 at 8.2 to 8.9 and 9.0 to 9.3 (a jump to another branch between 8.9 and 9.0), period 2 at 9.4 to 9.8, chaos at 7.4 to 8.1 and 10.0 to 10.6, period 3 at 10.7 to 11.0; the fine sweep (steps of 0.01, 400 periods) gave period 2 up to 9.83, period 4 at 9.85 to 9.89 (9.84 still converging), 8 at 9.90, 16 at 9.91, chaos from 9.92 to 10.02'
+    shown: ['two points appear between 9.3 and 9.4 and last up to about 9.83; four points from about 9.85 to 9.89; then 8 points at 9.90 and 16 at 9.91, and chaos from about 9.92 to 10.6']
+    source: {cite: mit, at: 'Problem 4(a) (our own computation)'}
+    origin: page-own
+
+  - id: p4b-sections
+    kind: fact
+    where: 'Problem 4(b), solution: the section points from start (0, 0), as in p4a-table'
+    shown: ['two points, $x = 1.898$ and $x = 2.527$', 'four points ($x = 1.623$, $1.817$, $2.529$, $2.572$)', '(62 and 58 different values of $x$)']
+    source: {cite: mit, at: 'Problem 4(b) (our own computation)'}
+    origin: page-own
+
+  - id: p4b-starts
+    kind: fact
+    where: 'Problem 4(b), check: four other starts (1, 0), (−1, 0.5), (0.5, −1), (2, 1): at B = 9.6 two points, either (1.898, 2.527) or (0.769, 0.892); at 9.87 four points on one of two attractors; at 8.5 one point, x = 0.675 or 2.349; at 10.3 and 7.6 chaos from every start; at 10.8 three points on one of two attractors'
+    shown: ['a second pair ($x = 0.769$ and $0.892$)']
+    source: {cite: mit, at: 'Problem 4(b) (our own computation)'}
+    origin: page-own
+
+  - id: p4c-sep
+    kind: fact
+    where: 'Problem 4(c), solution: separation √(Δx² + Δẋ²) at strobe times after a 1e-8 offset in x, from the state after 300 periods (start (0, 0)); rtol 1e-12, atol 1e-14. B = 10.3: 1.00e-8, 1.25e-6, 3.00e-4, 4.91e-4 (15), 0.337, 4.17, 0.532 (30), 0.769, 1.71 (40). B = 9.6: 1.00e-8, 2.39e-9, 1.39e-10, 1.42e-11 (15), 4.78e-12, 7.69e-12, 2.00e-12 (30)'
+    shown: ['| 5 | 1.3 × 10⁻⁶ | 2.4 × 10⁻⁹ |', '| 10 | 3.0 × 10⁻⁴ | 1.4 × 10⁻¹⁰ |', '| 20 | 0.34 | 4.8 × 10⁻¹² |', '| 25 | 4.2 | 7.7 × 10⁻¹² |', '(0.53 at 30 periods, 1.7 at 40)']
+    source: {cite: mit, at: 'Problem 4(c) (our own computation)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5a-rc
+    answer: p5a-rc
+    where: 'Problem 5(a), answer box: r_c where the branch x = ln r meets x = 0, a numerical root of ln r = 0'
+    formula: solve('log(z)', 'z', 0.5, 2)
+    expected: '1'
+    tolerance: 0.01
+    shown: ['id="p5a-rc"', 'The two coincide when $\ln r = 0$: $r_c = 1$.']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-slope
+    kind: identity
+    answer: p5a-slope
+    where: 'Problem 5(a), answer box: f′(ln r) against a numerical derivative of x(r − eˣ) at x = ln r'
+    formula: -r*log(r)
+    equals: deriv('z*(r - exp(z))', 'z', log(r))
+    samples:
+      r: [1.3, 2.0, 2.9]
+    tolerance: 1e-6
+    shown: ['id="p5a-slope"', '$f''(x^\star) = r - r - r\ln r = -r\ln r$']
+    source: {cite: mit, at: 'Problem 5(a) (our own addition)'}
+    origin: page-own
+
+  - id: p5b-rc
+    answer: p5b-rc
+    where: 'Problem 5(b), answer box: r_c, the largest value of ln(1 + x) − x, taken at the numerical root of its derivative 1/(1 + x) − 1'
+    formula: log(1 + solve('1/(1 + z) - 1', 'z', -0.5, 0.5)) - solve('1/(1 + z) - 1', 'z', -0.5, 0.5)
+    expected: '0'
+    tolerance: 0.01
+    shown: ['id="p5b-rc"', 'That gives $r_c = 0$.']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-slope
+    kind: identity
+    answer: p5b-slope
+    where: 'Problem 5(b), answer box: f′(x) against a numerical derivative of r + x − ln(1 + x)'
+    formula: x/(1 + x)
+    equals: deriv('0.3 + z - log(1 + z)', 'z', x)
+    samples:
+      x: [0.2, 1.1, 2.7]
+    tolerance: 1e-6
+    shown: ['id="p5b-slope"', '$f''(x) = 1 - 1/(1 + x) = x/(1 + x)$']
+    source: {cite: mit, at: 'Problem 5(b) (our own addition)'}
+    origin: page-own
+
+  - id: p5c-rc
+    answer: p5c-rc
+    where: 'Problem 5(c), answer box: r_c as the numerical root of f′(0) = 1 + r (the slope of x + tanh(rx) at 0, by a numerical derivative inside the root)'
+    formula: solve('1 + z', 'z', -3, 0)
+    expected: '-1'
+    tolerance: 0.01
+    shown: ['id="p5c-rc"', '$f''(0) = 1 + r$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-slope0
+    kind: identity
+    where: 'Problem 5(c), solution: f′(0) = 1 + r against a numerical derivative of x + tanh(rx) at x = 0'
+    formula: 1 + r
+    equals: deriv('z + tanh(r*z)', 'z', 0)
+    samples:
+      r: [-2, -1.2, -0.6]
+    tolerance: 1e-6
+    shown: ['so $r_c = -1$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-c
+    kind: identity
+    answer: p5c-c
+    where: 'Problem 5(c), answer box: c against the small-x limit of [x + tanh(rx) − (1 + r)x]/x³, evaluated at x = 0.001 (the next term is of order x²)'
+    formula: -r**3/3
+    equals: (0.001 + tanh(r*0.001) - (1 + r)*0.001)/0.001**3
+    samples:
+      r: [-1.8, -1.0, -0.6]
+    tolerance: 1e-4
+    shown: ['id="p5c-c"', '\dot x = (1 + r)\,x - \frac{r^3}{3}\,x^3 + \ldots']
+    source: {cite: mit, at: 'Problem 5(c) (our own addition)'}
+    origin: page-own
+
+  - id: p5c-r2
+    where: 'Problem 5(c), solution: the nonzero fixed point for r = −2, a numerical root of x + tanh(−2x) = 0'
+    formula: solve('z + tanh(-2*z)', 'z', 0.5, 2)
+    expected: '0.96'
+    shown: ['for $r = -2$, at $x = \pm 0.96$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-r12
+    where: 'Problem 5(c), check: the nonzero fixed point for r = −1.2'
+    formula: solve('z + tanh(-1.2*z)', 'z', 0.2, 2)
+    expected: '0.659'
+    shown: ['$x^\star = 0.659$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-r12-slope
+    where: 'Problem 5(c), check: f′ = 1 + r sech²(rx*) at r = −1.2, x* the numerical root'
+    formula: 1 - 1.2/cosh(-1.2*solve('z + tanh(-1.2*z)', 'z', 0.2, 2))**2
+    expected: '0.32'
+    shown: ['= 0.32 > 0$, unstable as claimed']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
