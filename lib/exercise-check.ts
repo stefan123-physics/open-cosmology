@@ -164,7 +164,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
           const mc = m.calc ? calcs?.get(String(m.calc)) : undefined;
           if (!m.calc) errors.push(`${an}: mistakes[${i}] needs calc="…", the id of the calculation that recomputes the wrong value`);
           else if (!mc) errors.push(`${an}: mistakes[${i}] calc "${m.calc}" is not in calcs/${page.course}/${page.slug}.yaml`);
-          else if (parseNumber(String(mc.expected ?? "").trim().split(/\s+/)[0]) !== mi[0])
+          else if (!sameScaled(mc.expected, mi[0], a.scale))
             errors.push(`${an}: mistakes[${i}] value ${m.value} differs from expected "${mc.expected}" of calc "${m.calc}"`);
         }
         // The tolerance rule (docs/CONTENT_GUIDE.md "Problem sets", owner decision 2026-11-28): no obvious slip may
@@ -189,7 +189,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
           const oc = o.calc ? calcs?.get(String(o.calc)) : undefined;
           if (!o.calc) errors.push(`${an}: alsoAccept[${i}] needs calc="…", the id of the calculation that recomputes it`);
           else if (!oc) errors.push(`${an}: alsoAccept[${i}] calc "${o.calc}" is not in calcs/${page.course}/${page.slug}.yaml`);
-          else if (ov !== null && parseNumber(String(oc.expected ?? "").trim().split(/\s+/)[0]) !== ov)
+          else if (ov !== null && !sameScaled(oc.expected, ov, a.scale))
             errors.push(`${an}: alsoAccept[${i}] value ${o.value} differs from expected "${oc.expected}" of calc "${o.calc}"`);
         }
       } else if (types[0] === "expr") {
@@ -226,4 +226,13 @@ export function asksScaledUnit(label: string, unit: string): boolean {
   if (/^\s*\$?\s*(\times|×)\s*10/.test(unit)) return true;
   if (/^\s*(\?%|per ?cent)\s*$/i.test(unit)) return true;
   return false;
+}
+
+/** A calc's expected value equals a box value, either as written or, on a `scale` box, as the full number (8.20 and 8.20e26). */
+function sameScaled(expected: unknown, value: number, scale: unknown): boolean {
+  const e = parseNumber(String(expected ?? "").trim().split(/\s+/)[0]);
+  if (e === null) return false;
+  if (e === value) return true;
+  const s = scale === undefined ? null : parseNumber(String(scale));
+  return s !== null && s > 0 && Math.abs(e / s - value) <= 1e-9 * Math.max(1, Math.abs(value));
 }
