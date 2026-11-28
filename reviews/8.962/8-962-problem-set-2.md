@@ -103,3 +103,7 @@ COUNTS: errors=0 warnings=1 info=4
 - Info 5 taken: the right option of `p2-order` now says "about one part in twenty thousand", matching v²/2 = 5.0 × 10⁻⁵ at v = 0.01.
 - Info 2 and 4: no change needed.
 - `status: reviewed`.
+
+## Later change (2026-11-28, answer-box fix, owner decision)
+
+Under the second-readings audit (`audits/answer-boxes/second-readings.md`, section A, #4 and #5): p3b-rho0 and p3b-tt now accept the diameter reading of δa through `alsoAccept`, with a note; the diameter reading was a listed mistake on p3b-rho0 only, so the two boxes now treat it the same way.
