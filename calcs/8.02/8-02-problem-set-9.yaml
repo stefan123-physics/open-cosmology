@@ -1,0 +1,485 @@
+# Calculations on content/year-1/8.02/8-02-problem-set-9.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Sources: MIT 8.02T Problem Solving 8, Driven LRC Circuits (cite mit), and the 8.02 Course Notes,
+# Chapter 11 (reading1: Additional Problems 11.13.4 and 11.13.7) and Chapter 12 (reading2: 12.11.6 and 12.11.9).
+# Neither prints solutions for these problems, so every formula answer is checked here by an independent route:
+# a numerical average over a cycle, a derivative put back into the loop equation, an integral of the current,
+# a numerical root of the phase condition, or the general series-circuit result of Eq. (8.1).
+
+page: content/year-1/8.02/8-02-problem-set-9.mdx
+calcs:
+  # ---- Problem 1 (session Examples 1 to 3)
+
+  - id: p1-PR-by-average
+    kind: identity
+    answer: p1-a2
+    where: 'Problem 1(a), second answer box and formula "Average power in the resistor": numerical average of I(t)V(t) over one cycle'
+    formula: V0**2/(2*R)
+    equals: integrate('(V0/R)*sin(x)*V0*sin(x)', 'x', 0, 2*pi) / (2*pi)
+    samples:
+      V0: [1, 10, 3, 7]
+      R: [1, 10, 2, 5]
+    tolerance: 1e-7
+    shown: ['\langle P_R\rangle = \frac{V_0^2}{2R}']
+    source: {cite: mit, at: 'Question 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-IL0-from-eq81
+    kind: identity
+    answer: p1-b1
+    where: 'Problem 1(b), first answer box: Eq. (8.1) with R = 0 and 1/(ωC) = 0 (MIT''s Question 5 route)'
+    formula: V0/(omega*L)
+    equals: V0 / sqrt(0**2 + (omega*L - 0)**2)
+    samples:
+      V0: [1, 10, 3, 7]
+      omega: [2, 10, 3, 7]
+      L: [1, 5, 2, 3]
+    tolerance: 1e-12
+    shown: ['I_{L0} = \frac{V_0}{\omega L}']
+    source: {cite: mit, at: 'Questions 4 and 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-IL-solves-loop
+    kind: identity
+    where: 'Problem 1(b), formula "Current through the inductor": L dI/dt of the solution gives back V0 sin ωt'
+    formula: L*deriv('(V0/(omega*L))*sin(omega*x - pi/2)', 'x', t)
+    equals: V0*sin(omega*t)
+    samples:
+      V0: [1, 10, 3]
+      omega: [2, 10, 3]
+      L: [1, 5, 2]
+      t: [0.1, 0.37, 1.3]
+    tolerance: 1e-6
+    shown: ['I_L(t) = \frac{V_0}{\omega L}\,\sin\!\left(\omega t - \frac{\pi}{2}\right)']
+    source: {cite: mit, at: 'Question 4, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-PL-zero
+    kind: identity
+    where: 'Problem 1(b): the average of I(t)V(t) for the inductor is zero (numerical average over a cycle, plus 1 on both sides)'
+    formula: 1 + integrate('-(V0**2/(omega*L))*sin(omega*x)*cos(omega*x)', 'x', 0, 2*pi/omega)
+    equals: 1
+    samples:
+      V0: [1, 10, 3]
+      omega: [2, 10, 3]
+      L: [1, 5, 2]
+    tolerance: 1e-7
+    shown: ['whose average is zero']
+    source: {cite: mit, at: 'Question 6, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-IC0-by-derivative
+    kind: identity
+    answer: p1-c1
+    where: 'Problem 1(c), first answer box: the current dQ/dt of Q = CV0 sin ωt at t = 0, where it is largest'
+    formula: omega*C*V0
+    equals: deriv('C*V0*sin(omega*x)', 'x', 0)
+    samples:
+      V0: [1, 10, 3]
+      omega: [2, 10, 3]
+      C: [0.6, 2, 1]
+    tolerance: 1e-6
+    shown: ['I_{C0} = \omega CV_0']
+    source: {cite: mit, at: 'Question 7, p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2 (session Sample Problems 1 and 2)
+
+  - id: p2-Z
+    where: 'Problem 2(b): the size of the impedance, 100 V / 10 A'
+    inputs: {}
+    formula: 100 / 10
+    expected: '10'
+    shown: ['V_0/I_0 = 100/10 = 10$ Ω']
+    source: {cite: mit, at: 'Sample Problem 1, p. 5'}
+    origin: page-own
+
+  - id: p2-R
+    answer: p2-b1
+    where: 'Problem 2(b), first answer box: R from the root of I0 = V0/sqrt(R² + (ωL)²) with ωL = R (tan π/4 = 1)'
+    inputs: {}
+    formula: solve('100/sqrt(x**2 + (x*tan(pi/4))**2) - 10', 'x', 1, 20)
+    expected: '7.07'
+    tolerance: '0.1%'
+    shown: ['= 5\sqrt 2\ \Omega = 7.07\ \Omega']
+    source: {cite: mit, at: 'Question 11, p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p2-L
+    answer: p2-b2
+    where: 'Problem 2(b), second answer box: L = R/ω with ω = 10 rad/s'
+    inputs: {}
+    formula: (10/sqrt(2)) / 10
+    expected: '0.707'
+    tolerance: '0.1%'
+    shown: ['= 0.707\ \text{H}']
+    source: {cite: mit, at: 'Question 12, p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p2-check-I0
+    where: 'Problem 2(b), check: I0 = 100/sqrt(50 + 50) = 10 A'
+    inputs: {}
+    formula: 100 / sqrt((10/sqrt(2))**2 + (10/sqrt(2))**2)
+    expected: '10'
+    tolerance: '0.01%'
+    shown: ['$I_0 = 100/\sqrt{50 + 50} = 10$ A']
+    source: {cite: mit, at: 'Sample Problem 1, p. 5 (our own check)'}
+    origin: page-own
+
+  - id: p2-L2
+    answer: p2-d1
+    where: 'Problem 2(d), first answer box: root of the phase condition atan((2L − 1/(2C))/R) = π/4 with C = 1/L (resonance at 1 rad/s), R = 1'
+    inputs: {}
+    formula: solve('atan((2*x - x/2)/1) - pi/4', 'x', 0.1, 5)
+    expected: '0.6667'
+    tolerance: '0.05%'
+    shown: ['L = \frac23\ \text{H}']
+    source: {cite: mit, at: 'Question 14, p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p2-C2
+    answer: p2-d2
+    where: 'Problem 2(d), second answer box: C = 1/(L ω²) at ω = 1 rad/s'
+    inputs: {}
+    formula: 1 / (solve('atan((2*x - x/2)/1) - pi/4', 'x', 0.1, 5) * 1**2)
+    expected: '1.5'
+    tolerance: '0.05%'
+    shown: ['= \frac32\ \text{F}']
+    source: {cite: mit, at: 'Question 14, p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p2-XL-at-2
+    where: 'Problem 2(d), check: ωL = 4/3 Ω at 2 rad/s'
+    inputs: {}
+    formula: 2 * (2/3)
+    expected: '1.3333'
+    tolerance: '0.02%'
+    shown: ['$\omega L = 4/3$ Ω']
+    source: {cite: mit, at: 'Question 14, p. 6 (our own check)'}
+    origin: page-own
+
+  - id: p2-XC-at-2
+    where: 'Problem 2(d), check: 1/(ωC) = 1/3 Ω at 2 rad/s'
+    inputs: {}
+    formula: 1 / (2 * 1.5)
+    expected: '0.3333'
+    tolerance: '0.02%'
+    shown: ['$1/(\omega C) = 1/3$ Ω']
+    source: {cite: mit, at: 'Question 14, p. 6 (our own check)'}
+    origin: page-own
+
+  - id: p2-X-at-1
+    where: 'Problem 2(d), check: both reactances are 2/3 Ω at 1 rad/s'
+    inputs: {}
+    formula: 1 / (1 * 1.5)
+    expected: '0.6667'
+    tolerance: '0.02%'
+    shown: ['both reactances are $2/3$ Ω']
+    source: {cite: mit, at: 'Question 14, p. 6 (our own check)'}
+    origin: page-own
+
+  - id: p2-P
+    answer: p2-e
+    where: 'Problem 2(e), answer box: numerical average of I(t)V(t) at resonance, I0 = 1 A, V0 = 1 V'
+    inputs: {}
+    formula: integrate('(1/1)*sin(x)*1*sin(x)', 'x', 0, 2*pi) / (2*pi)
+    expected: '0.5'
+    tolerance: '0.01%'
+    shown: ['= 0.5$ W']
+    source: {cite: mit, at: 'Question 15, p. 6 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3 (notes, Additional Problem 11.13.4)
+
+  - id: p3-I0-limit
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: the rising current through R1 and L after many time constants'
+    formula: eps/R1
+    equals: (eps/R1)*(1 - exp(-R1*60/1))
+    samples:
+      eps: [1, 12, 5]
+      R1: [1, 2, 1.5]
+    tolerance: 1e-9
+    shown: ['$I_0 = \varepsilon/R_1$']
+    source: {cite: reading1, at: 'Section 11.13.4(a), p. 48 (our own solution)'}
+    origin: page-own
+
+  - id: p3-I-solves-loop
+    kind: identity
+    answer: p3-b
+    where: 'Problem 3(b), answer box and formula "Current after the switch opens": the solution put back into L dI/dt = −(R1 + R2) I'
+    formula: I0*exp(-(R1 + R2)*t/L)
+    equals: -L/(R1 + R2) * deriv('I0*exp(-(R1 + R2)*x/L)', 'x', t)
+    samples:
+      I0: [1, 3, 2]
+      R1: [1, 2, 1.5]
+      R2: [50, 200, 100]
+      L: [1, 3, 2]
+      t: [0.001, 0.01, 0.005]
+    tolerance: 1e-5
+    shown: ['I(t) = I_0\,e^{-(R_1 + R_2)t/L}']
+    source: {cite: reading1, at: 'Section 11.13.4(b), p. 48 (our own solution)'}
+    origin: page-own
+
+  - id: p3-emf-start
+    kind: identity
+    answer: p3-c1
+    where: 'Problem 3(c), first answer box and formula "Total emf just after opening": −L dI/dt of the part (b) current at t = 0'
+    formula: eps*(R1 + R2)/R1
+    equals: -L*deriv('(eps/R1)*exp(-(R1 + R2)*x/L)', 'x', 0)
+    samples:
+      eps: [1, 12, 5]
+      R1: [1, 2, 1.5]
+      R2: [50, 200, 100]
+      L: [1, 3, 2]
+    tolerance: 1e-5
+    shown: ['= \varepsilon\,\frac{R_1 + R_2}{R_1}']
+    source: {cite: reading1, at: 'Section 11.13.4(c), p. 48 (our own solution)'}
+    origin: page-own
+
+  - id: p3-emf-exact
+    kind: identity
+    where: 'Problem 3(c): with the battery kept, −L dI/dt at t = 0 is εR2/R1, smaller by ε'
+    formula: eps*R2/R1
+    equals: -L*deriv('eps/(R1 + R2) + (eps/R1 - eps/(R1 + R2))*exp(-(R1 + R2)*x/L)', 'x', 0)
+    samples:
+      eps: [1, 12, 5]
+      R1: [1, 2, 1.5]
+      R2: [50, 200, 100]
+      L: [1, 3, 2]
+    tolerance: 1e-5
+    shown: ['$-L\,dI/dt$ at $t = 0^+$ is $\varepsilon R_2/R_1$, smaller than our value by just $\varepsilon$']
+    source: {cite: reading1, at: 'Section 11.13.4(c), p. 48 (our own solution)'}
+    origin: page-own
+
+  - id: p3-exact-solves-loop
+    kind: identity
+    where: 'Problem 3(c): the exact current with the battery kept satisfies ε − I(R1 + R2) − L dI/dt = 0'
+    formula: eps/(R1 + R2) + (eps/R1 - eps/(R1 + R2))*exp(-(R1 + R2)*t/L)
+    equals: (eps - L*deriv('eps/(R1 + R2) + (eps/R1 - eps/(R1 + R2))*exp(-(R1 + R2)*x/L)', 'x', t)) / (R1 + R2)
+    samples:
+      eps: [1, 12, 5]
+      R1: [1, 2, 1.5]
+      R2: [50, 200, 100]
+      L: [1, 3, 2]
+      t: [0.001, 0.01, 0.005]
+    tolerance: 1e-5
+    shown: ['I(t) = \varepsilon/(R_1 + R_2) + \left[I_0 - \varepsilon/(R_1 + R_2)\right]e^{-(R_1 + R_2)t/L}']
+    source: {cite: reading1, at: 'Section 11.13.4(c), p. 48 (our own solution)'}
+    origin: page-own
+
+  - id: p3-drop
+    kind: identity
+    answer: p3-d1
+    where: 'Problem 3(d), first answer box: the exact current at t = 0+ times R2'
+    formula: eps*R2/R1
+    equals: (eps/(R1 + R2) + (eps/R1 - eps/(R1 + R2))*exp(0)) * R2
+    samples:
+      eps: [1, 12, 5]
+      R1: [1, 2, 1.5]
+      R2: [50, 200, 100]
+    tolerance: 1e-9
+    shown: ['$|\Delta V_2| = I_0R_2 = \varepsilon R_2/R_1$']
+    source: {cite: reading1, at: 'Section 11.13.4(d), p. 48 (our own solution)'}
+    origin: page-own
+
+  - id: p3-ratio
+    answer: p3-d2
+    where: 'Problem 3(d), second answer box: εR2/R1 divided by ε for R2 = 100 R1'
+    inputs: {}
+    formula: (100*1)/1
+    expected: '100'
+    shown: ['this is $100\,\varepsilon$']
+    source: {cite: reading1, at: 'Section 11.13.4(d), p. 48 (the notes'' R2 = 100 R1)'}
+    origin: page-own
+
+  - id: p3-pulse
+    where: 'Problem 3(d): a 12 V battery gives a 1200 V pulse'
+    inputs: {}
+    formula: 100 * 12
+    expected: '1200'
+    shown: ['a 12 V battery gives a 1200 V pulse']
+    source: {cite: reading1, at: 'Section 11.13.4(d), p. 48 (our own example)'}
+    origin: page-own
+
+  # ---- Problem 4 (notes, Additional Problems 11.13.7 and 12.11.6)
+
+  - id: p4-I-solves-loop
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "Current through the inductor": the solution put back into ε − IR − L dI/dt = 0'
+    formula: eps/R*(1 - exp(-R*t/L))
+    equals: (eps - L*deriv('eps/R*(1 - exp(-R*x/L))', 'x', t)) / R
+    samples:
+      eps: [1, 12, 5]
+      R: [6, 10, 8]
+      L: [1, 5, 2]
+      t: [0.1, 2, 0.5]
+    tolerance: 1e-5
+    shown: ['I(t) = \frac{\varepsilon}{R}\left(1 - e^{-Rt/L}\right)" cite="reading1" at="Section 11.13.7(a)']
+    source: {cite: reading1, at: 'Section 11.13.7(a), p. 50 (our own solution)'}
+    origin: page-own
+
+  - id: p4-UB-by-power
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box: the power L I dI/dt into the inductor, integrated over 60 time constants'
+    formula: L*eps**2/(2*R**2)
+    equals: integrate('L*(eps/R)*(1 - exp(-R*x/L))*(eps/L)*exp(-R*x/L)', 'x', 0, 60*L/R)
+    samples:
+      eps: [1, 12, 5]
+      R: [6, 10, 8]
+      L: [1, 5, 2]
+    tolerance: 1e-6
+    shown: ['= \frac{L\varepsilon^2}{2R^2}']
+    source: {cite: reading1, at: 'Section 11.13.7(c), p. 50 (our own solution)'}
+    origin: page-own
+
+  - id: p4-Qmax-by-integral
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box: the charge is the integral of the current (ε/R) cos(ω0 t) over a quarter period'
+    formula: eps*sqrt(L*C)/R
+    equals: integrate('(eps/R)*cos(x/sqrt(L*C))', 'x', 0, pi/2*sqrt(L*C))
+    samples:
+      eps: [1, 12, 5]
+      R: [6, 10, 8]
+      L: [1, 5, 2]
+      C: [1.5, 5, 3]
+    tolerance: 1e-6
+    shown: ['Q_\text{max} = \frac{\varepsilon}{R}\,\sqrt{LC}']
+    source: {cite: reading1, at: 'Section 11.13.7(d), pp. 50 and 51 (our own solution)'}
+    origin: page-own
+
+  - id: p4-tmax-by-root
+    kind: identity
+    answer: p4-d
+    where: 'Problem 4(d), answer box: first zero of the current cos(ω0 t), found numerically'
+    formula: pi/2*sqrt(L*C)
+    equals: solve('cos(x/sqrt(L*C))', 'x', 0.5*sqrt(L*C), 2*sqrt(L*C))
+    samples:
+      L: [1, 5, 2]
+      C: [1.5, 5, 3]
+    tolerance: 1e-6
+    shown: ['= \frac{\pi}{2}\sqrt{LC}']
+    source: {cite: reading1, at: 'Section 11.13.7(e), p. 51 (our own solution)'}
+    origin: page-own
+
+  - id: p4-Qratio
+    answer: p4-e1
+    where: 'Problem 4(e), first answer box: cos(2π/6)'
+    inputs: {}
+    formula: cos(2*pi/6)
+    expected: '0.5'
+    tolerance: '0.01%'
+    shown: ['$Q/Q_0 = \cos 60° = 0.5$']
+    source: {cite: reading2, at: 'Section 12.11.6, p. 38 (our own solution)'}
+    origin: page-own
+
+  - id: p4-Iratio
+    where: 'Problem 4(e): sin 60° = 0.866'
+    inputs: {}
+    formula: sin(2*pi/6)
+    expected: '0.866'
+    tolerance: '0.05%'
+    shown: ['$|I|/I_\text{max} = \sin 60° = 0.866$']
+    source: {cite: reading2, at: 'Section 12.11.6, p. 38 (our own solution)'}
+    origin: page-own
+
+  - id: p4-UEratio
+    where: 'Problem 4(e): cos² 60° = 0.25'
+    inputs: {}
+    formula: cos(2*pi/6)**2
+    expected: '0.25'
+    tolerance: '0.01%'
+    shown: ['\cos^2 60° = 0.25']
+    source: {cite: reading2, at: 'Section 12.11.6, p. 38 (our own solution)'}
+    origin: page-own
+
+  - id: p4-UBratio
+    answer: p4-e2
+    where: 'Problem 4(e), second answer box: sin² 60°'
+    inputs: {}
+    formula: sin(2*pi/6)**2
+    expected: '0.75'
+    tolerance: '0.01%'
+    shown: ['\sin^2 60° = 0.75']
+    source: {cite: reading2, at: 'Section 12.11.6, p. 38 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5 (notes, Additional Problem 12.11.9)
+
+  - id: p5-omega0
+    answer: p5-a
+    where: 'Problem 5(a), answer box: ω0 = 1/sqrt(LC)'
+    inputs: {}
+    formula: 1 / sqrt(1e-6 * 1e-12)
+    expected: '1e9'
+    tolerance: '0.01%'
+    shown: ['= 10^{9}$ rad/s']
+    source: {cite: reading2, at: 'Section 12.11.9(a), p. 39 (our own solution)'}
+    origin: page-own
+
+  - id: p5-f0
+    where: 'Problem 5(a): f0 = ω0/2π = 159 MHz'
+    inputs: {}
+    formula: 1e9 / (2*pi) / 1e6
+    expected: '159'
+    tolerance: '0.2%'
+    shown: ['$f_0 = \omega_0/2\pi = 159$ MHz']
+    source: {cite: reading2, at: 'Section 12.11.9(a), p. 39 (our own solution)'}
+    origin: page-own
+
+  - id: p5-Q
+    answer: p5-b
+    where: 'Problem 5(b), answer box: Q = ω0 L/R'
+    inputs: {}
+    formula: (1/sqrt(1e-6*1e-12)) * 1e-6 / 100
+    expected: '10'
+    tolerance: '0.01%'
+    shown: ['/100 = 10$']
+    source: {cite: reading2, at: 'Section 12.11.9(b), p. 39 (our own solution, with Eq. (12.4.16))'}
+    origin: page-own
+
+  - id: p5-width
+    where: 'Problem 5(b): Δω = R/L = 1e8 rad/s'
+    inputs: {}
+    formula: 100 / 1e-6
+    expected: '1e8'
+    tolerance: '0.01%'
+    shown: ['$\Delta\omega = R/L = 10^8$ rad/s']
+    source: {cite: reading2, at: 'Section 12.11.9(b), p. 39 (our own solution)'}
+    origin: page-own
+
+  - id: p5-I0
+    answer: p5-c
+    where: 'Problem 5(c), answer box: I0 = V0/Z from Eq. (8.1) at ω = ω0'
+    inputs: {}
+    formula: 1e-5 / sqrt(100**2 + (1e9*1e-6 - 1/(1e9*1e-12))**2)
+    expected: '1e-7'
+    tolerance: '0.01%'
+    shown: ['= 10^{-7}$ A']
+    source: {cite: reading2, at: 'Section 12.11.9(c), p. 39 (our own solution)'}
+    origin: page-own
+
+  - id: p5-VC0
+    answer: p5-d
+    where: 'Problem 5(d), answer box: V_C0 = I0/(ω0 C)'
+    inputs: {}
+    formula: 1e-7 / (1e9 * 1e-12)
+    expected: '1e-4'
+    tolerance: '0.01%'
+    shown: ['= 10^{-4}$ V']
+    source: {cite: reading2, at: 'Section 12.11.9(d), p. 39 (our own solution)'}
+    origin: page-own
+
+  - id: p5-gain
+    where: 'Problem 5(d), check: V_C0/V0 = 1/(ω0 C R) = ω0 L/R = Q = 10'
+    inputs: {}
+    formula: 1 / (1e9 * 1e-12 * 100)
+    expected: '10'
+    tolerance: '0.01%'
+    shown: ['This is ten times the driving amplitude']
+    source: {cite: reading2, at: 'Section 12.11.9(d), p. 39 (our own check)'}
+    origin: page-own
