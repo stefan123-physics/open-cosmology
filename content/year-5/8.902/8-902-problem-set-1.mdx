@@ -1,0 +1,785 @@
+---
+title: "Problem Set 1: Light profiles, redshifts, luminosities and the mass of two galaxies"
+slug: 8-902-problem-set-1
+course: "8.902"
+kind: problems
+set: 1
+lecture: 2
+order: 90
+covers: [1, 2]
+solutions: own
+summary: "Three problems on two galaxies of our own making, measured as an astronomer measures real ones. Turn binned counts into surface-brightness profiles and fit the two standard profile laws. Read the redshifts from a spectral line of each galaxy, turn them into distances and sizes, and add up the light into a luminosity. Then measure the width of an absorption line and use the virial estimate to weigh one of the galaxies."
+prerequisites: [galaxy-observations, virial-theorem]
+source:
+  title: "MIT 8.902 Problem Set 1 (Fall 2023)"
+  url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/resources/mit8_902_f23_problem_set_1_pdf/
+  readings:
+    - title: "8.902 Lecture 1 notes (M. Vogelsberger, Fall 2023)"
+      url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec01.pdf
+    - title: "8.902 Lecture 2 notes (M. Vogelsberger, Fall 2023)"
+      url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec02.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: reviewed
+---
+
+This set practises the first two lectures: [magnitudes, surface brightness, profile laws and redshifts](/courses/8-902/galaxy-observations) (Lecture 1) and [the virial theorem](/courses/8-902/virial-theorem) (Lecture 2). It follows MIT's Problem Set 1 in our own words and in MIT's order: the light profiles of two galaxies (Problem 1), their redshifts, distances, sizes and luminosities (Problem 2), and the width of a spectral line and the mass it implies (Problem 3). MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+**Our own galaxies.** MIT's sheet works with the images and spectra of two real galaxies from the Sloan Digital Sky Survey. OCW marks the galaxy images as copyright of the Sloan Digital Sky Survey, with every right kept by it, and excludes them from its Creative Commons licence. Neither the images nor the spectra are used here, in any form. In their place this page gives the data of two galaxies that we made ourselves with Python (our choice): an image of each, built from a profile formula plus a flat sky and random noise, and a spectrum of each, built from a smooth continuum, one spectral line at a redshift we chose, and random noise. You do not need the images themselves: the tables below give everything each part uses, already measured from our images in the way MIT's sheet describes. How each galaxy was made is told in the solutions, after you have measured it. Every number in the tables is ours; only the steps, their order and a few constants of the sheet are MIT's.
+
+A few things to know about the source. The sheet has printed page numbers; the problems are on pp. 1 to 3, cited below as "p. 1" and so on. The notes are cited by their printed page and equation number. The sheet asks you to read the data files with your own software (it suggests ds9 or Astropy) and to plot the profiles; here the data are tables, and you may plot them with any tool. Two steps of the sheet's Problem 1(A) are left out: the plot in bins one pixel wide (our table starts from bins 2 arcseconds wide, the sheet's part B), and refining the centre of each galaxy (our galaxies sit exactly on the centre of the bins; our choice). Two plots of the sheet have no box here: re-plotting the profiles in magnitudes per square arcsecond in Problem 1(C), and drawing each fitted model over the points in Problem 1(D); make them with any tool. The sheet writes the de Vaucouleurs radius as $r_\text{eff}$; this page writes $r_e$, as the notes do. For the calcium line the sheet gives a rest wavelength of 8545 Å; the strongest line of the Ca II triplet, the one meant, lies at 8542 Å, which this page uses.
+
+Some choices are ours, each marked where it appears:
+
+- every number in the tables, the redshifts, the calibrations of the images and the strength of the lines;
+- the exact rules for the sky level, the fits and the line centres, so that everyone who follows them gets the same numbers;
+- the Sun's absolute magnitude in the band of the images, which the luminosity of Problem 2(d) needs;
+- the width of the lines of nearby stars in Problem 3(b): 90 km/s (MIT's sheet has 95 km/s for its own spectrograph);
+- the split of the points between the problems and their parts (the sheet gives no points).
+
+Some boxes are our additions, each marked where it appears: the number of pixels in a bin in Problem 1(b), the apparent magnitudes in Problem 2(d), and the ratio of mass to light in Problem 3(c).
+
+## How to answer
+
+Work each problem on paper or in your own code first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit named in the question. Most parts follow an exact rule given in the statement, applied to the numbers in the tables, so a correct calculation lands on our value; the tolerances leave room for rounding. Where a step is only rough (reading a peak from a coarse table), the tolerance is wider and says so.
+
+The points are ours: the sheet gives none. Problem 1 has 40, Problem 2 has 35 and Problem 3 has 25. Some parts ask you to compare or explain: their boxes are choices, and the solution gives the reasons. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+The tools come from the notes. Magnitudes are logarithms of flux, brighter meaning smaller:
+
+<Formula label="Magnitude difference" tex="m_1 - m_2 = -2.5\log_{10}\frac{F_1}{F_2}" cite="reading1" at="Section 1.A, eq. (6), p. 5" />
+
+The absolute magnitude $M_G$ is the magnitude the object would have at 10 pc, and the difference is the distance modulus:
+
+<Formula label="Distance modulus" tex="m - M_G = 5\log_{10}\frac{d}{10\ \text{pc}}" cite="reading1" at="Section 1.A, eqs. (14) and (15), pp. 7 and 8" />
+
+Surface brightness $I$ is light per unit area of the sky, quoted in magnitudes per square arcsecond, $\mu = -2.5\log_{10} I + \text{constant}$ (notes, eq. (17), p. 8). The redshift of a line is $z = (\lambda_\text{obs} - \lambda_0)/\lambda_0$, and for $z \ll 1$ the recession velocity is $v \approx cz$ (notes, eqs. (24) and (26), p. 11). The subscript $G$ on $M_G$ names the band of the images, MIT's "G band".
+
+## Problem 1
+
+<Exercise id="p1" title="Galaxy profiles" points={40} mit="Problem 1">
+
+Each of our two galaxies was "photographed" in one band by a camera with a scale of 0.394 arcseconds per pixel, the scale given on the sheet. Every pixel holds a number of counts (DN, for digital number) proportional to the light that fell on it. The light of the galaxy sits on top of the sky, which is not dark: it adds a roughly constant number of counts to every pixel.
+
+We grouped the pixels of each image by their distance $r$ from the centre of the galaxy into rings 2 arcseconds wide and took the **median** of the counts in each ring. The table gives the result. The first sixteen rows cover the galaxy out to 32 arcseconds; the last five are rings much further out, where little of the galaxy is left.
+
+| Bin (arcsec) | Pixels in bin | Galaxy 1 (DN) | Galaxy 2 (DN) |
+|---|---|---|---|
+| 0 to 2 | 81 | 729.4 | 473.4 |
+| 2 to 4 | 244 | 328.4 | 316.8 |
+| 4 to 6 | 400 | 224.0 | 263.4 |
+| 6 to 8 | 580 | 178.3 | 230.2 |
+| 8 to 10 | 720 | 158.2 | 207.6 |
+| 10 to 12 | 892 | 146.2 | 188.0 |
+| 12 to 14 | 1068 | 137.7 | 175.0 |
+| 14 to 16 | 1208 | 133.3 | 163.8 |
+| 16 to 18 | 1364 | 130.6 | 155.3 |
+| 18 to 20 | 1528 | 128.1 | 148.3 |
+| 20 to 22 | 1692 | 126.8 | 142.8 |
+| 22 to 24 | 1876 | 125.8 | 137.7 |
+| 24 to 26 | 2016 | 124.2 | 134.2 |
+| 26 to 28 | 2208 | 123.3 | 131.9 |
+| 28 to 30 | 2336 | 123.0 | 129.3 |
+| 30 to 32 | 2508 | 122.5 | 127.2 |
+| 40 to 42 | 3324 | 121.2 | 122.4 |
+| 50 to 52 | 4116 | 120.4 | 120.6 |
+| 60 to 62 | 4924 | 120.2 | 120.0 |
+| 70 to 72 | 5732 | 120.3 | 120.1 |
+| 78 to 80 | 6448 | 120.0 | 120.2 |
+
+Below, "the profile" of a galaxy means the counts of the first fifteen rows (bins from 0 to 30 arcseconds) with the sky taken off, each placed at the centre of its bin: $r = 1, 3, 5, \dots, 29$ arcseconds.
+
+<Part label="a" points={6}>
+
+Before the counts can be read as the light of the galaxy, the sky must come off. Estimate the sky level $S$ of each image as the mean of the counts in its three outermost rings (60 to 62, 70 to 72 and 78 to 80 arcseconds; our rule), in DN per pixel. Then plot $\log_{10}$ of the counts minus $S$ against $r$ for each galaxy (no box for the plot).
+
+<Hint>
+
+Far from the centre the counts stop falling: what is left there is the sky. Average the three outermost values of each column.
+
+</Hint>
+
+<Answer id="p1a-s1" label="Sky level of Galaxy 1, $S$ (DN per pixel):" value="120.17" unit="DN" tolerance="0.02" calc="p1a-s1" />
+
+<Answer id="p1a-s2" label="Sky level of Galaxy 2, $S$ (DN per pixel):" value="120.10" unit="DN" tolerance="0.02" calc="p1a-s2" />
+
+<Solution>
+
+**The idea.** The sky adds the same number of counts to every pixel, so it shows up as the level the profile flattens to far from the galaxy.
+
+<Step title="The sky levels">
+
+For Galaxy 1, $(120.2 + 120.3 + 120.0)/3 = 120.17$ DN per pixel. For Galaxy 2, $(120.0 + 120.1 + 120.2)/3 = 120.10$ DN per pixel.
+
+</Step>
+
+<Step title="Why it matters">
+
+Near the centre the sky is a small part of the counts (120 of 729 DN in the first bin of Galaxy 1), but by 30 arcseconds the galaxy adds only about 3 DN to a sky of 120 DN. An error of 1 DN in $S$ there changes the light of the galaxy by a third, and it bends the outer profile on a logarithmic plot. That is why the sheet insists that the sky be taken off before anything is fitted.
+
+</Step>
+
+<Step title="Check the result">
+
+The rings at 40 to 42 and 50 to 52 arcseconds are still a little above $S$ (121.2 and 120.4 DN for Galaxy 1): the galaxy is not quite gone there, which is why the rule uses only the three outermost rings. Even those may hold a trace of galaxy light; Problem 1(e) comes back to this.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+The table is already binned in rings 2 arcseconds wide, as the sheet's part B asks. About how many pixels does a ring from 10 to 12 arcseconds hold? Work it out from the area of the ring and the pixel scale, and compare with the table (our addition). Then say, in the second box, why each bin gives the median of its pixels rather than their mean.
+
+<Hint>
+
+A ring from $r_1$ to $r_2$ has area $\pi(r_2^2 - r_1^2)$ in square arcseconds; one pixel covers $0.394^2$ square arcseconds.
+
+</Hint>
+
+<Hint>
+
+Think of what a single bright pixel in the ring does to each average: a foreground star, or a cosmic ray that hit the camera.
+
+</Hint>
+
+<Answer id="p1b-npix" label="Pixels in the ring from 10 to 12 arcseconds:" value="890" tolerance="2%" calc="p1b-npix" />
+
+<Answer id="p1b-median" label="The median is used because:" choices={["The median of many pixels has no noise at all, which the mean of the same pixels always keeps", "A few very bright pixels, from a star or a cosmic ray, pull the mean up but barely move the median", "The median always equals the light at the exact centre of the bin, where the radius is known", "The median takes off the sky by itself, so the sky level S need not be subtracted afterwards"]} answer={1} />
+
+<Solution>
+
+**The idea.** The number of pixels is an area divided by the area of one pixel; the median is chosen because it ignores outliers.
+
+<Step title="Pixels in the ring">
+
+<Formula label="Problem 1(b): pixels in a ring" tex="N_\text{pix} = \frac{\pi(r_2^2 - r_1^2)}{(0.394'')^2} = \frac{\pi(144 - 100)}{0.1552} \approx 890" cite="mit" at="Problem 1(B), p. 2 (our own solution)" />
+
+The table has 892: a ring drawn on a grid of square pixels holds a whole number of them, close to the area.
+
+</Step>
+
+<Step title="Why the median">
+
+Binning many pixels together shrinks the noise, which is the point of the sheet's part B. A median does that too, and in addition a handful of very bright pixels (a foreground star in the ring, a cosmic ray) cannot pull it up, because it only asks which value sits in the middle. The mean would be dragged up by them. The median does not remove the noise (it shrinks it, about as $1/\sqrt{N_\text{pix}}$), it does not remove the sky, and it is the value of the middle pixel in brightness, not the light at the centre of the bin.
+
+</Step>
+
+<Step title="Check the result">
+
+The outer rings hold thousands of pixels, so their medians scatter by only a few tenths of a DN even though a single pixel scatters by about 11 DN (the square root of the 120 counts of sky). That is why the three outermost rings of each image, used in (a), agree to within 0.3 DN.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={6}>
+
+Turn the profiles into the usual unit of surface brightness, magnitudes per square arcsecond. Our calibration (our choice of numbers, the sheet's form): in the image of Galaxy 1 a star of magnitude 20 gives $N_{20} = 2400$ counts above the sky in all, summed over its whole image; in the image of Galaxy 2 it gives $N_{20} = 2550$ counts. Give the surface brightness $\mu$ of each galaxy in the bin from 10 to 12 arcseconds, using the sky levels of (a).
+
+<Hint>
+
+A source that gives $N$ counts in all has magnitude $m = 20 - 2.5\log_{10}(N/N_{20})$. Apply that to the counts that fall on one square arcsecond.
+
+</Hint>
+
+<Hint>
+
+Counts per pixel divided by the area of a pixel in square arcseconds give counts per square arcsecond.
+
+</Hint>
+
+<Answer id="p1c-mu1" label="Galaxy 1, $\mu$ at 10 to 12 arcsec (mag/arcsec²):" value="22.89" unit="mag/arcsec²" tolerance="0.02" calc="p1c-mu1" />
+
+<Answer id="p1c-mu2" label="Galaxy 2, $\mu$ at 10 to 12 arcsec (mag/arcsec²):" value="21.91" unit="mag/arcsec²" tolerance="0.02" calc="p1c-mu2" />
+
+<Solution>
+
+**The idea.** The magnitude scale of eq. (6) compares any flux with the flux of the calibration star; surface brightness applies it to the light of one square arcsecond.
+
+<Step title="The formula">
+
+With $I - S$ the counts per pixel of the galaxy and $(0.394'')^2$ the area of a pixel,
+
+<Formula label="Problem 1(c): surface brightness from counts" tex="\mu = 20 - 2.5\log_{10}\frac{I - S}{(0.394)^2 N_{20}}" cite="mit" at="Problem 1(C), p. 2 (our own solution)" />
+
+in magnitudes per square arcsecond.
+
+</Step>
+
+<Step title="The numbers">
+
+Galaxy 1: $I - S = 146.2 - 120.17 = 26.03$ DN, and $26.03/(0.1552 \times 2400) = 0.0699$, so $\mu = 20 + 2.89 = 22.89$ mag/arcsec². Galaxy 2: $188.0 - 120.10 = 67.9$ DN, and $67.9/(0.1552 \times 2550) = 0.172$, so $\mu = 20 + 1.91 = 21.91$ mag/arcsec².
+
+</Step>
+
+<Step title="Check the result">
+
+A fainter patch of sky has a larger $\mu$: Galaxy 1 is fainter than Galaxy 2 at this radius (26 against 68 DN), and its $\mu$ is larger by $2.5\log_{10}(67.9 \times 2400/(26.03 \times 2550)) = 0.98$ magnitudes. On the re-plotted profiles $\mu$ grows outwards, so astronomers often draw that axis upside down.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={14}>
+
+The sheet compares each profile with the two standard laws of the notes:
+
+<Formula label="Exponential profile" tex="I(r) = I_0\,e^{-r/r_s}" cite="mit" at="Problem 1(D), eq. (1), p. 2" />
+
+<Formula label="de Vaucouleurs profile" tex="I(r) = I_0\,e^{-7.67\,(r/r_e)^{1/4}}" cite="mit" at="Problem 1(D), eq. (2), p. 2" />
+
+Fit both laws to both galaxies by this rule (our choice): take $y = \log_{10}(I - S)$ for the fifteen points of the profile, and fit a straight line to $y$ by ordinary least squares, against $r$ for the exponential law and against $r^{1/4}$ for the de Vaucouleurs law, with $r$ in arcseconds. From the slopes, give the scale length $r_s$ and the effective radius $r_e$ for each galaxy, in arcseconds. Then say, in the last box, which law describes each galaxy better.
+
+<Hint>
+
+Take $\log_{10}$ of each law. Each becomes a straight line: in $r$ for the first, in $r^{1/4}$ for the second. What does the slope of each line contain?
+
+</Hint>
+
+<Hint>
+
+The exponential law gives a slope $-1/(r_s \ln 10)$ in a plot of $\log_{10} I$ against $r$. The de Vaucouleurs law gives $-7.67/(r_e^{1/4}\ln 10)$ against $r^{1/4}$. To judge which law fits better, look at how far the points scatter about each line.
+
+</Hint>
+
+<Answer id="p1d-rs1" label="Galaxy 1, $r_s$ (arcsec):" value="5.80" unit="arcsec" tolerance="2%" calc="p1d-rs1" />
+
+<Answer id="p1d-re1" label="Galaxy 1, $r_e$ (arcsec):" value="11.5" unit="arcsec" tolerance="2%" calc="p1d-re1" />
+
+<Answer id="p1d-rs2" label="Galaxy 2, $r_s$ (arcsec):" value="8.28" unit="arcsec" tolerance="2%" calc="p1d-rs2" />
+
+<Answer id="p1d-re2" label="Galaxy 2, $r_e$ (arcsec):" value="58.2" unit="arcsec" tolerance="2%" calc="p1d-re2" />
+
+<Answer id="p1d-which" label="The better description is:" choices={["Galaxy 1 exponential and Galaxy 2 de Vaucouleurs", "Both galaxies de Vaucouleurs", "Galaxy 1 de Vaucouleurs and Galaxy 2 exponential", "Both galaxies exponential"]} answer={2} />
+
+<Solution>
+
+**The idea.** Each law is a straight line in the right variables, so a straight-line fit to the logarithm of the counts gives its two numbers, and the scatter about the line says how well it fits.
+
+<Step title="The laws as straight lines">
+
+Taking $\log_{10}$ of eqs. (1) and (2):
+
+<Formula label="Problem 1(d): the two laws as straight lines" tex="\log_{10} I = \log_{10} I_0 - \frac{r}{r_s\ln 10}, \qquad \log_{10} I = \log_{10} I_0 - \frac{7.67}{\ln 10}\left(\frac{r}{r_e}\right)^{1/4}" cite="mit" at="Problem 1(D), p. 2 (our own solution)" />
+
+So a fitted slope $\beta$ gives $r_s = -1/(\beta\ln 10)$ for the first law and $r_e = \left(-7.67/(\beta\ln 10)\right)^4$ for the second.
+
+</Step>
+
+<Step title="Galaxy 1">
+
+Against $r$ the slope is $\beta = -0.0748$ per arcsecond, so $r_s = 1/(0.0748 \times 2.3026) = 5.80$ arcseconds. Against $r^{1/4}$ the slope is $\beta = -1.808$, so $r_e = (7.67/(1.808 \times 2.3026))^4 = 11.5$ arcseconds. The points scatter about the exponential line by 0.17 in $\log_{10}$ (root mean square), a factor of about 1.5, with a clear bend: too high at both ends and too low in the middle. About the de Vaucouleurs line they scatter by only 0.036. Galaxy 1 follows the de Vaucouleurs law.
+
+</Step>
+
+<Step title="Galaxy 2">
+
+Against $r$ the slope is $\beta = -0.0524$ per arcsecond, so $r_s = 8.28$ arcseconds; against $r^{1/4}$ it is $\beta = -1.206$, so $r_e = 58.2$ arcseconds. Now the exponential line fits better (scatter 0.047 against 0.093), and the de Vaucouleurs fit gives an "effective radius" far beyond the light we measured, a sign that the law does not describe this galaxy. Galaxy 2 follows the exponential law: it looks like a disc galaxy, and Galaxy 1 like an elliptical (notes, Section 1.B, p. 9).
+
+</Step>
+
+<Step title="Check the result">
+
+At the centre of the profile, $r = 15$ arcseconds, the de Vaucouleurs fit of Galaxy 1 predicts $10^{4.678 - 1.808 \times 15^{1/4}} = 13.2$ DN; the table has $133.3 - 120.17 = 13.1$ DN. The exponential fit of Galaxy 2 predicts $10^{2.451 - 0.0524 \times 15} = 46.2$ DN at $r = 15$; the table has $163.8 - 120.10 = 43.7$ DN, a little lower, a first hint of what (e) is about.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={8}>
+
+Does one law (one de Vaucouleurs or one exponential) describe the whole profile of each galaxy? Look at the points minus the better of your two lines, bin by bin. Where does the single law fail, and what could cause it? Choose in the box.
+
+<Hint>
+
+Plot, for each galaxy, the difference between $\log_{10}(I - S)$ and the better fitted line. Which bins stand out, and by how much compared with the scatter elsewhere?
+
+</Hint>
+
+<Hint>
+
+Disc galaxies often have a second, rounder component of old stars at their centre. Which profile would that component have, and where would it add light?
+
+</Hint>
+
+<Answer id="p1e-break" label="The single law fails:" choices={["For Galaxy 1, whose outer bins lie a factor of 1.4 above its line, because its outer disc is warped and flared", "For both galaxies at all radii, because neither law fits real galaxies", "Only far out, where the sky dominates, so the sky level was wrong for both", "For Galaxy 2, whose innermost bin lies a factor of 1.4 above its line, because of a central bulge"]} answer={3} />
+
+<Solution>
+
+**The idea.** A single law leaves a pattern in the residuals where a second component adds light. Disc galaxies have a bulge at their centre, with a profile close to de Vaucouleurs (notes, Section 1.B, p. 9).
+
+<Step title="Galaxy 2">
+
+The innermost bin of Galaxy 2 lies $0.149$ above the exponential line in $\log_{10}$, a factor of $10^{0.149} = 1.41$, while the other bins scatter by a few hundredths. The line is also pulled up by that bin, so most of the bins out to 15 arcseconds lie a little below it (by up to 0.04). The galaxy has more light at its centre than its disc provides: a **bulge**, a small, dense, round component of mostly old stars. A fit with two components, an exponential disc plus a de Vaucouleurs bulge, would describe the whole profile; fitting the exponential law to the outer bins only would come closer to the disc alone.
+
+</Step>
+
+<Step title="Galaxy 1">
+
+The de Vaucouleurs line fits Galaxy 1 to within 0.09 in $\log_{10}$ in every bin, so one law is adequate. Its innermost bin lies 0.085 below the line: the law is very steep at the centre, and the median of a 2-arcsecond bin cannot follow the peak. The last bins lie up to 0.06 below the line: the sky level of (a) still holds a little light of the galaxy's faint, far-reaching outskirts, so subtracting it takes off slightly too much where the galaxy is faintest. With real images the blurring of the centre by the atmosphere (seeing) adds to the first effect.
+
+</Step>
+
+<Step title="How we made the galaxies (our choice)">
+
+Galaxy 1 is a pure de Vaucouleurs law with $r_e = 10.0$ arcseconds and 31.0 DN per pixel at $r_e$. Galaxy 2 is an exponential disc with $I_0 = 230$ DN per pixel and $r_s = 9.0$ arcseconds, plus a de Vaucouleurs bulge with $r_e = 2.0$ arcseconds and 80 DN per pixel at its $r_e$. Both sit on a sky of 120.0 DN per pixel, and each pixel got random noise of about the square root of its counts. Your fits came out at 11.5 and 8.28 arcseconds rather than 10.0 and 9.0: the small error of the sky level, the medians of wide bins and, for Galaxy 2, the bulge all move a fit. Real measurements have the same problems.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Galaxy spectra: redshifts, distances and luminosities" points={35} mit="Problem 2">
+
+Our spectra use the sheet's wavelength grid: pixel $i$ of a spectrum has the wavelength
+
+<Formula label="Wavelength of pixel i" tex="\lambda_i = 10^{\,w + 0.0001\,i}\ \text{Å}" cite="mit" at="Problem Set 1, p. 1" />
+
+with $w = 3.5810$ for Galaxy 1 and $w = 3.5815$ for Galaxy 2 (our choice). The continuum of each spectrum, the smooth light of all its stars, is given every 200 Å in the first table, scaled so that its highest value is 1.
+
+| λ (Å) | Galaxy 1 | Galaxy 2 |
+|---|---|---|
+| 3800 | 0.334 | 0.923 |
+| 4000 | 0.407 | 0.961 |
+| 4200 | 0.480 | 0.986 |
+| 4400 | 0.553 | 0.998 |
+| 4600 | 0.622 | 1.000 |
+| 4800 | 0.687 | 0.993 |
+| 5000 | 0.747 | 0.979 |
+| 5200 | 0.800 | 0.958 |
+| 5400 | 0.847 | 0.934 |
+| 5600 | 0.887 | 0.906 |
+| 5800 | 0.921 | 0.876 |
+| 6000 | 0.948 | 0.844 |
+| 6200 | 0.969 | 0.811 |
+| 6400 | 0.984 | 0.777 |
+| 6600 | 0.994 | 0.744 |
+| 6800 | 0.999 | 0.711 |
+| 7000 | 1.000 | 0.679 |
+| 7200 | 0.997 | 0.647 |
+| 7400 | 0.990 | 0.617 |
+| 7600 | 0.981 | 0.587 |
+| 7800 | 0.969 | 0.559 |
+| 8000 | 0.955 | 0.532 |
+| 8200 | 0.939 | 0.505 |
+| 8400 | 0.921 | 0.481 |
+| 8600 | 0.902 | 0.457 |
+| 8800 | 0.883 | 0.434 |
+| 9000 | 0.862 | 0.413 |
+| 9200 | 0.841 | 0.393 |
+
+The flux in these tables is per unit wavelength. Near its one strong line each spectrum is given pixel by pixel, divided by the continuum there, so that the continuum is 1:
+
+| Galaxy 1: $i$ | $\lambda_i$ (Å) | Flux | | Galaxy 2: $i$ | $\lambda_i$ (Å) | Flux |
+|---|---|---|---|---|---|---|
+| 3616 | 8761.9 | 0.985 | | 2424 | 6666.5 | 0.985 |
+| 3617 | 8764.0 | 1.012 | | 2425 | 6668.1 | 0.987 |
+| 3618 | 8766.0 | 1.012 | | 2426 | 6669.6 | 0.961 |
+| 3619 | 8768.0 | 0.986 | | 2427 | 6671.1 | 1.034 |
+| 3620 | 8770.0 | 0.988 | | 2428 | 6672.7 | 1.231 |
+| 3621 | 8772.0 | 0.979 | | 2429 | 6674.2 | 1.732 |
+| 3622 | 8774.0 | 1.000 | | 2430 | 6675.7 | 2.465 |
+| 3623 | 8776.1 | 0.979 | | 2431 | 6677.3 | 2.757 |
+| 3624 | 8778.1 | 0.940 | | 2432 | 6678.8 | 2.305 |
+| 3625 | 8780.1 | 0.885 | | 2433 | 6680.4 | 1.652 |
+| 3626 | 8782.1 | 0.844 | | 2434 | 6681.9 | 1.211 |
+| 3627 | 8784.2 | 0.793 | | 2435 | 6683.4 | 0.991 |
+| 3628 | 8786.2 | 0.750 | | 2436 | 6685.0 | 0.940 |
+| 3629 | 8788.2 | 0.690 | | 2437 | 6686.5 | 1.006 |
+| 3630 | 8790.2 | 0.664 | | 2438 | 6688.1 | 0.995 |
+| 3631 | 8792.2 | 0.643 | | | | |
+| 3632 | 8794.3 | 0.662 | | | | |
+| 3633 | 8796.3 | 0.682 | | | | |
+| 3634 | 8798.3 | 0.724 | | | | |
+| 3635 | 8800.4 | 0.805 | | | | |
+| 3636 | 8802.4 | 0.857 | | | | |
+| 3637 | 8804.4 | 0.916 | | | | |
+| 3638 | 8806.4 | 0.930 | | | | |
+| 3639 | 8808.5 | 0.963 | | | | |
+| 3640 | 8810.5 | 0.951 | | | | |
+| 3641 | 8812.5 | 0.995 | | | | |
+| 3642 | 8814.5 | 1.012 | | | | |
+| 3643 | 8816.6 | 0.997 | | | | |
+| 3644 | 8818.6 | 1.006 | | | | |
+| 3645 | 8820.6 | 1.009 | | | | |
+| 3646 | 8822.7 | 1.007 | | | | |
+
+<Part label="a" points={8}>
+
+Treat the light of a typical star of each galaxy as a blackbody, as the sheet says to (a rough picture: real stellar spectra are not blackbodies). Take the wavelength of the highest value in the continuum table as the peak (our rule), and use Wien's displacement law to estimate the temperature of the typical star of each galaxy (the boxes accept 5%, since the table is coarse). Then choose, in the third box, roughly which spectral type these temperatures belong to.
+
+<Hint>
+
+Wien's law says that a blackbody's flux per unit wavelength peaks at a wavelength $\lambda_\text{max}$ inversely proportional to its temperature: $\lambda_\text{max} T = 2.898\times10^{-3}$ m K.
+
+</Hint>
+
+<Hint>
+
+In ångström kelvin the constant is $2.898\times10^{7}$ Å K. For the types, the Sun (a G star) is near 5800 K; hotter stars are F, A, B, O in turn, cooler ones K and M.
+
+</Hint>
+
+<Answer id="p2a-t1" label="Galaxy 1, $T$ (K):" value="4140" unit="K" tolerance="5%" calc="p2a-t1" />
+
+<Answer id="p2a-t2" label="Galaxy 2, $T$ (K):" value="6300" unit="K" tolerance="5%" calc="p2a-t2" />
+
+<Answer id="p2a-type" label="The spectral types are roughly:" choices={["Galaxy 1 type G, Galaxy 2 type B", "Galaxy 1 type M, Galaxy 2 type A", "Galaxy 1 type F, Galaxy 2 type K", "Galaxy 1 type K, Galaxy 2 type F"]} answer={3} />
+
+<Solution>
+
+**The idea.** A blackbody's peak wavelength is inversely proportional to its temperature, so the peak of the continuum gives a typical temperature.
+
+<Step title="Wien's law">
+
+<Formula label="Wien's displacement law" tex="T = \frac{2.898\times10^{7}\ \text{Å K}}{\lambda_\text{max}}" cite="mit" at="Problem 2(A), p. 2 (the sheet names the law; the constant is its standard value)" />
+
+The continuum of Galaxy 1 peaks at 7000 Å, so $T \approx 2.898\times10^{7}/7000 = 4140$ K. That of Galaxy 2 peaks at 4600 Å, so $T \approx 6300$ K.
+
+</Step>
+
+<Step title="The spectral types">
+
+Roughly, type K stars have about 3700 to 5200 K, type G about 5200 to 6000 K and type F about 6000 to 7500 K. So the typical star of Galaxy 1 is a K star, cooler and redder than the Sun, and that of Galaxy 2 an F star, a little hotter. It fits the profiles of Problem 1: ellipticals hold old, red stars, discs have young, blue ones (notes, Section 1.B, p. 9).
+
+</Step>
+
+<Step title="Check the result">
+
+The table steps by 200 Å, and near the peak the values are nearly level (0.999, 1.000, 0.997 for Galaxy 1), so the peak is uncertain by about 100 Å, or 1.5%. The peak is also seen redshifted: in the rest frame of each galaxy it lies at a wavelength shorter by the factor $1 + z$ of (b), about 3% and 2%, so the temperatures are really about 3% and 2% higher. Neither changes the types. (We made the continua as blackbodies of 4300 K and 6500 K, seen at the redshifts of (b); our choice.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={10}>
+
+The strong line of Galaxy 2 is an emission line: Hα, emitted when electrons and protons recombine in the clouds of ionized hydrogen around young stars, with rest wavelength 6563 Å. Galaxy 1 has no emission line, but it has a strong absorption line of ionized calcium (Ca II), which we take at rest wavelength 8542 Å. For each line find the centroid $\bar\lambda$, the mean wavelength weighted by the line's flux, by this rule (our choice): use every row of the line's table, with weight $F_i - 1$ for the emission line and $1 - F_i$ for the absorption line. Then give each galaxy's recession velocity, $v = cz$.
+
+<Hint>
+
+The centroid is the sum of each $\lambda_i$ times its weight, divided by the sum of the weights. Rows far from the line have weights near zero, positive or negative: keep them all.
+
+</Hint>
+
+<Hint>
+
+The redshift is $z = \bar\lambda/\lambda_0 - 1$, with $\lambda_0$ the rest wavelength; take $c = 2.998\times10^5$ km/s.
+
+</Hint>
+
+<Answer id="p2b-lc2" label="Galaxy 2, $\bar\lambda$ of Hα (Å):" value="6677.2" unit="Å" tolerance="0.3" calc="p2b-lc2" />
+
+<Answer id="p2b-v2" label="Galaxy 2, $v$ (km/s):" value="5215" unit="km/s" tolerance="1%" calc="p2b-v2" />
+
+<Answer id="p2b-lc1" label="Galaxy 1, $\bar\lambda$ of Ca II (Å):" value="8792.1" unit="Å" tolerance="0.3" calc="p2b-lc1" />
+
+<Answer id="p2b-v1" label="Galaxy 1, $v$ (km/s):" value="8776" unit="km/s" tolerance="1%" calc="p2b-v1" />
+
+<Solution>
+
+**The idea.** The centroid of a line is where its light (or its missing light) is centred; its ratio to the rest wavelength gives the redshift, and $v = cz$ the recession velocity.
+
+<Step title="The centroids">
+
+<Formula label="Problem 2(b): the centroid of a line" tex="\bar\lambda = \frac{\sum_i \lambda_i\,(F_i - 1)}{\sum_i (F_i - 1)}" cite="mit" at="Problem 2(B), pp. 2 and 3 (our own solution)" />
+
+for the emission line, and the same with $1 - F_i$ for the absorption line. For Galaxy 2 the weights add up to $\sum_i (F_i - 1) = 6.252$, and the centroid is $\bar\lambda = 6677.2$ Å. For Galaxy 1 they add up to $\sum_i (1 - F_i) = 3.334$, and $\bar\lambda = 8792.1$ Å.
+
+</Step>
+
+<Step title="Redshifts and velocities">
+
+<Formula label="Redshift and recession velocity" tex="z = \frac{\lambda_\text{obs} - \lambda_0}{\lambda_0}, \qquad v = H_0 d \approx cz" cite="reading1" at="Section 1.B, eqs. (24) and (26), p. 11" />
+
+Galaxy 2: $z = 6677.16/6563 - 1 = 0.01739$, so $v = 2.998\times10^5 \times 0.01739 = 5215$ km/s. Galaxy 1: $z = 8792.05/8542 - 1 = 0.02927$, so $v = 8776$ km/s.
+
+</Step>
+
+<Step title="Check the result">
+
+Each centroid lies next to the deepest or highest pixel of its table (8792.2 Å and 6677.3 Å), as it should for a line that is close to symmetric. Both redshifts are small, so $v = cz$ is good to about 1% (the relativistic formula would lower $v$ by about $z/2$, 1.5% and 0.9%). We made the lines at $z = 0.0293$ and $z = 0.0174$ (our choice); the noise moves the centroids by a few hundredths of an ångström.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={8}>
+
+Hubble's law, $v = H_0 d$, with $H_0 = 71$ km/s/Mpc as on the sheet, turns each velocity into a distance. Give the distance of each galaxy in Mpc. Then, ignoring all corrections for the expansion, turn each galaxy's characteristic radius from 1(d) into a physical radius in kpc: for each galaxy use the radius of the law that describes it better.
+
+<Hint>
+
+The distance is $d = v/H_0$. An angle $\theta$ seen at distance $d$ spans the length $R = \theta d$, with $\theta$ in radians.
+
+</Hint>
+
+<Hint>
+
+One radian is 206265 arcseconds, and 1 Mpc is 1000 kpc.
+
+</Hint>
+
+<Answer id="p2c-d1" label="Galaxy 1, $d$ (Mpc):" value="123.6" unit="Mpc" tolerance="1%" calc="p2c-d1" />
+
+<Answer id="p2c-d2" label="Galaxy 2, $d$ (Mpc):" value="73.4" unit="Mpc" tolerance="1%" calc="p2c-d2" />
+
+<Answer id="p2c-r1" label="Galaxy 1, $R$ from $r_e$ (kpc):" value="6.91" unit="kpc" tolerance="2%" calc="p2c-r1" />
+
+<Answer id="p2c-r2" label="Galaxy 2, $R$ from $r_s$ (kpc):" value="2.95" unit="kpc" tolerance="2%" calc="p2c-r2" />
+
+<Solution>
+
+**The idea.** Hubble's law gives the distance; a small angle times the distance gives a length.
+
+<Step title="Distances">
+
+<Formula label="Hubble's law" tex="v = H_0\,d" cite="mit" at="Problem 2(C), p. 3" />
+
+Galaxy 1: $d = 8776/71 = 123.6$ Mpc. Galaxy 2: $d = 5215/71 = 73.4$ Mpc.
+
+</Step>
+
+<Step title="Physical radii">
+
+<Formula label="Problem 2(c): a physical radius from an angle" tex="R = \frac{\theta}{206265}\,d \quad (\theta \text{ in arcseconds})" cite="mit" at="Problem 2(C), p. 3 (our own solution)" />
+
+Galaxy 1, with $r_e = 11.53$ arcseconds: $R = 11.53/206265 \times 123.6$ Mpc $= 6.91$ kpc. Galaxy 2, with $r_s = 8.28$ arcseconds: $R = 8.28/206265 \times 73.4$ Mpc $= 2.95$ kpc.
+
+</Step>
+
+<Step title="Check the result">
+
+Both are a few kiloparsecs, the size of the bright part of a galaxy like the Milky Way, whose disc has a scale length of a few kpc. A disc's light reaches several scale lengths, so Galaxy 2's stars extend to 10 kpc or more. The radii scale with $1/H_0$: with another value of $H_0$ every distance and size here changes in proportion.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={9}>
+
+Integrate each galaxy's fitted law from 1(d) (the better one) over the whole sky to get its total counts above the sky, and turn them into an apparent magnitude with the calibration of 1(c); give the apparent magnitudes in the first two boxes (our addition). Then use the distances of (c) to find each galaxy's luminosity in the band. Take the Sun's absolute magnitude in this band to be $M_{\odot,G} = 5.1$ (our choice; the sheet does not give one), and assume, as the sheet does, that 90% of the Sun's luminosity falls in the band. Give each galaxy's luminosity in the band in units of the Sun's total luminosity $L_\odot$.
+
+<Hint>
+
+Integrate $I(r)\,2\pi r\,dr$ from 0 to infinity. For the de Vaucouleurs law substitute $u = 7.67\,(r/r_e)^{1/4}$; the integral becomes a factorial. Remember that $I$ is in counts per pixel and $r$ in arcseconds.
+
+</Hint>
+
+<Hint>
+
+Total counts $N$ give $m = 20 - 2.5\log_{10}(N/N_{20})$. The distance modulus gives $M_G$, and $L = 10^{-0.4(M_G - M_{\odot,G})}$ in units of the Sun's luminosity in the band, which is $0.9\,L_\odot$.
+
+</Hint>
+
+<Answer id="p2d-m1" label="Galaxy 1, $m$:" value="14.36" tolerance="0.02" calc="p2d-m1" />
+
+<Answer id="p2d-m2" label="Galaxy 2, $m$:" value="13.78" tolerance="0.02" calc="p2d-m2" />
+
+<Answer id="p2d-l1" label="Galaxy 1, $L$ (in $L_\odot$):" value="2.71e10" tolerance="3%" calc="p2d-l1" />
+
+<Answer id="p2d-l2" label="Galaxy 2, $L$ (in $L_\odot$):" value="1.64e10" tolerance="3%" calc="p2d-l2" />
+
+<Solution>
+
+**The idea.** The total light is the profile integrated over the area of the galaxy. Its magnitude, corrected for distance, gives the absolute magnitude, and the Sun's absolute magnitude in the same band turns that into solar units.
+
+<Step title="Total counts">
+
+For the exponential law, $\int_0^\infty I_0 e^{-r/r_s}\,2\pi r\,dr = 2\pi I_0 r_s^2$. For the de Vaucouleurs law the substitution $u = 7.67\,(r/r_e)^{1/4}$, so that $r = r_e (u/7.67)^4$, gives
+
+<Formula label="Problem 2(d): total light of the two laws" tex="N = 2\pi I_0 r_s^2 \ \text{(exponential)}, \qquad N = \frac{8!}{7.67^8}\,\pi I_0 r_e^2 = 0.003366\,\pi I_0 r_e^2 \ \text{(de Vaucouleurs)}" cite="mit" at="Problem 2(D), p. 3 (our own solution)" />
+
+with $I_0$ in counts per pixel and the radii in pixels ($r$ in arcseconds divided by 0.394). The fits of 1(d) have intercepts $\log_{10} I_0 = 4.678$ (Galaxy 1, de Vaucouleurs) and $2.451$ (Galaxy 2, exponential), so $I_0 = 47600$ and $282.8$ DN per pixel. Galaxy 1: $r_e = 11.53/0.394 = 29.26$ pixels and $N = 0.003366\,\pi \times 47600 \times 29.26^2 = 4.31\times10^5$ counts. Galaxy 2: $r_s = 8.285/0.394 = 21.03$ pixels and $N = 2\pi \times 282.8 \times 21.03^2 = 7.86\times10^5$ counts.
+
+</Step>
+
+<Step title="Magnitudes">
+
+Galaxy 1: $m = 20 - 2.5\log_{10}(4.31\times10^5/2400) = 14.36$. Galaxy 2: $m = 20 - 2.5\log_{10}(7.86\times10^5/2550) = 13.78$. The distance modulus (notes, eqs. (14) and (15)) then gives $M_G = 14.36 - 5\log_{10}(1.236\times10^7) = -21.10$ for Galaxy 1 and $M_G = 13.78 - 5\log_{10}(7.34\times10^6) = -20.55$ for Galaxy 2.
+
+</Step>
+
+<Step title="Luminosities">
+
+<Formula label="Problem 2(d): luminosity in solar units" tex="L = 0.9 \times 10^{-0.4\,(M_G - M_{\odot,G})}\,L_\odot" cite="mit" at="Problem 2(D), p. 3 (our own solution)" />
+
+Galaxy 1: $L = 0.9 \times 10^{0.4 \times 26.20}\,L_\odot = 2.71\times10^{10}\,L_\odot$. Galaxy 2: $L = 0.9 \times 10^{0.4 \times 25.65}\,L_\odot = 1.64\times10^{10}\,L_\odot$.
+
+</Step>
+
+<Step title="Check the result">
+
+Both are a few times $10^{10}\,L_\odot$, close to the characteristic luminosity $L_*$ of the Schechter function (notes, eq. (21), p. 10), which is about $2\times10^{10}\,L_\odot$ for $H_0 = 71$ km/s/Mpc: two ordinary, fairly bright galaxies. The laws we used to make the galaxies (Problem 1(e)) hold $4.53\times10^5$ and $8.01\times10^5$ counts in all, so the fits recover 95% and 98% of the light: the fitted laws differ from ours, but their total light is close.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Galaxy spectra: line widths and a mass" points={25} mit="Problem 3">
+
+Problem 3 uses the Ca II absorption line of Galaxy 1 from the table of Problem 2.
+
+<Part label="a" points={9}>
+
+Fit a Gaussian to the absorption line, $F(\lambda) = 1 - A\,e^{-(\lambda - \lambda_c)^2/2\sigma_\lambda^2}$, by least squares over all 31 rows of its table, with the depth $A$, the centre $\lambda_c$ and the width $\sigma_\lambda$ free and the continuum held at 1 (our rule). Give $\sigma_\lambda$ in ångström and the matching velocity width $\sigma_v$ in km/s.
+
+<Hint>
+
+Any nonlinear least-squares routine will do (for example `curve_fit` in Python's SciPy). Start it near the deepest pixel, with a width of a few pixels.
+
+</Hint>
+
+<Hint>
+
+For $\sigma_v \ll c$, a width in wavelength and a width in velocity are related by $\sigma_\lambda/\lambda = \sigma_v/c$, with $\lambda$ the line's centre.
+
+</Hint>
+
+<Answer id="p3a-sl" label="$\sigma_\lambda$ (Å):" value="7.63" unit="Å" tolerance="2%" calc="p3a-sl" />
+
+<Answer id="p3a-sv" label="$\sigma_v$ (km/s):" value="260" unit="km/s" tolerance="2%" calc="p3a-sv" />
+
+<Solution>
+
+**The idea.** A Gaussian has one width parameter; the Doppler formula turns a width in wavelength into a spread of velocities along the line of sight.
+
+<Step title="The fit">
+
+Our fit gives the depth $A = 0.356$, the centre $\lambda_c = 8792.3$ Å and the width $\sigma_\lambda = 7.63$ Å (about 3.8 pixels of 2.0 Å each).
+
+</Step>
+
+<Step title="In velocity">
+
+<Formula label="Line width in velocity" tex="\frac{\sigma_\lambda}{\lambda} = \frac{\sigma_v}{c}" cite="mit" at="Problem 3(A), p. 3" />
+
+so $\sigma_v = 2.998\times10^5 \times 7.63/8792.3 = 260$ km/s.
+
+</Step>
+
+<Step title="Check the result">
+
+The centre of the Gaussian, 8792.3 Å, agrees with the centroid of Problem 2(b), 8792.1 Å. A width of 260 km/s is typical of a large elliptical galaxy (notes, Section 1.B, p. 11: 200 to 300 km/s), and it is much more than the 69 km/s that one pixel of the grid spans ($c\ln 10 \times 0.0001$), so the line is well resolved.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+The line is broadened by the orbits of the stars in the galaxy, but also by the motions of atoms inside each star and by the spectrograph itself. Nearby stars of the same kind, observed with the same spectrograph, show lines of width $\sigma_c = 90$ km/s (our number). The sheet assumes that all three effects are Gaussian, so their widths add in quadrature. Find the velocity dispersion $\sigma_\star$ of the stars of Galaxy 1, using $\sigma_v$ from (a).
+
+<Hint>
+
+In quadrature means $\sigma_v^2 = \sigma_\star^2 + \sigma_c^2$: the nearby stars carry the broadening from the atoms and the spectrograph, without any orbits.
+
+</Hint>
+
+<Answer id="p3b-ss" label="$\sigma_\star$ (km/s):" value="244" unit="km/s" tolerance="2%" calc="p3b-ss" />
+
+<Solution>
+
+**The idea.** Independent Gaussian broadenings combine into one Gaussian whose variance is the sum of theirs; take off the part that is not due to the orbits.
+
+<Step title="Subtract in quadrature">
+
+<Formula label="Problem 3(b): the dispersion of the orbits" tex="\sigma_\star = \sqrt{\sigma_v^2 - \sigma_c^2}" cite="mit" at="Problem 3(B), p. 3 (our own solution)" />
+
+so $\sigma_\star = \sqrt{260.3^2 - 90^2} = 244$ km/s.
+
+</Step>
+
+<Step title="Check the result">
+
+The correction is small, 6%, because the widths add as squares: 90 km/s is a third of 260 km/s but only a ninth of its square. (The line was made with $\sigma_\star = 250$ km/s and $\sigma_c = 90$ km/s, our choice; noise moved the fit by 2%.) On the sheet the nearby stars' widths are measured on sodium lines, while the galaxy's line is a calcium line; this page uses the same line for both, as the comparison needs.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={10}>
+
+Suppose $\sigma_\star$ is the typical orbital speed of the stars at the radius $R$ found from $r_e$ in Problem 2(c). Use the virial estimate of the notes to find the mass of Galaxy 1 inside that radius, in solar masses. Then compare it with the number of stars you would expect from the luminosity of Problem 2(d) if every star were like the Sun: give the ratio of the mass to that luminosity, in solar units (our addition), and choose what it suggests.
+
+<Hint>
+
+The virial theorem says that twice the kinetic energy plus the potential energy is zero. With a kinetic energy $\frac12 Mv^2$ and a potential energy $-GM^2/R$ it gives a speed in terms of $M$ and $R$; solve it for $M$.
+
+</Hint>
+
+<Hint>
+
+Use $G = 0.0043\ M_\odot^{-1}$ pc (km/s)² as the notes do, with $R$ in pc. A galaxy of Sun-like stars has $1/0.9 \approx 1.1$ solar masses per solar luminosity of band light.
+
+</Hint>
+
+<Answer id="p3c-m" label="Mass inside $R$ (in $M_\odot$):" value="9.58e10" tolerance="4%" calc="p3c-m" />
+
+<Answer id="p3c-ml" label="Mass over luminosity (in $M_\odot/L_\odot$):" value="3.54" tolerance="5%" calc="p3c-ml" />
+
+<Answer id="p3c-means" label="The ratio suggests:" choices={["More mass than Sun-like stars would give: many dim, low-mass stars, possibly with some dark matter", "Exactly the stars expected, so the galaxy holds only Sun-like stars and nothing else", "Less mass than the stars alone, so the virial theorem cannot apply to this galaxy", "That the distance of Problem 2 is wrong by a factor of 3.5, since mass and light must agree"]} answer={0} />
+
+<Solution>
+
+**The idea.** In a steady state gravity balances the motions of the stars, so a speed and a size give a mass.
+
+<Step title="The virial mass">
+
+The notes apply the virial theorem to a galaxy of mass $M$ and size $R$ and find
+
+<Formula label="Virial speed of a galaxy" tex="v = \sqrt{\frac{GM}{R}}" cite="reading2" at="Section 2.A, eq. (52), p. 15" />
+
+So $M = \sigma_\star^2 R/G$. With $R = 6.91$ kpc $= 6907$ pc,
+
+<Formula label="Problem 3(c): the mass of Galaxy 1" tex="M = \frac{\sigma_\star^2 R}{G} = \frac{(244.2)^2 \times 6907}{0.0043}\,M_\odot = 9.58\times10^{10}\,M_\odot" cite="mit" at="Problem 3(C), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="Compared with the stars">
+
+The mass per unit of band light is $9.58\times10^{10}/2.71\times10^{10} = 3.54$ in solar units. The luminosity of Problem 2(d) counts band light in units of the Sun's total luminosity, and each Sun gives only 0.9 of that in the band. So if every star were like the Sun, the luminosity would mean $2.71\times10^{10}/0.9 = 3.0\times10^{10}$ stars, of $3.0\times10^{10}\,M_\odot$ in all: such a population has $M/L = 1/0.9 = 1.11$ in these units, and the virial mass is $3.54/1.11 = 3.2$ times more. Either the typical star is dimmer for its mass than the Sun (an old population, rich in faint low-mass stars, as the cool continuum of Problem 2(a) suggests), or there is mass that gives no light, or both. Old stellar populations alone give a few solar masses per solar luminosity, so this ratio does not by itself require dark matter inside $r_e$; the strong evidence for dark matter comes from larger radii, such as the flat rotation curves of the notes (eq. (23), p. 10).
+
+</Step>
+
+<Step title="Check the result">
+
+The notes' example, $10^{11}\,M_\odot$ inside 10 kpc, gives about 200 km/s (eq. (53), p. 15); our galaxy, with a little less mass inside a smaller radius, has a slightly larger speed, as $v = \sqrt{GM/R}$ says. The estimate is rough by a factor of a few: $\sigma_\star$ is the spread along one line of sight, and a full treatment with three directions would use $v^2 \approx 3\sigma_\star^2$ and raise the mass by up to 3.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
