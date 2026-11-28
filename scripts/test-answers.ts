@@ -173,6 +173,9 @@ test("audit: an answer that is not finite in its ranges is reported", auditFormu
   const full = checkNumber("5.54e-11", s);
   test("scale: the full number is correct, with a note", full.status === "correct" && /10⁻¹¹/.test(full.note ?? ""), full);
   test("scale: another power of ten is still wrong", checkNumber("5.54e-12", s).status === "wrong");
+  const g = { value: "2.07", tolerance: "2%", scale: "1e-42", alsoAccept: [{ value: "1.035", tolerance: "2%", note: "half" }] };
+  const gHalf = checkNumber("1.04e-42", g);
+  test("scale: a second reading typed in full is correct with its note", gHalf.status === "correct" && gHalf.note === "half", gHalf);
   const pct = checkNumber("0.25", { value: "25", tolerance: "2%", scale: "0.01" });
   test("scale: a percentage as a fraction is correct", pct.status === "correct" && /percentage/.test(pct.note ?? ""), pct);
   const m = { value: "2.19", tolerance: "2%", mistakes: [{ value: "0.686", tolerance: "2%", hint: "That is the dark fraction." }] };

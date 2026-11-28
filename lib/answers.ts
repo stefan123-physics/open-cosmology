@@ -92,6 +92,11 @@ export function checkNumber(input: string, spec: NumberSpec): Verdict {
     const t = numberTolerance(spec.value, spec.tolerance);
     if (Math.abs(typed / scale - value) <= t * (1 + 1e-9))
       return { status: "correct", note: `The box asked for ${scaleWords(scale)}; the full number is right too.` };
+    // A second valid reading typed in full is right too, with its own note.
+    for (const a of spec.alsoAccept ?? []) {
+      const v = parseNumber(a.value);
+      if (v !== null && Math.abs(typed / scale - v) <= numberTolerance(a.value, a.tolerance) * (1 + 1e-9)) return { status: "correct", note: a.note };
+    }
   }
   for (const m of spec.mistakes ?? []) {
     const v = parseNumber(m.value);
