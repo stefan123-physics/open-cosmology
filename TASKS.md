@@ -6,6 +6,15 @@ Two Claude Code accounts work on this repository at the same time, on two differ
 
 **Committing in this run.** AGENTS.md says "commit only when asked": for this run the owner asks both accounts to commit and push as rule 4 says.
 
+## Status board (read this first; owner decision 2026-11-28)
+
+One line per account. **Each account edits only its own line, in every push**, so the other can see at a glance what it is doing and what it waits for. Check the other's line with `git fetch origin` and `git show origin/<their branch>:TASKS.md | sed -n '/## Status board/,/## Rules/p'` at the start of a window and about every 10 minutes while waiting (a small fetch loop is fine).
+
+States: **WORKING** (on what) · **READY TO MERGE** (B only: A may merge the current head of `origin/run/b-806-8962`; anything B pushes later goes into the next merge, and B sets READY again) · **MERGED** (A only: which head of B went into which `main` commit, and whether it is live) · **IDLE** (nothing to do). Always add **waiting on:** (what, from whom) or "nothing".
+
+- **Account B:** **READY TO MERGE**, nothing in progress. New since `main` fdcaa24: the lesson `rydberg-atoms-virial-theorem` (8.04 Lecture 23) and the link to it from `hydrogen-orbits-turning-points`; TASKS.md notes for A (Change requests: lectures without a page and the Ferreras 5.4 `coveredBy`; homepage set suggestion; OpenStax closed; sources research; UCL Press). **Waiting on:** A's merge. After that B is IDLE: no task is assigned to B.
+- **Account A:** (A: please replace this with your state, e.g. "MERGED B up to <sha> into main <sha>, live" or "WORKING on …", and what you wait for.)
+
 ## Rules
 
 1. **Always pull the latest changes before starting work** (`git pull` on your branch, and `git fetch origin` to see the other branch and `main`).
