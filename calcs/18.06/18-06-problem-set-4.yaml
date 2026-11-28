@@ -1,0 +1,578 @@
+# Calculations on content/year-2/18.06/18-06-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Every problem on this page is our own (MIT's 18.06 problem sets are textbook exercise numbers), so every answer is
+# checked here by a route independent of the page's solution: dependences checked component by component (residuals
+# squared and added), ranks written as "number of pivots + sum of squared residuals of the dependence that removes the
+# rest", parameters as numerical roots (solve) of the expanded 3 × 3 determinant (which the page itself never uses),
+# coefficients from a different pair of components than the page uses, and y^T A multiplied out entry by entry.
+# All matrices were also row reduced with exact fractions and their ranks found with numpy.linalg.matrix_rank when the
+# page was written.
+
+page: content/year-2/18.06/18-06-problem-set-4.mdx
+calcs:
+  - id: intro-points
+    where: 'How to answer: the points of the six problems (16 + 18 + 16 + 22 + 14 + 14)'
+    inputs: {}
+    formula: 16 + 18 + 16 + 22 + 14 + 14
+    expected: '100'
+    tolerance: '1e-9'
+    shown: ['the points here (100 in all)']
+    source: {cite: reading1, at: 'our own points'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  - id: p1-a-1
+    where: 'Problem 1(a), choice box Set 1 (independent): (3, −1) = k(1, 2) needs k = 3 from the first component and k = −1/2 from the second; the difference of the two k is not zero'
+    inputs: {}
+    formula: 3/1 - (-1)/2
+    expected: '3.5'
+    tolerance: '1e-9'
+    shown: ['the first components would need the factor 3, the second the factor $-\frac12$']
+    source: {cite: reading1, at: 'pp. 4–6'}
+    origin: page-own
+
+  - id: p1-a-4
+    where: 'Problem 1(a), choice box Set 4 (dependent): 2(1, 2, 3) − (2, 1, 0) − (0, 3, 6), components squared and added'
+    inputs: {}
+    formula: (2*1 - 2 - 0)**2 + (2*2 - 1 - 3)**2 + (2*3 - 0 - 6)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['twice the first vector minus the second is $(2 - 2, 4 - 1, 6 - 0) = (0, 3, 6)$']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p1-a-4-rank
+    where: 'Problem 1(a), Set 4: rank 2 = two pivots (columns 1 and 2 are not multiples) + the squared residual of the dependence of p1-a-4'
+    inputs: {}
+    formula: 2 + ((2*1 - 2 - 0)**2 + (2*2 - 1 - 3)**2 + (2*3 - 0 - 6)**2)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['The matrix with these columns has rank 2, not 3']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p1-b-t
+    answer: p1-b-t
+    where: 'Problem 1(b), answer box: t as the root of the expanded determinant of the matrix with columns (1, 2, −1), (2, 5, 1), (0, 1, t), expanded along the first row (1, 2, 0)'
+    inputs: {}
+    formula: solve('1*(5*t - 1*1) - 2*(2*t - 1*(-1)) + 0', 't', -10, 10)
+    expected: '3'
+    tolerance: '1e-9'
+    shown: ['The third pivot $t - 3$ is missing exactly when $t = 3$.']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p1-b-pivot
+    where: 'Problem 1(b): the third pivot t − 3 against the determinant divided by the first two pivots 1 and 1, at t = 7 (pivot 4)'
+    inputs: {t: 7}
+    formula: (1*(5*t - 1*1) - 2*(2*t - 1*(-1)))/(1*1)
+    expected: '4'
+    tolerance: '1e-9'
+    shown: ['0 & 0 & t - 3 \end{pmatrix}']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p1-b-c1
+    answer: p1-b-c1
+    where: 'Problem 1(b), answer box: c1 from components 1 and 3 of c1(1, 2, −1) + c2(2, 5, 1) = (0, 1, 3) (the page uses components 1 and 2): c2 = −c1/2 from the first, then −c1 + c2 = 3'
+    inputs: {}
+    formula: solve('-c1 + (-c1/2) - 3', 'c1', -10, 10)
+    expected: '-2'
+    tolerance: '1e-9'
+    shown: ['$c_2 = 1$ and $c_1 = -2$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  - id: p1-b-check
+    where: 'Problem 1(b), check: −2(1, 2, −1) + 1·(2, 5, 1) − (0, 1, 3), components squared and added'
+    inputs: {}
+    formula: (-2*1 + 2 - 0)**2 + (-2*2 + 5 - 1)**2 + (-2*(-1) + 1 - 3)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$-2v_1 + v_2 = (-2 + 2, -4 + 5, 2 + 1) = (0, 1, 3) = v_3$']
+    source: {cite: reading1, at: 'p. 3'}
+    origin: page-own
+
+  # ---- Problem 2  (w1 = (1, 0, 2, 1), w2 = (2, 1, 3, 0), w3 = (0, 1, −1, −2), w4 = (1, 1, 1, 1))
+
+  - id: p2-a-dep
+    where: 'Problem 2(a): w2 − 2w1 − w3, components squared and added'
+    inputs: {}
+    formula: (2 - 2*1 - 0)**2 + (1 - 0 - 1)**2 + (3 - 4 + 1)**2 + (0 - 2 + 2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$w_2 - 2w_1 = (2 - 2, 1 - 0, 3 - 4, 0 - 2) = (0, 1, -1, -2) = w_3$']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p2-a-pivots
+    where: 'Problem 2(a): product of the three pivots of the matrix with columns w1, w2, w4 (nonzero, so three pivots); the third is the last entry of row 4 = (1, 0, 1) minus row 1 = (1, 2, 1), plus 2 times row 2 = (0, 1, 1)'
+    inputs: {}
+    formula: 1*1*((1 - 1*1) + 2*1)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['0 & 0 & 0 \\ 0 & 0 & 2 \end{pmatrix}']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p2-a
+    answer: p2-a
+    where: 'Problem 2(a), answer box: dim S = number of vectors (4) minus the dimension of the nullspace of [w1 w2 w3 w4]; that nullspace is the line of (2, −1, 1, 0) (residual of p2-a-dep added, 0), since w1, w2, w4 have three pivots (p2-a-pivots)'
+    inputs: {}
+    formula: 4 - 1 + ((2 - 2*1 - 0)**2 + (1 - 0 - 1)**2 + (3 - 4 + 1)**2 + (0 - 2 + 2)**2)
+    expected: '3'
+    tolerance: '1e-9'
+    shown: ['They are a basis of $S$, and $\text{dim}\, S = 3$.']
+    source: {cite: reading1, at: 'p. 16'}
+    origin: page-own
+
+  - id: p2-b-indep
+    where: 'Problem 2(b), choice box (w1, w3, w4): the fourth component c1 − 2c3 + c4 with c1 = c3 = −c4 gives 2c4; at c4 = 1 it is 2, not 0, so c4 = 0'
+    inputs: {c4: 1}
+    formula: (-c4) - 2*(-c4) + c4
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['becomes $-c_4 + 2c_4 + c_4 = 2c_4 = 0$']
+    source: {cite: reading1, at: 'p. 21'}
+    origin: page-own
+
+  - id: p2-c-1
+    answer: p2-c-1
+    where: 'Problem 2(c), answer box: c1 solved directly (the page solves for c4 first): c4 = 3 − c1 (component 1), c3 = −c4 (component 2), then component 4, c1 − 2c3 + c4 = c1 + 3c4 = 5 (component 3 repeats component 1)'
+    inputs: {}
+    formula: solve('c1 + 3*(3 - c1) - 5', 'c1', -10, 10)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['so $c_4 = 1$, and then $c_1 = 2$ and $c_3 = -1$']
+    source: {cite: reading1, at: 'p. 10'}
+    origin: page-own
+
+  - id: p2-c-4
+    answer: p2-c-4
+    where: 'Problem 2(c), answer box: c4 from components 2 and 4: c3 = −c4 and c1 = 3 − c4, so c1 − 2c3 + c4 = 3 + 2c4 = 5'
+    inputs: {}
+    formula: solve('(3 - c4) - 2*(-c4) + c4 - 5', 'c4', -10, 10)
+    expected: '1'
+    tolerance: '1e-9'
+    shown: ['The fourth becomes $3 - c_4 + 2c_4 + c_4 = 3 + 2c_4 = 5$']
+    source: {cite: reading1, at: 'p. 10'}
+    origin: page-own
+
+  - id: p2-c-check
+    where: 'Problem 2(c), check: 2w1 − w3 + w4 − z, components squared and added'
+    inputs: {}
+    formula: (2 - 0 + 1 - 3)**2 + (0 - 1 + 1 - 0)**2 + (4 + 1 + 1 - 6)**2 + (2 + 2 + 1 - 5)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$2(1, 0, 2, 1) - (0, 1, -1, -2) + (1, 1, 1, 1) = (2 - 0 + 1, 0 - 1 + 1, 4 + 1 + 1, 2 + 2 + 1) = (3, 0, 6, 5)$']
+    source: {cite: reading1, at: 'p. 10'}
+    origin: page-own
+
+  - id: p2-d-eq
+    where: 'Problem 2(d): 2x1 − x2 − x3 at w1, w2, w3, w4, squared and added'
+    inputs: {}
+    formula: (2*1 - 0 - 2)**2 + (2*2 - 1 - 3)**2 + (2*0 - 1 + 1)**2 + (2*1 - 1 - 1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['Every $w$ satisfies $2x_1 - x_2 - x_3 = 0$']
+    source: {cite: reading1, at: 'p. 21'}
+    origin: page-own
+
+  - id: p2-d
+    where: 'Problem 2(d), choice box ((1, 0, 0, 0)): 2x1 − x2 − x3 at the four candidates (0, 0, 0, 1), (1, 1, 1, 0), (1, 0, 0, 0), (1, 2, 0, 0); only the third is nonzero, so the sum of squares is its square'
+    inputs: {}
+    formula: (2*0 - 0 - 0)**2 + (2*1 - 1 - 1)**2 + (2*1 - 0 - 0)**2 + (2*1 - 2 - 0)**2
+    expected: '4'
+    tolerance: '1e-12'
+    shown: ['Only $(1, 0, 0, 0)$ breaks the equation']
+    source: {cite: reading1, at: 'p. 21'}
+    origin: page-own
+
+  - id: p2-d-half
+    where: 'Problem 2(d), check: (w1 + w3 + w4)/2 − (1, 1, 1, 0), components squared and added'
+    inputs: {}
+    formula: ((1 + 0 + 1)/2 - 1)**2 + ((0 + 1 + 1)/2 - 1)**2 + ((2 - 1 + 1)/2 - 1)**2 + ((1 - 2 + 1)/2 - 0)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['so $(1, 1, 1, 0) = \frac12(w_1 + w_3 + w_4)$']
+    source: {cite: reading1, at: 'p. 21'}
+    origin: page-own
+
+  # ---- Problem 3  (columns (1, 1, 0), (1, a, 1), (0, 2, a))
+
+  - id: p3-a
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: the third pivot against the expanded determinant of A divided by the first two pivots 1 and a − 1'
+    formula: a - 2/(a - 1)
+    equals: (1*(a*a - 2*1) - 1*(1*a - 2*0) + 0)/(1*(a - 1))
+    samples: {a: [-3, 0, 1.5, 2.5, 4, 6]}
+    tolerance: 1e-9
+    shown: ['a - \frac{1}{a - 1} \cdot 2 = a - \frac{2}{a - 1} = \frac{a^2 - a - 2}{a - 1}']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p3-a-check
+    where: 'Problem 3(a), check: at a = 3, row (0, 1, 3) minus half of (0, 2, 2), last entry'
+    inputs: {a: 3}
+    formula: a - (1/(a - 1))*2
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['At $a = 3$: $3 - \frac22 = 2$.']
+    source: {cite: reading1, at: 'pp. 7–8'}
+    origin: page-own
+
+  - id: p3-b
+    where: 'Problem 3(b), choice box (a basis after a row exchange): at a = 1 the expanded determinant 1·(1·1 − 2·1) − 1·(1·1 − 2·0) is not zero, and the pivots after the exchange are 1, 1, 2 with product 2 = |det|'
+    inputs: {a: 1}
+    formula: 1*(a*a - 2*1) - 1*(1*a - 2*0)
+    expected: '-2'
+    tolerance: '1e-12'
+    shown: ['and the pivots are $1, 1, 2$']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  - id: p3-c-hi
+    answer: p3-c-hi
+    where: 'Problem 3(c), answer box: the root above 1 of the expanded determinant a² − 2 − a'
+    inputs: {}
+    formula: solve('1*(a*a - 2*1) - 1*(1*a - 2*0)', 'a', 1.2, 10)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['is zero for $a = 2$ and $a = -1$. For those two values']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  - id: p3-c-lo
+    answer: p3-c-lo
+    where: 'Problem 3(c), answer box: the root below 1 of the expanded determinant a² − 2 − a'
+    inputs: {}
+    formula: solve('1*(a*a - 2*1) - 1*(1*a - 2*0)', 'a', -10, 0.8)
+    expected: '-1'
+    tolerance: '1e-9'
+    shown: ['So the only two failures are $a = 2$ and $a = -1$.']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  - id: p3-c-dep2
+    where: 'Problem 3(c), check: at a = 2, −2(1, 1, 0) + 2(1, 2, 1) − (0, 2, 2), squared and added'
+    inputs: {}
+    formula: (-2 + 2 - 0)**2 + (-2 + 4 - 2)**2 + (0 + 2 - 2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$-2v_1 + 2v_2 = (-2 + 2, -2 + 4, 0 + 2) = (0, 2, 2) = v_3$']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  - id: p3-c-dep1
+    where: 'Problem 3(c), check: at a = −1, (1, 1, 0) − (1, −1, 1) − (0, 2, −1), squared and added'
+    inputs: {}
+    formula: (1 - 1 - 0)**2 + (1 + 1 - 2)**2 + (0 - 1 + 1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$v_1 - v_2 = (1 - 1, 1 + 1, 0 - 1) = (0, 2, -1) = v_3$']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  # ---- Problem 4  (A = [1 2 −1 1; 3 7 −2 5; −1 0 3 3], m = 3, n = 4)
+
+  - id: p4-rank
+    where: 'Problem 4(a): rank 2 = two pivots (rows 1 and 2 are not multiples: 3/1 against 7/2) + the squared residual of row 3 = −7·row 1 + 2·row 2, entry by entry'
+    inputs: {}
+    formula: 2 + ((-7*1 + 2*3 - (-1))**2 + (-7*2 + 2*7 - 0)**2 + (-7*(-1) + 2*(-2) - 3)**2 + (-7*1 + 2*5 - 3)**2)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['Two pivots, in columns 1 and 2: $r = 2$.']
+    source: {cite: reading2, at: 'pp. 11–12'}
+    origin: page-own
+
+  - id: p4-a-c
+    answer: p4-a-c
+    where: 'Problem 4(a), answer box: dim C(A) = r, with r recomputed as in p4-rank'
+    inputs: {}
+    formula: 2 + ((-7*1 + 2*3 - (-1))**2 + (-7*2 + 2*7 - 0)**2 + (-7*(-1) + 2*(-2) - 3)**2 + (-7*1 + 2*5 - 3)**2)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['$\text{dim}\, C(A) = \text{dim}\, C(A^T) = r = 2$']
+    source: {cite: reading2, at: 'p. 7'}
+    origin: page-own
+
+  - id: p4-a-row
+    answer: p4-a-row
+    where: 'Problem 4(a), answer box: dim C(Aᵀ) = number of independent rows: three rows minus the one dependence of p4-rank'
+    inputs: {}
+    formula: 3 - 1 + ((-7*1 + 2*3 - (-1))**2 + (-7*2 + 2*7 - 0)**2 + (-7*(-1) + 2*(-2) - 3)**2 + (-7*1 + 2*5 - 3)**2)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['$\text{dim}\, C(A) = \text{dim}\, C(A^T) = r = 2$']
+    source: {cite: reading2, at: 'p. 8'}
+    origin: page-own
+
+  - id: p4-a-n
+    answer: p4-a-n
+    where: 'Problem 4(a), answer box: dim N(A) = n − r = number of independent special solutions; the two special solutions (3, −1, 1, 0) and (3, −2, 0, 1) from R satisfy A s = 0 (residuals of all six products squared and added, 0)'
+    inputs: {}
+    formula: 4 - 2 + ((1*3 + 2*(-1) - 1*1 + 1*0)**2 + (3*3 + 7*(-1) - 2*1 + 5*0)**2 + (-1*3 + 0 + 3*1 + 0)**2 + (1*3 + 2*(-2) + 0 + 1*1)**2 + (3*3 + 7*(-2) + 0 + 5*1)**2 + (-1*3 + 0 + 0 + 3*1)**2)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['$\text{dim}\, N(A) = n - r = 4 - 2 = 2$ (two free variables, $x_3$ and $x_4$)']
+    source: {cite: reading2, at: 'pp. 9–10'}
+    origin: page-own
+
+  - id: p4-a-left
+    answer: p4-a-left
+    where: 'Problem 4(a), answer box: dim N(Aᵀ) = m − r'
+    inputs: {m: 3, r: 2}
+    formula: m - r
+    expected: '1'
+    tolerance: '1e-9'
+    shown: ['$\text{dim}\, N(A^T) = m - r = 3 - 2 = 1$']
+    source: {cite: reading2, at: 'p. 10'}
+    origin: page-own
+
+  - id: p4-b-s
+    answer: p4-b-s
+    where: 'Problem 4(b), answer box: (1, 1, s, t) as a combination x·(row 1) + yy·(row 2) of the rows of A itself, not of R (row 3 is dependent): x + 3yy = 1 and 2x + 7yy = 1 give yy = −1 and x = 1 − 3yy = 4; s is then −x − 2yy'
+    inputs: {}
+    formula: -1*(1 - 3*solve('2*(1 - 3*yy) + 7*yy - 1', 'yy', -10, 10)) + (-2)*solve('2*(1 - 3*yy) + 7*yy - 1', 'yy', -10, 10)
+    expected: '-2'
+    tolerance: '1e-9'
+    shown: ['so the vector is $(1, 1, -2, -1)$: $s = -2$ and $t = -1$']
+    source: {cite: reading2, at: 'pp. 12–15'}
+    origin: page-own
+
+  - id: p4-b-t
+    answer: p4-b-t
+    where: 'Problem 4(b), answer box: t = 1·x + 5·yy, with the same x = 1 − 3yy and yy from 2x + 7yy = 1 (rows of A, not of R)'
+    inputs: {}
+    formula: 1*(1 - 3*solve('2*(1 - 3*yy) + 7*yy - 1', 'yy', -10, 10)) + 5*solve('2*(1 - 3*yy) + 7*yy - 1', 'yy', -10, 10)
+    expected: '-1'
+    tolerance: '1e-9'
+    shown: ['$(1, 3, 0, 3) - 2(0, 1, 1, 2) = (1, 1, -2, -1)$']
+    source: {cite: reading2, at: 'pp. 12–15'}
+    origin: page-own
+
+  - id: p4-b-R
+    where: 'Problem 4(b): R = EA, the two nonzero rows of R recomputed from A with E rows (7, −2, 0) and (−3, 1, 0): entries 3 and 4 of row 1 and entries 3 and 4 of row 2 against −3, −3, 1, 2, differences squared and added'
+    inputs: {}
+    formula: (7*(-1) - 2*(-2) + 3)**2 + (7*1 - 2*5 + 3)**2 + (-3*(-1) + 1*(-2) - 1)**2 + (-3*1 + 1*5 - 2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['So $(1, 0, -3, -3)$ and $(0, 1, 1, 2)$ are a basis of $C(A^T)$.']
+    source: {cite: reading2, at: 'p. 13'}
+    origin: page-own
+
+  - id: p4-c-col4
+    where: 'Problem 4(c), check: −3·column 1 + 2·column 2 − column 4 of A, squared and added'
+    inputs: {}
+    formula: (-3*1 + 2*2 - 1)**2 + (-3*3 + 2*7 - 5)**2 + (-3*(-1) + 2*0 - 3)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$-3(1, 3, -1) + 2(2, 7, 0) = (1, 5, 3)$']
+    source: {cite: reading2, at: 'p. 7'}
+    origin: page-own
+
+  - id: p4-c-col3
+    where: 'Problem 4(c): column 3 of A = −3·column 1 + 1·column 2 (column 3 of R is (−3, 1, 0)), residual squared and added; with p4-c-col4 the pivot columns produce every column'
+    inputs: {}
+    formula: (-3*1 + 1*2 - (-1))**2 + (-3*3 + 1*7 - (-2))**2 + (-3*(-1) + 1*0 - 3)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['So the pivot columns of $A$ do produce the other columns.']
+    source: {cite: reading2, at: 'p. 7'}
+    origin: page-own
+
+  - id: p4-d-1
+    answer: p4-d-1
+    where: 'Problem 4(d), answer box: y1 from y^T A = 0 with y3 = 1, columns 1 and 2 (y1 + 3y2 − 1 = 0 and 2y1 + 7y2 = 0): y2 = −2y1/7, so y1 − 6y1/7 = 1'
+    inputs: {}
+    formula: solve('y1 + 3*(-2*y1/7) - 1', 'y1', -20, 20)
+    expected: '7'
+    tolerance: '1e-9'
+    shown: ['$y_1 = 7$ and $y_2 = -2$']
+    source: {cite: reading2, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p4-d-2
+    answer: p4-d-2
+    where: 'Problem 4(d), answer box: y2 from columns 3 and 4 of y^T A = 0 with y3 = 1 (−y1 − 2y2 + 3 = 0 and y1 + 5y2 + 3 = 0): put y1 = −5y2 − 3 from the second into the first'
+    inputs: {}
+    formula: solve('(-(-5*y2 - 3) - 2*y2 + 3)', 'y2', -20, 20)
+    expected: '-2'
+    tolerance: '1e-9'
+    shown: ['and $y = (7, -2, 1)$']
+    source: {cite: reading2, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p4-d-check
+    where: 'Problem 4(d), check: 7·row 1 − 2·row 2 + row 3 of A, entries squared and added'
+    inputs: {}
+    formula: (7 - 6 - 1)**2 + (14 - 14 + 0)**2 + (-7 + 4 + 3)**2 + (7 - 10 + 3)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$y^TA = 7(1, 2, -1, 1) - 2(3, 7, -2, 5) + (-1, 0, 3, 3) = (7 - 6 - 1, 14 - 14 + 0, -7 + 4 + 3, 7 - 10 + 3) = (0, 0, 0, 0)$']
+    source: {cite: reading2, at: 'pp. 19–20'}
+    origin: page-own
+
+  - id: p4-d-E
+    where: 'Problem 4(d): row 3 of E after the two steps that change it, (1, 0, 1) − 2(−3, 1, 0), first entry'
+    inputs: {}
+    formula: 1 - 2*(-3)
+    expected: '7'
+    tolerance: '1e-12'
+    shown: ['$(1, 0, 1) - 2(-3, 1, 0) = (7, -2, 1)$']
+    source: {cite: reading2, at: 'pp. 17–20'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-a-n
+    answer: p5-a-n
+    where: 'Problem 5(a), answer box: dim N(A) = n − r for a 6 × 9 matrix of rank 4'
+    inputs: {n: 9, r: 4}
+    formula: n - r
+    expected: '5'
+    tolerance: '1e-9'
+    shown: ['$\text{dim}\, N(A) = n - r = 9 - 4 = 5$']
+    source: {cite: reading2, at: 'pp. 9–10'}
+    origin: page-own
+
+  - id: p5-a-left
+    answer: p5-a-left
+    where: 'Problem 5(a), answer box: dim N(Aᵀ) = m − r'
+    inputs: {m: 6, r: 4}
+    formula: m - r
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['$\text{dim}\, N(A^T) = m - r = 6 - 4 = 2$']
+    source: {cite: reading2, at: 'p. 10'}
+    origin: page-own
+
+  - id: p5-b-n
+    kind: identity
+    answer: p5-b-n
+    where: 'Problem 5(b), answer box: dim N(B) for b in C(A) against (columns of B) − (rank of B), with rank of B = rank of A'
+    formula: n + 1 - r
+    equals: (n + 1) - r
+    samples: {n: [3, 4, 5, 6, 3.5], r: [1, 2, 1.5, 2, 1]}
+    tolerance: 1e-12
+    shown: ['\text{dim}\, N(B) = (n + 1) - r']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: p5-b-n-example
+    where: 'Problem 5(b), check: for A = [1 0; 0 0], b = (1, 0), the two vectors (1, 0, −1) and (0, 1, 0) satisfy B x = 0 (B = [1 0 1; 0 0 0]), residuals squared and added; their number 2 equals n + 1 − r with n = 2, r = 1'
+    inputs: {n: 2, r: 1}
+    formula: n + 1 - r + ((1*1 + 0*0 + 1*(-1))**2 + (1*0 + 0*1 + 1*0)**2)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['$N(B)$ holds $(1, 0, -1)$ and $(0, 1, 0)$: dimension $2 = 2 + 1 - 1$']
+    source: {cite: reading1, at: 'p. 24'}
+    origin: page-own
+
+  - id: p5-b-left
+    kind: identity
+    answer: p5-b-left
+    where: 'Problem 5(b), answer box: dim N(Bᵀ) for b not in C(A) against (rows of B) − (rank of B), with rank r + 1'
+    formula: m - r - 1
+    equals: m - (r + 1)
+    samples: {m: [10, 11, 12, 14, 13], r: [1, 2, 1.5, 2, 1]}
+    tolerance: 1e-12
+    shown: ['\text{dim}\, N(B^T) = m - (r + 1) = m - r - 1']
+    source: {cite: reading2, at: 'p. 10'}
+    origin: page-own
+
+  - id: p5-c-1
+    where: 'Problem 5(c), property 1 (impossible): dim N(A) = 1 for a 3 × 4 matrix forces r = 4 − 1, and then dim N(Aᵀ) = 3 − r is 0, not 1'
+    inputs: {m: 3, n: 4}
+    formula: m - (n - 1)
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['and then $\text{dim}\, N(A^T) = 3 - 3 = 0$, not 1']
+    source: {cite: reading2, at: 'pp. 7–10'}
+    origin: page-own
+
+  - id: p5-c-3
+    where: 'Problem 5(c), property 3 (possible): dim C(Aᵀ) = 3 gives r = 3, and then dim N(A) = 6 − 3'
+    inputs: {n: 6, r: 3}
+    formula: n - r
+    expected: '3'
+    tolerance: '1e-12'
+    shown: ['and then $\text{dim}\, N(A) = 6 - 3 = 3$, as asked']
+    source: {cite: reading2, at: 'pp. 7–10'}
+    origin: page-own
+
+  - id: p5-c-2
+    where: 'Problem 5(c), property 2 (impossible): r = n − r gives r = n/2, not a whole number for n = 3'
+    inputs: {n: 3}
+    formula: n/2
+    expected: '1.5'
+    tolerance: '1e-12'
+    shown: ['since $r$ would be $\frac32$']
+    source: {cite: reading2, at: 'pp. 7–10'}
+    origin: page-own
+
+  - id: p5-c-4
+    where: 'Problem 5(c), property 4 (possible): [0 1; 0 0] times (1, 0) is zero, and its only column direction (1, 0) is that vector: (0·1 + 1·0)² + (0·1 + 0·0)²'
+    inputs: {}
+    formula: (0*1 + 1*0)**2 + (0*1 + 0*0)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['is zero exactly when $x_2 = 0$']
+    source: {cite: reading2, at: 'pp. 7–10'}
+    origin: page-own
+
+  # ---- Problem 6  (A = [1 3; 2 6; −1 −3])
+
+  - id: p6-b-p
+    answer: p6-b-p
+    where: 'Problem 6(b), answer box: p from the second column of (p, 1, 0)^T A = 0: 3p + 6 = 0 (the page uses the first column)'
+    inputs: {}
+    formula: solve('3*p + 6', 'p', -10, 10)
+    expected: '-2'
+    tolerance: '1e-9'
+    shown: ['that gives $p + 2 = 0$, so $p = -2$']
+    source: {cite: reading2, at: 'p. 16'}
+    origin: page-own
+
+  - id: p6-b-q
+    answer: p6-b-q
+    where: 'Problem 6(b), answer box: q from the second column of (q, 0, 1)^T A = 0: 3q − 3 = 0'
+    inputs: {}
+    formula: solve('3*q - 3', 'q', -10, 10)
+    expected: '1'
+    tolerance: '1e-9'
+    shown: ['it gives $q - 1 = 0$, so $q = 1$']
+    source: {cite: reading2, at: 'p. 16'}
+    origin: page-own
+
+  - id: p6-b-check
+    where: 'Problem 6(b), check: (−2, 1, 0)^T A and (1, 0, 1)^T A, all four entries squared and added'
+    inputs: {}
+    formula: (-2*1 + 2)**2 + (-2*3 + 6)**2 + (1 - 1)**2 + (3 - 3)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$(-2, 1, 0)^TA = -2(1, 3) + (2, 6) = (0, 0)$']
+    source: {cite: reading2, at: 'p. 16'}
+    origin: page-own
+
+  - id: p6-b-cmp
+    where: 'Problem 6(b), choice box (two different planes): (0, 1, 0) is in N(Rᵀ) (first component 0) but y1 + 2y2 − y3 = 2 for it, so it is not in N(Aᵀ)'
+    inputs: {}
+    formula: 0 + 2*1 - 0
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['since $0 + 2 - 0 \neq 0$']
+    source: {cite: reading2, at: 'p. 16'}
+    origin: page-own
+
+  - id: p6-b-dim
+    where: 'Problem 6(b): dim N(Aᵀ) = m − r = 3 − 1 (A has one independent row)'
+    inputs: {m: 3, r: 1}
+    formula: m - r
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['which has dimension $m - r = 3 - 1 = 2$']
+    source: {cite: reading2, at: 'p. 10'}
+    origin: page-own
