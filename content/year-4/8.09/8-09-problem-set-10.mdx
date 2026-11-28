@@ -1,0 +1,1046 @@
+---
+title: "Problem Set 10: Fixed points, a bead on a spinning hoop, a driven pendulum without damping, a limit cycle and chaotic maps"
+slug: 8-09-problem-set-10
+course: "8.09"
+kind: problems
+set: 10
+lecture: 7.5
+order: 90
+covers: [7.1, 7.2, 7.3, 7.4, 7.5]
+solutions: own
+summary: "Five problems on nonlinear dynamics and chaos. Find and classify the fixed points of a two-dimensional flow. Follow a bead on a rotating hoop with and without friction, through its fixed points and a conserved quantity. Explore a driven pendulum without damping numerically. Study a system whose limit cycle and fixed point trade stability. Explore the logistic map and three other one-dimensional maps."
+prerequisites: [chaos-phase-space-poincare-sections, one-dimensional-bifurcations, fixed-points-two-dimensions, limit-cycles-hopf-bifurcations, chaos-logistic-map]
+source:
+  title: "MIT 8.09 Problem Set 10 (Fall 2014)"
+  url: https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/resources/mit8_09f14_pset10/
+  readings:
+    - title: "8.09 Chapter 7 notes (Stewart, typed, pp. 142–195)"
+      url: https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/a3b977a17091d225ee1870d100c7a308_MIT8_09F14_Chapter_7.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: draft
+---
+
+This set practises the chapter on chaos and nonlinear dynamics. Problem 1 uses [fixed points in two dimensions](/courses/8-09/fixed-points-two-dimensions) (Section 7.3). Problem 2 takes the bead on a rotating hoop of [bifurcations in one dimension](/courses/8-09/one-dimensional-bifurcations) (Section 7.2) into two dimensions, with the tools of Section 7.3. Problem 3 is a numerical experiment on the driven pendulum of [phase space and Poincaré sections](/courses/8-09/chaos-phase-space-poincare-sections) (Section 7.1). Problem 4 uses [limit cycles and Hopf bifurcations](/courses/8-09/limit-cycles-hopf-bifurcations) (Section 7.4), and Problem 5 [the logistic map](/courses/8-09/chaos-logistic-map) (Section 7.5). The problems follow MIT's Problem Set 10, in our own words and in MIT's order. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+A few things to know about the source. The sheet has printed page numbers; the problems are on pp. 2 to 5, cited below as "p. 2" and so on. The notes are cited by their printed page and equation number. The sheet's reading list (sections of two textbooks) is left out. Problems 3 and 5 ask you to use MIT's Mathematica notebooks from the course website (for the driven pendulum and for the logistic map); here you may use any tool that integrates differential equations or iterates a map, and our own numbers were computed with Python (NumPy, SciPy and mpmath). The sheet shows a bifurcation plot of the logistic map (marked as in the public domain); it is not reproduced here, and the start of the same plot is drawn below from exact formulas instead. The sheet writes the angular velocity as $w$, and this page keeps that letter. Several parts ask for a plot or a sketch: those parts are marked by you from the solution, and where we could, we added a box that checks one number you can read off your plot.
+
+Some choices are ours, each marked where it appears:
+
+- in Problem 2, the start at the stable position $\theta = \pi/3$ for the numbers of (c) and (d), and "over the top" meaning that the bead reaches $\theta = \pi$;
+- in Problem 3, the start $\theta = 0$, $w = 0$, $\varphi = 0$, the strobe times, the use of the largest Lyapunov exponent as the test for chaos, and the values of $a$ that the boxes offer;
+- in Problem 5, the values $r = 3.2$ and $r = 4$ and the start $x_0 = 0.3$ in (a), and the ranges of $r$ in (d);
+- the split of each problem's points between its parts.
+
+Some boxes are our additions, each marked where it appears: the angular frequency of the spiral and the slopes of the eigenvectors in Problem 1, the damping at which a spiral turns into a node in Problem 2(b), the starting speeds and the shape of a trajectory in Problem 2(c) and (d), the window in Problem 3(a), the value of $a$ at which the type of the fixed point changes in Problem 4(b), the larger point of the 2-cycle and the third root in Problem 5(c), and the first period doublings in Problem 5(d).
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit named in the question. A formula box takes plain typing, for example `a*omega0^2/g`, and accepts every correct way of writing the answer. It treats its letters as independent, so each question says which letters to type: for example `theta` for $\theta$, `gamma` for $\gamma$, `beta` for $\beta$, `omega0` for $\omega_0$.
+
+The points per problem are MIT's, and so is their split between the parts of Problems 2 to 5. Problem 1 has no parts on the sheet; its split into three parts is ours. Several parts ask you to show or sketch something. Those parts have no box, or only a small one: open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+All five problems use the language of Section 7.3. A flow $\dot{\vec x} = \vec f(\vec x)$ has fixed points where $\vec f = 0$. Near one, the small displacement $\vec u$ obeys a linear system whose matrix holds the derivatives of $\vec f$ there:
+
+<Formula label="Linearization about a fixed point" tex="\dot{\vec u} = M\vec u, \qquad M_{ij} = \left.\frac{\partial f_i}{\partial x_j}\right|_{\vec x = \vec x_*}" cite="reading1" at="Section 7.3.1, eq. (7.47), p. 170" />
+
+In two dimensions the eigenvalues of $M$ follow from its trace $\tau$ and determinant $\Delta$:
+
+<Formula label="Eigenvalues of a 2 × 2 system" tex="\lambda_\pm = \frac{\tau \pm \sqrt{\tau^2 - 4\Delta}}{2}" cite="reading1" at="Section 7.3.1, eqs. (7.42) and (7.43), p. 166" />
+
+$\Delta < 0$ gives a saddle. For $\Delta > 0$: a node if $\tau^2 > 4\Delta$, a spiral if $\tau^2 < 4\Delta$, stable when $\tau < 0$ and unstable when $\tau > 0$, and a centre when $\tau = 0$ (pp. 166–168). An overdot is $d/dt$.
+
+## Problem 1
+
+<Exercise id="p1" title="Classifying fixed points" points={8} mit="Problem 1">
+
+A flow in the $(x, y)$ plane is
+
+<Formula label="The flow of Problem 1" tex="\dot x = x\,(4 + y - x^2), \qquad \dot y = y\,(x - 1)" cite="mit" at="Problem 1, p. 2" />
+
+Find all its fixed points, their stability and type, and the eigenvectors where they help; then sketch the trajectories. The sheet gives this as one task; we split it into three parts (our choice).
+
+<Part label="a" points={2}>
+
+Find all the fixed points. Give their number in the first box. Exactly one of them lies off both axes: give its $y$ coordinate in the second box.
+
+<Hint>
+
+$\dot y = 0$ needs $y = 0$ or $x = 1$. Take each case into $\dot x = 0$.
+
+</Hint>
+
+<Answer id="p1a-n" label="Number of fixed points:" value="4" tolerance="0.1" calc="p1a-n" />
+
+<Answer id="p1a-y" label="$y$ of the fixed point off the axes:" value="-3" tolerance="0.01" calc="p1a-y" />
+
+<Solution>
+
+**The idea.** Both right-hand sides are products, so each vanishes when one of its factors does.
+
+<Step title="The cases">
+
+If $y = 0$, then $\dot x = x(4 - x^2) = 0$ gives $x = 0$ or $x = \pm 2$. If $x = 1$, then $\dot x = 1\cdot(4 + y - 1) = 0$ gives $y = -3$. So
+
+<Formula label="Problem 1(a): the fixed points" tex="(0, 0), \qquad (2, 0), \qquad (-2, 0), \qquad (1, -3)" cite="mit" at="Problem 1, p. 2 (our own solution)" />
+
+four fixed points, and $(1, -3)$ is the one off the axes.
+
+</Step>
+
+<Step title="Check the result">
+
+At $(1, -3)$: $\dot x = 1\cdot(4 - 3 - 1) = 0$ and $\dot y = -3\cdot 0 = 0$. The case $x = 0$ needs nothing new: then $\dot y = -y = 0$ gives the origin again.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Linearize about each fixed point and give its stability and type, one box for each. Then (our addition) give the angular frequency, the imaginary part of the eigenvalues, at the one fixed point whose eigenvalues are complex, as a decimal (in units of 1/time).
+
+<Hint>
+
+The matrix is $M = \begin{pmatrix} 4 + y - 3x^2 & x \\ y & x - 1\end{pmatrix}$. Put in each fixed point, then use $\tau$ and $\Delta$.
+
+</Hint>
+
+<Hint>
+
+At three of the points $M$ is triangular, so its eigenvalues are the numbers on its diagonal.
+
+</Hint>
+
+<Answer id="p1b-00" label="$(0, 0)$ is:" choices={["a saddle", "a stable node", "an unstable node", "a stable spiral", "a centre"]} answer={0} />
+
+<Answer id="p1b-20" label="$(2, 0)$ is:" choices={["a stable node", "a stable spiral", "a saddle", "an unstable node", "a centre"]} answer={2} />
+
+<Answer id="p1b-m20" label="$(-2, 0)$ is:" choices={["a saddle", "a stable node", "a stable spiral", "an unstable spiral", "a centre"]} answer={1} />
+
+<Answer id="p1b-13" label="$(1, -3)$ is:" choices={["a stable node", "a saddle", "an unstable spiral", "a centre", "a stable spiral"]} answer={4} />
+
+<Answer id="p1b-freq" label="Angular frequency of the spiral:" value="1.414" unit="1/time" tolerance="1%" calc="p1b-freq" />
+
+<Solution>
+
+**The idea.** Evaluate the matrix of derivatives at each fixed point and read off its eigenvalues, or its trace and determinant.
+
+<Step title="The matrix">
+
+With $f_x = 4x + xy - x^3$ and $f_y = xy - y$:
+
+<Formula label="Problem 1(b): the matrix of the linearized flow" tex="M = \begin{pmatrix} 4 + y - 3x^2 & x \\ y & x - 1 \end{pmatrix}" cite="mit" at="Problem 1, p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="The four points">
+
+- $(0, 0)$: $M = \mathrm{diag}(4, -1)$. Eigenvalues $4$ and $-1$, of opposite sign: a **saddle** (unstable).
+- $(2, 0)$: $M = \begin{pmatrix} -8 & 2 \\ 0 & 1\end{pmatrix}$. Eigenvalues $-8$ and $1$: a **saddle**.
+- $(-2, 0)$: $M = \begin{pmatrix} -8 & -2 \\ 0 & -3\end{pmatrix}$. Eigenvalues $-8$ and $-3$, both negative: a **stable node**.
+- $(1, -3)$: $M = \begin{pmatrix} -2 & 1 \\ -3 & 0\end{pmatrix}$, with $\tau = -2$, $\Delta = 3$. Since $\tau^2 - 4\Delta = -8 < 0$ the eigenvalues are complex, $\lambda = -1 \pm i\sqrt2$, with negative real part: a **stable spiral**.
+
+The spiral decays at the rate 1 and turns at the angular frequency $\sqrt2 = 1.414$.
+
+</Step>
+
+<Step title="Check the result">
+
+For each point the eigenvalues add up to $\tau$ and multiply to $\Delta$: for example $(-8)(1) = -8 = \Delta$ at $(2, 0)$, and $(-1 + i\sqrt2)(-1 - i\sqrt2) = 3$ at $(1, -3)$. None of the four points is a borderline case ($\Delta = 0$, $\tau = 0$ or $\tau^2 = 4\Delta$), so the linear classification holds for the full nonlinear flow (p. 170).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+Find the eigenvectors that help the sketch, and sketch the trajectories in the $(x, y)$ plane. As checks (our additions), give the slope $dy/dx$ of the unstable direction at the saddle $(2, 0)$, and the slope of the slow direction (the eigenvalue $-3$) at the node $(-2, 0)$, both as decimals.
+
+<Hint>
+
+The $x$ axis and the $y$ axis are both made of whole trajectories: on $y = 0$ the flow has $\dot y = 0$, and on $x = 0$ it has $\dot x = 0$. So one eigenvector of each point on an axis lies along that axis.
+
+</Hint>
+
+<Hint>
+
+For the other eigenvector $(1, s)$ of $\begin{pmatrix} p & q \\ 0 & d\end{pmatrix}$ with eigenvalue $d$, the first row gives $p + qs = d$.
+
+</Hint>
+
+<Answer id="p1c-s1" label="Slope of the unstable direction at $(2, 0)$:" value="4.5" tolerance="1%" calc="p1c-s1" />
+
+<Answer id="p1c-s2" label="Slope of the slow direction at $(-2, 0)$:" value="-2.5" tolerance="1%" calc="p1c-s2" />
+
+<Solution>
+
+**The idea.** The axes carry trajectories of their own, which fixes one eigenvector at each point on an axis; the other comes from the first row of $M$.
+
+<Step title="The eigenvectors">
+
+- $(0, 0)$: the unstable direction is the $x$ axis (eigenvalue 4), the stable one the $y$ axis (eigenvalue $-1$).
+- $(2, 0)$: eigenvalue $-8$ along the $x$ axis; for the eigenvalue 1, $-8 + 2s = 1$ gives $s = 9/2$, the direction $(2, 9)$, slope $4.5$.
+- $(-2, 0)$: eigenvalue $-8$ along the $x$ axis; for $-3$, $-8 - 2s = -3$ gives $s = -5/2$, the direction $(2, -5)$, slope $-2.5$. Since $|-3| < |-8|$, trajectories approach this node along $(2, -5)$, tangent to that line, after the fast part along $x$ has died.
+- $(1, -3)$: complex eigenvectors, so no special straight directions: trajectories spiral in.
+
+<Formula label="Problem 1(c): the real eigenvectors" tex="(2, 0):\ \lambda = 1 \text{ along } (2, 9), \qquad (-2, 0):\ \lambda = -3 \text{ along } (2, -5)" cite="mit" at="Problem 1, p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="The sketch">
+
+On the $x$ axis the flow runs away from the origin, towards $x = -2$ from both sides, and away from $x = 2$ on both sides. On the $y$ axis it runs into the origin. In the upper half plane ($y > 0$) points with $x > 1$ move up and those with $x < 1$ move down, and $\dot x = 0$ on the parabola $y = x^2 - 4$. Trajectories leave the saddle $(2, 0)$ along $(2, 9)$: one branch rises up and to the right without bound, the other goes down into the lower half plane and spirals into $(1, -3)$. Since both axes are trajectories, no trajectory crosses them, and each quadrant has its own fate. Points to the left of the $y$ axis end at the node $(-2, 0)$. Points with $x > 0$, $y < 0$ end in the spiral, and points with $x > 0$, $y > 0$ run off to infinity (in our numerical check every start we tried in these quadrants did so).
+
+</Step>
+
+<Step title="Check the result">
+
+$M\,(2, 9) = (-16 + 18,\ 9) = (2, 9)$ at $(2, 0)$, and $M\,(2, -5) = (-16 + 10,\ 15) = (-6, 15) = -3\,(2, -5)$ at $(-2, 0)$. Both are eigenvectors with the stated eigenvalues.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Bead on a rotating hoop" points={15} mit="Problem 2">
+
+A bead of mass $m$ slides on a hoop of radius $a$, with friction coefficient $\beta > 0$. The hoop stands vertically and turns about its vertical diameter (the $z$ axis) at the constant angular velocity $\omega_0$. With $\theta$ the angle of the bead from the bottom of the hoop, its equation of motion is
+
+<Formula label="The bead on a rotating hoop" tex="m a\,\ddot\theta = -\beta\,\dot\theta + m a\,\omega_0^2\sin\theta\left(\cos\theta - \frac{g}{a\omega_0^2}\right)" cite="mit" at="Problem 2, p. 2" />
+
+The notes study the same equation (eq. (7.35), p. 162) in the overdamped limit, where $\ddot\theta$ is dropped. Here you keep it, so the motion lives in the two-dimensional phase space $(\theta, w)$.
+
+<Part label="a" points={2}>
+
+Show that new variables bring the equation to the dimensionless form
+
+<Formula label="The dimensionless bead" tex="\dot\theta = w, \qquad \dot w = \sin\theta\left(\cos\theta - \frac{1}{\gamma}\right) - b\,w" cite="mit" at="Problem 2(a), p. 2" />
+
+with $\gamma > 0$ and $b > 0$, where the overdot now means the derivative with respect to the dimensionless time $s = \omega_0 t$. Type $\gamma$ with `a`, `omega0` and `g`, and $b$ with `beta`, `m`, `a` and `omega0`. Then choose, in the third box, a symmetry of the system that involves both variables.
+
+<Hint>
+
+Divide the equation by $ma\omega_0^2$. Which time unit then makes the coefficient of $\sin\theta\cos\theta$ equal to 1?
+
+</Hint>
+
+<Answer id="p2a-gamma" label="$\gamma =$" expr="a*omega0^2/g"
+  vars={{ a: [0.1, 2], omega0: [1, 10], g: [9, 10] }} names={{ omega0: "\\omega_0" }}
+  mistakes={[
+    { expr: "g/(a*omega0^2)", hint: "This is 1/γ, the number that appears in the bracket next to cos θ." }
+  ]} />
+
+<Answer id="p2a-b" label="$b =$" expr="beta/(m*a*omega0)"
+  vars={{ beta: [0.1, 2], m: [0.1, 2], a: [0.1, 2], omega0: [1, 10] }} names={{ beta: "\\beta", omega0: "\\omega_0" }}
+  mistakes={[
+    { expr: "beta/(m*a*omega0^2)", hint: "This keeps one factor of ω₀ too many. Changing the time to s = ω₀t turns θ̇ into ω₀ dθ/ds, which cancels one of the two." },
+    { expr: "beta/(m*a)", hint: "This is a rate in 1/s, not a pure number. Measured in the time unit 1/ω₀ it becomes β/(maω₀)." }
+  ]} />
+
+<Answer id="p2a-sym" label="The system is unchanged under:" choices={["θ → −θ with w kept", "θ → θ + π with w kept", "θ → −θ, w → −w", "w → −w with θ kept"]} answer={2} />
+
+<Solution>
+
+**The idea.** Divide by $ma\omega_0^2$ and measure time in units of $1/\omega_0$.
+
+<Step title="The change of variables">
+
+Dividing by $ma\omega_0^2$:
+
+$\ddot\theta/\omega_0^2 = -\frac{\beta}{ma\omega_0^2}\,\dot\theta + \sin\theta\left(\cos\theta - \frac{g}{a\omega_0^2}\right)$.
+
+With $s = \omega_0 t$, $d\theta/ds = \dot\theta/\omega_0$ and $d^2\theta/ds^2 = \ddot\theta/\omega_0^2$, so with $w = d\theta/ds$:
+
+<Formula label="Problem 2(a): the dimensionless numbers" tex="\gamma = \frac{a\omega_0^2}{g}, \qquad b = \frac{\beta}{ma\omega_0}" cite="mit" at="Problem 2(a), p. 2 (our own solution)" />
+
+</Step>
+
+<Step title="The symmetry">
+
+Replace $\theta \to -\theta$ and $w \to -w$. The first equation becomes $-\dot\theta = -w$, the same. In the second, $\sin\theta$ changes sign and $\cos\theta$ does not, so the right-hand side changes sign, as does the left. It is the mirror image of the bead in the axis of rotation: a bead on the left side moving left behaves as one on the right moving right.
+
+</Step>
+
+<Step title="Check the result">
+
+Units: $a\omega_0^2/g$ is an acceleration over an acceleration, and $\beta$ has the units of $ma\ddot\theta/\dot\theta$, kg·m/s, so $\beta/(ma\omega_0)$ is a pure number too. The other choices fail: $\theta \to -\theta$ alone flips the sign of $\dot w$ but not of $w$ in $\dot\theta = w$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Find the fixed points for $b = 0$ and for $b \neq 0$, and classify the stability and type of each with a linear analysis only. Type the positive angle $\theta_*$ of the fixed point that exists only for $\gamma > 1$, with `gamma`. Choose what $\theta = 0$ is for $\gamma > 1$, and what $\theta = \pm\theta_*$ are when $b = 0$. Then (our addition) type the value of $b$, with `gamma`, below which $\pm\theta_*$ are spirals and above which they are nodes.
+
+<Hint>
+
+A fixed point has $w = 0$ and $\sin\theta\,(\cos\theta - 1/\gamma) = 0$. Damping only enters through $w$, so it does not move the fixed points.
+
+</Hint>
+
+<Hint>
+
+The matrix is $\begin{pmatrix} 0 & 1 \\ F'(\theta_*) & -b\end{pmatrix}$ with $F(\theta) = \sin\theta\cos\theta - \sin\theta/\gamma$ and $F'(\theta) = \cos 2\theta - \cos\theta/\gamma$. So $\tau = -b$ and $\Delta = -F'(\theta_*)$.
+
+</Hint>
+
+<Answer id="p2b-th" label="$\theta_* =$" expr="acos(1/gamma)"
+  vars={{ gamma: [1.2, 5] }} names={{ gamma: "\\gamma" }}
+  mistakes={[
+    { expr: "acos(gamma)", hint: "Check which way round: the fixed point needs cos θ = 1/γ, a number below 1 when γ > 1." }
+  ]} />
+
+<Answer id="p2b-0" label="For $\gamma > 1$, $\theta = 0$ is:" choices={["a stable spiral", "a saddle", "a centre", "a stable node"]} answer={1} />
+
+<Answer id="p2b-c" label="For $b = 0$, $\theta = \pm\theta_*$ are:" choices={["centres", "saddles", "stable spirals", "unstable nodes"]} answer={0} />
+
+<Answer id="p2b-bc" label="$b$ at the change from spiral to node:" expr="2*sqrt(1 - 1/gamma^2)"
+  vars={{ gamma: [1.2, 5] }} names={{ gamma: "\\gamma" }}
+  mistakes={[
+    { expr: "sqrt(1 - 1/gamma^2)", hint: "This is √Δ. The spiral turns into a node where τ² = 4Δ, so b = 2√Δ." },
+    { expr: "2*sqrt(1 - 1/gamma)", hint: "This uses Δ = 1 − 1/γ, the value at θ = 0 for γ < 1. At θ = ±θ_* the determinant is sin²θ_* = 1 − 1/γ²." }
+  ]} />
+
+<Solution>
+
+**The idea.** The fixed points do not depend on $b$; their types do, through the trace $\tau = -b$.
+
+<Step title="The fixed points">
+
+$w = 0$ and $\sin\theta = 0$ or $\cos\theta = 1/\gamma$. So $\theta = 0$ (bottom) and $\theta = \pi$ (top) for every $\gamma$, and for $\gamma > 1$ also $\theta = \pm\theta_*$ with
+
+<Formula label="Problem 2(b): the side fixed points" tex="\theta_* = \arccos\frac{1}{\gamma} \quad (\gamma > 1)" cite="reading1" at="Section 7.2.3, p. 162" />
+
+as in the notes' overdamped analysis (which writes $g/(a\omega^2)$ for $1/\gamma$). The same points hold for $b = 0$ and $b \neq 0$.
+
+</Step>
+
+<Step title="The determinant at each point">
+
+$\Delta = -F'(\theta_*) = \cos\theta_*/\gamma - \cos 2\theta_*$:
+
+- bottom, $\theta = 0$: $\Delta = 1/\gamma - 1$, positive for $\gamma < 1$ and negative for $\gamma > 1$;
+- top, $\theta = \pi$: $\Delta = -1/\gamma - 1 < 0$ always;
+- sides, $\cos\theta_* = 1/\gamma$: $\Delta = 1/\gamma^2 - (2/\gamma^2 - 1) = 1 - 1/\gamma^2 = \sin^2\theta_* > 0$.
+
+</Step>
+
+<Step title="The types">
+
+<Formula label="Problem 2(b): trace and determinant" tex="\tau = -b, \qquad \Delta(0) = \frac{1}{\gamma} - 1, \qquad \Delta(\pi) = -1 - \frac{1}{\gamma}, \qquad \Delta(\pm\theta_*) = 1 - \frac{1}{\gamma^2}" cite="mit" at="Problem 2(b), p. 2 (our own solution)" />
+
+- $\theta = \pi$: a **saddle** for every $\gamma$ and $b$.
+- $\theta = 0$, $\gamma > 1$: a **saddle**. For $\gamma < 1$: a **centre** if $b = 0$; if $b > 0$ a stable spiral when $b^2 < 4(1/\gamma - 1)$ and a stable node when $b^2 > 4(1/\gamma - 1)$.
+- $\theta = \pm\theta_*$ ($\gamma > 1$): **centres** if $b = 0$; if $b > 0$ stable, spirals for $b < 2\sqrt{1 - 1/\gamma^2}$ and nodes above that.
+
+(At $\gamma = 1$ the bottom has $\Delta = 0$, a borderline case where linear analysis says nothing: this is the pitchfork of the notes.)
+
+</Step>
+
+<Step title="Check the result">
+
+For $\gamma = 2$: $\theta_* = \arccos(1/2) = \pi/3$, $\Delta = 3/4$, and the change from spiral to node is at $b = 2\sqrt{3/4} = \sqrt3 = 1.73$. So for $b = 1$ in part (d) the side points are stable spirals. The centres for $b = 0$ are a linear verdict; part (c) confirms them with a conserved quantity.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Take $b = 0$. Show that the system is conservative and find a conserved quantity $H(\theta, w)$. Type it in the form $\frac12 w^2 + U(\theta)$ with $U(0) = 0$, using `theta`, `w` and `gamma`. Is $H$ the energy? Choose in the second box. Then draw the phase portrait from curves of constant $H$ and label the fixed points. Finally (our addition), take $\gamma = 2$ and the bead starting at its stable position $\theta = \pi/3$ (our choice): give the smallest $w(0) > 0$ that takes it over the top, to $\theta = \pi$, as a decimal (in units of $\omega_0$).
+
+<Hint>
+
+Multiply $\dot w = F(\theta)$ by $w = \dot\theta$: then both sides are time derivatives.
+
+</Hint>
+
+<Hint>
+
+In the lab frame the bead's kinetic energy is $\frac12 ma^2(\dot\theta^2 + \omega_0^2\sin^2\theta)$: it moves along the hoop and is carried round with it. Compare the sign of the $\sin^2\theta$ term with your $H$.
+
+</Hint>
+
+<Hint>
+
+The bead gets over the top when its $H$ exceeds the value of $H$ at the top fixed point.
+
+</Hint>
+
+<Answer id="p2c-h" label="$H =$" expr="w^2/2 - sin(theta)^2/2 + (1 - cos(theta))/gamma"
+  vars={{ w: [-2, 2], theta: [0.2, 2.8], gamma: [0.5, 5] }} names={{ theta: "\\theta", gamma: "\\gamma" }}
+  mistakes={[
+    { expr: "w^2/2 + sin(theta)^2/2 + (1 - cos(theta))/gamma", hint: "Check the sign of the sin²θ term: ẇ = −dU/dθ, and the term sin θ cos θ in ẇ comes from U = −½ sin²θ." },
+    { expr: "w^2/2 - sin(theta)^2/2 - (1 - cos(theta))/gamma", hint: "Check the sign of the gravity term: the force −sin θ/γ pulls the bead down, so U grows as the bead rises, like +(1 − cos θ)/γ." }
+  ]} />
+
+<Answer id="p2c-e" label="Is $H$ the energy?" choices={["Yes: it is the bead's kinetic and gravitational energy, divided by ma²ω₀²", "Yes, up to a constant: only the rotational energy of the hoop is left out", "No: it is the energy seen in the rotating frame, while the hoop does work on the bead in the lab", "No: H is not conserved once the hoop rotates"]} answer={2} />
+
+<Answer id="p2c-w" label="Smallest $w(0)$, undamped:" value="1.5" unit="ω₀" tolerance="1%" calc="p2c-w" />
+
+<Solution>
+
+**The idea.** With $b = 0$ the equation is $\dot w = F(\theta)$, a particle in a potential; the potential includes the centrifugal term of the rotating hoop.
+
+<Step title="A conserved quantity">
+
+The divergence of the flow is $\partial\dot\theta/\partial\theta + \partial\dot w/\partial w = 0 + 0 = 0$, so the flow keeps phase-space areas: it is conservative, and in two dimensions it has a Hamiltonian (Section 7.3.2, p. 172). Directly: with $U(\theta) = -\int F\,d\theta$,
+
+<Formula label="Problem 2(c): the conserved quantity" tex="H(\theta, w) = \frac12 w^2 - \frac12\sin^2\theta + \frac{1 - \cos\theta}{\gamma}, \qquad \dot\theta = \frac{\partial H}{\partial w}, \quad \dot w = -\frac{\partial H}{\partial\theta}" cite="mit" at="Problem 2(c), p. 2 (our own solution)" />
+
+and $\dot H = w\dot w - F(\theta)\,w = 0$.
+
+</Step>
+
+<Step title="Is it the energy?">
+
+In physical units, $ma^2\omega_0^2\,H = \frac12 ma^2\dot\theta^2 - \frac12 ma^2\omega_0^2\sin^2\theta + mga(1 - \cos\theta)$. The lab energy is $\frac12 ma^2\dot\theta^2 + \frac12 ma^2\omega_0^2\sin^2\theta + mga(1 - \cos\theta)$, with a plus sign on the motion carried round by the hoop. The two differ by $ma^2\omega_0^2\sin^2\theta$, which changes as the bead moves, so the lab energy is not conserved: the hoop pushes the bead sideways and the motor that keeps $\omega_0$ fixed does work on it. $H$ is the energy in the frame that rotates with the hoop, where $-\frac12 ma^2\omega_0^2\sin^2\theta$ is the centrifugal potential energy (the Jacobi integral of a Lagrangian that does not depend on time).
+
+</Step>
+
+<Step title="The phase portrait">
+
+For $\gamma > 1$ the potential $U$ has minima at $\pm\theta_*$ (closed orbits round centres), a small hump at $\theta = 0$ with $U = 0$, and its largest value $U(\pi) = 2/\gamma$ at the top. The level curves $H = 0$ and $H = 2/\gamma$ pass through the saddles and are separatrices: inside $H = 0$, two families of loops, one round each centre; between the two, loops that swing through the bottom and round both centres; above $H = 2/\gamma$, curves that run along the whole $\theta$ axis, the bead going over the top again and again. For $\gamma < 1$ there is only a centre at the bottom and a saddle at the top, like a pendulum.
+
+<Plot variable="x" domain={[-3.1416, 3.1416]} range={[-2.2, 2.2]} xLabel="θ" yLabel="w" samples={800}
+  curves={[
+    { expr: "-0.06 - (-sin(x)^2/2 + (1 - cos(x))/2) >= 0 ? sqrt(2*(-0.06 - (-sin(x)^2/2 + (1 - cos(x))/2))) : NaN" },
+    { expr: "-0.06 - (-sin(x)^2/2 + (1 - cos(x))/2) >= 0 ? -sqrt(2*(-0.06 - (-sin(x)^2/2 + (1 - cos(x))/2))) : NaN" },
+    { expr: "0 - (-sin(x)^2/2 + (1 - cos(x))/2) >= 0 ? sqrt(2*(0 - (-sin(x)^2/2 + (1 - cos(x))/2))) : NaN", dash: true },
+    { expr: "0 - (-sin(x)^2/2 + (1 - cos(x))/2) >= 0 ? -sqrt(2*(0 - (-sin(x)^2/2 + (1 - cos(x))/2))) : NaN", dash: true },
+    { expr: "0.5 - (-sin(x)^2/2 + (1 - cos(x))/2) >= 0 ? sqrt(2*(0.5 - (-sin(x)^2/2 + (1 - cos(x))/2))) : NaN" },
+    { expr: "0.5 - (-sin(x)^2/2 + (1 - cos(x))/2) >= 0 ? -sqrt(2*(0.5 - (-sin(x)^2/2 + (1 - cos(x))/2))) : NaN" },
+    { expr: "sqrt(2*max(0, 1 - (-sin(x)^2/2 + (1 - cos(x))/2)))", dash: true },
+    { expr: "-sqrt(2*max(0, 1 - (-sin(x)^2/2 + (1 - cos(x))/2)))", dash: true },
+    { expr: "sqrt(2*(1.6 - (-sin(x)^2/2 + (1 - cos(x))/2)))" },
+    { expr: "-sqrt(2*(1.6 - (-sin(x)^2/2 + (1 - cos(x))/2)))" }
+  ]}
+  points={[{ x: 0, y: 0 }, { x: 1.0472, y: 0 }, { x: -1.0472, y: 0 }]}
+  caption="Phase portrait of the undamped bead for γ = 2, computed from the curves of constant H = w²/2 − sin²θ/2 + (1 − cos θ)/2, that is w = ±√(2(H − U(θ))), for H = −0.06, 0 (dashed), 0.5, 1 (dashed) and 1.6. The dashed curves are the separatrices through the saddles at θ = 0 (the middle dot) and θ = ±π (the top, at the left and right edges); the outer two dots are the centres at θ = ±π/3." />
+
+</Step>
+
+<Step title="The number">
+
+For $\gamma = 2$: $H(\pi/3, w_0) = \frac12 w_0^2 - \frac38 + \frac14 = \frac12 w_0^2 - \frac18$, and the top has $H(\pi, 0) = 2/\gamma = 1$. Over the top needs $\frac12 w_0^2 - \frac18 > 1$, so $w_0 > \sqrt{9/4} = 1.5$.
+
+</Step>
+
+<Step title="Check the result">
+
+The stationary points of $H$ are the fixed points: $\partial H/\partial w = w = 0$ and $\partial H/\partial\theta = -F(\theta) = 0$. Minima of $H$ ($\pm\theta_*$) are centres and saddle points of $H$ ($0$ and $\pi$ for $\gamma > 1$) are saddles, as part (b) found. For $\omega_0 \to 0$ ($\gamma \to 0$) the centrifugal term drops out and $\gamma H$ becomes the pendulum's energy $1 - \cos\theta$ plus a kinetic term.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Now take $b = 1$ and $\gamma = 2$. Sketch a trajectory that starts near each stable fixed point, and one with an initial $w(0)$ large enough for the bead to go over the top of the hoop. Choose, in the first box (our addition), what a trajectory near a stable fixed point does. Then (our addition, solved numerically) give the smallest $w(0) > 0$ that takes the bead from $\theta = \pi/3$ over the top, to $\theta = \pi$, as a decimal (in units of $\omega_0$). The sheet suggests $b = 1/2$ too if you solve numerically.
+
+<Hint>
+
+Part (b) gives the type of the side points for $\gamma = 2$: compare $b = 1$ with $\sqrt3$.
+
+</Hint>
+
+<Hint>
+
+With friction, the bead loses $H$ on the way, $\dot H = -bw^2$, so it needs more than the 1.5 of part (c). Integrate the equations from $(\pi/3, w_0)$ and bisect on $w_0$: does $\theta$ ever reach $\pi$?
+
+</Hint>
+
+<Answer id="p2d-near" label="Near $\theta = \pi/3$ a trajectory:" choices={["runs straight into the fixed point without circling it", "circles the fixed point on a closed loop", "runs away from the fixed point along one direction", "spirals into the fixed point"]} answer={3} />
+
+<Answer id="p2d-w" label="Smallest $w(0)$ with $b = 1$:" value="3.06" unit="ω₀" tolerance="1%" calc="p2d-w" />
+
+<Solution>
+
+**The idea.** With friction the centres of part (c) become stable spirals, and $H$ decreases along every moving trajectory, so each bead ends at rest at one of the two side points (or, exceptionally, on a saddle).
+
+<Step title="Near the stable points">
+
+At $\theta = \pm\pi/3$: $\tau = -1$, $\Delta = 3/4$, so $\lambda = -\frac12 \pm i\frac{1}{\sqrt2}$. Since $b = 1 < \sqrt3$, the points are stable spirals: a nearby trajectory turns round the point once every $2\pi\sqrt2 = 8.9$ units of time while its distance shrinks as $e^{-s/2}$. Because of the symmetry of (a), the spiral round $-\pi/3$ is the mirror image of the one round $+\pi/3$.
+
+</Step>
+
+<Step title="Over the top">
+
+$\dot H = w\dot w + U'(\theta)\,w = -bw^2 \le 0$: friction removes $H$. Starting at $\theta = \pi/3$ with $w_0 > 0$, the bead must arrive at the top with $H > 1$. Our numbers (SciPy, DOP853, relative tolerance $10^{-11}$, bisection on $w_0$):
+
+<Formula label="Problem 2(d): the smallest starting speed" tex="b = 1:\ w_0 = 3.056, \qquad b = \tfrac12:\ w_0 = 2.238, \qquad b = 0:\ w_0 = 1.500" cite="mit" at="Problem 2(d), p. 2 (our own computation)" />
+
+A trajectory that starts a little faster passes $\theta = \pi$, comes down on the far side ($\theta$ beyond $\pi$ is the same as the left half of the hoop, near $-\pi/3$) and spirals into the fixed point at $\theta = -\pi/3 + 2\pi$, the same bead position as $-\pi/3$. One just below the threshold falls back and spirals into $+\pi/3$.
+
+</Step>
+
+<Step title="Check the result">
+
+The undamped value $1.500$ from the solver matches part (c) exactly, a test of the method. The damped values are larger, more so for larger $b$, as they should be. In the phase plane, the boundary between the two outcomes is the stable direction of the saddle at the top: starting exactly at $w_0 = 3.056$, the bead creeps up to $\theta = \pi$ and stops there.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Chaos in an undamped nonlinear oscillator" points={10} mit="Problem 3">
+
+Is damping needed for chaos in the driven pendulum? In the notes the damped driven pendulum is the flow
+
+<Formula label="The damped driven pendulum as a flow" tex="\dot\theta = \omega, \qquad \dot\omega = -\frac{1}{q}\,\omega - \sin\theta + a\cos\varphi, \qquad \dot\varphi = \omega_D" cite="reading1" at="Section 7.1.1, eq. (7.9), p. 144" />
+
+Take away the damping ($q = \infty$), and write $w$ for the angular velocity as the sheet does:
+
+<Formula label="The undamped driven pendulum" tex="\dot\theta = w, \qquad \dot w = -\sin\theta - a\cos\varphi, \qquad \dot\varphi = \omega_D" cite="mit" at="Problem 3, p. 3" />
+
+with $\omega_D = 0.7$. (The sign of the drive differs from the notes; it only shifts the drive's phase by half a period.) The sheet asks you to switch off the damping in MIT's Mathematica notebook for the driven pendulum; any tool that integrates the equations will do. Our numbers come from a fourth-order Runge-Kutta method with 256 steps per drive period, checked at several values of $a$ with SciPy's DOP853 method (relative tolerance $10^{-10}$). Our start is $\theta = 0$, $w = 0$, $\varphi = 0$ at $t = 0$ (our choice), and the Poincaré section records $(\theta, w)$ at the strobe times $t = 2\pi k/\omega_D$ (our choice). Without damping nothing dies away, so there is no transient to discard, and the section depends on the start. As the test of chaos we use the largest Lyapunov exponent $\lambda$ (Section 7.5, p. 186, and Section 7.6), estimated over 400 drive periods from the growth of a small displacement that is followed with the linearized equations: chaos has $\lambda > 0$, while regular motion gives an estimate that shrinks towards zero as the run gets longer (our choice of test).
+
+<Part label="a" points={4}>
+
+Make a bifurcation plot of $w$ at the strobe times against $a$, for at least $0.1 < a < 2$, with about 300 steps in $a$. Find a value of $a$ in a periodic window between chaotic regions, and show Poincaré sections that prove it. As a check (our addition), choose in the box which of the listed values lies in such a window, from our start.
+
+<Hint>
+
+In the bifurcation plot, chaos fills a vertical band with scattered points; regular motion gives a few points or a thin line at each $a$. Look for a gap of thin lines between two bands.
+
+</Hint>
+
+<Answer id="p3a-win" label="A regular window between chaotic regions is at:" choices={["a = 0.60", "a = 1.00", "a = 1.40", "a = 1.90"]} answer={2} />
+
+<Solution>
+
+**The idea.** Chaos shows in the bifurcation plot as a wide band and in a Poincaré section as a scatter of points; regular motion as a few points or a smooth closed curve.
+
+<Step title="Our sweep">
+
+From our start, the largest Lyapunov exponent over 400 drive periods:
+
+| $a$ | $\lambda$ | Largest size of $w$ at the strobe times | Motion |
+|---|---|---|---|
+| 0.10 | 0.0008 | 0.20 | regular |
+| 0.25 | 0.0017 | 0.51 | regular |
+| 0.30 | 0.11 | 2.3 | chaos |
+| 0.60 | 0.15 | 2.9 | chaos |
+| 1.00 | 0.17 | 3.3 | chaos |
+| 1.25 | 0.17 | 3.9 | chaos |
+| 1.40 | 0.0002 | 3.04 | regular |
+| 1.50 | 0.17 | 4.1 | chaos |
+| 1.90 | 0.17 | 4.7 | chaos |
+
+The motion is chaotic over almost the whole range from $a \approx 0.29$ to 2, with a regular window from about $a = 1.30$ to $1.43$, itself broken by thin chaotic slivers (at 1.33 to 1.34 and at 1.38 in our sweep with steps of 0.01).
+
+</Step>
+
+<Step title="The sections">
+
+At $a = 1.40$ the strobe points fall, in turn, into three small clusters, near $(\theta, w) \approx (-0.5, 3.0)$, $(-0.5, -3.0)$ and $(0, 0)$ (with $\theta$ taken between $-\pi$ and $\pi$): the orbit circles a periodic orbit that repeats every three drive periods, and each cluster is a small closed curve round one of its three points. In the bifurcation plot this shows as three thin lines at each $a$. At $a = 1.00$ the strobe points instead scatter over a wide region of the $(\theta, w)$ plane without any order: chaos. A section at 1.25 or 1.50, on either side of the window, looks like the one at 1.00.
+
+</Step>
+
+<Step title="Check the result">
+
+The flow has divergence $\partial\dot\theta/\partial\theta + \partial\dot w/\partial w + \partial\dot\varphi/\partial\varphi = 0$: it keeps phase-space volumes, so there are no attractors and a bifurcation plot shows the orbit of one start, not a limit. That is why our window is a property of the start: another start at $a = 1.40$ can land in the chaotic sea. The DOP853 runs at $a = 0.3$, 1.0 and 1.5 gave Lyapunov exponents 0.10, 0.17 and 0.18, and at 0.1 and 0.2 regular motion, in agreement with the table.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Look closely at small drives. Make a bifurcation plot for $0 < a < 0.1$, and other plots of your choice. Is there chaos there? For which value in $0 < a < 1$ does chaos first appear? Test and justify your answer. Choose in the first box what the motion from our start does for $0 < a < 0.1$, and give in the second box, from our start, the smallest $a$ at which the motion is chaotic, to three decimals.
+
+<Hint>
+
+For a small drive the pendulum barely leaves the bottom, so $\sin\theta \approx \theta$: what does a driven harmonic oscillator without damping do?
+
+</Hint>
+
+<Hint>
+
+Scan $a$ in small steps from 0.2 upwards and watch the largest size of $w$ and your test for chaos together. Something sudden happens.
+
+</Hint>
+
+<Answer id="p3b-small" label="For $0 < a < 0.1$, from our start, the motion is:" choices={["chaotic at every a", "periodic, with the period of the drive", "regular: a mix of two frequencies that never repeats exactly", "chaotic only in a few narrow windows"]} answer={2} />
+
+<Answer id="p3b-onset" label="Smallest chaotic $a$:" value="0.287" tolerance="2%" calc="p3b-onset" />
+
+<Solution>
+
+**The idea.** For a small drive the motion stays near the bottom, where the pendulum is nearly linear; chaos needs the motion to reach the region near the top, where the nonlinearity is strong.
+
+<Step title="Small drives">
+
+With $\sin\theta \approx \theta$ the equation is $\ddot\theta + \theta = -a\cos(\omega_D t)$. From rest at $\theta = 0$ its solution is
+
+<Formula label="Problem 3(b): the linear response from rest" tex="\theta(t) = \frac{a}{1 - \omega_D^2}\bigl[\cos t - \cos(\omega_D t)\bigr]" cite="mit" at="Problem 3(b), p. 3 (our own solution)" />
+
+a sum of the free oscillation (frequency 1) and the forced one (frequency $\omega_D = 0.7$). The ratio of the two frequencies is not a simple fraction for this motion, so the strobe points fill a smooth closed curve: regular, quasi-periodic motion, which never repeats exactly but is not chaotic. Its size is about $2a/(1 - \omega_D^2) = 3.9a$, so for $a < 0.1$ the pendulum swings less than $0.4$ rad. Our Lyapunov estimates there are below 0.001 and shrink as the run gets longer: no chaos.
+
+</Step>
+
+<Step title="The onset">
+
+Scanning in steps of 0.0005 over 2000 drive periods, the motion stays regular up to $a = 0.2870$, with $w$ between $-0.59$ and $0.59$. At $a = 0.2875$ it suddenly becomes chaotic: $\lambda \approx 0.11$ and $w$ reaches $\pm 2.4$, the pendulum now going over the top at irregular times. So from our start chaos first appears at
+
+<Formula label="Problem 3(b): the onset of chaos from our start" tex="a \approx 0.287" cite="mit" at="Problem 3(b), p. 3 (our own computation)" />
+
+This answer belongs to our start. Started near the top instead, at $\theta = 3.0$ or $3.1$ with $w = 0$, the motion is chaotic even for $a = 0.02$ (our Lyapunov estimates 0.04 to 0.08 over 1500 drive periods, for $a = 0.02$, 0.05 and 0.1): close to the separatrix of the pendulum, where a swing takes a long time, the smallest drive decides whether the pendulum goes over the top or falls back. Without damping such a thin chaotic layer round the separatrix exists for every $a > 0$, so chaos is present at small $a$ too, just not for starts near the bottom.
+
+</Step>
+
+<Step title="Check the result">
+
+The jump is sudden because the start is not on an attractor: at $a = 0.287$ the closed curve on which our orbit lies is still intact, and just above it the curve has broken up and the orbit escapes into the chaotic region round the separatrix of the pendulum. A longer run cannot move the onset down: our runs over 400 and 2000 periods agree that every value below 0.2870 is regular.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Bifurcation of a limit cycle and a fixed point" points={12} mit="Problem 4">
+
+A system obeys
+
+<Formula label="The equation of Problem 4" tex="\ddot x + a\,\dot x\,(x^2 + \dot x^2 - 1) + x = 0" cite="mit" at="Problem 4, p. 3" />
+
+with a real constant $a$. Write $w = \dot x$.
+
+<Part label="a" points={4}>
+
+Form the first-order equations; type $\dot w$ with `x`, `w` and `a`. Show that for $a \neq 0$ the system has a circular limit cycle, and give its amplitude (in units of $x$) and its period, both as decimals (in the dimensionless time of the equation). That it is isolated follows from part (c).
+
+<Hint>
+
+On the circle $x^2 + w^2 = 1$ the bracket vanishes. What is left?
+
+</Hint>
+
+<Answer id="p4a-wdot" label="$\dot w =$" expr="-x - a*w*(x^2 + w^2 - 1)"
+  vars={{ x: [-1.5, 1.5], w: [0.2, 1.5], a: [0.2, 2] }}
+  mistakes={[
+    { expr: "-x + a*w*(x^2 + w^2 - 1)", hint: "Check the sign: moving every term but ẍ to the right-hand side makes the damping term negative." }
+  ]} />
+
+<Answer id="p4a-amp" label="Amplitude:" value="1" tolerance="1%" calc="p4a-amp" />
+
+<Answer id="p4a-per" label="Period:" value="6.283" tolerance="1%" calc="p4a-per" />
+
+<Solution>
+
+**The idea.** On the unit circle in the $(x, w)$ plane the nonlinear term vanishes, and the motion is that of a harmonic oscillator, which stays on the circle.
+
+<Step title="The equations">
+
+<Formula label="Problem 4(a): the first-order system" tex="\dot x = w, \qquad \dot w = -x - a\,w\,(x^2 + w^2 - 1)" cite="mit" at="Problem 4(a), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The circle">
+
+Try $x = \cos t$, $w = -\sin t$. Then $x^2 + w^2 = 1$, the bracket vanishes, and $\dot w = -\cos t = -x$ holds. So the unit circle is a closed trajectory: an oscillation of amplitude 1 and period $2\pi = 6.283$, run clockwise in the $(x, w)$ plane.
+
+</Step>
+
+<Step title="Check the result">
+
+Along any trajectory $\frac{d}{dt}(x^2 + w^2) = 2x w + 2w\dot w = -2a\,w^2(x^2 + w^2 - 1)$, which vanishes on the circle: a trajectory that starts on it stays on it. Off the circle it is not zero (except where $w = 0$), so neighbouring circles are not trajectories when $a \neq 0$: the cycle is isolated, a limit cycle. For $a = 0$ the system is the harmonic oscillator and every circle is a closed orbit.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Find and classify all the fixed points for $a > 0$, $a < 0$ and $a = 0$, with their stability (linear analysis only for borderline cases). Choose the type for $0 < a < 2$ in the first box, and (our addition) give in the second box the positive value of $a$ at which the type changes again. Then, from the stability of the fixed point and the behaviour of $\dot w$ outside the cycle, propose when the limit cycle is stable, unstable or half-stable: choose for $a > 0$ in the third box.
+
+<Hint>
+
+The only fixed point is the origin. Linearize: the cubic terms drop out, and $a\,w(x^2 + w^2 - 1) \approx -a\,w$.
+
+</Hint>
+
+<Hint>
+
+Outside the circle, $x^2 + w^2 - 1 > 0$, so for $a > 0$ the term $-a\,w(\ldots)$ always opposes $w$: it acts as friction.
+
+</Hint>
+
+<Answer id="p4b-type" label="For $0 < a < 2$ the origin is:" choices={["a stable spiral", "a centre", "an unstable node", "an unstable spiral"]} answer={3} />
+
+<Answer id="p4b-a2" label="$a$ where it turns into a node:" value="2" tolerance="1%" calc="p4b-a2" />
+
+<Answer id="p4b-cyc" label="For $a > 0$ the limit cycle is:" choices={["stable", "unstable", "half-stable: attracting from inside, repelling outside", "half-stable: attracting from outside, repelling inside"]} answer={0} />
+
+<Solution>
+
+**The idea.** The origin is the only fixed point; its linear matrix has trace $a$. Inside the circle the nonlinear term pumps energy in for $a > 0$, outside it takes energy out.
+
+<Step title="The fixed point">
+
+$\dot x = 0$ gives $w = 0$; then $\dot w = -x = 0$. So only the origin. Linearized:
+
+<Formula label="Problem 4(b): the linearized system" tex="M = \begin{pmatrix} 0 & 1 \\ -1 & a \end{pmatrix}, \qquad \tau = a, \quad \Delta = 1, \qquad \lambda_\pm = \frac{a \pm \sqrt{a^2 - 4}}{2}" cite="mit" at="Problem 4(b), p. 3 (our own solution)" />
+
+</Step>
+
+<Step title="The types">
+
+- $a > 0$: unstable; an **unstable spiral** for $0 < a < 2$, an unstable degenerate node at $a = 2$ ($\tau^2 = 4\Delta$), an unstable node for $a > 2$.
+- $a < 0$: stable; a stable spiral for $-2 < a < 0$, a stable node for $a < -2$.
+- $a = 0$: a centre (a borderline case for the linear analysis, but here the full system is the harmonic oscillator, whose orbits are exactly circles).
+
+</Step>
+
+<Step title="A proposal for the cycle">
+
+For $a > 0$ trajectories leave the origin, so they must end somewhere; outside the circle the term $-a\,w(x^2 + w^2 - 1)$ is a friction, which pulls them inwards. Both sides are pushed towards the circle: the cycle should be **stable**. For $a < 0$ everything reverses: the origin attracts, outside the circle the term pumps energy in, and the cycle is **unstable**. Nothing makes it half-stable, which would need the same sign of motion on both sides.
+
+</Step>
+
+<Step title="Check the result">
+
+$\lambda_+\lambda_- = 1 = \Delta$ and $\lambda_+ + \lambda_- = a = \tau$. At $a = 2$ the root vanishes: $\lambda = 1$ twice.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Change to polar coordinates, $x = r\cos\theta$ and $w = r\sin\theta$. Derive the first-order equation for $\dot r$ and type it with `a`, `r` and `theta`. Use it to prove your proposal from (b), find the bifurcation point, and choose in the second box a reasonable name for the bifurcation.
+
+<Hint>
+
+Differentiate $r^2 = x^2 + w^2$: $r\dot r = x\dot x + w\dot w$.
+
+</Hint>
+
+<Answer id="p4c-rdot" label="$\dot r =$" expr="-a*r*sin(theta)^2*(r^2 - 1)"
+  vars={{ a: [0.2, 2], r: [0.2, 0.9], theta: [0.3, 2.8] }} names={{ theta: "\\theta" }}
+  mistakes={[
+    { expr: "-a*r*cos(theta)^2*(r^2 - 1)", hint: "The damping term multiplies w = r sin θ, and it enters r ṙ through w ẇ: two factors of sin θ, not cos θ." },
+    { expr: "-a*r^2*sin(theta)^2*(r^2 - 1)", hint: "This is r ṙ. Divide by r once more to get ṙ." }
+  ]} />
+
+<Answer id="p4c-name" label="A reasonable name:" choices={["a saddle-node bifurcation of cycles: two cycles meet and vanish", "a supercritical Hopf bifurcation, with a cycle that grows from zero size as √a", "a degenerate Hopf bifurcation: the spiral changes stability and the cycle, at fixed size, changes stability with it", "a supercritical pitchfork of the fixed point"]} answer={2} />
+
+<Solution>
+
+**The idea.** In polar coordinates the distance from the origin has its own equation, and its sign shows directly which way trajectories cross each circle.
+
+<Step title="The radial equation">
+
+$r\dot r = x w + w\big(-x - a\,w(r^2 - 1)\big) = -a\,w^2(r^2 - 1)$, so with $w = r\sin\theta$:
+
+<Formula label="Problem 4(c): polar form" tex="\dot r = -a\,r\sin^2\theta\,(r^2 - 1), \qquad \dot\theta = -1 - a\sin\theta\cos\theta\,(r^2 - 1)" cite="mit" at="Problem 4(c), p. 3 (our own solution)" />
+
+(the second from $r^2\dot\theta = x\dot w - w\dot x$).
+
+</Step>
+
+<Step title="The proof">
+
+Take $a > 0$. For $0 < r < 1$, $\dot r \ge 0$, and for $r > 1$, $\dot r \le 0$, with equality only where $\sin\theta = 0$. Near the circle $\dot\theta \approx -1$, so a trajectory passes those two points quickly and keeps moving towards $r = 1$ on average: averaged over one turn, $\dot r \approx -\frac{a}{2}r(r^2 - 1)$. The cycle is stable, approached from both sides. For $a < 0$ the signs flip and the cycle is unstable. This proves the proposal of (b), and also shows the cycle is isolated: no other circle is a trajectory.
+
+</Step>
+
+<Step title="The bifurcation">
+
+At $a = 0$ the fixed point changes from a stable spiral to an unstable one, its eigenvalues $\frac{a}{2} \pm i\sqrt{1 - a^2/4}$ crossing the imaginary axis, and the limit cycle changes from unstable to stable at the same moment. That is the signature of a Hopf bifurcation (Section 7.4.2, p. 178), but here the cycle does not grow from zero size: it sits at $r = 1$ for every $a \neq 0$, and at $a = 0$ the whole plane is filled with circles. A reasonable name is a **degenerate Hopf bifurcation**: the fixed point and the cycle exchange their stability, somewhat like the two fixed points of a transcritical bifurcation.
+
+</Step>
+
+<Step title="Check the result">
+
+Compare the supercritical Hopf normal form of the notes,
+
+<Formula label="Supercritical Hopf normal form" tex="\dot r = \mu r - r^3, \qquad \dot\theta = \omega + br^2" cite="reading1" at="Section 7.4.2, eq. (7.64), p. 178" />
+
+whose cycle has radius $\sqrt\mu$ and shrinks to the fixed point as $\mu \to 0$. Here the averaged equation $\dot r \approx \frac{a}{2}r(1 - r^2)$ has its cycle at $r = 1$ for every $a$, and the rate $a$ in front sets only how fast trajectories approach it. For $a = 2$ the averaged equation is the system $\dot r = r(1 - r^2)$ of the notes' eq. (7.57) (p. 174).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Chaos in maps" points={15} mit="Problem 5">
+
+Chaos in a flow of first-order differential equations needs three variables and nonlinearity. A map, $x_{n+1} = f(x_n)$, which gives a discrete sequence of points, can be chaotic with a single variable. (The Poincaré section of the driven pendulum is a hint of this: it, too, is a sequence of points.) The simplest example is the logistic map,
+
+<Formula label="The logistic map" tex="x_{n+1} = r\,x_n(1 - x_n)" cite="mit" at="Problem 5, p. 4" />
+
+with a fixed control parameter $r$. The sheet shows its bifurcation plot, made by discarding the first 300 values of $x_n$ and plotting the next 301 for many values of $r$: after the transients have died the points lie on an attractor that does not depend on $x_0$, and as $r$ grows the attractor goes through a sequence of period doublings into chaos, as the driven damped pendulum does. The sheet suggests MIT's Mathematica notebook for the map; any tool will do. The start of the plot, where it has simple formulas, is drawn here:
+
+<Plot variable="r" domain={[2.6, 4]} range={[0, 1]} xLabel="r" yLabel="xₙ for large n" samples={600}
+  curves={[
+    { expr: "r <= 3 ? 1 - 1/r : NaN", label: "fixed point" },
+    { expr: "r >= 3 and r <= 3.4495 ? (r + 1 + sqrt((r - 3)*(r + 1)))/(2*r) : NaN", label: "2-cycle" },
+    { expr: "r >= 3 and r <= 3.4495 ? (r + 1 - sqrt((r - 3)*(r + 1)))/(2*r) : NaN" },
+    { expr: "r > 3 ? 1 - 1/r : NaN", dash: true }
+  ]}
+  caption="The first branches of the logistic map's bifurcation plot, computed from the exact formulas: the fixed point x = 1 − 1/r (stable up to r = 3, dashed where unstable) and the two points of the 2-cycle, [r + 1 ± √((r − 3)(r + 1))]/2r, stable up to r = 1 + √6 = 3.449. The 4-cycle and higher, and the chaotic bands beyond r ≈ 3.57, have no simple formula; a numerical plot shows them." />
+
+<Part label="a" points={3}>
+
+Test the sensitivity to initial conditions: compute $\{x_n\}$ and $\{x'_n\}$ from two nearby starts $x_0$ and $x'_0$, once for a value of $r$ where the map is periodic and once where it is chaotic, and plot $x_n - x'_n$ to large enough $n$. Take $r = 3.2$ and $r = 4$, with $x_0 = 0.3$ and $x'_0 = x_0 + \delta$ (our choices). For $r = 4$, how small must $\delta$ be to make sure that $|x_n - x'_n| < 10^{-6}$ at $n = 15$? Give the largest such $\delta$ (for small $\delta$ the difference grows in proportion to $\delta$), typed for example as `2.5e-9`.
+
+<Hint>
+
+For a small $\delta$, $x_n - x'_n \approx -\frac{dx_n}{dx_0}\,\delta$, and by the chain rule $\frac{dx_n}{dx_0}$ is the product of the factors $f'(x_j)$ along the orbit, for $j = 0$ to $n - 1$.
+
+</Hint>
+
+<Hint>
+
+$f'(x) = r(1 - 2x)$. Multiply the fifteen factors on a computer, or iterate both starts and shrink $\delta$ until the condition holds.
+
+</Hint>
+
+<Answer id="p5a-d" label="Largest $\delta$:" value="3.66e-11" tolerance="2%" calc="p5a-d" />
+
+<Solution>
+
+**The idea.** In chaotic motion a small difference is multiplied at every step by the size of $f'$, on average by $e^\lambda$ with $\lambda$ the Lyapunov exponent; in periodic motion it shrinks.
+
+<Step title="The periodic case">
+
+At $r = 3.2$ the attractor is the 2-cycle ($3 < r < 3.449$). With $\delta = 10^{-6}$ our difference is $4.0\times10^{-6}$ at $n = 10$ (the orbit first passes near the unstable fixed point), $5.4\times10^{-8}$ at $n = 20$ and $5.8\times10^{-12}$ at $n = 30$: every two steps it is multiplied by the multiplier of the 2-cycle, $f'(p)f'(q) = 4 + 2r - r^2 = 0.16$ (the product of eq. (7.77), p. 185), so it shrinks by a factor of about 6 every two steps: no sensitivity.
+
+</Step>
+
+<Step title="The chaotic case">
+
+At $r = 4$, the product of the fifteen factors $4(1 - 2x_n)$ along the orbit from $x_0 = 0.3$ is
+
+<Formula label="Problem 5(a): the stretching after fifteen steps" tex="\frac{dx_n}{dx_0} = \prod_{j=0}^{n-1} f'(x_j) = -2.729\times10^{4} \ \ (n = 15), \qquad \delta < \frac{10^{-6}}{2.729\times10^{4}} = 3.66\times10^{-11}" cite="reading1" at="Section 7.5, eq. (7.79), p. 186" />
+
+Iterating both starts directly agrees: $\delta = 3\times10^{-11}$ gives $|x_n - x'_n| = 8.2\times10^{-7}$ at $n = 15$, and $\delta = 4\times10^{-11}$ gives $1.09\times10^{-6}$. To control 15 steps you need about eleven digits.
+
+</Step>
+
+<Step title="Check the result">
+
+At $r = 4$ the substitution $x = \sin^2(\pi u)$ turns the map into the doubling $u \to 2u$, so the Lyapunov exponent is $\ln 2$ and a difference grows on average by $2^{15} = 32768$ in 15 steps; it gives $\delta \approx 3.1\times10^{-11}$, close to but not the same as the exact value for this start, which the box checks. The same substitution gives the derivative exactly, $dx_n/dx_0 = 2^n\sin(2^{n+1}\pi u_0)/\sin(2\pi u_0)$ with $\sin^2(\pi u_0) = x_0$, and for $n = 15$ it has the same value.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+By zooming into the bifurcation plot, find the first four values of $r$ at which period doublings occur (the sheet calls them a₁ to a₄; we write $r_1$ to $r_4$, as the notes do). Two are $r_1 = 3$ and $r_2 = 1 + \sqrt6 = 3.4495$. Give $r_3$ and $r_4$ to four decimals, and the two ratios $(r_2 - r_1)/(r_3 - r_2)$ and $(r_3 - r_2)/(r_4 - r_3)$, which should agree to about two significant figures.
+
+<Hint>
+
+The branches split slowly near a doubling, so a bifurcation plot gives the doubling points only to about three decimals. For better values, find where the multiplier of the $2^k$-cycle, the product of $f'$ over the cycle, reaches $-1$.
+
+</Hint>
+
+<Answer id="p5b-r3" label="$r_3 =$" value="3.5441" tolerance="0.0005" calc="p5b-r3" />
+
+<Answer id="p5b-r4" label="$r_4 =$" value="3.5644" tolerance="0.0005" calc="p5b-r4" />
+
+<Answer id="p5b-q1" label="$(r_2 - r_1)/(r_3 - r_2) =$" value="4.751" tolerance="3%" calc="p5b-q1" />
+
+<Answer id="p5b-q2" label="$(r_3 - r_2)/(r_4 - r_3) =$" value="4.656" tolerance="3%" calc="p5b-q2" />
+
+<Solution>
+
+**The idea.** A $2^k$-cycle turns unstable when its multiplier passes $-1$; the spacing between successive doublings shrinks by a nearly constant factor.
+
+<Step title="The doubling points">
+
+Solving $f^{(2^k)}(x) = x$ together with $\prod f'(x_j) = -1$ over the cycle (Newton's method in mpmath), we find
+
+<Formula label="Problem 5(b): the first four period doublings" tex="r_1 = 3, \qquad r_2 = 3.449490, \qquad r_3 = 3.544090, \qquad r_4 = 3.564407" cite="mit" at="Problem 5(b), p. 4 (our own computation)" />
+
+</Step>
+
+<Step title="The ratios">
+
+$(r_2 - r_1)/(r_3 - r_2) = 0.449490/0.094600 = 4.751$ and $(r_3 - r_2)/(r_4 - r_3) = 0.094600/0.020317 = 4.656$. They agree to two significant figures, 4.7, and approach the Feigenbaum number
+
+<Formula label="The Feigenbaum number" tex="\delta_F = \lim_{\alpha\to\infty}\frac{r_\alpha - r_{\alpha-1}}{r_{\alpha+1} - r_\alpha} \approx 4.669201" cite="reading1" at="Section 7.5, eq. (7.81), p. 187" />
+
+(the next ratio, with the fifth doubling at $r = 3.568759$, is 4.668).
+
+</Step>
+
+<Step title="Check the result">
+
+The first two values are exact: the fixed point $1 - 1/r$ has multiplier $2 - r$ (notes, eq. (7.74), p. 184), which is $-1$ at $r = 3$, and the 2-cycle's multiplier $4 + 2r - r^2$ is $-1$ at $r = 1 + \sqrt6$. With the spacings shrinking by $\delta_F$, the doublings accumulate near $3 + 0.4495/(1 - 1/4.669) = 3.572$ (eq. (7.83)), close to the true onset of chaos, 3.5699.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Show that between the first and the second bifurcation, the two values of $x$ on the attractor satisfy
+
+<Formula label="The cubic for the 2-cycle" tex="r^3x^2(2 - x) - r^2(r + 1)\,x + (r^2 - 1) = 0" cite="mit" at="Problem 5(c), p. 5" />
+
+The cubic has a third root. As checks (our additions), type the larger of the two attractor values and the third root, with `r`.
+
+<Hint>
+
+The two values are each a fixed point of $f(f(x))$, but not of $f$. Write out $f(f(x)) = x$ and remove the root you already know.
+
+</Hint>
+
+<Answer id="p5c-p" label="Larger attractor value:" expr="(r + 1 + sqrt((r - 3)*(r + 1)))/(2*r)"
+  vars={{ r: [3.05, 3.44] }}
+  mistakes={[
+    { expr: "(r + 1 - sqrt((r - 3)*(r + 1)))/(2*r)", hint: "This is the smaller of the two values: the square root enters with a minus sign." }
+  ]} />
+
+<Answer id="p5c-third" label="Third root:" expr="1 - 1/r"
+  vars={{ r: [3.05, 3.44] }}
+  mistakes={[
+    { expr: "0", hint: "x = 0 is a fixed point of the map, but it is not a root of the cubic: the cubic has the constant term r² − 1, which is not zero. It was removed when dividing by x." }
+  ]} />
+
+<Solution>
+
+**The idea.** A point of the 2-cycle returns after two steps: $f(f(x)) = x$. That equation also holds for the fixed points, $0$ and $1 - 1/r$; removing the root $x = 0$ leaves the cubic.
+
+<Step title="The cubic">
+
+$f(f(x)) = r\,f(x)\,(1 - f(x))$ with $f(x) = rx(1 - x)$. For $x \neq 0$, divide $f(f(x)) = x$ by $x$:
+
+<Formula label="Problem 5(c): the cubic from f(f(x)) = x" tex="r^2(1 - x)\bigl[1 - rx(1 - x)\bigr] - 1 = (r^2 - 1) - r^2(r + 1)\,x + r^3x^2(2 - x) = 0" cite="mit" at="Problem 5(c), p. 5 (our own solution)" />
+
+which is the sheet's cubic. Expanding: $r^2 - r^2x - r^3x(1 - x)^2 - 1$, and $-r^3x(1 - 2x + x^2) - r^2x = -r^2(r + 1)x + 2r^3x^2 - r^3x^3$.
+
+</Step>
+
+<Step title="Its three roots">
+
+The fixed point $1 - 1/r$ also satisfies $f(f(x)) = x$, so $rx - (r - 1)$ is a factor:
+
+$r^3x^2(2 - x) - r^2(r + 1)x + (r^2 - 1) = -\big(rx - r + 1\big)\big(r^2x^2 - r(r + 1)x + (r + 1)\big)$.
+
+The quadratic gives the two points of the cycle,
+
+<Formula label="Problem 5(c): the 2-cycle" tex="x = \frac{r + 1 \pm \sqrt{(r - 3)(r + 1)}}{2r}" cite="reading1" at="Section 7.5, p. 185" />
+
+real for $r > 3$. Between $r = 3$ and $1 + \sqrt6$ they form the attractor, and the third root, $1 - 1/r$, is the unstable fixed point.
+
+</Step>
+
+<Step title="Check the result">
+
+At $r = 3$ the square root vanishes and both points equal $2/3 = 1 - 1/3$: the cycle is born out of the fixed point, as a period doubling should. At $r = 3.2$: $x = 0.7995$ and $0.5130$, and $3.2 \times 0.7995 \times 0.2005 = 0.5130$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={5}>
+
+Make bifurcation plots for three more maps:
+
+<Formula label="Three more maps" tex="\text{(i)}\ x_{n+1} = r\cos x_n, \qquad \text{(ii)}\ x_{n+1} = r x_n - x_n^3, \qquad \text{(iii)}\ x_{n+1} = e^{-r x_n}" cite="mit" at="Problem 5(d), p. 5" />
+
+All three show period doubling; two of them are chaotic, and for those choose a range of $r$ that shows both chaotic and regular regions. Choose the map that is not chaotic in the first box. Then (our additions) give the value of $r$ of the first period doubling of each map, to three decimals.
+
+<Hint>
+
+A fixed point of a map period-doubles where its multiplier $f'(x_*)$ passes $-1$. For (i) that means $x_* = r\cos x_*$ and $r\sin x_* = 1$ together.
+
+</Hint>
+
+<Hint>
+
+Map (iii) is decreasing in $x$. What does that imply for $f(f(x))$, and for the cycles it can have?
+
+</Hint>
+
+<Answer id="p5d-not" label="The map that is not chaotic:" choices={["(i) r cos x", "(iii) exp(−r x)", "(ii) r x − x³"]} answer={1} />
+
+<Answer id="p5d-i" label="(i), first doubling at $r =$" value="1.319" tolerance="1%" calc="p5d-i" />
+
+<Answer id="p5d-ii" label="(ii), first doubling at $r =$" value="2" tolerance="1%" calc="p5d-ii" />
+
+<Answer id="p5d-iii" label="(iii), first doubling at $r =$" value="2.718" tolerance="1%" calc="p5d-iii" />
+
+<Solution>
+
+**The idea.** Find the fixed point whose multiplier reaches $-1$ first; then run the map to see what follows.
+
+<Step title="(i) r cos x">
+
+$x_* = r\cos x_*$ and $f'(x_*) = -r\sin x_* = -1$ give $x_*\tan x_* = 1$, so $x_* = 0.8603$ and $r = \sqrt{x_*^2 + 1} = 1.319$. Our runs (start $x_0 = 0.5$, 1000 steps discarded, Lyapunov exponent over 4000 steps): a 2-cycle at $r = 1.4$ to 1.8, a 4-cycle at 1.9, chaos from about $r = 2.0$ (exponent 0.16 at $r = 2.0$, 0.36 at 2.2), with a periodic window at 2.6 and a stable fixed point again near $x = -r$ from $r \approx 3$. A range such as $1 < r < 3$ shows it all.
+
+</Step>
+
+<Step title="(ii) r x − x³">
+
+The fixed points are $0$ (multiplier $r$) and $x_* = \pm\sqrt{r - 1}$ for $r > 1$, with multiplier $r - 3x_*^2 = 3 - 2r$, which is $-1$ at $r = 2$. Our runs: a 2-cycle at 2.05 to 2.2, a 4-cycle at 2.25, chaos from about $r = 2.35$, a window near 2.7, and chaos up to $r = 3$, beyond which orbits escape to infinity. The map is odd, $f(-x) = -f(x)$, so every attractor below about $r = 2.6$ has a mirror twin at negative $x$; the two bands merge into one near $r = 2.6$. A range $1.5 < r < 3$ shows it.
+
+</Step>
+
+<Step title="(iii) exp(−r x)">
+
+The fixed point $x_* = e^{-rx_*}$ has multiplier $-rx_*$, which is $-1$ when $rx_* = 1$: then $x_* = e^{-1}$ and $r = e = 2.718$. Beyond that, a 2-cycle, and nothing more: our runs up to $r = 20$ show the 2-cycle with negative Lyapunov exponents. The reason is that $f$ is decreasing, so $f(f(x))$ is increasing, and an increasing map of a line moves every point monotonically towards a fixed point of it. So the orbit of $f$ settles on a fixed point or a 2-cycle, and never on anything longer or chaotic.
+
+<Formula label="Problem 5(d): the first period doublings" tex="\text{(i)}\ r = 1.319, \qquad \text{(ii)}\ r = 2, \qquad \text{(iii)}\ r = e = 2.718" cite="mit" at="Problem 5(d), p. 5 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+At each doubling the multiplier is exactly $-1$: for (i), $-1.319\sin(0.8603) = -1.000$; for (ii), $3 - 2(2) = -1$; for (iii), $-e\cdot e^{-1} = -1$. Map (iii) does show one period doubling, as the sheet says, which is why "all three show period doubling" and "two are chaotic" fit together.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>

@@ -1,0 +1,663 @@
+# Calculations on content/year-4/8.09/8-09-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set, so every answer is checked here by a route independent of the page where
+# one exists: numerical roots of the fixed-point conditions and characteristic equations (Problems 1, 2, 4), the
+# integral of the force for the conserved quantity and a root of H = H(top) (Problem 2), the radial equation from
+# the Cartesian one (Problem 4), roots of f(f(x)) = x and of the multiplier conditions, and the exact solution of
+# the logistic map at r = 4 (Problem 5). Problem 2(d), Problem 3 and parts of Problem 5(b) and (d) are numerical
+# experiments (our own Python runs: SciPy DOP853, a fixed-step fourth-order Runge-Kutta method, mpmath Newton
+# iterations); their results are recorded as inputs or facts, each re-checked from several starts or methods.
+# Short names in the samples: z is the variable of a numerical root, derivative or integral; theta for θ, w for the
+# angular velocity, gamma for γ, beta for β, omega0 for ω₀.
+
+page: content/year-4/8.09/8-09-problem-set-10.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1a-n
+    answer: p1a-n
+    where: 'Problem 1(a), answer box: the origin, the two roots x = ±2 of 4 − x² = 0 on y = 0, and the one point with x = 1'
+    formula: 1 + 2 + 1
+    expected: '4'
+    tolerance: 0.1
+    shown: ['id="p1a-n"', 'four fixed points, and $(1, -3)$ is the one off the axes']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1a-y
+    answer: p1a-y
+    where: 'Problem 1(a), answer box: y of the fixed point with x = 1, a numerical root of ẋ/x = 4 + y − 1 = 0'
+    formula: solve('4 + z - 1', 'z', -5, 0)
+    expected: '-3'
+    tolerance: 0.01
+    shown: ['id="p1a-y"', 'gives $y = -3$']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-saddle20
+    kind: identity
+    where: 'Problem 1(b): at (2, 0) the matrix entry 4 + y − 3x² is −8, a numerical derivative of ẋ = x(4 + y − x²) in x'
+    formula: -8
+    equals: deriv('z*(4 + y - z**2)', 'z', 2)
+    samples:
+      y: [0, 0]
+    tolerance: 1e-6
+    shown: ['$M = \begin{pmatrix} -8 & 2 \\ 0 & 1\end{pmatrix}$']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-freq
+    answer: p1b-freq
+    where: 'Problem 1(b), answer box: the imaginary part of the eigenvalues at (1, −3), √(4Δ − τ²)/2 with τ = −2, Δ = (−2)(0) − (1)(−3) = 3'
+    inputs: {tau: -2, Delta: 3}
+    formula: sqrt(4*Delta - tau**2)/2
+    expected: '1.414'
+    shown: ['id="p1b-freq"', 'turns at the angular frequency $\sqrt2 = 1.414$']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1b-disc
+    where: 'Problem 1(b), solution: τ² − 4Δ at (1, −3)'
+    inputs: {tau: -2, Delta: 3}
+    formula: tau**2 - 4*Delta
+    expected: '-8'
+    shown: ['Since $\tau^2 - 4\Delta = -8 < 0$']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-s1
+    answer: p1c-s1
+    where: 'Problem 1(c), answer box: slope s of the eigenvector (1, s) with eigenvalue 1 at (2, 0), a numerical root of the first row −8 + 2s = 1'
+    formula: solve('-8 + 2*z - 1', 'z', 0, 10)
+    expected: '4.5'
+    tolerance: 1%
+    shown: ['id="p1c-s1"', 'the direction $(2, 9)$, slope $4.5$']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1c-s2
+    answer: p1c-s2
+    where: 'Problem 1(c), answer box: slope s of the eigenvector (1, s) with eigenvalue −3 at (−2, 0), a numerical root of −8 − 2s = −3'
+    formula: solve('-8 - 2*z + 3', 'z', -10, 0)
+    expected: '-2.5'
+    tolerance: 1%
+    shown: ['id="p1c-s2"', 'the direction $(2, -5)$, slope $-2.5$']
+    source: {cite: mit, at: 'Problem 1 (our own addition)'}
+    origin: page-own
+
+  - id: p1c-check
+    where: 'Problem 1(c), check: the second component of M(2, −5) at (−2, 0), y·2 + (x − 1)(−5) with x = −2, y = 0'
+    formula: 0*2 + (-2 - 1)*(-5)
+    expected: '15'
+    shown: ['$M\,(2, -5) = (-16 + 10,\ 15) = (-6, 15) = -3\,(2, -5)$']
+    source: {cite: mit, at: 'Problem 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-fates
+    kind: fact
+    where: 'Problem 1(c), sketch: our SciPy runs (solve_ivp, rtol 1e-9) from (0.5, −1), (1.5, −1), (3, −2), (0.5, −6), (2, −0.5) end at (1, −3); from (0.5, 1), (1.5, 1), (0.5, 4), (3, 3) leave a circle of radius 50; from (−1, 5), (−0.5, −5) end at (−2, 0); the two branches of the unstable direction of (2, 0) go to infinity and to (1, −3)'
+    shown: ['in our numerical check every start we tried in these quadrants did so']
+    source: {cite: mit, at: 'Problem 1 (our own computation)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2a-gamma
+    kind: identity
+    answer: p2a-gamma
+    where: 'Problem 2(a), answer box: γ is the ratio of the largest centrifugal force on the bead, m a ω₀², to its weight m g'
+    formula: a*omega0**2/g
+    equals: (mass*a*omega0**2)/(mass*g)
+    samples:
+      a: [0.2, 0.7, 1.6]
+      omega0: [2, 5, 9]
+      g: [9.2, 9.81, 9.7]
+      mass: [0.3, 1.1, 1.9]
+    tolerance: 1e-9
+    shown: ['id="p2a-gamma"', '\gamma = \frac{a\omega_0^2}{g}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2a-b
+    kind: identity
+    answer: p2a-b
+    where: 'Problem 2(a), answer box: b is the ratio of the friction term β θ̇ to m a θ̈, with θ̇ = ω₀ w and θ̈ = ω₀² dw/ds (w = dw/ds = 1)'
+    formula: beta/(m*a*omega0)
+    equals: (beta*omega0*1)/(m*a*omega0**2*1)
+    samples:
+      beta: [0.2, 0.9, 1.7]
+      m: [0.3, 1.1, 1.9]
+      a: [0.2, 0.7, 1.6]
+      omega0: [2, 5, 9]
+    tolerance: 1e-9
+    shown: ['id="p2a-b"', 'b = \frac{\beta}{ma\omega_0}']
+    source: {cite: mit, at: 'Problem 2(a) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-th
+    kind: identity
+    answer: p2b-th
+    where: 'Problem 2(b), answer box: θ_* against a numerical root of sin θ (cos θ − 1/γ) = 0 between 0 and π/2'
+    formula: acos(1/gamma)
+    equals: solve('cos(z) - 1/gamma', 'z', 0.0001, pi/2)
+    samples:
+      gamma: [1.3, 2, 4.5]
+    tolerance: 1e-8
+    shown: ['id="p2b-th"', '\theta_* = \arccos\frac{1}{\gamma}']
+    source: {cite: reading1, at: 'Section 7.2.3, p. 162'}
+    origin: page-own
+
+  - id: p2b-bc
+    kind: identity
+    answer: p2b-bc
+    where: 'Problem 2(b), answer box: b at τ² = 4Δ, with Δ = −F′(θ_*) from a numerical derivative of F(θ) = sin θ cos θ − sin θ/γ at θ_* = acos(1/γ)'
+    formula: 2*sqrt(1 - 1/gamma**2)
+    equals: 2*sqrt(-deriv('sin(z)*cos(z) - sin(z)/gamma', 'z', acos(1/gamma)))
+    samples:
+      gamma: [1.3, 2, 4.5]
+    tolerance: 1e-6
+    shown: ['id="p2b-bc"', 'spirals for $b < 2\sqrt{1 - 1/\gamma^2}$']
+    source: {cite: mit, at: 'Problem 2(b) (our own addition)'}
+    origin: page-own
+
+  - id: p2b-delta-top
+    kind: identity
+    where: 'Problem 2(b), solution: Δ at the top, −F′(π), by a numerical derivative'
+    formula: -1 - 1/gamma
+    equals: -deriv('sin(z)*cos(z) - sin(z)/gamma', 'z', pi)
+    samples:
+      gamma: [0.5, 2, 4.5]
+    tolerance: 1e-6
+    shown: ['\Delta(\pi) = -1 - \frac{1}{\gamma}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2b-sqrt3
+    where: 'Problem 2(b), check: 2√(1 − 1/γ²) for γ = 2'
+    formula: 2*sqrt(1 - 1/2**2)
+    expected: '1.73'
+    shown: ['at $b = 2\sqrt{3/4} = \sqrt3 = 1.73$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-h
+    kind: identity
+    answer: p2c-h
+    where: 'Problem 2(c), answer box: H against w²/2 plus U(θ) = −∫₀^θ F dθ′, by numerical integration of F = sin θ cos θ − sin θ/γ'
+    formula: w**2/2 - sin(theta)**2/2 + (1 - cos(theta))/gamma
+    equals: w**2/2 - integrate('sin(z)*cos(z) - sin(z)/gamma', 'z', 0, theta)
+    samples:
+      w: [-1.5, 0.3, 1.9]
+      theta: [0.3, 1.4, 2.7]
+      gamma: [0.6, 2, 4.5]
+    tolerance: 1e-9
+    shown: ['id="p2c-h"', 'H(\theta, w) = \frac12 w^2 - \frac12\sin^2\theta + \frac{1 - \cos\theta}{\gamma}']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2c-w
+    answer: p2c-w
+    where: 'Problem 2(c), answer box: w₀ from H(π/3, w₀) = H(π, 0) for γ = 2, a numerical root'
+    formula: solve('z**2/2 - sin(pi/3)**2/2 + (1 - cos(pi/3))/2 - (1 - cos(pi))/2', 'z', 1, 2)
+    expected: '1.5'
+    tolerance: 1%
+    shown: ['id="p2c-w"', 'so $w_0 > \sqrt{9/4} = 1.5$']
+    source: {cite: mit, at: 'Problem 2(c) (our own addition)'}
+    origin: page-own
+
+  - id: p2d-period
+    where: 'Problem 2(d), solution: the turning period 2π/Im λ with Im λ = 1/√2 at the stable spirals (τ = −1, Δ = 3/4)'
+    inputs: {tau: -1, Delta: 0.75}
+    formula: 2*pi/(sqrt(4*Delta - tau**2)/2)
+    expected: '8.9'
+    shown: ['once every $2\pi\sqrt2 = 8.9$ units of time']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  - id: p2d-w
+    answer: p2d-w
+    where: 'Problem 2(d), answer box: our bisection on w₀ (SciPy solve_ivp, DOP853, rtol 1e-11 and 1e-8 agree to 1e-9; event θ = π; 50 halvings) for b = 1, γ = 2 from θ = π/3 gave 3.0563547; from θ = 0 it gave 4.0681, from θ = −π/3 5.1424. The same code gives 1.5000 for b = 0, the exact value of part (c)'
+    inputs: {w0_solver: 3.0563547}
+    formula: w0_solver
+    expected: '3.06'
+    tolerance: 1%
+    shown: ['id="p2d-w"', 'b = 1:\ w_0 = 3.056']
+    source: {cite: mit, at: 'Problem 2(d) (our own computation)'}
+    origin: page-own
+
+  - id: p2d-runs
+    kind: fact
+    where: 'Problem 2(d), solution: the same bisection for b = 1/2 gave 2.2381564 and for b = 0 gave 1.5000000 (exact 3/2)'
+    shown: ['b = \tfrac12:\ w_0 = 2.238, \qquad b = 0:\ w_0 = 1.500']
+    source: {cite: mit, at: 'Problem 2(d) (our own computation)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-method
+    kind: fact
+    where: 'Problem 3, statement: how our numbers were computed (NumPy RK4 with 256 steps per drive period, vectorized over a; tangent vector of the linearized equations renormalized every drive period; Lyapunov exponent = mean log growth over 400 periods; start θ = w = φ = 0; checked with SciPy DOP853, rtol 1e-10)'
+    shown: ['a fourth-order Runge-Kutta method with 256 steps per drive period']
+    source: {cite: mit, at: 'Problem 3 (our own computation)'}
+    origin: page-own
+
+  - id: p3a-table
+    kind: fact
+    where: 'Problem 3(a), solution: RK4, 256 steps per period, 400 periods: a = 0.10: λ 0.0008, max |w| 0.197; 0.25: 0.0017, 0.506; 0.30: 0.1139, 2.327; 0.60: 0.1451, 2.876; 1.00: 0.1679, 3.306; 1.25: 0.1739, 3.944; 1.40: 0.0002, 3.044; 1.50: 0.1705, 4.081; 1.90: 0.1702, 4.674. A sweep in steps of 0.01 from 1.24 to 1.46 gave λ < 0.002 at 1.30 to 1.32, 1.35 to 1.37 and 1.39 to 1.43, and λ > 0.15 at 1.33, 1.34, 1.38 and from 1.44 on (1.29: 0.07)'
+    shown: ['| 1.40 | 0.0002 | 3.04 | regular |', '| 0.30 | 0.11 | 2.3 | chaos |', 'with a regular window from about $a = 1.30$ to $1.43$']
+    source: {cite: mit, at: 'Problem 3(a) (our own computation)'}
+    origin: page-own
+
+  - id: p3a-sections
+    kind: fact
+    where: 'Problem 3(a), solution: at a = 1.40 (600 periods, strobe points 300 to 307) the points cycle through (θ, w) ≈ (−0.53, 3.04), (−0.53, −3.04), (−0.01, 0.02), (−0.47, 3.04), (−0.45, −3.04), (−0.02, −0.02), …, with θ reduced to (−π, π]'
+    shown: ['near $(\theta, w) \approx (-0.5, 3.0)$, $(-0.5, -3.0)$ and $(0, 0)$']
+    source: {cite: mit, at: 'Problem 3(a) (our own computation)'}
+    origin: page-own
+
+  - id: p3a-dop853
+    kind: fact
+    where: 'Problem 3(a), check: SciPy DOP853 (rtol 1e-10, atol 1e-12), 400 periods: λ = 0.0970 at a = 0.3, 0.1676 at 1.0, 0.1807 at 1.5; 0.0008 at 0.1 and 0.0013 at 0.2'
+    shown: ['gave Lyapunov exponents 0.10, 0.17 and 0.18']
+    source: {cite: mit, at: 'Problem 3(a) (our own computation)'}
+    origin: page-own
+
+  - id: p3b-onset
+    answer: p3b-onset
+    where: 'Problem 3(b), answer box: RK4 (256 steps per period) over 2000 periods in steps of 0.0005: regular (λ ≤ 0.0006, max |w| ≤ 0.588) up to a = 0.2870, chaotic (λ ≈ 0.11, max |w| 2.42) at 0.2875; the onset is between the two. The 400-period sweep in steps of 0.0025 agrees (0.2850 regular, 0.2875 chaotic)'
+    inputs: {a_regular: 0.2870, a_chaotic: 0.2875}
+    formula: (a_regular + a_chaotic)/2
+    expected: '0.287'
+    tolerance: 2%
+    shown: ['id="p3b-onset"', 'a \approx 0.287', 'the motion stays regular up to $a = 0.2870$']
+    source: {cite: mit, at: 'Problem 3(b) (our own computation)'}
+    origin: page-own
+
+  - id: p3b-linear
+    kind: identity
+    where: 'Problem 3(b), solution: θ(t) = a[cos t − cos(ω_D t)]/(1 − ω_D²) solves θ̈ + θ = −a cos(ω_D t), checked by a numerical second derivative'
+    formula: -a*cos(0.7*t)
+    equals: deriv('a*(cos(z) - cos(0.7*z))/(1 - 0.49)', 'z', t, 2) + a*(cos(t) - cos(0.7*t))/(1 - 0.49)
+    samples:
+      a: [0.05, 0.1, 0.2]
+      t: [0.7, 3.1, 8.4]
+    tolerance: 1e-5
+    shown: ['\theta(t) = \frac{a}{1 - \omega_D^2}\bigl[\cos t - \cos(\omega_D t)\bigr]']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-size
+    where: 'Problem 3(b), solution: the largest size of the linear response, 2a/(1 − ω_D²), per unit a'
+    formula: 2/(1 - 0.7**2)
+    expected: '3.9'
+    shown: ['Its size is about $2a/(1 - \omega_D^2) = 3.9a$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3b-separatrix
+    kind: fact
+    where: 'Problem 3(b), solution: RK4, 1500 periods, start w = 0 and θ = 3.0 or 3.1: λ = 0.076, 0.045 (a = 0.02); 0.079, 0.054 (a = 0.05); 0.074, 0.075 (a = 0.1)'
+    shown: ['our Lyapunov estimates 0.04 to 0.08 over 1500 drive periods']
+    source: {cite: mit, at: 'Problem 3(b) (our own computation)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4a-wdot
+    kind: identity
+    answer: p4a-wdot
+    where: 'Problem 4(a), answer box: ẇ = ẍ from the equation of motion, ẍ = −a ẋ (x² + ẋ² − 1) − x with ẋ = w, written as its three terms collected differently'
+    formula: -x - a*w*(x**2 + w**2 - 1)
+    equals: -(a*w*x**2 + a*w**3 - a*w) - x
+    samples:
+      x: [-1.2, 0.4, 1.3]
+      w: [0.3, 0.9, 1.4]
+      a: [0.3, 1.1, 1.8]
+    tolerance: 1e-9
+    shown: ['id="p4a-wdot"', '\dot x = w, \qquad \dot w = -x - a\,w\,(x^2 + w^2 - 1)']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-amp
+    answer: p4a-amp
+    where: 'Problem 4(a), answer box: the radius where the bracket x² + w² − 1 vanishes, a numerical root'
+    formula: solve('z**2 - 1', 'z', 0.5, 2)
+    expected: '1'
+    tolerance: 1%
+    shown: ['id="p4a-amp"', 'an oscillation of amplitude 1']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4a-per
+    answer: p4a-per
+    where: 'Problem 4(a), answer box: the period, 2π divided by the angular speed |θ̇| = 1 on the cycle (θ̇ = −1 at r = 1 from the polar equation of part (c))'
+    formula: 2*pi/abs(-1)
+    expected: '6.283'
+    tolerance: 1%
+    shown: ['id="p4a-per"', 'period $2\pi = 6.283$']
+    source: {cite: mit, at: 'Problem 4(a) (our own solution)'}
+    origin: page-own
+
+  - id: p4b-a2
+    answer: p4b-a2
+    where: 'Problem 4(b), answer box: τ² = 4Δ with τ = a, Δ = 1, a numerical root for a > 0'
+    formula: solve('z**2 - 4*1', 'z', 1, 3)
+    expected: '2'
+    tolerance: 1%
+    shown: ['id="p4b-a2"', 'an unstable degenerate node at $a = 2$']
+    source: {cite: mit, at: 'Problem 4(b) (our own addition)'}
+    origin: page-own
+
+  - id: p4c-rdot
+    kind: identity
+    answer: p4c-rdot
+    where: 'Problem 4(c), answer box: ṙ against (x ẋ + w ẇ)/r with x = r cos θ, w = r sin θ and the Cartesian equations'
+    formula: -a*r*sin(theta)**2*(r**2 - 1)
+    equals: (r*cos(theta)*r*sin(theta) + r*sin(theta)*(-r*cos(theta) - a*r*sin(theta)*(r**2 - 1)))/r
+    samples:
+      a: [0.3, 1.1, 1.8]
+      r: [0.3, 0.6, 0.85]
+      theta: [0.4, 1.5, 2.6]
+    tolerance: 1e-9
+    shown: ['id="p4c-rdot"', '\dot r = -a\,r\sin^2\theta\,(r^2 - 1)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-thetadot
+    kind: identity
+    where: 'Problem 4(c), solution: θ̇ against (x ẇ − w ẋ)/r²'
+    formula: -1 - a*sin(theta)*cos(theta)*(r**2 - 1)
+    equals: (r*cos(theta)*(-r*cos(theta) - a*r*sin(theta)*(r**2 - 1)) - r*sin(theta)*r*sin(theta))/r**2
+    samples:
+      a: [0.3, 1.1, 1.8]
+      r: [0.3, 0.6, 1.4]
+      theta: [0.4, 1.5, 2.6]
+    tolerance: 1e-9
+    shown: ['\dot\theta = -1 - a\sin\theta\cos\theta\,(r^2 - 1)']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4c-average
+    kind: identity
+    where: 'Problem 4(c), solution: the average of ṙ over one turn of θ at fixed r, −(a/2) r (r² − 1), by numerical integration'
+    formula: -(a/2)*r*(r**2 - 1)
+    equals: integrate('-a*r*sin(z)**2*(r**2 - 1)', 'z', 0, 2*pi)/(2*pi)
+    samples:
+      a: [0.3, 1.1, 1.8]
+      r: [0.3, 0.6, 1.4]
+    tolerance: 1e-8
+    shown: ['$\dot r \approx -\frac{a}{2}r(r^2 - 1)$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5a-d
+    answer: p5a-d
+    where: 'Problem 5(a), answer box: 10⁻⁶/|dx₁₅/dx₀| at r = 4, x₀ = 0.3, from the exact solution x_n = sin²(2ⁿπu₀), sin²(πu₀) = 0.3, so dx₁₅/dx₀ = 2¹⁵ sin(2¹⁶πu₀)/sin(2πu₀) (the page multiplies the fifteen factors 4(1 − 2x_n); mpmath at 40 digits gives −27288.669 by both routes)'
+    formula: 1e-6*abs(sin(2*asin(sqrt(0.3))))/(2**15*abs(sin(2**16*asin(sqrt(0.3)))))
+    expected: '3.66e-11'
+    tolerance: 2%
+    shown: ['id="p5a-d"', '\delta < \frac{10^{-6}}{2.729\times10^{4}} = 3.66\times10^{-11}']
+    source: {cite: reading1, at: 'Section 7.5, eq. (7.79), p. 186'}
+    origin: page-own
+
+  - id: p5a-deriv
+    where: 'Problem 5(a), solution: dx₁₅/dx₀ at r = 4, x₀ = 0.3, from the exact solution'
+    formula: 2**15*sin(2**16*asin(sqrt(0.3)))/sin(2*asin(sqrt(0.3)))
+    expected: '-2.729e4'
+    shown: ['= -2.729\times10^{4}']
+    source: {cite: reading1, at: 'Section 7.5, eq. (7.79), p. 186'}
+    origin: page-own
+
+  - id: p5a-direct
+    kind: fact
+    where: 'Problem 5(a), solution: mpmath (40 digits), 15 iterations of 4x(1 − x) from 0.3 and from 0.3 + δ: |x₁₅ − x′₁₅| = 8.1866e-7 for δ = 3e-11 and 1.0915e-6 for δ = 4e-11'
+    shown: ['$\delta = 3\times10^{-11}$ gives $|x_n - x''_n| = 8.2\times10^{-7}$ at $n = 15$, and $\delta = 4\times10^{-11}$ gives $1.09\times10^{-6}$']
+    source: {cite: mit, at: 'Problem 5(a) (our own computation)'}
+    origin: page-own
+
+  - id: p5a-estimate
+    where: 'Problem 5(a), check: the rule-of-thumb δ from the average growth 2 per step'
+    formula: 1e-6/2**15
+    expected: '3.1e-11'
+    shown: ['it gives $\delta \approx 3.1\times10^{-11}$', 'on average by $2^{15} = 32768$ in 15 steps']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5a-periodic
+    kind: fact
+    where: 'Problem 5(a), solution: mpmath, r = 3.2, x₀ = 0.3, δ = 1e-6: |x_n − x′_n| = 3.988e-6 at n = 10, 5.411e-8 at n = 20, 5.803e-12 at n = 30, 6.09e-16 at n = 40'
+    shown: ['our difference is $4.0\times10^{-6}$ at $n = 10$', '$5.4\times10^{-8}$ at $n = 20$ and $5.8\times10^{-12}$ at $n = 30$']
+    source: {cite: mit, at: 'Problem 5(a) (our own computation)'}
+    origin: page-own
+
+  - id: p5a-mult
+    kind: identity
+    where: 'Problem 5(a), solution: the 2-cycle multiplier f′(p)f′(q) = r²(1 − 2p)(1 − 2q) equals 4 + 2r − r², with p, q from the exact formula'
+    formula: 4 + 2*r - r**2
+    equals: r**2*(1 - 2*(r + 1 + sqrt((r - 3)*(r + 1)))/(2*r))*(1 - 2*(r + 1 - sqrt((r - 3)*(r + 1)))/(2*r))
+    samples:
+      r: [3.1, 3.2, 3.4]
+    tolerance: 1e-9
+    shown: ['$f''(p)f''(q) = 4 + 2r - r^2 = 0.16$']
+    source: {cite: reading1, at: 'Section 7.5, eq. (7.77), p. 185'}
+    origin: page-own
+
+  - id: p5a-mult-num
+    where: 'Problem 5(a), solution: the 2-cycle multiplier at r = 3.2'
+    formula: 4 + 2*3.2 - 3.2**2
+    expected: '0.16'
+    shown: ['4 + 2r - r^2 = 0.16']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-r2
+    where: 'Problem 5(b), statement: r₂ = 1 + √6'
+    formula: 1 + sqrt(6)
+    expected: '3.4495'
+    shown: ['$r_2 = 1 + \sqrt6 = 3.4495$']
+    source: {cite: reading1, at: 'Section 7.5, p. 185'}
+    origin: page-own
+
+  - id: p5b-r2-root
+    where: 'Problem 5(b), check: r₂ as the root of 4 + 2r − r² = −1 (the 2-cycle multiplier reaches −1)'
+    formula: solve('4 + 2*z - z**2 + 1', 'z', 3, 4)
+    expected: '3.449490'
+    shown: ['r_2 = 3.449490']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5b-r3
+    answer: p5b-r3
+    where: 'Problem 5(b), answer box: our mpmath (40 digits) Newton solution of f⁴(x) = x with the product of f′ over the 4-cycle equal to −1, started from the attractor at r = 3.544: r₃ = 3.5440903596; it agrees with the published value 3.544090'
+    inputs: {r3_newton: 3.5440903596}
+    formula: r3_newton
+    expected: '3.5441'
+    tolerance: 0.0005
+    shown: ['id="p5b-r3"', 'r_3 = 3.544090']
+    source: {cite: mit, at: 'Problem 5(b) (our own computation)'}
+    origin: page-own
+
+  - id: p5b-r4
+    answer: p5b-r4
+    where: 'Problem 5(b), answer box: the same for the 8-cycle, started at r = 3.5644: r₄ = 3.5644072661'
+    inputs: {r4_newton: 3.5644072661}
+    formula: r4_newton
+    expected: '3.5644'
+    tolerance: 0.0005
+    shown: ['id="p5b-r4"', 'r_4 = 3.564407']
+    source: {cite: mit, at: 'Problem 5(b) (our own computation)'}
+    origin: page-own
+
+  - id: p5b-q1
+    answer: p5b-q1
+    where: 'Problem 5(b), answer box: (r₂ − r₁)/(r₃ − r₂) with r₂ = 1 + √6 exact and r₃ from p5b-r3'
+    inputs: {r3_newton: 3.5440903596}
+    formula: (1 + sqrt(6) - 3)/(r3_newton - 1 - sqrt(6))
+    expected: '4.751'
+    tolerance: 3%
+    shown: ['id="p5b-q1"', '$(r_2 - r_1)/(r_3 - r_2) = 0.449490/0.094600 = 4.751$']
+    source: {cite: mit, at: 'Problem 5(b) (our own computation)'}
+    origin: page-own
+
+  - id: p5b-q2
+    answer: p5b-q2
+    where: 'Problem 5(b), answer box: (r₃ − r₂)/(r₄ − r₃)'
+    inputs: {r3_newton: 3.5440903596, r4_newton: 3.5644072661}
+    formula: (r3_newton - 1 - sqrt(6))/(r4_newton - r3_newton)
+    expected: '4.656'
+    tolerance: 3%
+    shown: ['id="p5b-q2"', '$(r_3 - r_2)/(r_4 - r_3) = 0.094600/0.020317 = 4.656$']
+    source: {cite: mit, at: 'Problem 5(b) (our own computation)'}
+    origin: page-own
+
+  - id: p5b-q3
+    where: 'Problem 5(b), solution: the next ratio, with r₅ = 3.5687594195 from the same Newton method for the 16-cycle'
+    inputs: {r3_newton: 3.5440903596, r4_newton: 3.5644072661, r5_newton: 3.5687594195}
+    formula: (r4_newton - r3_newton)/(r5_newton - r4_newton)
+    expected: '4.668'
+    shown: ['(the next ratio, with the fifth doubling at $r = 3.568759$, is 4.668)']
+    source: {cite: mit, at: 'Problem 5(b) (our own computation)'}
+    origin: page-own
+
+  - id: p5b-accum
+    where: 'Problem 5(b), check: 3 + δ₁/(1 − 1/δ_F) with δ₁ = √6 − 2, as in the notes'
+    formula: 3 + (sqrt(6) - 2)/(1 - 1/4.669201)
+    expected: '3.572'
+    shown: ['accumulate near $3 + 0.4495/(1 - 1/4.669) = 3.572$']
+    source: {cite: reading1, at: 'Section 7.5, eq. (7.83), p. 188'}
+    origin: page-own
+
+  - id: p5c-cubic
+    kind: identity
+    where: 'Problem 5(c): the sheet''s cubic equals [f(f(x)) − x]/x for f(x) = r x (1 − x)'
+    formula: r**3*x**2*(2 - x) - r**2*(r + 1)*x + (r**2 - 1)
+    equals: (r*(r*x*(1 - x))*(1 - r*x*(1 - x)) - x)/x
+    samples:
+      r: [3.1, 3.3, 2.5]
+      x: [0.2, 0.55, 0.9]
+    tolerance: 1e-9
+    shown: ['r^3x^2(2 - x) - r^2(r + 1)\,x + (r^2 - 1) = 0']
+    source: {cite: mit, at: 'Problem 5(c), p. 5'}
+    origin: page-own
+
+  - id: p5c-factor
+    kind: identity
+    where: 'Problem 5(c), solution: the factorization of the cubic'
+    formula: r**3*x**2*(2 - x) - r**2*(r + 1)*x + (r**2 - 1)
+    equals: -(r*x - r + 1)*(r**2*x**2 - r*(r + 1)*x + (r + 1))
+    samples:
+      r: [3.1, 3.3, 2.5]
+      x: [0.2, 0.55, 0.9]
+    tolerance: 1e-9
+    shown: ['= -\big(rx - r + 1\big)\big(r^2x^2 - r(r + 1)x + (r + 1)\big)$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-p
+    kind: identity
+    answer: p5c-p
+    where: 'Problem 5(c), answer box: the larger 2-cycle point against a numerical root of f(f(x)) − x between the fixed point 1 − 1/r and 0.99'
+    formula: (r + 1 + sqrt((r - 3)*(r + 1)))/(2*r)
+    equals: solve('r*(r*z*(1 - z))*(1 - r*z*(1 - z)) - z', 'z', 1 - 1/r + 0.005, 0.99)
+    samples:
+      r: [3.1, 3.2, 3.4]
+    tolerance: 1e-8
+    shown: ['id="p5c-p"', 'x = \frac{r + 1 \pm \sqrt{(r - 3)(r + 1)}}{2r}']
+    source: {cite: reading1, at: 'Section 7.5, p. 185'}
+    origin: page-own
+
+  - id: p5c-third
+    kind: identity
+    answer: p5c-third
+    where: 'Problem 5(c), answer box: the third root against a numerical root of the sheet''s cubic between the two cycle points'
+    formula: 1 - 1/r
+    equals: solve('r**3*z**2*(2 - z) - r**2*(r + 1)*z + (r**2 - 1)', 'z', 1 - 1/r - 0.03, 1 - 1/r + 0.03)
+    samples:
+      r: [3.1, 3.2, 3.4]
+    tolerance: 1e-8
+    shown: ['id="p5c-third"', 'the third root, $1 - 1/r$, is the unstable fixed point']
+    source: {cite: mit, at: 'Problem 5(c) (our own addition)'}
+    origin: page-own
+
+  - id: p5c-check-p
+    where: 'Problem 5(c), check: the larger cycle point at r = 3.2'
+    formula: (4.2 + sqrt(0.2*4.2))/6.4
+    expected: '0.7995'
+    shown: ['At $r = 3.2$: $x = 0.7995$ and $0.5130$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5c-check-q
+    where: 'Problem 5(c), check: f of the larger point at r = 3.2 is the smaller one'
+    formula: 3.2*0.7995*(1 - 0.7995)
+    expected: '0.5130'
+    shown: ['$3.2 \times 0.7995 \times 0.2005 = 0.5130$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-xstar
+    where: 'Problem 5(d), solution: the fixed point of r cos x at its first doubling, a root of x tan x = 1'
+    formula: solve('z*tan(z) - 1', 'z', 0.5, 1.2)
+    expected: '0.8603'
+    shown: ['so $x_* = 0.8603$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-i
+    answer: p5d-i
+    where: 'Problem 5(d), answer box: r = √(x_*² + 1) for map (i), from r cos x_* = x_* and r sin x_* = 1'
+    formula: sqrt(solve('z*tan(z) - 1', 'z', 0.5, 1.2)**2 + 1)
+    expected: '1.319'
+    tolerance: 1%
+    shown: ['id="p5d-i"', '$r = \sqrt{x_*^2 + 1} = 1.319$']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-i-check
+    where: 'Problem 5(d), check: the multiplier −r sin x_* at r = 1.319, x_* = 0.8603'
+    formula: -1.319*sin(0.8603)
+    expected: '-1.000'
+    shown: ['$-1.319\sin(0.8603) = -1.000$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-ii
+    answer: p5d-ii
+    where: 'Problem 5(d), answer box: map (ii), the multiplier 3 − 2r of x_* = √(r − 1) reaches −1, a numerical root'
+    formula: solve('3 - 2*z + 1', 'z', 1, 3)
+    expected: '2'
+    tolerance: 1%
+    shown: ['id="p5d-ii"', 'which is $-1$ at $r = 2$']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-ii-mult
+    kind: identity
+    where: 'Problem 5(d), solution: the multiplier of x_* = √(r − 1) for map (ii), by a numerical derivative of r x − x³'
+    formula: 3 - 2*r
+    equals: deriv('r*z - z**3', 'z', sqrt(r - 1))
+    samples:
+      r: [1.5, 2, 2.6]
+    tolerance: 1e-6
+    shown: ['multiplier $r - 3x_*^2 = 3 - 2r$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5d-iii
+    answer: p5d-iii
+    where: 'Problem 5(d), answer box: map (iii), the fixed point x_* = e^(−r x_*) with multiplier −r x_* = −1; with r x_* = 1 the fixed-point equation gives r = 1/x_* = e. Checked as the root in r of x(r) = 1/r, x(r) from x = exp(−r x)'
+    formula: solve('exp(-1) - 1/z', 'z', 2, 3)
+    expected: '2.718'
+    tolerance: 1%
+    shown: ['id="p5d-iii"', '$r = e = 2.718$']
+    source: {cite: mit, at: 'Problem 5(d) (our own addition)'}
+    origin: page-own
+
+  - id: p5d-runs
+    kind: fact
+    where: 'Problem 5(d), solution: our runs (NumPy, start 0.5, 1000 steps discarded, Lyapunov exponent over 4000 steps, distinct values among the last 256 rounded to 1e-6). (i): 1 point to 1.3, 2 at 1.4 to 1.8, 4 at 1.9, chaos 2.0 to 2.5 (λ 0.158 at 2.0, 0.356 at 2.2), 4 at 2.6, chaos 2.7 to 2.9, a fixed point near −2.94 at 3.0. (ii): 2 points at 2.05 to 2.2, 4 at 2.25, 16 at 2.30, chaos from 2.35 (one-sided up to 2.55, symmetric from 2.60), 6 at 2.70, chaos to 3.0; orbits escape at 3.01, 3.05, 3.1. (iii): a 2-cycle with negative λ at every integer r from 3 to 20'
+    shown: ['(exponent 0.16 at $r = 2.0$, 0.36 at 2.2)', 'a 2-cycle at 2.05 to 2.2, a 4-cycle at 2.25, chaos from about $r = 2.35$']
+    source: {cite: mit, at: 'Problem 5(d) (our own computation)'}
+    origin: page-own
