@@ -1,0 +1,1048 @@
+---
+title: "Problem Set 1: linear equations, elimination and matrix multiplication"
+slug: 18-06-problem-set-1
+course: "18.06"
+kind: problems
+set: 1
+lecture: 3
+order: 90
+covers: [1, 2, 3]
+solutions: own
+summary: "Six problems of our own on Lectures 1 to 3: the row and column pictures of a system, singular and invertible matrices, elimination with multipliers and pivots, back substitution, elimination and permutation matrices, the four ways to multiply matrices, block multiplication, and the idea of the inverse."
+prerequisites: [geometry-of-linear-equations, elimination-with-matrices, multiplication-and-inverse-matrices]
+source:
+  title: "MIT 18.06 Lecture 3: Multiplication and inverse matrices"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-3-multiplication-and-inverse-matrices/
+  readings:
+    - title: "18.06 Lecture 1 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/f4e7ccf6e84b66c908c250fb85323f64_J7DzL2_Na80.pdf
+    - title: "18.06 Lecture 2 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/49c357a7166c58e09f76f25512872fd9_QVKj3LADCnA.pdf
+    - title: "18.06 Lecture 3 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/07f82f7a07458fb3d79d1ba5cf53fa1e_FX4C-JpTFgY.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: draft
+---
+
+This set practises three lessons: [the geometry of linear equations](/courses/18-06/geometry-of-linear-equations) (Lecture 1), [elimination with matrices](/courses/18-06/elimination-with-matrices) (Lecture 2) and the first half of [matrix multiplication and inverse matrices](/courses/18-06/multiplication-and-inverse-matrices) (Lecture 3): the ways to multiply, and what an inverse is. Computing inverses by Gauss–Jordan elimination belongs to Problem Set 2.
+
+MIT's 18.06 problem sets assign exercises from a textbook that is not openly licensed, so this set is made of our own problems on the same lectures, in MIT's lecture order. No MIT or textbook problem is used: every matrix and every number below is ours, and so are the hints and the solutions. The formulas come from the lessons and from the lecture transcripts they cite.
+
+## How to answer
+
+Work each problem on paper first. Then type or choose your result in the answer box and press Check.
+
+A number box wants a decimal number, not a fraction: write $0.25$, not $1/4$. Every number box accepts any value within $0.01$ of the exact one. A matrix cannot be typed: a box asks for one of its entries, or you choose the matrix from a list. Entries are numbered by row, then column, starting from 1: "the entry in row 2, column 3" is the third number of the second row.
+
+A formula box takes plain typing, for example `(2*s - 1)/(s + 4)`, and accepts every correct way of writing the answer.
+
+Some parts ask you to show something. They have no answer box: write your argument, then open the solution and mark yourself. The points here (100 in all) and their split between the parts are ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+## What you need from the lessons
+
+**The two pictures** (Lecture 1). A system of linear equations is $Ax = b$. In the row picture each equation is a line (in two dimensions) or a plane (in three), and the solution is where they meet. In the column picture, $Ax$ is a combination of the columns of $A$, with the entries of $x$ as the amounts:
+
+<Formula label="Matrix times vector, by columns" tex="\begin{pmatrix} 2 & 5 \\ 1 & 3 \end{pmatrix}\begin{pmatrix} 1 \\ 2 \end{pmatrix} = 1\begin{pmatrix} 2 \\ 1 \end{pmatrix} + 2\begin{pmatrix} 5 \\ 3 \end{pmatrix} = \begin{pmatrix} 12 \\ 7 \end{pmatrix}" cite="reading1" at="p. 19" />
+
+If the combinations of the columns fill the whole space, $Ax = b$ can be solved for every $b$ and $A$ is invertible. If the columns lie in one plane (for a $3 \times 3$ matrix), only the right-hand sides in that plane can be reached, and $A$ is singular (pp. 15–16).
+
+**Elimination** (Lecture 2). Subtract a multiple $\ell$ of a pivot row from each row below it, to get zeros under the pivot; the result is an upper triangular $U$, and the same steps turn $b$ into $c$. Then $Ux = c$ is solved by back substitution, from the bottom up (pp. 2–9). A zero in a pivot position is cured by a row exchange with a lower row that has a nonzero entry there; when no row below can help, the matrix is not invertible (pp. 5–7). The step "subtract $\ell$ times row 1 from row 2" is a multiplication by the elimination matrix $E_{21}$, the identity with $-\ell$ in row 2, column 1, and all steps together are (pp. 13–16)
+
+<Formula label="Elimination in one line" tex="E_{32}(E_{21}A) = U = (E_{32}E_{21})A" cite="reading2" at="pp. 15–16" />
+
+A row exchange is a multiplication by a permutation matrix $P$: do the exchange to the identity and use the result. On the left, a matrix acts on the rows; on the right, on the columns; and in general $AB \neq BA$ (pp. 17–18). The inverse of "subtract $\ell$ times row 1 from row 2" adds it back (p. 20).
+
+**Matrix multiplication** (Lecture 3). For an $m \times n$ matrix $A$ and an $n \times p$ matrix $B$, the entry in row $i$, column $j$ of $AB$ is row $i$ of $A$ times column $j$ of $B$ (pp. 1–4):
+
+<Formula label="Entry of a product" tex="(AB)_{ij} = \sum_{k=1}^{n} a_{ik}\,b_{kj}, \qquad (m \times n)(n \times p) = m \times p" cite="reading3" at="pp. 2–4" />
+
+Each column of $AB$ is a combination of the columns of $A$, and each row of $AB$ a combination of the rows of $B$ (pp. 4–6). $AB$ is also a sum of columns times rows, and matching blocks multiply like entries (pp. 7–11):
+
+<Formula label="Columns times rows" tex="AB = \sum_{k=1}^{n} (\text{column } k \text{ of } A)(\text{row } k \text{ of } B)" cite="reading3" at="pp. 8–9" />
+
+**The inverse** (Lecture 3). A square matrix $A$ is invertible when some matrix $A^{-1}$ gives (p. 12)
+
+<Formula label="The inverse" tex="A^{-1}A = I = AA^{-1}" cite="reading3" at="p. 12" />
+
+If $Ax = 0$ for some nonzero $x$, then $A$ has no inverse (pp. 14–16).
+
+## Problem 1
+
+<Exercise id="p1" title="Two pictures of a 2 × 2 system" points={16}>
+
+Take the system $2x + 3y = 4$, $\;x - y = -3$.
+
+<Part label="a" points={4}>
+
+Solve the system for $x$ and $y$.
+
+<Hint>
+
+Eliminate: subtract a multiple of the first equation from the second so that $x$ drops out. Then substitute back.
+
+</Hint>
+
+<Answer id="p1-a-x" label="$x =$" value="-1" tolerance="0.01" calc="p1-a-x" />
+
+<Answer id="p1-a-y" label="$y =$" value="2" tolerance="0.01" calc="p1-a-y" />
+
+<Solution>
+
+**The idea.** In the row picture the answer is where the two lines meet; elimination finds that point.
+
+<Step title="Eliminate and substitute">
+
+Subtract $\frac12$ of the first equation from the second: $(1 - 1)x + (-1 - \frac32)y = -3 - 2$, so $-\frac52y = -5$ and $y = 2$. Then $2x + 6 = 4$ gives $x = -1$.
+
+</Step>
+
+<Step title="Check">
+
+Both equations: $2(-1) + 3(2) = 4$ and $-1 - 2 = -3$. In the column picture, $-1$ times the column $(2, 1)$ plus $2$ times the column $(3, -1)$ is $(-2 + 6, -1 - 2) = (4, -3)$, which is $b$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Keep the same left-hand sides. Which right-hand side $b = (b_1, b_2)$ has the solution $x = 2$, $y = 1$?
+
+<Hint>
+
+Read the system as $x$ times column 1 plus $y$ times column 2 of the matrix. Here you know the amounts.
+
+</Hint>
+
+<Answer id="p1-b-1" label="$b_1 =$" value="7" tolerance="0.01" calc="p1-b-1" />
+
+<Answer id="p1-b-2" label="$b_2 =$" value="1" tolerance="0.01" calc="p1-b-2" />
+
+<Solution>
+
+**The idea.** $Ax$ is a combination of the columns of $A$: here, two of the first column and one of the second.
+
+<Step title="By columns">
+
+<Formula label="The combination" tex="2\begin{pmatrix} 2 \\ 1 \end{pmatrix} + 1\begin{pmatrix} 3 \\ -1 \end{pmatrix} = \begin{pmatrix} 7 \\ 1 \end{pmatrix}" cite="reading1" at="p. 19 (multiplication by columns; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+By rows, the two dot products are $(2, 3)\cdot(2, 1) = 7$ and $(1, -1)\cdot(2, 1) = 1$: the same $b$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Now replace the coefficient $-1$ of $y$ in the second equation by a number $a$, so that the matrix becomes $\begin{pmatrix} 2 & 3 \\ 1 & a \end{pmatrix}$. For which $a$ is this matrix singular? For that $a$, and the right-hand side $(4, -3)$ of the original system, what does the row picture show?
+
+<Hint>
+
+The matrix is singular when its two columns lie on one line through the origin: when one column is a multiple of the other.
+
+</Hint>
+
+<Hint>
+
+For the row picture, compare the two equations: is the second one a multiple of the first, left side and right side?
+
+</Hint>
+
+<Answer id="p1-c-a" label="The matrix is singular for $a =$" value="1.5" tolerance="0.01" calc="p1-c-a" />
+
+<Answer id="p1-c-pic" label="For that $a$ and the right-hand side $(4, -3)$, the row picture shows"
+  choices={["two lines that cross at one point", "one line drawn twice: every point of it solves", "two parallel lines, so there is no solution", "two lines that cross at the origin"]} answer={2} />
+
+<Solution>
+
+**The idea.** Singular means the columns are parallel. Then the two lines of the row picture have the same slope, and the right-hand side decides whether they coincide.
+
+<Step title="Parallel columns">
+
+The column $(3, a)$ is a multiple of $(2, 1)$ only if it is $\frac32$ times it: $a = \frac32 = 1.5$. Then every combination of the columns lies on the line through $(2, 1)$, so most right-hand sides cannot be reached.
+
+</Step>
+
+<Step title="The row picture">
+
+With $a = 1.5$ the equations are $2x + 3y = 4$ and $x + 1.5y = -3$. Twice the second is $2x + 3y = -6$: the same left side as the first equation with a different right side. The two lines are parallel and never meet, so there is no solution.
+
+</Step>
+
+<Step title="Check">
+
+In the column picture: $(4, -3)$ is not a multiple of $(2, 1)$, so it cannot be reached. A right-hand side such as $(4, 2)$, on the line through $(2, 1)$, would give one line drawn twice and infinitely many solutions.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+Keep the right-hand side $(4, -3)$ and the matrix of part (c), with $a \neq 1.5$. Solve by elimination and give $y$ as a formula in $a$.
+
+<Hint>
+
+Subtract $\frac12$ of row 1 from row 2, on both sides. The second pivot then depends on $a$.
+
+</Hint>
+
+<Answer id="p1-d" label="$y =$" expr="-10/(2*a - 3)"
+  vars={{ a: [-1, 1] }} names={{ a: "a" }}
+  mistakes={[
+    { expr: "-2/(2*a - 3)", hint: "Half of row 1 must be subtracted on the right-hand side too, not added: the new right side is −3 − ½ · 4 = −5, not −1." },
+    { expr: "10/(2*a - 3)", hint: "A sign is lost: for a = −1 this gives y = −2, but part (a) found y = 2." }
+  ]} />
+
+<Solution>
+
+**The idea.** One elimination step leaves a triangular system; its second pivot is $a - \frac32$.
+
+<Step title="Eliminate">
+
+Row 2 minus $\frac12$ row 1 gives $(a - \frac32)y = -3 - 2 = -5$. So
+
+<Formula label="y as a function of a" tex="y = \frac{-5}{a - \frac32} = -\frac{10}{2a - 3}" cite="mit" at="Problem 1(d) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+For $a = -1$: $y = -10/(-5) = 2$, as in part (a). As $a$ approaches $1.5$ the second pivot goes to zero and $y$ grows without bound: the two lines turn parallel and their crossing point runs away, as part (c) found.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Columns in three dimensions" points={14}>
+
+Take the matrix with columns $(1, 0, 1)$, $(2, 1, 0)$ and $(0, 1, 3)$:
+
+<Formula label="A 3 × 3 matrix" tex="A = \begin{pmatrix} 1 & 2 & 0 \\ 0 & 1 & 1 \\ 1 & 0 & 3 \end{pmatrix}" cite="reading1" at="pp. 9–12 (the column picture; the matrix is our own)" />
+
+<Part label="a" points={5}>
+
+Find the combination $x = (x_1, x_2, x_3)$ of the columns that gives $b = (5, 3, 4)$.
+
+<Hint>
+
+Write out the three equations: the second row has only $x_2$ and $x_3$, the third only $x_1$ and $x_3$. Express $x_1$ and $x_2$ through $x_3$ and put them into the first row.
+
+</Hint>
+
+<Answer id="p2-a-1" label="$x_1 =$" value="1" tolerance="0.01" calc="p2-a-1" />
+
+<Answer id="p2-a-2" label="$x_2 =$" value="2" tolerance="0.01" calc="p2-a-2" />
+
+<Answer id="p2-a-3" label="$x_3 =$" value="1" tolerance="0.01" calc="p2-a-3" />
+
+<Solution>
+
+**The idea.** The column picture asks for the amounts of each column; the three equations say the same thing row by row.
+
+<Step title="Solve">
+
+The rows are $x_1 + 2x_2 = 5$, $x_2 + x_3 = 3$ and $x_1 + 3x_3 = 4$. From the last two, $x_2 = 3 - x_3$ and $x_1 = 4 - 3x_3$. The first row becomes $4 - 3x_3 + 6 - 2x_3 = 5$, so $5x_3 = 5$ and $x_3 = 1$. Then $x_2 = 2$ and $x_1 = 1$.
+
+</Step>
+
+<Step title="Check">
+
+<Formula label="The combination" tex="1\begin{pmatrix} 1 \\ 0 \\ 1 \end{pmatrix} + 2\begin{pmatrix} 2 \\ 1 \\ 0 \end{pmatrix} + 1\begin{pmatrix} 0 \\ 1 \\ 3 \end{pmatrix} = \begin{pmatrix} 5 \\ 3 \\ 4 \end{pmatrix}" cite="reading1" at="p. 12 (the column picture; the numbers are our own)" />
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Now replace the third column by $(4, 3, -2)$. Show that the new third column is a combination $\alpha\,(1, 0, 1) + \beta\,(2, 1, 0)$ of the first two, and give $\alpha$ and $\beta$.
+
+<Hint>
+
+The middle component of $\alpha(1, 0, 1) + \beta(2, 1, 0)$ involves only $\beta$, the last one only $\alpha$.
+
+</Hint>
+
+<Answer id="p2-b-alpha" label="$\alpha =$" value="-2" tolerance="0.01" calc="p2-b-alpha" />
+
+<Answer id="p2-b-beta" label="$\beta =$" value="3" tolerance="0.01" calc="p2-b-beta" />
+
+<Solution>
+
+**The idea.** Match the components one at a time, starting with those that contain only one unknown.
+
+<Step title="Match components">
+
+The middle components give $\beta = 3$, the last ones $\alpha = -2$. The first component is then $\alpha + 2\beta = -2 + 6 = 4$, which agrees with the first entry of $(4, 3, -2)$. So the new third column is $-2$ times column 1 plus $3$ times column 2.
+
+</Step>
+
+<Step title="Check">
+
+$-2(1, 0, 1) + 3(2, 1, 0) = (-2 + 6, 3, -2) = (4, 3, -2)$. All three columns now lie in one plane through the origin: the new matrix is singular (Lecture 1 transcript, p. 16).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+With the new third column of part (b), the right-hand side $b = (5, 3, b_3)$ can be reached for only one value of $b_3$. Find it. How many solutions $x$ does $Ax = b$ then have?
+
+<Hint>
+
+Every combination of the three columns is a combination of the first two. Which $b_3$ makes $(5, 3, b_3)$ a combination of $(1, 0, 1)$ and $(2, 1, 0)$?
+
+</Hint>
+
+<Hint>
+
+For the count: start from one solution and add a combination of the columns that gives the zero vector.
+
+</Hint>
+
+<Answer id="p2-c-b3" label="$b_3 =$" value="-1" tolerance="0.01" calc="p2-c-b3" />
+
+<Answer id="p2-c-count" label="For that $b_3$, the number of solutions is"
+  choices={["none", "exactly one", "exactly three", "infinitely many"]} answer={3} />
+
+<Solution>
+
+**The idea.** The reachable right-hand sides form the plane of the first two columns; inside that plane there are many ways to reach a point, because the third column adds nothing new.
+
+<Step title="The reachable b">
+
+Of the first two columns, only $(2, 1, 0)$ has a middle component, so it is taken $3$ times to make the middle $3$. The first component then needs $5 - 6 = -1$ of $(1, 0, 1)$, and that fixes the last component: $b_3 = -1$. Any other $b_3$ lies off the plane.
+
+</Step>
+
+<Step title="How many solutions">
+
+One solution is $x = (-1, 3, 0)$. By part (b), $x = (-2, 3, -1)$ gives $Ax = 0$, so adding any multiple of $(-2, 3, -1)$ to $(-1, 3, 0)$ gives another solution: infinitely many.
+
+</Step>
+
+<Step title="Check">
+
+$-1(1, 0, 1) + 3(2, 1, 0) = (5, 3, -1)$. With $t = 1$: $x = (-3, 6, -1)$ gives $-3(1, 0, 1) + 6(2, 1, 0) - (4, 3, -2) = (-3 + 12 - 4, 6 - 3, -3 + 2) = (5, 3, -1)$ as well.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Elimination and back substitution" points={20}>
+
+Solve by elimination:
+
+<Formula label="The system" tex="2x + y + z = 3, \qquad 4x - y + 3z = 11, \qquad -2x + 5y + z = -5" cite="reading2" at="pp. 1–2 (the method; the system is our own)" />
+
+Its matrix is $A = \begin{pmatrix} 2 & 1 & 1 \\ 4 & -1 & 3 \\ -2 & 5 & 1 \end{pmatrix}$ and its right-hand side $b = (3, 11, -5)$. The multiplier $\ell_{21}$ is the number of times row 1 is subtracted from row 2, and so on.
+
+<Part label="a" points={7}>
+
+Find the three multipliers $\ell_{21}$, $\ell_{31}$, $\ell_{32}$ and the second and third pivots. (The first pivot is the $2$ in the top left.)
+
+<Hint>
+
+A multiplier is the entry to be removed divided by the pivot above it. A multiplier can be negative: subtracting a negative multiple of row 1 means adding.
+
+</Hint>
+
+<Hint>
+
+After the first column is cleared, the second pivot is the new entry in row 2, column 2; $\ell_{32}$ uses that new entry, not the old $-1$.
+
+</Hint>
+
+<Answer id="p3-a-l21" label="$\ell_{21} =$" value="2" tolerance="0.01" calc="p3-a-l21" />
+
+<Answer id="p3-a-l31" label="$\ell_{31} =$" value="-1" tolerance="0.01" calc="p3-a-l31" />
+
+<Answer id="p3-a-l32" label="$\ell_{32} =$" value="-2" tolerance="0.01" calc="p3-a-l32" />
+
+<Answer id="p3-a-p2" label="The second pivot is" value="-3" tolerance="0.01" calc="p3-a-p2" />
+
+<Answer id="p3-a-p3" label="The third pivot is" value="4" tolerance="0.01" calc="p3-a-p3" />
+
+<Solution>
+
+**The idea.** Clear column 1 below the first pivot, then column 2 below the second pivot.
+
+<Step title="Column 1">
+
+$\ell_{21} = 4/2 = 2$: row 2 minus 2 times row 1 is $(0, -3, 1)$. $\ell_{31} = -2/2 = -1$: row 3 minus $(-1)$ times row 1, that is row 3 plus row 1, is $(0, 6, 2)$. The second pivot is $-3$.
+
+</Step>
+
+<Step title="Column 2">
+
+$\ell_{32} = 6/(-3) = -2$: the new row 3 minus $(-2)$ times the new row 2 is $(0, 6 - 6, 2 + 2) = (0, 0, 4)$. The third pivot is $4$:
+
+<Formula label="The upper triangular U" tex="A \to \begin{pmatrix} 2 & 1 & 1 \\ 0 & -3 & 1 \\ 0 & 6 & 2 \end{pmatrix} \to \begin{pmatrix} 2 & 1 & 1 \\ 0 & -3 & 1 \\ 0 & 0 & 4 \end{pmatrix} = U" cite="reading2" at="pp. 3–5 (the steps; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+No pivot is zero, so no row exchange was needed and $A$ is invertible. The lesson's rule that the product of the pivots is the determinant gives $2 \cdot (-3) \cdot 4 = -24$; a later set computes determinants directly.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Apply the same steps to the right-hand side to get $c$, with $Ux = c$. Give the last entry of $c$, then solve by back substitution.
+
+<Hint>
+
+Carry $b$ along as a fourth column (the augmented matrix): every row operation of part (a) acts on it too.
+
+</Hint>
+
+<Answer id="p3-b-c3" label="The last entry of $c$ is" value="8" tolerance="0.01" calc="p3-b-c3" />
+
+<Answer id="p3-b-x" label="$x =$" value="1" tolerance="0.01" calc="p3-b-x" />
+
+<Answer id="p3-b-y" label="$y =$" value="-1" tolerance="0.01" calc="p3-b-y" />
+
+<Answer id="p3-b-z" label="$z =$" value="2" tolerance="0.01" calc="p3-b-z" />
+
+<Solution>
+
+**The idea.** The right-hand side goes through the same steps; then the triangular system is solved from the bottom up.
+
+<Step title="The right-hand side">
+
+$11 - 2 \cdot 3 = 5$ and $-5 + 3 = -2$ after column 1; then $-2 + 2 \cdot 5 = 8$ after column 2. So $c = (3, 5, 8)$ and
+
+<Formula label="The triangular system" tex="2x + y + z = 3, \qquad -3y + z = 5, \qquad 4z = 8" cite="reading2" at="p. 9 (back substitution; the numbers are our own)" />
+
+</Step>
+
+<Step title="Back substitution">
+
+$4z = 8$ gives $z = 2$. Then $-3y + 2 = 5$ gives $y = -1$. Then $2x - 1 + 2 = 3$ gives $x = 1$.
+
+</Step>
+
+<Step title="Check">
+
+Put $(1, -1, 2)$ into the original equations: $2 - 1 + 2 = 3$, $4 + 1 + 6 = 11$, $-2 - 5 + 2 = -5$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={7}>
+
+Two changes to $A$, one at a time. First change the entry in row 3, column 3 (the coefficient of $z$ in the third equation) from $1$ to a number $q$: for which $q$ does elimination break down for good? Then go back to $A$ and change the entry in row 2, column 2 from $-1$ to a number $s$: for which $s$ is there a zero in the second pivot position, and what happens then?
+
+<Hint>
+
+Redo part (a) with the letter in place of the number. Only some of the entries it produces change.
+
+</Hint>
+
+<Hint>
+
+A zero in a pivot position is harmless if some row below has a nonzero entry in that column.
+
+</Hint>
+
+<Answer id="p3-c-q" label="Elimination breaks down for good when $q =$" value="-3" tolerance="0.01" calc="p3-c-q" />
+
+<Answer id="p3-c-s" label="The second pivot position holds a zero when $s =$" value="2" tolerance="0.01" calc="p3-c-s" />
+
+<Answer id="p3-c-what" label="For that $s$:"
+  choices={["no row below can help: the matrix is singular", "a row exchange gives three nonzero pivots", "elimination goes on without any change", "only an exchange of two columns can help"]} answer={1} />
+
+<Solution>
+
+**The idea.** Follow the changed entry through the elimination steps and see which pivot it lands in.
+
+<Step title="The entry q">
+
+The steps of part (a) do not depend on the entry in row 3, column 3; they only add to it. After column 1 it is $q + 1$; after column 2 it is $q + 1 + 2 \cdot 1 = q + 3$. That is the third pivot, and nothing lies below it to exchange with: elimination fails for good at $q = -3$, and the matrix is then singular.
+
+</Step>
+
+<Step title="The entry s">
+
+After column 1, row 2 is $(4, s, 3) - 2(2, 1, 1) = (0, s - 2, 1)$, while row 3 is still $(0, 6, 2)$. So $s = 2$ puts a zero in the second pivot position. Row 3 has a $6$ there, so exchange rows 2 and 3:
+
+<Formula label="After the exchange" tex="\begin{pmatrix} 2 & 1 & 1 \\ 0 & 6 & 2 \\ 0 & 0 & 1 \end{pmatrix}" cite="reading2" at="pp. 5–6 (a row exchange; the numbers are our own)" />
+
+This is already upper triangular, with the pivots $2$, $6$, $1$: the changed matrix is invertible.
+
+</Step>
+
+<Step title="Check">
+
+With $q = -3$ the changed matrix sends $x = (-2, 1, 3)$ to $(-4 + 1 + 3, -8 - 1 + 9, 4 + 5 - 9) = (0, 0, 0)$: a nonzero $x$ with zero output, so that matrix has no inverse (Lecture 3 transcript, p. 16).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Elimination and permutation matrices" points={16}>
+
+Use the matrix $A$ of Problem 3 and the elimination matrices $E_{21}$, $E_{31}$, $E_{32}$ of its elimination: each is the $3 \times 3$ identity with $-\ell$ in the place of its multiplier, so that $E_{32}E_{31}E_{21}A = U$.
+
+<Part label="a" points={5}>
+
+Multiply the three into one matrix $E = E_{32}E_{31}E_{21}$, with $EA = U$. What is the entry of $E$ in row 3, column 1?
+
+<Hint>
+
+Write the three matrices out first. Then compute $E_{31}E_{21}$, and let $E_{32}$ act on its rows: on the left, $E_{32}$ changes row 3 only.
+
+</Hint>
+
+<Hint>
+
+The entry is not one of the multipliers. Row 3 of $E$ records everything that happened to row 3, including the copy of row 1 that came in with row 2.
+
+</Hint>
+
+<Answer id="p4-a" label="The entry of $E$ in row 3, column 1 is" value="-3" tolerance="0.01" calc="p4-a" />
+
+<Solution>
+
+**The idea.** Each elimination matrix is the identity with one changed entry, and a matrix on the left combines rows.
+
+<Step title="The three matrices">
+
+With $\ell_{21} = 2$, $\ell_{31} = -1$, $\ell_{32} = -2$ from Problem 3:
+
+<Formula label="The elimination matrices" tex="E_{21} = \begin{pmatrix} 1 & 0 & 0 \\ -2 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}, \quad E_{31} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 1 & 0 & 1 \end{pmatrix}, \quad E_{32} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 2 & 1 \end{pmatrix}" cite="reading2" at="pp. 13–14 (the form; the numbers are our own)" />
+
+</Step>
+
+<Step title="The product">
+
+$E_{31}E_{21}$ is the identity with $-2$ in row 2, column 1 and $1$ in row 3, column 1. Then $E_{32}$ adds 2 times row 2 to row 3: $(1, 0, 1) + 2(-2, 1, 0) = (-3, 2, 1)$. So
+
+<Formula label="All of elimination in one matrix" tex="E = E_{32}E_{31}E_{21} = \begin{pmatrix} 1 & 0 & 0 \\ -2 & 1 & 0 \\ -3 & 2 & 1 \end{pmatrix}" cite="mit" at="Problem 4(a) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+Row 3 of $EA$ is $-3(2, 1, 1) + 2(4, -1, 3) + 1(-2, 5, 1) = (-6 + 8 - 2, -3 - 2 + 5, -3 + 6 + 1) = (0, 0, 4)$, the last row of $U$. And $E$ applied to $b = (3, 11, -5)$ gives the last entry $-9 + 22 - 5 = 8$, as in Problem 3(b).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Does the order of two elimination matrices matter? Find the entry in row 3, column 1 of $E_{32}E_{21}$, and of $E_{21}E_{32}$.
+
+<Hint>
+
+In $E_{32}E_{21}$, the matrix $E_{32}$ acts on the rows of $E_{21}$; in $E_{21}E_{32}$, the matrix $E_{21}$ acts on the rows of $E_{32}$. Which row does each one change?
+
+</Hint>
+
+<Answer id="p4-b-1" label="In $E_{32}E_{21}$ the entry in row 3, column 1 is" value="-4" tolerance="0.01" calc="p4-b-1" />
+
+<Answer id="p4-b-2" label="In $E_{21}E_{32}$ the entry in row 3, column 1 is" value="0" tolerance="0.01" calc="p4-b-2" />
+
+<Solution>
+
+**The idea.** A matrix on the left changes rows: the result depends on what is already in the rows it uses.
+
+<Step title="E₃₂E₂₁">
+
+$E_{32}$ adds 2 times row 2 of $E_{21}$ to row 3 of $E_{21}$: $(0, 0, 1) + 2(-2, 1, 0) = (-4, 2, 1)$. The entry is $-4$.
+
+</Step>
+
+<Step title="E₂₁E₃₂">
+
+$E_{21}$ subtracts 2 times row 1 of $E_{32}$ from row 2, and leaves row 3 of $E_{32}$ alone: row 3 stays $(0, 2, 1)$. The entry is $0$.
+
+</Step>
+
+<Step title="Check">
+
+So $E_{32}E_{21} \neq E_{21}E_{32}$: the commutative law fails even for these simple matrices (Lecture 2 transcript, p. 18). In $E_{32}E_{21}$ the step on row 2 comes first, and its row 1 part is carried into row 3; in the other order row 3 is changed before row 2 has taken anything from row 1.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Let $P$ be the permutation matrix that exchanges rows 2 and 3 of the $3 \times 3$ identity. Find the entry in row 2, column 3 of $PA$, and of $AP$.
+
+<Hint>
+
+$P$ on the left acts on the rows of $A$; $P$ on the right acts on its columns.
+
+</Hint>
+
+<Answer id="p4-c-1" label="In $PA$ the entry in row 2, column 3 is" value="1" tolerance="0.01" calc="p4-c-1" />
+
+<Answer id="p4-c-2" label="In $AP$ the entry in row 2, column 3 is" value="-1" tolerance="0.01" calc="p4-c-2" />
+
+<Solution>
+
+**The idea.** On the left $P$ exchanges rows, on the right it exchanges columns.
+
+<Step title="PA">
+
+$PA$ is $A$ with rows 2 and 3 exchanged: its row 2 is $(-2, 5, 1)$, and the entry in column 3 is $1$.
+
+</Step>
+
+<Step title="AP">
+
+$AP$ is $A$ with columns 2 and 3 exchanged: its row 2 is $(4, 3, -1)$, and the entry in column 3 is $-1$.
+
+</Step>
+
+<Step title="Check">
+
+By the entry rule: row 2 of $P$ is $(0, 0, 1)$, and its dot product with column 3 of $A$, $(1, 3, 1)$, is $1$. Row 2 of $A$, $(4, -1, 3)$, with column 3 of $P$, $(0, 1, 0)$, gives $-1$. This is the rule of the lecture: rows on the left, columns on the right (Lecture 2 transcript, pp. 17–18).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Which matrix undoes $E_{32}$, so that it times $E_{32}$ is the identity?
+
+<Hint>
+
+Say in words what $E_{32}$ does to the rows. The inverse step does the opposite.
+
+</Hint>
+
+<Answer id="p4-d" label="The inverse of $E_{32}$ is the identity with"
+  choices={["$-2$ in row 3, column 2", "$2$ in row 3, column 2", "$-2$ in row 2, column 3", "$0.5$ in row 3, column 2"]} answer={0} />
+
+<Solution>
+
+**The idea.** What one step subtracts, the inverse step adds back (Lecture 2 transcript, p. 20).
+
+<Step title="Undo the step">
+
+$E_{32}$ adds 2 times row 2 to row 3 (it subtracts $\ell_{32} = -2$ times row 2). To undo it, subtract 2 times row 2 from row 3: the identity with $-2$ in row 3, column 2.
+
+</Step>
+
+<Step title="Check">
+
+Row 3 of the product is $-2$ times row 2 of $E_{32}$ plus row 3 of $E_{32}$: $-2(0, 1, 0) + (0, 2, 1) = (0, 0, 1)$. Rows 1 and 2 are unchanged, so the product is $I$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Four ways to multiply, and blocks" points={18}>
+
+Take
+
+<Formula label="Two rectangular matrices" tex="A = \begin{pmatrix} 1 & 2 & 0 \\ -1 & 1 & 3 \end{pmatrix}, \qquad B = \begin{pmatrix} 2 & 1 \\ 0 & -1 \\ 1 & 4 \end{pmatrix}" cite="reading3" at="pp. 3–4 (the shapes; the matrices are our own)" />
+
+<Part label="a" points={4}>
+
+Computed entry by entry, each entry of a product is a sum of products of numbers. How many multiplications of numbers does $AB$ take, and how many does $BA$ take?
+
+<Hint>
+
+Find the shape of each product first, then count the terms in the sum for one entry.
+
+</Hint>
+
+<Answer id="p5-a-ab" label="$AB$ takes this many multiplications:" value="12" tolerance="0.01" calc="p5-a-ab" />
+
+<Answer id="p5-a-ba" label="$BA$ takes this many multiplications:" value="18" tolerance="0.01" calc="p5-a-ba" />
+
+<Solution>
+
+**The idea.** An $(m \times n)(n \times p)$ product has $mp$ entries, each a sum of $n$ products.
+
+<Step title="Count">
+
+$A$ is $2 \times 3$ and $B$ is $3 \times 2$. $AB$ is $2 \times 2$: $4$ entries of $3$ products each, $12$ in all. $BA$ is $3 \times 3$: $9$ entries of $2$ products each, $18$ in all.
+
+</Step>
+
+<Step title="Check">
+
+Both counts are $m \cdot n \cdot p$: $2 \cdot 3 \cdot 2 = 12$ and $3 \cdot 2 \cdot 3 = 18$. The two products are not even the same size, let alone equal.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Find the entry in row 2, column 2 of $AB$, and the entry in row 3, column 1 of $BA$.
+
+<Hint>
+
+One entry needs one row of the left factor and one column of the right factor.
+
+</Hint>
+
+<Answer id="p5-b-ab" label="In $AB$ the entry in row 2, column 2 is" value="10" tolerance="0.01" calc="p5-b-ab" />
+
+<Answer id="p5-b-ba" label="In $BA$ the entry in row 3, column 1 is" value="-3" tolerance="0.01" calc="p5-b-ba" />
+
+<Solution>
+
+**The idea.** Entry $(i, j)$ of a product is row $i$ of the left factor times column $j$ of the right factor.
+
+<Step title="The two entries">
+
+Row 2 of $A$, $(-1, 1, 3)$, times column 2 of $B$, $(1, -1, 4)$: $-1 - 1 + 12 = 10$. Row 3 of $B$, $(1, 4)$, times column 1 of $A$, $(1, -1)$: $1 - 4 = -3$.
+
+</Step>
+
+<Step title="Check by rows">
+
+Row 3 of $BA$ is a combination of the rows of $A$, with the amounts in row 3 of $B$: $1(1, 2, 0) + 4(-1, 1, 3) = (-3, 6, 12)$. Its first entry is $-3$ again.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Write $AB$ as a sum of three columns times rows. What is the entry in row 1, column 2 of the second of them, (column 2 of $A$)(row 2 of $B$)?
+
+<Hint>
+
+A column with two entries times a row with two entries is a $2 \times 2$ matrix: entry $(i, j)$ is entry $i$ of the column times entry $j$ of the row.
+
+</Hint>
+
+<Answer id="p5-c" label="The entry in row 1, column 2 of (column 2 of $A$)(row 2 of $B$) is" value="-2" tolerance="0.01" calc="p5-c" />
+
+<Solution>
+
+**The idea.** Each term of the sum is a full matrix; adding the three gives $AB$.
+
+<Step title="The three terms">
+
+<Formula label="AB as columns times rows" tex="\begin{pmatrix} 1 \\ -1 \end{pmatrix}\begin{pmatrix} 2 & 1 \end{pmatrix} + \begin{pmatrix} 2 \\ 1 \end{pmatrix}\begin{pmatrix} 0 & -1 \end{pmatrix} + \begin{pmatrix} 0 \\ 3 \end{pmatrix}\begin{pmatrix} 1 & 4 \end{pmatrix} = \begin{pmatrix} 2 & 1 \\ -2 & -1 \end{pmatrix} + \begin{pmatrix} 0 & -2 \\ 0 & -1 \end{pmatrix} + \begin{pmatrix} 0 & 0 \\ 3 & 12 \end{pmatrix}" cite="reading3" at="pp. 8–9 (the rule; the numbers are our own)" />
+
+The second term has $2 \cdot (-1) = -2$ in row 1, column 2.
+
+</Step>
+
+<Step title="Check">
+
+The sum is $\begin{pmatrix} 2 & -1 \\ 1 & 10 \end{pmatrix}$, which is $AB$ entry by entry: for example row 1 of $A$ times column 2 of $B$ is $1 - 2 + 0 = -1$, and the entry in row 2, column 2 is the $10$ of part (b).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Let $u$ be a nonzero column with $m$ entries and $v$ a nonzero row with $p$ entries. Show that every row of the $m \times p$ matrix $uv$ is a multiple of $v$, and every column a multiple of $u$. What does this say about the rows of each of the three terms in part (c)?
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Write out the entry in row $i$, column $j$ of $uv$. Keep $i$ fixed and let $j$ run.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The entry of $uv$ in row $i$, column $j$ is entry $i$ of $u$ times entry $j$ of $v$.
+
+<Step title="Rows and columns">
+
+Keep $i$ fixed: row $i$ of $uv$ is entry $i$ of $u$ times each entry of $v$ in turn, so it is that number times $v$, a multiple of $v$. Keep $j$ fixed: column $j$ is entry $j$ of $v$ times $u$, a multiple of $u$. So all rows lie on the line through $v$ and all columns on the line through $u$, as for the lecture's column times row (Lecture 3 transcript, pp. 8–9).
+
+</Step>
+
+<Step title="The three terms">
+
+In part (c) the rows of the first term are multiples of $(2, 1)$, those of the second multiples of $(0, -1)$, those of the third multiples of $(1, 4)$. $AB$ is a sum of three such matrices, each as simple as a matrix can be without being zero.
+
+</Step>
+
+<Step title="Check">
+
+The second term has rows $(0, -2) = 2(0, -1)$ and $(0, -1) = 1(0, -1)$, the amounts $2$ and $1$ being the entries of column 2 of $A$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="e" points={4}>
+
+Blocks. Let $C = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$ and let $M$ be the $4 \times 4$ matrix with the blocks $\begin{pmatrix} I & 0 \\ C & I \end{pmatrix}$, where $I$ and $0$ are the $2 \times 2$ identity and zero matrices. Find the entry in row 4, column 1 of $M^2 = MM$. Then show that the block matrix $N = \begin{pmatrix} I & 0 \\ -C & I \end{pmatrix}$ satisfies $NM = I$ (this last step has no box).
+
+<Hint>
+
+Multiply block rows by block columns, as if the blocks were numbers, but keep their order in each product. Row 4, column 1 of $M^2$ lies in the lower-left block.
+
+</Hint>
+
+<Answer id="p5-e" label="The entry of $M^2$ in row 4, column 1 is" value="6" tolerance="0.01" calc="p5-e" />
+
+<Solution>
+
+**The idea.** Blocks multiply like entries (Lecture 3 transcript, pp. 10–11).
+
+<Step title="M squared">
+
+<Formula label="The square by blocks" tex="M^2 = \begin{pmatrix} I & 0 \\ C & I \end{pmatrix}\begin{pmatrix} I & 0 \\ C & I \end{pmatrix} = \begin{pmatrix} I \cdot I + 0 \cdot C & I \cdot 0 + 0 \cdot I \\ C \cdot I + I \cdot C & C \cdot 0 + I \cdot I \end{pmatrix} = \begin{pmatrix} I & 0 \\ 2C & I \end{pmatrix}" cite="reading3" at="pp. 10–11 (block multiplication; the matrices are our own)" />
+
+Row 4 of $M^2$ is the second row of its lower blocks, and column 1 the first column of its left blocks: the entry is $2 \cdot 3 = 6$, the entry of $2C$ in row 2, column 1.
+
+</Step>
+
+<Step title="The inverse">
+
+In the same way, $NM$ has the lower-left block $-C \cdot I + I \cdot C = 0$, and the other blocks $I$, $0$, $I$ as before. So $NM$ is the $4 \times 4$ identity, and $MN$ is too. $N$ is the inverse of $M$: what $M$ adds to the lower rows, $N$ takes away, just as for the elimination matrices of Problem 4.
+
+</Step>
+
+<Step title="Check">
+
+Entry by entry: row 4 of $M$ is $(3, 4, 0, 1)$ and column 1 of $M$ is $(1, 0, 1, 3)$, so the entry is $3 + 0 + 0 + 3 = 6$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="Which matrices have an inverse?" points={16}>
+
+<Part label="a" points={3}>
+
+Take $A = \begin{pmatrix} 3 & -6 \\ -1 & 2 \end{pmatrix}$. Find a nonzero $x = (x_1, 1)$ with $Ax = 0$: give $x_1$.
+
+<Hint>
+
+Look for a combination of the two columns that gives the zero column. How is column 2 related to column 1?
+
+</Hint>
+
+<Answer id="p6-a" label="$x_1 =$" value="2" tolerance="0.01" calc="p6-a" />
+
+<Solution>
+
+**The idea.** $Ax = x_1(\text{column } 1) + 1\,(\text{column } 2)$, and column 2 is $-2$ times column 1.
+
+<Step title="Solve">
+
+$x_1(3, -1) + (-6, 2) = (3x_1 - 6, -x_1 + 2)$ is zero for $x_1 = 2$.
+
+</Step>
+
+<Step title="Check">
+
+$A(2, 1) = (6 - 6, -2 + 2) = (0, 0)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Show in two ways that this $A$ has no inverse: first with the columns of a product $AB$, then with the vector $x$ of part (a).
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Every column of $AB$ is a combination of the columns of $A$. Where do those combinations lie, and where is $(1, 0)$?
+
+</Hint>
+
+<Hint>
+
+If $A^{-1}$ existed, multiply both sides of $Ax = 0$ by it.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Both arguments are the ones of the lecture, here for our matrix (Lecture 3 transcript, pp. 13–16).
+
+<Step title="By columns">
+
+Both columns of $A$ are multiples of $(3, -1)$, so every combination of them lies on the line through $(3, -1)$. Every column of $AB$ is such a combination. But the first column of $I$, $(1, 0)$, is not a multiple of $(3, -1)$. So no $B$ gives $AB = I$.
+
+</Step>
+
+<Step title="By Ax = 0">
+
+If $A^{-1}A = I$, multiply $Ax = 0$ on the left by $A^{-1}$:
+
+<Formula label="An inverse would force x = 0" tex="A^{-1}(Ax) = (A^{-1}A)x = Ix = x, \qquad A^{-1}0 = 0" cite="reading3" at="pp. 15–16" />
+
+so $x = 0$. But $x = (2, 1)$ is not zero. So $A^{-1}$ cannot exist.
+
+</Step>
+
+<Step title="Check">
+
+Elimination agrees: subtracting $-\frac13$ times row 1 from row 2 gives the row $(0, 2 - 2) = (0, 0)$, a zero in the second pivot position with no row below to exchange with.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+For a number $t$, take $A_t = \begin{pmatrix} 1 & 2 & t \\ 0 & 1 & 1 \\ 2 & 1 & 0 \end{pmatrix}$. Find the $t$ for which $A_t$ has no inverse. For that $t$, find the nonzero $x$ with $A_tx = 0$ whose third entry is $2$, and give its second entry.
+
+<Hint>
+
+Eliminate, keeping $t$ as a letter. The matrix is not invertible when a pivot turns out zero with nothing below to exchange with.
+
+</Hint>
+
+<Hint>
+
+For $x$: with the third entry fixed, the second row of $U$ gives the second entry, and the first row the first.
+
+</Hint>
+
+<Answer id="p6-c-t" label="$A_t$ has no inverse for $t =$" value="1.5" tolerance="0.01" calc="p6-c-t" />
+
+<Answer id="p6-c-x2" label="The second entry of $x$ is" value="-2" tolerance="0.01" calc="p6-c-x2" />
+
+<Solution>
+
+**The idea.** Elimination shows the pivots; a zero third pivot means the third column is a combination of the first two, and that combination is $x$.
+
+<Step title="Eliminate">
+
+$\ell_{31} = 2$: row 3 minus 2 times row 1 is $(0, -3, -2t)$. $\ell_{32} = -3$: adding 3 times row 2 gives $(0, 0, 3 - 2t)$. The third pivot is $3 - 2t$, zero for $t = \frac32 = 1.5$.
+
+</Step>
+
+<Step title="The vector x">
+
+For $t = 1.5$, solve $Ux = 0$ with the third entry $2$. Row 2 of $U$, $(0, 1, 1)$, gives $x_2 + 2 = 0$, so $x_2 = -2$. Row 1, $(1, 2, 1.5)$, gives $x_1 - 4 + 3 = 0$, so $x_1 = 1$. So $x = (1, -2, 2)$.
+
+</Step>
+
+<Step title="Check">
+
+<Formula label="A nonzero solution of Ax = 0" tex="\begin{pmatrix} 1 & 2 & 1.5 \\ 0 & 1 & 1 \\ 2 & 1 & 0 \end{pmatrix}\begin{pmatrix} 1 \\ -2 \\ 2 \end{pmatrix} = \begin{pmatrix} 1 - 4 + 3 \\ -2 + 2 \\ 2 - 2 + 0 \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\ 0 \end{pmatrix}" cite="reading3" at="pp. 14–16 (the test; the numbers are our own)" />
+
+So for $t = 1.5$ the matrix has no inverse, by the argument of part (b).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+Let $P$ now be the permutation matrix $\begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}$. Which matrix is its inverse?
+
+<Hint>
+
+Say in words what $P$ does to the rows of a matrix it multiplies on the left. How many times must you do it to get every row back in its place?
+
+</Hint>
+
+<Answer id="p6-d" label="The inverse of $P$ is"
+  choices={["$P$ itself", "$P^2 = PP$", "$-P$", "none: $P$ is singular"]} answer={1} />
+
+<Solution>
+
+**The idea.** A permutation can always be undone by another permutation; here, by doing the same one twice more.
+
+<Step title="What P does">
+
+$PA$ has row 3 of $A$ on top, then row 1, then row 2: the rows move down one place, the last coming round to the top. Doing this three times brings every row back, so $P^3 = I$, which says $P^2 \cdot P = I = P \cdot P^2$. The inverse is $P^2$.
+
+</Step>
+
+<Step title="Check">
+
+$P^2 = \begin{pmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \\ 1 & 0 & 0 \end{pmatrix}$, and $P^2P$: row 1 of $P^2$ picks row 2 of $P$, $(1, 0, 0)$; row 2 picks row 3, $(0, 1, 0)$; row 3 picks row 1, $(0, 0, 1)$. That is $I$. $P$ is not its own inverse, because $PP = P^2$ is not $I$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
