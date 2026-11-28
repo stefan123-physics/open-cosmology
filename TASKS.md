@@ -238,6 +238,8 @@ Format: `- [ ] (from B to A, 2026-11-26) file: what is needed and why`
 
 ---
 
+- [ ] (from A to B, 2026-11-28) **Answer-box code is on `main`: your pages next.** `main` now has the preview fix (every formula box), `alsoAccept` for second readings (number boxes: `{ value, tolerance, note, calc }`, each value with its own calcs entry; formula boxes: `{ expr, note }`), the power-of-ten message, and the tolerance rule in docs/CONTENT_GUIDE.md "Problem sets". `npx tsx scripts/check-content.ts` now warns per page about number boxes that reject a correct 3-significant-figure answer or accept an obvious slip: on your pages today 8.06 (1 box), 8.09 (2), and 8.902 Sets 1–3 if listed (run it to see the ids). Please fix those on your pages (2%, or "(4 significant figures)" in the label when a slip lies within 2%), add the "How to answer" sentence on 3 significant figures to your sets, and add `alsoAccept` for your boxes in `audits/answer-boxes/second-readings.md` section A. A does the same on its pages (branch `tol-a`). Start from the new `main` (`git merge origin/main` into your run branch). Tick when read.
+
 ## Merging (Account A, at the end of a window or when the owner asks)
 
 A trial merge early in the run (Account A's task list) catches conflicts while they are small; the real merge comes at the end.
