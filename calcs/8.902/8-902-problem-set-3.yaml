@@ -1,0 +1,463 @@
+# Calculations on content/year-5/8.902/8-902-problem-set-3.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set. Problem 1 uses the sheet's Oort constants (A = 14.82, B = −12.37 km/s/kpc)
+# and R0 = 8.5 kpc; times use 977.8 Myr per kpc/(km/s). Formula boxes are checked against independent routes:
+# the rotation curve v_c = v0 (R/R0)^pw with derivatives taken numerically (deriv), the notes' eq. (151) for κ²,
+# the exact relative velocities of Problem 1(a) differentiated in d at d = 0, and the free-fall integral done
+# numerically (integrate). Variable names have more than one letter so none is read as a unit.
+
+page: content/year-5/8.902/8-902-problem-set-3.mdx
+calcs:
+  - id: intro-points
+    kind: fact
+    where: 'How to answer: our split of the points (the sheet gives none); 70 + 30 = 100, parts 20 + 15 + 10 + 15 + 10 = 70 and 15 + 10 + 5 = 30'
+    shown: ['Problem 1 has 70 and Problem 2 has 30']
+    source: {cite: mit, at: 'Problem Set 3 (our own points)'}
+    origin: page-own
+
+  - id: sheet-values
+    kind: fact
+    where: 'Problem 1: the sheet''s Oort constants with their errors, said to come from Hipparcos, and R0 = 8.5 kpc'
+    shown:
+      - 'A = 14.82 \pm 0.84\ \text{km/s/kpc}, \qquad B = -12.37 \pm 0.64\ \text{km/s/kpc}'
+      - 'and asks you to take $R_0 = 8.5$ kpc'
+      - 'the Hipparcos satellite:'
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: kpc-per-kms
+    where: 'Problem 1, before part (b): 1 kpc/(km/s) in millions of years (our choice of constants)'
+    inputs: {}
+    formula: 3.0857e16 / (365.25 * 86400) / 1e6
+    expected: '977.8'
+    shown: ['1 kpc/(km/s) = 977.8 million years (with 1 kpc = 3.0857 × 10¹⁶ km and a year of 365.25 days; our choice)']
+    source: {cite: mit, at: 'Problem 1 (our own computation)'}
+    origin: page-own
+
+  - id: p1a-flat
+    kind: identity
+    answer: p1a-flat
+    where: 'Problem 1(a), answer box: A for a flat rotation curve, against A = −½ R0 dΩ/dR with Ω = v0/R differentiated numerically'
+    formula: v0 / (2 * R0)
+    equals: -0.5 * R0 * deriv('v0 / x', 'x', R0)
+    samples:
+      v0: [150, 300, 220, 231.1]
+      R0: [5, 12, 8.5, 7.3]
+    tolerance: 1e-6
+    shown: ['so $A = v_0/(2R_0)$ and $B = -v_0/(2R_0)$']
+    source: {cite: mit, at: 'Problem 1(A), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1a-vr-first-order
+    kind: identity
+    where: 'Problem 1(a), solution: d(v_r)/dd at d = 0 from the exact v_r = (Ω − Ω0) R0 sin l, for v_c = v0 (R/R0)^pw, equals A sin 2l with A = ½(v0/R0 − dv_c/dR)'
+    formula: deriv('(v0 * (sqrt(R0**2 + x**2 - 2*R0*x*cos(ell)) / R0)**pw / sqrt(R0**2 + x**2 - 2*R0*x*cos(ell)) - v0 / R0) * R0 * sin(ell)', 'x', 0)
+    equals: 0.5 * (v0 / R0 - pw * v0 / R0) * sin(2 * ell)
+    samples:
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+      pw: [0.3, 0, -0.5, 1]
+      ell: [0.3, 1.2, 2.5, 4.0]
+    tolerance: 1e-5
+    shown: ['v_r = \left(\Omega - \Omega_0\right)R_0\sin l, \qquad v_T = \left(\Omega - \Omega_0\right)R_0\cos l - \Omega\,d']
+    source: {cite: mit, at: 'Problem 1(A), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1a-vt-first-order
+    kind: identity
+    where: 'Problem 1(a), solution: d(v_T)/dd at d = 0 from the exact v_T = (Ω − Ω0) R0 cos l − Ω d equals A cos 2l + B, B = −½(v0/R0 + dv_c/dR)'
+    formula: deriv('(v0 * (sqrt(R0**2 + x**2 - 2*R0*x*cos(ell)) / R0)**pw / sqrt(R0**2 + x**2 - 2*R0*x*cos(ell)) - v0 / R0) * R0 * cos(ell) - v0 * (sqrt(R0**2 + x**2 - 2*R0*x*cos(ell)) / R0)**pw / sqrt(R0**2 + x**2 - 2*R0*x*cos(ell)) * x', 'x', 0)
+    equals: 0.5 * (v0 / R0 - pw * v0 / R0) * cos(2 * ell) - 0.5 * (v0 / R0 + pw * v0 / R0)
+    samples:
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+      pw: [0.3, 0, -0.5, 1]
+      ell: [0.3, 1.2, 2.5, 4.0]
+    tolerance: 1e-5
+    shown: ['v_r = A\,d\sin 2l, \qquad v_T = d\left(A\cos 2l + B\right)']
+    source: {cite: mit, at: 'Problem 1(A), p. 1'}
+    origin: page-own
+
+  - id: p1b-v0
+    kind: identity
+    answer: p1b-v0
+    where: 'Problem 1(b), formula box v0 = R0 (A − B): with A and B built from a power-law rotation curve, R0 (A − B) gives back v0 (samples: A and B computed from the sheet''s definitions for v_c = v0 (R/R0)^pw, to 12 digits)'
+    formula: R0 * (A - B)
+    equals: v0
+    samples:
+      A: [9.05882352941, 14.44375, 22.5, 1.25]
+      B: [-16.8235294118, -14.44375, -7.5, -23.75]
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+      pw: [0.3, 0, -0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['v_0 = R_0\left(A - B\right), \qquad P = \frac{2\pi R_0}{v_0} = \frac{2\pi}{A - B}']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: omega0
+    where: 'Problem 1(b), solution: A − B = Ω0'
+    inputs: {}
+    formula: 14.82 + 12.37
+    expected: '27.19'
+    shown: ['$A - B = 14.82 + 12.37 = 27.19$ km/s/kpc']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-v0-num
+    answer: p1b-v0-num
+    where: 'Problem 1(b), number box: v0 = 8.5 × 27.19 km/s'
+    inputs: {}
+    formula: 8.5 * (14.82 + 12.37)
+    expected: '231.1'
+    shown: ['so $v_0 = 8.5 \times 27.19 = 231.1$ km/s', 'value="231.1"']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-period
+    kind: identity
+    answer: p1b-period
+    where: 'Problem 1(b), formula box P = 2π/(A − B), against 2π R0/v0 (samples: A and B computed from the sheet''s definitions for v_c = v0 (R/R0)^pw with pw = 0.3, 0, −0.5, 0.9)'
+    formula: 2 * pi / (A - B)
+    equals: 2 * pi * R0 / v0
+    samples:
+      A: [9.05882352941, 14.44375, 22.5, 1.25]
+      B: [-16.8235294118, -14.44375, -7.5, -23.75]
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+    tolerance: 1e-6
+    shown: ['P = \frac{2\pi R_0}{v_0} = \frac{2\pi}{A - B}']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-period-kpc
+    where: 'Problem 1(b), solution: 2π/27.19 in kpc/(km/s)'
+    inputs: {}
+    formula: 2 * pi / 27.19
+    expected: '0.2311'
+    shown: ['The period is $2\pi/27.19 = 0.2311$ kpc/(km/s)']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-period-num
+    answer: p1b-period-num
+    where: 'Problem 1(b), number box: P = 2π/(A − B) × 977.8 Myr'
+    inputs: {}
+    formula: 2 * pi / (14.82 + 12.37) * 977.8
+    expected: '226'
+    shown: ['which is $0.2311 \times 977.8 = 226$ million years', 'value="226"']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-check-path
+    where: 'Problem 1(b), check: the length of one orbit, 2π × 8.5 kpc'
+    inputs: {}
+    formula: 2 * pi * 8.5
+    expected: '53.4'
+    shown: ['The Sun covers $2\pi \times 8.5 = 53.4$ kpc in one orbit']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-check-speed
+    where: 'Problem 1(b), check: 231.1 km/s in kpc per million years'
+    inputs: {}
+    formula: 231.1 / 977.8
+    expected: '0.236'
+    shown: ['at 231 km/s, which is 0.236 kpc per million years']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1b-check-time
+    where: 'Problem 1(b), check: 53.4 kpc at 0.236 kpc/Myr'
+    inputs: {}
+    formula: 53.4 / 0.236
+    expected: '226'
+    tolerance: 1.0
+    shown: ['that takes $53.4/0.236 = 226$ million years']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-slope
+    kind: identity
+    answer: p1c-slope
+    where: 'Problem 1(c), formula box: −(A + B) equals dv_c/dR at R0 for a power-law rotation curve (derivative taken numerically) (samples: A and B computed from the sheet''s definitions for v_c = v0 (R/R0)^pw, to 12 digits)'
+    formula: -(A + B)
+    equals: deriv('v0 * (x / R0)**pw', 'x', R0)
+    samples:
+      A: [9.05882352941, 14.44375, 22.5, 1.25]
+      B: [-16.8235294118, -14.44375, -7.5, -23.75]
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+      pw: [0.3, 0, -0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['\left(\frac{dv_c}{dR}\right)_{R_0} = -\left(A + B\right)']
+    source: {cite: mit, at: 'Problem 1(C), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-slope-num
+    answer: p1c-slope-num
+    where: 'Problem 1(c), number box: −(A + B)'
+    inputs: {}
+    formula: -(14.82 - 12.37)
+    expected: '-2.45'
+    shown: ['$-(14.82 - 12.37) = -2.45$ km/s/kpc', 'value="-2.45"', 'Over 1 kpc the speed drops by only 2.45 km/s out of 231']
+    source: {cite: mit, at: 'Problem 1(C), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1c-kepler
+    where: 'Problem 1(c), solution: slope of a point-mass curve at the Sun, −v0/(2R0) = −(A − B)/2'
+    inputs: {}
+    formula: -(14.82 + 12.37) / 2
+    expected: '-13.6'
+    shown: ['$-v_0/(2R_0) = -13.6$ km/s/kpc']
+    source: {cite: mit, at: 'Problem 1(C) (our addition)'}
+    origin: page-own
+
+  - id: p1c-solid
+    where: 'Problem 1(c), solution: slope of a solid body, +v0/R0'
+    inputs: {}
+    formula: 14.82 + 12.37
+    expected: '27.19'
+    shown: ['A solid body would have a slope of $+27.19$ km/s/kpc', 'Compare it with $v_0/R_0 = 27.19$ km/s/kpc']
+    source: {cite: mit, at: 'Problem 1(C) (our addition)'}
+    origin: page-own
+
+  - id: p1c-error
+    where: 'Problem 1(c), check: the two errors in quadrature'
+    inputs: {}
+    formula: sqrt(0.84**2 + 0.64**2)
+    expected: '1.06'
+    shown: ['\sqrt{0.84^2 + 0.64^2} = 1.06', '$A + B$ lies between about $2.45 - 1.06$ and $2.45 + 1.06$ km/s/kpc']
+    source: {cite: mit, at: 'Problem 1(C) (our addition)'}
+    origin: page-own
+
+  - id: p1d-kappa
+    kind: identity
+    answer: p1d-kappa
+    where: 'Problem 1(d), formula box: sqrt(−4B(A − B)) equals the notes'' κ² = R dΩ²/dR + 4Ω² (eq. 151) for a power-law rotation curve (samples: A and B computed from the sheet''s definitions for v_c = v0 (R/R0)^pw, to 12 digits)'
+    formula: sqrt(-4 * B * (A - B))
+    equals: sqrt(R0 * deriv('(v0 * (x / R0)**pw / x)**2', 'x', R0) + 4 * (v0 / R0)**2)
+    samples:
+      A: [9.05882352941, 14.44375, 22.5, 1.25]
+      B: [-16.8235294118, -14.44375, -7.5, -23.75]
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+      pw: [0.3, 0, -0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['\kappa^2 = -4B\left(A - B\right)']
+    source: {cite: reading1, at: 'eqs. (151) and (157), pp. 35 and 36'}
+    origin: page-own
+
+  - id: p1d-kappa-sq
+    where: 'Problem 1(d), solution: −4B(A − B)'
+    inputs: {}
+    formula: -4 * (-12.37) * 27.19
+    expected: '1345.4'
+    shown: ['$-4 \times (-12.37) \times 27.19 = 1345.4$']
+    source: {cite: reading1, at: 'eq. (157), p. 36'}
+    origin: page-own
+
+  - id: p1d-kappa-num
+    answer: p1d-kappa-num
+    where: 'Problem 1(d), number box: κ = sqrt(−4B(A − B))'
+    inputs: {}
+    formula: sqrt(-4 * (-12.37) * (14.82 + 12.37))
+    expected: '36.68'
+    shown: ['so $\kappa = \sqrt{1345.4} = 36.68$ km/s/kpc', 'value="36.68"']
+    source: {cite: reading1, at: 'eq. (157), p. 36'}
+    origin: page-own
+
+  - id: p1d-epicycle-period
+    where: 'Problem 1(d), solution: 2π/κ in kpc/(km/s) and in Myr'
+    inputs: {}
+    formula: 2 * pi / sqrt(-4 * (-12.37) * 27.19)
+    expected: '0.1713'
+    shown: ['One radial oscillation takes $2\pi/\kappa = 0.1713$ kpc/(km/s)']
+    source: {cite: mit, at: 'Problem 1(D) (our own solution)'}
+    origin: page-own
+
+  - id: p1d-epicycle-period-myr
+    where: 'Problem 1(d), solution: 2π/κ × 977.8 Myr'
+    inputs: {}
+    formula: 2 * pi / sqrt(-4 * (-12.37) * 27.19) * 977.8
+    expected: '167.5'
+    shown: ['or 167.5 million years']
+    source: {cite: mit, at: 'Problem 1(D) (our own solution)'}
+    origin: page-own
+
+  - id: flat-kappa
+    where: 'Problem 1(d), check, and 1(e): κ/Ω = √2 = 1.41 for a flat curve'
+    inputs: {}
+    formula: sqrt(2)
+    expected: '1.41'
+    shown: ['should therefore lie between 1 and 1.41', '1.349 lies between 1 (point mass) and 1.41 (flat curve)']
+    source: {cite: reading1, at: 'eq. (151), p. 35'}
+    origin: page-own
+
+  - id: p1e-ratio
+    kind: identity
+    answer: p1e-ratio
+    where: 'Problem 1(e), formula box: sqrt(−4B/(A − B)) against κ/Ω0 from the notes'' eq. (151) for a power-law rotation curve (samples: A and B computed from the sheet''s definitions for v_c = v0 (R/R0)^pw, to 12 digits)'
+    formula: sqrt(-4 * B / (A - B))
+    equals: sqrt(R0 * deriv('(v0 * (x / R0)**pw / x)**2', 'x', R0) + 4 * (v0 / R0)**2) / (v0 / R0)
+    samples:
+      A: [9.05882352941, 14.44375, 22.5, 1.25]
+      B: [-16.8235294118, -14.44375, -7.5, -23.75]
+      v0: [220, 231.1, 150, 300]
+      R0: [8.5, 8, 5, 12]
+      pw: [0.3, 0, -0.5, 0.9]
+    tolerance: 1e-6
+    shown: ['\frac{\kappa}{\Omega_0} = \frac{\sqrt{-4B\left(A - B\right)}}{A - B} = \sqrt{\frac{-4B}{A - B}}']
+    source: {cite: mit, at: 'Problem 1(E), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1e-ratio-num
+    answer: p1e-ratio-num
+    where: 'Problem 1(e), number box: κ/Ω0 = 36.68/27.19'
+    inputs: {}
+    formula: sqrt(-4 * (-12.37) / (14.82 + 12.37))
+    expected: '1.349'
+    shown: ['Numerically $36.68/27.19 = 1.349$', 'value="1.349"']
+    source: {cite: mit, at: 'Problem 1(E), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1e-ratio-periods
+    where: 'Problem 1(e), solution: the same ratio from the two periods, 226/167.5'
+    inputs: {}
+    formula: 226 / 167.5
+    expected: '1.349'
+    tolerance: 0.002
+    shown: ['also 226/167.5 from the two periods']
+    source: {cite: mit, at: 'Problem 1(E), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1e-lesson
+    kind: fact
+    where: 'Problem 1(e), check: the lesson''s worked example (Gaia values of Bovy 2017) gives κ/Ω = 1.32 (calcs/8.902/orbits-and-epicycles.yaml, kappa-over-omega)'
+    shown: ['with later Gaia values of $A$ and $B$ (2017), finds 1.32']
+    source: {cite: mit, at: 'Problem 1(E) (our addition; values from the lesson orbits-and-epicycles)'}
+    origin: later-data
+
+  - id: p1a-numeric-check
+    kind: fact
+    where: 'Problem 1(a), check: our numerical comparison of the exact and first-order components (Python, v_c ∝ R^0.3, R0 = 8.5 kpc, d = 0.01 kpc, four longitudes; agreement to about 0.2%)'
+    shown: ['for a rotation curve $v_c \propto R^{0.3}$ at $d = 0.01$ kpc (our check)']
+    source: {cite: mit, at: 'Problem 1(A) (our own computation)'}
+    origin: page-own
+
+  - id: p2a-time
+    kind: identity
+    answer: p2a-time
+    where: 'Problem 2(a), formula box: (π/2) sqrt(r0³/(2GM)) against the integral of dr/|dr/dt| from 0 to r0, done numerically'
+    formula: (pi / 2) * sqrt(r0**3 / (2 * G * M))
+    equals: integrate('1 / sqrt(2 * G * M * (1 / x - 1 / r0))', 'x', 0, r0)
+    samples:
+      r0: [0.5, 5, 1, 2.3]
+      G: [0.5, 2, 1, 1.7]
+      M: [0.5, 5, 1, 3.1]
+    tolerance: 1e-6
+    shown: ['t = \frac{\pi}{2}\sqrt{\frac{r_0^3}{2GM}}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2a-kepler
+    kind: identity
+    where: 'Problem 2(a), check: half the period of a Kepler ellipse of semi-major axis r0/2'
+    formula: pi * sqrt(r0**3 / (8 * Gn * Mass))
+    equals: 0.5 * 2 * pi * sqrt((r0 / 2)**3 / (Gn * Mass))
+    samples:
+      r0: [0.5, 5, 1, 2.3]
+      Gn: [0.5, 2, 1, 1.7]
+      Mass: [0.5, 5, 1, 3.1]
+    tolerance: 1e-9
+    shown: ['$\pi\sqrt{r_0^3/(8GM)}$, the same result']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-tf
+    kind: identity
+    where: 'Problem 2(b), formula "Free-fall time from the shell''s motion": part (a) with M = (4/3)π r0³ ρ'
+    formula: (pi / 2) * sqrt(r0**3 / (2 * Gn * (4 / 3) * pi * r0**3 * rho))
+    equals: sqrt(3 * pi / (32 * Gn * rho))
+    samples:
+      r0: [0.5, 5, 1, 2.3]
+      Gn: [0.5, 2, 1, 1.7]
+      rho: [0.5, 5, 1, 3.1]
+    tolerance: 1e-9
+    shown: ['= \sqrt{\frac{\pi^2}{4}\cdot\frac{3}{8\pi G\rho}} = \sqrt{\frac{3\pi}{32\,G\rho}}']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-factor
+    answer: p2b-factor
+    where: 'Problem 2(b), number box: sqrt(3π/32)'
+    inputs: {}
+    formula: sqrt(3 * pi / 32)
+    expected: '0.5427'
+    shown: ['$t_f\sqrt{G\rho} = \sqrt{3\pi/32} = 0.5427$', 'value="0.5427"', 'longer by the factor $1/0.5427$']
+    source: {cite: mit, at: 'Problem 2, p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p2b-constant-pull
+    where: 'Problem 2(b), plot caption: with the pull kept at GM/r0², r/r0 = 1 − (π²/16)(t/t_f)² reaches 0 at t/t_f = 4/π'
+    inputs: {}
+    formula: 4 / pi
+    expected: '1.27'
+    shown: ['at t/t_f = 1 instead of 4/π = 1.27']
+    source: {cite: mit, at: 'Problem 2 (our own solution)'}
+    origin: page-own
+
+  - id: p2c-inputs
+    kind: fact
+    where: 'Problem 2(c): the cloud of the Lecture 7 lesson (10³ molecules per cm³ of mean mass 2.33 m_H, m_H = 1.67 × 10⁻²⁷ kg, ρ = 3.89 × 10⁻¹⁸ kg/m³, rounded to 3.9 × 10⁻¹⁸), G and the year (our choice)'
+    shown:
+      - 'a density of $\rho = 3.9\times10^{-18}$ kg/m³ (our rounding)'
+      - 'Use $G = 6.674\times10^{-11}$ m³ kg⁻¹ s⁻² and a year of $3.156\times10^7$ s'
+    source: {cite: mit, at: 'Problem 2 (our addition)'}
+    origin: page-own
+
+  - id: p2c-32grho
+    where: 'Problem 2(c), solution: 32 G ρ'
+    inputs: {}
+    formula: 32 * 6.674e-11 * 3.9e-18
+    expected: '8.33e-27'
+    shown: ['$32G\rho = 32 \times 6.674\times10^{-11} \times 3.9\times10^{-18} = 8.33\times10^{-27}$ s⁻²']
+    source: {cite: mit, at: 'Problem 2 (our addition)'}
+    origin: page-own
+
+  - id: p2c-seconds
+    where: 'Problem 2(c), solution: t_f in seconds'
+    inputs: {}
+    formula: sqrt(3 * pi / (32 * 6.674e-11 * 3.9e-18))
+    expected: '3.36e13'
+    shown: ['$t_f = \sqrt{3\pi/(8.33\times10^{-27})} = 3.36\times10^{13}$ s']
+    source: {cite: mit, at: 'Problem 2 (our addition)'}
+    origin: page-own
+
+  - id: p2c-cloud
+    answer: p2c-cloud
+    where: 'Problem 2(c), number box: t_f in millions of years'
+    inputs: {}
+    formula: sqrt(3 * pi / (32 * 6.674e-11 * 3.9e-18)) / 3.156e13
+    expected: '1.066'
+    shown: ['that is 1.066 million years', 'value="1.066"']
+    source: {cite: mit, at: 'Problem 2 (our addition)'}
+    origin: page-own
+
+  - id: p2c-estimate
+    where: 'Problem 2(c), check: the notes'' estimate 1/sqrt(Gρ) in seconds'
+    inputs: {}
+    formula: 1 / sqrt(6.674e-11 * 3.9e-18)
+    expected: '6.20e13'
+    shown: ['The notes'' estimate $1/\sqrt{G\rho} = 6.20\times10^{13}$ s']
+    source: {cite: reading2, at: 'eq. (204), p. 45'}
+    origin: page-own
+
+  - id: p2c-estimate-myr
+    where: 'Problem 2(c), check: the estimate in millions of years'
+    inputs: {}
+    formula: 1 / sqrt(6.674e-11 * 3.9e-18) / 3.156e13
+    expected: '1.96'
+    shown: ['about 1.96 million years']
+    source: {cite: reading2, at: 'eq. (204), p. 45'}
+    origin: page-own
