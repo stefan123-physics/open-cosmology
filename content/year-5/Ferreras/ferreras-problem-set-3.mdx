@@ -15,8 +15,12 @@ source:
   url: https://doi.org/10.14324/111.9781800084704
   readings: []
 license: CC BY-NC-SA 4.0
-references: {}
-status: draft
+references:
+  vogelsberger14:
+    title: "M. Vogelsberger, MIT 8.902 Astrophysics II (Fall 2023), Lecture 14 notes"
+    url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec14.pdf
+    location: "eq. (408), p. 89"
+status: reviewed
 ---
 
 This set practises Chapter 4 of Ignacio Ferreras's *Fundamentals of Dark Matter* (UCL Press, 2025, licensed CC BY-NC 4.0): [simulating galaxy formation](/courses/fundamentals-of-dark-matter/simulating-galaxy-formation) and [galaxies in halos](/courses/fundamentals-of-dark-matter/galaxies-in-halos), with [spherical collapse](/courses/8-902/spherical-collapse), [the virial theorem](/courses/8-902/virial-theorem) and [the power spectrum](/courses/8-902/power-spectrum) from 8.902. The four problems are the book's Exercises 4.1 to 4.4, in the book's order, rewritten in our own words. The book prints no solutions to its exercises, so the hints and the solutions here are ours.
@@ -125,15 +129,15 @@ The mean spacing in the whole universe is $(10^7/4.08 \times 10^{10})^{1/3}$ Mpc
 
 Which softening length suits this mass resolution and this halo density?
 
-<Answer id="p1-eps" label="The softening length should be" choices={["much larger than the spacing, tens of kpc, so that each halo becomes one smooth blob", "far below one parsec, so that close encounters of two particles are followed exactly", "comparable to the spacing in a halo or a few times smaller: a few kpc, not much less", "the mean spacing in the whole box, about 60 kpc, at every redshift and in every halo"]} answer={2} />
+<Answer id="p1-eps" label="The softening length should be" choices={["much larger than the spacing, tens of kpc, so that each halo becomes one smooth blob", "far below one parsec, so that close encounters of two particles are followed exactly", "a fraction of the spacing in a halo, a few to ten times smaller: about 1 to a few kpc", "the mean spacing in the whole box, about 60 kpc, at every redshift and in every halo"]} answer={2} />
 
 <Solution>
 
 **The idea.** A synthetic particle stands for an enormous number of real dark matter particles, which do not scatter off each other. Any force that the simulation computes on scales below the particle spacing comes from the graininess of the model, not from the real dark matter.
 
-<Step title="Why not much smaller">
+<Step title="Why not far smaller">
 
-Inside a halo, a particle has neighbours about $d \approx 9$ kpc away. Below that distance the force on it is dominated by its nearest neighbour, and close passages between two synthetic particles would kick them around: two-body relaxation that the real, collisionless dark matter does not have. The softening is there to switch this off, so $\epsilon$ must not be far below $d$. A parsec-sized $\epsilon$ would only make the time steps tiny and the noise worse.
+Inside a halo, a particle has neighbours about $d \approx 9$ kpc away. Below that distance the force on it is dominated by its nearest neighbour, and close passages between two synthetic particles would kick them around: two-body relaxation that the real, collisionless dark matter does not have. The softening is there to switch this off, so $\epsilon$ must not be many orders of magnitude below $d$. A parsec-sized $\epsilon$ would only make the time steps tiny and the noise worse.
 
 </Step>
 
@@ -145,7 +149,7 @@ The force must still follow the structure of the halo, which is resolved by the 
 
 <Step title="The estimate">
 
-So $\epsilon \sim d$, a few kpc to about 10 kpc for $m_1 = 10^7\,M_\odot$. Real simulations take $\epsilon$ a few times below the spacing of a typical halo, because halos are denser in their centres and halos that formed early are denser still (part D). The best force resolution quoted in the book, about 100 pc (p. 78), needs smaller particle masses or zoom-in runs: $d \propto m_1^{1/3}$.
+So $\epsilon$ is a fraction of $d$: of order 1 to 3 kpc, a few to ten times below $d \approx 9$ kpc, for $m_1 = 10^7\,M_\odot$. It sits below the spacing of a typical halo because halos are denser in their centres, where the spacing is smaller, and halos that formed early are denser still (part D). The best force resolution quoted in the book, about 100 pc (p. 78), needs smaller particle masses or zoom-in runs: $d \propto m_1^{1/3}$.
 
 </Step>
 
@@ -340,7 +344,7 @@ The sign makes sense: on the axis, the near particle's pull grows by $(2x + 3x^2
 
 <Part label="C" points={5}>
 
-How large is the exact relative error, $(F_\text{exact} - F_\text{mono})/F_\text{mono}$, when the group is at $y = 5s$? Give it in percent (tolerance 1%).
+How large is the exact relative error, $(F_\text{exact} - F_\text{mono})/F_\text{mono}$, when the group is at $y = 5s$ (our choice)? Give it in percent (tolerance 1%).
 
 <Hint>
 
@@ -486,7 +490,7 @@ When the potential changes slowly, the orbits change slowly too, and some quanti
 
 <Solution>
 
-**The idea.** In a slow change each orbit adjusts gradually, keeping its adiabatic invariants. For a circular orbit, the angular momentum per unit mass $rv$ is conserved, since the force stays central.
+**The idea.** In a slow change each orbit adjusts gradually, keeping its adiabatic invariants. For a circular orbit, the angular momentum per unit mass $rv$ is conserved, since the force stays central (true for a loss at any rate; what slowness adds is that each orbit stays circular, so $v^2 = GM/r$ still holds at the end).
 
 <Step title="Circular orbits">
 
@@ -603,7 +607,7 @@ The density contrast of a component is $\delta = \rho/\langle\rho\rangle - 1$, a
 
 The two-point correlation function of a component is the average $\xi(r) = \langle\delta(\vec x)\,\delta(\vec x + \vec r)\rangle$ over all positions $\vec x$ ([the power spectrum](/courses/8-902/power-spectrum)). The power spectrum $P(k)$ and $\xi(r)$ are a Fourier pair: for an isotropic field, with the convention of that lesson,
 
-<Formula label="Correlation function from the power spectrum" tex="\xi(r) = \frac{1}{2\pi^2}\int_0^\infty P(k)\,\frac{\sin kr}{kr}\,k^2\,dk" cite="mit" at="Exercise 4.4, p. 98 (the book refers to its companion volume; stated here in our words)" />
+<Formula label="Correlation function from the power spectrum" tex="\xi(r) = \frac{1}{2\pi^2}\int_0^\infty P(k)\,\frac{\sin kr}{kr}\,k^2\,dk" cite="vogelsberger14" at="eq. (408), p. 89 (there in three dimensions; this form follows after the angular integral)" />
 
 Galaxies are observed to have a power-law correlation function:
 
@@ -757,7 +761,7 @@ The galaxies are more clustered than the dark matter ($r_0$ larger), so $b > 1$,
 
 The book quotes that the measured dark-matter power spectrum has $n \approx 1$ on very large scales and turns over to $n \approx -2$ on smaller scales. How do those slopes compare with the galaxies' $\gamma \approx 1.8$, measured on scales of a few Mpc?
 
-<Answer id="p4-confront" label="The best reading is:" choices={["galaxies follow the large-scale part with n near 1, so their correlation function should have γ near 4", "galaxy pairs a few Mpc apart sample the bend between the two slopes, where the spectrum is turning over", "no slope of the spectrum can give γ = 1.8, so the measured value rules out cold dark matter", "the slope of the correlation function is set by the bias alone and carries no information about P(k)"]} answer={1} />
+<Answer id="p4-confront" label="The best reading is:" choices={["galaxies follow the large-scale part with n near 1, so their correlation function should have γ near 4", "galaxy pairs a few Mpc apart see an intermediate effective slope, between the two quoted limits", "no slope of the spectrum can give γ = 1.8, so the measured value rules out cold dark matter", "the slope of the correlation function is set by the bias alone and carries no information about P(k)"]} answer={1} />
 
 <Solution>
 
@@ -771,7 +775,7 @@ With $\gamma = n + 3$: the small-scale slope $n \approx -2$ gives $\gamma \appro
 
 <Step title="The reading">
 
-The observed $\gamma \approx 1.8$ corresponds to an effective slope $n \approx -1.2$ (part C), between the two limits: galaxy clustering on scales of a few Mpc probes the region where the spectrum bends from one slope to the other. A pure power-law fit on these scales is an approximation. The match is not exact for two more reasons: on scales below 1 to 2 Mpc the clustering of galaxies is set by galaxies within one halo, not by the linear spectrum, and on all scales galaxies are biased tracers whose bias may change with scale. These are the effects that halo occupation models are built to describe.
+The observed $\gamma \approx 1.8$ corresponds to an effective slope $n \approx -1.2$ (part C), between the two limits. The peak of the spectrum, where it turns over, lies at $k \approx 0.02\,h$ per Mpc, wavelengths of hundreds of Mpc, far above the few Mpc probed here. On few-Mpc scales the cold dark matter spectrum is past its peak but still curving slowly towards $n \approx -2$, and nonlinear growth makes it shallower still, so its effective slope there is intermediate. A pure power-law fit on these scales is an approximation. The match is not exact for two more reasons: on scales below 1 to 2 Mpc the clustering of galaxies is set by galaxies within one halo, not by the linear spectrum, and on all scales galaxies are biased tracers whose bias may change with scale. These are the effects that halo occupation models are built to describe.
 
 </Step>
 
