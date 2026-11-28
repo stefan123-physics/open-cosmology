@@ -1,0 +1,786 @@
+---
+title: "Problem Set 3: Particles in a simulated universe, the multipole error, puffed-up galaxies and galaxy bias"
+slug: ferreras-problem-set-3
+course: "Ferreras"
+kind: problems
+set: 3
+lecture: 4.6
+order: 90
+covers: [4.2, 4.4, 4.6]
+solutions: own
+summary: "Four exercises from Chapter 4 of the book: the mass and force resolution of a dark-matter simulation, the error of the monopole approximation in a tree code, how a galaxy grows when its gas is blown out quickly or slowly, and galaxy bias with the link between the power spectrum and the correlation function."
+prerequisites: [simulating-galaxy-formation, galaxies-in-halos, spherical-collapse, virial-theorem, power-spectrum]
+source:
+  title: "I. Ferreras, Fundamentals of Dark Matter (UCL Press, 2025), Chapter 4 exercises"
+  url: https://doi.org/10.14324/111.9781800084704
+  readings: []
+license: CC BY-NC-SA 4.0
+references:
+  vogelsberger14:
+    title: "M. Vogelsberger, MIT 8.902 Astrophysics II (Fall 2023), Lecture 14 notes"
+    url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec14.pdf
+    location: "eq. (408), p. 89"
+status: reviewed
+---
+
+This set practises Chapter 4 of Ignacio Ferreras's *Fundamentals of Dark Matter* (UCL Press, 2025, licensed CC BY-NC 4.0): [simulating galaxy formation](/courses/fundamentals-of-dark-matter/simulating-galaxy-formation) and [galaxies in halos](/courses/fundamentals-of-dark-matter/galaxies-in-halos), with [spherical collapse](/courses/8-902/spherical-collapse), [the virial theorem](/courses/8-902/virial-theorem) and [the power spectrum](/courses/8-902/power-spectrum) from 8.902. The four problems are the book's Exercises 4.1 to 4.4, in the book's order, rewritten in our own words. The book prints no solutions to its exercises, so the hints and the solutions here are ours.
+
+Several things differ from the book. Its four exercises are short, so each problem has one or two parts of our own, marked "(our addition)"; every answer box is ours too. Where the book leaves a number open, we choose one and say so ("our choice"). Exercise 4.2 refers to a small sketch in the book: we describe the arrangement in words instead. Exercise 4.4 refers to the author's other book for the Fourier pair of the power spectrum and the correlation function, and to a figure of measured power spectra that the book takes from the Planck collaboration; neither is used here. We state what is needed from the 8.902 lessons, and the slopes of the spectrum are the ones the exercise quotes.
+
+## How to answer
+
+Work each problem on paper first. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it; type decimals, for example `0.25` or `1.2e5`, in the unit the box names. A formula box accepts any formula equal to the right one: type it with `*`, `/`, `^` and brackets, for example `a*b/c` or `(x + 1)^2/sqrt(x)`. A choice box takes one click.
+
+The book gives no points. The points are ours: 26 for Problem 1, 24 each for Problems 2 and 3 and 26 for Problem 4, 100 points in all, and every split between parts is ours too. Parts that ask you to show something have no box: open the solution and mark yourself. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+Constants and units: $G = 6.67430 \times 10^{-11}$ m³ kg⁻¹ s⁻² (CODATA 2018), $M_\odot = 1.98841 \times 10^{30}$ kg (the IAU 2015 nominal solar mass parameter divided by $G$), 1 Mpc $= 3.0857 \times 10^{22}$ m.
+
+## Problem 1
+
+<Exercise id="p1" title="How finely can a simulation resolve forces?" points={26} mit="Exercise 4.1">
+
+A simulation follows the dark matter of a flat ΛCDM universe with $\Omega_{m,0} = 0.3$ and $h = 0.7$ (so $H_0 = 70$ km/s/Mpc), both the book's values. Each synthetic particle has the mass $m_1 = 10^7\,M_\odot$. Close encounters are tamed by the softened (Plummer) potential, with softening length $\epsilon$:
+
+<Formula label="Softened potential of one particle" tex="\Phi(r; \epsilon) = -\frac{G\,m_1}{\sqrt{r^2 + \epsilon^2}}" cite="mit" at="Eq. (4.2), p. 78" />
+
+The book asks for a rough estimate of the force resolution $\epsilon$ that suits the average density of a halo, as the spherical collapse model gives it (Exercise 4.1, p. 78). For that density the book quotes (p. 71) a mean density inside a halo of $\Delta \approx 178$ times the background matter density for halos that formed at the redshifts where most galaxies formed, and $\Delta \approx 330$ for halos forming today.
+
+<Part label="A" points={4}>
+
+What is the mean matter density $\bar\rho_{m,0}$ of this universe today? Give it in units of $10^{10}\,M_\odot$ per Mpc³ (tolerance 2%).
+
+<Hint>
+
+The matter density is the fraction $\Omega_{m,0}$ of the critical density $3H_0^2/8\pi G$. Convert $H_0$ to s⁻¹ before you start.
+
+</Hint>
+
+<Answer id="p1-rhom" label="$\bar\rho_{m,0}$ in $10^{10}\,M_\odot$ per Mpc³:" value="4.08" tolerance="2%" calc="p1-rhom" />
+
+<Solution>
+
+**The idea.** The critical density follows from $H_0$ alone; the matter is 30% of it.
+
+<Step title="The critical density">
+
+$H_0 = 70$ km/s/Mpc $= 2.269 \times 10^{-18}$ s⁻¹, so $\rho_{c,0} = 3H_0^2/8\pi G = 9.20 \times 10^{-27}$ kg/m³. One Mpc³ is $2.938 \times 10^{67}$ m³, so $\rho_{c,0} = 1.360 \times 10^{11}\,M_\odot$ per Mpc³.
+
+</Step>
+
+<Step title="The matter density">
+
+$\bar\rho_{m,0} = 0.3\,\rho_{c,0} = 4.08 \times 10^{10}\,M_\odot$ per Mpc³.
+
+</Step>
+
+<Step title="Check">
+
+A handy form to remember is $\rho_{c,0} = 2.775 \times 10^{11}\,h^2\,M_\odot$ per Mpc³; with $h^2 = 0.49$ it gives the same $1.36 \times 10^{11}$. The same number appears in the worked example of the lesson [dark matter halos](/courses/fundamentals-of-dark-matter/dark-matter-halos).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="B" points={8}>
+
+Take a halo that is forming today, with mean density $\Delta = 330$ times $\bar\rho_{m,0}$. On average, how far apart are neighbouring synthetic particles inside it? Use the mean spacing $d = (m_1/\rho_h)^{1/3}$, where $\rho_h$ is the halo's mean density. Give $d$ in kpc (tolerance 2%).
+
+<Hint>
+
+Each particle has, on average, a volume $m_1/\rho_h$ to itself. A cube of that volume has the side $d$.
+
+</Hint>
+
+<Answer id="p1-d0" label="$d$ in kpc:" value="9.06" tolerance="2%" calc="p1-d0" />
+
+<Solution>
+
+**The idea.** The halo is $\Delta$ times denser than the mean, so its particles are $\Delta^{1/3}$ times closer together than on average.
+
+<Step title="The halo density">
+
+<Formula label="Mean density inside a halo" tex="\rho_h = \Delta\,\bar\rho_m(z) = \Delta\,\bar\rho_{m,0}\,(1+z)^3" cite="mit" at="Exercise 4.1, p. 78, with Δ from p. 71 (our own solution)" />
+
+Today ($z = 0$): $\rho_h = 330 \times 4.08 \times 10^{10} = 1.346 \times 10^{13}\,M_\odot$ per Mpc³.
+
+</Step>
+
+<Step title="The spacing">
+
+<Formula label="Mean spacing of the particles" tex="d = \left(\frac{m_1}{\rho_h}\right)^{1/3}" cite="mit" at="Exercise 4.1, p. 78 (our own solution)" />
+
+$d = (10^7/1.346 \times 10^{13})^{1/3}$ Mpc $= (7.43 \times 10^{-7})^{1/3}$ Mpc $= 9.06 \times 10^{-3}$ Mpc $= 9.06$ kpc.
+
+</Step>
+
+<Step title="Check">
+
+The mean spacing in the whole universe is $(10^7/4.08 \times 10^{10})^{1/3}$ Mpc $= 62.6$ kpc, and $62.6/330^{1/3} = 62.6/6.91 = 9.06$ kpc. A halo of $10^{12}\,M_\odot$, like the Milky Way's, holds $10^{12}/10^7 = 10^5$ particles at this mass resolution, and its radius at this density is $(3 \times 10^{12}/4\pi\rho_h)^{1/3} = 261$ kpc: its radius is about 29 spacings.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="C" points={5}>
+
+Which softening length suits this mass resolution and this halo density?
+
+<Answer id="p1-eps" label="The softening length should be" choices={["much larger than the spacing, tens of kpc, so that each halo becomes one smooth blob", "far below one parsec, so that close encounters of two particles are followed exactly", "a fraction of the spacing in a halo, a few to ten times smaller: about 1 to a few kpc", "the mean spacing in the whole box, about 60 kpc, at every redshift and in every halo"]} answer={2} />
+
+<Solution>
+
+**The idea.** A synthetic particle stands for an enormous number of real dark matter particles, which do not scatter off each other. Any force that the simulation computes on scales below the particle spacing comes from the graininess of the model, not from the real dark matter.
+
+<Step title="Why not far smaller">
+
+Inside a halo, a particle has neighbours about $d \approx 9$ kpc away. Below that distance the force on it is dominated by its nearest neighbour, and close passages between two synthetic particles would kick them around: two-body relaxation that the real, collisionless dark matter does not have. The softening is there to switch this off, so $\epsilon$ must not be many orders of magnitude below $d$. A parsec-sized $\epsilon$ would only make the time steps tiny and the noise worse.
+
+</Step>
+
+<Step title="Why not much larger">
+
+The force must still follow the structure of the halo, which is resolved by the particles down to scales of order $d$. With $\epsilon$ of tens of kpc (or the box-average spacing, 62.6 kpc), a Milky-Way halo of radius 261 kpc would be blurred over a large fraction of its radius, and smaller halos would be smeared out altogether.
+
+</Step>
+
+<Step title="The estimate">
+
+So $\epsilon$ is a fraction of $d$: of order 1 to 3 kpc, a few to ten times below $d \approx 9$ kpc, for $m_1 = 10^7\,M_\odot$. It sits below the spacing of a typical halo because halos are denser in their centres, where the spacing is smaller, and halos that formed early are denser still (part D). The best force resolution quoted in the book, about 100 pc (p. 78), needs smaller particle masses or zoom-in runs: $d \propto m_1^{1/3}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="D" points={5}>
+
+(Our addition.) A halo that virialised at $z = 2$ (our choice), with the book's $\Delta = 178$ times the background density at that redshift, keeps its density afterwards. What is the mean particle spacing $d$ inside it, as a physical distance? Give $d$ in kpc (tolerance 2%).
+
+<Hint>
+
+The background matter density was higher at $z = 2$. By what factor?
+
+</Hint>
+
+<Answer id="p1-d2" label="$d$ in kpc:" value="3.71" tolerance="2%" calc="p1-d2" />
+
+<Solution>
+
+**The idea.** The background was $(1+z)^3 = 27$ times denser at $z = 2$, which more than makes up for the smaller $\Delta$.
+
+<Step title="The density">
+
+$\rho_h = 178 \times 27 \times 4.08 \times 10^{10} = 1.961 \times 10^{14}\,M_\odot$ per Mpc³: 14.6 times the density of the halo of part B.
+
+</Step>
+
+<Step title="The spacing">
+
+$d = (10^7/1.961 \times 10^{14})^{1/3}$ Mpc $= 3.71 \times 10^{-3}$ Mpc $= 3.71$ kpc.
+
+</Step>
+
+<Step title="Check">
+
+The ratio to part B is $(14.6)^{1/3} = 2.44$, and $9.06/2.44 = 3.71$ kpc. Halos that formed early, which host most galaxies, are the densest, and they set how small $\epsilon$ must be. (The spacing in comoving units would be 3 times larger; the softening of a simulation is usually fixed in comoving units at early times and in physical units later on.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="E" points={4}>
+
+(Our addition.) The lesson's example is a box 100 Mpc on a side (comoving). How many particles of mass $m_1$ are needed to fill it at the mean matter density? Give the number of particles along one side of the cube, $N^{1/3}$ (tolerance 1%).
+
+<Hint>
+
+The total mass in the box is $\bar\rho_{m,0}$ times its comoving volume.
+
+</Hint>
+
+<Answer id="p1-nside" label="$N^{1/3}$:" value="1598" tolerance="1%" calc="p1-nside" />
+
+<Solution>
+
+**The idea.** Mass in the box divided by mass per particle.
+
+<Step title="The count">
+
+$N = \bar\rho_{m,0}\,(100\ \text{Mpc})^3/m_1 = 4.08 \times 10^{10} \times 10^6/10^7 = 4.08 \times 10^9$, so $N^{1/3} = 1598$: a run with about $1600^3$ particles.
+
+</Step>
+
+<Step title="Check">
+
+$1598 \times 62.6$ kpc $= 100$ Mpc: the number along a side times the mean spacing is the side of the box. With direct summation such a run would need $N^2 \approx 1.7 \times 10^{19}$ pair forces per time step, which is why the tree codes of the next problem are used.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="How wrong is the monopole approximation?" points={24} mit="Exercise 4.2">
+
+A tree code replaces the pull of a distant group of particles by that of a single particle with the group's total mass at the group's centre of mass: the monopole approximation, the lowest term of a multipole expansion. The book asks for its error in a simple arrangement, which we describe in words (the book shows it in a sketch). Four particles, each of mass $m$, sit at the corners of a square whose diagonals lie along the $x$ and $y$ axes: two at $(\pm s, y)$ and two at $(0, y \pm s)$, with $s > 0$. Their centre of mass is the point $(0, y)$. A test particle of mass $m_t$ sits at the origin, a distance $y > s$ below the centre of the square. (The book calls the half-diagonal $\Delta$; we write $s$, because Problem 1 uses $\Delta$ for the density contrast. All four particles lie in one plane, but the forces are those of ordinary three-dimensional gravity, which falls off as the inverse square of the distance.)
+
+In the monopole approximation the test particle feels the pull of a mass $4m$ at the distance $y$:
+
+<Formula label="Force in the monopole approximation" tex="F_\text{mono} = \frac{4\,G\,m\,m_t}{y^2}" cite="mit" at="Exercise 4.2, p. 81 (our own statement)" />
+
+<Part label="A" points={8}>
+
+Find the exact force on the test particle, in units of $G\,m\,m_t$: that is, find $F_\text{exact}/(G\,m\,m_t)$ as a function of $y$ and $s$. (By symmetry the total force points along $+y$.)
+
+<Hint>
+
+The two particles on the $y$ axis are at the distances $y - s$ and $y + s$, and pull straight along $+y$.
+
+</Hint>
+
+<Hint>
+
+Each of the two side particles is at the distance $\sqrt{y^2 + s^2}$. Only part of its pull is along $y$: which fraction?
+
+</Hint>
+
+<Answer id="p2-exact" label="$F_\text{exact}/(G\,m\,m_t) =$" expr="1/(y - s)^2 + 1/(y + s)^2 + 2*y/(y^2 + s^2)^(3/2)"
+  vars={{ y: [3, 6], s: [0.3, 1] }}
+  mistakes={[
+    { expr: "4/y^2", hint: "That is the monopole force itself. The question asks for the sum of the four separate pulls." },
+    { expr: "1/(y - s)^2 + 1/(y + s)^2 + 2/(y^2 + s^2)", hint: "The two side particles pull along the lines towards them, which are tilted away from the y axis. Only the y-component of each pull adds up." },
+    { expr: "1/(y - s)^2 + 1/(y + s)^2 + 2*s/(y^2 + s^2)^(3/2)", hint: "That factor s over the distance projects a side pull onto the x axis, and the x-components of the two side pulls cancel. Which projection gives the y-component?" },
+    { expr: "1/(y - s)^2 + 1/(y + s)^2", hint: "The two particles on the y axis are right, but the two side particles at (±s, y) also pull." }
+  ]} />
+
+<Solution>
+
+**The idea.** Add the four pulls as vectors. The $x$-components cancel in pairs; the $y$-components add.
+
+<Step title="The particles on the axis">
+
+They are at the distances $y - s$ and $y + s$, straight above the test particle: $G\,m\,m_t\left[(y - s)^{-2} + (y + s)^{-2}\right]$ along $+y$.
+
+</Step>
+
+<Step title="The side particles">
+
+Each is at the distance $\sqrt{y^2 + s^2}$, and its pull makes an angle with the $y$ axis whose cosine is $y/\sqrt{y^2 + s^2}$. Together they give $2\,G\,m\,m_t\,y/(y^2 + s^2)^{3/2}$ along $+y$.
+
+</Step>
+
+<Step title="The total">
+
+<Formula label="Exact force on the test particle" tex="\frac{F_\text{exact}}{G\,m\,m_t} = \frac{1}{(y - s)^2} + \frac{1}{(y + s)^2} + \frac{2y}{\left(y^2 + s^2\right)^{3/2}}" cite="mit" at="Exercise 4.2, p. 81 (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+For $s \to 0$ the four terms become $1/y^2$ each, $4/y^2$: the monopole force, as it must be when the four particles merge. The units are those of $1/y^2$, as for $4/y^2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="B" points={7}>
+
+For a distant group, $y \gg s$, expand the relative error in powers of $s/y$. Show that there is no term linear in $s/y$, and find the coefficient $C$ of the leading term:
+
+<Formula label="Leading relative error" tex="\frac{F_\text{exact} - F_\text{mono}}{F_\text{mono}} \approx C\left(\frac{s}{y}\right)^2" cite="mit" at="Exercise 4.2, p. 81 (our own statement)" />
+
+Give $C$ (tolerance 1%).
+
+<Hint>
+
+Write each term with $x = s/y$ and expand: $(1 \pm x)^{-2}$ and $(1 + x^2)^{-3/2}$ to second order in $x$.
+
+</Hint>
+
+<Answer id="p2-c" label="$C =$" value="0.75" tolerance="1%" calc="p2-c" />
+
+<Solution>
+
+**The idea.** Factor out $1/y^2$ and use the binomial series.
+
+<Step title="The expansions">
+
+With $x = s/y$: $(1 - x)^{-2} + (1 + x)^{-2} = 2 + 6x^2$ plus terms in $x^4$ and higher, since the odd terms $\pm 2x$ cancel. And $2(1 + x^2)^{-3/2} = 2 - 3x^2$, again plus terms in $x^4$ and higher. So
+
+<Formula label="Exact force for a distant group" tex="\frac{F_\text{exact}}{G\,m\,m_t} = \frac{1}{y^2}\left[4 + 3\left(\frac{s}{y}\right)^2 + \dots\right]" cite="mit" at="Exercise 4.2, p. 81 (our own solution)" />
+
+and the relative error is $\frac34(s/y)^2$: $C = 0.75$.
+
+</Step>
+
+<Step title="Why there is no linear term">
+
+A term linear in $s/y$ would be the dipole term. A dipole moment measured from the centre of mass is zero by the definition of the centre of mass, for any group of particles. Expanding about the centre of mass is what makes the monopole approximation good to second order: the leading error is the quadrupole term.
+
+</Step>
+
+<Step title="Check">
+
+The sign makes sense: on the axis, the near particle's pull grows by $(2x + 3x^2)/y^2$ and the far one's changes by $(-2x + 3x^2)/y^2$, so the axis pair pulls harder than $2/y^2$ by $6x^2/y^2$; the side pair, farther away and pulling at an angle, pulls less than $2/y^2$ by $3x^2/y^2$. The net is $+3x^2/y^2$: the monopole slightly underestimates the force here.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="C" points={5}>
+
+How large is the exact relative error, $(F_\text{exact} - F_\text{mono})/F_\text{mono}$, when the group is at $y = 5s$ (our choice)? Give it in percent (tolerance 1%).
+
+<Hint>
+
+Use the exact force of part A with $s = 1$ and $y = 5$, not the expansion.
+
+</Hint>
+
+<Answer id="p2-y5" label="Relative error, in percent:" value="3.57" tolerance="1%" calc="p2-y5" />
+
+<Solution>
+
+**The idea.** Put the numbers into the exact force.
+
+<Step title="The terms">
+
+With $s = 1$, $y = 5$: $1/16 = 0.06250$, $1/36 = 0.02778$, $2 \times 5/26^{3/2} = 10/132.57 = 0.07543$. The sum is $0.16571$, while $4/25 = 0.16$.
+
+</Step>
+
+<Step title="The error">
+
+$0.16571/0.16 - 1 = 0.0357$: 3.57%.
+
+</Step>
+
+<Step title="Check">
+
+The leading term of part B gives $0.75/25 = 0.030$, or 3.0%: close, and a little lower, because the next term, of order $(s/y)^4$, is positive here. At $y = 5s$ the group spans an angle of about $2s/y = 0.4$ radian (23°) as seen from the test particle, and the monopole is already wrong by a few percent.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="D" points={4}>
+
+(Our addition.) A tree code "opens" a group, summing its particles one by one, when the monopole would be too inaccurate. Here, for which smallest $y/s$ is the exact relative error 1%? Give $y/s$ (tolerance 1%).
+
+<Hint>
+
+The leading term of part B gives a first guess. The error of part C shows which way the exact answer lies from it; then solve with the exact force, for example by trying values.
+
+</Hint>
+
+<Answer id="p2-open" label="$y/s$:" value="8.91" tolerance="1%" calc="p2-open" />
+
+<Solution>
+
+**The idea.** Start from the expansion, then refine with the exact force.
+
+<Step title="First guess">
+
+$\frac34(s/y)^2 = 0.01$ gives $y/s = \sqrt{75} = 8.66$.
+
+</Step>
+
+<Step title="Refine">
+
+At $y/s = 8.66$ the exact error is 1.06%, a little too large, so the group must be farther away. Solving $F_\text{exact}/F_\text{mono} - 1 = 0.01$ numerically gives $y/s = 8.91$ (at $y/s = 8.91$ the exact error is 1.00%).
+
+</Step>
+
+<Step title="Check">
+
+The group then spans about $2s/y = 0.22$ radian (13°). Tree codes use exactly this kind of rule: a cell is accepted as one particle when its size divided by its distance is below an opening angle of a few tenths of a radian, and the error falls as the square of that angle when the expansion is about the centre of mass.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Puffing up a galaxy by blowing out its gas" points={24} mit="Exercise 4.3">
+
+One way to make a galaxy larger is to throw out a large part of its gas, for example by the energy of an active nucleus (AGN): "puffing up". Model the galaxy as a self-gravitating system of mass $M_i$ and size $R_i$ in virial equilibrium, which loses gas until its mass is $M_f$, and then settles into a new equilibrium of size $R_f$. Write $\alpha \equiv M_i/M_f$. Simple arguments (the book's words) are enough: take the potential energy as $W = -c\,GM^2/R$, where the constant $c$ depends only on the shape of the mass distribution, and assume that the shape stays the same, so that the gas is lost evenly from the whole galaxy.
+
+<Part label="A" points={6}>
+
+Show that if the gas is lost much faster than a dynamical time (the time a star takes to cross the galaxy), then $R_i/R_f = 2 - \alpha$. What happens if $\alpha \geq 2$?
+
+<Hint>
+
+Just after a sudden loss, the remaining stars are still where they were and still move as fast as before. What are their kinetic and potential energies then?
+
+</Hint>
+
+<Hint>
+
+The new equilibrium has the same total energy as the system just after the loss, and obeys the virial theorem $2K + W = 0$, so its energy is $E = W/2$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** A sudden loss keeps the positions and velocities, but removes mass: the remaining system has the old kinetic energy per unit mass in a shallower potential, so it is less bound and expands.
+
+<Step title="Before">
+
+By the virial theorem, $2K + W = 0$, the kinetic energy per unit mass is $K/M_i = c\,GM_i/(2R_i)$.
+
+</Step>
+
+<Step title="Just after the loss">
+
+The mass $M_f$ remains, with the same kinetic energy per unit mass and the same size: $K' = M_f\,c\,GM_i/(2R_i)$ and $W' = -c\,GM_f^2/R_i$. Its energy is
+
+<Formula label="Energy just after a sudden loss" tex="E = K' + W' = \frac{c\,G\,M_f}{R_i}\left(\frac{M_i}{2} - M_f\right)" cite="mit" at="Exercise 4.3, p. 91 (our own solution)" />
+
+</Step>
+
+<Step title="The new equilibrium">
+
+After it has settled, $E = W_f/2 = -c\,GM_f^2/(2R_f)$, with the same $E$. Dividing both sides by $c\,GM_f^2$:
+
+<Formula label="Size after a sudden loss" tex="-\frac{1}{2R_f} = \frac{1}{R_i}\left(\frac{\alpha}{2} - 1\right) \quad\Longrightarrow\quad \frac{R_i}{R_f} = 2 - \alpha" cite="mit" at="Exercise 4.3, p. 91" />
+
+</Step>
+
+<Step title="Check">
+
+With no loss, $\alpha = 1$, the size stays the same. If $\alpha \geq 2$, that is if half the mass or more is lost at once, $E \geq 0$: the remaining system is no longer bound and flies apart. Losing a third of the mass ($\alpha = 1.5$) already doubles the size.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="B" points={5}>
+
+Show that if the gas is lost slowly, over many dynamical times, then $R_i/R_f = 1/\alpha$. Which kind of loss puffs a galaxy up more?
+
+<Hint>
+
+When the potential changes slowly, the orbits change slowly too, and some quantities of each orbit stay constant (adiabatic invariants). For a star on a circular orbit, which conserved quantity can you use?
+
+</Hint>
+
+<Solution>
+
+**The idea.** In a slow change each orbit adjusts gradually, keeping its adiabatic invariants. For a circular orbit, the angular momentum per unit mass $rv$ is conserved, since the force stays central (true for a loss at any rate; what slowness adds is that each orbit stays circular, so $v^2 = GM/r$ still holds at the end).
+
+<Step title="Circular orbits">
+
+On a circular orbit of radius $r$ around a mass $M$, $v^2 = GM/r$, so $(rv)^2 = GMr$. Constant $rv$ means constant $Mr$ for every star, and so for the galaxy as a whole:
+
+<Formula label="Size after a slow loss" tex="M_i R_i = M_f R_f \quad\Longrightarrow\quad \frac{R_i}{R_f} = \frac{M_f}{M_i} = \frac{1}{\alpha}" cite="mit" at="Exercise 4.3, p. 91" />
+
+</Step>
+
+<Step title="Comparing the two">
+
+For $\alpha > 1$, $2 - \alpha < 1/\alpha$, because $\alpha(2 - \alpha) = 1 - (\alpha - 1)^2 < 1$. So the sudden loss always puffs the galaxy up more. For a small loss, $\alpha = 1 + \eta$, the fast case gives $R_f/R_i \approx 1 + \eta$ and the slow case also $1 + \eta$: they differ only at second order. For large losses they differ greatly: the slow case gives a finite size for any $\alpha$, the fast case unbinds the galaxy at $\alpha = 2$.
+
+</Step>
+
+<Step title="Check">
+
+A slow loss can never unbind the galaxy: every star stays on a (wider) bound orbit. The two cases bracket what real outflows do, which last for a time that may be similar to the dynamical time.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="C" points={5}>
+
+(Our addition.) Let $f = 1 - M_f/M_i$ be the fraction of the mass that is lost. For a sudden loss, find $R_f/R_i$ as a function of $f$.
+
+<Hint>
+
+Write $\alpha$ in terms of $f$ first, then use part A.
+
+</Hint>
+
+<Answer id="p3-fast" label="$R_f/R_i =$" expr="(1 - f)/(1 - 2*f)"
+  vars={{ f: [0.05, 0.4] }}
+  mistakes={[
+    { expr: "1/(1 - f)", hint: "That is the slow loss of part B. For a sudden loss use the result of part A." },
+    { expr: "(1 - 2*f)/(1 - f)", hint: "That is R_i/R_f, the ratio the other way round. The question asks for R_f/R_i." }
+  ]} />
+
+<Solution>
+
+**The idea.** $\alpha = M_i/M_f = 1/(1 - f)$.
+
+<Step title="Substitute">
+
+$R_i/R_f = 2 - 1/(1 - f) = (1 - 2f)/(1 - f)$, so
+
+<Formula label="Size after a sudden loss of a fraction f" tex="\frac{R_f}{R_i} = \frac{1 - f}{1 - 2f}" cite="mit" at="Exercise 4.3, p. 91 (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+For $f = 0$ the size is unchanged; as $f \to 1/2$ the size grows without limit, the unbinding of part A. For small $f$, $R_f/R_i \approx 1 + f$, the same as the slow case $1/(1 - f) \approx 1 + f$ to first order.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="D" points={8}>
+
+(Our addition.) Now let dark matter in. Inside the galaxy's radius, dark matter makes up 60% of the mass and stars and gas 40% (our choice). The AGN blows out half of these baryons; the dark matter stays. Treat stars, gas and dark matter as one system as above (a rough model: in reality the halo responds on its own time scale). Find $R_f/R_i$ for a sudden loss and for a slow loss (tolerance 1% each).
+
+<Hint>
+
+What fraction $f$ of the total mass is lost?
+
+</Hint>
+
+<Answer id="p3-dm-fast" label="Sudden loss, $R_f/R_i$:" value="1.333" tolerance="1%" calc="p3-dm-fast" />
+
+<Answer id="p3-dm-slow" label="Slow loss, $R_f/R_i$:" value="1.25" tolerance="1%" calc="p3-dm-slow" />
+
+<Solution>
+
+**The idea.** The dark matter adds to the mass that holds the galaxy together but is not blown out, so the same outflow is a smaller fraction of the total.
+
+<Step title="The fraction lost">
+
+Half of 40%: $f = 0.2$, so $\alpha = 1/0.8 = 1.25$.
+
+</Step>
+
+<Step title="The sizes">
+
+Sudden: $R_f/R_i = 0.8/0.6 = 1.333$. Slow: $R_f/R_i = 1/0.8 = 1.25$.
+
+</Step>
+
+<Step title="The role of dark matter">
+
+Without the dark matter, losing half the baryons is $f = 0.5$, $\alpha = 2$: a sudden loss would unbind what is left, and even a slow one would double the size. With the dark matter, the galaxy grows by only a third, or a quarter. The dark matter dominates the potential and anchors the galaxy, so puffing-up works best where baryons dominate the mass, as in the centres of compact galaxies, for which it has been proposed as one way to grow in size.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Galaxy bias and the slope of the correlation function" points={26} mit="Exercise 4.4">
+
+The density contrast of a component is $\delta = \rho/\langle\rho\rangle - 1$, and the book defines the bias of galaxies through it, as the ratio of the galaxies' density contrast to that of the dark matter:
+
+<Formula label="Bias from the density contrast" tex="b(r) \equiv \frac{\delta_g(r)}{\delta_\text{DM}(r)}" cite="mit" at="Exercise 4.4, p. 98" />
+
+The two-point correlation function of a component is the average $\xi(r) = \langle\delta(\vec x)\,\delta(\vec x + \vec r)\rangle$ over all positions $\vec x$ ([the power spectrum](/courses/8-902/power-spectrum)). The power spectrum $P(k)$ and $\xi(r)$ are a Fourier pair: for an isotropic field, with the convention of that lesson,
+
+<Formula label="Correlation function from the power spectrum" tex="\xi(r) = \frac{1}{2\pi^2}\int_0^\infty P(k)\,\frac{\sin kr}{kr}\,k^2\,dk" cite="vogelsberger14" at="eq. (408), p. 89 (there in three dimensions; this form follows after the angular integral)" />
+
+Galaxies are observed to have a power-law correlation function:
+
+<Formula label="Galaxy correlation function" tex="\xi(r) = \left(\frac{r}{r_0}\right)^{-\gamma}" cite="mit" at="Eq. (4.14), p. 96" />
+
+<Part label="A" points={4}>
+
+Show that the definition of $b$ through the density contrast gives the relation between bias and the correlation functions that the book uses (eq. 4.15, p. 97): $b = (\xi_g/\xi_\text{DM})^{1/2}$. What must you assume about $b$?
+
+<Hint>
+
+Put $\delta_g = b\,\delta_\text{DM}$ into the average that defines $\xi_g$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The correlation function is quadratic in $\delta$, so a factor $b$ in $\delta$ becomes $b^2$ in $\xi$.
+
+<Step title="The step">
+
+If $\delta_g(\vec x) = b\,\delta_\text{DM}(\vec x)$ with the same $b$ at $\vec x$ and at $\vec x + \vec r$, then
+
+<Formula label="Bias and the correlation functions" tex="\xi_g(r) = \langle b\,\delta_\text{DM}(\vec x)\; b\,\delta_\text{DM}(\vec x + \vec r)\rangle = b^2\,\xi_\text{DM}(r) \quad\Longrightarrow\quad b = \left(\frac{\xi_g}{\xi_\text{DM}}\right)^{1/2}" cite="mit" at="Eq. (4.15), p. 97" />
+
+</Step>
+
+<Step title="The assumption">
+
+$b$ must be a constant (or vary only slowly with scale), the same everywhere, so that it can be taken out of the average. This "linear, deterministic" bias holds well on large scales; on small scales, inside halos (the 1-halo term), it fails, and $b$ then depends on $r$. The positive square root is taken because galaxies sit where the dark matter is dense: $\delta_g$ has the sign of $\delta_\text{DM}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="B" points={6}>
+
+Let the power spectrum be a power law, $P(k) \propto k^n$. Find the slope $\gamma$ of the correlation function, $\xi \propto r^{-\gamma}$, in terms of $n$.
+
+<Hint>
+
+In the integral, change the variable to $u = kr$. Which power of $r$ comes out in front?
+
+</Hint>
+
+<Answer id="p4-gamma" label="$\gamma =$" expr="n + 3"
+  vars={{ n: [-2.8, -1.2] }}
+  mistakes={[
+    { expr: "n + 2", hint: "Count the powers of k again: besides P(k), the volume element brings k², and dk itself is one more power of k." },
+    { expr: "-(n + 3)", hint: "The minus sign is already in the definition ξ ∝ r^(−γ). A spectrum with more power on small scales (larger n) gives a steeper correlation function: γ should grow with n." },
+    { expr: "3 - n", hint: "Check the direction: a spectrum with more power on small scales (larger n) gives a steeper correlation function, so γ should grow with n, not fall." }
+  ]} />
+
+<Solution>
+
+**The idea.** A power law has no scale of its own, so the only length is $r$, and the integral gives a power of $r$ times a pure number.
+
+<Step title="Change of variable">
+
+With $P = A\,k^n$ and $u = kr$, $k = u/r$ and $dk = du/r$:
+
+<Formula label="Correlation function for a power-law spectrum" tex="\xi(r) = \frac{A}{2\pi^2}\,r^{-(n+3)}\int_0^\infty u^{\,n+1}\sin u\;du \;\propto\; r^{-(n+3)}" cite="mit" at="Exercise 4.4, p. 98 (our own solution)" />
+
+so $\gamma = n + 3$.
+
+</Step>
+
+<Step title="When it holds">
+
+The integral converges only for $-3 < n < -1$ (at small $u$ it behaves like $u^{n+2}$, at large $u$ it oscillates with the amplitude $u^{n+1}$, which must fall). For $n = -2$, for instance, it is $\int_0^\infty \sin u/u\,du = \pi/2$, and $\xi \propto 1/r$. Outside that range the pure power law is not a consistent spectrum on all scales, and the shape of $\xi$ depends on where the spectrum bends.
+
+</Step>
+
+<Step title="Check">
+
+The dimensions agree: in three dimensions $P(k)\,k^3$ is dimensionless (it is the variance per logarithmic interval of $k$), so $\xi(r)$ scales like $P(1/r)\,r^{-3} \propto r^{-n-3}$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="C" points={5}>
+
+Which slope $n$ of the power spectrum corresponds to the observed $\gamma = 1.8$? Give $n$ (tolerance 1%).
+
+<Answer id="p4-n" label="$n =$" value="-1.2" tolerance="1%" calc="p4-n" />
+
+<Solution>
+
+**The idea.** Invert part B.
+
+<Step title="Invert">
+
+$n = \gamma - 3 = 1.8 - 3 = -1.2$.
+
+</Step>
+
+<Step title="Check">
+
+$-1.2$ lies in the range $-3 < n < -1$ where the relation of part B holds, so the inversion is consistent.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="D" points={5}>
+
+(Our addition.) A sample of red galaxies has the correlation length $r_0 = 5$ Mpc, while the dark matter, on the same scales, follows a power law with the same $\gamma = 1.8$ and $r_0 = 4$ Mpc (our numbers). What is the bias of these galaxies (tolerance 1%)?
+
+<Hint>
+
+With the same slope, the ratio $\xi_g/\xi_\text{DM}$ is the same at every $r$. Write it with the two correlation lengths.
+
+</Hint>
+
+<Answer id="p4-bias" label="$b =$" value="1.222" tolerance="1%" calc="p4-bias" />
+
+<Solution>
+
+**The idea.** The ratio of two power laws with the same slope is a constant.
+
+<Step title="The ratio">
+
+$\xi_g/\xi_\text{DM} = (r/5)^{-1.8}/(r/4)^{-1.8} = (5/4)^{1.8} = 1.494$, the same at every $r$.
+
+</Step>
+
+<Step title="The bias">
+
+$b = (1.494)^{1/2} = (5/4)^{0.9} = 1.222$.
+
+</Step>
+
+<Step title="Check">
+
+The galaxies are more clustered than the dark matter ($r_0$ larger), so $b > 1$, as expected for red galaxies, which formed in the rarer, higher peaks of the density field. Without the square root one would get 1.494, which is $b^2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="E" points={6}>
+
+The book quotes that the measured dark-matter power spectrum has $n \approx 1$ on very large scales and turns over to $n \approx -2$ on smaller scales. How do those slopes compare with the galaxies' $\gamma \approx 1.8$, measured on scales of a few Mpc?
+
+<Answer id="p4-confront" label="The best reading is:" choices={["galaxies follow the large-scale part with n near 1, so their correlation function should have γ near 4", "galaxy pairs a few Mpc apart see an intermediate effective slope, between the two quoted limits", "no slope of the spectrum can give γ = 1.8, so the measured value rules out cold dark matter", "the slope of the correlation function is set by the bias alone and carries no information about P(k)"]} answer={1} />
+
+<Solution>
+
+**The idea.** Each slope of the spectrum maps onto a slope of $\xi$ on the matching scales, $r \sim 1/k$; the observed slope tells us where on the spectrum galaxy clustering sits.
+
+<Step title="The two limits">
+
+With $\gamma = n + 3$: the small-scale slope $n \approx -2$ gives $\gamma \approx 1$, flatter than observed. The large-scale slope $n \approx 1$ would formally give $\gamma = 4$, but it lies outside the range where part B holds: on the largest scales $\xi$ is not a power law at all (it becomes small and even changes sign). Neither limit gives 1.8.
+
+</Step>
+
+<Step title="The reading">
+
+The observed $\gamma \approx 1.8$ corresponds to an effective slope $n \approx -1.2$ (part C), between the two limits. The peak of the spectrum, where it turns over, lies near the horizon scale at matter–radiation equality ([the power spectrum lesson](/courses/8-902/power-spectrum)), wavelengths of hundreds of Mpc, far above the few Mpc probed here. On few-Mpc scales the cold dark matter spectrum is past its peak but still curving slowly towards $n \approx -2$, and nonlinear growth makes it shallower still, so its effective slope there is intermediate. A pure power-law fit on these scales is an approximation. The match is not exact for two more reasons: on scales below 1 to 2 Mpc the clustering of galaxies is set by galaxies within one halo, not by the linear spectrum, and on all scales galaxies are biased tracers whose bias may change with scale. These are the effects that halo occupation models are built to describe.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
