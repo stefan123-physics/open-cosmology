@@ -137,3 +137,7 @@ All recomputed by hand and with Python, independently of calcs:
 - Warning 4: added that no shell overtakes another, which Guth checks (Lecture 6, transcript pp. 17–18).
 - Info: caption notes that for densities just above critical the turning point lies beyond the graph; pp. 17–19 corrected to pp. 17–20 (location and body); the bracket on a particle inside the ball cites Lecture 6 pp. 29–30; `calcs/values.yaml` role of "67" extended to Guth's h₀ = 0.67 on this page.
 - Status set to reviewed.
+
+## Change (2026-11-28, by Account A, from reader feedback)
+
+The sentence introducing $H$ now calls it the Hubble parameter (the same for every galaxy at a given moment, but changing as the universe expands) and its value today the Hubble constant. No number changed.

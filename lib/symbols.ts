@@ -22,6 +22,8 @@ export const SYMBOL_KINDS = [
 const Meaning = z.object({
   /** Short plain-English meaning (plain text with Unicode symbols, no TeX) */
   text: z.string().min(1),
+  /** The symbol's name where this meaning applies, when the entry's general name does not fit ("source speed") */
+  name: z.string().optional(),
   /** SI unit of this quantity (plain text), with the unit the lessons usually quote in brackets. Only for quantities
    *  with one clear unit; pure numbers, labels and indices have none. */
   unit: z.string().optional(),
@@ -228,7 +230,7 @@ export function symbolsOnPage(page: Page, hrefOf: (id: string) => string = (id) 
         glyphs: s.glyphs,
         compounds: s.compounds,
         kind: s.kind,
-        name: s.name,
+        name: m.name ?? s.name,
         spoken: spokenOnPage(s.spoken, s.keys.find((k) => used.has(k)) ?? s.keys[0], capitals),
         sounds: s.sounds,
         meaning: m.text,

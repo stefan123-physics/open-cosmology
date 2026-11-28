@@ -83,3 +83,7 @@ COUNTS: errors=0 warnings=0 info=4
 - Info 1: the hint on the mistake `(vs + vo)/(u + vs)` now says "the fractional drop in frequency, 1 − f_O/f_S".
 - Info 2–4: left as they are (the part labels already show the swap of roles; choice boxes and figures described in words are fine).
 - Status set to `reviewed`.
+
+## Change (2026-11-28, by Account A, from reader feedback)
+
+Problem 1: the sentence "only the listener's speed is below the line" (unclear, since both speeds are smaller than u) now says both speeds are in the numerator and only $v_o$ is also in the denominator, $u - v_o$; the hint of the listed mistake says "in the denominator" too. Symbols: $v_s$ is now named "source speed" on this page (a meaning can carry its own name, `lib/symbols.ts`), not the general "sound or dispersion speed". No number changed.
