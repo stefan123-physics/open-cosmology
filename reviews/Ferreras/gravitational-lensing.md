@@ -108,3 +108,7 @@ The physics of each formula matches the book, as far as the garbled extraction l
 Every cited equation was compared with the book's printed page, rendered with Poppler (pdftoppm), now that the text extraction's garbled maths could be checked directly.
 
 - Eq. 2.9 now written as the book does (θ = β + (D_LS/D_S)α̂) and Eq. 2.12 with |Φ|. Two book misprints noted in brackets: the critical density after Eq. 2.17 is printed upside down, and Eq. 2.21 prints (1 − κ²) instead of (1 − κ)².
+
+## Correction (2026-11-28, by the page author)
+
+The blind reviews of Ferreras Problem Set 1 (reviews/Ferreras/ferreras-problem-set-1.md) found a further slip in the book: the isothermal mass of HE 2149-2745 printed from Eq. (2.34), p. 42, 7.8 x 10^10 solar masses, comes from a formula with one distance too many (it is c^2 D_L theta_E^2/(2 pi G)); the mass inside the Einstein radius is about 2.1 x 10^11 solar masses. The bracket in the text, which said the isothermal values "agree with the image positions", now says this holds for the Einstein radius and source position but not for the printed mass, and links Problem Set 1, Problem 8. New calcs entries he2149-iso-mass-book and he2149-iso-mass.
