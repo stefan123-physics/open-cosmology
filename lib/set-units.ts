@@ -4,7 +4,7 @@ import type { ScoreUnit } from "./progress";
  * The scoring units of a problem set, read from its MDX source at build time: the same list that
  * `unitsOnPage()` (components/exercise/units.ts) reads from the rendered page, so the homepage can show a set's score
  * without opening it. Each <Part> with points is a unit ("p2-a"), or the <Exercise> itself when it has no parts with
- * points; its answers are the <Answer> ids inside it. `npm run test:answers` compares the two on every set.
+ * points; its answers are the <Answer> ids inside it. `content:check` (lib/exercise-check.ts) compares the two on every set.
  */
 export function setUnits(body: string): ScoreUnit[] {
   const units: ScoreUnit[] = [];

@@ -17,7 +17,12 @@ const fmt = (n: number) => String(Math.round(n * 10) / 10);
  * set in programme order that is not done and whose lessons are all studied.
  */
 function suggestSet(sets: PathSet[], p: Progress): { set: PathSet; started: boolean } | undefined {
-  const at = (slug: string) => Object.values(p.problems[slug] ?? {}).reduce((m, e) => (e.at > m ? e.at : m), "");
+  // Only real tries count as started (an answer checked or a part self-marked): a set whose solutions were merely
+  // opened can never reach 75%, and suggesting it would hide the sets that are ready.
+  const at = (slug: string) =>
+    Object.values(p.problems[slug] ?? {})
+      .filter((e) => e.ok !== undefined || e.self !== undefined)
+      .reduce((m, e) => (e.at > m ? e.at : m), "");
   const open = sets.filter((s) => !p.done[s.slug] && at(s.slug)).sort((a, b) => at(b.slug).localeCompare(at(a.slug)));
   if (open[0]) return { set: open[0], started: true };
   const ready = sets.find((s) => !p.done[s.slug] && s.lessons.length > 0 && s.lessons.every((l) => p.done[l]));
@@ -57,7 +62,8 @@ export function ContinueCard({ pages, sets = [] }: { pages: PathPage[]; sets?: P
       title: "Clear study progress",
       message: (
         <p>
-          Clear your studied lessons, quiz scores and where you left off in this browser? Your flashcard progress stays.
+          Clear your studied lessons, quiz scores, problem-set answers and scores, and where you left off in this browser? Your
+          flashcard progress stays.
         </p>
       ),
       confirmLabel: "Clear progress",
@@ -96,7 +102,7 @@ export function ContinueCard({ pages, sets = [] }: { pages: PathPage[]; sets?: P
                 Suggested next: <Link href={next.href}>{next.title}</Link> <span className="muted">({next.course})</span>
               </li>
             )}
-            {practise && practise.set.slug !== last?.slug && (
+            {practise && (
               <li>
                 {practise.started ? "Finish the problem set" : "Practise"}: <Link href={practise.set.href}>{practise.set.title}</Link>{" "}
                 <span className="muted">
