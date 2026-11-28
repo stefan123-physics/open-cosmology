@@ -1,0 +1,932 @@
+# Calculations on content/year-2/18.06/18-06-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Every problem on this page is our own (MIT's 18.06 problem sets are textbook exercise numbers), so every answer is
+# checked here by a route independent of the page's solution: eigenvalues as numerical roots of det(A − λI) written
+# out from the entries (solve), constants by Cramer's rule, solutions put back into their differential equations
+# (deriv), Markov steady states checked row by row, and Fourier coefficients by numerical integration.
+# All values were also recomputed with NumPy and SciPy (numpy.linalg.eigvals, scipy.linalg.expm, matrix powers,
+# scipy.integrate.quad) when the page was written.
+
+page: content/year-2/18.06/18-06-problem-set-8.mdx
+calcs:
+  - id: intro-points
+    where: 'How to answer: the points of the seven problems (16 + 16 + 14 + 12 + 16 + 14 + 12)'
+    inputs: {}
+    formula: 16 + 16 + 14 + 12 + 16 + 14 + 12
+    expected: '100'
+    tolerance: '1e-12'
+    shown: ['the points here (100 in all)']
+    source: {cite: mit, at: 'our own points'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  - id: p1-a-big
+    answer: p1-a-big
+    where: 'Problem 1(a), answer box: the root of det(A − λI) = (−3 − λ)(−2 − λ) − 1·2 between −2 and 0'
+    inputs: {}
+    formula: solve('(-3 - l)*(-2 - l) - 2', 'l', -2, 0)
+    expected: '-1'
+    tolerance: '1e-9'
+    shown: ['\lambda_1 = -1,\ \lambda_2 = -4']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-small
+    answer: p1-a-small
+    where: 'Problem 1(a), answer box: the root of det(A − λI) between −6 and −2.5'
+    inputs: {}
+    formula: solve('(-3 - l)*(-2 - l) - 2', 'l', -6, -2.5)
+    expected: '-4'
+    tolerance: '1e-9'
+    shown: ['\lambda_1 = -1,\ \lambda_2 = -4']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-a-det
+    where: 'Problem 1(a): the determinant (−3)(−2) − (1)(2)'
+    inputs: {}
+    formula: (-3)*(-2) - 1*2
+    expected: '4'
+    tolerance: '1e-12'
+    shown: ['the determinant is $(-3)(-2) - (1)(2) = 4$']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-x1
+    where: 'Problem 1(b): A x₁ = −x₁ for x₁ = (1, 2), first component −3·1 + 1·2'
+    inputs: {}
+    formula: -3*1 + 1*2
+    expected: '-1'
+    tolerance: '1e-12'
+    shown: ['so $x_1 = (1, 2)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-x1-second
+    where: 'Problem 1(b): A x₁ = −x₁ for x₁ = (1, 2), second component 2·1 − 2·2'
+    inputs: {}
+    formula: 2*1 - 2*2
+    expected: '-2'
+    tolerance: '1e-12'
+    shown: ['so $x_1 = (1, 2)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-x2
+    where: 'Problem 1(b): A x₂ = −4x₂ for x₂ = (1, −1), first component −3 − 1'
+    inputs: {}
+    formula: -3*1 + 1*(-1)
+    expected: '-4'
+    tolerance: '1e-12'
+    shown: ['so $x_2 = (1, -1)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-c2
+    answer: p1-b-c2
+    where: 'Problem 1(b), answer box: c₂ by Cramer''s rule from c₁(1, 2) + c₂(1, −1) = (3, 0): det(1, 3; 2, 0)/det(1, 1; 2, −1)'
+    inputs: {}
+    formula: (1*0 - 3*2) / (1*(-1) - 1*2)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['so $c_1 = 1$ and $c_2 = 2$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-c1
+    where: 'Problem 1(b): c₁ by Cramer''s rule, det(3, 1; 0, −1)/det(1, 1; 2, −1)'
+    inputs: {}
+    formula: (3*(-1) - 1*0) / (1*(-1) - 1*2)
+    expected: '1'
+    tolerance: '1e-12'
+    shown: ['so $c_1 = 1$ and $c_2 = 2$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-u2
+    kind: identity
+    answer: p1-b-u2
+    where: 'Problem 1(b), answer box: u₂ against the solution of the scalar equation u₂″ + 5u₂′ + 4u₂ = 0 (which u₂ obeys, since trace −5 and det 4) with u₂(0) = 0 and u₂′(0) = 2u₁(0) − 2u₂(0) = 6: u₂ = 6(e^(λ₁t) − e^(λ₂t))/(λ₁ − λ₂), the λ''s found numerically'
+    formula: 2*exp(-t) - 2*exp(-4*t)
+    equals: 6*(exp(solve('(-3 - l)*(-2 - l) - 2', 'l', -2, 0)*t) - exp(solve('(-3 - l)*(-2 - l) - 2', 'l', -6, -2.5)*t)) / (solve('(-3 - l)*(-2 - l) - 2', 'l', -2, 0) - solve('(-3 - l)*(-2 - l) - 2', 'l', -6, -2.5))
+    samples: {t: [0.05, 0.5, 1.5, 4]}
+    tolerance: 1e-6
+    shown: ['So $u_2(t) = 2e^{-t} - 2e^{-4t}$.']
+    source: {cite: reading1, at: 'p. 5 (the general solution; the numbers are our own)'}
+    origin: page-own
+
+  - id: p1-b-u2-ode
+    kind: identity
+    where: 'Problem 1(b), check: u₂ = 2e^(−t) − 2e^(−4t) solves du₂/dt = 2u₁ − 2u₂ with u₁ = e^(−t) + 2e^(−4t)'
+    formula: deriv('2*exp(-s) - 2*exp(-4*s)', 's', t)
+    equals: 2*(exp(-t) + 2*exp(-4*t)) - 2*(2*exp(-t) - 2*exp(-4*t))
+    samples: {t: [0.05, 0.5, 1.5, 4]}
+    tolerance: 1e-6
+    shown: ['should equal $2u_1 - 2u_2 = 2e^{-t} + 4e^{-4t} - 4e^{-t} + 4e^{-4t} = -2e^{-t} + 8e^{-4t}$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-u1
+    kind: identity
+    where: 'Problem 1(b): u₁ = e^(−t) + 2e^(−4t) solves du₁/dt = −3u₁ + u₂'
+    formula: deriv('exp(-s) + 2*exp(-4*s)', 's', t)
+    equals: -3*(exp(-t) + 2*exp(-4*t)) + (2*exp(-t) - 2*exp(-4*t))
+    samples: {t: [0.05, 0.5, 1.5, 4]}
+    tolerance: 1e-6
+    shown: ['e^{-t} + 2e^{-4t} \\ 2e^{-t} - 2e^{-4t}']
+    source: {cite: reading1, at: 'p. 5 (the general solution; the numbers are our own)'}
+    origin: page-own
+
+  - id: p1-b-start
+    where: 'Problem 1(b), check: u₂(0) = 2 − 2'
+    inputs: {}
+    formula: 2*exp(0) - 2*exp(0)
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$u = (1 + 2, 2 - 2) = (3, 0)$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-t
+    answer: p1-c-t
+    where: 'Problem 1(c), answer box: the zero of du₂/dt = −2e^(−t) + 8e^(−4t) between 0.1 and 1'
+    inputs: {}
+    formula: solve('-2*exp(-x) + 8*exp(-4*x)', 'x', 0.1, 1)
+    expected: '0.4621'
+    shown: ['t^* = \frac{\ln 4}{3} \approx 0.4621', 'near t = 0.46']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-max
+    answer: p1-c-max
+    where: 'Problem 1(c), answer box: u₂ at the zero of its derivative'
+    inputs: {}
+    formula: 2*exp(-solve('-2*exp(-x) + 8*exp(-4*x)', 'x', 0.1, 1)) - 2*exp(-4*solve('-2*exp(-x) + 8*exp(-4*x)', 'x', 0.1, 1))
+    expected: '0.9449'
+    shown: ['\frac32 \cdot 4^{-1/3} \approx 0.9449']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-closed
+    where: 'Problem 1(c): the closed form (3/2)·4^(−1/3)'
+    inputs: {}
+    formula: 1.5 * 4**(-1/3)
+    expected: '0.9449'
+    shown: ['\frac32 \cdot 4^{-1/3} \approx 0.9449']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  - id: p1-d-total
+    kind: identity
+    where: 'Problem 1(d), check: u₁ + u₂ = 3e^(−t)'
+    formula: (exp(-t) + 2*exp(-4*t)) + (2*exp(-t) - 2*exp(-4*t))
+    equals: 3*exp(-t)
+    samples: {t: [0, 0.7, 2]}
+    tolerance: 1e-12
+    shown: ['$(e^{-t} + 2e^{-4t}) + (2e^{-t} - 2e^{-4t}) = 3e^{-t}$']
+    source: {cite: mit, at: 'Problem 1(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-a
+    answer: p2-a
+    where: 'Problem 2(a), answer box: the a at which det A = (−2)(−3) − a·1 is zero'
+    inputs: {}
+    formula: solve('(-2)*(-3) - x*1', 'x', 0, 10)
+    expected: '6'
+    tolerance: '1e-9'
+    shown: ['So the system is stable for $a < 6$.']
+    source: {cite: reading1, at: 'pp. 12–13'}
+    origin: page-own
+
+  - id: p2-b
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box: the larger eigenvalue against a numerical root of det(A − λI) = (−2 − λ)(−3 − λ) − a, searched above the midpoint −5/2'
+    formula: (-5 + sqrt(1 + 4*a))/2
+    equals: solve('(-2 - l)*(-3 - l) - a', 'l', -2.5, 5)
+    samples: {a: [0, 0.5, 2, 5]}
+    tolerance: 1e-6
+    shown: ['= \frac{-5 \pm \sqrt{1 + 4a}}{2}']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-re
+    answer: p2-c-re
+    where: 'Problem 2(c), answer box: real part of the eigenvalues, half the trace (−2 − 3)/2'
+    inputs: {}
+    formula: (-2 + -3)/2
+    expected: '-2.5'
+    tolerance: '1e-12'
+    shown: ['$\lambda = (-5 \pm 5i)/2 = -2.5 \pm 2.5i$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-im
+    answer: p2-c-im
+    where: 'Problem 2(c), answer box: imaginary part sqrt(det − (trace/2)²) with det = 6 + 6.5'
+    inputs: {}
+    formula: sqrt((6 + 6.5) - 2.5**2)
+    expected: '2.5'
+    tolerance: '1e-12'
+    shown: ['$\lambda = (-5 \pm 5i)/2 = -2.5 \pm 2.5i$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-disc
+    where: 'Problem 2(c): 1 + 4a at a = −6.5'
+    inputs: {}
+    formula: 1 + 4*(-6.5)
+    expected: '-25'
+    tolerance: '1e-12'
+    shown: ['$1 + 4a = 1 - 26 = -25$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-det
+    where: 'Problem 2(c), check: det A = 6 − a at a = −6.5, and the product (−2.5)² + 2.5² of the conjugate eigenvalues'
+    inputs: {}
+    formula: 6 - (-6.5)
+    expected: '12.5'
+    tolerance: '1e-12'
+    shown: ['$(-2.5)^2 + 2.5^2 = 12.5$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c-prod
+    where: 'Problem 2(c), check: (−2.5)² + 2.5²'
+    inputs: {}
+    formula: (-2.5)**2 + 2.5**2
+    expected: '12.5'
+    tolerance: '1e-12'
+    shown: ['$(-2.5)^2 + 2.5^2 = 12.5$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  - id: p2-d-check
+    kind: identity
+    where: 'Problem 2(d), check: u = (cos 3t, sin 3t) solves du₁/dt = −3u₂'
+    formula: deriv('cos(3*s)', 's', t)
+    equals: -3*sin(3*t)
+    samples: {t: [0.2, 1, 2.5]}
+    tolerance: 1e-6
+    shown: ['$u(t) = (\cos 3t, \sin 3t)$ is a solution']
+    source: {cite: mit, at: 'Problem 2(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-a
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box: the (1, 2) entry against Sylvester''s formula e^(At) = (e^(λ₁t)(A − λ₂I) − e^(λ₂t)(A − λ₁I))/(λ₁ − λ₂), whose (1, 2) entry is (e^(2t)·(−2) − e^(3t)·(−2))/(2 − 3), with no S at all'
+    formula: 2*exp(2*t) - 2*exp(3*t)
+    equals: (exp(2*t)*(-2) - exp(3*t)*(-2)) / (2 - 3)
+    samples: {t: [0.1, 0.4, 1]}
+    tolerance: 1e-9
+    shown: ['The $(1, 2)$ entry is $2e^{2t} - 2e^{3t}$.']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-ode
+    kind: identity
+    where: 'Problem 3(a): the (1, 2) entry E₁₂ and the (2, 2) entry E₂₂ = 2e^(2t) − e^(3t) satisfy the first row of dE/dt = AE, dE₁₂/dt = 4E₁₂ − 2E₂₂'
+    formula: deriv('2*exp(2*s) - 2*exp(3*s)', 's', t)
+    equals: 4*(2*exp(2*t) - 2*exp(3*t)) - 2*(2*exp(2*t) - exp(3*t))
+    samples: {t: [0.1, 0.4, 1]}
+    tolerance: 1e-6
+    shown: ['-e^{2t} + e^{3t} & 2e^{2t} - e^{3t}']
+    source: {cite: reading1, at: 'pp. 19–21 (the formula; the numbers are our own)'}
+    origin: page-own
+
+  - id: p3-a-e11
+    kind: identity
+    where: 'Problem 3(a): the (1, 1) entry E₁₁ = −e^(2t) + 2e^(3t) and the (2, 1) entry E₂₁ = −e^(2t) + e^(3t) satisfy the first row of dE/dt = AE in the first column, dE₁₁/dt = 4E₁₁ − 2E₂₁ (and E₁₁(0) = 1, an independent route to the 3(c) value)'
+    formula: deriv('-exp(2*s) + 2*exp(3*s)', 's', t)
+    equals: 4*(-exp(2*t) + 2*exp(3*t)) - 2*(-exp(2*t) + exp(3*t))
+    samples: {t: [0.1, 0.5, 1]}
+    tolerance: 1e-6
+    shown: ['-e^{2t} + 2e^{3t} & 2e^{2t} - 2e^{3t}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-e21
+    kind: identity
+    where: 'Problem 3(a): the second row of dE/dt = AE in the first column, dE₂₁/dt = E₁₁ + E₂₁'
+    formula: deriv('-exp(2*s) + exp(3*s)', 's', t)
+    equals: (-exp(2*t) + 2*exp(3*t)) + (-exp(2*t) + exp(3*t))
+    samples: {t: [0.1, 0.5, 1]}
+    tolerance: 1e-6
+    shown: ['-e^{2t} + e^{3t} & 2e^{2t} - e^{3t}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-a-sinv
+    where: 'Problem 3(a): det S = 1·1 − 2·1'
+    inputs: {}
+    formula: 1*1 - 2*1
+    expected: '-1'
+    tolerance: '1e-12'
+    shown: ['S^{-1} = \frac{1}{-1}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c
+    answer: p3-c
+    where: 'Problem 3(c), answer box: the (1, 1) entry −e^(2t) + 2e^(3t) at t = 0.5 (checked against scipy.linalg.expm when written)'
+    inputs: {}
+    formula: -exp(2*0.5) + 2*exp(3*0.5)
+    expected: '6.2451'
+    shown: ['-e^{1} + 2e^{1.5} \approx -2.7183 + 8.9634 = 6.2451']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-e1
+    where: 'Problem 3(c): e'
+    inputs: {}
+    formula: exp(1)
+    expected: '2.7183'
+    shown: ['-2.7183 + 8.9634']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-e15
+    where: 'Problem 3(c): 2e^1.5'
+    inputs: {}
+    formula: 2*exp(1.5)
+    expected: '8.9634'
+    shown: ['-2.7183 + 8.9634']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-22
+    where: 'Problem 3(c), check: the (2, 2) entry 2e − e^1.5'
+    inputs: {}
+    formula: 2*exp(1) - exp(1.5)
+    expected: '0.9549'
+    shown: ['$6.2451 + (2e - e^{1.5}) = 6.2451 + 0.9549 = 7.2000$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-trace
+    where: 'Problem 3(c), check: the trace e + e^1.5 of e^(At) at t = 0.5'
+    inputs: {}
+    formula: exp(1) + exp(1.5)
+    expected: '7.2000'
+    shown: ['$e + e^{1.5} = 2.7183 + 4.4817 = 7.2000$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-e15b
+    where: 'Problem 3(c), check: e^1.5'
+    inputs: {}
+    formula: exp(1.5)
+    expected: '4.4817'
+    shown: ['2.7183 + 4.4817 = 7.2000']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-d-geo
+    answer: p3-d-geo
+    where: 'Problem 3(d), answer box: the t at which the larger eigenvalue of At reaches 1; the larger root of λ² − 5λ + 6 is found numerically'
+    inputs: {}
+    formula: 1 / solve('l**2 - 5*l + 6', 'l', 2.5, 4)
+    expected: '0.3333'
+    shown: ['$0 < t < \frac13 \approx 0.3333$']
+    source: {cite: reading1, at: 'p. 18'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-a-11
+    answer: p4-a-11
+    where: 'Problem 4(a), answer box: the coefficient of y″ in y⁽³⁾ = 2y″ + y′ − 2y, read off at y″ = 1, y′ = y = 0'
+    inputs: {}
+    formula: 2*1 + 0 - 2*0
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['So $c_{11} = 2$ and $c_{13} = -2$.']
+    source: {cite: reading1, at: 'p. 23 (the method; the third-order matrix is our own)'}
+    origin: page-own
+
+  - id: p4-a-13
+    answer: p4-a-13
+    where: 'Problem 4(a), answer box: the coefficient of y, read off at y = 1, y″ = y′ = 0'
+    inputs: {}
+    formula: 2*0 + 0 - 2*1
+    expected: '-2'
+    tolerance: '1e-12'
+    shown: ['So $c_{11} = 2$ and $c_{13} = -2$.']
+    source: {cite: reading1, at: 'p. 23 (the method; the third-order matrix is our own)'}
+    origin: page-own
+
+  - id: p4-b-det
+    kind: identity
+    where: 'Problem 4(b): the expansion along the first row equals −(λ³ − 2λ² − λ + 2)'
+    formula: (2 - l)*l**2 - 1*(-l) + (-2)*1
+    equals: -(l**3 - 2*l**2 - l + 2)
+    samples: {l: [-1.5, 0.3, 2.7]}
+    tolerance: 1e-12
+    shown: ['= -\lambda^3 + 2\lambda^2 + \lambda - 2']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b
+    answer: p4-b
+    where: 'Problem 4(b), answer box: the root of λ³ − 2λ² − λ + 2 above 1.5'
+    inputs: {}
+    formula: solve('l**3 - 2*l**2 - l + 2', 'l', 1.5, 5)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['The eigenvalues are $2$, $1$ and $-1$; the largest is $2$.']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-mid
+    where: 'Problem 4(b): the root between 0 and 1.5'
+    inputs: {}
+    formula: solve('l**3 - 2*l**2 - l + 2', 'l', 0, 1.5)
+    expected: '1'
+    tolerance: '1e-9'
+    shown: ['The eigenvalues are $2$, $1$ and $-1$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-low
+    where: 'Problem 4(b): the root below 0'
+    inputs: {}
+    formula: solve('l**3 - 2*l**2 - l + 2', 'l', -3, 0)
+    expected: '-1'
+    tolerance: '1e-9'
+    shown: ['The eigenvalues are $2$, $1$ and $-1$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c
+    answer: p4-c
+    where: 'Problem 4(c), answer box: y = e^(−t) has y(0) = 1 and y′(0) = −1; its second derivative at 0'
+    inputs: {}
+    formula: deriv('deriv("exp(-r)", "r", s)', 's', 0)
+    expected: '1'
+    tolerance: '1e-4'
+    shown: ['So $y = e^{-t}$ and $y''''(0) = 1$.']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-ode
+    kind: identity
+    where: 'Problem 4(c): y = e^(−t) solves y⁽³⁾ − 2y″ − y′ + 2y = 0, written with its derivatives −e^(−t), e^(−t), −e^(−t)'
+    formula: -exp(-t) - 2*exp(-t) - (-exp(-t)) + 2*exp(-t)
+    equals: 0*t
+    samples: {t: [0, 1, 2]}
+    tolerance: 1e-12
+    shown: ['So $y = e^{-t}$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-a-lam
+    answer: p5-a-lam
+    where: 'Problem 5(a), answer box: the root of det(A − λI) = (0.8 − λ)(0.7 − λ) − 0.3·0.2 below 0.9'
+    inputs: {}
+    formula: solve('(0.8 - l)*(0.7 - l) - 0.3*0.2', 'l', 0, 0.9)
+    expected: '0.5'
+    tolerance: '1e-9'
+    shown: ['so the other eigenvalue is $1.5 - 1 = 0.5$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-trace
+    where: 'Problem 5(a): the trace 0.8 + 0.7 (also in the hint of the 0.7 mistake of 5(c))'
+    inputs: {}
+    formula: 0.8 + 0.7
+    expected: '1.5'
+    tolerance: '1e-12'
+    shown: ['The trace is $1.5$', 'the two eigenvalues add up to the trace 1.5.']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-det
+    where: 'Problem 5(a): det A = 0.56 − 0.06'
+    inputs: {}
+    formula: 0.8*0.7 - 0.3*0.2
+    expected: '0.5'
+    tolerance: '1e-12'
+    shown: ['$0.56 - 0.06 = 0.5 = 1 \cdot 0.5$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-x1
+    where: 'Problem 5(a), check: A(3, 2), first component 2.4 + 0.6'
+    inputs: {}
+    formula: 0.8*3 + 0.3*2
+    expected: '3'
+    tolerance: '1e-12'
+    shown: ['$A(3, 2) = (2.4 + 0.6, 0.6 + 1.4) = (3, 2)$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b
+    answer: p5-b
+    where: 'Problem 5(b), answer box: people in P in the steady state, the P-share 0.3/(0.3 + 0.2) of 1000 (from the balance 0.2p = 0.3q)'
+    inputs: {}
+    formula: 1000 * 0.3/(0.3 + 0.2)
+    expected: '600'
+    tolerance: '1e-9'
+    shown: ['$200 \cdot (3, 2) = (600, 400)$: $600$ people in P']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-q
+    where: 'Problem 5(b): people in Q in the steady state, the Q-share 0.2/(0.3 + 0.2) of 1000'
+    inputs: {}
+    formula: 1000 * 0.2/(0.3 + 0.2)
+    expected: '400'
+    tolerance: '1e-9'
+    shown: ['$200 \cdot (3, 2) = (600, 400)$: $600$ people in P']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-check-p
+    where: 'Problem 5(b), check: the first row of A(600, 400), 480 + 120'
+    inputs: {}
+    formula: 0.8*600 + 0.3*400
+    expected: '600'
+    tolerance: '1e-9'
+    shown: ['$A(600, 400) = (480 + 120, 120 + 280) = (600, 400)$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-check-q
+    where: 'Problem 5(b), check: the second row of A(600, 400), 120 + 280'
+    inputs: {}
+    formula: 0.2*600 + 0.7*400
+    expected: '400'
+    tolerance: '1e-9'
+    shown: ['$A(600, 400) = (480 + 120, 120 + 280) = (600, 400)$']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(c), answer box: with the total 1000, the first row reads p_(k+1) = 0.8p_k + 0.3(1000 − p_k) = 0.5p_k + 300; from p_0 = 1000 this gives 1000·0.5^k plus the geometric series 300(1 + 0.5 + ⋯ + 0.5^(k−1))'
+    formula: 600 + 400*0.5**k
+    equals: 1000*0.5**k + 300*(1 - 0.5**k)/(1 - 0.5)
+    samples: {k: [1, 3, 10]}
+    tolerance: 1e-9
+    shown: ['600 + 400\,(0.5)^k \\ 400 - 400\,(0.5)^k']
+    source: {cite: reading2, at: 'p. 3 (the expansion; the numbers are our own)'}
+    origin: page-own
+
+  - id: p5-c-step
+    kind: identity
+    where: 'Problem 5(c): p_k = 600 + 400·0.5^k satisfies the first row p_(k+1) = 0.8p_k + 0.3(1000 − p_k)'
+    formula: 600 + 400*0.5**(k + 1)
+    equals: 0.8*(600 + 400*0.5**k) + 0.3*(1000 - (600 + 400*0.5**k))
+    samples: {k: [0, 1, 3, 10]}
+    tolerance: 1e-9
+    shown: ['600 + 400\,(0.5)^k \\ 400 - 400\,(0.5)^k']
+    source: {cite: reading2, at: 'p. 3 (the expansion; the numbers are our own)'}
+    origin: page-own
+
+  - id: p5-c-c1
+    where: 'Problem 5(c): c₁ by Cramer''s rule from c₁(3, 2) + c₂(1, −1) = (1000, 0)'
+    inputs: {}
+    formula: (1000*(-1) - 1*0) / (3*(-1) - 1*2)
+    expected: '200'
+    tolerance: '1e-9'
+    shown: ['so $c_1 = 200$ and $c_2 = 400$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-c2
+    where: 'Problem 5(c): c₂ by Cramer''s rule'
+    inputs: {}
+    formula: (3*0 - 1000*2) / (3*(-1) - 1*2)
+    expected: '400'
+    tolerance: '1e-9'
+    shown: ['so $c_1 = 200$ and $c_2 = 400$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-year1
+    where: 'Problem 5(c), check: A(1000, 0), first component 0.8·1000'
+    inputs: {}
+    formula: 0.8*1000 + 0.3*0
+    expected: '800'
+    tolerance: '1e-9'
+    shown: ['directly $A(1000, 0) = (800, 200)$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-year1-q
+    where: 'Problem 5(c), check: A(1000, 0), second component 0.2·1000'
+    inputs: {}
+    formula: 0.2*1000 + 0.7*0
+    expected: '200'
+    tolerance: '1e-9'
+    shown: ['At $k = 1$: $(800, 200)$']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-mistake
+    where: 'Problem 5(c), hint of the sign mistake 600 − 400·0.5^k: its value at k = 0'
+    inputs: {}
+    formula: 600 - 400*0.5**0
+    expected: '200'
+    tolerance: '1e-9'
+    shown: ['This gives 200 people in P at k = 0']
+    source: {cite: mit, at: 'Problem 5(c) (our own solution)'}
+    origin: page-own
+
+  - id: p5-d
+    answer: p5-d
+    where: 'Problem 5(d), answer box: 1 + the number of years k = 1 … 8 with more than 610 people in P (each term (1 + sign(p_k − 610))/2 is 1 above 610 and 0 below; P falls every year, and from k = 6 on p_k < 607)'
+    inputs: {}
+    formula: 1 + (1 + ((600 + 400*0.5**1) - 610)/abs((600 + 400*0.5**1) - 610))/2 + (1 + ((600 + 400*0.5**2) - 610)/abs((600 + 400*0.5**2) - 610))/2 + (1 + ((600 + 400*0.5**3) - 610)/abs((600 + 400*0.5**3) - 610))/2 + (1 + ((600 + 400*0.5**4) - 610)/abs((600 + 400*0.5**4) - 610))/2 + (1 + ((600 + 400*0.5**5) - 610)/abs((600 + 400*0.5**5) - 610))/2 + (1 + ((600 + 400*0.5**6) - 610)/abs((600 + 400*0.5**6) - 610))/2 + (1 + ((600 + 400*0.5**7) - 610)/abs((600 + 400*0.5**7) - 610))/2 + (1 + ((600 + 400*0.5**8) - 610)/abs((600 + 400*0.5**8) - 610))/2
+    expected: '6'
+    tolerance: '1e-9'
+    shown: ['The first whole year is $k = 6$.']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-d-log
+    where: 'Problem 5(d): log₂ 40'
+    inputs: {}
+    formula: log(40)/log(2)
+    expected: '5.32'
+    shown: ['$k > \log_2 40 \approx 5.32$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-d-y5
+    where: 'Problem 5(d), check: year 5, 600 + 400/32'
+    inputs: {}
+    formula: 600 + 400*0.5**5
+    expected: '612.5'
+    shown: ['$600 + 400/32 = 612.5$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-d-y6
+    where: 'Problem 5(d), check: year 6, 600 + 400/64'
+    inputs: {}
+    formula: 600 + 400*0.5**6
+    expected: '606.25'
+    shown: ['$600 + 400/64 = 606.25$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6-b-trace
+    where: 'Problem 6(b): the trace 0.4 + 0.6 + 0.7'
+    inputs: {}
+    formula: 0.4 + 0.6 + 0.7
+    expected: '1.7'
+    tolerance: '1e-12'
+    shown: ['The trace is $0.4 + 0.6 + 0.7 = 1.7$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-sum
+    where: 'Problem 6(b): λ₂ + λ₃ = trace − 1'
+    inputs: {}
+    formula: (0.4 + 0.6 + 0.7) - 1
+    expected: '0.7'
+    tolerance: '1e-12'
+    shown: ['so $\lambda_2 + \lambda_3 = 0.7$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-prod
+    where: 'Problem 6(b): λ₂λ₃ = det A / 1, with det A by Sarrus'
+    inputs: {}
+    formula: (0.4*0.6*0.7 + 0.2*0.1*0.3 + 0.2*0.3*0.2 - 0.2*0.6*0.3 - 0.4*0.1*0.2 - 0.2*0.3*0.7) / 1
+    expected: '0.1'
+    tolerance: '1e-12'
+    shown: ['so $\lambda_2\lambda_3 = 0.1$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-det
+    where: 'Problem 6(b): det A by the rule of Sarrus (another route than the first-row expansion on the page)'
+    inputs: {}
+    formula: 0.4*0.6*0.7 + 0.2*0.1*0.3 + 0.2*0.3*0.2 - 0.2*0.6*0.3 - 0.4*0.1*0.2 - 0.2*0.3*0.7
+    expected: '0.1'
+    tolerance: '1e-12'
+    shown: ['= 0.16 - 0.036 - 0.024 = 0.1']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-big
+    answer: p6-b-big
+    where: 'Problem 6(b), answer box: a root of det(A − λI), written out by Sarrus, between 0.35 and 0.9'
+    inputs: {}
+    formula: solve('(0.4 - l)*(0.6 - l)*(0.7 - l) + 0.2*0.1*0.3 + 0.2*0.3*0.2 - 0.2*(0.6 - l)*0.3 - (0.4 - l)*0.1*0.2 - 0.2*0.3*(0.7 - l)', 'l', 0.35, 0.9)
+    expected: '0.5'
+    tolerance: '1e-9'
+    shown: ['the other eigenvalues are $0.5$ and $0.2$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-small
+    answer: p6-b-small
+    where: 'Problem 6(b), answer box: the root of det(A − λI) between 0 and 0.35'
+    inputs: {}
+    formula: solve('(0.4 - l)*(0.6 - l)*(0.7 - l) + 0.2*0.1*0.3 + 0.2*0.3*0.2 - 0.2*(0.6 - l)*0.3 - (0.4 - l)*0.1*0.2 - 0.2*0.3*(0.7 - l)', 'l', 0, 0.35)
+    expected: '0.2'
+    tolerance: '1e-9'
+    shown: ['the other eigenvalues are $0.5$ and $0.2$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-one
+    where: 'Problem 6(b): λ = 1 is a root of the same polynomial'
+    inputs: {}
+    formula: solve('(0.4 - l)*(0.6 - l)*(0.7 - l) + 0.2*0.1*0.3 + 0.2*0.3*0.2 - 0.2*(0.6 - l)*0.3 - (0.4 - l)*0.1*0.2 - 0.2*0.3*(0.7 - l)', 'l', 0.9, 1.5)
+    expected: '1'
+    tolerance: '1e-9'
+    shown: ['Knowing $\lambda_1 = 1$']
+    source: {cite: reading2, at: 'pp. 4–6'}
+    origin: page-own
+
+  - id: p6-c-x2
+    where: 'Problem 6(c): the second row of A applied to (5, 6, 9) gives back its second component, 0.3·5 + 0.6·6 + 0.1·9'
+    inputs: {}
+    formula: 0.3*5 + 0.6*6 + 0.1*9
+    expected: '6'
+    tolerance: '1e-9'
+    shown: ['With $y = 6$: $x_1 = (5, 6, 9)$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-x1
+    where: 'Problem 6(c): the first row of A applied to (5, 6, 9), 0.4·5 + 0.2·6 + 0.2·9'
+    inputs: {}
+    formula: 0.4*5 + 0.2*6 + 0.2*9
+    expected: '5'
+    tolerance: '1e-9'
+    shown: ['With $y = 6$: $x_1 = (5, 6, 9)$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-x3
+    where: 'Problem 6(c): the third row of A applied to (5, 6, 9), 0.3·5 + 0.2·6 + 0.7·9'
+    inputs: {}
+    formula: 0.3*5 + 0.2*6 + 0.7*9
+    expected: '9'
+    tolerance: '1e-9'
+    shown: ['With $y = 6$: $x_1 = (5, 6, 9)$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-total
+    where: 'Problem 6(c): the total 5 + 6 + 9 of the eigenvector'
+    inputs: {}
+    formula: 5 + 6 + 9
+    expected: '20'
+    tolerance: '1e-12'
+    shown: ['$5 + 6 + 9 = 20$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-scale
+    where: 'Problem 6(c): the factor that scales the total 20 to 2000 members'
+    inputs: {}
+    formula: 2000 / (5 + 6 + 9)
+    expected: '100'
+    tolerance: '1e-12'
+    shown: ['so scale by $100$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-2
+    answer: p6-c-2
+    where: 'Problem 6(c), answer box: the second club in the steady state (500, 600, 900); its second row 0.3·500 + 0.6·600 + 0.1·900 gives it back'
+    inputs: {}
+    formula: 0.3*500 + 0.6*600 + 0.1*900
+    expected: '600'
+    tolerance: '1e-9'
+    shown: ['scale by $100$: $(500, 600, 900)$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-3
+    answer: p6-c-3
+    where: 'Problem 6(c), answer box: the third club; its third row 0.3·500 + 0.2·600 + 0.7·900 gives it back'
+    inputs: {}
+    formula: 0.3*500 + 0.2*600 + 0.7*900
+    expected: '900'
+    tolerance: '1e-9'
+    shown: ['$0.3 \cdot 500 + 0.2 \cdot 600 + 0.7 \cdot 900 = 150 + 120 + 630 = 900$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-1
+    where: 'Problem 6(c): the first row 0.4·500 + 0.2·600 + 0.2·900 gives the first club back'
+    inputs: {}
+    formula: 0.4*500 + 0.2*600 + 0.2*900
+    expected: '500'
+    tolerance: '1e-9'
+    shown: ['scale by $100$: $(500, 600, 900)$']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 7
+
+  - id: p7-a-3
+    answer: p7-a-3
+    where: 'Problem 7(a), answer box: x₃ = q₃ᵀv'
+    inputs: {}
+    formula: 0.5*(3 - 1 + 2 - (-2))
+    expected: '3'
+    tolerance: '1e-12'
+    shown: ['$x_3 = q_3^Tv = \frac12(3 - 1 + 2 + 2) = 3$']
+    source: {cite: reading2, at: 'p. 16'}
+    origin: page-own
+
+  - id: p7-a-4
+    answer: p7-a-4
+    where: 'Problem 7(a), answer box: x₄ = q₄ᵀv'
+    inputs: {}
+    formula: 0.5*(3 - 1 - 2 + (-2))
+    expected: '-1'
+    tolerance: '1e-12'
+    shown: ['$x_4 = q_4^Tv = \frac12(3 - 1 - 2 - 2) = -1$']
+    source: {cite: reading2, at: 'p. 16'}
+    origin: page-own
+
+  - id: p7-a-rebuild
+    where: 'Problem 7(a), check: the fourth component of x₁q₁ + ⋯ + x₄q₄ with (2, 2, 3, −1) rebuilds v₄ = −2'
+    inputs: {}
+    formula: 0.5*(2*1 + 2*(-1) + 3*(-1) + (-1)*1)
+    expected: '-2'
+    tolerance: '1e-12'
+    shown: ['$x_1^2 + \cdots + x_4^2 = 4 + 4 + 9 + 1 = 18$']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-a-length
+    where: 'Problem 7(a), check: ‖v‖²'
+    inputs: {}
+    formula: 3**2 + 1**2 + 2**2 + (-2)**2
+    expected: '18'
+    tolerance: '1e-12'
+    shown: ['$\|v\|^2 = 9 + 1 + 4 + 4 = 18$']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-1
+    answer: p7-b-1
+    where: 'Problem 7(b), answer box: b₁ = (1/π)∫₀^(2π) f(x) sin x dx, integrated numerically on the two halves'
+    inputs: {}
+    formula: (integrate('sin(x)', 'x', 0, pi) - integrate('sin(x)', 'x', pi, 2*pi)) / pi
+    expected: '1.2732'
+    shown: ['so $b_1 = 4/\pi \approx 1.2732$']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-3
+    answer: p7-b-3
+    where: 'Problem 7(b), answer box: b₃, integrated numerically'
+    inputs: {}
+    formula: (integrate('sin(3*x)', 'x', 0, pi) - integrate('sin(3*x)', 'x', pi, 2*pi)) / pi
+    expected: '0.4244'
+    shown: ['so $b_3 = \frac{4}{3\pi} \approx 0.4244$']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-sin2
+    where: 'Problem 7(b): ∫₀^(2π) sin²x dx = π, the norm that gives the factor 1/π'
+    inputs: {}
+    formula: integrate('sin(x)**2', 'x', 0, 2*pi) / pi
+    expected: '1'
+    tolerance: '1e-6'
+    shown: ['b_n\int_0^{2\pi}\sin^2nx\,dx = \pi b_n']
+    source: {cite: reading2, at: 'p. 21'}
+    origin: page-own
+
+  - id: p7-b-int3
+    where: 'Problem 7(b): ∫₀^π sin 3x dx = 2/3'
+    inputs: {}
+    formula: integrate('sin(3*x)', 'x', 0, pi) * 3 / 2
+    expected: '1'
+    tolerance: '1e-6'
+    shown: ['$\int_0^\pi\sin 3x\,dx = \frac23$']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-2
+    where: 'Problem 7(b), check: b₂ = 0'
+    inputs: {}
+    formula: (integrate('sin(2*x)', 'x', 0, pi) - integrate('sin(2*x)', 'x', pi, 2*pi)) / pi
+    expected: '0'
+    tolerance: '1e-6'
+    shown: ['so $b_2 = 0$']
+    source: {cite: mit, at: 'Problem 7(b) (our own solution)'}
+    origin: page-own
