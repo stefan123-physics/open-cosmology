@@ -113,6 +113,54 @@ function normalise(text: string): string {
     .replace(/π/g, "pi");
 }
 
+/**
+ * Takes off braces that group nothing in mathjs's TeX ({v}^{2}, {x_0}, {\Delta x}): KaTeX draws the same either way,
+ * but read-aloud (lib/speech.ts) reads a fraction only once its parts hold no bare braces, so with them it lost
+ * "over" ("v squared (2 times d )"). A brace pair is bare when it is not the argument of a command (\frac{…},
+ * \sqrt{…}), of ^ or _, or the second argument after another group (\frac{a}{b}). Its content is kept apart from
+ * what follows by a space when that content ends in a command name.
+ */
+export function bareBraces(tex: string): string {
+  let out = tex;
+  for (let pass = 0; pass < 8; pass++) {
+    let changed = false;
+    let result = "";
+    let i = 0;
+    while (i < out.length) {
+      const ch = out[i];
+      if (ch === "{") {
+        // Find the matching brace.
+        let depth = 0, j = i;
+        for (; j < out.length; j++) {
+          if (out[j] === "{") depth++;
+          else if (out[j] === "}" && --depth === 0) break;
+        }
+        const before = result.replace(/\s+$/, "");
+        const prev = before.slice(-1);
+        const isArgument = /[A-Za-z^_}]/.test(prev) && !/\\(?:cdot|times|div|pm|mp|left|right)$/.test(before);
+        const inner = out.slice(i + 1, j);
+        const next = out.slice(j + 1).replace(/^\s+/, "")[0] ?? "";
+        // A base that has its own script before another one needs its braces: {v^\theta}^{2}, not v^\theta^{2}.
+        // Only a script at the group's own level counts, not one inside a bracket or a nested group.
+        const topLevel = inner.replace(/\\left[\s\S]*\\right./g, "").replace(/\{[^{}]*\}/g, "");
+        // Only the same kind of script clashes: v_0^{2} is fine, v^\theta^{2} is not.
+        const scriptedBase = (next === "^" || next === "_") && topLevel.includes(next);
+        if (!isArgument && j < out.length && !scriptedBase) {
+          result += /\\[A-Za-z]+$/.test(inner) && /[A-Za-z]/.test(next) ? inner + " " : inner;
+          i = j + 1;
+          changed = true;
+          continue;
+        }
+      }
+      result += ch;
+      i++;
+    }
+    out = result;
+    if (!changed) break;
+  }
+  return out;
+}
+
 /** Reads a typed formula that may use only the symbols in `allowed`. Never throws. */
 export function parseFormula(text: string, allowed: string[]): Parsed {
   const source = normalise(text).trim();
@@ -166,13 +214,20 @@ export function parseFormula(text: string, allowed: string[]): Parsed {
         }
       },
       tex: (names = {}) =>
-        root
-          .toTex({
-            parenthesis: "keep",
-            implicit: "hide",
-            handler: (node: any) => (node.type === "SymbolNode" && names[node.name] ? names[node.name] : undefined),
-          })
-          .replace(/\\mathrm\{ln\}/g, "\\ln"),
+        bareBraces(
+          root
+            .toTex({
+              parenthesis: "keep",
+              implicit: "hide",
+              // Braces, so a name such as a_0 can never run into the TeX before it (\cdot{a_0}, not \cdota_0);
+              // bareBraces takes them off again where nothing can run into the name.
+              handler: (node: any) => (node.type === "SymbolNode" && names[node.name] ? `{${names[node.name]}}` : undefined),
+            })
+            // mathjs writes its operators with no space after them ("2\cdotm"), which KaTeX reads as one unknown
+            // command: put a space after every operator command that a letter, digit or brace follows.
+            .replace(/\\(cdot|times|div|pm|mp)(?=[A-Za-z0-9{])/g, "\\$1 ")
+            .replace(/\\mathrm\{ln\}/g, "\\ln"),
+        ),
     },
   };
 }

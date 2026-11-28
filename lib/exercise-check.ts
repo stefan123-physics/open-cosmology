@@ -6,7 +6,10 @@
  *  - a number answer names a calc in the page's calcs file whose `expected` is the same number;
  *  - a formula answer has a range for every symbol, is finite at 20 sample points, and every listed mistake differs
  *    from it there;
- *  - a choice answer marks one of its choices.
+ *  - a choice answer marks one of its choices;
+ *  - the "You typed" preview of a formula answer and of each listed mistake renders in KaTeX without an error, has
+ *    no operator glued to a letter (\cdotm), and is fully spoken in "In words" (no read-aloud gap, no backslash
+ *    left): the preview a reader sees is built by the same code (lib/answers.ts tex, lib/speech.ts).
  * Run by `npm run content:check`.
  */
 import fs from "node:fs";
@@ -16,7 +19,27 @@ import * as runtime from "react/jsx-runtime";
 import { createElement, Fragment, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Page } from "./content";
-import { auditFormula, parseNumber } from "./answers";
+import katex from "katex";
+import { auditFormula, parseFormula, parseNumber } from "./answers";
+import { speechGaps, texToSpeech } from "./speech";
+
+/** What is wrong with the preview of one typed formula (empty when it is fine). */
+export function previewProblems(expr: string, vars: Record<string, unknown>, names: Record<string, string> = {}): string[] {
+  const parsed = parseFormula(expr, Object.keys(vars));
+  if (!parsed.ok) return [];
+  const tex = parsed.formula.tex(names);
+  const out: string[] = [];
+  try {
+    katex.renderToString(tex, { throwOnError: true });
+  } catch (e) {
+    out.push(`preview does not render (${(e as Error).message.split("\n")[0].slice(0, 80)})`);
+  }
+  if (/\\(?:cdot|times|div|pm|mp)[A-Za-z0-9]/.test(tex)) out.push("preview glues an operator to a letter");
+  const gaps = speechGaps(tex);
+  if (gaps.length) out.push(`"In words" cannot say ${gaps.join(" ")}`);
+  else if (texToSpeech(tex).includes("\\")) out.push('"In words" keeps a TeX command');
+  return out.map((m) => `${m}: ${tex}`);
+}
 
 type Props = Record<string, any> & { children?: ReactNode };
 type Ex = { props: Props; solutions: number; partPoints: number[]; answers: Props[] };
@@ -117,6 +140,9 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
         if (!a.vars || typeof a.vars !== "object") errors.push(`${an}: a formula answer needs vars, a range for every symbol`);
         else for (const m of auditFormula({ expr: String(a.expr), vars: a.vars, mistakes: a.mistakes })) errors.push(`${an}: ${m}`);
         for (const k of Object.keys(a.names ?? {})) if (!(k in (a.vars ?? {}))) errors.push(`${an}: names.${k} is not a symbol in vars`);
+        if (a.vars && typeof a.vars === "object")
+          for (const e of [String(a.expr), ...((a.mistakes ?? []) as { expr: string }[]).map((m) => String(m.expr))])
+            for (const m of previewProblems(e, a.vars, a.names ?? {})) errors.push(`${an}: ${e === String(a.expr) ? "answer" : `mistake ${e}`}: ${m}`);
       } else if (!Array.isArray(a.choices) || a.choices.length < 2 || !Number.isInteger(a.answer) || a.answer < 0 || a.answer >= a.choices.length)
         errors.push(`${an}: choices needs two or more entries and answer the index of the right one`);
     }

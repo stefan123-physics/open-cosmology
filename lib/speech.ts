@@ -274,7 +274,10 @@ function nameSymbols(tex: string, names: string[], capitals: Set<string>): strin
         }
       }
       if (FORM_SPOKEN[key] && (primes || end !== j)) {
-        out += mark(withCapital(base, FORM_SPOKEN[key]));
+        // One entry often holds a quantity and its value today (\Omega_m and \Omega_{m,0}) under one spoken name:
+        // say the ", 0" of the second as "nought", or the two would sound the same.
+        const today = /,0$/.test(key) && !/\bnought\b|\btoday\b/.test(FORM_SPOKEN[key]);
+        out += mark(withCapital(base, FORM_SPOKEN[key] + (today ? " nought" : "")));
         i = end;
         continue;
       }
@@ -700,6 +703,10 @@ export function texToSpeech(tex: string, options: SpeechOptions | ((command: str
       .replace(/\^(\w)/g, " to the power $1 ")
       .replace(/_\{([^{}]*)\}/g, " sub $1 ")
       .replace(/_(\w)/g, " sub $1 ");
+    // A brace pair left that groups nothing (a base such as {v^\theta} once its scripts are read): drop the braces,
+    // so the fraction or root around it can be read on the next round. Only when nothing else changed this round,
+    // and never right after a command, ^ or _, or another group (those braces are arguments).
+    if (s === before) s = s.replace(/(^|[^A-Za-z\\^_}])\{([^{}]*)\}/g, "$1 $2 ");
     if (s === before) break;
   }
   s = s
