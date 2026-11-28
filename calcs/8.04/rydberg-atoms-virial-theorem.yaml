@@ -1,0 +1,526 @@
+# Calculations on content/year-2/8.04/rydberg-atoms-virial-theorem.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# Source: MIT 8.04 (Spring 2016, Zwiebach) Lecture 23, transcripts of the video segments
+# "Rydberg atoms" (reading1) and "Orbits in the hydrogen atom" (reading2), with the page's own plots and worked example (n = 60).
+# Units in the identities: r in a0, energies in e²/(2a0) unless stated; L stands for l(l + 1).
+# Constants: CODATA 2018 (a0 = 0.0529177 nm, Ry = 13.6057 eV, h = 4.135668e-15 eV s, R_inf c = 3.2898419603e15 Hz, m_p/m_e = 1836.15267343).
+
+page: content/year-2/8.04/rydberg-atoms-virial-theorem.mdx
+calcs:
+  # ---------------------------------------------------------------- virial theorem
+  - id: virial-T
+    kind: identity
+    where: '⟨V⟩ = −2⟨T⟩ and ⟨T⟩ + ⟨V⟩ = E give ⟨T⟩ = −E'
+    formula: E - (-2*(-E))
+    equals: -E
+    samples: {E: [-1.0, -0.25, -0.0003]}
+    tolerance: 1e-12
+    shown: ['\langle T\rangle = -E_n, \qquad \langle V\rangle = -2\,\langle T\rangle = 2E_n', 'since $T + V = T - 2T = -T$']
+    source: {cite: reading1, at: 'transcript p. 2, board'}
+    origin: mit
+
+  - id: virial-V
+    kind: identity
+    where: '⟨V⟩ = −2⟨T⟩ = −2(−E) = 2E, and the two add up to E'
+    formula: (-2*(-E)) + (-E)
+    equals: E
+    samples: {E: [-1.0, -0.25, -0.0003]}
+    tolerance: 1e-12
+    shown: ['\langle V\rangle = -2\,\langle T\rangle = 2E_n']
+    source: {cite: reading1, at: 'transcript p. 2, board'}
+    origin: mit
+
+  - id: virial-power-law
+    kind: identity
+    where: 'page''s own addition: 2⟨T⟩ = k⟨V⟩ with k = −1 is ⟨V⟩ = −2⟨T⟩'
+    formula: 2*T
+    equals: (-1)*(-2*T)
+    samples: {T: [1.0, 0.3]}
+    tolerance: 1e-12
+    shown: ['$2\langle T\rangle = k\langle V\rangle$', '$k = -1$']
+    source: {cite: reading1, at: 'transcript p. 2 (general k: the page''s own addition)'}
+    origin: page-own
+
+  - id: inverse-r
+    kind: identity
+    where: '⟨−e²/r⟩ = 2E_n = −e²/(a0 n²) gives ⟨1/r⟩ = 1/(n² a0) (q = e, a = a0)'
+    formula: (2*(-q**2/(2*a*n**2)))/(-q**2)
+    equals: 1/(n**2*a)
+    samples: {q: [1.0, 1.7, 1.0], a: [1.0, 0.53, 2.0], n: [1, 7, 60]}
+    tolerance: 1e-12
+    shown: ['\left\langle -\frac{e^2}{r}\right\rangle = 2E_n = -\frac{e^2}{a_0}\,\frac{1}{n^2} \quad\Longrightarrow\quad \left\langle\frac{1}{r}\right\rangle = \frac{1}{n^2a_0}']
+    source: {cite: reading1, at: 'transcript pp. 2–3, board'}
+    origin: mit
+
+  # ---------------------------------------------------------------- expected radius
+  - id: r-mean-l0
+    kind: identity
+    where: '⟨r⟩ bracket for l = 0 is 3/2'
+    formula: 1 + (1 - 0/n**2)/2
+    equals: 3/2
+    samples: {n: [1, 5, 100]}
+    tolerance: 1e-12
+    shown: ['For $l = 0$ the bracket is $\frac32$, so $\langle r\rangle = \frac32n^2a_0$']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: mit
+
+  - id: r-mean-ground
+    where: '⟨r⟩ for n = 1, l = 0, in a0: 3/2 (as the hydrogen-spectrum page found by integration)'
+    inputs: {}
+    formula: 1**2*(1 + (1 - 0)/2)
+    expected: '1.5'
+    shown: ['this is the $\frac32a_0$ found on']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: r-mean-lmax
+    kind: identity
+    where: 'l = n − 1: l(l + 1)/n² = 1 − 1/n and the bracket is 1 + 1/(2n)'
+    formula: 1 + (1 - (n - 1)*n/n**2)/2
+    equals: 1 + 1/(2*n)
+    samples: {n: [1, 4, 60, 100]}
+    tolerance: 1e-12
+    shown: ['$\frac{l(l + 1)}{n^2} = 1 - \frac1n$, so the bracket is $1 + \frac{1}{2n}$']
+    source: {cite: reading1, at: 'transcript p. 3 (the closed form is the page''s own step)'}
+    origin: page-own
+
+  - id: r-mean-lmax-from-p
+    kind: identity
+    where: 'check: for l = n − 1, p ∝ r^(2n) e^(−2r/n) (a0 = 1) has mean (2n + 1) n/2 = n²(1 + 1/(2n)), matching the quoted ⟨r⟩'
+    formula: (2*n + 1)*n/2
+    equals: n**2*(1 + (1 - (n - 1)*n/n**2)/2)
+    samples: {n: [1, 2, 3, 10, 60]}
+    tolerance: 1e-10
+    shown: ['\langle r\rangle = n^2a_0\left[1 + \frac12\left(1 - \frac{l(l + 1)}{n^2}\right)\right]']
+    source: {cite: reading1, at: 'transcript p. 3, board'}
+    origin: page-own
+
+  - id: jensen-bracket
+    kind: identity
+    where: 'Jensen check: the bracket minus 1 is (1 − L/n²)/2, never negative for l ≤ n − 1 (here l = n − 1, the smallest case)'
+    formula: (1 - (n - 1)*n/n**2)/2
+    equals: 1/(2*n)
+    samples: {n: [1, 3, 50]}
+    tolerance: 1e-12
+    shown: ['$\langle 1/r\rangle \ge 1/\langle r\rangle$, so $\langle r\rangle \ge n^2a_0$']
+    source: {cite: reading1, at: 'transcript p. 3 (page''s own check)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- radial probability
+  - id: p-max
+    kind: identity
+    where: 'd/dr ln(r^(2n) e^(−2r/(n a))) = 2n/r − 2/(n a) vanishes at r = n² a'
+    formula: deriv('2*n*log(r) - 2*r/(n*a)', 'r', n**2*a)
+    equals: '0'
+    samples: {n: [2, 5, 60], a: [1.0, 0.53, 2.0]}
+    tolerance: 1e-12
+    shown: ['\frac{2n}{r} - \frac{2}{na_0} = 0 \quad\Longrightarrow\quad r = n^2a_0']
+    source: {cite: reading1, at: 'transcript p. 5, board'}
+    origin: mit
+
+  - id: plot-norm-2
+    where: 'plot: ∫ r^4 e^(−r) dr = 4! (2n)! (n/2)^(2n+1) for n = 2'
+    inputs: {}
+    formula: 24*(2/2)**5
+    expected: '24'
+    shown: ['{ expr: "r^4*exp(-r)/24", label: "n = 2" }']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: page-own
+
+  - id: plot-norm-3
+    where: 'plot: (2n)! (n/2)^(2n+1) for n = 3 is 720 × 1.5^7'
+    inputs: {}
+    formula: 720*(3/2)**7
+    expected: '12301.9'
+    tolerance: 0.1
+    shown: ['{ expr: "r^6*exp(-2*r/3)/(720*1.5^7)", label: "n = 3", dash: true }']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: page-own
+
+  - id: plot-norm-4
+    where: 'plot: (2n)! (n/2)^(2n+1) for n = 4 is 40320 × 2^9'
+    inputs: {}
+    formula: 40320*(4/2)**9
+    expected: '20643840'
+    shown: ['{ expr: "r^8*exp(-r/2)/(40320*2^9)", label: "n = 4" }', '(the normalization is (2n)! (na₀/2)^(2n+1))']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: page-own
+
+  - id: plot-norm-integral
+    where: 'plot: the normalization integral ∫₀^∞ r^(2n) e^(−2r/n) dr equals (2n)! (n/2)^(2n+1) = 12301.9, checked for n = 3 (upper limit 300 for ∞)'
+    inputs: {}
+    formula: integrate('r**6*exp(-2*r/3)', 'r', 0, 300)
+    expected: '12301.9'
+    tolerance: 0.1
+    shown: ['each normalized here to area 1']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: page-own
+
+  - id: plot-peak-2
+    where: 'plot: peak of n = 2 at 4 a0, value 256 e^−4/24 (inside the range 0.22)'
+    inputs: {}
+    formula: 4**4*exp(-4)/24
+    expected: '0.195'
+    shown: ['The peaks lie at r = n²a₀: 4a₀, 9a₀ and 16a₀', 'range={[0, 0.22]}']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- Rydberg atoms in nature
+  - id: n350-size
+    where: 'n = 350: 350² × 0.53e-10 m (lecture: 6.5 microns)'
+    inputs: {a0: 0.53e-10 m}
+    formula: 350**2*a0
+    expected: 6.5 um
+    shown: ['$n^2a_0 \approx 350^2 \times 0.53\times10^{-10}$ m $\approx 6.5$ µm']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: mit
+
+  - id: n350-hair
+    where: 'hair 50 µm over the n = 350 atom of 6.5 µm: a factor of about 5 to 10'
+    inputs: {}
+    formula: 50/6.5
+    expected: '7.7'
+    tolerance: 2.5
+    shown: ['within a factor of about 5 to 10 of the thickness of a hair, about 50 µm', 'comparable with a red blood cell, about 8 µm']
+    source: {cite: reading1, at: 'transcript pp. 5–6'}
+    origin: mit
+
+  - id: n350-factor
+    where: '350² (lecture: "almost a million times bigger"; it is about 120,000)'
+    inputs: {}
+    formula: 350**2
+    expected: '120000'
+    tolerance: 3000
+    shown: ['the factor $350^2$ is about 120,000']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: slip
+
+  - id: lifetimes
+    kind: fact
+    where: 'lifetimes quoted in the lecture: n = 5 → 1 in about 1e-7 s; Rydberg atoms a millisecond to a second'
+    shown: ['$n = 5$ falls to $n = 1$ in about $10^{-7}$ s']
+    source: {cite: reading1, at: 'transcript p. 5'}
+    origin: mit
+
+  - id: lab-levels
+    kind: fact
+    where: 'MIT laboratory: two lasers to n = 10, the third to n = 60'
+    shown: ['two lift the outermost electron to $n = 10$, the third to $n = 60$']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: mit
+
+  - id: spacing-expansion
+    kind: identity
+    where: 'E_(n+1) − E_n in units of e²/(2a0) is 1/n² − 1/(n + 1)² ≈ 2/n³ at large n (ratio → 1)'
+    formula: (1/n**2 - 1/(n + 1)**2)/(2/n**3)
+    equals: 1 - 3/(2*n)
+    samples: {n: [1e4, 1e5]}
+    tolerance: 1e-6
+    shown: ['\approx \frac{e^2}{a_0}\,\frac{1}{n^3}']
+    source: {cite: reading1, at: 'transcript p. 6 (the expansion is our own step)'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- radio recombination lines (page's own addition)
+  - id: RH-frequency
+    where: 'hydrogen''s Rydberg frequency R_H c = R_inf c/(1 + m_e/m_p)'
+    inputs: {Rc: 3.2898419603e15 Hz}
+    formula: Rc/(1 + 1/1836.15267343)
+    expected: 3.2881e15 Hz
+    shown: ['$R_\text{H}c = 3.2881\times10^{15}$ Hz']
+    source: {ref: 'CODATA 2018: R_inf c = 3.2898419603e15 Hz, m_p/m_e = 1836.15267343'}
+    origin: later-data
+
+  - id: H109alpha
+    where: 'H109α: R_H c (1/109² − 1/110²) (observed at 5008.9 MHz)'
+    inputs: {Rc: 3.2898419603e15 Hz}
+    formula: Rc/(1 + 1/1836.15267343)*(1/109**2 - 1/110**2)
+    expected: 5.009 GHz
+    shown: ['lies at about 5.009 GHz', '$\nu = R_\text{H}c\left(\frac{1}{109^2} - \frac{1}{110^2}\right)$']
+    source: {ref: 'CODATA 2018 constants; the H109α line of H II regions'}
+    origin: later-data
+
+  - id: H350alpha
+    where: 'line from n = 351 to n = 350: R_H c (1/350² − 1/351²)'
+    inputs: {Rc: 3.2898419603e15 Hz}
+    formula: Rc/(1 + 1/1836.15267343)*(1/350**2 - 1/351**2)
+    expected: 153 MHz
+    shown: ['near 153 MHz']
+    source: {ref: 'CODATA 2018 constants'}
+    origin: later-data
+
+  # ---------------------------------------------------------------- worked example (n = 60)
+  - id: ex-n2
+    where: 'example (a): n² = 3600'
+    inputs: {}
+    formula: 60**2
+    expected: '3600'
+    shown: ['$1/\langle 1/r\rangle = n^2a_0 = 3600\,a_0 \approx 190.5$ nm']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: ex-inv-r
+    where: 'example (a): 3600 × 0.05292 nm'
+    inputs: {a0: 0.05292 nm}
+    formula: 3600*a0
+    expected: 190.5 nm
+    shown: ['3600\,a_0 \approx 190.5$ nm']
+    source: {cite: reading1, at: 'transcript pp. 2–3'}
+    origin: page-own
+
+  - id: ex-r-l0
+    where: 'example (a): l = 0, ⟨r⟩ = 1.5 × 3600 a0 = 5400 a0'
+    inputs: {a0: 0.05292 nm}
+    formula: 1.5*3600*a0
+    expected: 285.8 nm
+    shown: ['$\langle r\rangle = \frac32 \times 3600\,a_0 = 5400\,a_0 \approx 285.8$ nm']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: ex-r-l59-a0
+    where: 'example (a): l = 59, ⟨r⟩ = 3600 (1 + 1/120) a0 = 3630 a0, from the full formula'
+    inputs: {}
+    formula: 60**2*(1 + (1 - 59*60/60**2)/2)
+    expected: '3630'
+    shown: ['$\langle r\rangle = 3600\left(1 + \frac{1}{120}\right)a_0 = 3630\,a_0 \approx 192.1$ nm']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: ex-r-l59-nm
+    where: 'example (a): 3630 × 0.05292 nm'
+    inputs: {a0: 0.05292 nm}
+    formula: 3630*a0
+    expected: 192.1 nm
+    shown: ['3630\,a_0 \approx 192.1$ nm']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: ex-ground-ratio
+    where: 'example (a): sizes 3600 to 5400 times a0, "several thousand times its ground-state size" (1.5 a0)'
+    inputs: {}
+    formula: 5400/1.5
+    expected: '3600'
+    shown: ['several thousand times its ground-state size']
+    source: {cite: reading1, at: 'transcript p. 3'}
+    origin: page-own
+
+  - id: ex-E60
+    where: 'example (b): E_60 = −13.606/3600 eV'
+    inputs: {Ry: 13.606 eV}
+    formula: -Ry/3600
+    expected: -3.779 meV
+    shown: ['$E_{60} = -13.606/3600$ eV $\approx -3.779$ meV', '\langle T\rangle = -E_{60} \approx 3.779$ meV']
+    source: {cite: reading1, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: ex-V60
+    where: 'example (b): ⟨V⟩ = 2 E_60'
+    inputs: {Ry: 13.606 eV}
+    formula: -2*Ry/3600
+    expected: -7.559 meV
+    shown: ['$\langle V\rangle = 2E_{60} \approx -7.559$ meV']
+    source: {cite: reading1, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: ex-dE
+    where: 'example (c): E_61 − E_60 = 13.606 (1/3600 − 1/3721) eV'
+    inputs: {Ry: 13.606 eV}
+    formula: Ry*(1/3600 - 1/3721)
+    expected: 0.1229 meV
+    shown: ['$E_{61} - E_{60} = 13.606\left(\frac{1}{3600} - \frac{1}{3721}\right)$ eV $\approx 0.1229$ meV']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: page-own
+
+  - id: ex-dE-approx
+    where: 'example (c): large-n estimate 2 × 13.606/60³ eV'
+    inputs: {Ry: 13.606 eV}
+    formula: 2*Ry/60**3
+    expected: 0.1260 meV
+    shown: ['$2 \times 13.606/60^3$ eV $\approx 0.1260$ meV']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: page-own
+
+  - id: ex-dE-error
+    where: 'example (c): the estimate is within 3% (2.5%)'
+    inputs: {}
+    formula: (2/60**3)/(1/3600 - 1/3721) - 1
+    expected: '0.025'
+    tolerance: 0.005
+    shown: ['is within 3%']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: page-own
+
+  - id: ex-nu
+    where: 'example (c): ν = ΔE/h with h = 4.1357e-15 eV s'
+    inputs: {Ry: 13.606 eV, h: 4.1357e-15 eV*s}
+    formula: Ry*(1/3600 - 1/3721)/h
+    expected: 29.7 GHz
+    shown: ['$\nu = \Delta E/h \approx 29.7$ GHz']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: page-own
+
+  - id: ex-lyman
+    where: 'example (c): 10.2 eV for n = 1 → 2, about 80,000 times 0.1229 meV'
+    inputs: {Ry: 13.606 eV}
+    formula: (Ry*(1 - 1/4))/(Ry*(1/3600 - 1/3721))
+    expected: '80000'
+    tolerance: 5000
+    shown: ['takes $10.2$ eV, about 80,000 times more']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: page-own
+
+  - id: ex-lyman-eV
+    where: 'example (c): 13.606 × 3/4 eV'
+    inputs: {Ry: 13.606 eV}
+    formula: Ry*(1 - 1/4)
+    expected: 10.2 eV
+    shown: ['takes $10.2$ eV']
+    source: {cite: reading1, at: 'transcript p. 6'}
+    origin: page-own
+
+  # ---------------------------------------------------------------- effective potential (reading2)
+  - id: veff-coefficient
+    kind: identity
+    where: 'ħ²/(2 m a0²) with a0 = ħ²/(m e²) equals e²/(2 a0), so V_eff/(e²/2a0) = L/x² − 2/x'
+    formula: hb**2/(2*m*(hb**2/(m*q**2))**2)
+    equals: q**2/(2*(hb**2/(m*q**2)))
+    samples: {hb: [1.0, 0.7], m: [1.0, 2.3], q: [1.0, 1.9]}
+    tolerance: 1e-12
+    shown: ['computed from V_eff/(e²/2a₀) = l(l + 1)/x² − 2/x with x = r/a₀']
+    source: {cite: reading2, at: 'transcript p. 1, board'}
+    origin: page-own
+
+  - id: veff-min-position
+    kind: identity
+    where: 'd/dx (L/x² − 2/x) = 0 at x = L'
+    formula: deriv('L/x**2 - 2/x', 'x', L)
+    equals: '0'
+    samples: {L: [2, 6, 12, 9900]}
+    tolerance: 1e-12
+    shown: ['r = l(l + 1)\,a_0, \qquad V_{\text{eff}} = -\frac{e^2}{2a_0}\,\frac{1}{l(l + 1)}']
+    source: {cite: reading2, at: 'transcript p. 1 (V_eff); the minimum is the page''s own step'}
+    origin: page-own
+
+  - id: veff-min-value
+    kind: identity
+    where: 'L/x² − 2/x at x = L equals −1/L'
+    formula: L/L**2 - 2/L
+    equals: -1/L
+    samples: {L: [2, 6, 12, 9900]}
+    tolerance: 1e-12
+    shown: ['V_{\text{eff}} = -\frac{e^2}{2a_0}\,\frac{1}{l(l + 1)}']
+    source: {cite: reading2, at: 'transcript p. 1 (page''s own step)'}
+    origin: page-own
+
+  - id: lmax-bound
+    kind: identity
+    where: '(n − 1) n < n² < n (n + 1): n² − (n − 1)n = n > 0 and n(n + 1) − n² = n > 0'
+    formula: (n**2 - (n - 1)*n) - (n*(n + 1) - n**2)
+    equals: '0'
+    samples: {n: [1, 4, 100]}
+    tolerance: 1e-12
+    shown: ['Since $(n - 1)n < n^2 < n(n + 1)$, the largest allowed value is $l = n - 1$']
+    source: {cite: reading2, at: 'transcript p. 1 (page''s own step)'}
+    origin: page-own
+
+  - id: plot-veff-l0
+    where: 'V_eff plot: l = 0, −2/x = −1/16 at x = 32'
+    inputs: {}
+    formula: 2*16
+    expected: '32'
+    shown: ['turns at x = 32']
+    source: {cite: reading2, at: 'transcript p. 1'}
+    origin: page-own
+
+  - id: plot-veff-l3-min
+    where: 'V_eff plot: l = 3, bottom at x = 12 with value −1/12, below E4 = −1/16'
+    inputs: {}
+    formula: 12/12**2 - 2/12
+    expected: '-0.0833'
+    shown: ['the bottom of the well (x = 12, value −1/12) lies just below E₄', '{ expr: "-1/16", label: "E₄", dash: true }']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: plot-veff-l3-inner
+    where: 'V_eff plot: l = 3, n = 4: 16(1 − √(1 − 12/16)) = 8'
+    inputs: {}
+    formula: 16*(1 - sqrt(1 - 12/16))
+    expected: '8'
+    shown: ['the radius swings only between 8 and 24']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: plot-veff-l3-outer
+    where: 'V_eff plot: l = 3, n = 4: 16(1 + √(1 − 12/16)) = 24'
+    inputs: {}
+    formula: 16*(1 + sqrt(1 - 12/16))
+    expected: '24'
+    shown: ['the radius swings only between 8 and 24']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: plot-veff-l1-inner
+    where: 'V_eff plot: l = 1, n = 4: 16(1 − √(1 − 2/16))'
+    inputs: {}
+    formula: 16*(1 - sqrt(1 - 2/16))
+    expected: '1.0'
+    shown: ['swings between about 1.0 and 31.0']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: plot-veff-l1-outer
+    where: 'V_eff plot: l = 1, n = 4: 16(1 + √(1 − 2/16))'
+    inputs: {}
+    formula: 16*(1 + sqrt(1 - 2/16))
+    expected: '31.0'
+    shown: ['swings between about 1.0 and 31.0']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: plot-veff-l1-min
+    where: 'V_eff plot: l = 1, bottom −1/2 at x = 2, below the range −0.15'
+    inputs: {}
+    formula: 2/2**2 - 2/2
+    expected: '-0.5'
+    shown: ['bottom −1/2 at x = 2, off the scale', 'range={[-0.15, 0.05]}']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: lmax-eccentricity
+    kind: identity
+    where: 'l = n − 1: √(1 − l(l + 1)/n²) = 1/√n (computed on the next page)'
+    formula: sqrt(1 - (n - 1)*n/n**2)
+    equals: 1/sqrt(n)
+    samples: {n: [2, 10, 100]}
+    tolerance: 1e-12
+    shown: ['the next page finds its eccentricity, $1/\sqrt n$']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: page-own
+
+  - id: semi-major-announced
+    kind: identity
+    where: '(r+ + r−)/2 = n² a0 for every l, announced in the lecture'
+    formula: (n**2*(1 + sqrt(1 - L/n**2)) + n**2*(1 - sqrt(1 - L/n**2)))/2
+    equals: n**2
+    samples: {L: [0, 2, 12], n: [4, 7, 10]}
+    tolerance: 1e-12
+    shown: ['their average, $\frac12(r_+ + r_-)$, is $n^2a_0$ for every $l$']
+    source: {cite: reading2, at: 'transcript p. 2'}
+    origin: mit
+
+  # ---------------------------------------------------------------- quiz
+  - id: quiz-lmax-50
+    where: 'quiz 3: the largest l for n = 50 is 49'
+    inputs: {}
+    formula: 50 - 1
+    expected: '49'
+    shown: ['The largest $l = 49$ gives the most nearly circular orbit']
+    source: {cite: reading2, at: 'transcript p. 1'}
+    origin: page-own
+
+  - id: quiz-l100
+    where: 'quiz 4: l = 100 would need l(l + 1) = 10100 ≤ n² = 10000, which fails'
+    inputs: {}
+    formula: 100*101 - 100**2
+    expected: '100'
+    shown: ['which allows $l$ up to $n - 1$ and no further']
+    source: {cite: reading2, at: 'transcript p. 1'}
+    origin: page-own
