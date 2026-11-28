@@ -135,3 +135,10 @@ COUNTS: errors=0 warnings=1 info=5
 - Info 3–5: no change (g versus g_* is a notation point; the symbol meanings already fit; the mond-tests lesson note is a separate follow-up).
 
 Status set to `reviewed`.
+
+## Changes after the owner's feedback (2026-11-28, by the page author)
+
+- 6.3(D): the box now also accepts the rate with the factor ½ for identical particles (1.035, shown as 1.04 in the solution), with a note; new calcs entry e3-gamma-also (docs/ANSWER-BOX-FIX-PLAN.md Step 4).
+- 7.2(B): the statement now says to type only the number in front of 10⁻¹¹; the box also answers 5.54e-11 with a power-of-ten hint (site-wide, Step 4).
+- 7.3(C): the comparison step now gives our reading of the book's 0.3 arcsec: half of our limit, 0.263 arcsec, the deflection without the factor 2 of general relativity, close to the plateau of Figure 7.4; new calcs entry e7-arcsec-newton.
+- The typed-formula preview of 7.3(B) and 6.4(B) (red `\cdota_0`, `\cdotm_N`) is fixed in shared code for every page (Steps 1-3).
