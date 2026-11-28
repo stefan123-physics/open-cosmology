@@ -1,0 +1,956 @@
+# Calculations on content/year-1/8.02/8-02-problem-set-4.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT's Problem Solving 4 prints no solutions and the notes' Additional Problems only a few final numbers, so every
+# formula answer is checked here by an independent route: a numerical integral of the field or of the energy density,
+# a numerical derivative of a potential or of an energy, the charging integral of q/C, or the potential difference
+# added layer by layer. Where a box is written with the capacitance C, the samples of C are the capacitance
+# 2 pi eps0 l / ln(b/a) of the coaxial cylinders with the sample radii (computed to 16 digits), so the route through
+# the cylinders' own field can be used.
+
+page: content/year-1/8.02/8-02-problem-set-4.mdx
+calcs:
+  - id: eps0-value
+    kind: fact
+    where: 'How to answer: the value of eps0 used for numbers'
+    shown: ['use $\varepsilon_0 = 8.85 \times 10^{-12}$ F/m']
+    source: {cite: reading1, at: 'Example 5.5, p. 14'}
+    origin: mit
+
+  - id: strength-table
+    kind: fact
+    where: 'What you need: dielectric strength of dry air and of paper, from the notes'' table'
+    shown: ['for dry air about $3 \times 10^6$ V/m, for paper about $16 \times 10^6$ V/m']
+    source: {cite: reading1, at: 'Section 5.5, table on p. 15'}
+    origin: mit
+
+  # ---- Problem 1
+
+  - id: p1-E
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "The field between the cylinders": against Q/eps0 divided by the flux area, the rim length found as the integral of r dphi'
+    formula: Q/(2*pi*eps0*l*r)
+    equals: Q / (eps0 * integrate('r', 'phi', 0, 2 * pi) * l)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      eps0: [0.5, 2, 1, 1.3]
+      l: [1, 10, 2, 5]
+      r: [0.2, 2, 0.5, 1]
+    tolerance: 1e-9
+    shown: ['\vec E = \frac{Q}{2\pi\varepsilon_0 \ell\, r}\,\hat r']
+    source: {cite: mit, at: 'Question 1, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-dV
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "The potential difference": against the numerical integral of the field from a to b'
+    formula: Q*log(b/a)/(2*pi*eps0*l)
+    equals: integrate('Q / (2 * pi * eps0 * l * rr)', 'rr', a, b)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      eps0: [0.5, 2, 1, 1.3]
+      l: [1, 10, 2, 5]
+      a: [0.1, 0.5, 0.2, 0.3]
+      b: [1, 3, 1.5, 2]
+    tolerance: 1e-8
+    shown: ['= \frac{Q}{2\pi\varepsilon_0 \ell}\ln\frac{b}{a}']
+    source: {cite: mit, at: 'Question 2, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-C
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box and formula "Capacitance of two coaxial cylinders": against Q over the integrated potential difference'
+    formula: 2*pi*eps0*l/log(b/a)
+    equals: Q / integrate('Q / (2 * pi * eps0 * l * rr)', 'rr', a, b)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      eps0: [0.5, 2, 1, 1.3]
+      l: [1, 10, 2, 5]
+      a: [0.1, 0.5, 0.2, 0.3]
+      b: [1, 3, 1.5, 2]
+    tolerance: 1e-8
+    shown: ['C = \frac{Q}{|\Delta V|} = \frac{2\pi\varepsilon_0 \ell}{\ln(b/a)}']
+    source: {cite: mit, at: 'Question 3, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-C-narrow
+    kind: limit
+    where: 'Problem 1(c), solution check: for a narrow gap b = a + gap the capacitance tends to eps0 (2 pi a l)/gap'
+    inputs: {eps0: 1, l: 2, a: 1}
+    formula: 2*pi*eps0*l/log((a + gap)/a)
+    limit: eps0*2*pi*a*l/gap
+    vary: {gap: [0.1, 0.01, 0.001, 0.0001]}
+    tolerance: 1e-3
+    shown: ['$C \approx \varepsilon_0(2\pi a\ell)/d$']
+    source: {cite: mit, at: 'Question 3, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-U
+    kind: identity
+    answer: p1-d
+    where: 'Problem 1(d), answer box and formula "Energy stored in the cylindrical capacitor": against the numerical integral of eps0 E^2/2 over shells 2 pi r l dr'
+    formula: Q**2*log(b/a)/(4*pi*eps0*l)
+    equals: integrate('eps0 / 2 * (Q / (2 * pi * eps0 * l * rr))**2 * 2 * pi * rr * l', 'rr', a, b)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      eps0: [0.5, 2, 1, 1.3]
+      l: [1, 10, 2, 5]
+      a: [0.1, 0.5, 0.2, 0.3]
+      b: [1, 3, 1.5, 2]
+    tolerance: 1e-8
+    shown: ['U = \frac{Q^2}{4\pi\varepsilon_0 \ell}\int_a^b \frac{dr}{r} = \frac{Q^2}{4\pi\varepsilon_0 \ell}\ln\frac{b}{a}']
+    source: {cite: mit, at: 'Question 4, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-U-QC
+    kind: identity
+    answer: p1-e
+    where: 'Problem 1(e), answer box: Q^2/(2C), against the field-energy integral of the cylinders whose capacitance is the sample C'
+    formula: Q**2/(2*C)
+    equals: integrate('eps0 / 2 * (Q / (2 * pi * eps0 * l * rr))**2 * 2 * pi * rr * l', 'rr', a, b)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      eps0: [1, 0.5, 2, 1.3]
+      l: [1, 3, 7, 10]
+      a: [0.2, 0.1, 0.4, 0.3]
+      b: [1.5, 2, 1.2, 3]
+      C: [3.1183561904079196, 3.146068173037466, 80.06882428664358, 35.47378519988787]
+    tolerance: 1e-8
+    shown: ['so $U = \tfrac12 Q^2 \ln(b/a)/(2\pi\varepsilon_0\ell) = Q^2/(2C)$']
+    source: {cite: mit, at: 'Question 4, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-cable-data
+    kind: fact
+    where: 'Problem 1(f), statement: our cable, our numbers'
+    shown: ['$a = 0.50$ mm and an outer sheath of radius $b = 2.0$ mm', 'a piece $\ell = 1.00$ m long']
+    source: {cite: mit, at: 'Question 3, p. 3 (our addition, our numbers)'}
+    origin: page-own
+
+  - id: p1-cable-num
+    where: 'Problem 1(f), solution: 2 pi eps0 l in F'
+    inputs: {eps0: 8.85e-12, l: 1.00}
+    formula: 2 * pi * eps0 * l
+    expected: '5.561e-11'
+    shown: ['= 5.561 \times 10^{-11}\ \text{F}/1.386']
+    source: {cite: mit, at: 'Question 3, p. 3 (our addition)'}
+    origin: page-own
+
+  - id: p1-ln4
+    where: 'Problem 1(f), solution: ln(b/a) = ln 4'
+    inputs: {a: 0.50e-3, b: 2.0e-3}
+    formula: log(b / a)
+    expected: '1.386'
+    shown: ['(1.00\ \text{m})/\ln 4']
+    source: {cite: mit, at: 'Question 3, p. 3 (our addition)'}
+    origin: page-own
+
+  - id: p1-cable-F
+    where: 'Problem 1(f), solution: the capacitance in F'
+    inputs: {eps0: 8.85e-12, l: 1.00, a: 0.50e-3, b: 2.0e-3}
+    formula: 2 * pi * eps0 * l / log(b / a)
+    expected: '4.01e-11'
+    shown: ['= 4.01 \times 10^{-11}$ F']
+    source: {cite: mit, at: 'Question 3, p. 3 (our addition)'}
+    origin: page-own
+
+  - id: p1-cable
+    answer: p1-f
+    where: 'Problem 1(f), answer box: the capacitance of 1 m of cable in pF'
+    inputs: {eps0: 8.85e-12, l: 1.00, a: 0.50e-3, b: 2.0e-3}
+    formula: 2 * pi * eps0 * l / log(b / a) * 1e12
+    expected: '40.1'
+    shown: ['F $= 40.1$ pF']
+    source: {cite: mit, at: 'Question 3, p. 3 (our addition)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-dV
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box: q/C, against the potential difference of the cylinders (Problem 1(b)) with the charge q, the sample C being their capacitance'
+    formula: q/C
+    equals: integrate('q / (2 * pi * eps0 * l * rr)', 'rr', a, b)
+    samples:
+      q: [0.5, 5, 1, 2]
+      eps0: [1, 0.5, 2, 1.3]
+      l: [1, 3, 7, 10]
+      a: [0.2, 0.1, 0.4, 0.3]
+      b: [1.5, 2, 1.2, 3]
+      C: [3.1183561904079196, 3.146068173037466, 80.06882428664358, 35.47378519988787]
+    tolerance: 1e-8
+    shown: ['$\Delta V = q/C$: it grows in step']
+    source: {cite: mit, at: 'Question 5(a), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p2-dW
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Work for one more piece of charge": against dq times the integrated potential difference of the cylinders with the charge q'
+    formula: q*dq/C
+    equals: dq * integrate('q / (2 * pi * eps0 * l * rr)', 'rr', a, b)
+    samples:
+      q: [0.5, 5, 1, 2]
+      dq: [0.01, 0.1, 0.05, 0.02]
+      eps0: [1, 0.5, 2, 1.3]
+      l: [1, 3, 7, 10]
+      a: [0.2, 0.1, 0.4, 0.3]
+      b: [1.5, 2, 1.2, 3]
+      C: [3.1183561904079196, 3.146068173037466, 80.06882428664358, 35.47378519988787]
+    tolerance: 1e-8
+    shown: ['dW = \Delta V\,dq = \frac{q}{C}\,dq']
+    source: {cite: mit, at: 'Question 5(b), p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p2-W
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box and formula "Work to charge a capacitor": against the numerical charging integral of the cylinders'' potential difference q ln(b/a)/(2 pi eps0 l) from 0 to Q'
+    formula: Q**2/(2*C)
+    equals: integrate('qq * log(b / a) / (2 * pi * eps0 * l)', 'qq', 0, Q)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      eps0: [1, 0.5, 2, 1.3]
+      l: [1, 3, 7, 10]
+      a: [0.2, 0.1, 0.4, 0.3]
+      b: [1.5, 2, 1.2, 3]
+      C: [3.1183561904079196, 3.146068173037466, 80.06882428664358, 35.47378519988787]
+    tolerance: 1e-8
+    shown: ['W = \int_0^Q \frac{q}{C}\,dq = \frac{Q^2}{2C}']
+    source: {cite: mit, at: 'Question 5(c), p. 4 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-data
+    kind: fact
+    where: 'Problem 3, statement: the two capacitors and the battery'
+    shown: ['$C_1 = 6.00$ μF is charged by connecting it to a battery of $\Delta V = 20.0$ V', '$C_2 = 3.00$ μF, which carries no charge']
+    source: {cite: mit, at: 'Homework Problem 1, p. 5'}
+    origin: mit
+
+  - id: p3-Q0
+    answer: p3-a
+    where: 'Problem 3(a), answer box and solution: the charge from the battery, in microcoulombs'
+    inputs: {C1: 6.00, V: 20.0}
+    formula: C1 * V
+    expected: '120'
+    tolerance: '0.1'
+    shown: ['(20.0\ \text{V}) = 120$ μC']
+    source: {cite: mit, at: 'Homework Problem 1(a), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p3-Vf
+    where: 'Problem 3(b), formula "Sharing the charge": the common potential difference, in V'
+    inputs: {Q0: 120, C1: 6.00, C2: 3.00}
+    formula: Q0 / (C1 + C2)
+    expected: '13.3'
+    shown: ['= 13.3\ \text{V}', '6.00 \times 13.33 = 80$']
+    source: {cite: mit, at: 'Homework Problem 1(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p3-Q1
+    answer: p3-b1
+    where: 'Problem 3(b), answer box: the final charge on C1, in microcoulombs (from the unrounded potential difference)'
+    inputs: {Q0: 120, C1: 6.00, C2: 3.00}
+    formula: C1 * Q0 / (C1 + C2)
+    expected: '80'
+    tolerance: '0.01'
+    shown: ['$Q_1 = 6.00 \times 13.33 = 80$ μC']
+    source: {cite: mit, at: 'Homework Problem 1(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p3-Q2
+    answer: p3-b2
+    where: 'Problem 3(b), answer box: the final charge on C2, in microcoulombs'
+    inputs: {Q0: 120, C1: 6.00, C2: 3.00}
+    formula: C2 * Q0 / (C1 + C2)
+    expected: '40'
+    tolerance: '0.01'
+    shown: ['$Q_2 = 3.00 \times 13.33 = 40$ μC']
+    source: {cite: mit, at: 'Homework Problem 1(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p3-sum
+    where: 'Problem 3(b), solution check: the two charges add to the first'
+    inputs: {Q1: 80, Q2: 40}
+    formula: Q1 + Q2
+    expected: '120'
+    tolerance: '0.01'
+    shown: ['$80 + 40 = 120$ μC']
+    source: {cite: mit, at: 'Homework Problem 1(b), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p3-U0
+    where: 'Problem 3(c), solution: energy in C1 before, in mJ (microfarads times volts squared give microjoules)'
+    inputs: {C1: 6.00, V: 20.0}
+    formula: C1 * V**2 / 2 / 1000
+    expected: '1.20'
+    shown: ['(20.0\ \text{V})^2 = 1.20$ mJ']
+    source: {cite: mit, at: 'Homework Problem 1, p. 5 (our addition)'}
+    origin: page-own
+
+  - id: p3-Uf
+    answer: p3-c
+    where: 'Problem 3(c), answer box and solution: energy of the pair after, Q0^2/(2(C1 + C2)), in mJ'
+    inputs: {Q0: 120, C1: 6.00, C2: 3.00}
+    formula: Q0**2 / (2 * (C1 + C2)) / 1000
+    expected: '0.800'
+    shown: ['(2 \times 9.00\ \mu\text{F}) = 0.800$ mJ']
+    source: {cite: mit, at: 'Homework Problem 1, p. 5 (our addition)'}
+    origin: page-own
+
+  - id: p3-loss
+    where: 'Problem 3(c), solution: the energy lost, in mJ, and its fraction C2/(C1 + C2) = 1/3'
+    inputs: {C1: 6.00, C2: 3.00, V: 20.0}
+    formula: C1 * V**2 / 2 / 1000 * C2 / (C1 + C2)
+    expected: '0.400'
+    shown: ['A third of the energy, 0.400 mJ, is gone']
+    source: {cite: mit, at: 'Homework Problem 1, p. 5 (our addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-C
+    kind: identity
+    answer: p4-a
+    where: 'Problem 4(a), answer box and formula "A filled parallel-plate capacitor": against 1 over the potential difference per unit charge, the field Q/(kappa eps0 A) integrated across the gap'
+    formula: kappa*eps0*A/d
+    equals: 1 / integrate('1 / (kappa * eps0 * A)', 'x', 0, d)
+    samples:
+      kappa: [1.5, 10, 3, 5.4]
+      eps0: [0.5, 2, 1, 1.3]
+      A: [0.5, 2, 1, 1.5]
+      d: [0.1, 1, 0.3, 0.5]
+    tolerance: 1e-9
+    shown: ['= \frac{\kappa\varepsilon_0 A}{d}" cite="mit" at="Homework Problem 3(a)']
+    source: {cite: mit, at: 'Homework Problem 3(a), p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p4-mixed
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Slab beside two layers": against the left half plus the right half, each found from its integrated potential difference per unit charge'
+    formula: eps0*A/d*(kappa1/2 + kappa2*kappa3/(kappa2 + kappa3))
+    equals: 1 / integrate('1 / (kappa1 * eps0 * A / 2)', 'x', 0, d) + 1 / (integrate('1 / (kappa2 * eps0 * A / 2)', 'x', 0, d / 2) + integrate('1 / (kappa3 * eps0 * A / 2)', 'x', d / 2, d))
+    samples:
+      eps0: [0.5, 2, 1, 1.3]
+      A: [0.5, 2, 1, 1.5]
+      d: [0.1, 1, 0.3, 0.5]
+      kappa1: [1.5, 10, 3, 2]
+      kappa2: [2, 1.5, 8, 4]
+      kappa3: [6, 9, 1.5, 4]
+    tolerance: 1e-9
+    shown: ['= \frac{\varepsilon_0 A}{d}\left(\frac{\kappa_1}{2} + \frac{\kappa_2\kappa_3}{\kappa_2 + \kappa_3}\right)']
+    source: {cite: mit, at: 'Homework Problem 3(b), pp. 5 and 6 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-factor
+    answer: p5-a
+    where: 'Problem 5(a), answer box: U(2d)/U(d) at fixed charge, U = Q^2 d/(2 eps0 A)'
+    inputs: {Q: 1, eps0: 1, A: 1, d: 1}
+    formula: (Q**2 * 2 * d / (2 * eps0 * A)) / (Q**2 * d / (2 * eps0 * A))
+    expected: '2'
+    tolerance: '0.01'
+    shown: ['doubling $d$ doubles $U$']
+    source: {cite: mit, at: 'Homework Problem 4(a), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p5-W
+    kind: identity
+    answer: p5-b
+    where: 'Problem 5(b), answer box and formula "Work to double the gap": against the constant force Q^2/(2 eps0 A) integrated over the distance from d to 2d'
+    formula: Q**2*d/(2*eps0*A)
+    equals: integrate('Q**2 / (2 * eps0 * A)', 'x', d, 2 * d)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      d: [0.1, 1, 0.3, 0.5]
+      A: [0.5, 2, 1, 1.5]
+      eps0: [0.5, 2, 1, 1.3]
+    tolerance: 1e-9
+    shown: ['- \frac{Q^2 d}{2\varepsilon_0 A} = \frac{Q^2 d}{2\varepsilon_0 A}']
+    source: {cite: mit, at: 'Homework Problem 4(b), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p5-Qfixed
+    kind: identity
+    answer: p5-c1
+    where: 'Problem 5(c), answer box: U(2b)/U(b) at fixed charge, against the ratio of the field-energy integrals of dr/r'
+    formula: log(2*b/a)/log(b/a)
+    equals: integrate('1 / rr', 'rr', a, 2 * b) / integrate('1 / rr', 'rr', a, b)
+    samples:
+      a: [0.2, 0.5, 0.3, 0.4]
+      b: [1, 3, 1.5, 2]
+    tolerance: 1e-8
+    shown: ['$U_{\text{new}}/U_{\text{old}} = \ln(2b/a)/\ln(b/a) = 1 + \ln 2/\ln(b/a)$']
+    source: {cite: mit, at: 'Homework Problem 4(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ex1
+    where: 'Problem 5(c), solution: the factor for b = 2a'
+    inputs: {x: 2}
+    formula: log(2 * x) / log(x)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['it is $\ln 4/\ln 2 = 2$']
+    source: {cite: mit, at: 'Homework Problem 4(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p5-ex2
+    where: 'Problem 5(c), solution: the factor for b = 10a'
+    inputs: {x: 10}
+    formula: log(2 * x) / log(x)
+    expected: '1.30'
+    shown: ['$\ln 20/\ln 10 = 1.30$']
+    source: {cite: mit, at: 'Homework Problem 4(c), p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p5-Vfixed
+    kind: identity
+    answer: p5-d1
+    where: 'Problem 5(d), answer box: U(2b)/U(b) at fixed potential difference, U = C dV^2/2, against the ratio of the integrals of dr/r the other way up'
+    formula: log(b/a)/log(2*b/a)
+    equals: integrate('1 / rr', 'rr', a, b) / integrate('1 / rr', 'rr', a, 2 * b)
+    samples:
+      a: [0.2, 0.5, 0.3, 0.4]
+      b: [1, 3, 1.5, 2]
+    tolerance: 1e-8
+    shown: ['$U_{\text{new}}/U_{\text{old}} = \ln(b/a)/\ln(2b/a)$, less than 1']
+    source: {cite: mit, at: 'Homework Problem 4(d), p. 6 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6
+
+  - id: p6-data
+    kind: fact
+    where: 'Problem 6, statement: the four capacitors and the battery'
+    shown: ['$C_1 = 1$ μF, $C_2 = 2$ μF, $C_3 = 3$ μF and $C_4 = 4$ μF, are charged by a 12 V battery']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1, p. 42'}
+    origin: mit
+
+  - id: p6-C12
+    answer: p6-a
+    where: 'Problem 6(a), answer box: C1 and C2 in series, in microfarads'
+    inputs: {C1: 1, C2: 2}
+    formula: 1 / (1 / C1 + 1 / C2)
+    expected: '0.667'
+    tolerance: '2%'
+    shown: ['$C_{12} = 2/3 = 0.667$ μF']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(a), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q1-open
+    answer: p6-b1
+    where: 'Problem 6(b), answer box: charge on C1 (and C2) with the switch open, in microcoulombs'
+    inputs: {C1: 1, C2: 2, V: 12}
+    formula: V / (1 / C1 + 1 / C2)
+    expected: '8.00'
+    shown: ['$Q_1 = Q_2 = C_{12}(12\ \text{V}) = (2/3)(12) = 8.00$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(b), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-C34
+    where: 'Problem 6(b), solution: C3 and C4 in series, in microfarads'
+    inputs: {C3: 3, C4: 4}
+    formula: 1 / (1 / C3 + 1 / C4)
+    expected: '1.714'
+    shown: ['= 12/7 = 1.714$ μF']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(b), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q3-open
+    answer: p6-b2
+    where: 'Problem 6(b), answer box: charge on C3 (and C4) with the switch open, in microcoulombs'
+    inputs: {C3: 3, C4: 4, V: 12}
+    formula: V / (1 / C3 + 1 / C4)
+    expected: '20.6'
+    shown: ['$Q_3 = Q_4 = (12/7)(12) = 20.6$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(b), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-V-open
+    kind: units
+    where: 'Problem 6(b), solution check: 8 V across C1 and 4 V across C2 add to the 12 V of the battery (8 + 4 = 12, both terms in volts)'
+    inputs: {V1: 8 V, V2: 4 V}
+    terms: ['V1', 'V2', 'V1 + V2']
+    unit: V
+    shown: ['$\Delta V_1 = 8/1 = 8$ V and $\Delta V_2 = 8/2 = 4$ V, which add to 12 V']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(b), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Ceq-closed
+    where: 'Problem 6(c), solution: (C1 + C3) in series with (C2 + C4), in microfarads'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4}
+    formula: 1 / (1 / (C1 + C3) + 1 / (C2 + C4))
+    expected: '2.4'
+    shown: ['$C_{\text{eq}} = (1/4 + 1/6)^{-1} = 2.4$ μF']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q-closed
+    where: 'Problem 6(c), solution: the charge of the series pair, in microcoulombs'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: V / (1 / (C1 + C3) + 1 / (C2 + C4))
+    expected: '28.8'
+    shown: ['$Q = 2.4 \times 12 = 28.8$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-V13
+    where: 'Problem 6(c), solution: potential difference across C1 and C3, in V'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: V / (1 / (C1 + C3) + 1 / (C2 + C4)) / (C1 + C3)
+    expected: '7.2'
+    shown: ['$28.8/4 = 7.2$ V']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-V24
+    where: 'Problem 6(c), solution: potential difference across C2 and C4, in V'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: V / (1 / (C1 + C3) + 1 / (C2 + C4)) / (C2 + C4)
+    expected: '4.8'
+    shown: ['$28.8/6 = 4.8$ V']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q1-closed
+    answer: p6-c1
+    where: 'Problem 6(c), answer box: charge on C1 with the switch closed, by solving the two loops and the middle node directly (x = potential of the middle points above the negative terminal)'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: C1 * (V - solve('C1 * (V - x) + C3 * (V - x) - C2 * x - C4 * x', 'x', 0, 12))
+    expected: '7.20'
+    shown: ['$Q_1 = 1 \times 7.2 = 7.20$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q2-closed
+    answer: p6-c2
+    where: 'Problem 6(c), answer box: charge on C2 with the switch closed (same node equation)'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: C2 * solve('C1 * (V - x) + C3 * (V - x) - C2 * x - C4 * x', 'x', 0, 12)
+    expected: '9.60'
+    shown: ['$Q_2 = 2 \times 4.8 = 9.60$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q3-closed
+    answer: p6-c3
+    where: 'Problem 6(c), answer box: charge on C3 with the switch closed (same node equation)'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: C3 * (V - solve('C1 * (V - x) + C3 * (V - x) - C2 * x - C4 * x', 'x', 0, 12))
+    expected: '21.6'
+    shown: ['$Q_3 = 3 \times 7.2 = 21.6$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-Q4-closed
+    answer: p6-c4
+    where: 'Problem 6(c), answer box: charge on C4 with the switch closed (same node equation)'
+    inputs: {C1: 1, C2: 2, C3: 3, C4: 4, V: 12}
+    formula: C4 * solve('C1 * (V - x) + C3 * (V - x) - C2 * x - C4 * x', 'x', 0, 12)
+    expected: '19.2'
+    shown: ['$Q_4 = 4 \times 4.8 = 19.2$ μC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p6-moved
+    where: 'Problem 6(c), solution check: the charge that moved through the switch, Q2 - Q1, in microcoulombs'
+    inputs: {Q1: 7.2, Q2: 9.6}
+    formula: Q2 - Q1
+    expected: '2.4'
+    shown: ['the extra $2.4$ μC moved through the switch']
+    source: {cite: reading1, at: 'Additional Problem 5.12.1(c), p. 42 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 7
+
+  - id: p7-parallel
+    kind: identity
+    answer: p7-a
+    where: 'Problem 7(a), answer box and formula "Three dielectrics side by side": against the sum of three blocks of area A/3, each found from its integrated potential difference per unit charge'
+    formula: eps0*A*(kappa1 + kappa2 + kappa3)/(3*d)
+    equals: 1 / integrate('1 / (kappa1 * eps0 * A / 3)', 'x', 0, d) + 1 / integrate('1 / (kappa2 * eps0 * A / 3)', 'x', 0, d) + 1 / integrate('1 / (kappa3 * eps0 * A / 3)', 'x', 0, d)
+    samples:
+      eps0: [0.5, 2, 1, 1.3]
+      A: [0.5, 2, 1, 1.5]
+      d: [0.1, 1, 0.3, 0.5]
+      kappa1: [1.5, 10, 3, 2]
+      kappa2: [2, 1.5, 8, 4]
+      kappa3: [6, 9, 1.5, 4]
+    tolerance: 1e-9
+    shown: ['= \frac{\varepsilon_0 A}{3d}\,(\kappa_1 + \kappa_2 + \kappa_3)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.2(a), p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p7-series
+    kind: identity
+    answer: p7-b
+    where: 'Problem 7(b), answer box and formula "Three dielectrics stacked": against Q over the field Q/(kappa_i eps0 A) integrated layer by layer across the gap'
+    formula: 3*eps0*A/(d*(1/kappa1 + 1/kappa2 + 1/kappa3))
+    equals: Q / (integrate('Q / (kappa1 * eps0 * A)', 'x', 0, d / 3) + integrate('Q / (kappa2 * eps0 * A)', 'x', d / 3, 2 * d / 3) + integrate('Q / (kappa3 * eps0 * A)', 'x', 2 * d / 3, d))
+    samples:
+      Q: [1, 2, 0.5, 3]
+      eps0: [0.5, 2, 1, 1.3]
+      A: [0.5, 2, 1, 1.5]
+      d: [0.1, 1, 0.3, 0.5]
+      kappa1: [1.5, 10, 3, 2]
+      kappa2: [2, 1.5, 8, 4]
+      kappa3: [6, 9, 1.5, 4]
+    tolerance: 1e-9
+    shown: ['C = \frac{Q}{\Delta V} = \frac{3\varepsilon_0 A}{d\,(1/\kappa_1 + 1/\kappa_2 + 1/\kappa_3)}']
+    source: {cite: reading1, at: 'Additional Problem 5.12.2(b), p. 43 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 8
+
+  - id: p8-D
+    kind: identity
+    answer: p8-a
+    where: 'Problem 8(a), answer box and formula "The displacement around the sphere": against Q over the area of the sphere, found as the integral of 2 pi r^2 sin(theta)'
+    formula: Q/(4*pi*r**2)
+    equals: Q / integrate('2 * pi * r**2 * sin(th)', 'th', 0, pi)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      r: [0.5, 2, 1, 1.5]
+    tolerance: 1e-9
+    shown: ['\vec D = \frac{Q}{4\pi r^2}\,\hat r']
+    source: {cite: reading1, at: 'Additional Problem 5.12.3(a), p. 43 (our own solution)'}
+    origin: page-own
+
+  - id: p8-E-in
+    kind: identity
+    answer: p8-b1
+    where: 'Problem 8(b), answer box: the field in the shell, against D/(kappa eps0) with D from the integrated sphere area'
+    formula: Q/(4*pi*kappa*eps0*r**2)
+    equals: Q / integrate('2 * pi * r**2 * sin(th)', 'th', 0, pi) / (kappa * eps0)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      r: [0.5, 2, 1, 1.5]
+      kappa: [1.5, 10, 3, 5]
+      eps0: [0.5, 2, 1, 1.3]
+    tolerance: 1e-9
+    shown: ['E = \frac{Q}{4\pi\kappa\varepsilon_0 r^2}\ (R_1 < r < R_2)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.3(b), p. 43 (our own solution)'}
+    origin: page-own
+
+  - id: p8-E-out
+    kind: identity
+    answer: p8-b2
+    where: 'Problem 8(b), answer box: the field outside the shell, against minus the numerical derivative of the potential Q/(4 pi eps0 r)'
+    formula: Q/(4*pi*eps0*r**2)
+    equals: -deriv('Q / (4 * pi * eps0 * rr)', 'rr', r)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      r: [2.5, 5, 3, 4]
+      kappa: [1.5, 10, 3, 5]
+      eps0: [0.5, 2, 1, 1.3]
+    tolerance: 1e-6
+    shown: ['E = \frac{Q}{4\pi\varepsilon_0 r^2}\ (r > R_2)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.3(b), p. 43 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 9
+
+  - id: p9-kappa
+    kind: fact
+    where: 'Problem 9, statement: the dielectric constant of the tube'
+    shown: ['$\kappa = 10$, has the inner radius']
+    source: {cite: reading1, at: 'Additional Problem 5.12.4, p. 44'}
+    origin: mit
+
+  - id: p9-E-in
+    kind: identity
+    answer: p9-a1
+    where: 'Problem 9(a), answer box: the field in the dielectric, against lambda/(kappa eps0) over the rim length integrated as r dphi, kappa = 10'
+    formula: lam/(20*pi*eps0*r)
+    equals: lam / (10 * eps0 * integrate('r', 'phi', 0, 2 * pi))
+    samples:
+      lam: [0.5, 5, 1, 2]
+      eps0: [0.5, 2, 1, 1.3]
+      r: [0.5, 2, 1, 1.5]
+    tolerance: 1e-9
+    shown: ['= \frac{\lambda}{20\pi\varepsilon_0 r}\ (a < r < b)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.4(a), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p9-E-out
+    kind: identity
+    answer: p9-a2
+    where: 'Problem 9(a), answer box: the field outside the tube, against minus the numerical derivative of the line potential -lambda ln(r)/(2 pi eps0)'
+    formula: lam/(2*pi*eps0*r)
+    equals: -deriv('-lam / (2 * pi * eps0) * log(rr)', 'rr', r)
+    samples:
+      lam: [0.5, 5, 1, 2]
+      eps0: [0.5, 2, 1, 1.3]
+      r: [2.5, 5, 3, 4]
+    tolerance: 1e-6
+    shown: ['E = \frac{\lambda}{2\pi\varepsilon_0 r}\ (r < a,\ r > b)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.4(a), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p9-inner
+    answer: p9-b
+    where: 'Problem 9(b), answer box: bound charge per unit length on the inner surface over lambda, from 2 pi eps0 r E - lambda with the field in the dielectric (lambda = 1)'
+    inputs: {lam: 1, kappa: 10}
+    formula: (lam / kappa - lam) / lam
+    expected: '-0.9'
+    tolerance: '0.001'
+    shown: ['= -\lambda(1 - 1/\kappa) = -0.9\,\lambda$']
+    source: {cite: reading1, at: 'Additional Problem 5.12.4(b), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p9-outer
+    answer: p9-c
+    where: 'Problem 9(c), answer box: bound charge per unit length on the outer surface over lambda (the bound charges add to zero)'
+    inputs: {lam: 1, kappa: 10}
+    formula: -(lam / kappa - lam) / lam
+    expected: '0.9'
+    tolerance: '0.001'
+    shown: ['$\lambda_{\text{outer}} = +0.9\,\lambda$']
+    source: {cite: reading1, at: 'Additional Problem 5.12.4(c), p. 44 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 10
+
+  - id: p10-data
+    kind: fact
+    where: 'Problem 10, statement: the mica capacitor'
+    shown: ['the capacitance $112$ pF and plates of area $96.5$ cm², with mica between them, $\kappa = 5.40$', 'a potential difference of $55$ V']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5, p. 44'}
+    origin: mit
+
+  - id: p10-d
+    where: 'Problem 10(a), formula "Gap and field of the mica capacitor": the gap kappa eps0 A/C'
+    inputs: {kappa: 5.40, eps0: 8.85e-12 F/m, A: 96.5e-4 m**2, C: 112e-12 F}
+    formula: kappa * eps0 * A / C
+    expected: '4.12 mm'
+    shown: ['\ \text{m} = 4.12\ \text{mm}']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(a), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-E
+    answer: p10-a
+    where: 'Problem 10(a), answer box and formula: the field dV/d in the mica, in kV/m (13.36 unrounded; the notes print 13.4)'
+    inputs: {kappa: 5.40, eps0: 8.85e-12 F/m, A: 96.5e-4 m**2, C: 112e-12 F, V: 55 V}
+    formula: V / (kappa * eps0 * A / C)
+    expected: '13.4 kV/m'
+    tolerance: '1%'
+    shown: ['= 13.4\ \text{kV/m}" cite']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(a), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-Q
+    answer: p10-b
+    where: 'Problem 10(b), answer box: the free charge C dV, in nC'
+    inputs: {C: 112e-12 F, V: 55 V}
+    formula: C * V
+    expected: '6.16 nC'
+    shown: ['(55\ \text{V}) = 6.16 \times 10^{-9}$ C $= 6.16$ nC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(b), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-factor
+    where: 'Problem 10(c), solution: 1 - 1/kappa'
+    inputs: {kappa: 5.40}
+    formula: 1 - 1 / kappa
+    expected: '0.815'
+    shown: ['6.16 \times 0.815 = 5.02$ nC']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(c), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-QP
+    answer: p10-c
+    where: 'Problem 10(c), answer box: the bound charge Q(1 - 1/kappa), in nC'
+    inputs: {kappa: 5.40, C: 112e-12 F, V: 55 V}
+    formula: C * V * (1 - 1 / kappa)
+    expected: '5.02 nC'
+    shown: ['$Q_P = 6.16\ \text{nC} \times (1 - 1/5.40)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(c), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-net
+    where: 'Problem 10(c), solution check: the net charge Q - Q_P, in C'
+    inputs: {kappa: 5.40, C: 112e-12 F, V: 55 V}
+    formula: C * V / kappa
+    expected: '1.141e-9 C'
+    shown: ['(Q - Q_P)/(\varepsilon_0 A) = 1.141 \times 10^{-9}']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(c), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-E-check
+    where: 'Problem 10(c), solution check: the field from the net charge, (Q - Q_P)/(eps0 A)'
+    inputs: {kappa: 5.40, eps0: 8.85e-12 F/m, A: 96.5e-4 m**2, C: 112e-12 F, V: 55 V}
+    formula: C * V / kappa / (eps0 * A)
+    expected: '13.4 kV/m'
+    tolerance: '1%'
+    shown: ['(8.85 \times 10^{-12} \times 9.65 \times 10^{-3}) = 13.4$ kV/m, as in part (a)']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(c), p. 44 (our own solution)'}
+    origin: page-own
+
+  - id: p10-P
+    answer: p10-d
+    where: 'Problem 10(d), answer box: the polarization Q_P/A, in nC/m^2'
+    inputs: {kappa: 5.40, C: 112e-12 F, V: 55 V, A: 96.5e-4 m**2}
+    formula: C * V * (1 - 1 / kappa) / A
+    expected: '520 nC/m**2'
+    tolerance: '1%'
+    shown: ['= 5.20 \times 10^{-7}$ C/m² $= 520$ nC/m²']
+    source: {cite: reading1, at: 'Additional Problem 5.12.5(d), p. 44 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 11
+
+  - id: p11-sheet
+    kind: identity
+    answer: p11-a
+    where: 'Problem 11(a), answer box: the field of one plate, against the force from the energy, dU/dx at fixed Q with U = Q^2 x/(2 eps0 A), divided by Q (Problem 11(b)''s route)'
+    formula: Q/(2*eps0*A)
+    equals: deriv('Q**2 * x / (2 * eps0 * A)', 'x', 1) / Q
+    samples:
+      Q: [0.5, 5, 1, 2]
+      A: [0.5, 2, 1, 1.5]
+      eps0: [0.5, 2, 1, 1.3]
+    tolerance: 1e-6
+    shown: ['its field on either side is $\sigma/(2\varepsilon_0) = Q/(2\varepsilon_0 A)$']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(a), p. 45 (our own solution)'}
+    origin: page-own
+
+  - id: p11-pressure
+    kind: fact
+    where: 'Problem 11(d) and its solution: atmospheric pressure, as the notes give it (14.7 lb/in2, 101,341 N/m2) and the standard atmosphere'
+    shown: ['equal atmospheric pressure, $1.013 \times 10^5$ N/m²', '14.7 lb/in², or 101,341 N/m²', 'the standard atmosphere 101,325 N/m²']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45'}
+    origin: mit
+
+  - id: p11-psi
+    where: 'Problem 11(d), solution: 14.7 lb/in2 in N/m2 (1 lb/in2 = 6894.757 N/m2)'
+    inputs: {p: 14.7 psi}
+    formula: p
+    expected: '101353 N/m**2'
+    tolerance: '1 N/m**2'
+    shown: ['14.7 lb/in² is 101,353 N/m²']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45 (our own check)'}
+    origin: page-own
+
+  - id: p11-E-sci
+    where: 'Problem 11(d), formula "The field that presses like the air": sqrt(2p/eps0)'
+    inputs: {p: 1.013e5, eps0: 8.85e-12}
+    formula: sqrt(2 * p / eps0)
+    expected: '1.51e8'
+    shown: ['= 1.51 \times 10^8\ \text{V/m}']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45 (our own solution)'}
+    origin: page-own
+
+  - id: p11-E
+    answer: p11-d
+    where: 'Problem 11(d), answer box: the field in MV/m'
+    inputs: {p: 1.013e5, eps0: 8.85e-12}
+    formula: sqrt(2 * p / eps0) / 1e6
+    expected: '151'
+    shown: ['that is, 151 MV/m']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45 (our own solution)'}
+    origin: page-own
+
+  - id: p11-E-notes
+    where: 'Problem 11(d), solution note: the notes'' 101,341 N/m2 (and 101,353, 101,325) also give 151 MV/m'
+    inputs: {p1: 101341, p2: 101353, p3: 101325, eps0: 8.85e-12}
+    formula: (sqrt(2 * p1 / eps0) + sqrt(2 * p2 / eps0) + sqrt(2 * p3 / eps0)) / 3 / 1e6
+    expected: '151'
+    shown: ['All three give 151 MV/m']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45 (our own solution)'}
+    origin: page-own
+
+  - id: p11-ratio
+    where: 'Problem 11(d), solution check: 151 MV/m against the 3 MV/m breakdown field of dry air'
+    inputs: {E: 151, Eb: 3}
+    formula: E / Eb
+    expected: '50'
+    tolerance: '1'
+    shown: ['dry air breaks down at about 3 MV/m, fifty times less']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45, and the table on p. 15 (our own solution)'}
+    origin: page-own
+
+  - id: p11-vdg
+    kind: fact
+    where: 'Problem 11(d), solution: the notes'' remark on Van de Graaff accelerators'
+    shown: ['reach about 100 MV/m before breakdown']
+    source: {cite: reading1, at: 'Additional Problem 5.12.6(d), p. 45'}
+    origin: mit
+
+  # ---- Problem 12
+
+  - id: p12-u
+    kind: identity
+    answer: p12-a
+    where: 'Problem 12(a), answer box: kappa eps0 E^2/2, against the charging work divided by the volume for a capacitor whose field is E (free charge kappa eps0 A E)'
+    formula: kappa*eps0*E**2/2
+    equals: integrate('qq * d / (kappa * eps0 * A)', 'qq', 0, kappa * eps0 * A * E) / (A * d)
+    samples:
+      kappa: [1.5, 10, 3, 5]
+      eps0: [0.5, 2, 1, 1.3]
+      E: [0.5, 5, 1, 2]
+      A: [1, 2, 0.5, 1.5]
+      d: [0.1, 0.5, 1, 0.3]
+    tolerance: 1e-9
+    shown: ['$u_E = \tfrac12 E\,(\kappa\varepsilon_0 E) = \tfrac12\kappa\varepsilon_0 E^2$']
+    source: {cite: reading1, at: 'Additional Problem 5.12.7(a), p. 45 (our own solution)'}
+    origin: page-own
+
+  - id: p12-W
+    kind: identity
+    answer: p12-b
+    where: 'Problem 12(b), answer box and formula "Work to charge the filled capacitor": against the energy density kappa eps0 E^2/2 times the volume A d, with E = Q/(kappa eps0 A)'
+    formula: Q**2*d/(2*kappa*eps0*A)
+    equals: kappa * eps0 * (Q / (kappa * eps0 * A))**2 / 2 * A * d
+    samples:
+      Q: [0.5, 5, 1, 2]
+      d: [0.1, 1, 0.3, 0.5]
+      A: [0.5, 2, 1, 1.5]
+      kappa: [1.5, 10, 3, 5]
+      eps0: [0.5, 2, 1, 1.3]
+    tolerance: 1e-9
+    shown: ['W = \int_0^Q \frac{q\,d}{\kappa\varepsilon_0 A}\,dq = \frac{Q^2 d}{2\kappa\varepsilon_0 A}']
+    source: {cite: reading1, at: 'Additional Problem 5.12.7(b), p. 45 (our own solution)'}
+    origin: page-own
+
+  - id: p12-u-from-W
+    kind: identity
+    answer: p12-c
+    where: 'Problem 12(c), answer box and formula "Energy density from the work": against the numerical charging integral divided by the volume A d'
+    formula: Q**2/(2*kappa*eps0*A**2)
+    equals: integrate('qq * d / (kappa * eps0 * A)', 'qq', 0, Q) / (A * d)
+    samples:
+      Q: [0.5, 5, 1, 2]
+      A: [0.5, 2, 1, 1.5]
+      kappa: [1.5, 10, 3, 5]
+      eps0: [0.5, 2, 1, 1.3]
+      d: [0.1, 1, 0.3, 0.5]
+    tolerance: 1e-9
+    shown: ['u_E = \frac{W}{Ad} = \frac{Q^2}{2\kappa\varepsilon_0 A^2}']
+    source: {cite: reading1, at: 'Additional Problem 5.12.7(c), p. 45 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 13
+
+  - id: p13-nine
+    where: 'Problem 13(b), solution: three times the potential difference gives 3^2 times the energy'
+    inputs: {k3: 3}
+    formula: k3**2
+    expected: '9'
+    tolerance: '0.01'
+    shown: ['gives $3^2 = 9$ times the energy']
+    source: {cite: reading1, at: 'Conceptual Question 2, p. 42 (our own solution)'}
+    origin: page-own
+
+  - id: p13-table
+    kind: fact
+    where: 'Problem 13(c), solution: dielectric strengths of air, paper and glass from the notes'' table'
+    shown: ['Air breaks down at about $3 \times 10^6$ V/m', 'gives 16 and 9 MV/m']
+    source: {cite: reading1, at: 'Section 5.5, table on p. 15'}
+    origin: mit
