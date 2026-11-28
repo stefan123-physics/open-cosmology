@@ -1,0 +1,597 @@
+# Calculations on content/year-1/8.02/8-02-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Sources: MIT 8.02T Problem Solving 6 (cite mit) and the 8.02 Course Notes, Chapters 9 (reading1) and 8 (reading2).
+# Neither prints solutions for these problems, so every formula answer is checked here by an independent route:
+# the tube and the slab by adding up thin shells or thin sheets of current (each with its own simple field),
+# the square of wires by a coordinate sum of four wire fields, the disc by integrating over rings,
+# and the force between magnets by numerical differentiation of the dipole field.
+# μ0 = 4π × 10⁻⁷ T m/A, as the page says (CODATA 2018 differs by 1 part in 10¹⁰).
+
+page: content/year-1/8.02/8-02-problem-set-7.mdx
+calcs:
+  # ---- Introduction
+
+  - id: mu0-value
+    kind: fact
+    where: 'How to answer: the value of μ0 used for numbers'
+    shown: ['Take $\mu_0 = 4\pi \times 10^{-7}$ T m/A.']
+    source: {cite: reading1, at: 'Eq. (9.1.2), p. 2'}
+    origin: mit
+
+  # ---- Problem 1
+
+  - id: p1-J-by-area
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box and formula "Current density in the copper": J times the area of the ring, built up from thin rings, is I'
+    formula: I/(pi*(b**2 - a**2))
+    equals: I / integrate('2*pi*x', 'x', a, b)
+    samples:
+      I: [1, 10, 3, 7]
+      a: [1, 2, 0.001, 1.5]
+      b: [3, 4, 0.002, 6]
+    tolerance: 1e-7
+    shown: ['J = \frac{I}{\pi\,(b^2 - a^2)}']
+    source: {cite: mit, at: 'Question 1, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-Ienc-by-rings
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Current enclosed for a < r < b": share of the copper area inside r, by integration over thin rings'
+    formula: I*(r**2 - a**2)/(b**2 - a**2)
+    equals: I * integrate('2*pi*x', 'x', a, r) / integrate('2*pi*x', 'x', a, b)
+    samples:
+      I: [1, 10, 3, 7]
+      a: [1, 2, 1.2, 0.5]
+      b: [4, 5, 4.5, 3]
+      r: [2.5, 3.5, 3, 1]
+    tolerance: 1e-7
+    shown: ['I_{\text{enc}} = J\,\pi\,(r^2 - a^2) = I\,\frac{r^2 - a^2}{b^2 - a^2}']
+    source: {cite: mit, at: 'Question 2, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-Ienc-limits
+    kind: identity
+    where: 'Problem 1(b), check (MIT''s Question 3): the enclosed current is 0 at r = a and I at r = b'
+    formula: (I*(b**2 - a**2)/(b**2 - a**2)) + 0*(a**2 - a**2)
+    equals: I
+    samples:
+      I: [1, 10, 3]
+      a: [1, 2, 1.2]
+      b: [4, 5, 4.5]
+    tolerance: 1e-12
+    shown: ['At $r = a$ it is zero', 'At $r = b$ it is $I$']
+    source: {cite: mit, at: 'Question 3, p. 2'}
+    origin: page-own
+
+  # The tube as nested thin shells: a shell of radius x and width dx carries dI = J 2πx dx, and by
+  # Ampère's law for one thin shell its field is μ0 dI/(2π r) outside it and zero inside it.
+  - id: p1-B-copper-by-shells
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box and formula "Field in the copper": sum of the fields of the thin shells inside r'
+    formula: mu0*I*(r**2 - a**2)/(2*pi*r*(b**2 - a**2))
+    equals: integrate('mu0 * (I/(pi*(b**2 - a**2))) * 2*pi*x / (2*pi*r)', 'x', a, r)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      I: [1, 10, 3, 5]
+      a: [1, 2, 1.2, 0.002]
+      b: [4, 5, 4.5, 0.004]
+      r: [2.5, 3.5, 3, 0.003]
+    tolerance: 1e-7
+    shown: ['B = \frac{\mu_0 I}{2\pi r}\,\frac{r^2 - a^2}{b^2 - a^2}']
+    source: {cite: mit, at: 'Question 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-B-copper-at-b
+    kind: identity
+    where: 'Problem 1(c), check: at r = b the field in the copper equals the field of a thin wire'
+    formula: mu0*I*(b**2 - a**2)/(2*pi*b*(b**2 - a**2))
+    equals: mu0*I/(2*pi*b)
+    samples:
+      mu0: [1, 2, 1.5]
+      I: [1, 10, 3]
+      a: [1, 2, 1.2]
+      b: [4, 5, 4.5]
+    tolerance: 1e-12
+    shown: ['At $r = b$ this is $\mu_0 I/2\pi b$']
+    source: {cite: mit, at: 'Question 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-B-copper-solid-limit
+    kind: identity
+    where: 'Problem 1(c), check: with a → 0 the field becomes that inside a solid wire (a = 1e-9 b here)'
+    formula: mu0*I*(r**2 - a**2)/(2*pi*r*(b**2 - a**2))
+    equals: mu0*I*r/(2*pi*b**2)
+    samples:
+      mu0: [1, 2, 1.5]
+      I: [1, 10, 3]
+      a: [1e-9, 2e-9, 1.5e-9]
+      b: [4, 5, 4.5]
+      r: [2.5, 3.5, 1]
+    tolerance: 1e-9
+    shown: ['it becomes $\mu_0 I r/2\pi b^2$, the field inside a solid wire']
+    source: {cite: mit, at: 'Question 5, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-B-outside-by-shells
+    kind: identity
+    answer: p1-e
+    where: 'Problem 1(e), answer box and formula "Field outside the tube": sum of the fields of all the thin shells'
+    formula: mu0*I/(2*pi*r)
+    equals: integrate('mu0 * (I/(pi*(b**2 - a**2))) * 2*pi*x / (2*pi*r)', 'x', a, b)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      I: [1, 10, 3, 5]
+      a: [1, 2, 1.2, 0.002]
+      b: [4, 5, 4.5, 0.004]
+      r: [6, 10, 20, 0.01]
+    tolerance: 1e-7
+    shown: ['B = \frac{\mu_0 I}{2\pi r}" cite="mit" at="Question 7']
+    source: {cite: mit, at: 'Question 7, p. 3 (our own solution)'}
+    origin: page-own
+
+  # (f) The slope of B = k (r − a²/r) with k = μ0 I/[2π(b² − a²)], by numerical differentiation.
+  - id: p1-slope-copper
+    kind: identity
+    where: 'Problem 1(f), step "The slope": the slope in the copper is k (1 + a²/r²)'
+    formula: k*(1 + a**2/r**2)
+    equals: deriv('k*(x - a**2/x)', 'x', r)
+    samples:
+      k: [1, 2, 0.5]
+      a: [1, 2, 1.2]
+      r: [1, 3, 4.5]
+    tolerance: 1e-6
+    shown: ['Its slope is $k\,(1 + a^2/r^2)$']
+    source: {cite: mit, at: 'Question 8, p. 4, and Problem 9.13.2(d), p. 63 (our own solution)'}
+    origin: page-own
+
+  - id: p1-k-form
+    kind: identity
+    where: 'Problem 1(f), step "The slope": the copper field written as k (r − a²/r)'
+    formula: mu0*I*(r**2 - a**2)/(2*pi*r*(b**2 - a**2))
+    equals: (mu0*I/(2*pi*(b**2 - a**2)))*(r - a**2/r)
+    samples:
+      mu0: [1, 2, 1.5]
+      I: [1, 10, 3]
+      a: [1, 2, 1.2]
+      b: [4, 5, 4.5]
+      r: [2.5, 3.5, 3]
+    tolerance: 1e-12
+    shown: ['$B = k\,(r - a^2/r)$ with $k = \mu_0 I/[2\pi(b^2 - a^2)]$']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p1-slope-outside
+    kind: identity
+    where: 'Problem 1(f), step "The slope": the slope just outside is −μ0 I/2πb²'
+    formula: -mu0*I/(2*pi*b**2)
+    equals: deriv('mu0*I/(2*pi*x)', 'x', b)
+    samples:
+      mu0: [1, 2, 1.5]
+      I: [1, 10, 3]
+      b: [4, 5, 4.5]
+    tolerance: 1e-6
+    shown: ['$-\mu_0 I/2\pi b^2$']
+    source: {cite: mit, at: 'Problem 9.13.2(d), p. 63 (our own solution)'}
+    origin: page-own
+
+  - id: p1-plot-peak
+    kind: identity
+    where: 'Problem 1(f), graph: in units of μ0 I/2πb with a = b/2, the copper formula is (u² − 1/4)/(3u/4) and equals 1/u at u = r/b = 1'
+    formula: (u**2 - 0.25)/(0.75*u)
+    equals: mu0*I*((u*b)**2 - (b/2)**2)/(2*pi*(u*b)*(b**2 - (b/2)**2)) / (mu0*I/(2*pi*b))
+    samples:
+      u: [0.5, 0.8, 1, 0.6]
+      mu0: [1, 2, 1.5, 1]
+      I: [1, 10, 3, 2]
+      b: [4, 5, 4.5, 1]
+    tolerance: 1e-12
+    shown: ['(u^2 - 0.25)/(0.75*u)', 'The field of the tube with a = b/2, in units of μ₀I/2πb']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own graph)'}
+    origin: page-own
+
+  # (g) Superposition: the tube's field minus the field of the wire on the axis.
+  - id: p1-B-with-wire
+    kind: identity
+    answer: p1-g
+    where: 'Problem 1(g), answer box and formula "Field in the copper with the wire": thin-shell sum minus the wire field'
+    formula: mu0*I*(b**2 - r**2)/(2*pi*r*(b**2 - a**2))
+    equals: mu0*I/(2*pi*r) - integrate('mu0 * (I/(pi*(b**2 - a**2))) * 2*pi*x / (2*pi*r)', 'x', a, r)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      I: [1, 10, 3, 5]
+      a: [1, 2, 1.2, 0.002]
+      b: [4, 5, 4.5, 0.004]
+      r: [2.2, 2.8, 4.4, 0.0021]
+    tolerance: 1e-7
+    shown: ['B = \frac{\mu_0 I}{2\pi r}\,\frac{b^2 - r^2}{b^2 - a^2}']
+    source: {cite: reading1, at: 'Problem 9.13.2(e), p. 63 (our own solution)'}
+    origin: page-own
+
+  - id: p1-net-current
+    kind: identity
+    where: 'Problem 1(g), formula "Net current with the wire on the axis"'
+    formula: I*(r**2 - a**2)/(b**2 - a**2) - I
+    equals: -I*(b**2 - r**2)/(b**2 - a**2)
+    samples:
+      I: [1, 10, 3]
+      a: [1, 2, 1.2]
+      b: [4, 5, 4.5]
+      r: [2.2, 2.8, 4]
+    tolerance: 1e-12
+    shown: ['I_{\text{enc}} = I\,\frac{r^2 - a^2}{b^2 - a^2} - I = -I\,\frac{b^2 - r^2}{b^2 - a^2}']
+    source: {cite: reading1, at: 'Problem 9.13.2(e), p. 63 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2: the slab as a stack of thin sheets, each of thickness dy' with field
+  # B_x = −μ0 J dy'/2 above it and +μ0 J dy'/2 below it.
+
+  - id: p2-Ienc-by-strips
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box: current through the rectangle from y = 0, by integrating J ℓ over the upper half of the slab'
+    formula: J*l*d/2
+    equals: integrate('J*l', 'x', 0, d/2)
+    samples:
+      J: [1, 5, 2e6, 3]
+      l: [1, 3, 0.5, 2]
+      d: [0.5, 2, 0.005, 1]
+    tolerance: 1e-9
+    shown: ['So $I_{\text{enc}} = J\,\ell\,d/2$, out of the page.']
+    source: {cite: mit, at: 'Question 11, p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p2-B-above-by-sheets
+    kind: identity
+    answer: p2-d
+    where: 'Problem 2(d), answer box and formula "Field above the slab": sum of the fields of all thin sheets, all below the point'
+    formula: -mu0*J*d/2
+    equals: integrate('-mu0*J/2', 'x', -d/2, d/2)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      J: [1, 5, 3, 2e6]
+      d: [0.5, 2, 1, 0.005]
+    tolerance: 1e-9
+    shown: ['B_x = -\frac{\mu_0 J d}{2} \qquad (y > d/2)']
+    source: {cite: mit, at: 'Question 13, p. 6 (our own solution)'}
+    origin: page-own
+
+  - id: p2-B-inside-by-sheets
+    kind: identity
+    answer: p2-e
+    where: 'Problem 2(e), answer box and formula "Field inside the slab": sheets below y give −μ0 J/2 per unit thickness, sheets above give +μ0 J/2'
+    formula: -mu0*J*y
+    equals: integrate('-mu0*J/2', 'x', -d/2, y) + integrate('mu0*J/2', 'x', y, d/2)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      J: [1, 5, 3, 2e6]
+      y: [0.1, 0.4, 0.2, 0.001]
+      d: [1, 2, 1.5, 0.005]
+    tolerance: 1e-9
+    shown: ['B_x = -\mu_0 J y \qquad (0 < y < d/2)']
+    source: {cite: mit, at: 'Question 17, p. 7 (our own solution)'}
+    origin: page-own
+
+  - id: p2-line-integral
+    kind: identity
+    where: 'Problem 2(d), formula "Line integral around the rectangle": top side −B_x(y) ℓ, bottom side on y = 0 where B = 0, sides along y perpendicular to B'
+    formula: -Bx*l
+    equals: -Bx*l + 0*l + 0
+    samples:
+      Bx: [1, -2, 0.5]
+      l: [1, 3, 2]
+    tolerance: 1e-12
+    shown: ['\oint \vec B \cdot d\vec s = -B_x(y)\,\ell']
+    source: {cite: mit, at: 'Question 12, p. 5 (our own solution)'}
+    origin: page-own
+
+  - id: p2-given-thickness
+    kind: fact
+    where: 'Problem 2(f), statement: our choice of thickness and current density'
+    shown: ['A copper bar 5.0 mm thick and very wide carries the current density $J = 2.0 \times 10^6$ A/m²']
+    source: {cite: mit, at: 'Example 2, p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-bar-field
+    answer: p2-f
+    where: 'Problem 2(f), answer box and step "The number": field just outside the bar'
+    inputs: {mu0: 1.2566370614e-6 T*m/A, J: 2.0e6 A/m**2, d: 5.0e-3 m}
+    formula: mu0 * J * d / 2
+    expected: 6.28 mT
+    shown: ['= 6.28 \times 10^{-3}$ T, so 6.28 mT']
+    source: {cite: mit, at: 'Question 13, p. 6 (our own numbers)'}
+    origin: page-own
+
+  - id: earth-field-gauss
+    kind: fact
+    where: 'Problem 2(f): the Earth''s field quoted in the notes as 0.5 gauss'
+    shown: ['the Earth''s field (0.5 gauss, which is $5 \times 10^{-5}$ T)']
+    source: {cite: reading1, at: 'Problem 9.13.12(a), p. 67'}
+    origin: mit
+
+  - id: earth-field-tesla
+    where: 'Problem 2(f): 0.5 gauss in tesla'
+    inputs: {Bg: 0.5}
+    formula: Bg * 1e-4
+    expected: '5e-5'
+    shown: ['$5 \times 10^{-5}$ T)']
+    source: {cite: reading1, at: 'Problem 9.13.12(a), p. 67'}
+    origin: page-own
+
+  - id: p2-earth-ratio
+    where: 'Problem 2(f): the bar''s field is more than a hundred times the Earth''s field'
+    inputs: {B: 6.28e-3 T, Be: 5e-5 T}
+    formula: B / Be
+    expected: '126'
+    tolerance: '1%'
+    shown: ['more than a hundred times the Earth''s field']
+    source: {cite: mit, at: 'Question 13, p. 6 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3: four wires, by a coordinate sum. Wire W at (xw, yw) with current s I (s = +1 out of the page)
+  # gives at the origin B = s μ0 I/(2π ρ²) (yw, −xw), ρ² = xw² + yw² = a²/2.
+  # A (a/2, −a/2, +1), B (−a/2, −a/2, −1), C (−a/2, a/2, −1), D (a/2, a/2, +1).
+
+  - id: p3-B-by-coordinates
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Field at the centre of the square": coordinate sum of the four wire fields'
+    formula: 2*mu0*I/(pi*a)
+    equals: mu0*I/(2*pi*(a**2/2)) * sqrt(((1)*(-a/2) + (-1)*(-a/2) + (-1)*(a/2) + (1)*(a/2))**2 + (-(1)*(a/2) - (-1)*(-a/2) - (-1)*(-a/2) - (1)*(a/2))**2)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      I: [1, 10, 3, 5]
+      a: [1, 3, 2, 0.1]
+    tolerance: 1e-12
+    shown: ['B = 4 \cdot \frac{\sqrt2\,\mu_0 I}{2\pi a} \cdot \frac{1}{\sqrt2} = \frac{2\mu_0 I}{\pi a}']
+    source: {cite: reading1, at: 'Problem 9.13.6, p. 64 (our own solution)'}
+    origin: page-own
+
+  - id: p3-By-sign
+    where: 'Problem 3(b): the y component of the sum is negative (downwards), in units of μ0 I/(2π a)'
+    inputs: {a: 1}
+    formula: (-(1)*(a/2) - (-1)*(-a/2) - (-1)*(-a/2) - (1)*(a/2)) / (a**2/2) * a
+    expected: '-4'
+    tolerance: 1e-9
+    shown: ['The $x$ parts cancel and the $y$ parts all point down.']
+    source: {cite: reading1, at: 'Problem 9.13.6, p. 64 (our own solution)'}
+    origin: page-own
+
+  - id: p3-one-wire
+    kind: identity
+    where: 'Problem 3(a), formula "Field of one wire at the centre"'
+    formula: mu0*I/(2*pi*(a/sqrt(2)))
+    equals: sqrt(2)*mu0*I/(2*pi*a)
+    samples:
+      mu0: [1, 2]
+      I: [1, 10]
+      a: [1, 3]
+    tolerance: 1e-12
+    shown: ['B_1 = \frac{\mu_0 I}{2\pi\,(a/\sqrt2)} = \frac{\sqrt2\,\mu_0 I}{2\pi a}']
+    source: {cite: reading1, at: 'Problem 9.13.6, p. 64 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4: the disc as rings.
+
+  - id: p4-B-centre-by-rings
+    kind: identity
+    where: 'Problem 4(a), formula "Field at the centre of the spinning disc": ring fields μ0 dI/2r with dI = ω σ r dr (lower limit 1e-12 R to avoid 0/0)'
+    formula: mu0*sigma*omega*R/2
+    equals: integrate('mu0*(omega*sigma*x)/(2*x)', 'x', 1e-12*R, R)
+    samples:
+      mu0: [1, 2, 1.25664e-6]
+      sigma: [1, 3, 2e-6]
+      omega: [1, 5, 314.159]
+      R: [1, 2, 0.1]
+    tolerance: 1e-9
+    shown: ['B = \int_0^R \frac{\mu_0\,\omega\,\sigma}{2}\,dr = \frac12\,\mu_0\,\sigma\,\omega\,R']
+    source: {cite: reading1, at: 'Problem 9.13.5, p. 64'}
+    origin: mit
+
+  - id: p4-given
+    kind: fact
+    where: 'Problem 4(b), statement: our numbers for the disc'
+    shown: ['A plastic disc of radius 10 cm carries $\sigma = 2.0\ \mu\text{C/m}^2$ and spins at 3000 revolutions per minute.']
+    source: {cite: reading1, at: 'Problem 9.13.5, p. 64 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-rps
+    where: 'Problem 4(b), step "The angular speed": 3000 revolutions per minute in revolutions per second'
+    inputs: {rpm: 3000}
+    formula: rpm / 60
+    expected: '50'
+    shown: ['3000 revolutions per minute is 50 per second']
+    source: {cite: reading1, at: 'Problem 9.13.5, p. 64 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-omega
+    where: 'Problem 4(b), step "The angular speed": ω = 2π × 50'
+    inputs: {f: 50 / s}
+    formula: 2 * pi * f
+    expected: 314 / s
+    shown: ['$\omega = 2\pi \times 50 = 314$ rad/s']
+    source: {cite: reading1, at: 'Problem 9.13.5, p. 64 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-disc-field
+    answer: p4-b
+    where: 'Problem 4(b), answer box and step "The field": B = μ0 σ ω R/2'
+    inputs: {mu0: 1.2566370614e-6 T*m/A, sigma: 2.0e-6 C/m**2, omega: 314.159265 / s, R: 0.10 m}
+    formula: mu0 * sigma * omega * R / 2
+    expected: 39.5 pT
+    shown: ['= 3.95 \times 10^{-11}$ T, so 39.5 pT']
+    source: {cite: reading1, at: 'Problem 9.13.5, p. 64 (our own numbers)'}
+    origin: page-own
+
+  - id: p4-earth-ratio
+    where: 'Problem 4(b): more than a million times weaker than the Earth''s field (5 × 10⁻⁵ T)'
+    inputs: {B: 3.95e-11 T, Be: 5e-5 T}
+    formula: Be / B
+    expected: 1.27e6
+    tolerance: '1%'
+    shown: ['more than a million times weaker than the Earth''s field']
+    source: {cite: reading1, at: 'Problem 9.13.12(a), p. 67 (0.5 gauss)'}
+    origin: page-own
+
+  - id: p4-moment-by-rings
+    kind: identity
+    answer: p4-c
+    where: 'Problem 4(c), answer box and formula "Magnetic moment of the spinning disc": numerical sum of ring moments π r² dI'
+    formula: pi*sigma*omega*R**4/4
+    equals: integrate('pi*x**2*omega*sigma*x', 'x', 0, R)
+    samples:
+      sigma: [1, 3, 2e-6]
+      omega: [1, 5, 314.159]
+      R: [1, 2, 0.1]
+    tolerance: 1e-9
+    shown: ['\mu = \int_0^R \pi r^2\,\omega\,\sigma\,r\,dr = \frac{\pi\,\sigma\,\omega\,R^4}{4}']
+    source: {cite: reading2, at: 'Eq. (8.4.8), p. 8, applied ring by ring (our own solution)'}
+    origin: page-own
+
+  - id: p4-moment-rim-check
+    kind: identity
+    where: 'Problem 4(c), check: all the current at the rim would give π σ ω R⁴/2, twice our moment'
+    formula: pi*R**2 * integrate('omega*sigma*x', 'x', 0, R)
+    equals: 2 * (pi*sigma*omega*R**4/4)
+    samples:
+      sigma: [1, 3]
+      omega: [1, 5]
+      R: [1, 2]
+    tolerance: 1e-9
+    shown: ['$\pi\sigma\omega R^4/2$', 'The total current of the disc is $\int_0^R \omega\sigma r\,dr = \sigma\omega R^2/2$']
+    source: {cite: reading2, at: 'Eq. (8.4.8), p. 8 (our own check)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-given
+    kind: fact
+    where: 'Problem 5, statement: size and magnetization of the magnet'
+    shown: ['A permanent magnet is a cylindrical rod 4.8 cm long and 1.1 cm in diameter. It has a uniform magnetization of 5300 A/m along its axis.']
+    source: {cite: reading1, at: 'Problem 9.13.11, p. 67'}
+    origin: mit
+
+  - id: p5-radius
+    where: 'Problem 5(a), step "The volume": the radius is half the diameter'
+    inputs: {D: 1.1 cm}
+    formula: D / 2
+    expected: 0.55 cm
+    shown: ['The radius is 0.55 cm']
+    source: {cite: reading1, at: 'Problem 9.13.11, p. 67'}
+    origin: page-own
+
+  - id: p5-volume
+    where: 'Problem 5(a), step "The volume"'
+    inputs: {rr: 0.0055 m, L: 0.048 m}
+    formula: pi * rr**2 * L
+    expected: 4.56e-6 m**3
+    shown: ['$\pi (0.0055)^2 (0.048) = 4.56 \times 10^{-6}$ m³']
+    source: {cite: reading1, at: 'Problem 9.13.11, p. 67 (our own solution)'}
+    origin: page-own
+
+  - id: p5-moment
+    answer: p5-a
+    where: 'Problem 5(a), answer box: μ = M V, to four figures'
+    inputs: {M: 5300 A/m, rr: 0.0055 m, L: 0.048 m}
+    formula: M * pi * rr**2 * L
+    expected: 0.02418 A*m**2
+    shown: ['$\mu = MV = 5300 \times 4.56 \times 10^{-6} = 2.42 \times 10^{-2}$ A m²']
+    source: {cite: reading1, at: 'Problem 9.13.11(a), p. 67 (the notes print 2.42 × 10⁻² A m²)'}
+    origin: mit
+
+  - id: p5-moment-printed
+    where: 'Problem 5(a), step "The moment": the rounded value'
+    inputs: {M: 5300 A/m, rr: 0.0055 m, L: 0.048 m}
+    formula: M * pi * rr**2 * L
+    expected: 2.42e-2 A*m**2
+    shown: ['= 2.42 \times 10^{-2}$ A m²']
+    source: {cite: reading1, at: 'Problem 9.13.11(a), p. 67'}
+    origin: mit
+
+  - id: p5-axis-identity
+    kind: identity
+    where: 'Problem 5(b), formula "Dipole field on its axis": Eq. (9.5.5) with r̂ along μ, and the far field of a ring μ0 I R²/2z³ with μ = I π R²'
+    formula: mu0*mu/(2*pi*z**3)
+    equals: mu0*(mu/(pi*R**2))*R**2/(2*(R**2 + z**2)**1.5)
+    samples:
+      mu0: [1, 2, 1.25664e-6]
+      mu: [1, 3, 0.024]
+      z: [1e3, 2e3, 1e4]
+      R: [1, 0.5, 2]
+    tolerance: 1e-5
+    shown: ['B = \frac{\mu_0\,\mu}{2\pi z^3}']
+    source: {cite: reading1, at: 'Eqs. (9.1.15), p. 8, and (9.5.5), p. 24'}
+    origin: page-own
+
+  - id: p5-axis-field
+    answer: p5-b
+    where: 'Problem 5(b), answer box and step "The number": the axial field at 1 m'
+    inputs: {mu0: 1.2566370614e-6 T*m/A, mu: 2.418e-2 A*m**2, z: 1 m}
+    formula: mu0 * mu / (2 * pi * z**3)
+    expected: 4.84 nT
+    shown: ['= 4.84 \times 10^{-9}$ T, so 4.84 nT']
+    source: {cite: reading1, at: 'Problem 9.13.11(b), p. 67 (the notes print 4.8 × 10⁻⁹ T)'}
+    origin: mit
+
+  - id: p5-axis-field-notes
+    kind: fact
+    where: 'Problem 5(b): the value the notes print'
+    shown: ['(The notes give $4.8 \times 10^{-9}$ T.)']
+    source: {cite: reading1, at: 'Problem 9.13.11, p. 67'}
+    origin: mit
+
+  - id: p5-earth-ratio
+    where: 'Problem 5(b): about ten thousand times weaker than the Earth''s field'
+    inputs: {B: 4.84e-9 T, Be: 5e-5 T}
+    formula: Be / B
+    expected: 1.0e4
+    tolerance: '5%'
+    shown: ['about ten thousand times weaker than the Earth''s field']
+    source: {cite: reading1, at: 'Problem 9.13.12(a), p. 67 (0.5 gauss)'}
+    origin: page-own
+
+  - id: p5-force-by-deriv
+    kind: identity
+    answer: p5-c
+    where: 'Problem 5(c), answer box and formula "Force between two aligned dipoles on one axis": μ times the numerical derivative of the axial field'
+    formula: -3*mu0*mu**2/(2*pi*z**4)
+    equals: mu * deriv('mu0*mu/(2*pi*x**3)', 'x', z)
+    samples:
+      mu0: [1, 2, 1.5, 1.25664e-6]
+      mu: [1, 3, 2, 0.02418]
+      z: [2, 5, 3, 1]
+    tolerance: 1e-6
+    shown: ['F_z = \mu\,\frac{dB_z}{dz} = -\frac{3\,\mu_0\,\mu^2}{2\pi z^4}']
+    source: {cite: reading2, at: 'Eq. (8.4.15), p. 10 (our own solution)'}
+    origin: page-own
+
+  - id: p5-force-number
+    where: 'Problem 5(c), step "Check with numbers": two such magnets 1 m apart'
+    inputs: {mu0: 1.2566370614e-6 T*m/A, mu: 2.418e-2 A*m**2, z: 1 m}
+    formula: 3 * mu0 * mu**2 / (2 * pi * z**4)
+    expected: 3.51e-10 N
+    shown: ['= 3.51 \times 10^{-10}$ N']
+    source: {cite: reading2, at: 'Eq. (8.4.15), p. 10 (our own numbers)'}
+    origin: page-own
+
+  - id: p5-force-scaling
+    where: 'Problem 5(c): at 10 cm the force would be ten thousand times larger (1/z⁴)'
+    inputs: {z1: 1 m, z2: 0.1 m}
+    formula: (z1 / z2)**4
+    expected: 1e4
+    tolerance: '0.1%'
+    shown: ['at 10 cm it would be ten thousand times larger']
+    source: {cite: reading2, at: 'Eq. (8.4.15), p. 10 (our own numbers)'}
+    origin: page-own
+
+  - id: mu0-over-2pi
+    where: 'Problems 5(b) and 5(c): μ0/2π = 2 × 10⁻⁷ T m/A'
+    inputs: {mu0: 1.2566370614e-6}
+    formula: mu0 / (2 * pi)
+    expected: '2e-7'
+    tolerance: '0.01%'
+    shown: ['$B = (2 \times 10^{-7})(2.418 \times 10^{-2})/1^3', '$|F_z| = 3 \times (2 \times 10^{-7})']
+    source: {cite: reading1, at: 'Eq. (9.1.2), p. 2'}
+    origin: page-own
