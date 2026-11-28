@@ -1,0 +1,539 @@
+# Calculations on content/year-1/8.02/8-02-problem-set-8.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Sources: MIT 8.02T Problem Solving 7 (cite mit) and the 8.02 Course Notes, Chapters 10 (reading1) and 9 (reading2).
+# Neither prints solutions for these problems, so every formula answer is checked here by an independent route:
+# the flux by integrating B over the loop, its rate by numerical differentiation, the force by the cross product
+# written out in components, the terminal speeds by solving the force balance numerically, and the bar's speed
+# by putting v(t) back into its equation of motion.
+# μ0 = 4π × 10⁻⁷ T m/A and g = 9.8 m/s², as the page says.
+
+page: content/year-1/8.02/8-02-problem-set-8.mdx
+calcs:
+  # ---- Introduction
+
+  - id: mu0-g-values
+    kind: fact
+    where: 'How to answer: the values of μ0 and g used for numbers'
+    shown: ['Take $\mu_0 = 4\pi \times 10^{-7}$ T m/A and $g = 9.8$ m/s².']
+    source: {cite: reading2, at: 'Eq. (9.1.2), Chapter 9, p. 2 (μ0); g is our choice'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  - id: p1-flux-by-integration
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box and formula "Flux through the falling loop": B integrated over the loop, B above the line (0 < height < z above it) and 0 below (the loop reaches l - z below the line)'
+    formula: B*w*z
+    equals: integrate('B*w', 'u', 0, z) + integrate('0*w', 'u', -(l - z), 0)
+    samples:
+      B: [1, 2, 0.5, 1.5]
+      w: [0.3, 0.6, 0.1, 0.4]
+      z: [0.1, 0.4, 0.2, 0.9]
+      l: [1, 2, 1.5, 1]
+    tolerance: 1e-9
+    shown: ['\Phi_B = B\,w\,z(t)']
+    source: {cite: mit, at: 'Question 2, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-rate-by-derivative
+    kind: identity
+    answer: p1-c
+    where: 'Problem 1(c), answer box and formula "Rate of change of the flux": numerical derivative of B w z(t) with z(t) = z0 + V t'
+    formula: B*w*V
+    equals: deriv('B*w*(z0 + V*tt)', 'tt', 0.1)
+    samples:
+      B: [1, 2, 0.5, 1.5]
+      w: [0.3, 0.6, 0.1, 0.4]
+      V: [-3, -1, -2, -0.5]
+      z0: [0.5, 0.8, 0.6, 0.9]
+    tolerance: 1e-8
+    shown: ['\frac{d\Phi_B}{dt} = B\,w\,\frac{dz}{dt} = B\,w\,V(t)']
+    source: {cite: mit, at: 'Question 3, p. 3 (our own solution)'}
+    origin: page-own
+
+  - id: p1-current-by-ohm
+    kind: identity
+    answer: p1-f
+    where: 'Problem 1(f), answer box and formula "Current in the falling loop": |dΦ/dt|/R, the rate taken numerically, with v = -V'
+    formula: B*w*v/R
+    equals: abs(deriv('B*w*(z0 - v*tt)', 'tt', 0.1))/R
+    samples:
+      B: [1, 2, 0.5, 1.5]
+      w: [0.3, 0.6, 0.1, 0.4]
+      v: [1, 3, 2, 0.5]
+      R: [2, 4, 0.5, 0.05]
+      z0: [0.5, 0.8, 0.6, 0.9]
+    tolerance: 1e-8
+    shown: ['I = \frac{|\varepsilon|}{R} = \frac{B\,w\,v}{R}']
+    source: {cite: mit, at: 'Question 6, p. 3 (our own solution)'}
+    origin: page-own
+
+  # Cross product written out: the top side's current runs along -y, so I ds = (0, -I w, 0); B = (B, 0, 0).
+  # z component of (a × b) = ax*by - ay*bx = 0*0 - (-I w)*B.
+  - id: p1-force-by-components
+    kind: identity
+    answer: p1-g
+    where: 'Problem 1(g), answer box and formula "Magnetic force on the falling loop": z component of I w (-ŷ) × B x̂ written out in components, with I = B w v/R'
+    formula: B**2*w**2*v/R
+    equals: 0*0 - (-(B*w*v/R)*w)*B
+    samples:
+      B: [1, 2, 0.5, 1.5]
+      w: [0.3, 0.6, 0.1, 0.4]
+      v: [1, 3, 2, 0.5]
+      R: [2, 4, 0.5, 0.05]
+    tolerance: 1e-12
+    shown: ['\vec F = I\,w\,(-\hat y) \times B\,\hat x = I\,w\,B\,\hat z = \frac{B^2 w^2 v}{R}\,\hat z']
+    source: {cite: mit, at: 'Question 7, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p1-terminal-by-solve
+    kind: identity
+    answer: p1-h
+    where: 'Problem 1(h), answer box and formula "Terminal speed of the falling loop": the speed at which B²w²v/R - m g = 0, found numerically'
+    formula: m*g*R/(B**2*w**2)
+    equals: solve('B**2*w**2*q/R - m*g', 'q', 1e-6, 1e6)
+    samples:
+      m: [0.01, 0.05, 0.02, 0.03]
+      g: [9, 10, 9.8, 9.5]
+      R: [2, 4, 0.05, 3]
+      B: [1, 2, 0.8, 1.5]
+      w: [0.1, 0.3, 0.1, 0.2]
+    tolerance: 1e-7
+    shown: ['v_t = \frac{m\,g\,R}{B^2 w^2}']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p1-power-balance
+    kind: identity
+    where: 'Problem 1(i), formula "Power balance at terminal speed": I²R with I = B w v_t/R equals m g v_t'
+    formula: (B*w*(m*g*R/(B**2*w**2))/R)**2*R
+    equals: m*g*(m*g*R/(B**2*w**2))
+    samples:
+      m: [0.01, 0.05, 0.02]
+      g: [9, 10, 9.8]
+      R: [2, 4, 0.05]
+      B: [1, 2, 0.8]
+      w: [0.1, 0.3, 0.1]
+    tolerance: 1e-12
+    shown: ['m\,g\,v_t = I^2 R']
+    source: {cite: mit, at: 'Questions 9 and 10, p. 4 (our own solution)'}
+    origin: page-own
+
+  - id: p1-terminal-speed
+    answer: p1-j
+    where: 'Problem 1(j), answer box and step "The number"'
+    inputs: {m: 0.020 kg, g: 9.8 m/s**2, R: 0.050 ohm, B: 0.80 T, w: 0.10 m}
+    formula: m * g * R / (B**2 * w**2)
+    expected: 1.53 m/s
+    shown: ['= 0.0098/0.0064 = 1.53$ m/s']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-terminal-mgR
+    where: 'Problem 1(j), step "The number": the numerator m g R'
+    inputs: {m: 0.020 kg, g: 9.8 m/s**2, R: 0.050 ohm}
+    formula: m * g * R
+    expected: 0.0098 kg*m*ohm/s**2
+    shown: ['= 0.0098/0.0064 = 1.53$ m/s']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-terminal-B2w2
+    where: 'Problem 1(j), step "The number": the denominator B² w²'
+    inputs: {B: 0.80 T, w: 0.10 m}
+    formula: B**2 * w**2
+    expected: 0.0064 T**2*m**2
+    shown: ['= 0.0098/0.0064 = 1.53$ m/s']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-free-fall-height
+    where: 'Problem 1(j), step "The number": the height of free fall that gives 1.53 m/s, v²/2g'
+    inputs: {v: 1.53125 m/s, g: 9.8 m/s**2}
+    formula: v**2 / (2 * g)
+    expected: 12 cm
+    shown: ['about the speed reached after falling 12 cm freely']
+    source: {cite: mit, at: 'Question 8, p. 4 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-current-by-kirchhoff
+    kind: identity
+    answer: p2-a
+    where: 'Problem 2(a), answer box and formula "Current with the bar moving": battery emf minus the motional emf, the rate of change of the flux B l x(t) taken numerically'
+    formula: (eps - B*l*v)/R
+    equals: (eps - deriv('B*l*(x0 + v*tt)', 'tt', 0.3))/R
+    samples:
+      eps: [1, 2, 1.5, 1.2]
+      B: [0.5, 1, 0.8, 0.6]
+      l: [0.1, 0.3, 0.2, 0.15]
+      v: [0.5, 2, 1, 3]
+      R: [0.5, 1, 0.7, 2]
+      x0: [1, 2, 1.5, 0.5]
+    tolerance: 1e-8
+    shown: ['I = \frac{\varepsilon - B\ell v}{R}']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own solution)'}
+    origin: page-own
+
+  - id: p2-terminal-by-limit
+    kind: identity
+    answer: p2-b
+    where: 'Problem 2(b), answer box and formula "Terminal speed of the bar": v(t) of part (c) at t = 60 τ, and the zero of the current of part (a)'
+    formula: eps/(B*l)
+    equals: solve('(eps - B*l*q)/R', 'q', 1e-6, 1e4)
+    samples:
+      eps: [1, 2, 1.5, 1.2]
+      B: [0.5, 1, 0.8, 0.6]
+      l: [0.1, 0.3, 0.2, 0.15]
+      R: [2, 4, 0.5, 3]
+    tolerance: 1e-7
+    shown: ['v_\infty = \frac{\varepsilon}{B\ell}']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own solution)'}
+    origin: page-own
+
+  - id: p2-terminal-long-time
+    kind: identity
+    where: 'Problem 2(c), check: v(t) tends to v_∞ (t = 60 τ)'
+    formula: (eps/(B*l))*(1 - exp(-60))
+    equals: eps/(B*l)
+    samples:
+      eps: [1, 2, 1.5]
+      B: [0.5, 1, 0.8]
+      l: [0.1, 0.3, 0.2]
+    tolerance: 1e-12
+    shown: ['As $t \to \infty$ it tends to $v_\infty$.']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25'}
+    origin: page-own
+
+  # Put v(t) back into m dv/dt = (B l / R)(eps - B l v): both sides at the time tt.
+  - id: p2-speed-solves-ode
+    kind: identity
+    where: 'Problem 2(c), formulas "Equation of motion of the bar" and "Speed of the bar": m dv/dt, taken numerically, equals (B l/R)(eps - B l v) at sample times'
+    formula: m*deriv('(eps/(B*l))*(1 - exp(-q*B**2*l**2/(m*R)))', 'q', tt)
+    equals: (B*l/R)*(eps - B*l*(eps/(B*l))*(1 - exp(-tt*B**2*l**2/(m*R))))
+    samples:
+      eps: [1, 2, 1.5, 1.2]
+      B: [0.5, 1, 0.8, 0.6]
+      l: [0.1, 0.3, 0.2, 0.15]
+      m: [0.01, 0.05, 0.02, 0.03]
+      R: [0.5, 1, 0.7, 2]
+      tt: [0.1, 0.5, 1, 2]
+    tolerance: 1e-7
+    shown: ['v(t) = \frac{\varepsilon}{B\ell}\left(1 - e^{-t/\tau}\right), \qquad \tau = \frac{mR}{B^2\ell^2}', 'm\,\frac{dv}{dt} = I\ell B = \frac{B\ell}{R}\,(\varepsilon - B\ell v) = \frac{B^2\ell^2}{R}\,(v_\infty - v)']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25'}
+    origin: mit
+
+  - id: p2-start-slope
+    kind: identity
+    where: 'Problem 2(c), check: the slope of v(t) at t = 0 is the starting force (eps/R) l B over m'
+    formula: deriv('(eps/(B*l))*(1 - exp(-q*B**2*l**2/(m*R)))', 'q', 0)
+    equals: eps*B*l/(m*R)
+    samples:
+      eps: [1, 2, 1.5]
+      B: [0.5, 1, 0.8]
+      l: [0.1, 0.3, 0.2]
+      m: [0.01, 0.05, 0.02]
+      R: [0.5, 1, 0.7]
+    tolerance: 1e-7
+    shown: ['$v_\infty/\tau = \varepsilon B\ell/mR$']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own check)'}
+    origin: page-own
+
+  - id: p2-tau-seconds
+    where: 'Problem 2(d): τ in seconds (kg Ω / T² m² = s)'
+    inputs: {m: 0.010 kg, R: 0.50 ohm, B: 0.50 T, l: 0.20 m}
+    formula: m * R / (B**2 * l**2)
+    expected: 0.50 s
+    shown: ['= 0.005/0.01 = 0.50$ s']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-terminal-number
+    where: 'Problem 2(d), step "The time constant": the terminal speed'
+    inputs: {eps: 1.5 V, B: 0.50 T, l: 0.20 m}
+    formula: eps / (B * l)
+    expected: 15 m/s
+    shown: ['The terminal speed is $1.5/(0.50 \times 0.20) = 15$ m/s.']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-time-90
+    answer: p2-d
+    where: 'Problem 2(d), answer box and step "The time": t = τ ln 10'
+    inputs: {m: 0.010 kg, R: 0.50 ohm, B: 0.50 T, l: 0.20 m}
+    formula: (m * R / (B**2 * l**2)) * log(10)
+    expected: 1.15 s
+    shown: ['= 0.50 \times 2.303 = 1.15$ s']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-ln10
+    where: 'Problem 2(d), step "The time": ln 10'
+    formula: log(10)
+    expected: 2.303
+    shown: ['= 0.50 \times 2.303 = 1.15$ s']
+    source: {cite: reading1, at: 'Problem 10.11.1, p. 25 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-area
+    where: 'Problem 3(b), step "The number": the loop area'
+    inputs: {r: 0.50 m}
+    formula: pi * r**2
+    expected: 0.785 m**2
+    shown: ['$\pi r^2 = \pi (0.50)^2 = 0.785$ m²']
+    source: {cite: reading1, at: 'Problem 10.11.9, p. 29'}
+    origin: mit
+
+  - id: p3-rate-rise
+    where: 'Problem 3(b), step "The number": dB_z/dt while the field rises'
+    inputs: {dB: 5.0 T, dt: 2.0 s}
+    formula: dB / dt
+    expected: 2.5 T/s
+    shown: ['$dB_z/dt = 5.0/2.0 = 2.5$ T/s']
+    source: {cite: reading1, at: 'Problem 10.11.9, Figure 10.11.9, p. 29'}
+    origin: mit
+
+  - id: p3-emf-rise
+    answer: p3-b
+    where: 'Problem 3(b), answer box and step "The number": emf = -π r² dB_z/dt while the field rises (the notes print the size 1.96 V)'
+    inputs: {r: 0.50 m, dBdt: 2.5 T/s}
+    formula: -pi * r**2 * dBdt
+    expected: -1.963 V
+    shown: ['$\varepsilon = -0.785 \times 2.5 = -1.96$ V']
+    source: {cite: reading1, at: 'Problem 10.11.9(b), p. 30'}
+    origin: mit
+
+  - id: p3-rate-fall
+    where: 'Problem 3(c), step "The number": dB_z/dt while the field falls'
+    inputs: {dB: -5.0 T, dt: 4.0 s}
+    formula: dB / dt
+    expected: -1.25 T/s
+    shown: ['$dB_z/dt = -5.0/4.0 = -1.25$ T/s']
+    source: {cite: reading1, at: 'Problem 10.11.9, Figure 10.11.9, p. 29'}
+    origin: mit
+
+  - id: p3-emf-fall
+    answer: p3-c
+    where: 'Problem 3(c), answer box and step "The number" (the notes print the size 0.98 V)'
+    inputs: {r: 0.50 m, dBdt: -1.25 T/s}
+    formula: -pi * r**2 * dBdt
+    expected: 0.982 V
+    shown: ['$\varepsilon = -0.785 \times (-1.25) = +0.982$ V']
+    source: {cite: reading1, at: 'Problem 10.11.9(b), p. 30'}
+    origin: mit
+
+  - id: p3-notes-emfs
+    kind: fact
+    where: 'Problem 3(b): the sizes the notes print'
+    shown: ['(The notes give the sizes 1.96 V, 0.0 V and 0.98 V.)']
+    source: {cite: reading1, at: 'Problem 10.11.9(b), p. 30'}
+    origin: mit
+
+  - id: p3-current-rise
+    where: 'Problem 3(d), step "The sense": current while the field rises (the notes print 98 mA)'
+    inputs: {emf: 1.963 V, R: 20 ohm}
+    formula: emf / R
+    expected: 0.098 A
+    shown: ['$1.96/20 = 0.098$ A, 98 mA']
+    source: {cite: reading1, at: 'Problem 10.11.9(c), p. 30'}
+    origin: mit
+
+  - id: p3-current-fall
+    where: 'Problem 3(d), step "The sense": current while the field falls (the notes print 49 mA)'
+    inputs: {emf: 0.9817 V, R: 20 ohm}
+    formula: emf / R
+    expected: 49 mA
+    shown: ['the current is counterclockwise, 49 mA']
+    source: {cite: reading1, at: 'Problem 10.11.9(c), p. 30'}
+    origin: mit
+
+  - id: p3-power-rise
+    where: 'Problem 3(e), step "The powers": heating rate while the field rises'
+    inputs: {r: 0.50 m, dBdt: 2.5 T/s, R: 20 ohm}
+    formula: (pi * r**2 * dBdt)**2 / R
+    expected: 0.193 W
+    shown: ['$P = (1.963)^2/20 = 0.193$ W, 193 mW']
+    source: {cite: reading1, at: 'Problem 10.11.9(d), p. 30 (the notes print 192 mW)'}
+    origin: mit
+
+  - id: p3-power-fall
+    where: 'Problem 3(e), step "The powers": heating rate while the field falls'
+    inputs: {r: 0.50 m, dBdt: 1.25 T/s, R: 20 ohm}
+    formula: (pi * r**2 * dBdt)**2 / R
+    expected: 0.0482 W
+    shown: ['$(0.982)^2/20 = 0.0482$ W, 48 mW']
+    source: {cite: reading1, at: 'Problem 10.11.9(d), p. 30'}
+    origin: mit
+
+  - id: p3-notes-power
+    where: 'Problem 3(e): the notes'' 192 mW, from the emf rounded to 1.96 V'
+    inputs: {emf: 1.96 V, R: 20 ohm}
+    formula: emf**2 / R
+    expected: 192 mW
+    shown: ['(The notes print 192 mW and 48 mW, rounding the emf to 1.96 V first.)']
+    source: {cite: reading1, at: 'Problem 10.11.9(d), p. 30'}
+    origin: mit
+
+  - id: p3-heat
+    answer: p3-e
+    where: 'Problem 3(e), answer box and step "The energy": heat over 0 to 8 s'
+    inputs: {r: 0.50 m, R: 20 ohm, d1: 2.0 s, d2: 4.0 s, dB: 5.0 T}
+    formula: (pi * r**2 * dB / d1)**2 / R * d1 + (pi * r**2 * dB / d2)**2 / R * d2
+    expected: 0.578 J
+    shown: ['$0.193 \times 2.0 + 0.0482 \times 4.0 = 0.386 + 0.193 = 0.578$ J']
+    source: {cite: reading1, at: 'Problem 10.11.9(d), p. 30 (our addition)'}
+    origin: page-own
+
+  - id: p3-heat-rise
+    where: 'Problem 3(e), check: heat of the rising ramp, (π r² ΔB)²/(R Δt)'
+    inputs: {r: 0.50 m, R: 20 ohm, d1: 2.0 s, dB: 5.0 T}
+    formula: (pi * r**2 * dB)**2 / (R * d1)
+    expected: 0.386 J
+    shown: ['0.386 J against 0.193 J']
+    source: {cite: reading1, at: 'Problem 10.11.9(d), p. 30 (our addition)'}
+    origin: page-own
+
+  - id: p3-heat-fall
+    where: 'Problem 3(e), check: heat of the falling ramp'
+    inputs: {r: 0.50 m, R: 20 ohm, d2: 4.0 s, dB: 5.0 T}
+    formula: (pi * r**2 * dB)**2 / (R * d2)
+    expected: 0.193 J
+    shown: ['0.386 J against 0.193 J']
+    source: {cite: reading1, at: 'Problem 10.11.9(d), p. 30 (our addition)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  - id: p4-number-density
+    where: 'Problem 4(a), step "Atoms per volume": iron atoms per cm³ (the notes print 8.5 × 10²⁸ per m³)'
+    inputs: {rho: 7.9 g/cm**3, Mmol: 55.85 g/mol, NA: 6.022e23 1/mol}
+    formula: rho / Mmol * NA
+    expected: 8.52e22 1/cm**3
+    shown: ['= 8.52 \times 10^{22}$ per cm³, so $8.52 \times 10^{28}$ per m³']
+    source: {cite: reading2, at: 'Problem 9.13.9(a), p. 66'}
+    origin: mit
+
+  - id: p4-disc-volume
+    where: 'Problem 4(a), step "Atoms per volume": volume of the disc'
+    inputs: {r: 0.0100 m, h: 0.00100 m}
+    formula: pi * r**2 * h
+    expected: 3.14e-7 m**3
+    shown: ['$\pi (0.0100)^2 (0.00100) = 3.14 \times 10^{-7}$ m³']
+    source: {cite: reading2, at: 'Problem 9.13.9(a), p. 66'}
+    origin: mit
+
+  - id: p4-atom-count
+    where: 'Problem 4(a), step "Atoms per volume": atoms in the disc (the notes print 2.7 × 10²²)'
+    inputs: {rho: 7.9 g/cm**3, Mmol: 55.85 g/mol, NA: 6.022e23 1/mol, r: 0.0100 m, h: 0.00100 m}
+    formula: rho / Mmol * NA * pi * r**2 * h
+    expected: 2.68e22
+    shown: ['so it holds $2.68 \times 10^{22}$ atoms']
+    source: {cite: reading2, at: 'Problem 9.13.9(a), p. 66'}
+    origin: mit
+
+  - id: p4-magnetization
+    answer: p4-a
+    where: 'Problem 4(a), answer box and step "The magnetization" (the notes print 1.53 × 10⁶ A/m)'
+    inputs: {rho: 7.9 g/cm**3, Mmol: 55.85 g/mol, NA: 6.022e23 1/mol, mu: 1.8e-23 A*m**2}
+    formula: rho / Mmol * NA * mu
+    expected: 1.533e6 A/m
+    shown: ['$M = n\mu = 8.52 \times 10^{28} \times 1.8 \times 10^{-23} = 1.53 \times 10^6$ A/m']
+    source: {cite: reading2, at: 'Problem 9.13.9(b), p. 66'}
+    origin: mit
+
+  - id: p4-equivalent-current
+    answer: p4-b
+    where: 'Problem 4(b), answer box and step "The current": I = M h (the notes print 1525 A)'
+    inputs: {rho: 7.9 g/cm**3, Mmol: 55.85 g/mol, NA: 6.022e23 1/mol, mu: 1.8e-23 A*m**2, h: 1.00e-3 m}
+    formula: rho / Mmol * NA * mu * h
+    expected: 1533 A
+    shown: ['$I = Mh = 1.533 \times 10^6 \times 1.00 \times 10^{-3} = 1533$ A']
+    source: {cite: reading2, at: 'Problem 9.13.9(d), p. 66'}
+    origin: mit
+
+  - id: p4-disc-moment
+    where: 'Problem 4(b), step "The current": the disc''s moment M π r² h (the notes print 0.48 A m²)'
+    inputs: {rho: 7.9 g/cm**3, Mmol: 55.85 g/mol, NA: 6.022e23 1/mol, mu: 1.8e-23 A*m**2, r: 0.0100 m, h: 1.00e-3 m}
+    formula: rho / Mmol * NA * mu * pi * r**2 * h
+    expected: 0.48 A*m**2
+    shown: ['$M\pi r^2 h = 0.48$ A m²']
+    source: {cite: reading2, at: 'Problem 9.13.9(c), p. 66'}
+    origin: mit
+
+  - id: p4-notes-current
+    kind: fact
+    where: 'Problem 4(b): the notes'' printed 1525 A'
+    shown: ['(The notes print 1525 A, which is within 1% of ours, from rounded values.)']
+    source: {cite: reading2, at: 'Problem 9.13.9(d), p. 66'}
+    origin: mit
+
+  - id: p4-solenoid-field
+    where: 'Problem 4(c), step "The empty solenoid": B0 = μ0 n I'
+    inputs: {mu0: 1.2566370614e-6 T*m/A, n: 1600 1/m, I: 1.3 A}
+    formula: mu0 * n * I
+    expected: 2.61e-3 T
+    shown: ['$B_0 = (4\pi \times 10^{-7})(1600)(1.3) = 2.61 \times 10^{-3}$ T']
+    source: {cite: reading2, at: 'Problem 9.13.13, p. 68'}
+    origin: mit
+
+  - id: p4-chromium-rise
+    answer: p4-c
+    where: 'Problem 4(c), answer box and step "The rise": ΔB = χ_m μ0 n I with the stated χ_m = 2.7 × 10⁻⁴'
+    inputs: {chi: 2.7e-4, mu0: 1.2566370614e-6 T*m/A, n: 1600 1/m, I: 1.3 A}
+    formula: chi * mu0 * n * I
+    expected: 0.706 uT
+    shown: ['$\Delta B = \chi_m B_0 = 2.7 \times 10^{-4} \times 2.61 \times 10^{-3} = 7.06 \times 10^{-7}$ T, or 0.706 μT']
+    source: {cite: reading2, at: 'Problem 9.13.13(a), p. 68 (the notes print 0.86 μT)'}
+    origin: mit
+
+  - id: p4-chromium-M
+    where: 'Problem 4(c), step "The rise": M = χ_m n I'
+    inputs: {chi: 2.7e-4, n: 1600 1/m, I: 1.3 A}
+    formula: chi * n * I
+    expected: 0.56 A/m
+    shown: ['$M = \chi_m B_0/\mu_0 = \chi_m n I = 0.56$ A/m']
+    source: {cite: reading2, at: 'Problem 9.13.13(b), p. 68 (the notes print 0.68 A/m)'}
+    origin: mit
+
+  - id: p4-notes-chi-implied
+    where: 'Problem 4(c), step "A note on the notes": the χ_m that the notes'' 0.68 A/m implies, (0.68 A/m)/(n I)'
+    inputs: {Mn: 0.68 A/m, n: 1600 1/m, I: 1.3 A}
+    formula: Mn / (n * I)
+    expected: 3.3e-4
+    shown: ['as they would be with $\chi_m \approx 3.3 \times 10^{-4}$ in place of']
+    source: {cite: reading2, at: 'Problem 9.13.13, p. 68'}
+    origin: page-own
+
+  - id: p4-notes-ratio
+    where: 'Problem 4(c), step "A note on the notes": the notes'' 0.86 μT over our 0.706 μT'
+    inputs: {printed: 0.86 uT, ours: 0.7057 uT}
+    formula: printed / ours
+    expected: 1.2
+    shown: ['Both are about 1.2 times our values']
+    source: {cite: reading2, at: 'Problem 9.13.13, p. 68'}
+    origin: page-own
+
+  - id: p4-notes-rounded
+    where: 'Problem 4(c), step "A note on the notes": our values rounded as the notes round theirs'
+    inputs: {chi: 2.7e-4, mu0: 1.2566370614e-6 T*m/A, n: 1600 1/m, I: 1.3 A}
+    formula: chi * mu0 * n * I
+    expected: 0.71 uT
+    shown: ['with the stated value the answers are 0.71 μT and 0.56 A/m']
+    source: {cite: reading2, at: 'Problem 9.13.13, p. 68'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-turns
+    answer: p5-e
+    where: 'Problem 5(e), answer box and step "The number": N_s = N_p ε_s/ε_p'
+    inputs: {Np: 1840, es: 5.0 V, ep: 230 V}
+    formula: Np * es / ep
+    expected: 40
+    shown: ['$N_s = 1840 \times 5.0/230 = 40$ turns']
+    source: {cite: reading1, at: 'Eq. (10.1.4), p. 2, for each coil (our own numbers)'}
+    origin: page-own
