@@ -1,0 +1,1155 @@
+---
+title: "Problem Set 8: differential equations, exp(At) and Markov matrices"
+slug: 18-06-problem-set-8
+course: "18.06"
+kind: problems
+set: 8
+lecture: 24
+order: 90
+covers: [23, 24]
+solutions: own
+summary: "Seven problems of our own on Lectures 23 and 24: solving a system du/dt = Au from its eigenvalues and eigenvectors, stability from the trace and the determinant, the matrix exponential and the two series it is compared with, a third-order equation written as a system, a two-state and a three-state Markov chain and their steady states, and coefficients in an orthonormal basis and in a Fourier series."
+prerequisites: [differential-equations-exp-at, markov-matrices-fourier-series]
+source:
+  title: "MIT 18.06 Lecture 24: Markov matrices; fourier series"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-24-markov-matrices-fourier-series/
+  readings:
+    - title: "18.06 Lecture 23 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/6d67704459268b5517f5f800a2aae300_IZqwi0wJovM.pdf
+    - title: "18.06 Lecture 24 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/a77a2a3a8c01d73741727acb73bffb69_lGGDIGizcQ0.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: reviewed
+---
+
+This set practises two lessons: [differential equations and exp(At)](/courses/18-06/differential-equations-exp-at) (Lecture 23) and [Markov matrices and Fourier series](/courses/18-06/markov-matrices-fourier-series) (Lecture 24). Eigenvalues and diagonalisation themselves belong to Problem Set 7; symmetric and positive definite matrices to Problem Set 9.
+
+MIT's 18.06 problem sets assign exercises from a textbook that is not openly licensed, so this set is made of our own problems on the same lectures, in MIT's lecture order. No MIT or textbook problem is used: every matrix and every number below is ours, and so are the hints and the solutions. The formulas come from the lessons and from the lecture transcripts they cite.
+
+## How to answer
+
+Work each problem on paper first. Then type or choose your result in the answer box and press Check.
+
+A number box wants a decimal number, not a fraction or a root: write $0.25$, not $1/4$. A number box accepts any value within $0.01$ of the exact one, or within $0.005$ when the exact value is below 1 in size, so give at least three decimal places when the answer is not a whole number. A matrix cannot be typed: a box asks for one of its entries, an eigenvalue, a coefficient or a component, or you choose from a list. Entries are numbered by row, then column, starting from 1 (so $c_{12}$ is in the first row, second column).
+
+A formula box takes plain typing, for example `4*exp(-t/2) + sqrt(t)` or `100*0.9^k`, and accepts every correct way of writing the answer. Type `exp( )` for the exponential function and `^` for a power.
+
+Some parts ask you to show something. They have no answer box: write your argument, then open the solution and mark yourself. MIT gives no points for these problems: the points here (100 in all) and their split between the parts are ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+## What you need from the lessons
+
+**Differential equations** (Lecture 23). Each eigenvalue $\lambda_i$ of $A$, with eigenvector $x_i$, gives a pure exponential solution of $du/dt = Au$, and the general solution combines them; the constants come from the start, $Sc = u(0)$, with the eigenvectors in the columns of $S$ (pp. 13–14 of the Lecture 23 transcript):
+
+<Formula label="General solution" tex="u(t) = c_1e^{\lambda_1t}x_1 + c_2e^{\lambda_2t}x_2 + \cdots + c_ne^{\lambda_nt}x_n" cite="reading1" at="p. 5" />
+
+Every solution goes to zero when every eigenvalue has a negative real part; one eigenvalue $0$ with the others of negative real part gives a steady state; a positive real part blows up (pp. 9–10). For a $2 \times 2$ matrix the eigenvalues add up to the trace and multiply to the determinant, so
+
+<Formula label="Two by two stability" tex="\operatorname{trace} = \lambda_1 + \lambda_2 < 0 \quad\text{and}\quad \det A = \lambda_1\lambda_2 > 0" cite="reading1" at="pp. 12–13" />
+
+The matrix exponential is defined by its series, which converges for every $A$ and $t$; with $n$ independent eigenvectors it is built from $S$ and the diagonal $\Lambda$, and $u(t) = e^{At}u(0)$:
+
+<Formula label="The matrix exponential" tex="e^{At} = I + At + \frac{(At)^2}{2} + \frac{(At)^3}{6} + \cdots = Se^{\Lambda t}S^{-1}" cite="reading1" at="pp. 15–20" />
+
+The geometric series converges only when every eigenvalue of $At$ is below 1 in size (p. 18):
+
+<Formula label="Geometric series" tex="(I - At)^{-1} = I + At + (At)^2 + (At)^3 + \cdots" cite="reading1" at="pp. 17–18" />
+
+A second-order equation $y'' + by' + ky = 0$ becomes a first-order system for $u = (y', y)$: the equation in the top row, the trivial equation $y' = y'$ below it. Higher orders work the same way, with ones just below the diagonal (p. 23):
+
+<Formula label="First-order form" tex="\frac{d}{dt}\begin{pmatrix} y' \\ y \end{pmatrix} = \begin{pmatrix} -b & -k \\ 1 & 0 \end{pmatrix}\begin{pmatrix} y' \\ y \end{pmatrix}" cite="reading1" at="p. 23" />
+
+**Markov matrices** (Lecture 24). A Markov matrix has no negative entries and every column adds to 1. Then $\lambda = 1$ is an eigenvalue, the others have $|\lambda| \leq 1$ (in all but exceptional cases $|\lambda| < 1$), and the powers approach the steady state $c_1x_1$ (pp. 2–4 of the Lecture 24 transcript):
+
+<Formula label="Approach to the steady state" tex="u_k = A^ku_0 = c_1\,1^k\,x_1 + c_2\lambda_2^kx_2 + \cdots \;\to\; c_1x_1" cite="reading2" at="p. 3" />
+
+A matrix and its transpose have the same eigenvalues:
+
+<Formula label="Same eigenvalues for the transpose" tex="\det(A - \lambda I) = \det(A^T - \lambda I)" cite="reading2" at="pp. 7–8" />
+
+**Orthonormal bases and Fourier series** (Lecture 24). If $q_1, \dots, q_n$ are orthonormal and $v = x_1q_1 + \cdots + x_nq_n$, a dot product with $q_i$ picks out one coefficient (pp. 15–16):
+
+<Formula label="Coefficient in an orthonormal basis" tex="x_i = q_i^Tv" cite="reading2" at="p. 16" />
+
+Functions on $[0, 2\pi]$ have the inner product $\int_0^{2\pi} f(x)g(x)\,dx$, in which $1, \cos x, \sin x, \cos 2x, \sin 2x, \dots$ are orthogonal (pp. 19–20). In the Fourier series of $f$, the coefficient of $\cos x$ is found by multiplying by $\cos x$ and integrating:
+
+<Formula label="Fourier series and its first coefficient" tex="f(x) = a_0 + a_1\cos x + b_1\sin x + a_2\cos 2x + b_2\sin 2x + \cdots, \qquad a_1 = \frac{1}{\pi}\int_0^{2\pi} f(x)\cos x\,dx" cite="reading2" at="pp. 18–21" />
+
+## Problem 1
+
+<Exercise id="p1" title="Solving du/dt = Au" points={16}>
+
+Solve the system
+
+<Formula label="The system of Problem 1" tex="\frac{du}{dt} = Au, \qquad A = \begin{pmatrix} -3 & 1 \\ 2 & -2 \end{pmatrix}, \qquad u(0) = \begin{pmatrix} 3 \\ 0 \end{pmatrix}" cite="mit" at="Problem 1 (our own problem)" />
+
+<Part label="a" points={4}>
+
+Find the two eigenvalues of $A$.
+
+<Hint>
+
+The eigenvalues solve $\lambda^2 - (\operatorname{trace})\lambda + \det A = 0$.
+
+</Hint>
+
+<Answer id="p1-a-big" label="The larger eigenvalue is" value="-1" tolerance="0.01" calc="p1-a-big" />
+
+<Answer id="p1-a-small" label="The smaller eigenvalue is" value="-4" tolerance="0.01" calc="p1-a-small" />
+
+<Solution>
+
+**The idea.** For a $2 \times 2$ matrix the trace and the determinant give the characteristic polynomial.
+
+<Step title="The characteristic polynomial">
+
+The trace is $-3 - 2 = -5$ and the determinant is $(-3)(-2) - (1)(2) = 4$:
+
+<Formula label="Eigenvalues of A" tex="\lambda^2 + 5\lambda + 4 = (\lambda + 1)(\lambda + 4) = 0, \qquad \lambda_1 = -1,\ \lambda_2 = -4" cite="mit" at="Problem 1(a) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+$-1 + (-4) = -5$ is the trace and $(-1)(-4) = 4$ the determinant. Both eigenvalues are negative, so every solution will decay to zero.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Find eigenvectors $x_1$ for $\lambda_1$ and $x_2$ for $\lambda_2$, with first components equal to 1. Write $u(0) = c_1x_1 + c_2x_2$ and find $c_2$. Then give the second component $u_2(t)$ of the solution.
+
+<Hint>
+
+$x_1$ is in the nullspace of $A - \lambda_1I$: a matrix whose two rows are multiples of each other, so one row is enough.
+
+</Hint>
+
+<Hint>
+
+$c_1x_1 + c_2x_2 = u(0)$ is two equations for $c_1$ and $c_2$. Then each $c_i x_i$ is multiplied by its own $e^{\lambda_it}$.
+
+</Hint>
+
+<Answer id="p1-b-c2" label="$c_2 =$" value="2" tolerance="0.01" calc="p1-b-c2" />
+
+<Answer id="p1-b-u2" label="$u_2(t) =$" expr="2*exp(-t) - 2*exp(-4*t)"
+  vars={{ t: [0.05, 4] }} names={{ t: "t" }}
+  mistakes={[
+    { expr: "2*exp(-4*t) - 2*exp(-t)", hint: "The signs are reversed: this starts to go negative, but du₂/dt = 2u₁ − 2u₂ is 6 at t = 0, so u₂ must start to grow." },
+    { expr: "4*exp(-t) - exp(-4*t)", hint: "This gives u₂(0) = 3 instead of 0: the two constants c₁ and c₂ have been swapped." }
+  ]} />
+
+<Solution>
+
+**The idea.** Eigenvectors from the nullspaces, constants from $u(0)$, and then each piece grows or decays with its own exponential.
+
+<Step title="The eigenvectors">
+
+$A + I = \begin{pmatrix} -2 & 1 \\ 2 & -1 \end{pmatrix}$: the first row says $-2x + y = 0$, so $x_1 = (1, 2)$. $A + 4I = \begin{pmatrix} 1 & 1 \\ 2 & 2 \end{pmatrix}$: $x + y = 0$, so $x_2 = (1, -1)$.
+
+</Step>
+
+<Step title="The constants">
+
+$c_1(1, 2) + c_2(1, -1) = (3, 0)$ means $c_1 + c_2 = 3$ and $2c_1 - c_2 = 0$. Adding, $3c_1 = 3$: so $c_1 = 1$ and $c_2 = 2$.
+
+</Step>
+
+<Step title="The solution">
+
+<Formula label="Solution of Problem 1" tex="u(t) = e^{-t}\begin{pmatrix} 1 \\ 2 \end{pmatrix} + 2e^{-4t}\begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} e^{-t} + 2e^{-4t} \\ 2e^{-t} - 2e^{-4t} \end{pmatrix}" cite="reading1" at="p. 5 (the general solution; the numbers are our own)" />
+
+So $u_2(t) = 2e^{-t} - 2e^{-4t}$.
+
+</Step>
+
+<Step title="Check">
+
+At $t = 0$: $u = (1 + 2, 2 - 2) = (3, 0)$. And $du_2/dt = -2e^{-t} + 8e^{-4t}$ should equal $2u_1 - 2u_2 = 2e^{-t} + 4e^{-4t} - 4e^{-t} + 4e^{-4t} = -2e^{-t} + 8e^{-4t}$. It does.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+$u_2$ starts at 0, rises and falls back to 0. At which time is it largest, and what is its largest value?
+
+<Hint>
+
+Set $du_2/dt = 0$ and solve for $e^{3t}$.
+
+</Hint>
+
+<Answer id="p1-c-t" label="The time of the maximum is $t =$" value="0.4621" tolerance="0.005" calc="p1-c-t" />
+
+<Answer id="p1-c-max" label="The largest value of $u_2$ is" value="0.9449" tolerance="0.005" calc="p1-c-max" />
+
+<Solution>
+
+**The idea.** A maximum of a smooth function is where its derivative is zero.
+
+<Step title="The time">
+
+$du_2/dt = -2e^{-t} + 8e^{-4t} = 0$ gives $e^{3t} = 4$:
+
+<Formula label="Time of the maximum" tex="t^* = \frac{\ln 4}{3} \approx 0.4621" cite="mit" at="Problem 1(c) (our own solution)" />
+
+</Step>
+
+<Step title="The value">
+
+At $t^*$, $e^{-3t^*} = \frac14$, so $u_2 = 2e^{-t^*}(1 - e^{-3t^*}) = \frac32e^{-t^*} = \frac32 \cdot 4^{-1/3} \approx 0.9449$.
+
+<Plot variable="t" domain={[0, 3]} range={[0, 3.2]} xLabel="t" yLabel="u"
+  curves={[
+    { expr: "exp(-t) + 2*exp(-4*t)" },
+    { expr: "2*exp(-t) - 2*exp(-4*t)", dash: true }
+  ]}
+  caption="The two components of the solution of Problem 1, computed from the formula: u₁ (solid) falls from 3, u₂ (dashed) rises from 0 to its largest value near t = 0.46 and then decays with u₁." />
+
+</Step>
+
+<Step title="Check">
+
+Before $t^*$ the term $8e^{-4t}$ wins and $u_2$ rises; after it, $-2e^{-t}$ wins and $u_2$ falls. So the stationary point is a maximum.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+Show that $u_1(t) + u_2(t) = 3e^{-t}$, without using the solution, from the columns of $A$. (This part has no box.)
+
+<Hint>
+
+Add the two equations $du_1/dt = \dots$ and $du_2/dt = \dots$. What does each column of $A$ add up to?
+
+</Hint>
+
+<Solution>
+
+**The idea.** The column sums of $A$ say how the total changes.
+
+<Step title="Adding the equations">
+
+$du_1/dt = -3u_1 + u_2$ and $du_2/dt = 2u_1 - 2u_2$. Their sum is $d(u_1 + u_2)/dt = -u_1 - u_2$, because each column of $A$ adds up to $-1$. So the total $s = u_1 + u_2$ solves $ds/dt = -s$ with $s(0) = 3$, which gives $s = 3e^{-t}$.
+
+</Step>
+
+<Step title="Check">
+
+From part (b): $(e^{-t} + 2e^{-4t}) + (2e^{-t} - 2e^{-4t}) = 3e^{-t}$. (In Lecture 23's example the columns add to zero, so there the total stays constant: Lecture 23 transcript, p. 1.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Stability from the trace and the determinant" points={16}>
+
+For a real number $a$, take
+
+<Formula label="The matrix of Problem 2" tex="A = \begin{pmatrix} -2 & a \\ 1 & -3 \end{pmatrix}, \qquad \frac{du}{dt} = Au" cite="mit" at="Problem 2 (our own problem)" />
+
+<Part label="a" points={3}>
+
+Every solution goes to zero exactly when $a$ is below a certain number. Find it.
+
+<Hint>
+
+The trace does not depend on $a$. What must the determinant do?
+
+</Hint>
+
+<Answer id="p2-a" label="Stable exactly when $a$ is below" value="6" tolerance="0.01" calc="p2-a" />
+
+<Solution>
+
+**The idea.** The $2 \times 2$ test: trace negative and determinant positive.
+
+<Step title="The test">
+
+The trace is $-5 < 0$ for every $a$. The determinant is $6 - a$, positive exactly when $a < 6$. So the system is stable for $a < 6$.
+
+</Step>
+
+<Step title="Check">
+
+At $a = 6$ the determinant is zero, so one eigenvalue is $0$ and the other is the trace $-5$: a steady state, not decay. Above 6 the determinant is negative, the eigenvalues have opposite signs and the positive one blows up.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+For $a \geq 0$ the eigenvalues are real. Give the larger one as a formula in $a$.
+
+<Hint>
+
+$\lambda^2 - (\operatorname{trace})\lambda + \det A = 0$, solved with the quadratic formula. Simplify the term under the root.
+
+</Hint>
+
+<Answer id="p2-b" label="The larger eigenvalue is" expr="(-5 + sqrt(1 + 4*a))/2"
+  vars={{ a: [0, 5] }} names={{ a: "a" }}
+  mistakes={[
+    { expr: "(5 + sqrt(1 + 4*a))/2", hint: "The eigenvalues add up to the trace, −5, not +5: this has the wrong sign in front of 5." },
+    { expr: "-5 + sqrt(1 + 4*a)", hint: "Try a = 0: the matrix is then triangular with eigenvalues −2 and −3, but this gives −4. The factor 1/2 of the quadratic formula is missing." }
+  ]} />
+
+<Solution>
+
+**The idea.** The characteristic polynomial of a $2 \times 2$ matrix comes from its trace and determinant.
+
+<Step title="The quadratic formula">
+
+<Formula label="Eigenvalues of the matrix of Problem 2" tex="\lambda^2 + 5\lambda + (6 - a) = 0, \qquad \lambda = \frac{-5 \pm \sqrt{25 - 4(6 - a)}}{2} = \frac{-5 \pm \sqrt{1 + 4a}}{2}" cite="mit" at="Problem 2(b) (our own solution)" />
+
+The larger one takes the plus sign.
+
+</Step>
+
+<Step title="Check">
+
+At $a = 0$: $(-5 + 1)/2 = -2$, the larger diagonal entry of the triangular matrix. At $a = 6$: $(-5 + 5)/2 = 0$, as part (a) found.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Now take $a = -6.5$. Find the real part of the eigenvalues and the positive imaginary part, and say what the solutions do.
+
+<Hint>
+
+With $a = -6.5$ the term under the root is negative: its square root is $i$ times the root of the positive number.
+
+</Hint>
+
+<Hint>
+
+The size of $e^{\lambda t}$ depends only on the real part of $\lambda$.
+
+</Hint>
+
+<Answer id="p2-c-re" label="The real part of the eigenvalues is" value="-2.5" tolerance="0.01" calc="p2-c-re" />
+
+<Answer id="p2-c-im" label="The positive imaginary part is" value="2.5" tolerance="0.01" calc="p2-c-im" />
+
+<Answer id="p2-c-what" label="Every solution other than zero"
+  choices={["spirals out to infinity", "decays to zero without turning", "spirals in, shrinking to zero", "circles at a fixed size"]} answer={2} />
+
+<Solution>
+
+**The idea.** Complex eigenvalues of a real matrix come in a conjugate pair; their real part is half the trace.
+
+<Step title="The eigenvalues">
+
+$1 + 4a = 1 - 26 = -25$, so $\lambda = (-5 \pm 5i)/2 = -2.5 \pm 2.5i$.
+
+</Step>
+
+<Step title="The behaviour">
+
+Each pure solution contains $e^{-2.5t}e^{\pm 2.5it}$. The factor $e^{\pm 2.5it} = \cos 2.5t \pm i\sin 2.5t$ has size 1 and turns; $e^{-2.5t}$ shrinks. So the solutions spiral in to zero.
+
+</Step>
+
+<Step title="Check">
+
+The trace and determinant test agrees: trace $-5 < 0$ and determinant $6 + 6.5 = 12.5 > 0$. And $(-2.5)^2 + 2.5^2 = 12.5$, the product of the two conjugate eigenvalues.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+For comparison, take $B = \begin{pmatrix} 0 & -3 \\ 3 & 0 \end{pmatrix}$ and $du/dt = Bu$. Say what the solutions do. Then show that $\|u(t)\|^2 = u_1^2 + u_2^2$ never changes (this step has no box).
+
+<Hint>
+
+Trace $0$: the stability test is on its border. Find the eigenvalues.
+
+</Hint>
+
+<Hint>
+
+Differentiate $u_1^2 + u_2^2$ and use the two equations.
+
+</Hint>
+
+<Answer id="p2-d" label="Every solution other than zero"
+  choices={["spirals in to zero", "spirals out to infinity", "decays to zero without turning", "circles at a fixed size"]} answer={3} />
+
+<Solution>
+
+**The idea.** Purely imaginary eigenvalues give pure oscillation: real part zero, so neither decay nor growth.
+
+<Step title="The eigenvalues">
+
+$\lambda^2 + 9 = 0$, so $\lambda = \pm 3i$. Since $|e^{3it}| = 1$, the solutions neither shrink nor grow: they circle at a fixed size.
+
+</Step>
+
+<Step title="The length">
+
+$du_1/dt = -3u_2$ and $du_2/dt = 3u_1$, so
+
+<Formula label="The length does not change" tex="\frac{d}{dt}\left(u_1^2 + u_2^2\right) = 2u_1(-3u_2) + 2u_2(3u_1) = 0" cite="mit" at="Problem 2(d) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+$u(t) = (\cos 3t, \sin 3t)$ is a solution: its derivative $(-3\sin 3t, 3\cos 3t)$ equals $B u$. Its length is always 1.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="The matrix exponential" points={14}>
+
+Take the matrix
+
+<Formula label="The matrix of Problem 3" tex="A = \begin{pmatrix} 4 & -2 \\ 1 & 1 \end{pmatrix}" cite="mit" at="Problem 3 (our own problem)" />
+
+<Part label="a" points={5}>
+
+Write $e^{At} = Se^{\Lambda t}S^{-1}$ and give its $(1, 2)$ entry, the entry in the first row and second column, as a formula in $t$.
+
+<Hint>
+
+The trace is 5 and the determinant 6. Find both eigenvectors, put them in the columns of $S$ and invert the $2 \times 2$ matrix $S$.
+
+</Hint>
+
+<Hint>
+
+$e^{\Lambda t}$ is diagonal with $e^{\lambda_1t}$ and $e^{\lambda_2t}$. Multiply the three matrices in order.
+
+</Hint>
+
+<Answer id="p3-a" label="The $(1, 2)$ entry of $e^{At}$ is" expr="2*exp(2*t) - 2*exp(3*t)"
+  vars={{ t: [0.1, 1] }} names={{ t: "t" }}
+  mistakes={[
+    { expr: "2*exp(3*t) - 2*exp(2*t)", hint: "The sign is reversed: the (1, 2) entry of A is −2, so this entry of e^(At) starts at 0 and decreases at first (its slope at t = 0 is −2)." },
+    { expr: "2*exp(3*t)", hint: "This is the (1, 2) entry of S e^(Λt): the factor S⁻¹ on the right is missing." }
+  ]} />
+
+<Solution>
+
+**The idea.** Diagonalise $A$; the exponential of the diagonal matrix is the diagonal of exponentials.
+
+<Step title="Eigenvalues and eigenvectors">
+
+$\lambda^2 - 5\lambda + 6 = (\lambda - 2)(\lambda - 3)$, so $\lambda_1 = 2$, $\lambda_2 = 3$. $A - 2I = \begin{pmatrix} 2 & -2 \\ 1 & -1 \end{pmatrix}$ gives $x_1 = (1, 1)$; $A - 3I = \begin{pmatrix} 1 & -2 \\ 1 & -2 \end{pmatrix}$ gives $x_2 = (2, 1)$.
+
+</Step>
+
+<Step title="The three factors">
+
+<Formula label="S and its inverse" tex="S = \begin{pmatrix} 1 & 2 \\ 1 & 1 \end{pmatrix}, \qquad S^{-1} = \frac{1}{-1}\begin{pmatrix} 1 & -2 \\ -1 & 1 \end{pmatrix} = \begin{pmatrix} -1 & 2 \\ 1 & -1 \end{pmatrix}" cite="mit" at="Problem 3(a) (our own solution)" />
+
+<Formula label="The exponential of A" tex="e^{At} = \begin{pmatrix} 1 & 2 \\ 1 & 1 \end{pmatrix}\begin{pmatrix} e^{2t} & 0 \\ 0 & e^{3t} \end{pmatrix}\begin{pmatrix} -1 & 2 \\ 1 & -1 \end{pmatrix} = \begin{pmatrix} -e^{2t} + 2e^{3t} & 2e^{2t} - 2e^{3t} \\ -e^{2t} + e^{3t} & 2e^{2t} - e^{3t} \end{pmatrix}" cite="reading1" at="pp. 19–21 (the formula; the numbers are our own)" />
+
+The $(1, 2)$ entry is $2e^{2t} - 2e^{3t}$.
+
+</Step>
+
+<Step title="Check">
+
+$SS^{-1} = \begin{pmatrix} -1 + 2 & 2 - 2 \\ -1 + 1 & 2 - 1 \end{pmatrix} = I$. Part (b) checks the result itself.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={2}>
+
+Check, from the series, that $e^{At}$ must equal $I$ at $t = 0$ and that its derivative at $t = 0$ must be $A$. Then check both on your matrix from part (a). (This part has no box.)
+
+<Hint>
+
+Differentiate the series term by term: what is left of each term at $t = 0$?
+
+</Hint>
+
+<Solution>
+
+**The idea.** The first two terms of the series, $I + At$, decide the value and the slope at $t = 0$.
+
+<Step title="From the series">
+
+At $t = 0$ every term after $I$ is zero. Differentiating term by term gives $A + A^2t + \frac12A^3t^2 + \cdots$, which is $A$ at $t = 0$. (In fact the derivative is $Ae^{At}$, so $u = e^{At}u(0)$ solves $du/dt = Au$.)
+
+</Step>
+
+<Step title="On the matrix">
+
+At $t = 0$ the four entries are $-1 + 2 = 1$, $2 - 2 = 0$, $-1 + 1 = 0$ and $2 - 1 = 1$: the identity. Their derivatives at $t = 0$ are $-2 + 6 = 4$, $4 - 6 = -2$, $-2 + 3 = 1$ and $4 - 3 = 1$: the matrix $A$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Find the $(1, 1)$ entry of $e^{At}$ at $t = 0.5$.
+
+<Hint>
+
+Put $t = 0.5$ into the $(1, 1)$ entry of the matrix you found in part (a).
+
+</Hint>
+
+<Answer id="p3-c" label="The $(1, 1)$ entry at $t = 0.5$ is" value="6.2451" tolerance="0.01" calc="p3-c" />
+
+<Solution>
+
+**The idea.** One entry of the product of part (a), at one time.
+
+<Step title="The number">
+
+<Formula label="An entry at t = 0.5" tex="-e^{1} + 2e^{1.5} \approx -2.7183 + 8.9634 = 6.2451" cite="mit" at="Problem 3(c) (our own solution)" />
+
+</Step>
+
+<Step title="Check">
+
+The trace of $e^{At}$ is $e^{2t} + e^{3t}$, the sum of its eigenvalues. At $t = 0.5$ the diagonal of part (a) gives $6.2451 + (2e - e^{1.5}) = 6.2451 + 0.9549 = 7.2000$, and $e + e^{1.5} = 2.7183 + 4.4817 = 7.2000$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+Compare the two series of the lecture for this $A$ and $t > 0$. For which $t$ does the exponential series $I + At + (At)^2/2 + \cdots$ converge? And up to which $t$ does the geometric series $I + At + (At)^2 + \cdots$ converge?
+
+<Hint>
+
+The eigenvalues of $At$ are $t$ times the eigenvalues of $A$.
+
+</Hint>
+
+<Answer id="p3-d-exp" label="The exponential series converges"
+  choices={["only for t below 1/2", "for every t, however large", "only when every eigenvalue of A is negative", "only for t between −1 and 1"]} answer={1} />
+
+<Answer id="p3-d-geo" label="The geometric series converges for $0 < t <$" value="0.3333" tolerance="0.005" calc="p3-d-geo" />
+
+<Solution>
+
+**The idea.** Factorials make the exponential series converge always; the geometric series needs every eigenvalue of $At$ below 1 in size.
+
+<Step title="The exponential series">
+
+The $n$-th term is $(At)^n/n!$, and $n!$ grows faster than any power: the series converges for every $A$ and every $t$ (Lecture 23 transcript, p. 18).
+
+</Step>
+
+<Step title="The geometric series">
+
+The eigenvalues of $At$ are $2t$ and $3t$. Both are below 1 when $3t < 1$, so the geometric series converges for $0 < t < \frac13 \approx 0.3333$. (Stopping at $2t < 1$, that is $t < \frac12$, forgets the larger eigenvalue.)
+
+</Step>
+
+<Step title="Check">
+
+At $t = \frac13$ the matrix $I - At$ has the eigenvalue $1 - 3 \cdot \frac13 = 0$: it is singular, so $(I - At)^{-1}$ does not even exist there.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="A third-order equation as a system" points={12}>
+
+Take the third-order equation
+
+<Formula label="The equation of Problem 4" tex="y^{(3)} - 2y'' - y' + 2y = 0" cite="mit" at="Problem 4 (our own problem)" />
+
+Here $y^{(3)}$ is the third derivative of $y$.
+
+<Part label="a" points={4}>
+
+Write it as $du/dt = Cu$ with $u = (y'', y', y)$, as in the lecture. Give the entries $c_{11}$ and $c_{13}$ of the $3 \times 3$ matrix $C$.
+
+<Hint>
+
+The top row of $du/dt$ is the third derivative $y^{(3)}$: solve the equation for it. The other two rows are trivial equations.
+
+</Hint>
+
+<Answer id="p4-a-11" label="$c_{11} =$" value="2" tolerance="0.01" calc="p4-a-11" />
+
+<Answer id="p4-a-13" label="$c_{13} =$" value="-2" tolerance="0.01" calc="p4-a-13" />
+
+<Solution>
+
+**The idea.** The equation itself goes in the top row; $y'' = y''$ and $y' = y'$ fill the rows below.
+
+<Step title="The matrix">
+
+$y^{(3)} = 2y'' + y' - 2y$, so
+
+<Formula label="The first-order form of Problem 4" tex="\frac{d}{dt}\begin{pmatrix} y'' \\ y' \\ y \end{pmatrix} = \begin{pmatrix} 2 & 1 & -2 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}\begin{pmatrix} y'' \\ y' \\ y \end{pmatrix}" cite="reading1" at="p. 23 (the method; the third-order matrix is our own)" />
+
+So $c_{11} = 2$ and $c_{13} = -2$.
+
+</Step>
+
+<Step title="Check">
+
+The second row says $d(y')/dt = y''$ and the third $dy/dt = y'$, both true. The ones sit just below the diagonal, as in the lecture's description.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Show that $\det(C - \lambda I) = -(\lambda^3 - 2\lambda^2 - \lambda + 2)$ (this step has no box). Then find the largest eigenvalue of $C$.
+
+<Hint>
+
+Expand the determinant along the first row. For the roots, try small whole numbers.
+
+</Hint>
+
+<Answer id="p4-b" label="The largest eigenvalue of $C$ is" value="2" tolerance="0.01" calc="p4-b" />
+
+<Solution>
+
+**The idea.** The eigenvalues of this matrix are the roots of the equation's own polynomial: try $y = e^{\lambda t}$ and you get the same polynomial.
+
+<Step title="The determinant">
+
+<Formula label="Determinant along the first row" tex="\det\begin{pmatrix} 2 - \lambda & 1 & -2 \\ 1 & -\lambda & 0 \\ 0 & 1 & -\lambda \end{pmatrix} = (2 - \lambda)\lambda^2 - 1\cdot(-\lambda) + (-2)\cdot 1 = -\lambda^3 + 2\lambda^2 + \lambda - 2" cite="mit" at="Problem 4(b) (our own solution)" />
+
+</Step>
+
+<Step title="The roots">
+
+$\lambda^3 - 2\lambda^2 - \lambda + 2 = \lambda^2(\lambda - 2) - (\lambda - 2) = (\lambda - 2)(\lambda - 1)(\lambda + 1)$. The eigenvalues are $2$, $1$ and $-1$; the largest is $2$.
+
+</Step>
+
+<Step title="Check">
+
+Their sum $2 + 1 - 1 = 2$ is the trace of $C$, and their product $-2$ is $\det C$ (put $\lambda = 0$ in the determinant).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Two eigenvalues are positive, so most solutions blow up. Take $y(0) = 1$ and $y'(0) = -1$. For which value of $y''(0)$ does $y(t)$ go to zero as $t \to \infty$?
+
+<Hint>
+
+$y(t)$ is a combination of $e^{\lambda t}$ for the three eigenvalues of part (b): which amounts must be zero?
+
+</Hint>
+
+<Answer id="p4-c" label="$y''(0) =$" value="1" tolerance="0.01" calc="p4-c" />
+
+<Solution>
+
+**The idea.** Only the pure solution with the negative eigenvalue decays; the start must contain nothing of the other two.
+
+<Step title="The condition">
+
+Write $y(t) = \alpha e^{2t} + \beta e^{t} + \gamma e^{-t}$. For $y \to 0$ we need $\alpha = \beta = 0$, so $y = \gamma e^{-t}$. Then $y(0) = \gamma = 1$, and $y'(0) = -1$ holds already. So $y = e^{-t}$ and $y''(0) = 1$.
+
+</Step>
+
+<Step title="Check">
+
+In general the three starting values give $\alpha + \beta + \gamma = 1$, $2\alpha + \beta - \gamma = -1$ and $4\alpha + \beta + \gamma = y''(0)$. The first and third give $3\alpha = y''(0) - 1$, and the first two give $3\alpha + 2\beta = 0$. Both $\alpha$ and $\beta$ vanish exactly when $y''(0) = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Two regions" points={16}>
+
+Each year $0.8$ of the people in region P stay and $0.2$ move to region Q; $0.7$ of the people in Q stay and $0.3$ move to P. Nobody arrives from outside or leaves. At the start (year 0) region P has $1000$ people and region Q is empty. (Like the two-state example of Lecture 24, with our own numbers: Lecture 24 transcript, pp. 10–14.) With $u_k = (\text{people in P}, \text{people in Q})$ in year $k$,
+
+<Formula label="The model of Problem 5" tex="u_{k+1} = Au_k, \qquad A = \begin{pmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{pmatrix}, \qquad u_0 = \begin{pmatrix} 1000 \\ 0 \end{pmatrix}" cite="mit" at="Problem 5 (our own problem)" />
+
+<Part label="a" points={4}>
+
+$A$ is a Markov matrix, so one eigenvalue is 1. Find the other, and choose the eigenvector for $\lambda = 1$.
+
+<Hint>
+
+The two eigenvalues add up to the trace.
+
+</Hint>
+
+<Answer id="p5-a-lam" label="The other eigenvalue is" value="0.5" tolerance="0.005" calc="p5-a-lam" />
+
+<Answer id="p5-a-x1" label="An eigenvector for $\lambda = 1$ is"
+  choices={["$(2, 3)$", "$(1, -1)$", "$(3, 2)$", "$(1, 1)$"]} answer={2} />
+
+<Solution>
+
+**The idea.** For a Markov matrix, $\lambda = 1$ is known; the trace gives the other eigenvalue at once.
+
+<Step title="The eigenvalues">
+
+The trace is $1.5$, so the other eigenvalue is $1.5 - 1 = 0.5$. The determinant agrees: $0.56 - 0.06 = 0.5 = 1 \cdot 0.5$.
+
+</Step>
+
+<Step title="The eigenvectors">
+
+$A - I = \begin{pmatrix} -0.2 & 0.3 \\ 0.2 & -0.3 \end{pmatrix}$: $-0.2x + 0.3y = 0$, so $x_1 = (3, 2)$, with no negative component, as the lecture says it must be. $A - 0.5I = \begin{pmatrix} 0.3 & 0.3 \\ 0.2 & 0.2 \end{pmatrix}$ gives $x_2 = (1, -1)$.
+
+</Step>
+
+<Step title="Check">
+
+$A(3, 2) = (2.4 + 0.6, 0.6 + 1.4) = (3, 2)$. The vector $(1, 1)$ is the eigenvector of $A^T$ for $\lambda = 1$, not of $A$ (Lecture 24 transcript, p. 8).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Show that the total number of people stays $1000$ (this step has no box). How many people live in P in the steady state?
+
+<Hint>
+
+What does each column of $A$ add up to? The steady state is the multiple of $x_1$ with the right total.
+
+</Hint>
+
+<Answer id="p5-b" label="People in P in the steady state:" value="600" tolerance="0.01" calc="p5-b" />
+
+<Solution>
+
+**The idea.** Columns adding to 1 conserve the total; the steady state is the eigenvector for $\lambda = 1$ with that total.
+
+<Step title="The total">
+
+Each column of $A$ adds up to 1: of the people in P, the fractions $0.8$ and $0.2$ are found again in P and Q, and of the people in Q, $0.3 + 0.7 = 1$. So the total in year $k + 1$ equals the total in year $k$, and it stays $1000$.
+
+</Step>
+
+<Step title="The steady state">
+
+The multiple of $(3, 2)$ with total $1000$ is $200 \cdot (3, 2) = (600, 400)$: $600$ people in P.
+
+</Step>
+
+<Step title="Check">
+
+$A(600, 400) = (480 + 120, 120 + 280) = (600, 400)$: nothing changes from year to year.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Give the number of people in P in year $k$ as a formula in $k$.
+
+<Hint>
+
+Write $u_0 = c_1x_1 + c_2x_2$; then $u_k = c_1x_1 + c_2\lambda_2^kx_2$, with $\lambda_2$ from part (a).
+
+</Hint>
+
+<Answer id="p5-c" label="People in P in year $k$:" expr="600 + 400*0.5^k"
+  vars={{ k: [1, 10] }} names={{ k: "k" }}
+  mistakes={[
+    { expr: "600 + 400*0.7^k", hint: "0.7 is an entry of A, not its second eigenvalue: the two eigenvalues add up to the trace 1.5." },
+    { expr: "600 - 400*0.5^k", hint: "This gives 200 people in P at k = 0, but all 1000 start in P: the sign of c₂ is wrong." }
+  ]} />
+
+<Solution>
+
+**The idea.** Expand $u_0$ in eigenvectors; each part is multiplied by its own eigenvalue every year.
+
+<Step title="The constants">
+
+$c_1(3, 2) + c_2(1, -1) = (1000, 0)$: $3c_1 + c_2 = 1000$ and $2c_1 - c_2 = 0$. Adding, $5c_1 = 1000$, so $c_1 = 200$ and $c_2 = 400$.
+
+</Step>
+
+<Step title="The solution">
+
+<Formula label="Population in year k" tex="u_k = 200\begin{pmatrix} 3 \\ 2 \end{pmatrix} + 400\,(0.5)^k\begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} 600 + 400\,(0.5)^k \\ 400 - 400\,(0.5)^k \end{pmatrix}" cite="reading2" at="p. 3 (the expansion; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+At $k = 0$: $(1000, 0)$. At $k = 1$: $(800, 200)$, and directly $A(1000, 0) = (800, 200)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={4}>
+
+In which year does the population of region P first fall below $610$?
+
+<Hint>
+
+Use your formula from part (c) and find the first whole $k$ for which it falls below 610.
+
+</Hint>
+
+<Answer id="p5-d" label="Year $k =$" value="6" tolerance="0.01" calc="p5-d" />
+
+<Solution>
+
+**The idea.** The distance to the steady state halves every year.
+
+<Step title="The inequality">
+
+$400(0.5)^k < 10$ means $2^k > 40$, so $k > \log_2 40 \approx 5.32$. The first whole year is $k = 6$.
+
+</Step>
+
+<Step title="Check">
+
+Year 5: $600 + 400/32 = 612.5$. Year 6: $600 + 400/64 = 606.25$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="Three clubs" points={14}>
+
+Members move between three clubs every year by the Markov matrix
+
+<Formula label="The matrix of Problem 6" tex="A = \begin{pmatrix} 0.4 & 0.2 & 0.2 \\ 0.3 & 0.6 & 0.1 \\ 0.3 & 0.2 & 0.7 \end{pmatrix}" cite="mit" at="Problem 6 (our own problem)" />
+
+<Part label="a" points={3}>
+
+Show that $(1, 1, 1)$ is an eigenvector of $A^T$, and explain why this makes $\lambda = 1$ an eigenvalue of $A$. (This part has no box.)
+
+<Hint>
+
+The rows of $A^T$ are the columns of $A$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** Column sums of $A$ are row sums of $A^T$, and $A$ and $A^T$ share their eigenvalues.
+
+<Step title="The eigenvector of the transpose">
+
+Each entry of $A^T(1, 1, 1)$ is the sum of one column of $A$: $0.4 + 0.3 + 0.3$, $0.2 + 0.6 + 0.2$ and $0.2 + 0.1 + 0.7$, each equal to 1. So $A^T(1, 1, 1) = (1, 1, 1)$.
+
+</Step>
+
+<Step title="Back to A">
+
+$\det(A - \lambda I) = \det(A^T - \lambda I)$, so $A$ has the same eigenvalue $1$, though with a different eigenvector (Lecture 24 transcript, pp. 7–8).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Find the other two eigenvalues of $A$.
+
+<Hint>
+
+The three eigenvalues add up to the trace and multiply to $\det A$. One of them is 1.
+
+</Hint>
+
+<Answer id="p6-b-big" label="The larger of the other two is" value="0.5" tolerance="0.005" calc="p6-b-big" />
+
+<Answer id="p6-b-small" label="The smaller of the other two is" value="0.2" tolerance="0.005" calc="p6-b-small" />
+
+<Solution>
+
+**The idea.** Knowing $\lambda_1 = 1$, the trace and the determinant leave a quadratic for the other two.
+
+<Step title="Trace and determinant">
+
+The trace is $0.4 + 0.6 + 0.7 = 1.7$, so $\lambda_2 + \lambda_3 = 0.7$. Along the first row,
+
+<Formula label="Determinant of the matrix of Problem 6" tex="\det A = 0.4(0.42 - 0.02) - 0.2(0.21 - 0.03) + 0.2(0.06 - 0.18) = 0.16 - 0.036 - 0.024 = 0.1" cite="mit" at="Problem 6(b) (our own solution)" />
+
+so $\lambda_2\lambda_3 = 0.1$.
+
+</Step>
+
+<Step title="The quadratic">
+
+$\lambda^2 - 0.7\lambda + 0.1 = (\lambda - 0.5)(\lambda - 0.2) = 0$: the other eigenvalues are $0.5$ and $0.2$, both below 1 in size.
+
+</Step>
+
+<Step title="Check">
+
+$A - 0.5I$ has rows $(-0.1, 0.2, 0.2)$, $(0.3, 0.1, 0.1)$ and $(0.3, 0.2, 0.2)$: its last two columns are equal, so it is singular.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+The three clubs have $2000$ members together. How many does each have in the steady state? Give the second and third club.
+
+<Hint>
+
+Solve $(A - I)x = 0$. Two of its rows are enough; then scale $x$ to the total 2000.
+
+</Hint>
+
+<Answer id="p6-c-2" label="Members of the second club:" value="600" tolerance="0.01" calc="p6-c-2" />
+
+<Answer id="p6-c-3" label="Members of the third club:" value="900" tolerance="0.01" calc="p6-c-3" />
+
+<Solution>
+
+**The idea.** The steady state is the eigenvector for $\lambda = 1$, scaled to the conserved total.
+
+<Step title="The eigenvector">
+
+$A - I$ has rows $(-0.6, 0.2, 0.2)$, $(0.3, -0.4, 0.1)$ and $(0.3, 0.2, -0.3)$. Times 10, the first two rows say $-6x + 2y + 2z = 0$ and $3x - 4y + z = 0$. Twice the second added to the first gives $-6y + 4z = 0$, so $z = \frac32y$; then $6x = 2y + 3y$, so $x = \frac56y$. With $y = 6$: $x_1 = (5, 6, 9)$.
+
+</Step>
+
+<Step title="The steady state">
+
+$5 + 6 + 9 = 20$, so scale by $100$: $(500, 600, 900)$.
+
+</Step>
+
+<Step title="Check">
+
+The third row: $0.3 \cdot 500 + 0.2 \cdot 600 + 0.7 \cdot 900 = 150 + 120 + 630 = 900$. Starting from any distribution of the 2000 members, the parts along the other eigenvectors shrink like $0.5^k$ and $0.2^k$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+An exceptional case: the matrix $P = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$ is also a Markov matrix. Start from $u_0 = (1, 0)$ and say what $u_k = P^ku_0$ does.
+
+<Hint>
+
+Find both eigenvalues of $P$. Is the second one below 1 in size?
+
+</Hint>
+
+<Answer id="p6-d" label="As $k$ grows, $u_k$"
+  choices={["tends to the steady state (0.5, 0.5)", "stays at (1, 0)", "flips back and forth", "decays to (0, 0)"]} answer={2} />
+
+<Solution>
+
+**The idea.** The steady state is reached only when every other eigenvalue has $|\lambda| < 1$.
+
+<Step title="The eigenvalues">
+
+$\lambda^2 - 1 = 0$: $\lambda = 1$ with $x_1 = (1, 1)$ and $\lambda = -1$ with $x_2 = (1, -1)$. Here $|\lambda_2| = 1$, the exceptional case of the lecture.
+
+</Step>
+
+<Step title="The powers">
+
+$u_0 = \frac12(1, 1) + \frac12(1, -1)$, so $u_k = \frac12(1, 1) + \frac12(-1)^k(1, -1)$: $(1, 0)$ for even $k$ and $(0, 1)$ for odd $k$. It flips for ever and never settles.
+
+</Step>
+
+<Step title="Check">
+
+$P$ simply swaps the two components: $P(1, 0) = (0, 1)$ and $P(0, 1) = (1, 0)$. Only a start at $(0.5, 0.5)$, a multiple of $x_1$, stays put.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 7
+
+<Exercise id="p7" title="Coefficients in an orthogonal basis" points={12}>
+
+Take the four vectors $q_1 = \frac12(1, 1, 1, 1)$, $q_2 = \frac12(1, 1, -1, -1)$, $q_3 = \frac12(1, -1, 1, -1)$, $q_4 = \frac12(1, -1, -1, 1)$ in four-dimensional space, and the square wave
+
+<Formula label="The square wave of Problem 7" tex="f(x) = \begin{cases} 1, & 0 < x < \pi \\ -1, & \pi < x < 2\pi \end{cases}" cite="mit" at="Problem 7 (our own problem)" />
+
+<Part label="a" points={5}>
+
+Check that $q_1, \dots, q_4$ are orthonormal (this check has no box). Write $v = (3, 1, 2, -2)$ as $x_1q_1 + x_2q_2 + x_3q_3 + x_4q_4$ and find $x_3$ and $x_4$.
+
+<Hint>
+
+No equations to solve: one dot product for each coefficient.
+
+</Hint>
+
+<Answer id="p7-a-3" label="$x_3 =$" value="3" tolerance="0.01" calc="p7-a-3" />
+
+<Answer id="p7-a-4" label="$x_4 =$" value="-1" tolerance="0.01" calc="p7-a-4" />
+
+<Solution>
+
+**The idea.** In an orthonormal basis each coefficient is a dot product, $x_i = q_i^Tv$.
+
+<Step title="Orthonormal">
+
+Each $q_i$ has four entries $\pm\frac12$, so $q_i^Tq_i = 4 \cdot \frac14 = 1$. Any two different ones agree in sign in two places and differ in two, so $q_i^Tq_j = \frac14(1 + 1 - 1 - 1) = 0$.
+
+</Step>
+
+<Step title="The coefficients">
+
+$x_3 = q_3^Tv = \frac12(3 - 1 + 2 + 2) = 3$ and $x_4 = q_4^Tv = \frac12(3 - 1 - 2 - 2) = -1$.
+
+</Step>
+
+<Step title="Check">
+
+The other two are $x_1 = \frac12(3 + 1 + 2 - 2) = 2$ and $x_2 = \frac12(3 + 1 - 2 + 2) = 2$. In an orthonormal basis lengths are kept: $x_1^2 + \cdots + x_4^2 = 4 + 4 + 9 + 1 = 18$, and $\|v\|^2 = 9 + 1 + 4 + 4 = 18$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={7}>
+
+By the same steps that give $a_1$, find the coefficients $b_1$ of $\sin x$ and $b_3$ of $\sin 3x$ in the Fourier series of the square wave.
+
+<Hint>
+
+Multiply the series by $\sin x$ and integrate from $0$ to $2\pi$. Which term survives, and what is $\int_0^{2\pi}\sin^2x\,dx$?
+
+</Hint>
+
+<Hint>
+
+Split each integral at $x = \pi$, where $f$ changes sign.
+
+</Hint>
+
+<Answer id="p7-b-1" label="$b_1 =$" value="1.2732" tolerance="0.01" calc="p7-b-1" />
+
+<Answer id="p7-b-3" label="$b_3 =$" value="0.4244" tolerance="0.005" calc="p7-b-3" />
+
+<Solution>
+
+**The idea.** The sines and cosines are orthogonal, so multiplying by $\sin nx$ and integrating leaves one term, $b_n\int_0^{2\pi}\sin^2nx\,dx = \pi b_n$.
+
+<Step title="The formula">
+
+As for $a_1$ in the lecture, with $\sin nx$ in place of $\cos x$:
+
+<Formula label="Sine coefficients" tex="b_n = \frac{1}{\pi}\int_0^{2\pi} f(x)\sin nx\,dx = \frac{1}{\pi}\left(\int_0^{\pi}\sin nx\,dx - \int_{\pi}^{2\pi}\sin nx\,dx\right)" cite="mit" at="Problem 7(b) (our own solution)" />
+
+</Step>
+
+<Step title="The two coefficients">
+
+$\int_0^{\pi}\sin x\,dx = 2$ and $\int_\pi^{2\pi}\sin x\,dx = -2$, so $b_1 = 4/\pi \approx 1.2732$. For $n = 3$: $\int_0^\pi\sin 3x\,dx = \frac23$ and $\int_\pi^{2\pi}\sin 3x\,dx = -\frac23$, so $b_3 = \frac{4}{3\pi} \approx 0.4244$.
+
+<Plot variable="x" domain={[0, 6.2832]} range={[-1.6, 1.6]} xLabel="x" yLabel="f"
+  curves={[
+    { expr: "abs(x - pi) > 0.03 ? (x < pi ? 1 : -1) : NaN" },
+    { expr: "(4/pi)*(sin(x) + sin(3*x)/3)", dash: true }
+  ]}
+  caption="The square wave (solid) and the first two nonzero terms of its Fourier series, b₁ sin x + b₃ sin 3x (dashed), computed from the formulas. Two terms already follow the steps of the wave, with a ripple." />
+
+</Step>
+
+<Step title="Check">
+
+For even $n$ the two halves cancel: $\int_0^\pi\sin 2x\,dx = 0$, so $b_2 = 0$. The cosine coefficients are zero too: $\int_0^\pi\cos x\,dx = 0 = \int_\pi^{2\pi}\cos x\,dx$, and the average $a_0$ of $f$ is $0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
