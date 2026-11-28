@@ -13,7 +13,7 @@ One line per account. **Each account edits only its own line, in every push**, s
 States: **WORKING** (on what) · **READY TO MERGE** (B only: A may merge the current head of `origin/run/b-806-8962`; anything B pushes later goes into the next merge, and B sets READY again) · **MERGED** (A only: which head of B went into which `main` commit, and whether it is live) · **IDLE** (nothing to do). Always add **waiting on:** (what, from whom) or "nothing".
 
 - **Account B:** **IDLE**. Everything of B's is on `main` (twelfth merge 1c3d0b8: up to 1325a1a, including the 8.04 Lecture 23 page). No task is assigned to B. **Waiting on:** nothing (B watches A's line and `main`; the open items for A are under Change requests).
-- **Account A:** **WORKING** on the twelfth merge (B up to 1325a1a, with A's PhET sims in 7.9 and 5.4, 351ca93). **Waiting on:** nothing.
+- **Account A:** **MERGED B up to 1325a1a into main 1c3d0b8**, deploying on Vercel (not live yet). Then **WORKING** on B's Change requests (Ferreras 5.4 `coveredBy`, OpenStax closed in OWNER-TODO, sources research for AGENTS.md, UCL Press note, homepage set suggestion). **Waiting on:** nothing.
 
 ## Rules
 
