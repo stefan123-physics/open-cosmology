@@ -45,7 +45,30 @@ export function numberTolerance(value: string, tolerance?: string): number {
 
 /** A second valid reading of a box (docs/ANSWER-BOX-FIX-PLAN.md Step 4), shown with its note when it is typed. */
 export type AlsoNumber = { value: string; tolerance?: string; note?: string };
-export type NumberSpec = { value: string; tolerance?: string; alsoAccept?: AlsoNumber[] };
+/** A typical wrong value with the hint shown when it is typed (owner decision 2026-11-28). */
+export type NumberMistake = { value: string; tolerance?: string; hint: string };
+export type NumberSpec = {
+  value: string;
+  tolerance?: string;
+  alsoAccept?: AlsoNumber[];
+  /**
+   * The unit the box asks for, as a number: "1e-11" for "in units of 10⁻¹¹", "1e6" for "in millions", "0.01" for a
+   * percentage. The box then accepts both the factor (5.54) and the full number (5.54e-11), each with its tolerance.
+   */
+  scale?: string;
+  mistakes?: NumberMistake[];
+};
+
+/** How a box's scale is said in the note shown when the reader typed the full number. */
+export function scaleWords(scale: number): string {
+  if (scale === 0.01) return "a percentage";
+  const k = Math.log10(scale);
+  if (Number.isInteger(Math.round(k * 1e9) / 1e9) && Math.abs(k - Math.round(k)) < 1e-9) {
+    const words: Record<number, string> = { 3: "thousands", 6: "millions", 9: "billions", 12: "trillions" };
+    return words[Math.round(k)] ?? `the number in front of 10${sup(Math.round(k))}`;
+  }
+  return `units of ${scale}`;
+}
 export type Verdict =
   | { status: "correct"; note?: string }
   | { status: "wrong"; hint?: string }
@@ -62,6 +85,17 @@ export function checkNumber(input: string, spec: NumberSpec): Verdict {
   for (const a of spec.alsoAccept ?? []) {
     const v = parseNumber(a.value);
     if (v !== null && within(v, numberTolerance(a.value, a.tolerance))) return { status: "correct", note: a.note };
+  }
+  // Both forms (scale): the full number counts too, divided back to the box's unit with the same tolerance.
+  const scale = spec.scale !== undefined ? parseNumber(spec.scale) : null;
+  if (scale) {
+    const t = numberTolerance(spec.value, spec.tolerance);
+    if (Math.abs(typed / scale - value) <= t * (1 + 1e-9))
+      return { status: "correct", note: `The box asked for ${scaleWords(scale)}; the full number is right too.` };
+  }
+  for (const m of spec.mistakes ?? []) {
+    const v = parseNumber(m.value);
+    if (v !== null && within(v, numberTolerance(m.value, m.tolerance))) return { status: "wrong", hint: m.hint };
   }
   // The right digits with the wrong power of ten (5.54e-11 typed in a box "in units of 10⁻¹¹"): say so, but it is
   // not correct. Only for a factor of 100 or more, so a slip of one decimal place is not mistaken for it.

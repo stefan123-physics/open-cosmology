@@ -27,7 +27,10 @@ export type AnswerProps = {
   expr?: string;
   vars?: Ranges;
   names?: Record<string, string>;
-  mistakes?: { expr: string; hint: string }[];
+  /** Formula boxes: { expr, hint }; number boxes: { value, tolerance?, hint }. */
+  mistakes?: { expr?: string; value?: string; tolerance?: string; hint: string }[];
+  /** Number boxes: the unit asked for as a number ("1e-11", "1e6", "0.01"); the full number is accepted too. */
+  scale?: string;
   /** Second valid readings, also correct, shown with their note: [{ value, tolerance?, note }] or [{ expr, note }]. */
   alsoAccept?: { value?: string; tolerance?: string; expr?: string; note?: string }[];
   // choice
@@ -45,7 +48,7 @@ let libs: Promise<[Lib, typeof import("katex"), typeof import("@/lib/speech")]> 
 const loadLibs = () => (libs ??= Promise.all([import("@/lib/answers"), import("katex"), import("@/lib/speech")]));
 
 export function Answer(props: AnswerProps & Rendered) {
-  const { id, expr, vars, names, mistakes, value, unit, tolerance, choices, answer, alsoAccept } = props;
+  const { id, expr, vars, names, mistakes, value, unit, tolerance, choices, answer, alsoAccept, scale } = props;
   const type = expr !== undefined ? "formula" : choices ? "choice" : "number";
   const uid = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -102,13 +105,15 @@ export function Answer(props: AnswerProps & Rendered) {
           ? lib.checkFormula(text, {
               expr: expr!,
               vars: vars ?? {},
-              mistakes,
+              mistakes: (mistakes ?? []).filter((m) => m.expr).map((m) => ({ expr: m.expr!, hint: m.hint })),
               alsoAccept: (alsoAccept ?? []).filter((a) => a.expr).map((a) => ({ expr: a.expr!, note: a.note })),
             })
           : lib.checkNumber(text, {
               value: value!,
               tolerance,
+              scale,
               alsoAccept: (alsoAccept ?? []).filter((a) => a.value).map((a) => ({ value: a.value!, tolerance: a.tolerance, note: a.note })),
+              mistakes: (mistakes ?? []).filter((m) => m.value).map((m) => ({ value: m.value!, tolerance: m.tolerance, hint: m.hint })),
             });
     }
     setVerdict(v);

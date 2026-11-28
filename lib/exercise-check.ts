@@ -112,6 +112,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   const untoleranced: string[] = [];
   const slipBoxes: string[] = [];
   const roundBoxes: string[] = [];
+  const unscaled: string[] = [];
   for (const ex of done) {
     const name = `<Exercise id="${ex.props.id}">`;
     unique("<Exercise>", ex.props.id);
@@ -142,6 +143,31 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
         // Without a tolerance a box accepts half a unit of the last printed digit, which can let a wrong value
         // through ("1" accepts 0.6 to 1.4): docs/ANSWER-BOX-FIX-PLAN.md Step 5.
         if (a.tolerance === undefined) untoleranced.push(String(a.id));
+        // Both forms (scale) and listed mistakes on number boxes (owner decisions 2026-11-28, B's change request).
+        const interval = (v: string, t: unknown) => {
+          const c = parseNumber(v);
+          return c === null ? null : ([c, numberTolerance(v, t === undefined ? undefined : String(t))] as const);
+        };
+        const correct = [interval(String(a.value), a.tolerance), ...((a.alsoAccept ?? []) as Record<string, unknown>[]).map((o) => interval(String(o.value ?? ""), o.tolerance))].filter(Boolean) as (readonly [number, number])[];
+        if (a.scale !== undefined) {
+          const s = parseNumber(String(a.scale));
+          if (s === null || !(s > 0)) errors.push(`${an}: scale "${a.scale}" must be a positive number such as "1e-11", "1e6" or "0.01"`);
+        } else if (/in units of\s*\$?\s*10\s*\^|\\times\s*10\s*\^|×\s*10|\bmillions?\b|\bbillions?\b|\bthousands?\b|%|\bper ?cent\b/i.test(`${a.label ?? ""} ${a.unit ?? ""}`))
+          unscaled.push(String(a.id));
+        for (const [i, m] of ((a.mistakes ?? []) as Record<string, unknown>[]).entries()) {
+          const mi = interval(String(m.value ?? ""), m.tolerance);
+          if (!mi) {
+            errors.push(`${an}: mistakes[${i}] needs a value that is a number (formula mistakes belong to formula boxes)`);
+            continue;
+          }
+          if (!String(m.hint ?? "").trim()) errors.push(`${an}: mistakes[${i}] needs a hint`);
+          if (correct.some(([c, t]) => Math.abs(c - mi[0]) <= t + mi[1])) errors.push(`${an}: mistakes[${i}] value ${m.value} overlaps an accepted interval, so the box would accept and reject it at once`);
+          const mc = m.calc ? calcs?.get(String(m.calc)) : undefined;
+          if (!m.calc) errors.push(`${an}: mistakes[${i}] needs calc="…", the id of the calculation that recomputes the wrong value`);
+          else if (!mc) errors.push(`${an}: mistakes[${i}] calc "${m.calc}" is not in calcs/${page.course}/${page.slug}.yaml`);
+          else if (parseNumber(String(mc.expected ?? "").trim().split(/\s+/)[0]) !== mi[0])
+            errors.push(`${an}: mistakes[${i}] value ${m.value} differs from expected "${mc.expected}" of calc "${m.calc}"`);
+        }
         // The tolerance rule (docs/CONTENT_GUIDE.md "Problem sets", owner decision 2026-11-28): no obvious slip may
         // be accepted, and a correct answer to 3 significant figures must be. Warnings while existing boxes are fixed.
         if (value !== null) {
@@ -184,5 +210,6 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   const list = (ids: string[]) => `${ids.slice(0, 5).join("; ")}${ids.length > 5 ? `; and ${ids.length - 5} more` : ""}`;
   if (slipBoxes.length) warnings.push(`${slipBoxes.length} number box${slipBoxes.length > 1 ? "es accept" : " accepts"} an obvious slip (tolerance rule, docs/CONTENT_GUIDE.md): ${list(slipBoxes)}`);
   if (roundBoxes.length) warnings.push(`${roundBoxes.length} number box${roundBoxes.length > 1 ? "es reject" : " rejects"} the answer rounded to 3 significant figures without asking for more digits in the label: ${list(roundBoxes)}`);
+  if (unscaled.length) warnings.push(`${unscaled.length} number box${unscaled.length > 1 ? "es ask" : " asks"} for a scaled unit (a power of ten, millions, a percentage) but ${unscaled.length > 1 ? "have" : "has"} no scale, so the full number is rejected: ${list(unscaled)}`);
   return { errors, warnings, exercises: done.length };
 }

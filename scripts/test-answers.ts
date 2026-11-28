@@ -166,6 +166,21 @@ test("audit: an answer that is not finite in its ranges is reported", auditFormu
   test("audit: alsoAccept without a note is reported", auditFormula({ ...f, alsoAccept: [{ expr: "x^2" }] }).length > 0);
 }
 
+// Both forms (scale) and listed mistakes on number boxes (owner decisions 2026-11-28).
+{
+  const s = { value: "5.54", tolerance: "2%", scale: "1e-11" };
+  test("scale: the factor is correct", checkNumber("5.54", s).status === "correct");
+  const full = checkNumber("5.54e-11", s);
+  test("scale: the full number is correct, with a note", full.status === "correct" && /10⁻¹¹/.test(full.note ?? ""), full);
+  test("scale: another power of ten is still wrong", checkNumber("5.54e-12", s).status === "wrong");
+  const pct = checkNumber("0.25", { value: "25", tolerance: "2%", scale: "0.01" });
+  test("scale: a percentage as a fraction is correct", pct.status === "correct" && /percentage/.test(pct.note ?? ""), pct);
+  const m = { value: "2.19", tolerance: "2%", mistakes: [{ value: "0.686", tolerance: "2%", hint: "That is the dark fraction." }] };
+  const mv = checkNumber("0.686", m);
+  test("number mistakes: a listed wrong value gets its hint", mv.status === "wrong" && mv.hint === "That is the dark fraction.", mv);
+  test("number mistakes: the answer is still correct", checkNumber("2.19", m).status === "correct");
+}
+
 // Scores (lib/progress.ts): revealed answers earn nothing, "Partly" earns half, optional problems only add.
 {
   const e = (ok: boolean, revealed = false) => ({ ok, revealed, tries: 1, at: "" });
