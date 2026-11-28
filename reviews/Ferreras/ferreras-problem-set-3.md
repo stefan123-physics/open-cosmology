@@ -106,3 +106,5 @@ COUNTS: errors=0 warnings=5 info=3
 - I1: no change.
 - I2: done. The Lecture 14 notes of 8.902 were checked on the rendered page: eq. (408), printed p. 89, ends in the boxed ξ(r) = (2π)⁻³ ∫ P(k) e^{ik·r} d³k. Added as reference `vogelsberger14`; the formula now cites it at "eq. (408), p. 89 (there in three dimensions; this form follows after the angular integral)".
 - I3: added to Problem 3(B), "The idea": rv is conserved for a loss at any rate; what slowness adds is that each orbit stays circular, so v² = GM/r still holds at the end.
+
+- Follow-up by the page author (same day): the quoted peak position "k ≈ 0.02 h per Mpc" and its calcs fact `p4-peak` were removed, because no source on the site gives that number; the solution now says the peak lies near the horizon scale at matter–radiation equality, with a link to the 8.902 power-spectrum lesson.
