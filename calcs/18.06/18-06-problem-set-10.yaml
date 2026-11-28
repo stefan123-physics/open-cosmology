@@ -1,0 +1,761 @@
+# Calculations on content/year-2/18.06/18-06-problem-set-10.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Every problem on this page is our own (MIT's 18.06 problem sets are textbook exercise numbers), so every answer is
+# checked here by a route independent of the page's solution: complex products written out in real and imaginary
+# parts, eigenvalues put back into the characteristic polynomial, the formula boxes against a numerical root of the
+# characteristic polynomial (solve), and singular values through trace and determinant of AᵀA and through |det A|.
+# All values were also recomputed with NumPy (numpy.linalg.eigvals, svd, matrix_rank) when the page was written.
+
+page: content/year-2/18.06/18-06-problem-set-10.mdx
+calcs:
+  - id: intro-points
+    where: 'How to answer: the points of the seven problems (14 + 16 + 12 + 14 + 16 + 16 + 12)'
+    inputs: {}
+    formula: 14 + 16 + 12 + 14 + 16 + 16 + 12
+    expected: '100'
+    shown: ['the points here (100 in all)']
+    source: {cite: mit, at: 'our own points'}
+    origin: page-own
+
+  # ---- Problem 1
+
+  - id: p1-a-len
+    answer: p1-a-len
+    where: 'Problem 1(a), answer box: |1 + 2i|² + |2 − i|²'
+    inputs: {}
+    formula: (1**2 + 2**2) + (2**2 + 1**2)
+    expected: '10'
+    shown: ['\|z\|^2 = z^Hz = 5 + 5 = 10']
+    source: {cite: reading1, at: 'pp. 3–5'}
+    origin: page-own
+
+  - id: p1-a-re
+    answer: p1-a-re
+    where: 'Problem 1(a), answer box: real part of (−i)(1 + 2i) + (2 − i); (p + qi)(r + si) has real part pr − qs'
+    inputs: {}
+    formula: (0*1 - (-1)*2) + 2
+    expected: '4'
+    shown: ['(-i + 2) + (2 - i) = 4 - 2i']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: p1-a-im
+    answer: p1-a-im
+    where: 'Problem 1(a), answer box: imaginary part of (−i)(1 + 2i) + (2 − i); imaginary part ps + qr'
+    inputs: {}
+    formula: (0*2 + (-1)*1) + (-1)
+    expected: '-2'
+    shown: ['The real part is $4$, the imaginary part $-2$.']
+    source: {cite: reading1, at: 'p. 4'}
+    origin: page-own
+
+  - id: p1-a-yTz
+    where: 'Problem 1(a), check: y^T z = i(1 + 2i) + (2 − i), real part (0·1 − 1·2) + 2 and imaginary part (0·2 + 1·1) − 1, squared and added'
+    inputs: {}
+    formula: ((0*1 - 1*2) + 2)**2 + ((0*2 + 1*1) - 1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['y^Tz = i(1 + 2i) + (2 - i) = (i - 2) + (2 - i) = 0']
+    source: {cite: mit, at: 'Problem 1(a) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-big
+    kind: identity
+    answer: p1-b-big
+    where: 'Problem 1(b), answer box: the larger eigenvalue against a numerical root of λ² − (a + 2)λ + (2a − 2), searched above the midpoint (a + 2)/2'
+    formula: (a + 2 + sqrt((a - 2)**2 + 8))/2
+    equals: solve('lam**2 - (a + 2)*lam + (2*a - 2)', 'lam', (a + 2)/2 + 0.5, 20)
+    samples: {a: [-3, -1, 0.5, 3, 6]}
+    tolerance: 1e-6
+    shown: ['\frac{a + 2 \pm \sqrt{(a - 2)^2 + 8}}{2}" cite']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-det
+    where: 'Problem 1(b): the off-diagonal product (1 − i)(1 + i) = 1·1 − (−1)(1) (real part; the imaginary part 1·1 + (−1)·1 is 0)'
+    inputs: {}
+    formula: 1*1 - (-1)*1
+    expected: '2'
+    shown: ['the determinant is $2a - (1 - i)(1 + i) = 2a - 2$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-small
+    answer: p1-b-small
+    where: 'Problem 1(b), answer box: the smaller eigenvalue for a = 3, (5 − √9)/2'
+    inputs: {}
+    formula: (3 + 2 - sqrt((3 - 2)**2 + 8))/2
+    expected: '1'
+    shown: ['$(5 \pm \sqrt{1 + 8})/2 = (5 \pm 3)/2$, so the eigenvalues are $4$ and $1$']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-small-check
+    where: 'Problem 1(b), check: λ = 1 is a root of λ² − 5λ + 4 (a = 3)'
+    inputs: {}
+    formula: 1**2 - 5*1 + 4
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$4 \cdot 1 = 4 = 2 \cdot 3 - 2$ is the determinant']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-pd
+    where: 'Problem 1(b), choice box (a > 1): the determinant 2a − 2 vanishes at a = 1'
+    inputs: {}
+    formula: solve('2*a - 2', 'a', 0, 3)
+    expected: '1'
+    tolerance: '1e-9'
+    shown: ['So $A$ is positive definite exactly for $a > 1$.']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-b-check
+    where: 'Problem 1(b), check: det(A − 4I) for a = 3, (−1)(−2) − (1 − i)(1 + i)'
+    inputs: {}
+    formula: (-1)*(-2) - 2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['has determinant $2 - 2 = 0$, as it should']
+    source: {cite: mit, at: 'Problem 1(b) (our own solution)'}
+    origin: page-own
+
+  - id: p1-c-check
+    where: 'Problem 1(c), check: x^H A x for A = (0 1; −1 0), x = (1, i): Ax = (i, −1), so 1·i + (−i)(−1), imaginary part'
+    inputs: {}
+    formula: 1 + 1
+    expected: '2'
+    shown: ['its $x^HAx$ for $x = (1, i)$ is $2i$, not real']
+    source: {cite: mit, at: 'Problem 1(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2  (rows of F4: (1,1,1,1), (1,i,−1,−i), (1,−1,1,−1), (1,−i,−1,i); x = (1, 2, 0, −1))
+
+  - id: p2-a-y0
+    answer: p2-a-y0
+    where: 'Problem 2(a), answer box: row 0 of F4 times x'
+    inputs: {}
+    formula: 1 + 2 + 0 - 1
+    expected: '2'
+    shown: ['$y_0$ is the plain sum of the components, $1 + 2 + 0 - 1 = 2$']
+    source: {cite: reading1, at: 'pp. 11–12'}
+    origin: page-own
+
+  - id: p2-a-y1re
+    answer: p2-a-y1re
+    where: 'Problem 2(a), answer box: real part of row 1 times x, 1·1 + 0·2 + (−1)·0 + 0·(−1)'
+    inputs: {}
+    formula: 1*1 + 0*2 + (-1)*0 + 0*(-1)
+    expected: '1'
+    shown: ['= \begin{pmatrix} 2 \\ 1 + 3i \\ 0 \\ 1 - 3i \end{pmatrix}" cite="reading1"']
+    source: {cite: reading1, at: 'pp. 11–12'}
+    origin: page-own
+
+  - id: p2-a-y1im
+    answer: p2-a-y1im
+    where: 'Problem 2(a), answer box: imaginary part of row 1 times x, 0·1 + 1·2 + 0·0 + (−1)·(−1)'
+    inputs: {}
+    formula: 0*1 + 1*2 + 0*0 + (-1)*(-1)
+    expected: '3'
+    shown: ['In row 1, the last term is $(-i)(-1) = +i$']
+    source: {cite: reading1, at: 'pp. 11–12'}
+    origin: page-own
+
+  - id: p2-a-y2
+    where: 'Problem 2(a): row 2 of F4 times x'
+    inputs: {}
+    formula: 1 - 2 + 0 + 1
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['1 - 2 + 0 - (-1)']
+    source: {cite: reading1, at: 'pp. 11–12'}
+    origin: page-own
+
+  - id: p2-a-y3im
+    answer: p2-a-y3im
+    where: 'Problem 2(a), answer box: imaginary part of row 3 times x, 0·1 + (−1)·2 + 0·0 + 1·(−1)'
+    inputs: {}
+    formula: 0*1 + (-1)*2 + 0*0 + 1*(-1)
+    expected: '-3'
+    shown: ['in row 3 it is $i \cdot (-1) = -i$']
+    source: {cite: reading1, at: 'pp. 11–12'}
+    origin: page-own
+
+  - id: p2-b
+    answer: p2-b
+    where: 'Problem 2(b), answer box: |y|² = 2² + (1² + 3²) + 0² + (1² + 3²), checked against 4·|x|²'
+    inputs: {}
+    formula: 4*(1**2 + 2**2 + 0**2 + (-1)**2)
+    expected: '24'
+    shown: ['4 + 10 + 0 + 10 = 24']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  - id: p2-b-x
+    where: 'Problem 2(b): |x|² and the ratio'
+    inputs: {}
+    formula: 1 + 4 + 0 + 1
+    expected: '6'
+    shown: ['$\|x\|^2 = 1 + 4 + 0 + 1 = 6$, and $24 = 4 \cdot 6$']
+    source: {cite: mit, at: 'Problem 2(b) (our own solution)'}
+    origin: page-own
+
+  - id: p2-c
+    where: 'Problem 2(c), choice box x = (1, 0, −1, 0): forward check, the four components of F4 x minus (0, 2, 0, 2), squared and added (rows of F4 times (1, 0, −1, 0): 1 − 1, 1 + 1, 1 − 1, 1 + 1)'
+    inputs: {}
+    formula: (1 - 1 - 0)**2 + (1 + 1 - 2)**2 + (1 - 1 - 0)**2 + (1 + 1 - 2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$(1, 1, 1, 1) - (1, -1, 1, -1) = (0, 2, 0, 2)$']
+    source: {cite: reading1, at: 'p. 14'}
+    origin: page-own
+
+  - id: p2-c-len
+    where: 'Problem 2(c), check: |(0, 2, 0, 2)|² = 4·|(1, 0, −1, 0)|²'
+    inputs: {}
+    formula: 4*(1 + 0 + 1 + 0)
+    expected: '8'
+    shown: ['$\|(0, 2, 0, 2)\|^2 = 8 = 4 \cdot 2$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  - id: p3-a-sq
+    where: 'Problem 3(a), choice box W8² = i: the angle of W8² is 2·(2π/8) = π/2, cos and sin'
+    inputs: {}
+    formula: cos(2*2*pi/8)**2 + (sin(2*2*pi/8) - 1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$W_8^2 = e^{4\pi i/8} = e^{i\pi/2} = i$']
+    source: {cite: reading1, at: 'p. 15'}
+    origin: page-own
+
+  - id: p3-a-re
+    answer: p3-a-re
+    where: 'Problem 3(a), answer box: real part of W8³, cos(3·2π/8), against −√2/2'
+    inputs: {}
+    formula: cos(3*2*pi/8)
+    expected: '-0.7071'
+    tolerance: '0.00001'
+    shown: ['The real part is $-\sqrt2/2 \approx -0.7071$.']
+    source: {cite: reading1, at: 'p. 10'}
+    origin: page-own
+
+  - id: p3-a-sqrt2
+    where: 'Problem 3(a): −√2/2'
+    inputs: {}
+    formula: -sqrt(2)/2
+    expected: '-0.7071'
+    tolerance: '0.00001'
+    shown: ['= -\frac{\sqrt2}{2} + i\,\frac{\sqrt2}{2}']
+    source: {cite: mit, at: 'Problem 3(a) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b
+    answer: p3-b
+    where: 'Problem 3(b), answer box: second entry of F2(2, −1) = 2 − (−1)'
+    inputs: {}
+    formula: 2 - (-1)
+    expected: '3'
+    shown: ['h = F_2\begin{pmatrix} 2 \\ -1 \end{pmatrix} = \begin{pmatrix} 1 \\ 3 \end{pmatrix}']
+    source: {cite: reading1, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p3-b-assemble
+    where: 'Problem 3(b): g + Dh and g − Dh against Problem 2(a): real parts g0 + h0 = 2, g0 − h0 = 0, g1 = 1 (twice), imaginary parts ±h1 = ±3; differences squared and added'
+    inputs: {}
+    formula: ((1 + 1) - 2)**2 + ((1 - 1) - 0)**2 + (1 - 1)**2 + (3 - 3)**2 + (-3 - (-3))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['The top half is $g + Dh = (2, 1 + 3i)$ and the bottom half $g - Dh = (0, 1 - 3i)$']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-b-count
+    where: 'Problem 3(b), check: 2·2² + 2 against 4²'
+    inputs: {}
+    formula: 2*2**2 + 2
+    expected: '10'
+    shown: ['the two $F_2$''s take $2 \cdot 2^2 = 8$ multiplications']
+    source: {cite: mit, at: 'Problem 3(b) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-count
+    kind: identity
+    answer: p3-c-count
+    where: 'Problem 3(c), answer box: k·2^(k−1) against ½ n log2 n with n = 2^k (log2 as ln n / ln 2)'
+    formula: k*2**(k - 1)
+    equals: 0.5*2**k*log(2**k)/log(2)
+    samples: {k: [1, 3, 10, 16, 20]}
+    tolerance: 1e-9
+    shown: ['\tfrac12 \cdot 2^k \cdot k = k\,2^{k-1}']
+    source: {cite: reading1, at: 'pp. 18–19'}
+    origin: page-own
+
+  - id: p3-c-ratio
+    answer: p3-c-ratio
+    where: 'Problem 3(c), answer box: n² over ½ n log2 n for n = 2^16'
+    inputs: {}
+    formula: (2**16)**2/(0.5*2**16*16)
+    expected: '8192'
+    tolerance: '1e-9'
+    shown: ['\frac{2^{17}}{16} = 2^{13} = 8192']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-n2
+    where: 'Problem 3(c): n² for n = 2^16'
+    inputs: {}
+    formula: (2**16)**2
+    expected: '4294967296'
+    tolerance: '0.5'
+    shown: ['$n^2 = 4\,294\,967\,296$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-fft
+    where: 'Problem 3(c): 16·2^15'
+    inputs: {}
+    formula: 16*2**15
+    expected: '524288'
+    tolerance: '0.5'
+    shown: ['$16 \cdot 2^{15} = 524\,288$']
+    source: {cite: mit, at: 'Problem 3(c) (our own solution)'}
+    origin: page-own
+
+  - id: p3-c-k10
+    where: 'Problem 3(c), check: the lecture''s n = 1024, k·2^(k−1) and 2^11/10'
+    inputs: {}
+    formula: 2**11/10
+    expected: '205'
+    shown: ['the ratio $2^{11}/10 \approx 205$, Strang''s "factor of 200"']
+    source: {cite: reading1, at: 'p. 19'}
+    origin: page-own
+
+  - id: p3-c-k10-count
+    where: 'Problem 3(c), check: 10·2^9 = 5·1024'
+    inputs: {}
+    formula: 10*2**9
+    expected: '5120'
+    shown: ['$k = 10$ gives $10 \cdot 2^9 = 5 \cdot 1024$']
+    source: {cite: reading1, at: 'p. 19'}
+    origin: page-own
+
+  # ---- Problem 4  (A = (3 1; 2 2), M = (1 0; 1 1), B = M⁻¹AM; computed entry by entry, AM = (3+1, 1; 2+2, 2))
+
+  - id: p4-a-11
+    answer: p4-a-11
+    where: 'Problem 4(a), answer box: b11 = (row 1 of M⁻¹ = (1, 0)) · (column 1 of AM = (4, 4))'
+    inputs: {}
+    formula: 1*(3*1 + 1*1) + 0*(2*1 + 2*1)
+    expected: '4'
+    shown: ['= \begin{pmatrix} 4 & 1 \\ 0 & 1 \end{pmatrix}" cite="reading2"']
+    source: {cite: reading2, at: 'pp. 6–8'}
+    origin: page-own
+
+  - id: p4-a-12
+    answer: p4-a-12
+    where: 'Problem 4(a), answer box: b12 = (1, 0) · (column 2 of AM = (1, 2))'
+    inputs: {}
+    formula: 1*(3*0 + 1*1) + 0*(2*0 + 2*1)
+    expected: '1'
+    shown: ['$AM = \begin{pmatrix} 3 + 1 & 1 \\ 2 + 2 & 2 \end{pmatrix}']
+    source: {cite: reading2, at: 'pp. 6–8'}
+    origin: page-own
+
+  - id: p4-a-21
+    answer: p4-a-21
+    where: 'Problem 4(a), answer box: b21 = (row 2 of M⁻¹ = (−1, 1)) · (4, 4)'
+    inputs: {}
+    formula: (-1)*(3*1 + 1*1) + 1*(2*1 + 2*1)
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$B$ is triangular, so its eigenvalues are its diagonal entries $4$ and $1$']
+    source: {cite: reading2, at: 'pp. 6–8'}
+    origin: page-own
+
+  - id: p4-a-22
+    answer: p4-a-22
+    where: 'Problem 4(a), answer box: b22 = (−1, 1) · (1, 2)'
+    inputs: {}
+    formula: (-1)*(3*0 + 1*1) + 1*(2*0 + 2*1)
+    expected: '1'
+    shown: ['$M^{-1} = \begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix}$, and']
+    source: {cite: reading2, at: 'pp. 6–8'}
+    origin: page-own
+
+  - id: p4-a-eig
+    where: 'Problem 4(a), check: λ = 4 is a root of λ² − 5λ + 4 (trace 5, det 6 − 2)'
+    inputs: {}
+    formula: 4**2 - (3 + 2)*4 + (3*2 - 1*2)
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['so $\lambda^2 - 5\lambda + 4 = 0$']
+    source: {cite: reading2, at: 'p. 9'}
+    origin: page-own
+
+  - id: p4-b
+    where: 'Problem 4(b), choice box (1, 0): B(1, 0) − 4(1, 0), with B = (4 1; 0 1), squared and added; and M⁻¹(1, 1) = (1, −1 + 1)'
+    inputs: {}
+    formula: (4*1 + 1*0 - 4)**2 + (0*1 + 1*0 - 0)**2 + (-1*1 + 1*1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$B(1, 0) = (4, 0) = 4(1, 0)$']
+    source: {cite: reading2, at: 'p. 11'}
+    origin: page-own
+
+  - id: p4-b-trap
+    where: 'Problem 4(b), check: B(1, 1) = (4 + 1, 0 + 1)'
+    inputs: {}
+    formula: 4 + 1
+    expected: '5'
+    shown: ['$B(1, 1) = (5, 1)$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-1
+    where: 'Problem 4(c), choice box C1 (yes): det C1 = 5·0 − (−2)·2'
+    inputs: {}
+    formula: 5*0 - (-2)*2
+    expected: '4'
+    shown: ['$C_1$: trace $5$, determinant $0 + 4 = 4$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-2
+    where: 'Problem 4(c), choice box C2 (no): det C2 = 4·1 − 1·1'
+    inputs: {}
+    formula: 4*1 - 1*1
+    expected: '3'
+    shown: ['determinant $4 - 1 = 3$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-2-eig
+    where: 'Problem 4(c): (5 + √13)/2 is a root of λ² − 5λ + 3'
+    inputs: {}
+    formula: ((5 + sqrt(13))/2)**2 - 5*(5 + sqrt(13))/2 + 3
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$(5 \pm \sqrt{13})/2$']
+    source: {cite: mit, at: 'Problem 4(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 5  (A = (2 −1; 1 4))
+
+  - id: p5-a-lam
+    answer: p5-a-lam
+    where: 'Problem 5(a), answer box: the double root of λ² − 6λ + 9, half the trace; the discriminant is 6² − 4·9 = 0'
+    inputs: {}
+    formula: (2 + 4)/2 + sqrt((2 + 4)**2 - 4*(2*4 - (-1)*1))
+    expected: '3'
+    shown: ['$\lambda^2 - 6\lambda + 9 = (\lambda - 3)^2 = 0$: $\lambda = 3$ twice']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-num
+    answer: p5-a-num
+    where: 'Problem 5(a), answer box: 2 minus the rank of A − 3I = (−1 −1; 1 1), whose determinant (−1)(1) − (−1)(1) is 0 while it is not the zero matrix (rank 1)'
+    inputs: {}
+    formula: 2 - 1 + ((-1)*1 - (-1)*1)
+    expected: '1'
+    shown: ['one independent eigenvector, $x_1 = (1, -1)$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-a-wrong
+    where: 'Problem 5(a), check: the distractor (2 1; 0 4) has determinant 8, the distractor (−3 1; 0 −3) trace −6'
+    inputs: {}
+    formula: 2*4 - 1*0
+    expected: '8'
+    shown: ['the right trace but determinant $8$']
+    source: {cite: mit, at: 'Problem 5(a) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b
+    answer: p5-b
+    where: 'Problem 5(b), answer box: the first row of (A − 3I)(p, 0) = (1, −1) is −p = 1, solved numerically'
+    inputs: {}
+    formula: solve('-1*p + (-1)*0 - 1', 'p', -5, 5)
+    expected: '-1'
+    tolerance: '1e-9'
+    shown: ['Both rows give $p = -1$, so $x_2 = (-1, 0)$.']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-b-check
+    where: 'Problem 5(b), check: AM − MJ for M = (1 −1; −1 0), J = (3 1; 0 3), all four entries squared and added'
+    inputs: {}
+    formula: ((2*1 + (-1)*(-1)) - (1*3))**2 + ((2*(-1) + (-1)*0) - (1*1 + (-1)*3))**2 + ((1*1 + 4*(-1)) - ((-1)*3))**2 + ((1*(-1) + 4*0) - ((-1)*1 + 0*3))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['\begin{pmatrix} 3 & -2 \\ -3 & -1 \end{pmatrix}$ and $MJ']
+    source: {cite: mit, at: 'Problem 5(b) (our own solution)'}
+    origin: page-own
+
+  - id: p5-c-k1
+    answer: p5-c-k1
+    where: 'Problem 5(c), answer box: 3 minus the rank of K1 − 7I (a single one: rank 1)'
+    inputs: {}
+    formula: 3 - 1
+    expected: '2'
+    shown: ['$K_1 - 7I$ and $K_2 - 7I$ each have a single one, so rank 1 and a nullspace of dimension $3 - 1 = 2$']
+    source: {cite: reading2, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p5-c-k3
+    answer: p5-c-k3
+    where: 'Problem 5(c), answer box: 3 minus the rank of K3 − 7I (two ones in different rows and columns: rank 2)'
+    inputs: {}
+    formula: 3 - 2
+    expected: '1'
+    shown: ['rank 2, and a nullspace of dimension 1: one eigenvector, $(1, 0, 0)$']
+    source: {cite: reading2, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p5-d-lam
+    kind: identity
+    answer: p5-d-lam
+    where: 'Problem 5(d), answer box: 5 + √ε against a numerical root of (5 − λ)² − ε above 5'
+    formula: 5 + sqrt(eps)
+    equals: solve('(5 - lam)**2 - eps', 'lam', 5 + 0.5*sqrt(eps), 7)
+    samples: {eps: [0.0001, 0.001, 0.01, 0.3, 1]}
+    tolerance: 1e-6
+    shown: ['\lambda = 5 \pm \sqrt\varepsilon']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-d-num
+    where: 'Problem 5(d): 5 + √(10⁻⁶)'
+    inputs: {}
+    formula: 5 + sqrt(1e-6)
+    expected: '5.001'
+    shown: ['For $\varepsilon = 10^{-6}$ the eigenvalues are $5.001$ and $4.999$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  - id: p5-d-num2
+    where: 'Problem 5(d): 5 − √(10⁻⁶)'
+    inputs: {}
+    formula: 5 - sqrt(1e-6)
+    expected: '4.999'
+    shown: ['$\operatorname{diag}(5.001, 4.999)$']
+    source: {cite: mit, at: 'Problem 5(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 6  (A = (6 2; −7 6))
+
+  - id: p6-a-off
+    answer: p6-a-off
+    where: 'Problem 6(a), answer box: (column 1) · (column 2) = 6·2 + (−7)·6'
+    inputs: {}
+    formula: 6*2 + (-7)*6
+    expected: '-30'
+    shown: ['\begin{pmatrix} 85 & -30 \\ -30 & 40 \end{pmatrix}" cite="reading3"']
+    source: {cite: reading3, at: 'pp. 6–8'}
+    origin: page-own
+
+  - id: p6-a-s1
+    answer: p6-a-s1
+    where: 'Problem 6(a), answer box: σ1 = √ of the larger eigenvalue of AᵀA = (85 −30; −30 40), from trace and determinant'
+    inputs: {}
+    formula: sqrt((125 + sqrt(125**2 - 4*(85*40 - 30**2)))/2)
+    expected: '10'
+    shown: ['$\sigma_1 = \sqrt{100} = 10$']
+    source: {cite: reading3, at: 'pp. 6–9'}
+    origin: page-own
+
+  - id: p6-a-s2
+    answer: p6-a-s2
+    where: 'Problem 6(a), answer box: σ2 = |det A|/σ1 = (36 + 14)/10, a second route'
+    inputs: {}
+    formula: (6*6 - 2*(-7))/10
+    expected: '5'
+    shown: ['$\sigma_2 = \sqrt{25} = 5$']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-a-det
+    where: 'Problem 6(a): det AᵀA = 85·40 − 30²'
+    inputs: {}
+    formula: 85*40 - 30**2
+    expected: '2500'
+    shown: ['the determinant $3400 - 900 = 2500$, so']
+    source: {cite: mit, at: 'Problem 6(a) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-v1
+    where: 'Problem 6(b), choice box v1 = (2, −1)/√5: (AᵀA − 100I)(2, −1) = (−15·2 + (−30)(−1), −30·2 + (−60)(−1)), squared and added'
+    inputs: {}
+    formula: (-15*2 + (-30)*(-1))**2 + (-30*2 + (-60)*(-1))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['so $v_1 = (2, -1)/\sqrt5$']
+    source: {cite: reading3, at: 'pp. 7–9'}
+    origin: page-own
+
+  - id: p6-b-v2
+    where: 'Problem 6(b): AᵀA(1, 2), second entry −30 + 80'
+    inputs: {}
+    formula: -30*1 + 40*2
+    expected: '50'
+    shown: ['$A^TA(1, 2) = (85 - 60, -30 + 80) = (25, 50) = 25(1, 2)$']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-b-u1
+    where: 'Problem 6(b), choice box u1 = (1, −2)/√5: A(2, −1) = (12 − 2, −14 − 6) = 10·(1, −2), i.e. Av1 = σ1 u1; differences squared and added'
+    inputs: {}
+    formula: (6*2 + 2*(-1) - 10*1)**2 + ((-7)*2 + 6*(-1) - 10*(-2))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['\frac{1}{10\sqrt5}\begin{pmatrix} 12 - 2 \\ -14 - 6 \end{pmatrix}']
+    source: {cite: reading3, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: p6-b-usvt
+    where: 'Problem 6(b), check: 10 u1 v1ᵀ + 5 u2 v2ᵀ = A, the four entries ((1)(2)·2 + (2)(1), (1)(−1)·2 + (2)(2), (−2)(2)·2 + (1)(1), (−2)(−1)·2 + (1)(2)) minus A, squared and added'
+    inputs: {}
+    formula: (2*2 + 2*1 - 6)**2 + (2*(-1) + 2*2 - 2)**2 + (2*(-4) + 1*1 - (-7))**2 + (2*2 + 1*2 - 6)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['= 2\begin{pmatrix} 2 & -1 \\ -4 & 2 \end{pmatrix} + \begin{pmatrix} 2 & 4 \\ 1 & 2 \end{pmatrix}']
+    source: {cite: mit, at: 'Problem 6(b) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c
+    answer: p6-c
+    where: 'Problem 6(c), answer box: larger eigenvalue of AAᵀ = (40 −30; −30 85), from its own trace and determinant'
+    inputs: {}
+    formula: ((40 + 85) + sqrt((40 + 85)**2 - 4*(40*85 - (-30)*(-30))))/2
+    expected: '100'
+    shown: ['The larger is $\sigma_1^2 = 100$.']
+    source: {cite: reading3, at: 'p. 10'}
+    origin: page-own
+
+  - id: p6-c-entries
+    where: 'Problem 6(c): AAᵀ from the rows (6, 2) and (−7, 6): the (2,2) entry 49 + 36'
+    inputs: {}
+    formula: (-7)**2 + 6**2
+    expected: '85'
+    shown: ['-42 + 12 & 49 + 36']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-c-check
+    where: 'Problem 6(c), check: AAᵀ(1, −2), second entry −30 − 170 = −200'
+    inputs: {}
+    formula: -30*1 + 85*(-2)
+    expected: '-200'
+    shown: ['\frac{1}{\sqrt5}(40 + 60, -30 - 170)']
+    source: {cite: mit, at: 'Problem 6(c) (our own solution)'}
+    origin: page-own
+
+  - id: p6-d
+    where: 'Problem 6(d), check: det A = 36 + 14 equals σ1σ2'
+    inputs: {}
+    formula: 10*5
+    expected: '50'
+    shown: ['$\det A = 36 + 14 = 50$ and $\sigma_1\sigma_2 = 10 \cdot 5 = 50$']
+    source: {cite: mit, at: 'Problem 6(d) (our own solution)'}
+    origin: page-own
+
+  - id: p6-d-detv
+    where: 'Problem 6(d): det Vᵀ with rows (2, −1)/√5 and (1, 2)/√5'
+    inputs: {}
+    formula: (2*2 - (-1)*1)/5
+    expected: '1'
+    shown: ['$\det V^T = \frac15(4 + 1) = 1$']
+    source: {cite: mit, at: 'Problem 6(d) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 7  (A = (1, c)ᵀ (1, 2, 2))
+
+  - id: p7-a
+    kind: identity
+    answer: p7-a
+    where: 'Problem 7(a), answer box: 3√(1 + c²) against √ of the trace of AᵀA (rank one), the sum of the squares of all six entries'
+    formula: 3*sqrt(1 + c**2)
+    equals: sqrt(1**2 + 2**2 + 2**2 + c**2 + (2*c)**2 + (2*c)**2)
+    samples: {c: [0.5, 1, 2, 3, 4]}
+    tolerance: 1e-9
+    shown: ['So $\sigma_1 = 3\sqrt{1 + c^2}$.']
+    source: {cite: reading3, at: 'pp. 13–16'}
+    origin: page-own
+
+  - id: p7-a-c2
+    where: 'Problem 7(a), check: σ1 for c = 2, 3√5'
+    inputs: {}
+    formula: 3*sqrt(5)
+    expected: '6.708'
+    shown: ['$\sigma_1 = 3\sqrt5 \approx 6.708$']
+    source: {cite: mit, at: 'Problem 7(a) (our own solution)'}
+    origin: page-own
+
+  - id: p7-b-null
+    answer: p7-b-null
+    where: 'Problem 7(b), answer box: n − r = 3 − 1'
+    inputs: {}
+    formula: 3 - 1
+    expected: '2'
+    shown: ['has dimension $3 - 1 = 2$, filled by $v_2$ and $v_3$']
+    source: {cite: reading3, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p7-b-left
+    answer: p7-b-left
+    where: 'Problem 7(b), answer box: m − r = 2 − 1'
+    inputs: {}
+    formula: 2 - 1
+    expected: '1'
+    shown: ['has dimension $2 - 1 = 1$, filled by $u_2$']
+    source: {cite: reading3, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p7-c
+    where: 'Problem 7(c), choice box: the three inner products of (1, 2, 2), (2, −1, 0), (2, 4, −5), squared and added'
+    inputs: {}
+    formula: (1*2 + 2*(-1) + 2*0)**2 + (1*2 + 2*4 + 2*(-5))**2 + (2*2 + (-1)*4 + 0*(-5))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['(2, -1, 0) \cdot (2, 4, -5) = 4 - 4 = 0']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-len
+    where: 'Problem 7(c): length squared of (2, 4, −5)'
+    inputs: {}
+    formula: 2**2 + 4**2 + (-5)**2
+    expected: '45'
+    shown: ['$\sqrt{4 + 16 + 25} = \sqrt{45}$']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-c-wrong
+    where: 'Problem 7(c): the distractors (−2, −2, 3) and (0, 1, −1) against (2, −1, 0)'
+    inputs: {}
+    formula: 2*(-2) + (-1)*(-2) + 0*3
+    expected: '-2'
+    shown: ['has inner product $-4 + 2 = -2$ with $(2, -1, 0)$']
+    source: {cite: mit, at: 'Problem 7(c) (our own solution)'}
+    origin: page-own
+
+  - id: p7-d
+    where: 'Problem 7(d), choice box (no): A(2, −1, 0) for c = 2, both entries, squared and added'
+    inputs: {}
+    formula: (1*2 + 2*(-1) + 2*0)**2 + (2*2 + 4*(-1) + 4*0)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['For $x = (2, -1, 0)$, $Ax = 0$']
+    source: {cite: reading2, at: 'pp. 4–5'}
+    origin: page-own
+
+  - id: p7-d-eig
+    where: 'Problem 7(d), check: σ1² = 9(1 + 2²)'
+    inputs: {}
+    formula: 9*(1 + 2**2)
+    expected: '45'
+    shown: ['The eigenvalues of $A^TA$ are $\sigma_1^2 = 45$, $0$ and $0$']
+    source: {cite: mit, at: 'Problem 7(d) (our own solution)'}
+    origin: page-own

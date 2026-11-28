@@ -1,0 +1,1279 @@
+---
+title: "Problem Set 10: complex matrices, similar matrices and the SVD"
+slug: 18-06-problem-set-10
+course: "18.06"
+kind: problems
+set: 10
+lecture: 29
+order: 90
+covers: [26, 28, 29]
+solutions: own
+summary: "Seven problems of our own on Lectures 26, 28 and 29: lengths and inner products of complex vectors, the eigenvalues of a Hermitian matrix, the four-point Fourier matrix and its inverse, the counting behind the fast Fourier transform, similar matrices, Jordan blocks and how fragile they are, and the singular value decomposition of a square and of a rectangular matrix."
+prerequisites: [complex-matrices-fft, similar-matrices-jordan-form, singular-value-decomposition]
+source:
+  title: "MIT 18.06 Lecture 29: Singular value decomposition"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-29-singular-value-decomposition/
+  readings:
+    - title: "18.06 Lecture 26 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/68440cfc1e8760b75bddc09bc8d374d6_M0Sa8fLOajA.pdf
+    - title: "18.06 Lecture 28 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/0f4bac6de07c6e13d35de60e556af4be_TSdXJw83kyA.pdf
+    - title: "18.06 Lecture 29 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/0f4d618b79d74403afcbaef310117f03_TX_vooSnhm8.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: draft
+---
+
+This set practises three lessons: [complex matrices and the fast Fourier transform](/courses/18-06/complex-matrices-fft) (Lecture 26), [similar matrices and the Jordan form](/courses/18-06/similar-matrices-jordan-form) (Lecture 28) and the [singular value decomposition](/courses/18-06/singular-value-decomposition) (Lecture 29). Lecture 27, on positive definite matrices and minima, belongs to Problem Set 9.
+
+MIT's 18.06 problem sets assign exercises from a textbook that is not openly licensed, so this set is made of our own problems on the same lectures, in MIT's lecture order. No MIT or textbook problem is used: every matrix and every number below is ours, and so are the hints and the solutions. The formulas come from the lessons and from the lecture transcripts they cite.
+
+## How to answer
+
+Work each problem on paper first. Then type or choose your result in the answer box and press Check.
+
+A number box wants a decimal number, not a fraction or a root: write $0.25$, not $1/4$. Every number box accepts any value within $0.01$ of the exact one, so give at least two decimal places when the answer is not a whole number. A complex number cannot be typed: its real part and its imaginary part have a box each (for $3 - 5i$ the real part is $3$ and the imaginary part is $-5$). A matrix cannot be typed either: a box asks for one of its entries, its eigenvalues or its singular values, or you choose the matrix from a list. Entries are numbered by row, then column, starting from 1 (so $b_{12}$ is in the first row, second column), except in the Fourier matrix, whose rows and columns count from 0 as in the lecture.
+
+A formula box takes plain typing, for example `(a + 1)/sqrt(2*a)`, and accepts every correct way of writing the answer. Type $\varepsilon$ as `eps`, and `sqrt( )` for a square root.
+
+Some parts ask you to show something. They have no answer box: write your argument, then open the solution and mark yourself. MIT gives no points for these problems: the points here (100 in all) and their split between the parts are ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+## What you need from the lessons
+
+**Complex vectors and matrices** (Lecture 26). For complex vectors, transposing always goes with conjugating; the superscript $H$ does both. The length squared and the inner product are
+
+<Formula label="Length and inner product in Cⁿ" tex="\|z\|^2 = z^Hz = |z_1|^2 + \cdots + |z_n|^2, \qquad y^Hx = \bar y_1x_1 + \cdots + \bar y_nx_n" cite="reading1" at="pp. 3–5" />
+
+A **Hermitian** matrix has $A^H = A$: a real diagonal and conjugate entries across it. Its eigenvalues are real and its eigenvectors perpendicular (p. 6 of the transcript). The **Fourier matrix** $F_n$ has entries $W^{jk}$, with rows and columns counted from 0:
+
+<Formula label="The Fourier matrix" tex="(F_n)_{jk} = W^{jk}, \qquad W = e^{2\pi i/n}, \qquad F_4 = \begin{pmatrix} 1 & 1 & 1 & 1 \\ 1 & i & -1 & -i \\ 1 & -1 & 1 & -1 \\ 1 & -i & -1 & i \end{pmatrix}" cite="reading1" at="pp. 8–12" />
+
+<Formula label="Its inverse" tex="F_4^{-1} = \tfrac14F_4^H" cite="reading1" at="p. 14" />
+
+The fast Fourier transform builds $F_{2m}$ from two copies of $F_m$, with the diagonal $D = \operatorname{diag}(1, W, \dots, W^{m-1})$ of $W = W_{2m}$ and the permutation $P$ that puts the even-numbered components before the odd ones (shown in the lecture for $2m = 64$):
+
+<Formula label="One step of the FFT" tex="F_{2m} = \begin{pmatrix} I & D \\ I & -D \end{pmatrix}\begin{pmatrix} F_m & 0 \\ 0 & F_m \end{pmatrix}P, \qquad W_{2m}^2 = W_m" cite="reading1" at="pp. 15–16" />
+
+Repeating the step brings the cost from $n^2$ down to $\frac12n\log_2n$ multiplications (pp. 18–19).
+
+**Similar matrices** (Lecture 28). $B$ is similar to $A$ when $B = M^{-1}AM$ for an invertible $M$. Similar matrices have the same eigenvalues; an eigenvector $x$ of $A$ becomes the eigenvector $M^{-1}x$ of $B$:
+
+<Formula label="Similar matrices" tex="B = M^{-1}AM, \qquad Ax = \lambda x \;\Rightarrow\; B(M^{-1}x) = \lambda(M^{-1}x)" cite="reading2" at="pp. 6–11" />
+
+Every square matrix is similar to a **Jordan matrix** $J$, with one Jordan block (one eigenvalue on its diagonal, ones just above it) for each independent eigenvector:
+
+<Formula label="Jordan form" tex="A = MJM^{-1}, \qquad J = \begin{pmatrix} J_1 & & \\ & \ddots & \\ & & J_d \end{pmatrix}" cite="reading2" at="pp. 19–20" />
+
+For a rectangular $A$, $A^TA$ is positive definite exactly when $A$ has independent columns, because $x^TA^TAx = \|Ax\|^2$ (pp. 4–5).
+
+**The SVD** (Lecture 29). Every matrix factors as $A = U\Sigma V^T$. The $v$'s are orthonormal eigenvectors of $A^TA$, the $\sigma^2$'s its eigenvalues, and each $v_i$ goes to a multiple of $u_i$:
+
+<Formula label="The SVD" tex="A = U\Sigma V^T, \qquad A^TA = V\Sigma^T\Sigma V^T, \qquad Av_i = \sigma_iu_i" cite="reading3" at="pp. 1–7" />
+
+The $u$'s are the eigenvectors of $AA^T$ (p. 10); their signs are matched to the $v$'s by taking $u_i = Av_i/\sigma_i$. The first $r$ $v$'s and $u$'s are orthonormal bases of the row space and the column space; the rest are orthonormal bases of the nullspace and the left nullspace (pp. 17–18).
+
+## Problem 1
+
+<Exercise id="p1" title="Complex vectors and a Hermitian matrix" points={14}>
+
+Take the complex vectors
+
+<Formula label="Two complex vectors" tex="z = \begin{pmatrix} 1 + 2i \\ 2 - i \end{pmatrix}, \qquad y = \begin{pmatrix} i \\ 1 \end{pmatrix}" cite="mit" at="Problem 1 (our own problem)" />
+
+and, for a real number $a$, the matrix
+
+<Formula label="A matrix with a real parameter" tex="A = \begin{pmatrix} a & 1 - i \\ 1 + i & 2 \end{pmatrix}" cite="mit" at="Problem 1 (our own problem)" />
+
+<Part label="a" points={4}>
+
+Find $\|z\|^2$ and the inner product $y^Hz$.
+
+<Hint>
+
+Each component of $z$ is multiplied by its own conjugate: $|p + qi|^2 = p^2 + q^2$.
+
+</Hint>
+
+<Hint>
+
+In $y^Hz$ the components of $y$ are conjugated, not those of $z$. The conjugate of $i$ is $-i$.
+
+</Hint>
+
+<Answer id="p1-a-len" label="$\|z\|^2 =$" value="10" tolerance="0.01" calc="p1-a-len" />
+
+<Answer id="p1-a-re" label="The real part of $y^Hz$ is" value="4" tolerance="0.01" calc="p1-a-re" />
+
+<Answer id="p1-a-im" label="The imaginary part of $y^Hz$ is" value="-2" tolerance="0.01" calc="p1-a-im" />
+
+<Solution>
+
+**The idea.** In $\mathbf{C}^n$ every transpose comes with a conjugate: $\|z\|^2 = z^Hz$ and the inner product is $y^Hz$.
+
+<Step title="The length">
+
+$|1 + 2i|^2 = 1 + 4 = 5$ and $|2 - i|^2 = 4 + 1 = 5$, so
+
+<Formula label="Length squared of z" tex="\|z\|^2 = z^Hz = 5 + 5 = 10" cite="reading1" at="pp. 3–5" />
+
+</Step>
+
+<Step title="The inner product">
+
+Conjugate $y$ to $(-i, 1)$ and multiply:
+
+<Formula label="The inner product" tex="y^Hz = (-i)(1 + 2i) + (1)(2 - i) = (-i + 2) + (2 - i) = 4 - 2i" cite="reading1" at="p. 4" />
+
+The real part is $4$, the imaginary part $-2$.
+
+</Step>
+
+<Step title="Check">
+
+Without the conjugate, $y^Tz = i(1 + 2i) + (2 - i) = (i - 2) + (2 - i) = 0$: the old rule would wrongly call $y$ and $z$ perpendicular, just as it gave $(1, i)$ the length zero in the lecture. In the other order, $z^Hy$ is the conjugate $4 + 2i$, so the order matters for the imaginary part.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Check that $A$ is Hermitian for every real $a$. Find its larger eigenvalue as a formula in $a$, and its smaller eigenvalue for $a = 3$. For which values of $a$ is $A$ positive definite?
+
+<Hint>
+
+For a $2 \times 2$ matrix the eigenvalues solve $\lambda^2 - (\text{trace})\lambda + \det = 0$. In the determinant, multiply the two off-diagonal entries with each other carefully.
+
+</Hint>
+
+<Hint>
+
+A Hermitian matrix is positive definite when both its eigenvalues are positive: their sum is the trace and their product the determinant.
+
+</Hint>
+
+<Answer id="p1-b-big" label="The larger eigenvalue of $A$ is" expr="(a + 2 + sqrt((a - 2)^2 + 8))/2"
+  vars={{ a: [-3, 6] }} names={{ a: "a" }}
+  mistakes={[
+    { expr: "(a + 2 + sqrt((a - 2)^2 + 4))/2", hint: "The product of the off-diagonal entries is (1 − i)(1 + i) = 1 − i² = 2, not 1." },
+    { expr: "(a + 2 + sqrt((a - 2)^2))/2", hint: "The off-diagonal entries are not zero: (1 − i)(1 + i) = 2 must be taken off the determinant." }
+  ]} />
+
+<Answer id="p1-b-small" label="For $a = 3$ the smaller eigenvalue is" value="1" tolerance="0.01" calc="p1-b-small" />
+
+<Answer id="p1-b-pd" label="$A$ is positive definite exactly when"
+  choices={["$a > 0$", "$a > 2$", "$a > 1$", "$a > -1$"]} answer={2} />
+
+<Solution>
+
+**The idea.** Hermitian means $A^H = A$. The eigenvalues come from the trace and the determinant, and the determinant needs the product of two conjugates.
+
+<Step title="Hermitian">
+
+The diagonal entries $a$ and $2$ are real, and $1 - i$ and $1 + i$ are conjugates of each other. So transposing and conjugating gives $A$ back: $A^H = A$ (p. 5 of the Lecture 26 transcript).
+
+</Step>
+
+<Step title="The eigenvalues">
+
+The trace is $a + 2$ and the determinant is $2a - (1 - i)(1 + i) = 2a - 2$. So
+
+<Formula label="Eigenvalues of A" tex="\lambda^2 - (a + 2)\lambda + (2a - 2) = 0, \qquad \lambda = \frac{a + 2 \pm \sqrt{(a + 2)^2 - 4(2a - 2)}}{2} = \frac{a + 2 \pm \sqrt{(a - 2)^2 + 8}}{2}" cite="mit" at="Problem 1(b) (our own solution)" />
+
+The term under the root is at least $8$, so both eigenvalues are real for every $a$, as they must be for a Hermitian matrix. For $a = 3$: $(5 \pm \sqrt{1 + 8})/2 = (5 \pm 3)/2$, so the eigenvalues are $4$ and $1$.
+
+</Step>
+
+<Step title="Positive definite">
+
+Both eigenvalues are positive when their product $2a - 2$ and their sum $a + 2$ are positive. The first needs $a > 1$, and then the second holds too. So $A$ is positive definite exactly for $a > 1$. At $a = 1$ the determinant is zero and one eigenvalue is $0$.
+
+</Step>
+
+<Step title="Check">
+
+For $a = 3$: $4 + 1 = 5$ is the trace and $4 \cdot 1 = 4 = 2 \cdot 3 - 2$ is the determinant. And $A - 4I = \begin{pmatrix} -1 & 1 - i \\ 1 + i & -2 \end{pmatrix}$ has determinant $2 - 2 = 0$, as it should.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Show that for any Hermitian matrix $A$ and any complex vector $x$ the number $x^HAx$ is real. Use this to show that every eigenvalue of a Hermitian matrix is real.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+A number is real when it equals its own conjugate. $x^HAx$ is a $1 \times 1$ matrix: what is its conjugate transpose?
+
+</Hint>
+
+<Hint>
+
+For an eigenvector, $Ax = \lambda x$. Multiply on the left by $x^H$ and look at both sides.
+
+</Hint>
+
+<Solution>
+
+**The idea.** A $1 \times 1$ matrix that equals its conjugate transpose is a real number.
+
+<Step title="x^H A x is real">
+
+The conjugate transpose of a product is the product of the conjugate transposes in reverse order, and $(x^H)^H = x$:
+
+<Formula label="The quadratic form is real" tex="(x^HAx)^H = x^HA^H(x^H)^H = x^HAx" cite="mit" at="Problem 1(c) (our own solution)" />
+
+For a $1 \times 1$ matrix the conjugate transpose is just the conjugate, so $x^HAx$ equals its own conjugate: it is real.
+
+</Step>
+
+<Step title="The eigenvalues are real">
+
+Let $Ax = \lambda x$ with $x \neq 0$. Multiply on the left by $x^H$:
+
+<Formula label="An eigenvalue as a ratio of real numbers" tex="x^HAx = \lambda\,x^Hx, \qquad \lambda = \frac{x^HAx}{x^Hx}" cite="mit" at="Problem 1(c) (our own solution)" />
+
+The top is real by the first step, and the bottom is $\|x\|^2$, real and positive. So $\lambda$ is real. This is the fact the lecture states for Hermitian matrices (Lecture 26 transcript, p. 6).
+
+</Step>
+
+<Step title="Check">
+
+Part (b) agrees: the eigenvalues of $A$ came out real for every $a$. A matrix that is not Hermitian can fail: $\begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix}$ has eigenvalues $\pm i$, and its $x^HAx$ for $x = (1, i)$ is $2i$, not real.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="The four-point Fourier matrix" points={16}>
+
+Use the matrix $F_4$ of "What you need", with rows and columns numbered $0, 1, 2, 3$. Take the real vector $x = (1, 2, 0, -1)$, with components $x_0, x_1, x_2, x_3$.
+
+<Part label="a" points={6}>
+
+Compute $y = F_4x$, with components $y_0, y_1, y_2, y_3$.
+
+<Hint>
+
+Row $j$ of $F_4$ holds the powers $i^{0}, i^{j}, i^{2j}, i^{3j}$. Write out each row times $x$ and collect the real and the imaginary parts.
+
+</Hint>
+
+<Answer id="p2-a-y0" label="$y_0 =$" value="2" tolerance="0.01" calc="p2-a-y0" />
+
+<Answer id="p2-a-y1re" label="The real part of $y_1$ is" value="1" tolerance="0.01" calc="p2-a-y1re" />
+
+<Answer id="p2-a-y1im" label="The imaginary part of $y_1$ is" value="3" tolerance="0.01" calc="p2-a-y1im" />
+
+<Answer id="p2-a-y3im" label="The imaginary part of $y_3$ is" value="-3" tolerance="0.01" calc="p2-a-y3im" />
+
+<Solution>
+
+**The idea.** Multiply row by row; the entries of $F_4$ are only $1, i, -1, -i$.
+
+<Step title="Row by row">
+
+<Formula label="The transform of x" tex="y = F_4x = \begin{pmatrix} 1 + 2 + 0 - 1 \\ 1 + 2i + 0 - (-i) \\ 1 - 2 + 0 - (-1) \\ 1 - 2i + 0 - i \end{pmatrix} = \begin{pmatrix} 2 \\ 1 + 3i \\ 0 \\ 1 - 3i \end{pmatrix}" cite="reading1" at="pp. 11–12 (the matrix; the product is our own)" />
+
+In row 1, the last term is $(-i)(-1) = +i$; in row 3 it is $i \cdot (-1) = -i$.
+
+</Step>
+
+<Step title="Check">
+
+$y_0$ is the plain sum of the components, $1 + 2 + 0 - 1 = 2$. And because $x$ is real, $y_3$ is the conjugate of $y_1$: row 3 of $F_4$ is the conjugate of row 1. Part (b) checks the lengths.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Find $\|y\|^2$ for the $y$ of part (a), and compare it with $\|x\|^2$.
+
+<Hint>
+
+Use the complex length: add $|y_j|^2$ for the four components.
+
+</Hint>
+
+<Answer id="p2-b" label="$\|y\|^2 =$" value="24" tolerance="0.01" calc="p2-b" />
+
+<Solution>
+
+**The idea.** Each $|y_j|^2$ is a real part squared plus an imaginary part squared.
+
+<Step title="The length">
+
+<Formula label="Length squared of y" tex="\|y\|^2 = 2^2 + |1 + 3i|^2 + 0^2 + |1 - 3i|^2 = 4 + 10 + 0 + 10 = 24" cite="reading1" at="pp. 3–5 (the length; the numbers are our own)" />
+
+</Step>
+
+<Step title="Compare">
+
+$\|x\|^2 = 1 + 4 + 0 + 1 = 6$, and $24 = 4 \cdot 6$. That is no accident: the columns of $F_4$ are orthogonal with length squared $4$, so $F_4^HF_4 = 4I$ and
+
+<Formula label="Lengths under F4" tex="\|F_4x\|^2 = x^HF_4^HF_4x = 4\,x^Hx = 4\|x\|^2" cite="reading1" at="p. 14 (orthogonal columns; the length rule is our own)" />
+
+</Step>
+
+<Step title="Check">
+
+The same rule with $x = (1, 0, 0, 0)$ gives $y = (1, 1, 1, 1)$, of length squared $4 = 4 \cdot 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Which vector $x$ has $F_4x = (0, 2, 0, 2)$?
+
+<Hint>
+
+Do not solve four equations: use the inverse $F_4^{-1} = \frac14F_4^H$. Since $F_4$ is symmetric, $F_4^H$ is simply $F_4$ with every entry conjugated.
+
+</Hint>
+
+<Answer id="p2-c" label="$x =$"
+  choices={["$(0.5, 0, -0.5, 0)$", "$(0, 1, 0, -1)$", "$(1, 0, 1, 0)$", "$(1, 0, -1, 0)$"]} answer={3} />
+
+<Solution>
+
+**The idea.** The inverse of $F_4$ is its conjugate transpose divided by $4$.
+
+<Step title="Apply the inverse">
+
+Only components 1 and 3 of the right-hand side are nonzero, so $x$ is $\frac24$ times the sum of columns 1 and 3 of $\bar F_4$, which are $(1, -i, -1, i)$ and $(1, i, -1, -i)$:
+
+<Formula label="The inverse transform" tex="x = \tfrac14F_4^H\begin{pmatrix} 0 \\ 2 \\ 0 \\ 2 \end{pmatrix} = \tfrac24\left[\begin{pmatrix} 1 \\ -i \\ -1 \\ i \end{pmatrix} + \begin{pmatrix} 1 \\ i \\ -1 \\ -i \end{pmatrix}\right] = \begin{pmatrix} 1 \\ 0 \\ -1 \\ 0 \end{pmatrix}" cite="reading1" at="p. 14 (the inverse; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+Forward again: $F_4(1, 0, -1, 0)$ is column 0 minus column 2 of $F_4$, $(1, 1, 1, 1) - (1, -1, 1, -1) = (0, 2, 0, 2)$. Lengths agree with part (b): $\|(0, 2, 0, 2)\|^2 = 8 = 4 \cdot 2$. The vector $(0.5, 0, -0.5, 0)$ would give half the right-hand side.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Show that the columns of $F_n$ are orthogonal for every $n$: for two different columns $k$ and $l$ (both between $0$ and $n - 1$), the inner product of column $k$ with column $l$ is zero. Show also that every column has length squared $n$.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+$W$ lies on the unit circle, so its conjugate is $1/W$. Write the inner product as one sum of powers of a single number.
+
+</Hint>
+
+<Hint>
+
+That sum is a geometric series. What is $W^n$?
+
+</Hint>
+
+<Solution>
+
+**The idea.** With conjugates, the inner product of two columns is a geometric series of a root of unity, and such a series adds up to zero.
+
+<Step title="One sum">
+
+Column $k$ has entries $W^{jk}$ for $j = 0, \dots, n - 1$. Since $|W| = 1$, $\bar W = W^{-1}$, and the inner product of column $k$ with column $l$ is
+
+<Formula label="Inner product of two columns" tex="\sum_{j=0}^{n-1}\overline{W^{jk}}\,W^{jl} = \sum_{j=0}^{n-1}\left(W^{l-k}\right)^j" cite="mit" at="Problem 2(d) (our own solution)" />
+
+</Step>
+
+<Step title="The geometric series">
+
+Put $q = W^{l-k}$. For $k \neq l$ the exponent $l - k$ lies between $-(n - 1)$ and $n - 1$ and is not zero, so $q \neq 1$ ($W$ goes once round the circle in $n$ steps). And $q^n = (W^n)^{l-k} = 1$. So
+
+<Formula label="The series adds to zero" tex="\sum_{j=0}^{n-1}q^j = \frac{q^n - 1}{q - 1} = \frac{1 - 1}{q - 1} = 0" cite="mit" at="Problem 2(d) (our own solution)" />
+
+For $k = l$ every term is $q^j = 1$, and the sum is $n$: every column has length squared $n$.
+
+</Step>
+
+<Step title="Check">
+
+For $n = 4$, columns 1 and 3 give $q = i^2 = -1$ and the sum $1 - 1 + 1 - 1 = 0$, as the lecture found for those two columns (Lecture 26 transcript, pp. 13–14). Together the two results say $F_n^HF_n = nI$, so $F_n^{-1} = F_n^H/n$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="Counting the fast Fourier transform" points={12}>
+
+<Part label="a" points={4}>
+
+For $n = 8$, the root is $W_8 = e^{2\pi i/8}$. Which number is $W_8^2$? And what is the real part of $W_8^3$, the last entry of the diagonal $D$ that builds $F_8$ from two copies of $F_4$?
+
+<Hint>
+
+Squaring a number on the unit circle doubles its angle. $W_8$ is at the angle $2\pi/8$.
+
+</Hint>
+
+<Answer id="p3-a-sq" label="$W_8^2 =$"
+  choices={["$-1$", "$i$", "$-i$", "$1$"]} answer={1} />
+
+<Answer id="p3-a-re" label="The real part of $W_8^3$ is" value="-0.7071" tolerance="0.01" calc="p3-a-re" />
+
+<Solution>
+
+**The idea.** Powers of $W_8$ walk round the unit circle in steps of $45°$.
+
+<Step title="The square">
+
+$W_8^2 = e^{4\pi i/8} = e^{i\pi/2} = i$, which is $W_4$: the rule $W_{2m}^2 = W_m$ with $m = 4$ (Lecture 26 transcript, p. 15).
+
+</Step>
+
+<Step title="The cube">
+
+<Formula label="The third power of W8" tex="W_8^3 = e^{6\pi i/8} = \cos 135° + i\sin 135° = -\frac{\sqrt2}{2} + i\,\frac{\sqrt2}{2}" cite="reading1" at="p. 10 (the polar form; the numbers are our own)" />
+
+The real part is $-\sqrt2/2 \approx -0.7071$. The diagonal is $D = \operatorname{diag}(1, W_8, W_8^2, W_8^3)$.
+
+</Step>
+
+<Step title="Check">
+
+$W_8^8 = e^{2\pi i} = 1$, and $W_8^4 = e^{i\pi} = -1$: the second half of the circle repeats the first with a minus sign, which is why the FFT step needs $D$ and $-D$ only.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Do one step of the fast Fourier transform by hand for $F_4$ and the vector $x = (1, 2, 0, -1)$ of Problem 2. Here $D = \operatorname{diag}(1, i)$ and $F_2 = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$. First split $x$ into its even part $(x_0, x_2)$ and its odd part $(x_1, x_3)$, and apply $F_2$ to each. Give the second entry of $F_2(x_1, x_3)$. Then show that the factorisation gives the same $y$ as Problem 2(a) (this last step has no box).
+
+<Hint>
+
+$F_2$ adds and subtracts: $F_2(p, q) = (p + q, p - q)$.
+
+</Hint>
+
+<Hint>
+
+Call the two results $g = F_2(x_0, x_2)$ and $h = F_2(x_1, x_3)$. The fix-up gives the top half as $g + Dh$ and the bottom half as $g - Dh$.
+
+</Hint>
+
+<Answer id="p3-b" label="The second entry of $F_2(x_1, x_3)$ is" value="3" tolerance="0.01" calc="p3-b" />
+
+<Solution>
+
+**The idea.** The permutation sorts the components, two half-size transforms do most of the work, and the diagonal $D$ glues them.
+
+<Step title="The two half transforms">
+
+The even part is $(1, 0)$ and the odd part $(2, -1)$:
+
+<Formula label="Two half transforms" tex="g = F_2\begin{pmatrix} 1 \\ 0 \end{pmatrix} = \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \qquad h = F_2\begin{pmatrix} 2 \\ -1 \end{pmatrix} = \begin{pmatrix} 1 \\ 3 \end{pmatrix}" cite="reading1" at="pp. 15–16 (the split; the numbers are our own)" />
+
+</Step>
+
+<Step title="The fix-up">
+
+$Dh = (1 \cdot 1, i \cdot 3) = (1, 3i)$. The top half is $g + Dh = (2, 1 + 3i)$ and the bottom half $g - Dh = (0, 1 - 3i)$. Together:
+
+<Formula label="The assembled transform" tex="y = \begin{pmatrix} g + Dh \\ g - Dh \end{pmatrix} = \begin{pmatrix} 2 \\ 1 + 3i \\ 0 \\ 1 - 3i \end{pmatrix}" cite="mit" at="Problem 3(b) (our own solution)" />
+
+This is the $y$ of Problem 2(a).
+
+</Step>
+
+<Step title="Check">
+
+The count: the two $F_2$'s take $2 \cdot 2^2 = 8$ multiplications if done as full matrices, and $D$ takes $2$, against $4^2 = 16$ for $F_4$ directly. (Multiplying by $1$ or by $i$ is free in practice; the count is the one of the lecture.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Let $n = 2^k$. With the FFT, multiplying by $F_n$ costs $\frac12n\log_2n$ multiplications. Write this count as a formula in $k$. Then find how many times fewer multiplications the FFT needs than the plain $n^2$ for $n = 2^{16}$.
+
+<Hint>
+
+$\log_2 2^k = k$. There are $k$ levels of splitting, and each level costs the multiplications by its diagonals.
+
+</Hint>
+
+<Answer id="p3-c-count" label="The number of multiplications is" expr="k*2^(k - 1)"
+  vars={{ k: [1, 20] }} names={{ k: "k" }}
+  mistakes={[
+    { expr: "k*2^k", hint: "Each level costs n/2 multiplications, not n: the diagonal D has half as many entries as the vector." },
+    { expr: "4^k", hint: "That is n² = 4^k, the cost of the plain matrix multiplication." }
+  ]} />
+
+<Answer id="p3-c-ratio" label="For $n = 2^{16}$ the FFT needs this many times fewer multiplications:" value="8192" tolerance="0.01" calc="p3-c-ratio" />
+
+<Solution>
+
+**The idea.** Put $n = 2^k$ into the lecture's count and divide.
+
+<Step title="The count in k">
+
+<Formula label="FFT count for n = 2^k" tex="\tfrac12\,n\log_2n = \tfrac12 \cdot 2^k \cdot k = k\,2^{k-1}" cite="reading1" at="pp. 18–19 (the count; the form in k is our own)" />
+
+</Step>
+
+<Step title="The ratio">
+
+<Formula label="Saving for n = 2^16" tex="\frac{n^2}{\frac12n\log_2n} = \frac{2n}{\log_2n} = \frac{2^{17}}{16} = 2^{13} = 8192" cite="mit" at="Problem 3(c) (our own solution)" />
+
+In numbers: $n^2 = 4\,294\,967\,296$ and $16 \cdot 2^{15} = 524\,288$.
+
+</Step>
+
+<Step title="Check">
+
+The lecture's case $k = 10$ gives $10 \cdot 2^9 = 5 \cdot 1024$, as Strang found (Lecture 26 transcript, p. 19), and the ratio $2^{11}/10 \approx 205$, Strang's "factor of 200".
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="Two similar matrices" points={14}>
+
+Take
+
+<Formula label="A matrix and a change of basis" tex="A = \begin{pmatrix} 3 & 1 \\ 2 & 2 \end{pmatrix}, \qquad M = \begin{pmatrix} 1 & 0 \\ 1 & 1 \end{pmatrix}" cite="mit" at="Problem 4 (our own problem)" />
+
+<Part label="a" points={5}>
+
+Find $B = M^{-1}AM$, entry by entry.
+
+<Hint>
+
+The inverse of $M$ just changes the sign of the entry below the diagonal. Compute $AM$ first, then multiply by $M^{-1}$ on the left.
+
+</Hint>
+
+<Answer id="p4-a-11" label="$b_{11} =$" value="4" tolerance="0.01" calc="p4-a-11" />
+
+<Answer id="p4-a-12" label="$b_{12} =$" value="1" tolerance="0.01" calc="p4-a-12" />
+
+<Answer id="p4-a-21" label="$b_{21} =$" value="0" tolerance="0.01" calc="p4-a-21" />
+
+<Answer id="p4-a-22" label="$b_{22} =$" value="1" tolerance="0.01" calc="p4-a-22" />
+
+<Solution>
+
+**The idea.** Multiply the three matrices; $M^{-1}$ is easy to write down.
+
+<Step title="The product">
+
+$M^{-1} = \begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix}$, and $AM = \begin{pmatrix} 3 + 1 & 1 \\ 2 + 2 & 2 \end{pmatrix} = \begin{pmatrix} 4 & 1 \\ 4 & 2 \end{pmatrix}$. Then
+
+<Formula label="The similar matrix" tex="B = M^{-1}AM = \begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix}\begin{pmatrix} 4 & 1 \\ 4 & 2 \end{pmatrix} = \begin{pmatrix} 4 & 1 \\ 0 & 1 \end{pmatrix}" cite="reading2" at="pp. 6–8 (similar matrices; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+$B$ is triangular, so its eigenvalues are its diagonal entries $4$ and $1$. $A$ has trace $5$ and determinant $6 - 2 = 4$, so $\lambda^2 - 5\lambda + 4 = 0$ and its eigenvalues are also $4$ and $1$: similar matrices share their eigenvalues.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+$x = (1, 1)$ is an eigenvector of $A$. Which vector is an eigenvector of $B$ for the same eigenvalue?
+
+<Hint>
+
+First find the eigenvalue from $Ax$. Then start from $Ax = \lambda x$, put $MM^{-1}$ between $A$ and $x$, and multiply on the left by $M^{-1}$.
+
+</Hint>
+
+<Answer id="p4-b" label="An eigenvector of $B$ for the same eigenvalue is"
+  choices={["$(1, -1)$", "$(1, 1)$", "$(1, 0)$", "$(1, 2)$"]} answer={2} />
+
+<Solution>
+
+**The idea.** The eigenvalue stays and the eigenvector moves to $M^{-1}x$.
+
+<Step title="Move the eigenvector">
+
+<Formula label="The moved eigenvector" tex="B(M^{-1}x) = \lambda(M^{-1}x), \qquad M^{-1}x = \begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix}\begin{pmatrix} 1 \\ 1 \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \end{pmatrix}" cite="reading2" at="p. 11 (the rule; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+$B(1, 0) = (4, 0) = 4(1, 0)$. The vector $(1, 2) = Mx$ uses $M$ instead of $M^{-1}$, and $(1, 1)$ is the eigenvector of $A$ itself: $B(1, 1) = (5, 1)$, not a multiple of $(1, 1)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Is each of these matrices similar to $A$?
+
+<Formula label="Three candidates" tex="C_1 = \begin{pmatrix} 5 & -2 \\ 2 & 0 \end{pmatrix}, \qquad C_2 = \begin{pmatrix} 4 & 1 \\ 1 & 1 \end{pmatrix}, \qquad C_3 = \begin{pmatrix} 1 & 0 \\ 7 & 4 \end{pmatrix}" cite="mit" at="Problem 4(c) (our own problem)" />
+
+<Hint>
+
+Compare eigenvalues through the trace and the determinant. When the two eigenvalues are different, both matrices are similar to the same diagonal matrix.
+
+</Hint>
+
+<Answer id="p4-c-1" label="$C_1$ is similar to $A$:" choices={["Yes", "No"]} answer={0} />
+
+<Answer id="p4-c-2" label="$C_2$ is similar to $A$:" choices={["Yes", "No"]} answer={1} />
+
+<Answer id="p4-c-3" label="$C_3$ is similar to $A$:" choices={["Yes", "No"]} answer={0} />
+
+<Solution>
+
+**The idea.** With distinct eigenvalues the family of $A$ is every matrix with those eigenvalues; a different eigenvalue rules a matrix out.
+
+<Step title="Trace and determinant">
+
+$C_1$: trace $5$, determinant $0 + 4 = 4$, eigenvalues $4$ and $1$. $C_2$: trace $5$ but determinant $4 - 1 = 3$, so its eigenvalues $(5 \pm \sqrt{13})/2$ differ from those of $A$. $C_3$ is triangular with diagonal $1, 4$.
+
+</Step>
+
+<Step title="The family">
+
+$A$, $C_1$ and $C_3$ have the distinct eigenvalues $4$ and $1$, so each has two independent eigenvectors and is similar to $\Lambda = \operatorname{diag}(4, 1)$: $S_1^{-1}C_1S_1 = \Lambda = S^{-1}AS$ gives $C_1 = (SS_1^{-1})^{-1}A\,(SS_1^{-1})$. The same holds for $C_3$. So $C_1$ and $C_3$ are similar to $A$, and $C_2$ is not, because similar matrices have the same eigenvalues (Lecture 28 transcript, pp. 7–10).
+
+</Step>
+
+<Step title="Check">
+
+The lecture's own example is the same: every matrix with eigenvalues $3$ and $1$ is in the family of $\begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ (Lecture 28 transcript, p. 10).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Show that any two similar matrices have the same determinant and the same characteristic polynomial $\det(A - \lambda I)$, and so the same trace.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+The determinant of a product is the product of the determinants, and $\det M^{-1} = 1/\det M$. Write $B - \lambda I$ as $M^{-1}(\text{something})M$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** $\lambda I$ commutes with $M$, so $B - \lambda I$ is similar to $A - \lambda I$ by the same $M$.
+
+<Step title="The determinant">
+
+$\det B = \det M^{-1}\,\det A\,\det M = \det A$, since $\det M^{-1}\det M = \det I = 1$.
+
+</Step>
+
+<Step title="The characteristic polynomial">
+
+Since $M^{-1}(\lambda I)M = \lambda I$,
+
+<Formula label="Same characteristic polynomial" tex="\det(B - \lambda I) = \det\!\left(M^{-1}(A - \lambda I)M\right) = \det(A - \lambda I)" cite="mit" at="Problem 4(d) (our own solution)" />
+
+For an $n \times n$ matrix the coefficient of $\lambda^{n-1}$ in this polynomial is $(-1)^{n-1}$ times the trace, so the traces agree as well.
+
+</Step>
+
+<Step title="Check">
+
+In part (a): $\det A = 4 = 4 \cdot 1 = \det B$, and both traces are $5$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Jordan blocks" points={16}>
+
+Take
+
+<Formula label="A matrix with a repeated eigenvalue" tex="A = \begin{pmatrix} 2 & -1 \\ 1 & 4 \end{pmatrix}" cite="mit" at="Problem 5 (our own problem)" />
+
+<Part label="a" points={5}>
+
+Find the eigenvalue of $A$ (it is repeated), the number of independent eigenvectors, and the Jordan form $J$ of $A$.
+
+<Hint>
+
+The trace and the determinant give the characteristic polynomial. Then find the rank of $A - \lambda I$.
+
+</Hint>
+
+<Answer id="p5-a-lam" label="The repeated eigenvalue is" value="3" tolerance="0.01" calc="p5-a-lam" />
+
+<Answer id="p5-a-num" label="The number of independent eigenvectors is" value="1" tolerance="0.01" calc="p5-a-num" />
+
+<Answer id="p5-a-jordan" label="$J$ is the matrix with"
+  choices={["rows $(3, 0)$ and $(0, 3)$", "rows $(2, 1)$ and $(0, 4)$", "rows $(-3, 1)$ and $(0, -3)$", "rows $(3, 1)$ and $(0, 3)$"]} answer={3} />
+
+<Solution>
+
+**The idea.** A repeated eigenvalue with only one eigenvector means one $2 \times 2$ Jordan block.
+
+<Step title="The eigenvalue">
+
+The trace is $6$ and the determinant $8 + 1 = 9$, so $\lambda^2 - 6\lambda + 9 = (\lambda - 3)^2 = 0$: $\lambda = 3$ twice.
+
+</Step>
+
+<Step title="The eigenvectors">
+
+$A - 3I = \begin{pmatrix} -1 & -1 \\ 1 & 1 \end{pmatrix}$ has rank 1, so its nullspace is a line: one independent eigenvector, $x_1 = (1, -1)$.
+
+</Step>
+
+<Step title="The Jordan form">
+
+$A$ is not $3I$, the only matrix in its own family (Lecture 28 transcript, p. 14). So it is in the other family, whose best member is the Jordan block:
+
+<Formula label="The Jordan form of A" tex="J = \begin{pmatrix} 3 & 1 \\ 0 & 3 \end{pmatrix}" cite="reading2" at="pp. 13–15 (the two families; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+One block for one eigenvector, as in Jordan's theorem. The matrix $\begin{pmatrix} -3 & 1 \\ 0 & -3 \end{pmatrix}$ has the right determinant but the wrong trace, and $\begin{pmatrix} 2 & 1 \\ 0 & 4 \end{pmatrix}$ the right trace but determinant $8$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Jordan's theorem promises an invertible $M$ with $AM = MJ$. Its first column is an eigenvector $x_1$ of $A$: take the one whose first entry is $1$. Its second column $x_2$ must satisfy $Ax_2 = \lambda x_2 + x_1$, that is $(A - \lambda I)x_2 = x_1$, with $\lambda$ the eigenvalue of part (a). Find the solution of the form $x_2 = (p, 0)$: give $p$.
+
+<Hint>
+
+Find $x_1$ from the nullspace of $A - \lambda I$. Then write out the first row of $(A - \lambda I)x_2 = x_1$ with $x_2 = (p, 0)$, and check the second row.
+
+</Hint>
+
+<Answer id="p5-b" label="$p =$" value="-1" tolerance="0.01" calc="p5-b" />
+
+<Solution>
+
+**The idea.** With $\lambda = 3$ and $x_1 = (1, -1)$ from part (a), the columns of $AM = MJ$ say $Ax_1 = 3x_1$ and $Ax_2 = x_1 + 3x_2$: the one above the diagonal of $J$ links the second column to the first.
+
+<Step title="Solve">
+
+<Formula label="The second column" tex="(A - 3I)\begin{pmatrix} p \\ 0 \end{pmatrix} = \begin{pmatrix} -1 & -1 \\ 1 & 1 \end{pmatrix}\begin{pmatrix} p \\ 0 \end{pmatrix} = \begin{pmatrix} -p \\ p \end{pmatrix} = \begin{pmatrix} 1 \\ -1 \end{pmatrix}" cite="mit" at="Problem 5(b) (our own solution)" />
+
+Both rows give $p = -1$, so $x_2 = (-1, 0)$.
+
+</Step>
+
+<Step title="Check">
+
+With $M = \begin{pmatrix} 1 & -1 \\ -1 & 0 \end{pmatrix}$ (determinant $-1$, so invertible): $AM = \begin{pmatrix} 2 + 1 & -2 + 0 \\ 1 - 4 & -1 + 0 \end{pmatrix} = \begin{pmatrix} 3 & -2 \\ -3 & -1 \end{pmatrix}$ and $MJ = \begin{pmatrix} 3 & 1 - 3 \\ -3 & -1 + 0 \end{pmatrix} = \begin{pmatrix} 3 & -2 \\ -3 & -1 \end{pmatrix}$ too. So $M^{-1}AM = J$. Computing $J$ is not part of the lecture (Lecture 28 transcript, p. 20); here it takes one small system.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Three $3 \times 3$ matrices all have the eigenvalue $7$ three times:
+
+<Formula label="Three Jordan matrices" tex="K_1 = \begin{pmatrix} 7 & 1 & 0 \\ 0 & 7 & 0 \\ 0 & 0 & 7 \end{pmatrix}, \qquad K_2 = \begin{pmatrix} 7 & 0 & 0 \\ 0 & 7 & 1 \\ 0 & 0 & 7 \end{pmatrix}, \qquad K_3 = \begin{pmatrix} 7 & 1 & 0 \\ 0 & 7 & 1 \\ 0 & 0 & 7 \end{pmatrix}" cite="mit" at="Problem 5(c) (our own problem)" />
+
+How many independent eigenvectors do $K_1$ and $K_3$ have? Which of the three are similar to each other?
+
+<Hint>
+
+The eigenvectors fill the nullspace of $K - 7I$. Its dimension is $3$ minus the rank.
+
+</Hint>
+
+<Hint>
+
+Similar matrices have the same number of independent eigenvectors. Two matrices made of the same Jordan blocks, in another order, are similar: a permutation matrix $M$ reorders the blocks.
+
+</Hint>
+
+<Answer id="p5-c-k1" label="Independent eigenvectors of $K_1$:" value="2" tolerance="0.01" calc="p5-c-k1" />
+
+<Answer id="p5-c-k3" label="Independent eigenvectors of $K_3$:" value="1" tolerance="0.01" calc="p5-c-k3" />
+
+<Answer id="p5-c-sim" label="Which statement is true?"
+  choices={["All three of them are similar to one another", "$K_1$ and $K_3$ are similar, while $K_2$ is not", "$K_1$ and $K_2$ are similar, and $K_3$ is not", "No two of the three matrices are similar"]} answer={2} />
+
+<Solution>
+
+**The idea.** Count blocks: each Jordan block brings one eigenvector.
+
+<Step title="Ranks">
+
+$K_1 - 7I$ and $K_2 - 7I$ each have a single one, so rank 1 and a nullspace of dimension $3 - 1 = 2$: two eigenvectors each. $K_3 - 7I$ has two ones in different rows and columns, rank 2, and a nullspace of dimension 1: one eigenvector, $(1, 0, 0)$.
+
+</Step>
+
+<Step title="Blocks">
+
+$K_1$ is a $2 \times 2$ block followed by a $1 \times 1$ block; $K_2$ is a $1 \times 1$ block followed by a $2 \times 2$ block; $K_3$ is one $3 \times 3$ block. Reordering the basis vectors as $(e_2, e_3, e_1)$, with the permutation matrix $M$ whose columns are $e_2$, $e_3$, $e_1$, turns $K_2$ into $K_1$: $M^{-1}K_2M = K_1$. $K_3$ has a different number of eigenvectors from both, so it is similar to neither.
+
+</Step>
+
+<Step title="Check">
+
+This is the lecture's warning on a smaller scale: eigenvalues alone do not decide similarity. For the $4 \times 4$ matrices of the lecture even the number of eigenvectors was not enough, and the block sizes ($3 + 1$ against $2 + 2$) decided (Lecture 28 transcript, pp. 17–20). Here the block sizes $2 + 1$ and $1 + 2$ are the same, and $3$ is different.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Now change one entry of a Jordan block by a small amount $\varepsilon > 0$:
+
+<Formula label="A nearby matrix" tex="A_\varepsilon = \begin{pmatrix} 5 & 1 \\ \varepsilon & 5 \end{pmatrix}" cite="mit" at="Problem 5(d) (our own problem)" />
+
+Find its larger eigenvalue as a formula in $\varepsilon$, and decide whether $A_\varepsilon$ is diagonalisable for $\varepsilon = 10^{-6}$.
+
+<Hint>
+
+Write out $\det(A_\varepsilon - \lambda I) = 0$ and solve for $\lambda - 5$.
+
+</Hint>
+
+<Answer id="p5-d-lam" label="The larger eigenvalue is" expr="5 + sqrt(eps)"
+  vars={{ eps: [0.0001, 1] }} names={{ eps: "\\varepsilon" }}
+  mistakes={[
+    { expr: "5 + eps", hint: "The determinant gives (λ − 5)² = ε: the eigenvalue moves by the square root of ε, which is much more than ε when ε is small." },
+    { expr: "5 + eps/2", hint: "The determinant gives (λ − 5)² = ε, a square, not a linear equation in λ." }
+  ]} />
+
+<Answer id="p5-d-diag" label="For $\varepsilon = 10^{-6}$, is $A_\varepsilon$ diagonalisable?"
+  choices={["Yes, because its two eigenvalues are different", "No, because it is still too close to the Jordan block"]} answer={0} />
+
+<Solution>
+
+**The idea.** A small change in one entry splits the repeated eigenvalue, and two different eigenvalues mean two eigenvectors.
+
+<Step title="The eigenvalues">
+
+<Formula label="Eigenvalues of the nearby matrix" tex="\det(A_\varepsilon - \lambda I) = (5 - \lambda)^2 - \varepsilon = 0, \qquad \lambda = 5 \pm \sqrt\varepsilon" cite="mit" at="Problem 5(d) (our own solution)" />
+
+</Step>
+
+<Step title="Diagonalisable">
+
+For $\varepsilon = 10^{-6}$ the eigenvalues are $5.001$ and $4.999$. They are different, so $A_\varepsilon$ has two independent eigenvectors and its Jordan form is the diagonal $\operatorname{diag}(5.001, 4.999)$, not a Jordan block. A change of one part in a million in one entry changed $J$ completely: this is why Strang calls the Jordan form numerically not a good thing (Lecture 28 transcript, pp. 20–21).
+
+</Step>
+
+<Step title="Check">
+
+At $\varepsilon = 0$ the formula gives $5$ twice, the Jordan block back. The eigenvalues still add to the trace $10$, and their product $25 - \varepsilon$ is the determinant.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="The SVD of a square matrix" points={16}>
+
+Find the singular value decomposition of
+
+<Formula label="A square matrix" tex="A = \begin{pmatrix} 6 & 2 \\ -7 & 6 \end{pmatrix}" cite="mit" at="Problem 6 (our own problem)" />
+
+<Part label="a" points={6}>
+
+Compute $A^TA$ and find the singular values $\sigma_1 \geq \sigma_2$.
+
+<Hint>
+
+The entries of $A^TA$ are the inner products of the columns of $A$ with each other.
+
+</Hint>
+
+<Hint>
+
+The eigenvalues of $A^TA$ come from its trace and its determinant. The singular values are their positive square roots.
+
+</Hint>
+
+<Answer id="p6-a-off" label="The off-diagonal entry of $A^TA$ is" value="-30" tolerance="0.01" calc="p6-a-off" />
+
+<Answer id="p6-a-s1" label="$\sigma_1 =$" value="10" tolerance="0.01" calc="p6-a-s1" />
+
+<Answer id="p6-a-s2" label="$\sigma_2 =$" value="5" tolerance="0.01" calc="p6-a-s2" />
+
+<Solution>
+
+**The idea.** $A^TA = V\Sigma^T\Sigma V^T$: the eigenvalues of $A^TA$ are the $\sigma^2$'s.
+
+<Step title="AᵀA">
+
+The columns of $A$ are $(6, -7)$ and $(2, 6)$, so
+
+<Formula label="AᵀA for this matrix" tex="A^TA = \begin{pmatrix} 36 + 49 & 12 - 42 \\ 12 - 42 & 4 + 36 \end{pmatrix} = \begin{pmatrix} 85 & -30 \\ -30 & 40 \end{pmatrix}" cite="reading3" at="pp. 6–8 (the method; the numbers are our own)" />
+
+</Step>
+
+<Step title="Its eigenvalues">
+
+The trace is $125$ and the determinant $3400 - 900 = 2500$, so $\lambda^2 - 125\lambda + 2500 = 0$ and $\lambda = (125 \pm 75)/2 = 100$ or $25$. The singular values are $\sigma_1 = \sqrt{100} = 10$ and $\sigma_2 = \sqrt{25} = 5$.
+
+</Step>
+
+<Step title="Check">
+
+$100 + 25 = 125$ and $100 \cdot 25 = 2500$. Part (d) gives one more check through $\det A$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Find the unit eigenvector $v_1$ of $A^TA$ for $\sigma_1^2$ (take its first entry positive), and then $u_1$.
+
+<Hint>
+
+$v_1$ is in the nullspace of $A^TA - \sigma_1^2I$.
+
+</Hint>
+
+<Hint>
+
+The sign of an eigenvector of $AA^T$ is not fixed by that matrix. Get $u_1$ from $v_1$ instead, so that the two signs fit together.
+
+</Hint>
+
+<Answer id="p6-b-v1" label="$v_1 =$"
+  choices={["the unit vector along $(-1, -2)$", "the unit vector along $(2, -1)$", "the unit vector along $(1, -2)$", "the unit vector along $(2, 1)$"]} answer={1} />
+
+<Answer id="p6-b-u1" label="$u_1 =$"
+  choices={["the unit vector along $(-1, 2)$", "the unit vector along $(2, -1)$", "the unit vector along $(-2, -1)$", "the unit vector along $(1, -2)$"]} answer={3} />
+
+<Solution>
+
+**The idea.** The $v$'s are eigenvectors of $A^TA$, and $Av_1 = \sigma_1u_1$ gives $u_1$ with the right sign.
+
+<Step title="v₁ and v₂">
+
+$A^TA - 100I = \begin{pmatrix} -15 & -30 \\ -30 & -60 \end{pmatrix}$: its rows say $v_1$ is a multiple of $(2, -1)$, so $v_1 = (2, -1)/\sqrt5$. The other eigenvector is perpendicular: $v_2 = (1, 2)/\sqrt5$, and indeed $A^TA(1, 2) = (85 - 60, -30 + 80) = (25, 50) = 25(1, 2)$.
+
+</Step>
+
+<Step title="u₁ and u₂">
+
+<Formula label="The u's from the v's" tex="u_1 = \frac{Av_1}{\sigma_1} = \frac{1}{10\sqrt5}\begin{pmatrix} 12 - 2 \\ -14 - 6 \end{pmatrix} = \frac{1}{\sqrt5}\begin{pmatrix} 1 \\ -2 \end{pmatrix}, \qquad u_2 = \frac{Av_2}{\sigma_2} = \frac{1}{5\sqrt5}\begin{pmatrix} 10 \\ 5 \end{pmatrix} = \frac{1}{\sqrt5}\begin{pmatrix} 2 \\ 1 \end{pmatrix}" cite="reading3" at="pp. 3–4 (Av = σu; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+$u_1$ and $u_2$ are perpendicular unit vectors, and they are eigenvectors of $AA^T$ (part (c)). But $(-1, 2)/\sqrt5$, the opposite of $u_1$, is an eigenvector of $AA^T$ just as well: taking it with this $v_1$ would give the wrong sign in $U\Sigma V^T$, Strang's puzzle in the lecture (Lecture 29 transcript, pp. 12–13). Finally $U\Sigma V^T = 10u_1v_1^T + 5u_2v_2^T = 2\begin{pmatrix} 2 & -1 \\ -4 & 2 \end{pmatrix} + \begin{pmatrix} 2 & 4 \\ 1 & 2 \end{pmatrix} = \begin{pmatrix} 6 & 2 \\ -7 & 6 \end{pmatrix} = A$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={2}>
+
+What is the larger eigenvalue of $AA^T$?
+
+<Hint>
+
+$AA^T = U\Sigma\Sigma^TU^T$. You may also compute $AA^T$ from the rows of $A$.
+
+</Hint>
+
+<Answer id="p6-c" label="The larger eigenvalue of $AA^T$ is" value="100" tolerance="0.01" calc="p6-c" />
+
+<Solution>
+
+**The idea.** $AA^T$ and $A^TA$ have the same nonzero eigenvalues, the $\sigma^2$'s.
+
+<Step title="The eigenvalue">
+
+<Formula label="AAᵀ for this matrix" tex="AA^T = \begin{pmatrix} 36 + 4 & -42 + 12 \\ -42 + 12 & 49 + 36 \end{pmatrix} = \begin{pmatrix} 40 & -30 \\ -30 & 85 \end{pmatrix} = U\Sigma\Sigma^TU^T" cite="reading3" at="p. 10 (AAᵀ removes V; the numbers are our own)" />
+
+Its trace is $125$ and its determinant $3400 - 900 = 2500$, the same as for $A^TA$, so its eigenvalues are again $100$ and $25$. The larger is $\sigma_1^2 = 100$.
+
+</Step>
+
+<Step title="Check">
+
+$AA^Tu_1 = \frac{1}{\sqrt5}(40 + 60, -30 - 170) = \frac{1}{\sqrt5}(100, -200) = 100\,u_1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Show that for every $2 \times 2$ matrix, $\sigma_1\sigma_2 = |\det A|$, and check it for this $A$.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Take determinants of both sides of $A = U\Sigma V^T$. What can the determinant of an orthogonal matrix be?
+
+</Hint>
+
+<Solution>
+
+**The idea.** Orthogonal factors have determinant $\pm 1$, so only $\Sigma$ changes the size of the determinant.
+
+<Step title="The determinants">
+
+From $Q^TQ = I$, $(\det Q)^2 = 1$ for any orthogonal $Q$, so $\det U = \pm 1$ and $\det V^T = \pm 1$. Then
+
+<Formula label="Determinant from the SVD" tex="|\det A| = |\det U|\,|\det\Sigma|\,|\det V^T| = \sigma_1\sigma_2" cite="mit" at="Problem 6(d) (our own solution)" />
+
+</Step>
+
+<Step title="Check for this A">
+
+$\det A = 36 + 14 = 50$ and $\sigma_1\sigma_2 = 10 \cdot 5 = 50$. (Here $\det U = \frac15(1 + 4) = 1$ and $\det V^T = \frac15(4 + 1) = 1$, which fits $\det A = +50$.)
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 7
+
+<Exercise id="p7" title="The SVD of a rectangular matrix of rank one" points={12}>
+
+For a real number $c > 0$, take the $2 \times 3$ matrix
+
+<Formula label="A rank-one matrix" tex="A = \begin{pmatrix} 1 & 2 & 2 \\ c & 2c & 2c \end{pmatrix}" cite="mit" at="Problem 7 (our own problem)" />
+
+<Part label="a" points={4}>
+
+Find its only nonzero singular value $\sigma_1$ as a formula in $c$.
+
+<Hint>
+
+Every row is a multiple of $(1, 2, 2)$ and every column a multiple of $(1, c)$: $A$ is one column times one row. What are $v_1$ and $u_1$?
+
+</Hint>
+
+<Hint>
+
+Compute $Av_1$ for the unit vector $v_1$ along $(1, 2, 2)$, and take its length.
+
+</Hint>
+
+<Answer id="p7-a" label="$\sigma_1 =$" expr="3*sqrt(1 + c^2)"
+  vars={{ c: [0.5, 4] }} names={{ c: "c" }}
+  mistakes={[
+    { expr: "3*(1 + c)", hint: "The length of (1, c) is the square root of 1 + c², not 1 + c." },
+    { expr: "9*(1 + c^2)", hint: "That is σ₁², the nonzero eigenvalue of AᵀA. The singular value is its square root." }
+  ]} />
+
+<Solution>
+
+**The idea.** For a matrix that is one column times one row, the bases are forced: $v_1$ along the row, $u_1$ along the column.
+
+<Step title="One column times one row">
+
+$A = \begin{pmatrix} 1 \\ c \end{pmatrix}\begin{pmatrix} 1 & 2 & 2 \end{pmatrix}$. The row space is the line through $(1, 2, 2)$, of length $3$, so $v_1 = (1, 2, 2)/3$. Then
+
+<Formula label="The singular value" tex="Av_1 = \frac{1 + 4 + 4}{3}\begin{pmatrix} 1 \\ c \end{pmatrix} = 3\begin{pmatrix} 1 \\ c \end{pmatrix} = 3\sqrt{1 + c^2}\;u_1, \qquad u_1 = \frac{(1, c)}{\sqrt{1 + c^2}}" cite="reading3" at="pp. 13–16 (a rank-one example; the numbers are our own)" />
+
+So $\sigma_1 = 3\sqrt{1 + c^2}$.
+
+</Step>
+
+<Step title="Check">
+
+$A^TA = (1 + c^2)\begin{pmatrix} 1 & 2 & 2 \\ 2 & 4 & 4 \\ 2 & 4 & 4 \end{pmatrix}$ has rank one, so its only nonzero eigenvalue is its trace, $9(1 + c^2) = \sigma_1^2$. For $c = 2$, $\sigma_1 = 3\sqrt5 \approx 6.708$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={3}>
+
+Now take $c = 2$. What are the dimensions of the nullspace of $A$ and of the left nullspace (the nullspace of $A^T$)?
+
+<Hint>
+
+$A$ is $2 \times 3$ with rank $r = 1$. The SVD gives $n - r$ vectors $v$ for one nullspace and $m - r$ vectors $u$ for the other.
+
+</Hint>
+
+<Answer id="p7-b-null" label="Dimension of the nullspace:" value="2" tolerance="0.01" calc="p7-b-null" />
+
+<Answer id="p7-b-left" label="Dimension of the left nullspace:" value="1" tolerance="0.01" calc="p7-b-left" />
+
+<Solution>
+
+**The idea.** The four subspaces have dimensions $r$, $r$, $n - r$ and $m - r$, and the SVD gives an orthonormal basis of each.
+
+<Step title="Count">
+
+Here $m = 2$, $n = 3$ and $r = 1$. The nullspace (in $\mathbf{R}^3$) has dimension $3 - 1 = 2$, filled by $v_2$ and $v_3$; the left nullspace (in $\mathbf{R}^2$) has dimension $2 - 1 = 1$, filled by $u_2$ (Lecture 29 transcript, pp. 17–18).
+
+</Step>
+
+<Step title="Check">
+
+$u_2$ must be perpendicular to $u_1 = (1, 2)/\sqrt5$, so $u_2 = (2, -1)/\sqrt5$, and indeed $A^Tu_2 = \frac{1}{\sqrt5}(2 - 2, 4 - 4, 4 - 4) = 0$. The two dimensions in each space add up: $1 + 2 = 3$ and $1 + 1 = 2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Which pair of vectors could be $v_2$ and $v_3$ in the SVD of $A$ for $c = 2$?
+
+<Hint>
+
+$v_2$ and $v_3$ must each be perpendicular to the row space, and also perpendicular to each other, with length one.
+
+</Hint>
+
+<Answer id="p7-c" label="$v_2$ and $v_3$:"
+  choices={["unit vectors along $(2, -1, 0)$ and $(2, 4, -5)$", "unit vectors along $(2, -1, 0)$ and $(-2, -2, 3)$", "unit vectors along $(1, 2, 2)$ and $(2, -1, 0)$", "unit vectors along $(2, -1, 0)$ and $(0, 1, -1)$"]} answer={0} />
+
+<Solution>
+
+**The idea.** Test each pair: both vectors perpendicular to $(1, 2, 2)$, perpendicular to each other, and of length one.
+
+<Step title="The tests">
+
+<Formula label="The right pair" tex="(1, 2, 2) \cdot (2, -1, 0) = 0, \quad (1, 2, 2) \cdot (2, 4, -5) = 2 + 8 - 10 = 0, \quad (2, -1, 0) \cdot (2, 4, -5) = 4 - 4 = 0" cite="mit" at="Problem 7(c) (our own solution)" />
+
+The lengths are $\sqrt5$ and $\sqrt{4 + 16 + 25} = \sqrt{45}$, so the scaled vectors are unit vectors. In the other pairs: $(-2, -2, 3)$ is in the nullspace but has inner product $-4 + 2 = -2$ with $(2, -1, 0)$; $(1, 2, 2)/3$ is $v_1$ itself, in the row space; and $(0, 1, -1)$ is in the nullspace but has inner product $-1$ with $(2, -1, 0)$.
+
+</Step>
+
+<Step title="Check">
+
+The third vector of an orthonormal basis of $\mathbf{R}^3$ is the cross product of the other two: $(1, 2, 2) \times (2, -1, 0) = (0 + 2, 4 - 0, -1 - 4) = (2, 4, -5)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={2}>
+
+For $c = 2$, is the $3 \times 3$ matrix $A^TA$ positive definite?
+
+<Hint>
+
+Look for a nonzero $x$ with $x^TA^TAx = \|Ax\|^2 = 0$.
+
+</Hint>
+
+<Answer id="p7-d" label="$A^TA$ is positive definite:"
+  choices={["Yes, since it is symmetric and its diagonal entries are all positive", "No, since $Ax = 0$ for some nonzero $x$"]} answer={1} />
+
+<Solution>
+
+**The idea.** $A^TA$ is positive definite exactly when the columns of $A$ are independent (rank $n$).
+
+<Step title="The test">
+
+The rank is $1 < 3 = n$, so the columns of $A$ are dependent. For $x = (2, -1, 0)$, $Ax = 0$ and $x^TA^TAx = \|Ax\|^2 = 0$ with $x \neq 0$. So $A^TA$ is only positive semidefinite (Lecture 28 transcript, pp. 4–5).
+
+</Step>
+
+<Step title="Check">
+
+The eigenvalues of $A^TA$ are $\sigma_1^2 = 45$, $0$ and $0$: two zeros. A symmetric matrix with positive diagonal entries need not be positive definite.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
