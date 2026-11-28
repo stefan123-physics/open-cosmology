@@ -152,8 +152,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
         if (a.scale !== undefined) {
           const s = parseNumber(String(a.scale));
           if (s === null || !(s > 0)) errors.push(`${an}: scale "${a.scale}" must be a positive number such as "1e-11", "1e6" or "0.01"`);
-        } else if (/in units of\s*\$?\s*10\s*\^|\\times\s*10\s*\^|×\s*10|\bmillions?\b|\bbillions?\b|\bthousands?\b|%|\bper ?cent\b/i.test(`${a.label ?? ""} ${a.unit ?? ""}`))
-          unscaled.push(String(a.id));
+        } else if (asksScaledUnit(String(a.label ?? ""), String(a.unit ?? ""))) unscaled.push(String(a.id));
         for (const [i, m] of ((a.mistakes ?? []) as Record<string, unknown>[]).entries()) {
           const mi = interval(String(m.value ?? ""), m.tolerance);
           if (!mi) {
@@ -212,4 +211,19 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   if (roundBoxes.length) warnings.push(`${roundBoxes.length} number box${roundBoxes.length > 1 ? "es reject" : " rejects"} the answer rounded to 3 significant figures without asking for more digits in the label: ${list(roundBoxes)}`);
   if (unscaled.length) warnings.push(`${unscaled.length} number box${unscaled.length > 1 ? "es ask" : " asks"} for a scaled unit (a power of ten, millions, a percentage) but ${unscaled.length > 1 ? "have" : "has"} no scale, so the full number is rejected: ${list(unscaled)}`);
   return { errors, warnings, exercises: done.length };
+}
+
+/**
+ * Does a number box ask for its value in a scaled unit (so it should have `scale`)? Account B's rule (2026-11-28):
+ * only "in units of 10^k", a unit that starts "× 10", "in millions/billions/thousands" or an answer that is a percentage.
+ * Not "(tolerance 1%)", a power of ten that belongs to a given quantity ("at 5 × 10^14 Hz") or "10% too large".
+ */
+export function asksScaledUnit(label: string, unit: string): boolean {
+  const l = label.replace(/\(?\s*tolerance\s*[\d.]+\s*(\?%)\s*\)?/gi, " ");
+  if (/in units of\s*\$?\s*(\left\(|\{)?\s*10\s*\^/i.test(l)) return true;
+  if (/\bin (thousands|millions|billions|trillions)\b/i.test(l)) return true;
+  if (/\bin (\?%|per ?cent)|\bas a percentage\b|\bpercentage\b|\(\s*\?%\s*\)/i.test(l)) return true;
+  if (/^\s*\$?\s*(\times|×)\s*10/.test(unit)) return true;
+  if (/^\s*(\?%|per ?cent)\s*$/i.test(unit)) return true;
+  return false;
 }
