@@ -20,7 +20,7 @@ import { createElement, Fragment, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Page } from "./content";
 import katex from "katex";
-import { auditFormula, parseFormula, parseNumber } from "./answers";
+import { auditFormula, numberTolerance, parseFormula, parseNumber } from "./answers";
 import { speechGaps, texToSpeech } from "./speech";
 
 /** What is wrong with the preview of one typed formula (empty when it is fine). */
@@ -110,6 +110,8 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
   };
   let calcs: ReturnType<typeof pageCalcs> | undefined;
   const untoleranced: string[] = [];
+  const slipBoxes: string[] = [];
+  const roundBoxes: string[] = [];
   for (const ex of done) {
     const name = `<Exercise id="${ex.props.id}">`;
     unique("<Exercise>", ex.props.id);
@@ -140,6 +142,19 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
         // Without a tolerance a box accepts half a unit of the last printed digit, which can let a wrong value
         // through ("1" accepts 0.6 to 1.4): docs/ANSWER-BOX-FIX-PLAN.md Step 5.
         if (a.tolerance === undefined) untoleranced.push(String(a.id));
+        // The tolerance rule (docs/CONTENT_GUIDE.md "Problem sets", owner decision 2026-11-28): no obvious slip may
+        // be accepted, and a correct answer to 3 significant figures must be. Warnings while existing boxes are fixed.
+        if (value !== null) {
+          const tol = numberTolerance(String(a.value), a.tolerance === undefined ? undefined : String(a.tolerance));
+          const inside = (x: number) => Math.abs(x - value) <= tol * (1 + 1e-9);
+          if (value !== 0) {
+            const slips: [string, number][] = [["sign", -value], ["×2", 2 * value], ["×½", value / 2], ["×10", 10 * value], ["×⅒", value / 10], ["×π", Math.PI * value], ["÷π", value / Math.PI]];
+            const caught = slips.filter(([, x]) => inside(x)).map(([s]) => s);
+            if (caught.length) slipBoxes.push(`${a.id} (${caught.join(", ")})`);
+            const three = Number(value.toPrecision(3));
+            if (!inside(three) && !/significant|digits|decimal/i.test(String(a.label ?? ""))) roundBoxes.push(String(a.id));
+          } else if (a.tolerance !== undefined && String(a.tolerance).includes("%")) slipBoxes.push(`${a.id} (a percentage of 0 accepts nothing but 0)`);
+        }
         // Second valid readings (Step 4): a number, a tolerance, a note, and a calc that recomputes the number.
         for (const [i, o] of ((a.alsoAccept ?? []) as Record<string, unknown>[]).entries()) {
           const ov = parseNumber(String(o.value ?? ""));
@@ -163,8 +178,11 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; wa
         errors.push(`${an}: choices needs two or more entries and answer the index of the right one`);
     }
   }
-  const warnings = untoleranced.length
+  const warnings: string[] = untoleranced.length
     ? [`${untoleranced.length} number box${untoleranced.length > 1 ? "es have" : " has"} no tolerance (${untoleranced.slice(0, 6).join(", ")}${untoleranced.length > 6 ? ", …" : ""}): give each one, so a wrong value cannot pass on the printed digits alone`]
     : [];
+  const list = (ids: string[]) => `${ids.slice(0, 5).join("; ")}${ids.length > 5 ? `; and ${ids.length - 5} more` : ""}`;
+  if (slipBoxes.length) warnings.push(`${slipBoxes.length} number box${slipBoxes.length > 1 ? "es accept" : " accepts"} an obvious slip (tolerance rule, docs/CONTENT_GUIDE.md): ${list(slipBoxes)}`);
+  if (roundBoxes.length) warnings.push(`${roundBoxes.length} number box${roundBoxes.length > 1 ? "es reject" : " rejects"} the answer rounded to 3 significant figures without asking for more digits in the label: ${list(roundBoxes)}`);
   return { errors, warnings, exercises: done.length };
 }
