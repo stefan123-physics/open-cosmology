@@ -186,7 +186,7 @@ Sims are hosted locally (unmodified, pinned versions, `public/phet/manifest.json
 | 3.11 Orbital energy and escape speed | `my-solar-system` (1.3.18) | Launch speed decides a closed or an open orbit |
 | 4.2 Temperature and thermal energy | `gases-intro` (1.1.9) | Temperature linked to the speed of particles |
 | 4.9 Entropy and the second law | `diffusion` (1.1.9) | Two gases mix and do not un-mix |
-| 5.7 Resonance | `wave-on-a-string` (1.2.6), in place of the suggested `normal-modes` (1.0.19) | A string driven at one end resonates near its harmonics; damping lowers the response (normal-modes has no driving force) |
+| 5.7 Resonance | `wave-on-a-string` (1.2.6), in place of the suggested `normal-modes` (1.0.19) | A string driven at one end resonates near its harmonics; damping lowers the response (normal-modes has no driving force; owner decision 2026-11-28: normal-modes is used in 5.4 Superposition and standing waves instead) |
 | 5.8 Light and the electromagnetic spectrum | `molecules-and-light` (1.5.35) | Microwave, infrared, visible and UV light acting on molecules |
 | 6.1 Electric charge | `balloons-and-static-electricity` (1.5.28) | Charging by rubbing; like and unlike charges |
 | 6.5 Capacitors | `capacitor-lab-basics` (1.6.41) | Plate area, gap, charge and stored energy |

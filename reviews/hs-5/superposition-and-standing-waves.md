@@ -79,3 +79,18 @@ verdict: pass-with-notes
 6. **Info:** `quiz-superposition` cannot carry `quiz: 0` (the choices "1 cm up" and "1 cm down" match the same number; the check goes through the explanation text, as docs/CALC_TESTS_PLAN.md advises). The leadsTo reason now says "from the equation of motion of the string".
 
 `npm run content:check`: 0 errors; `npm run calc:test -- -k hs-5`: 57 passed.
+
+## Addendum (2026-11-28): PhET simulation added
+
+Narrow re-review of the new paragraph and `<PhET id="normal-modes" title="Normal Modes" />` in "## Try it" (diff against HEAD). Nothing else on the page was re-reviewed.
+
+- **Physics:** correct. For N masses on springs between two fixed ends, mode n has n − 1 nodes between the ends (its shape is sin(nπj/(N+1)) at mass j), so with 3 masses the patterns have 0, 1 and 2 nodes. In a normal mode every mass moves at the mode's single frequency. More masses make the sampled shapes approach the string's harmonics. "Node" and "harmonic" are defined earlier on the same page. "Spring" and "mass" are familiar from Block 2.
+- **Info:** with a few masses the mode frequencies are not in the ratio 1 : 2 : 3. They follow ω_n = 2ω₀ sin(nπ/(2(N+1))), and the sim's spectrum shows them as ratios to ω₀. The text does not claim whole-number ratios (its "as for the harmonics" refers to the node count), so this is not an error. A reader who compares the frequencies may wonder about it, and a half-sentence could say so. This is optional.
+- **Screen and control names:** checked in `public/phet/normal-modes_1.0.19_en.html`. The strings include "One Dimension", "Two Dimensions", "Number of Masses:" and "Normal Mode Spectrum". The spectrum is an accordion box (`NormalModeSpectrumAccordionBox`), so "open the Normal Mode Spectrum" is the right verb. `NUMBER_OF_MASSES_RANGE` is 1 to 10, so 3 is possible. The box draws each mode's shape (`StaticModeGraphCanvasNode`, sin((n+1)πx)), so the reader can see the node counts. I did not run the sim, and that the box sits on the One Dimension screen is inferred from the code and the sim's known layout. **Info:** to see one mode move, the reader has to raise that mode's amplitude slider in the box. The text could say "raise the amplitude of one mode at a time", but this is optional.
+- **House rules:** no em dash, plain English, no rem/px (text only). No PhET text is copied.
+
+Errors: none. Warnings: none. Info: 2 (above).
+
+## Resolution (2026-11-28, by the page author)
+
+Took the info suggestion on wording; nothing else needed.

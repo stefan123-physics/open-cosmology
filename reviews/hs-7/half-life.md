@@ -91,3 +91,18 @@ Symbols note: t and t_half units changed to "s (here also minutes, hours and yea
 Read-aloud note: Bq and MBq already appear as \text{Bq} / \text{MBq} inside maths everywhere (the new 320 MBq too); the unit words themselves are being added to lib/speech.ts by another change.
 
 Checks: `npm run calc:test -- -k half-life`: 43 passed. `npm run content:check`: no error or warning for this page (0 error(s) site-wide).
+
+## Addendum (2026-11-28): PhET simulation added
+
+Narrow re-review of the new paragraph and `<PhET id="beta-decay" title="Beta Decay" />` in "## Try it" (diff against HEAD). Nothing else on the page was re-reviewed.
+
+- **Physics:** correct. Beta decay is random per nucleus with a constant chance per second, so a large sample follows the same half-life law as alpha decay. Beta decay is introduced in the prerequisite `radioactive-decay`, and "isotope" in `the-nucleus`.
+- **Screen and control names:** checked in `public/phet/beta-decay_1.0.2_en.html`. Its `screenNameKeys` are `BETA_DECAY/screen.singleAtom`, `screen.multipleAtoms` and `screen.decayRates`, with the strings "Single Atom", "Multiple Atoms" and "Decay Rates". "Decay Rates" (plural) is right for this sim. The Alpha Decay sim's screen is "Decay Rate" (`ALPHA_DECAY/screen.decayRate`), which matches the existing paragraph above it. The Decay Rates screen view is built with `includeIsotopeSelectorPanel: true`. The sim's beta emitters include hydrogen-3, carbon-14 and iodine-131 (half-lives from days to thousands of years), and it also has a "Custom" isotope with a half-life slider. So the reader can compare a short and a long half-life.
+- **Info:** "the number left halves in each half-life" is true on average only. The Alpha paragraph says "about half", and so does the page's own description of randomness. Writing "about halves" would match it, but this is optional.
+- **House rules:** no em dash, plain English, no rem/px (text only). No PhET text is copied: the sim strings, such as "Adjust time for Isotope A to undergo one half-life", do not appear.
+
+Errors: none. Warnings: none. Info: 1 (above).
+
+## Resolution (2026-11-28, by the page author)
+
+Took the info suggestion on wording; nothing else needed.
