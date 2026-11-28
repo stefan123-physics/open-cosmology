@@ -1,0 +1,296 @@
+# Calculations on content/year-1/8.02/8-02-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Neither MIT's Problem Solving 5 nor the Additional Problems of the course notes print solutions, so every formula
+# answer is checked here by an independent route: an integral over the wire or the area, the forces on single
+# sides instead of the dipole moment, or the other way round. g = 9.8 m/s² throughout (the notes' value).
+
+page: content/year-1/8.02/8-02-problem-set-6.mdx
+calcs:
+  # ---- Problem 1
+
+  - id: p1-dq-by-integral
+    kind: identity
+    answer: p1-a
+    where: 'Problem 1(a), answer box: the charge in a slice, against the integral of the charge per unit length rho A along the slice'
+    formula: rho*A*dx
+    equals: integrate('rho * A', 'x', 0, dx)
+    samples:
+      rho: [1, 10, 3.3, 7]
+      A: [2, 5, 2.5, 4.1]
+      dx: [0.01, 0.1, 0.05, 0.02]
+    tolerance: 1e-9
+    shown: ['dq = \rho\,A\,dx']
+    source: {cite: mit, at: 'Question 1, p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: p1-current-by-integral
+    kind: identity
+    answer: p1-b
+    where: 'Problem 1(b), answer box: the current, against the charge that crosses in a time T (integral of dq/dt = rho A vd over T) divided by T'
+    formula: rho*A*vd
+    equals: integrate('rho * A * vd', 't', 0, T) / T
+    samples:
+      rho: [1, 10, 3.3, 7]
+      A: [2, 5, 2.5, 4.1]
+      vd: [0.001, 0.01, 0.005, 0.002]
+      T: [1, 2, 0.5, 3]
+    tolerance: 1e-9
+    shown: ['I = \frac{dq}{dt} = \rho\,A\,v_d']
+    source: {cite: mit, at: 'Question 3, p. 2 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  # (c) The answer against the dipole route: current times the area of the loop (integrated across its width)
+  # times B, with the field in the plane of the loop (sin 90° = 1).
+  - id: p2-torque-by-area
+    kind: identity
+    answer: p2-c
+    where: 'Problem 2(c), answer box and formula "Total torque on the rectangular loop": against I times the area (integrated over the width) times B'
+    formula: I*a*b*B
+    equals: I * integrate('a', 'x', -b / 2, b / 2) * B * sin(pi / 2)
+    samples:
+      I: [0.5, 5, 2, 1.3]
+      a: [0.05, 0.5, 0.2, 0.1]
+      b: [0.05, 0.5, 0.3, 0.4]
+      B: [0.1, 2, 1, 0.7]
+    tolerance: 1e-9
+    shown: ['\vec\tau = \vec\tau_4 + \vec\tau_2 = IabB\,\hat k']
+    source: {cite: mit, at: 'Question 13, p. 6 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3
+
+  # (a) The dipole answer against the force route: force I l B on the bottom side times its lever arm l cos(theta).
+  - id: p3-torque-by-forces
+    kind: identity
+    answer: p3-a
+    where: 'Problem 3(a), answer box and formula "Torque on the hinged loop": against the force on the bottom side times its depth below the hinge'
+    formula: I*l**2*B*cos(theta)
+    equals: (I * l * B) * (l * cos(theta))
+    samples:
+      I: [0.5, 5, 17.8, 2]
+      l: [0.05, 0.5, 0.10, 0.2]
+      B: [0.01, 1, 0.050, 0.3]
+      theta: [0.1, 0.7, 0.349, 0.5]
+    tolerance: 1e-9
+    shown: ['\tau = \mu B \sin(90^\circ + \theta) = I\ell^2 B\cos\theta']
+    source: {cite: mit, at: 'Question 16, p. 8 (our own solution)'}
+    origin: page-own
+
+  - id: p3-torque-dipole-angle
+    kind: identity
+    where: 'Problem 3(a), step "The angle and the torque": sin(90° + theta) = cos(theta)'
+    formula: sin(pi/2 + theta)
+    equals: cos(theta)
+    samples:
+      theta: [0.1, 0.7, 0.349, 0.5]
+    tolerance: 1e-12
+    shown: ['$\sin(90^\circ + \theta) = \cos\theta$:']
+    source: {cite: mit, at: 'Question 16, p. 8 (our own solution)'}
+    origin: page-own
+
+  # (d) The torque of gravity as an integral along the three hanging sides (mass per length m/(4 l)).
+  - id: p3-gravity-torque-by-integral
+    kind: identity
+    where: 'Problem 3(d), formula "Torque of gravity on the hinged loop": against an integral along the two slanted sides plus the bottom side at s = l'
+    formula: m*g*l/2*sin(th)
+    equals: (m / (4 * l)) * g * sin(th) * (2 * integrate('s', 's', 0, l)) + (m / 4) * g * l * sin(th)
+    samples:
+      m: [0.05, 0.2, 0.1, 0.03]
+      g: [9.8, 9.81, 9, 10]
+      l: [0.1, 0.5, 0.2, 0.05]
+      th: [0.1, 1.2, 0.349, 0.8]
+    tolerance: 1e-9
+    shown: ['= \frac{m g \ell}{2}\,\sin\theta']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24 (our own solution)'}
+    origin: page-own
+
+  - id: p3-current-formula-by-solve
+    kind: identity
+    where: 'Problem 3(d), formula "Current that holds the loop": against a numerical solve of the torque balance for the current x'
+    formula: m*g*tan(th)/(2*l*B)
+    equals: solve('x * l**2 * B * cos(th) - m * g * l * sin(th) / 2', 'x', 0, 10000)
+    samples:
+      m: [0.05, 0.2, 0.1, 0.03]
+      g: [9.8, 9.81, 9, 10]
+      l: [0.1, 0.5, 0.2, 0.05]
+      B: [0.05, 0.5, 0.1, 1]
+      th: [0.349, 1.2, 0.2, 0.8]
+    tolerance: 1e-7
+    shown: ['I = \frac{m g \tan\theta}{2\,\ell B}']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24 (our own solution)'}
+    origin: page-own
+
+  - id: p3-given-numbers
+    kind: fact
+    where: 'Problem 3, statement before part (c): side, mass and angle of the loop from the notes'
+    shown: ['The loop has $\ell = 0.10$ m and mass $m = 50$ g, spread evenly along the wire.']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2, p. 23'}
+    origin: mit
+
+  - id: p3-field-gauss
+    where: 'Problem 3, statement before part (c): 500 gauss in tesla'
+    inputs: {Bg: 500, one_gauss: 1e-4 T}
+    formula: Bg * one_gauss
+    expected: 0.050 T
+    shown: ['The field is 500 G $= 0.050$ T']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2, p. 23'}
+    origin: mit
+
+  - id: p3-tan20
+    where: 'Problem 3(d), step "Balance and solve": tan 20°'
+    inputs: {deg: 20}
+    formula: tan(deg * pi / 180)
+    expected: '0.364'
+    shown: ['$\tan 20^\circ = 0.364$']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24 (our own solution)'}
+    origin: page-own
+
+  - id: p3-current
+    answer: p3-d
+    where: 'Problem 3(d), answer box and step "Balance and solve": the current that holds the loop at 20°'
+    inputs: {m: 0.050 kg, g: 9.8 m/s**2, deg: 20, l: 0.10 m, B: 0.050 T}
+    formula: m * g * tan(deg * pi / 180) / (2 * l * B)
+    expected: 17.8 A
+    shown: ['$I = 0.49 \times 0.364/(2 \times 0.10 \times 0.050) = 17.8$ A']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24 (our own solution)'}
+    origin: page-own
+
+  - id: p3-notes-answer
+    kind: fact
+    where: 'Problem 3(d), check: the answer the notes print'
+    shown: ['The notes give "about 20 A"']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24'}
+    origin: mit
+
+  - id: p3-torque-each
+    where: 'Problem 3(d), check: torque of gravity (and of the magnetic forces) at 20°'
+    inputs: {m: 0.050 kg, g: 9.8 m/s**2, deg: 20, l: 0.10 m}
+    formula: m * g * l * sin(deg * pi / 180) / 2
+    expected: 8.4e-3 N*m
+    shown: ['$\tau_g = 0.49 \times 0.10 \times \sin 20^\circ/2 = 8.4 \times 10^{-3}$ N m']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24 (our own solution)'}
+    origin: page-own
+
+  - id: p3-magnetic-torque-check
+    where: 'Problem 3(d), check: the magnetic torque with the rounded current 17.8 A equals the torque of gravity, 8.4e-3 N m'
+    inputs: {I: 17.8 A, l: 0.10 m, B: 0.050 T, deg: 20}
+    formula: I * l**2 * B * cos(deg * pi / 180)
+    expected: 8.4e-3 N*m
+    shown: ['Both torques at 20° are']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(c), p. 24 (our own solution)'}
+    origin: page-own
+
+  - id: p3-weight
+    where: 'Problem 3(d) and (e): the weight of the loop, 0.49 N (also the pivot force of part (e))'
+    inputs: {m: 0.050 kg, g: 9.8 m/s**2}
+    formula: m * g
+    expected: 0.49 N
+    shown: ['$mg = 0.050 \times 9.8 = 0.49$ N downwards', 'So the pivots push upwards with 0.49 N, straight up.']
+    source: {cite: reading1, at: 'Additional Problem 8.11.2(d), p. 24 (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 4
+
+  # (b) The answer against the area found by integration: half disc of radius R plus a triangle of base 2R and
+  # height R/tan(theta/2), sliced along the line of symmetry.
+  - id: p4-torque-by-area
+    kind: identity
+    answer: p4-b
+    where: 'Problem 4(b), answer box and formula "Torque on the cone-shaped loop": against I B times the area of half disc and triangle by integration'
+    formula: I*B*R**2*(pi/2 + 1/tan(theta/2))
+    equals: I * B * (integrate('2 * sqrt(R**2 - y**2)', 'y', 0, R) + integrate('2 * R * (1 - y * tan(theta / 2) / R)', 'y', 0, R / tan(theta / 2)))
+    samples:
+      I: [0.5, 5, 2, 1]
+      B: [0.1, 2, 1, 0.4]
+      R: [0.05, 0.3, 0.1, 0.2]
+      theta: [0.5, 2.5, 1.5708, 1.0]
+    tolerance: 1e-7
+    shown: ['\tau = I B R^2\left(\frac{\pi}{2} + \cot\frac{\theta}{2}\right)']
+    source: {cite: reading1, at: 'Additional Problem 8.11.6(b), p. 26 (our own solution)'}
+    origin: page-own
+
+  - id: p4-example
+    where: 'Problem 4(b), check: the factor pi/2 + 1 for theta = 90°'
+    inputs: {deg: 90}
+    formula: pi / 2 + 1 / tan(deg * pi / 180 / 2)
+    expected: '2.57'
+    shown: ['$(\pi/2 + 1)\,IBR^2 = 2.57\,IBR^2$']
+    source: {cite: reading1, at: 'Additional Problem 8.11.6(b), p. 26 (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 5
+
+  - id: p5-given
+    kind: fact
+    where: 'Problem 5, statement: field at the equator, density and resistivity of copper (from the notes)'
+    shown: ['$B = 0.5 \times 10^{-4}$ T', '$\rho_m = 8.9 \times 10^3\ \text{kg/m}^3$', '$\rho_e = 1.7 \times 10^{-8}$ Ω m']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8, p. 27'}
+    origin: mit
+
+  - id: p5-J
+    answer: p5-a
+    where: 'Problem 5(a), answer box and step "The balance": the current density that floats the wire'
+    inputs: {rho_m: 8.9e3 kg/m**3, g: 9.8 m/s**2, B: 0.5e-4 T}
+    formula: rho_m * g / B
+    expected: 1.74e9 A/m**2
+    shown: ['= 1.74 \times 10^9\ \text{A/m}^2$, whatever the diameter']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(a), p. 27 (our own solution)'}
+    origin: page-own
+
+  - id: p5-J-per-mm2
+    where: 'Problem 5(a), check: the current density in amperes per square millimetre'
+    inputs: {rho_m: 8.9e3 kg/m**3, g: 9.8 m/s**2, B: 0.5e-4 T}
+    formula: rho_m * g / B
+    expected: 1700 A/mm**2
+    tolerance: 3%
+    shown: ['about 1700 A through every square millimetre']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(a), p. 27 (our own solution)'}
+    origin: page-own
+
+  - id: p5-J-unrounded
+    where: 'Problem 5(b), step "The number": the unrounded current density used'
+    inputs: {rho_m: 8.9e3 kg/m**3, g: 9.8 m/s**2, B: 0.5e-4 T}
+    formula: rho_m * g / B
+    expected: 1.744e9 A/m**2
+    shown: ['(1.744 \times 10^9)^2']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(b), p. 27 (our own solution)'}
+    origin: page-own
+
+  - id: p5-power-m3
+    where: 'Problem 5(b), step "The number": heating per cubic metre'
+    inputs: {rho_e: 1.7e-8 ohm*m, rho_m: 8.9e3 kg/m**3, g: 9.8 m/s**2, B: 0.5e-4 T}
+    formula: rho_e * (rho_m * g / B)**2
+    expected: 5.17e10 W/m**3
+    shown: ['= 5.17 \times 10^{10}\ \text{W/m}^3$']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(b), p. 27 (our own solution)'}
+    origin: page-own
+
+  - id: p5-power
+    answer: p5-b
+    where: 'Problem 5(b), answer box and step "The number": heating per cubic centimetre'
+    inputs: {rho_e: 1.7e-8 ohm*m, rho_m: 8.9e3 kg/m**3, g: 9.8 m/s**2, B: 0.5e-4 T}
+    formula: rho_e * (rho_m * g / B)**2
+    expected: 5.17e4 W/cm**3
+    shown: ['$5.17 \times 10^4$ W, about 52 kW']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(b), p. 27 (our own solution)'}
+    origin: page-own
+
+  - id: p5-power-kw
+    where: 'Problem 5(b), step "The number": the same in kilowatts per cubic centimetre'
+    inputs: {rho_e: 1.7e-8 ohm*m, rho_m: 8.9e3 kg/m**3, g: 9.8 m/s**2, B: 0.5e-4 T}
+    formula: rho_e * (rho_m * g / B)**2
+    expected: 52 kW/cm**3
+    shown: ['about 52 kW, into heat']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(b), p. 27 (our own solution)'}
+    origin: page-own
+
+  - id: p5-cm3-per-m3
+    where: 'Problem 5(b), step "The number": cubic centimetres in a cubic metre'
+    inputs: {v: 1 m**3}
+    formula: v
+    expected: 1e6 cm**3
+    shown: ['A cubic metre is $10^6$ cubic centimetres']
+    source: {cite: reading1, at: 'Additional Problem 8.11.8(b), p. 27 (our own solution)'}
+    origin: page-own
