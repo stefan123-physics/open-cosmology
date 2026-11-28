@@ -1,0 +1,525 @@
+---
+title: "Problem Set 2: Orbits in a logarithmic potential and the Mestel disc"
+slug: 8-902-problem-set-2
+course: "8.902"
+kind: problems
+set: 2
+lecture: 5
+order: 90
+covers: [4, 5]
+solutions: own
+summary: "Two problems on stars in the potentials of galaxies. Integrate the orbit of a star in a logarithmic potential on a computer, find its turning points and its radial period, and see where along the orbit it spends its time. Then take apart the Mestel disc: its rotation curve, its density in space and its surface density."
+prerequisites: [potential-density-pairs, orbits-and-epicycles]
+source:
+  title: "MIT 8.902 Problem Set 2 (Fall 2023)"
+  url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/resources/mit8_902_f23_problem_set_2_pdf/
+  readings:
+    - title: "8.902 Lecture 4 notes (M. Vogelsberger, Fall 2023)"
+      url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec04.pdf
+    - title: "8.902 Lecture 5 notes (M. Vogelsberger, Fall 2023)"
+      url: https://ocw.mit.edu/courses/8-902-astrophysics-ii-fall-2023/mit8_902_f23_lec05.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: draft
+---
+
+This set practises the two halves of modelling a galaxy: the potential that a mass distribution makes, and the orbits of stars in it. Problem 1 uses [orbits in a central potential](/courses/8-902/orbits-and-epicycles) (Lecture 5): the integrals of motion, the radial equation and the effective potential. Problem 2 uses [potential–density pairs](/courses/8-902/potential-density-pairs) (Lecture 4), where the notes work through the same disc. The problems follow MIT's Problem Set 2, in our own words and in MIT's order. MIT publishes no solutions for the problem sets of this course, so the hints and the solutions here are our own.
+
+A few things to know about the source. The sheet is one printed page, cited below as "p. 1". The notes are cited by their printed page and equation number. The sheet writes the potential as a capital $\Phi$ and its reference radius as $r_\text{ref}$; the notes write a small $\phi$ and $r_0$. This page keeps the sheet's letters. For the angle of the star around the centre it uses the notes' $\psi$. The sheet asks you to hand in your computer code; here you may use any tool that solves differential equations, and our own numbers were computed with Python's SciPy. The sheet recommends a ready-made integrator over one written from scratch, and so do we, but you should know what it does at each step.
+
+Some choices are ours, each marked where it appears:
+
+- in Problem 1, the split of MIT's single task into four parts, the starting point on the $x$ axis, the units ($v_c = 1$ and $r_a = 1$), the time between plotted points, and the radius that splits the orbit into an inner and an outer half;
+- in Problem 2, the numbers of part (C);
+- the points: MIT says only that Problem 1 counts three times as much as Problem 2, so we give 30 and 10, and the split of each problem's points between its parts is ours.
+
+Some boxes are our additions, each marked where it appears: all the boxes of Problem 1 (the sheet asks only for plots and a comment), the epicycle frequency in Problem 2(A), the angular derivative in Problem 2(B), and the surface density and the mass in Problem 2(C).
+
+## How to answer
+
+Work each problem on paper first, and on a computer where a part asks for it. Then type your result in the answer box and press Check. A number box accepts any value within the tolerance written next to it, in the unit named in the question. A formula box takes plain typing, for example `vc^2*x/(x^2 + y^2)`, and accepts every correct way of writing the answer. It treats its letters as independent, so each question says which letters to type: `vc` for $v_c$, `ra` for $r_a$, `theta` for $\theta$, and `R` and `G` as they are.
+
+Problem 1 has 30 points and Problem 2 has 10: MIT gives Problem 1 triple weight. The split between the parts is ours. Several parts ask you to show or plot something. Those parts are marked by you: open the solution and compare. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+Both problems use the link between a potential and the force per unit mass on a star, $\vec F/m = -\nabla\Phi$ (eq. (78) of the Lecture 4 notes), and Poisson's equation, which ties the potential to the density that makes it:
+
+<Formula label="Poisson's equation" tex="\nabla^2\Phi = 4\pi G\rho" cite="reading1" at="p. 22, before eq. (79)" />
+
+An overdot is $d/dt$.
+
+## Problem 1
+
+<Exercise id="p1" title="Orbits in a logarithmic potential" points={30} mit="Problem 1">
+
+A star moves in the spherically symmetric logarithmic potential
+
+<Formula label="The logarithmic potential" tex="\Phi(r) = v_c^2\ln\frac{r}{r_\text{ref}}" cite="mit" at="Problem 1, p. 1" />
+
+where $v_c$ and $r_\text{ref}$ are constants. At apocentre, its largest distance $r_a$ from the centre, the star moves at the speed $v_a = v_c/2$. Integrate the orbit numerically. Plot the position of the star in its orbital plane at equal time steps of roughly one fiftieth of the radial period, for 50 to 100 orbits. Plot the orbit both as a continuous line and as separate dots, so that the dots show where the star is most likely to be found, and comment briefly on what you see. The sheet asks for this as one task; we split it into four parts (our choice).
+
+<Part label="a" points={6}>
+
+Set up the equations. Put the orbital plane in the $x$–$y$ plane and start the star at apocentre on the positive $x$ axis, $x = r_a$, $y = 0$ (our choice). Type the size $L$ of the angular momentum per unit mass with `ra` and `vc`. Then type the acceleration $\ddot x$ with `vc`, `x` and `y` (both our additions).
+
+<Hint>
+
+Why does the orbit stay in a plane? Then: at apocentre the distance from the centre is largest, so $\dot r = 0$ there. Which way does the star move?
+
+</Hint>
+
+<Hint>
+
+The force per unit mass is $-\nabla\Phi$. Find its size from $d\Phi/dr$, and split it into components with $\hat e_r = (x/r, y/r)$.
+
+</Hint>
+
+<Answer id="p1a-l" label="$L =$" expr="ra*vc/2"
+  vars={{ ra: [1, 20], vc: [50, 300] }} names={{ ra: "r_a", vc: "v_c" }}
+  mistakes={[
+    { expr: "ra*vc", hint: "This takes the star's speed at apocentre to be v_c. The star moves at v_a = v_c/2 there, slower than a circular orbit at that radius." }
+  ]} />
+
+<Answer id="p1a-acc" label="$\ddot x =$" expr="-vc^2*x/(x^2 + y^2)"
+  vars={{ vc: [1, 3], x: [0.3, 1.5], y: [0.3, 1.5] }} names={{ vc: "v_c" }}
+  mistakes={[
+    { expr: "-vc^2*x/(x^2 + y^2)^(3/2)", hint: "This is the inverse-square pull of a point mass. The logarithmic potential pulls with v_c²/r, which falls only as 1/r." },
+    { expr: "-vc^2/x", hint: "This divides by x instead of splitting the radial pull v_c²/r with the factor x/r. The x component of the force is −(v_c²/r)(x/r)." }
+  ]} />
+
+<Solution>
+
+**The idea.** In a central potential energy and angular momentum are conserved; the star moves in the plane that holds its position and its velocity. At apocentre the velocity is all sideways.
+
+<Step title="The plane and the angular momentum">
+
+The force is central, so the angular momentum $\vec L = \vec r\times\dot{\vec r}$ is constant (eqs. (104)–(105) of the Lecture 5 notes, p. 27). Position and velocity therefore stay in the plane perpendicular to $\vec L$. In polar coordinates $(r, \psi)$ in that plane the notes write
+
+<Formula label="Radial and tangential equations" tex="\ddot r - r\dot\psi^2 = F(r), \qquad L = r^2\dot\psi" cite="reading2" at="eqs. (110) and (112), p. 28" />
+
+with $F(r) = -d\Phi/dr$ the force per unit mass. At apocentre $\dot r = 0$, so the speed $v_a$ is all in the $\psi$ direction and
+
+<Formula label="Problem 1(a): the angular momentum" tex="L = r_a v_a = \frac{r_a v_c}{2}" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+Our start is $x = r_a$, $y = 0$, $\dot x = 0$, $\dot y = v_c/2$, so that the star goes round anticlockwise.
+
+</Step>
+
+<Step title="The equations for the integrator">
+
+The pull has size $d\Phi/dr = v_c^2/r$ and points to the centre. With $\hat e_r = (x/r, y/r)$:
+
+<Formula label="Problem 1(a): the equations of motion" tex="\ddot x = -\frac{v_c^2\,x}{x^2 + y^2}, \qquad \ddot y = -\frac{v_c^2\,y}{x^2 + y^2}" cite="mit" at="Problem 1(a), p. 1 (our own solution)" />
+
+Written as four first-order equations for $(x, y, \dot x, \dot y)$ this is what any integrator takes. Two numbers to watch during a run are the energy per unit mass and the angular momentum,
+
+<Formula label="The energy per unit mass" tex="E = \frac12 v^2 + \Phi(r)" cite="reading2" at="eq. (102), p. 26" />
+
+and $L = x\dot y - y\dot x$; both must stay constant.
+
+</Step>
+
+<Step title="Units">
+
+Changing $r_\text{ref}$ adds a constant to $\Phi$ and changes no force, so it drops out. Changing $r_a$ or $v_c$ only stretches the orbit in size or in time: the equations keep their form if lengths are measured in units of $r_a$ and speeds in units of $v_c$ (times in units of $r_a/v_c$). So we set $v_c = 1$, $r_a = 1$ and $r_\text{ref} = r_a$ (our choice). In these units $L = 1/2$ and $E = \frac12\cdot\frac14 + \ln 1 = \frac18$.
+
+</Step>
+
+<Step title="Check the result">
+
+Units: $v_c^2 x/r^2$ is (m/s)²·m/m² = m/s², an acceleration. For a circular orbit of radius $r$ the speed $v$ must satisfy $v^2/r = v_c^2/r$, so every circular orbit has the speed $v_c$ (a flat rotation curve, as in Problem 2). Our star, with half that speed at $r_a$, is too slow to stay at $r_a$ and falls inward: $r_a$ is indeed its largest distance.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={8}>
+
+Before you integrate, find from the two conserved quantities (our additions): the pericentre $r_p$, the smallest distance from the centre, as a fraction of $r_a$; the radial period $T_r$, the time from one apocentre to the next, in units of $r_a/v_c$; and the angle $\Delta\psi$ that the star goes round the centre in one radial period, in degrees. The radial period sets the time step of the plot.
+
+<Hint>
+
+At a turning point $\dot r = 0$ and all the motion is sideways, with speed $L/r$. Energy conservation then gives an equation for $r$ with two roots. One of them you know already.
+
+</Hint>
+
+<Hint>
+
+Energy conservation gives $\dot r$ at every radius. The time from pericentre to apocentre is $\int dr/\dot r$, and the angle is $\int \dot\psi\,dr/\dot r$ with $\dot\psi = L/r^2$. The integrands grow without bound at the ends, but the integrals are finite: a numerical routine that does not evaluate the end points copes, or substitute $r = \bar r - \frac12(r_a - r_p)\cos u$, with $\bar r$ the middle of the range. You can also read both off your integration in (c).
+
+</Hint>
+
+<Answer id="p1b-rp" label="$r_p/r_a$ (tolerance 1%):" value="0.3109" tolerance="1%" calc="p1b-rp" />
+
+<Answer id="p1b-tr" label="$T_r$, in units of $r_a/v_c$ (tolerance 1%):" value="2.985" tolerance="1%" calc="p1b-tr" />
+
+<Answer id="p1b-dpsi" label="$\Delta\psi$ (degrees, tolerance 1%):" value="247.9" unit="°" tolerance="1%" calc="p1b-dpsi" />
+
+<Solution>
+
+**The idea.** With $L$ fixed, the radial motion is one-dimensional motion in the effective potential; the turning points are where it equals the energy.
+
+<Step title="The effective potential">
+
+Eliminating $\dot\psi$ with $L$ turns the energy into $E = \frac12\dot r^2 + \Phi_\text{eff}(r)$, with the effective potential of the notes
+
+<Formula label="Effective potential" tex="\Phi_\text{eff}(r) = \Phi(r) + \frac{L^2}{2r^2}" cite="reading2" at="eq. (130), p. 31" />
+
+In our units, $\Phi_\text{eff} = \ln r + 1/(8r^2)$ and $E = 1/8$:
+
+<Plot variable="r" domain={[0.25, 1.6]} range={[-0.4, 1.0]} xLabel="r / r_a" yLabel="energy / v_c²"
+  curves={[
+    { expr: "log(r) + 1/(8*r^2)", label: "Φ_eff" },
+    { expr: "0.125 + 0*r", label: "E", dash: true }
+  ]}
+  points={[{ x: 0.3109, y: 0.125, label: "r_p" }, { x: 1, y: 0.125, label: "r_a" }]}
+  caption="The effective potential ln r + 1/(8r²) of Problem 1 in units of v_c = r_a = 1 (solid), computed from the formula, and the star's energy E = 1/8 (dashed). The star moves between the two radii where the line meets the curve." />
+
+</Step>
+
+<Step title="The pericentre">
+
+At a turning point $\dot r = 0$, so
+
+<Formula label="Problem 1(b): the turning points" tex="\ln\frac{r}{r_a} + \frac{r_a^2}{8r^2} = \frac18" cite="mit" at="Problem 1(b), p. 1 (our own solution)" />
+
+One root is $r = r_a$. A numerical root search between $0.1\,r_a$ and $0.9\,r_a$ gives the other: $r_p = 0.3109\,r_a$.
+
+</Step>
+
+<Step title="The radial period and the angle">
+
+From the energy, $\dot r^2 = 2(E - \Phi) - L^2/r^2$. The star goes from pericentre to apocentre and back in one radial period, so
+
+<Formula label="Problem 1(b): radial period and angle" tex="T_r = 2\int_{r_p}^{r_a}\frac{dr}{\sqrt{2(E - \Phi) - L^2/r^2}}, \qquad \Delta\psi = 2\int_{r_p}^{r_a}\frac{L\,dr}{r^2\sqrt{2(E - \Phi) - L^2/r^2}}" cite="mit" at="Problem 1(b), p. 1 (our own solution)" />
+
+Numerically, $T_r = 2.985\,r_a/v_c$ and $\Delta\psi = 4.326$ rad $= 247.9°$. So one fiftieth of the radial period is about $0.060\,r_a/v_c$.
+
+</Step>
+
+<Step title="Check the result">
+
+For an orbit close to a circle the epicycle approximation applies. A flat rotation curve has $\kappa = \sqrt2\,\Omega$ (Problem 2(A)), so in one radial period $2\pi/\kappa$ the star goes round by $2\pi\,\Omega/\kappa = 360°/\sqrt2 = 254.6°$. Our orbit is far from circular, and its angle is a little smaller, but of the same size. The integration in (c) gives the same three numbers. For a galaxy with $v_c = 200$ km/s and $r_a = 10$ kpc (our numbers) the unit of time is $r_a/v_c = 48.9$ Myr, so $T_r = 146$ Myr and $r_p = 3.1$ kpc.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={10}>
+
+Integrate the orbit for 50 to 100 radial periods and plot it as a continuous line. If your integrator takes fixed steps, find how small they must be, and watch the energy. Then choose in the first box what the orbit looks like, and give in the second box how many times the star has gone round the centre after exactly 100 radial periods (both our additions).
+
+<Hint>
+
+A good test of an integrator is the energy $E$: plot $E(t) - E(0)$ over the whole run. A method that keeps the error small and bounded over a hundred radial periods is good enough for the picture.
+
+</Hint>
+
+<Hint>
+
+The orbit would close after one radial period only if $\Delta\psi$ were exactly 360°, and after a few periods only if $\Delta\psi$ were a simple fraction of 360°.
+
+</Hint>
+
+<Answer id="p1c-shape" label="Over many radial periods the orbit:" choices={["closes on itself after each radial period, as a Kepler ellipse does", "spirals slowly inward, losing a little energy on every turn", "traces a rosette filling the ring between pericentre and apocentre", "closes after two radial periods, making a curve with two loops"]} answer={2} />
+
+<Answer id="p1c-turns" label="Turns round the centre after 100 radial periods (tolerance 1%):" value="68.86" tolerance="1%" calc="p1c-turns" />
+
+<Solution>
+
+**The idea.** A ready-made integrator with error control, or a simple symplectic one with a small enough step, follows the orbit for a hundred radial periods while keeping $E$ and $L$ fixed.
+
+<Step title="Our runs">
+
+We used SciPy's `solve_ivp` with the eighth-order Runge-Kutta method DOP853, a relative and absolute tolerance of $10^{-12}$, from the start of (a), in units $v_c = r_a = 1$ (our choices). Over 100 radial periods $E$ and $L$ stayed constant to $10^{-10}$, and the radius stayed between $0.3109$ and $1$. We also ran the leapfrog method (kick, drift, kick) with a fixed step for 100 radial periods. The largest energy error over the run, with $E = 0.125$:
+
+| Steps per radial period | Largest error in $E$ |
+|---|---|
+| 50 | $6.5\times10^{-3}$ |
+| 200 | $4.1\times10^{-4}$ |
+| 1000 | $1.6\times10^{-5}$ |
+
+The error falls as the square of the step, as it should for a second-order method, and it does not grow with time. With 50 steps per period it is 5% of $E$: a step equal to the plotting interval is too long for this method, and a few hundred steps per period are needed.
+
+</Step>
+
+<Step title="The shape">
+
+Each radial period the star goes round by $\Delta\psi = 247.9°$, not by 360° or by any simple fraction of it, so each apocentre lies $112.1°$ short of the one before (247.9° = 360° − 112.1°). The orbit is a rosette: loops that never repeat exactly and, over many periods, fill the whole ring $r_p \le r \le r_a$. After 100 radial periods the star has gone round $100\times247.9°/360° = 68.86$ times; our integration gives the same, 68.86.
+
+</Step>
+
+<Step title="Check the result">
+
+Energy and angular momentum are conserved to the accuracy of the integration, and the turning radii and the time between apocentres match (b). A Kepler orbit, by contrast, closes after each radial period (Lecture 5 notes, eq. (119), p. 29): a potential that is less concentrated than a point mass turns the orbit by less than 360° per radial period.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={6}>
+
+Now plot the position as separate dots at equal times of roughly one fiftieth of the radial period, over 50 to 100 radial periods, and look at where the dots crowd. Choose in the first box where they are densest. Then, as a number to compare with your dots (our addition), give the fraction of its time that the star spends in the outer half of its range, $r > (r_p + r_a)/2$ (our choice of the dividing radius).
+
+<Hint>
+
+Each dot stands for the same amount of time. Where does the star move slowly in $r$?
+
+</Hint>
+
+<Hint>
+
+The time spent between $r$ and $r + dr$ in one radial period is $2\,dr/|\dot r|$. Integrate it over the outer half and divide by $T_r$. Or count your dots, if they do not all fall at the same few radii (see the solution).
+
+</Hint>
+
+<Answer id="p1d-where" label="The dots are densest:" choices={["evenly over the whole ring between the two turning radii", "in narrow bands along the inner and outer edges of the ring", "near the centre, where the pull of the potential is strongest", "halfway between the two turning radii, where the loops cross"]} answer={1} />
+
+<Answer id="p1d-frac" label="Fraction of time with $r > (r_p + r_a)/2$ (tolerance 2%):" value="0.639" tolerance="2%" calc="p1d-frac" />
+
+<Solution>
+
+**The idea.** Equally spaced times turn the orbit into a sample of where the star is: the density of dots is the probability density of finding the star at a place. The star lingers where its radial speed is small, at the two turning radii.
+
+<Step title="Where the dots crowd">
+
+The time spent per unit radius is proportional to $1/|\dot r|$, which grows without bound at both turning points, where $\dot r = 0$. The dots therefore pile up in two bands, along the inner edge at $r_p$ and along the outer edge at $r_a$. In our run (5001 dots, one every $0.06\,r_a/v_c$, for about 100.5 radial periods) the number of dots per unit area, in ten rings of equal width between $r_p$ and $r_a$, was about 2.3 times the average in the innermost ring, about 2.0 times in the outermost, and about 0.65 times near the middle.
+
+</Step>
+
+<Step title="The time in the outer half">
+
+Splitting the integral of (b) at $\bar r = (r_p + r_a)/2 = 0.6554\,r_a$ gives a fraction $0.639$ of the time in the outer half. Our dots agree: 64.0% of them lie outside $\bar r$. The star spends most of its time in the outer part of its orbit, where it moves slowly, and only a short time diving through pericentre. Per unit area the inner edge is still dense, because its ring is small.
+
+</Step>
+
+<Step title="A trap with the time step">
+
+If the dots are exactly $T_r/50$ apart, the radial motion repeats after every 50 dots, and all the dots fall on the same 50 points of the radial cycle: in the picture they line up on a few circles instead of filling the ring. That is why the sheet says "roughly": with a step of $0.06\,r_a/v_c$ (our choice, close to $T_r/50 = 0.0597$) the dots drift through the cycle and fill it. Exactly $T_r/50$ gave us only 62% of the dots in the outer half.
+
+</Step>
+
+<Step title="Check the result">
+
+The fraction lies between one half and one, as it must for a star that is slow near apocentre. For a nearly circular orbit, the radial oscillation is close to a pure cosine about the middle radius, and the fraction would be close to one half.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="The Mestel disc" points={10} mit="Problem 2">
+
+A potential can be symmetric about an axis without being spherically symmetric. One known example is the flattened potential of the Mestel disc. In spherical coordinates $r$, $\theta$ (with $\theta$ measured from the $z$ axis) it is
+
+<Formula label="The Mestel potential" tex="\Phi(r, \theta) = v_c^2\left(\ln\frac{r}{r_\text{ref}} + \ln\frac{1 + |\cos\theta|}{2}\right)" cite="mit" at="Problem 2, p. 1" />
+
+with $v_c$ and $r_\text{ref}$ constants. The disc plane is $z = 0$, that is $\theta = \pi/2$. In that plane, $R$ is the distance from the centre.
+
+<Part label="A" points={3}>
+
+Show that the Mestel potential gives a flat rotation curve in the disc plane. Then (our addition) use the notes' formula for the epicycle frequency and type $\kappa$ in the disc plane with `vc` and `R`.
+
+<Hint>
+
+In the plane, a star on a circular orbit has $v^2/R$ equal to the inward pull. Which part of $\Phi$ changes with $r$?
+
+</Hint>
+
+<Hint>
+
+The angular frequency of a circular orbit is $\Omega = v/R$. The notes give $\kappa^2$ in terms of $\Omega$ and its derivative.
+
+</Hint>
+
+<Answer id="p2a-kappa" label="$\kappa =$" expr="sqrt(2)*vc/R"
+  vars={{ vc: [100, 300], R: [1, 20] }} names={{ vc: "v_c" }}
+  mistakes={[
+    { expr: "2*vc/R", hint: "This is κ = 2Ω, the value for a disc that turns like a solid body, with the same Ω at every radius. On a flat rotation curve Ω falls as 1/R." },
+    { expr: "vc/R", hint: "This is κ = Ω, the value for a point mass, where an orbit closes after one turn. A flat rotation curve gives a larger κ." }
+  ]} />
+
+<Solution>
+
+**The idea.** The angular part of the potential is a constant in the plane, so the radial pull there is that of the logarithmic potential of Problem 1.
+
+<Step title="The rotation curve">
+
+At $\theta = \pi/2$, $\cos\theta = 0$ and $\Phi = v_c^2\ln(R/r_\text{ref}) + v_c^2\ln\frac12$. The second term is a constant. The pull towards the centre is $\partial\Phi/\partial r = v_c^2/R$, and a circular orbit needs $v^2/R$ equal to it:
+
+<Formula label="Problem 2(A): the circular speed" tex="v^2 = R\left.\frac{\partial\Phi}{\partial r}\right|_{\theta = \pi/2} = v_c^2" cite="mit" at="Problem 2(A), p. 1 (our own solution)" />
+
+The circular speed is $v_c$ at every radius: the rotation curve is flat. (The pull along $\theta$ vanishes in the plane by the symmetry $z \to -z$.)
+
+</Step>
+
+<Step title="The epicycle frequency">
+
+The notes give
+
+<Formula label="Epicycle frequency" tex="\kappa^2 = r\frac{d\Omega^2}{dr} + 4\Omega^2" cite="reading2" at="eq. (151), p. 35" />
+
+With $\Omega = v_c/R$ (eq. (150), p. 34), $\Omega^2 = v_c^2/R^2$ and $R\,d\Omega^2/dR = -2v_c^2/R^2$, so
+
+<Formula label="Problem 2(A): the epicycle frequency" tex="\kappa^2 = -\frac{2v_c^2}{R^2} + \frac{4v_c^2}{R^2} = \frac{2v_c^2}{R^2}, \qquad \kappa = \frac{\sqrt2\,v_c}{R}" cite="mit" at="Problem 2(A), p. 1 (our own solution)" />
+
+</Step>
+
+<Step title="Check the result">
+
+$\kappa = \sqrt2\,\Omega$ lies between the point-mass value $\Omega$ and the solid-body value $2\Omega$, as it must for a rotation curve between falling and rising. It is the value used in the check of Problem 1(b).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="B" points={3}>
+
+Show that the density of this configuration is zero everywhere off the plane $z = 0$, and infinite in the plane. As a step (our addition), type $\partial\Phi/\partial\theta$ above the plane, for $0 < \theta < \pi/2$, with `vc` and `theta`.
+
+<Hint>
+
+Use Poisson's equation with the Laplacian in spherical coordinates; with no dependence on the azimuth, only the $r$ and $\theta$ terms remain. Above the plane $|\cos\theta| = \cos\theta$.
+
+</Hint>
+
+<Hint>
+
+Away from the plane the $r$ part and the $\theta$ part of the Laplacian may cancel. In the plane, compare $\partial\Phi/\partial\theta$ just above and just below it.
+
+</Hint>
+
+<Answer id="p2b-dphi" label="$\partial\Phi/\partial\theta =$" expr="-vc^2*sin(theta)/(1 + cos(theta))"
+  vars={{ vc: [1, 3], theta: [0.2, 1.4] }} names={{ vc: "v_c", theta: "\\theta" }}
+  mistakes={[
+    { expr: "vc^2*sin(theta)/(1 + cos(theta))", hint: "Check the sign: as θ grows from 0 towards the plane, 1 + cos θ shrinks, so Φ falls and its derivative is negative." },
+    { expr: "vc^2*sin(theta)/(1 - cos(theta))", hint: "This is the derivative below the plane, π/2 < θ < π, where |cos θ| = −cos θ. Above the plane |cos θ| = cos θ." }
+  ]} />
+
+<Solution>
+
+**The idea.** Off the plane the potential is smooth and Poisson's equation gives its density, which turns out to be zero. In the plane the potential has a kink, whose second derivative is a spike.
+
+<Step title="The Laplacian">
+
+With no dependence on the azimuth,
+
+<Formula label="Laplacian in spherical coordinates" tex="\nabla^2\Phi = \frac{1}{r^2}\frac{\partial}{\partial r}\left(r^2\frac{\partial\Phi}{\partial r}\right) + \frac{1}{r^2\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial\Phi}{\partial\theta}\right)" cite="reading1" at="eq. (90), p. 23" />
+
+The radial part is $v_c^2/r^2$, since $\partial\Phi/\partial r = v_c^2/r$.
+
+</Step>
+
+<Step title="The angular part above the plane">
+
+For $0 < \theta < \pi/2$:
+
+<Formula label="Problem 2(B): the angular derivatives" tex="\frac{\partial\Phi}{\partial\theta} = -\frac{v_c^2\sin\theta}{1 + \cos\theta}, \qquad \frac{\partial^2\Phi}{\partial\theta^2} = -v_c^2\left(\frac{\cos\theta}{1 + \cos\theta} + \frac{\sin^2\theta}{(1 + \cos\theta)^2}\right)" cite="reading1" at="eq. (93), p. 24 (there without the factor v_c²)" />
+
+The angular part of the Laplacian is $\frac{1}{r^2}\left(\frac{\cos\theta}{\sin\theta}\frac{\partial\Phi}{\partial\theta} + \frac{\partial^2\Phi}{\partial\theta^2}\right)$. Over the common denominator $(1 + \cos\theta)^2$ its bracket is $-v_c^2(2\cos\theta + 2\cos^2\theta + \sin^2\theta)/(1 + \cos\theta)^2 = -v_c^2(1 + \cos\theta)^2/(1 + \cos\theta)^2 = -v_c^2$, as in eq. (94) of the notes (p. 24). So
+
+<Formula label="Problem 2(B): off the plane" tex="\nabla^2\Phi = \frac{v_c^2}{r^2} - \frac{v_c^2}{r^2} = 0 \quad\Rightarrow\quad \rho = \frac{\nabla^2\Phi}{4\pi G} = 0" cite="mit" at="Problem 2(B), p. 1 (our own solution)" />
+
+Below the plane $\cos\theta$ changes sign throughout, and the same steps give zero again.
+
+</Step>
+
+<Step title="In the plane">
+
+As $\theta \to \pi/2$ from above, $\partial\Phi/\partial\theta \to -v_c^2$; from below, where $|\cos\theta| = -\cos\theta$ and $\partial\Phi/\partial\theta = v_c^2\sin\theta/(1 - \cos\theta)$, it tends to $+v_c^2$. The slope of the potential jumps across the plane. The force per unit mass along $\theta$, $-\frac1r\partial\Phi/\partial\theta$, is $+v_c^2/r$ just above the plane (pointing towards larger $\theta$, so down to the plane) and $-v_c^2/r$ just below it (up to the plane). A finite jump in a first derivative makes the second derivative, and with it $\nabla^2\Phi$ and $\rho$, infinite in the plane, while its integral across the plane stays finite: all the mass sits in an infinitely thin sheet.
+
+</Step>
+
+<Step title="Check the result">
+
+A compact way to see the kink (our own rewriting): since $1 + |\cos\theta| = (r + |z|)/r$, the potential is $\Phi = v_c^2\ln[(r + |z|)/(2r_\text{ref})]$, smooth everywhere except through $|z|$ at $z = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="C" points={4}>
+
+The surface density $\Sigma$ is the density summed along the $z$ direction, $\Sigma = \int_{-\infty}^{\infty}\rho\,dz$. Show that it is finite and equal to
+
+<Formula label="The surface density of the Mestel disc" tex="\Sigma = \frac{v_c^2}{2\pi G R}" cite="mit" at="Problem 2(C), p. 1" />
+
+Then (our additions) take $v_c = 220$ km/s and $R = 8$ kpc (our numbers), with $G = 4.30\times10^{-3}$ pc (km/s)²/M☉, and give $\Sigma$ in M☉/pc². Finally type the mass $M(<R)$ of the disc inside radius $R$ with `vc`, `R` and `G`.
+
+<Hint>
+
+Integrate Poisson's equation over a thin flat box that encloses a piece of the plane. By Gauss's theorem the integral of $\nabla^2\Phi$ over the box is the flux of $\nabla\Phi$ through its top and bottom faces.
+
+</Hint>
+
+<Hint>
+
+For the mass, add up rings of area $2\pi R'\,dR'$ from the centre out to $R$.
+
+</Hint>
+
+<Answer id="p2c-sigma" label="$\Sigma$ at $R = 8$ kpc (M☉/pc², tolerance 1%):" value="224" unit="M☉/pc²" tolerance="1%" calc="p2c-sigma" />
+
+<Answer id="p2c-mass" label="$M(<R) =$" expr="vc^2*R/G"
+  vars={{ vc: [100, 300], R: [1, 20], G: [0.002, 0.006] }} names={{ vc: "v_c" }}
+  mistakes={[
+    { expr: "vc^2*R/(2*G)", hint: "This is the mass for half the surface density, v_c²/(4πGR). The slope ∂Φ/∂z jumps on both faces of the plane, and both halves count." }
+  ]} />
+
+<Solution>
+
+**The idea.** The density is a spike in $z$, but its integral across the plane is set by the jump in the vertical pull, which is finite.
+
+<Step title="Gauss's theorem across the plane">
+
+Take a flat box of area $A$ in the plane, from just below to just above it. Integrating $\nabla^2\Phi = 4\pi G\rho$ over the box gives $A\,[\partial\Phi/\partial z]_{z = 0^-}^{z = 0^+} = 4\pi G\,A\,\Sigma$ (the sides add nothing as the box gets thin). With $\Phi = v_c^2\ln[(r + |z|)/(2r_\text{ref})]$ and $r = \sqrt{R^2 + z^2}$, just above the plane $\partial\Phi/\partial z = v_c^2(z/r + 1)/(r + z) \to v_c^2/R$; just below it is $-v_c^2/R$. So
+
+<Formula label="Problem 2(C): the surface density" tex="\Sigma = \frac{1}{4\pi G}\left(\frac{v_c^2}{R} + \frac{v_c^2}{R}\right) = \frac{v_c^2}{2\pi G R}" cite="mit" at="Problem 2(C), p. 1 (our own solution)" />
+
+which is finite. The notes reach the same result by integrating $\nabla^2\Phi/(4\pi G)$ over $\theta$ across the plane, with $dz \approx -r\,d\theta$:
+
+<Formula label="Surface density in the notes" tex="\Sigma(r) = \frac{1}{4\pi G}\frac{v_c^2}{r}(1 + 1) = \frac{1}{2\pi G}\frac{v_c^2}{r}" cite="reading1" at="eqs. (95)–(98), pp. 24–25" />
+
+Integrated over $z$, the surface density depends on the distance $R$ in the plane only; the sheet's $\Sigma(r, \theta)$ is a slip (in the plane, $r = R$).
+
+</Step>
+
+<Step title="The numbers">
+
+$\Sigma = (220)^2/(2\pi\times4.30\times10^{-3}\times8000) = 48\,400/216.1 = 224$ M☉/pc².
+
+</Step>
+
+<Step title="The mass inside R">
+
+<Formula label="Problem 2(C): the mass inside R" tex="M(<R) = \int_0^R 2\pi R'\,\Sigma(R')\,dR' = \int_0^R \frac{v_c^2}{G}\,dR' = \frac{v_c^2R}{G}" cite="mit" at="Problem 2(C), p. 1 (our own addition)" />
+
+For our numbers, $M(<8\text{ kpc}) = 48\,400\times8000/(4.30\times10^{-3}) = 9.0\times10^{10}$ M☉.
+
+</Step>
+
+<Step title="Check the result">
+
+Units: $v_c^2/(GR)$ is (km/s)²/[pc (km/s)²/M☉ · pc] = M☉/pc². The mass grows in proportion to $R$, as for the logarithmic potential, and $v_c^2 = GM(<R)/R$ holds here just as for a sphere; for a disc in general it does not, since the mass outside $R$ also pulls. A real galaxy gets much of its flat rotation curve from a dark matter halo, so its disc can be much lighter than a Mestel disc with the same $v_c$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
