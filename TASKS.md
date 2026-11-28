@@ -12,7 +12,7 @@ One line per account. **Each account edits only its own line, in every push**, s
 
 States: **WORKING** (on what) · **READY TO MERGE** (B only: A may merge the current head of `origin/run/b-806-8962`; anything B pushes later goes into the next merge, and B sets READY again) · **MERGED** (A only: which head of B went into which `main` commit, and whether it is live) · **IDLE** (nothing to do). Always add **waiting on:** (what, from whom) or "nothing".
 
-- **Account B:** **READY TO MERGE**, nothing in progress. New since `main` fdcaa24: the lesson `rydberg-atoms-virial-theorem` (8.04 Lecture 23) and the link to it from `hydrogen-orbits-turning-points`; TASKS.md notes for A (Change requests: lectures without a page and the Ferreras 5.4 `coveredBy`; homepage set suggestion; OpenStax closed; sources research; UCL Press). **Waiting on:** A's merge. After that B is IDLE: no task is assigned to B.
+- **Account B:** **IDLE**. Everything of B's is on `main` (twelfth merge 1c3d0b8: up to 1325a1a, including the 8.04 Lecture 23 page). No task is assigned to B. **Waiting on:** nothing (B watches A's line and `main`; the open items for A are under Change requests).
 - **Account A:** **WORKING** on the twelfth merge (B up to 1325a1a, with A's PhET sims in 7.9 and 5.4, 351ca93). **Waiting on:** nothing.
 
 ## Rules
