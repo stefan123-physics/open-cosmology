@@ -43,9 +43,11 @@ export function numberTolerance(value: string, tolerance?: string): number {
   return pct ? (Math.abs(v) * Number(pct[1])) / 100 : (parseNumber(tolerance) ?? NaN);
 }
 
-export type NumberSpec = { value: string; tolerance?: string };
+/** A second valid reading of a box (docs/ANSWER-BOX-FIX-PLAN.md Step 4), shown with its note when it is typed. */
+export type AlsoNumber = { value: string; tolerance?: string; note?: string };
+export type NumberSpec = { value: string; tolerance?: string; alsoAccept?: AlsoNumber[] };
 export type Verdict =
-  | { status: "correct" }
+  | { status: "correct"; note?: string }
   | { status: "wrong"; hint?: string }
   /** The entry could not be read; it does not count as a try. */
   | { status: "invalid"; message: string };
@@ -55,8 +57,29 @@ export function checkNumber(input: string, spec: NumberSpec): Verdict {
   if (typed === null) return { status: "invalid", message: "That is not a number I can read. Type it like 9.7 or 1.2e5." };
   const value = parseNumber(spec.value) ?? NaN;
   // A hair of slack so a value exactly on the edge is not lost to rounding.
-  return Math.abs(typed - value) <= numberTolerance(spec.value, spec.tolerance) * (1 + 1e-9) ? { status: "correct" } : { status: "wrong" };
+  const within = (v: number, t: number) => Math.abs(typed - v) <= t * (1 + 1e-9);
+  if (within(value, numberTolerance(spec.value, spec.tolerance))) return { status: "correct" };
+  for (const a of spec.alsoAccept ?? []) {
+    const v = parseNumber(a.value);
+    if (v !== null && within(v, numberTolerance(a.value, a.tolerance))) return { status: "correct", note: a.note };
+  }
+  // The right digits with the wrong power of ten (5.54e-11 typed in a box "in units of 10⁻¹¹"): say so, but it is
+  // not correct. Only for a factor of 100 or more, so a slip of one decimal place is not mistaken for it.
+  if (value !== 0 && typed !== 0) {
+    const k = Math.round(Math.log10(Math.abs(typed / value)));
+    const t = numberTolerance(spec.value, spec.tolerance);
+    if (Math.abs(k) >= 2 && Math.sign(typed) === Math.sign(value) && Math.abs(typed / 10 ** k - value) <= t * (1 + 1e-9))
+      return { status: "wrong", hint: powerOfTenHint(k) };
+  }
+  return { status: "wrong" };
 }
+
+/** What to say when the typed number is the answer times 10^k. */
+export function powerOfTenHint(k: number): string {
+  return `The digits are right, but your number is 10${sup(Math.abs(k))} times too ${k > 0 ? "large" : "small"}. Check the power of ten: if the box asks for the value "in units of" a power of ten, type only the number in front of it.`;
+}
+const SUPER: Record<string, string> = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "-": "⁻" };
+const sup = (n: number) => String(n).replace(/./g, (c) => SUPER[c] ?? c);
 
 // ---------------------------------------------------------------- formulas
 
@@ -233,7 +256,13 @@ export function parseFormula(text: string, allowed: string[]): Parsed {
 }
 
 export type Ranges = Record<string, [number, number]>;
-export type FormulaSpec = { expr: string; vars: Ranges; mistakes?: { expr: string; hint: string }[] };
+export type FormulaSpec = {
+  expr: string;
+  vars: Ranges;
+  mistakes?: { expr: string; hint: string }[];
+  /** Second valid readings (docs/ANSWER-BOX-FIX-PLAN.md Step 4): correct too, with their note. */
+  alsoAccept?: { expr: string; note?: string }[];
+};
 
 /** A small seeded generator (mulberry32), so content:check samples the same points on every run. */
 export function seeded(seed: number): () => number {
@@ -270,6 +299,10 @@ export function checkFormula(input: string, spec: FormulaSpec, random: () => num
   if (!answer.ok) return { status: "invalid", message: "This answer cannot be checked. Please report the mistake." };
   const points = samplePoints(spec.vars, n, random);
   if (sameFormula(typed.formula, answer.formula, points)) return { status: "correct" };
+  for (const a of spec.alsoAccept ?? []) {
+    const other = parseFormula(a.expr, allowed);
+    if (other.ok && sameFormula(typed.formula, other.formula, points)) return { status: "correct", note: a.note };
+  }
   for (const m of spec.mistakes ?? []) {
     const wrong = parseFormula(m.expr, allowed);
     if (wrong.ok && sameFormula(typed.formula, wrong.formula, points)) return { status: "wrong", hint: m.hint };
@@ -302,6 +335,18 @@ export function auditFormula(spec: FormulaSpec, n = 20): string[] {
     if (!wrong.ok) out.push(`mistakes[${i}] "${m.expr}": ${wrong.message}`);
     else if (!points.some((p) => !agree(wrong.formula.at(p), answer.formula.at(p)))) out.push(`mistakes[${i}] "${m.expr}" equals the answer itself`);
     if (!m.hint?.trim()) out.push(`mistakes[${i}] needs a hint`);
+  });
+  (spec.alsoAccept ?? []).forEach((a, i) => {
+    const other = parseFormula(a.expr, allowed);
+    if (!other.ok) return void out.push(`alsoAccept[${i}] "${a.expr}": ${other.message}`);
+    if (points.some((p) => !Number.isFinite(other.formula.at(p)))) out.push(`alsoAccept[${i}] "${a.expr}" is not finite in the ranges of vars`);
+    if (!points.some((p) => !agree(other.formula.at(p), answer.formula.at(p)))) out.push(`alsoAccept[${i}] "${a.expr}" equals the answer itself`);
+    (spec.mistakes ?? []).forEach((m, j) => {
+      const wrong = parseFormula(m.expr, allowed);
+      if (wrong.ok && !points.some((p) => !agree(wrong.formula.at(p), other.formula.at(p))))
+        out.push(`alsoAccept[${i}] "${a.expr}" equals mistakes[${j}]: a box cannot accept and reject the same formula`);
+    });
+    if (!a.note?.trim()) out.push(`alsoAccept[${i}] needs a note, shown when the reader types it`);
   });
   return out;
 }

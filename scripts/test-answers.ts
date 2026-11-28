@@ -143,6 +143,29 @@ test("audit: an answer that is not finite in its ranges is reported", auditFormu
   }
 }
 
+// Second valid readings and the power-of-ten message (docs/ANSWER-BOX-FIX-PLAN.md Step 4).
+{
+  const half = { value: "2.07", tolerance: "2%", alsoAccept: [{ value: "1.04", tolerance: "2%", note: "That is the rate with the factor ½ for identical particles." }] };
+  test("alsoAccept: the main answer", checkNumber("2.07", half).status === "correct");
+  const v = checkNumber("1.04", half);
+  test("alsoAccept: the second reading is correct, with its note", v.status === "correct" && v.note?.includes("½") === true, v);
+  test("alsoAccept: something else is still wrong", checkNumber("1.5", half).status === "wrong");
+  const units = { value: "5.54", tolerance: "2%" };
+  const p = checkNumber("5.54e-11", units);
+  test("power of ten: right digits, wrong power, says so", p.status === "wrong" && /power of ten/.test(p.hint ?? ""), p);
+  const big = checkNumber("554", units);
+  test("power of ten: too large by 10² says so", big.status === "wrong" && /too large/.test(big.hint ?? ""), big);
+  const tenfold = checkNumber("55.4", units);
+  test("power of ten: one decimal place off is a plain wrong answer", tenfold.status === "wrong" && !tenfold.hint, tenfold);
+  test("power of ten: the opposite sign is a plain wrong answer", !checkNumber("-5.54e-11", units).hasOwnProperty("hint") || !(checkNumber("-5.54e-11", units) as { hint?: string }).hint);
+  const f = { expr: "x^2/2", vars: { x: [1, 3] as [number, number] }, alsoAccept: [{ expr: "x^2", note: "That is the value without the factor ½." }] };
+  const fv = checkFormula("x*x", f, seeded(1));
+  test("alsoAccept: a second formula is correct, with its note", fv.status === "correct" && fv.note?.includes("½") === true, fv);
+  test("audit: alsoAccept equal to the answer is reported", auditFormula({ ...f, alsoAccept: [{ expr: "x*x/2", note: "n" }] }).length > 0);
+  test("audit: alsoAccept equal to a mistake is reported", auditFormula({ ...f, mistakes: [{ expr: "x*x", hint: "h" }] }).length > 0);
+  test("audit: alsoAccept without a note is reported", auditFormula({ ...f, alsoAccept: [{ expr: "x^2" }] }).length > 0);
+}
+
 // Scores (lib/progress.ts): revealed answers earn nothing, "Partly" earns half, optional problems only add.
 {
   const e = (ok: boolean, revealed = false) => ({ ok, revealed, tries: 1, at: "" });

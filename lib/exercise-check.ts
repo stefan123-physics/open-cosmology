@@ -56,8 +56,8 @@ function pageCalcs(page: Page): Map<string, Record<string, unknown>> | null {
 }
 
 /** Everything wrong with the exercises of one page; empty when sound. Also returns how many exercises it has. */
-export async function checkExercises(page: Page): Promise<{ errors: string[]; exercises: number }> {
-  if (!TAGS.test(page.body)) return { errors: [], exercises: 0 };
+export async function checkExercises(page: Page): Promise<{ errors: string[]; warnings: string[]; exercises: number }> {
+  if (!TAGS.test(page.body)) return { errors: [], warnings: [], exercises: 0 };
   const errors: string[] = [];
   const done: Ex[] = [];
   let current: Ex | null = null;
@@ -99,7 +99,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
   try {
     renderToStaticMarkup(createElement(Content as any, { components }));
   } catch (e) {
-    return { errors: [`exercises could not be read: ${(e as Error).message.slice(0, 200)}`], exercises: 0 };
+    return { errors: [`exercises could not be read: ${(e as Error).message.slice(0, 200)}`], warnings: [], exercises: 0 };
   }
 
   const ids = new Set<string>();
@@ -109,6 +109,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
     ids.add(id);
   };
   let calcs: ReturnType<typeof pageCalcs> | undefined;
+  const untoleranced: string[] = [];
   for (const ex of done) {
     const name = `<Exercise id="${ex.props.id}">`;
     unique("<Exercise>", ex.props.id);
@@ -136,9 +137,24 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
         else if (parseNumber(String(calc.expected ?? "").trim().split(/\s+/)[0]) !== value)
           errors.push(`${an}: value ${a.value} differs from expected "${calc.expected}" of calc "${a.calc}"`);
         if (a.tolerance !== undefined && !/^\s*[\d.]+\s*%?\s*$/.test(String(a.tolerance))) errors.push(`${an}: tolerance must be like "2%" or "0.01"`);
+        // Without a tolerance a box accepts half a unit of the last printed digit, which can let a wrong value
+        // through ("1" accepts 0.6 to 1.4): docs/ANSWER-BOX-FIX-PLAN.md Step 5.
+        if (a.tolerance === undefined) untoleranced.push(String(a.id));
+        // Second valid readings (Step 4): a number, a tolerance, a note, and a calc that recomputes the number.
+        for (const [i, o] of ((a.alsoAccept ?? []) as Record<string, unknown>[]).entries()) {
+          const ov = parseNumber(String(o.value ?? ""));
+          if (ov === null) errors.push(`${an}: alsoAccept[${i}] needs a value that is a number`);
+          if (o.tolerance !== undefined && !/^\s*[\d.]+\s*%?\s*$/.test(String(o.tolerance))) errors.push(`${an}: alsoAccept[${i}].tolerance must be like "2%" or "0.01"`);
+          if (!String(o.note ?? "").trim()) errors.push(`${an}: alsoAccept[${i}] needs a note, shown when the reader types it`);
+          const oc = o.calc ? calcs?.get(String(o.calc)) : undefined;
+          if (!o.calc) errors.push(`${an}: alsoAccept[${i}] needs calc="…", the id of the calculation that recomputes it`);
+          else if (!oc) errors.push(`${an}: alsoAccept[${i}] calc "${o.calc}" is not in calcs/${page.course}/${page.slug}.yaml`);
+          else if (ov !== null && parseNumber(String(oc.expected ?? "").trim().split(/\s+/)[0]) !== ov)
+            errors.push(`${an}: alsoAccept[${i}] value ${o.value} differs from expected "${oc.expected}" of calc "${o.calc}"`);
+        }
       } else if (types[0] === "expr") {
         if (!a.vars || typeof a.vars !== "object") errors.push(`${an}: a formula answer needs vars, a range for every symbol`);
-        else for (const m of auditFormula({ expr: String(a.expr), vars: a.vars, mistakes: a.mistakes })) errors.push(`${an}: ${m}`);
+        else for (const m of auditFormula({ expr: String(a.expr), vars: a.vars, mistakes: a.mistakes, alsoAccept: a.alsoAccept })) errors.push(`${an}: ${m}`);
         for (const k of Object.keys(a.names ?? {})) if (!(k in (a.vars ?? {}))) errors.push(`${an}: names.${k} is not a symbol in vars`);
         if (a.vars && typeof a.vars === "object")
           for (const e of [String(a.expr), ...((a.mistakes ?? []) as { expr: string }[]).map((m) => String(m.expr))])
@@ -147,5 +163,8 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
         errors.push(`${an}: choices needs two or more entries and answer the index of the right one`);
     }
   }
-  return { errors, exercises: done.length };
+  const warnings = untoleranced.length
+    ? [`${untoleranced.length} number box${untoleranced.length > 1 ? "es have" : " has"} no tolerance (${untoleranced.slice(0, 6).join(", ")}${untoleranced.length > 6 ? ", …" : ""}): give each one, so a wrong value cannot pass on the printed digits alone`]
+    : [];
+  return { errors, warnings, exercises: done.length };
 }
