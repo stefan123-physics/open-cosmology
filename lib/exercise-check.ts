@@ -6,7 +6,10 @@
  *  - a number answer names a calc in the page's calcs file whose `expected` is the same number;
  *  - a formula answer has a range for every symbol, is finite at 20 sample points, and every listed mistake differs
  *    from it there;
- *  - a choice answer marks one of its choices.
+ *  - a choice answer marks one of its choices;
+ *  - the "You typed" preview of a formula answer and of each listed mistake renders in KaTeX without an error, has
+ *    no operator glued to a letter (\cdotm), and is fully spoken in "In words" (no read-aloud gap, no backslash
+ *    left): the preview a reader sees is built by the same code (lib/answers.ts tex, lib/speech.ts).
  * Run by `npm run content:check`.
  */
 import fs from "node:fs";
@@ -16,7 +19,27 @@ import * as runtime from "react/jsx-runtime";
 import { createElement, Fragment, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Page } from "./content";
-import { auditFormula, parseNumber } from "./answers";
+import katex from "katex";
+import { auditFormula, numberTolerance, parseFormula, parseNumber } from "./answers";
+import { speechGaps, texToSpeech } from "./speech";
+
+/** What is wrong with the preview of one typed formula (empty when it is fine). */
+export function previewProblems(expr: string, vars: Record<string, unknown>, names: Record<string, string> = {}): string[] {
+  const parsed = parseFormula(expr, Object.keys(vars));
+  if (!parsed.ok) return [];
+  const tex = parsed.formula.tex(names);
+  const out: string[] = [];
+  try {
+    katex.renderToString(tex, { throwOnError: true });
+  } catch (e) {
+    out.push(`preview does not render (${(e as Error).message.split("\n")[0].slice(0, 80)})`);
+  }
+  if (/\\(?:cdot|times|div|pm|mp)[A-Za-z0-9]/.test(tex)) out.push("preview glues an operator to a letter");
+  const gaps = speechGaps(tex);
+  if (gaps.length) out.push(`"In words" cannot say ${gaps.join(" ")}`);
+  else if (texToSpeech(tex).includes("\\")) out.push('"In words" keeps a TeX command');
+  return out.map((m) => `${m}: ${tex}`);
+}
 
 type Props = Record<string, any> & { children?: ReactNode };
 type Ex = { props: Props; solutions: number; partPoints: number[]; answers: Props[] };
@@ -33,8 +56,8 @@ function pageCalcs(page: Page): Map<string, Record<string, unknown>> | null {
 }
 
 /** Everything wrong with the exercises of one page; empty when sound. Also returns how many exercises it has. */
-export async function checkExercises(page: Page): Promise<{ errors: string[]; exercises: number }> {
-  if (!TAGS.test(page.body)) return { errors: [], exercises: 0 };
+export async function checkExercises(page: Page): Promise<{ errors: string[]; warnings: string[]; exercises: number }> {
+  if (!TAGS.test(page.body)) return { errors: [], warnings: [], exercises: 0 };
   const errors: string[] = [];
   const done: Ex[] = [];
   let current: Ex | null = null;
@@ -76,7 +99,7 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
   try {
     renderToStaticMarkup(createElement(Content as any, { components }));
   } catch (e) {
-    return { errors: [`exercises could not be read: ${(e as Error).message.slice(0, 200)}`], exercises: 0 };
+    return { errors: [`exercises could not be read: ${(e as Error).message.slice(0, 200)}`], warnings: [], exercises: 0 };
   }
 
   const ids = new Set<string>();
@@ -86,6 +109,9 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
     ids.add(id);
   };
   let calcs: ReturnType<typeof pageCalcs> | undefined;
+  const untoleranced: string[] = [];
+  const slipBoxes: string[] = [];
+  const roundBoxes: string[] = [];
   for (const ex of done) {
     const name = `<Exercise id="${ex.props.id}">`;
     unique("<Exercise>", ex.props.id);
@@ -113,13 +139,50 @@ export async function checkExercises(page: Page): Promise<{ errors: string[]; ex
         else if (parseNumber(String(calc.expected ?? "").trim().split(/\s+/)[0]) !== value)
           errors.push(`${an}: value ${a.value} differs from expected "${calc.expected}" of calc "${a.calc}"`);
         if (a.tolerance !== undefined && !/^\s*[\d.]+\s*%?\s*$/.test(String(a.tolerance))) errors.push(`${an}: tolerance must be like "2%" or "0.01"`);
+        // Without a tolerance a box accepts half a unit of the last printed digit, which can let a wrong value
+        // through ("1" accepts 0.6 to 1.4): docs/ANSWER-BOX-FIX-PLAN.md Step 5.
+        if (a.tolerance === undefined) untoleranced.push(String(a.id));
+        // The tolerance rule (docs/CONTENT_GUIDE.md "Problem sets", owner decision 2026-11-28): no obvious slip may
+        // be accepted, and a correct answer to 3 significant figures must be. Warnings while existing boxes are fixed.
+        if (value !== null) {
+          const tol = numberTolerance(String(a.value), a.tolerance === undefined ? undefined : String(a.tolerance));
+          const inside = (x: number) => Math.abs(x - value) <= tol * (1 + 1e-9);
+          if (value !== 0) {
+            const slips: [string, number][] = [["sign", -value], ["×2", 2 * value], ["×½", value / 2], ["×10", 10 * value], ["×⅒", value / 10], ["×π", Math.PI * value], ["÷π", value / Math.PI]];
+            const caught = slips.filter(([, x]) => inside(x)).map(([s]) => s);
+            if (caught.length) slipBoxes.push(`${a.id} (${caught.join(", ")})`);
+            const three = Number(value.toPrecision(3));
+            if (!inside(three) && !/significant|digits|decimal/i.test(String(a.label ?? ""))) roundBoxes.push(String(a.id));
+          } else if (a.tolerance !== undefined && String(a.tolerance).includes("%")) slipBoxes.push(`${a.id} (a percentage of 0 accepts nothing but 0)`);
+        }
+        // Second valid readings (Step 4): a number, a tolerance, a note, and a calc that recomputes the number.
+        for (const [i, o] of ((a.alsoAccept ?? []) as Record<string, unknown>[]).entries()) {
+          const ov = parseNumber(String(o.value ?? ""));
+          if (ov === null) errors.push(`${an}: alsoAccept[${i}] needs a value that is a number`);
+          if (o.tolerance !== undefined && !/^\s*[\d.]+\s*%?\s*$/.test(String(o.tolerance))) errors.push(`${an}: alsoAccept[${i}].tolerance must be like "2%" or "0.01"`);
+          if (!String(o.note ?? "").trim()) errors.push(`${an}: alsoAccept[${i}] needs a note, shown when the reader types it`);
+          const oc = o.calc ? calcs?.get(String(o.calc)) : undefined;
+          if (!o.calc) errors.push(`${an}: alsoAccept[${i}] needs calc="…", the id of the calculation that recomputes it`);
+          else if (!oc) errors.push(`${an}: alsoAccept[${i}] calc "${o.calc}" is not in calcs/${page.course}/${page.slug}.yaml`);
+          else if (ov !== null && parseNumber(String(oc.expected ?? "").trim().split(/\s+/)[0]) !== ov)
+            errors.push(`${an}: alsoAccept[${i}] value ${o.value} differs from expected "${oc.expected}" of calc "${o.calc}"`);
+        }
       } else if (types[0] === "expr") {
         if (!a.vars || typeof a.vars !== "object") errors.push(`${an}: a formula answer needs vars, a range for every symbol`);
-        else for (const m of auditFormula({ expr: String(a.expr), vars: a.vars, mistakes: a.mistakes })) errors.push(`${an}: ${m}`);
+        else for (const m of auditFormula({ expr: String(a.expr), vars: a.vars, mistakes: a.mistakes, alsoAccept: a.alsoAccept })) errors.push(`${an}: ${m}`);
         for (const k of Object.keys(a.names ?? {})) if (!(k in (a.vars ?? {}))) errors.push(`${an}: names.${k} is not a symbol in vars`);
+        if (a.vars && typeof a.vars === "object")
+          for (const e of [String(a.expr), ...((a.mistakes ?? []) as { expr: string }[]).map((m) => String(m.expr))])
+            for (const m of previewProblems(e, a.vars, a.names ?? {})) errors.push(`${an}: ${e === String(a.expr) ? "answer" : `mistake ${e}`}: ${m}`);
       } else if (!Array.isArray(a.choices) || a.choices.length < 2 || !Number.isInteger(a.answer) || a.answer < 0 || a.answer >= a.choices.length)
         errors.push(`${an}: choices needs two or more entries and answer the index of the right one`);
     }
   }
-  return { errors, exercises: done.length };
+  const warnings: string[] = untoleranced.length
+    ? [`${untoleranced.length} number box${untoleranced.length > 1 ? "es have" : " has"} no tolerance (${untoleranced.slice(0, 6).join(", ")}${untoleranced.length > 6 ? ", …" : ""}): give each one, so a wrong value cannot pass on the printed digits alone`]
+    : [];
+  const list = (ids: string[]) => `${ids.slice(0, 5).join("; ")}${ids.length > 5 ? `; and ${ids.length - 5} more` : ""}`;
+  if (slipBoxes.length) warnings.push(`${slipBoxes.length} number box${slipBoxes.length > 1 ? "es accept" : " accepts"} an obvious slip (tolerance rule, docs/CONTENT_GUIDE.md): ${list(slipBoxes)}`);
+  if (roundBoxes.length) warnings.push(`${roundBoxes.length} number box${roundBoxes.length > 1 ? "es reject" : " rejects"} the answer rounded to 3 significant figures without asking for more digits in the label: ${list(roundBoxes)}`);
+  return { errors, warnings, exercises: done.length };
 }

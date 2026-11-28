@@ -1,0 +1,445 @@
+# Calculations on content/year-5/8.902/8-902-problem-set-7.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for its Midterm Problem Set. Formula answers are checked by an independent route
+# (numerical derivative of the accelerations, solve, derivative of the cumulative distribution);
+# number answers are recomputed from the page's stated choices with full-precision constants.
+# Constants: G and M_sun from calcs/constants.yaml (M_sun from the IAU 2015 nominal GM_sun).
+
+page: content/year-5/8.902/8-902-problem-set-7.mdx
+calcs:
+  # ---- constants in astronomical units
+
+  - id: g-astro
+    where: 'section "How to answer", constants: G in pc (kilometer/second)^2 per solar mass'
+    inputs: {}
+    formula: G * M_sun / parsec / (kilometer/second)**2
+    expected: '0.0043009'
+    shown: ['so that $G = 0.0043009$ pc (km/s)² $M_\odot^{-1}$']
+    source: {cite: iau2015, at: 'abstract (with CODATA 2018 G)'}
+    origin: page-own
+
+  # ---- Question 1
+
+  # kappa^2 = -(d/dR')(a_c - a_g) at R' = R, with a_c = Omega^2 R^4/R'^3 and a_g = G pi R^2 Sigma/R'^2.
+  - id: q1-kappa-by-derivative
+    kind: identity
+    answer: q1-kappa
+    where: 'Question 1(A), answer box and formula "Radial epicyclic frequency at the edge of the disc": against a numerical derivative of a_c − a_g'
+    formula: 3*Omega**2 - 2*pi*G*Sigma/R
+    equals: -deriv('Omega**2*R**4/x**3 - G*pi*R**2*Sigma/x**2', 'x', R)
+    samples:
+      G: [0.5, 2, 1.3, 0.77]
+      Sigma: [0.5, 2, 1.1, 1.7]
+      Omega: [1.2, 3, 2.2, 1.5]
+      R: [1, 3, 2.4, 1.6]
+    tolerance: 1e-6
+    shown: ['\kappa^2 = 3\Omega^2 - \frac{2\pi G\Sigma}{R}']
+    source: {cite: reading6, at: 'eqs. (207)–(209), p. 46 (our own solution)'}
+    origin: page-own
+
+  - id: q1-rmin-by-solve
+    kind: identity
+    answer: q1-rmin
+    where: 'Question 1(B), answer box and formula "Smallest radius stabilised by rotation": the root of kappa^2 = 0'
+    formula: 2*pi*G*Sigma/(3*Omega**2)
+    equals: solve('3*Omega**2 - 2*pi*G*Sigma/x', 'x', 1e-6, 1e6)
+    samples:
+      G: [0.5, 2, 1.3, 0.77]
+      Sigma: [0.5, 2, 1.1, 1.7]
+      Omega: [1.2, 3, 2.2, 1.5]
+    tolerance: 1e-6
+    shown: ['R > R_\text{min} = \frac{2\pi G\Sigma}{3\Omega^2}']
+    source: {cite: reading6, at: 'eqs. (210)–(211), p. 46'}
+    origin: mit
+
+  - id: q1-gsigma
+    where: 'Question 1(B), solution: G Sigma for Sigma = 10 M_sun/pc^2'
+    inputs: {Sigma: 10}
+    formula: G * Sigma * M_sun / parsec**2 / ((kilometer/second)**2/parsec)
+    expected: '0.043009'
+    shown: ['$G\Sigma = 0.0043009 \times 10 = 0.043009$ (km/s)²/pc']
+    source: {cite: mit, at: 'Question 1(B) (our own numbers)'}
+    origin: page-own
+
+  - id: q1-3omega2
+    where: 'Question 1(B), solution: 3 Omega^2 for Omega = 27.2 km/s/kpc, in (kilometer/second/parsec)^2'
+    inputs: {Omega: 27.2 km/s/kpc}
+    formula: 3 * Omega**2 / (kilometer/second/parsec)**2
+    expected: '2.2195e-3'
+    shown: ['$3\Omega^2 = 3 \times 0.0272^2 = 2.2195 \times 10^{-3}$ (km/s/pc)²']
+    source: {cite: mit, at: 'Question 1(B) (our own numbers)'}
+    origin: page-own
+
+  - id: q1-rmin-pc
+    answer: q1-rmin-pc
+    where: 'Question 1(B), answer box: R_min in pc for Sigma = 10 M_sun/pc^2, Omega = 27.2 km/s/kpc'
+    inputs: {Sigma: 10, Omega: 27.2 km/s/kpc}
+    formula: 2*pi*G*Sigma*M_sun/parsec**2 / (3*Omega**2) / parsec
+    expected: '122'
+    shown: ['$R_\text{min} = 2\pi \times 0.043009/2.2195 \times 10^{-3}$ pc $= 122$ pc', 'larger than $R_\text{min} = 122$ pc']
+    source: {cite: mit, at: 'Question 1(B) (our own numbers)'}
+    origin: page-own
+
+  - id: q1-growth-example
+    where: 'Question 1(C), check: kappa^2 at R = R_min/2 in units of Omega^2'
+    inputs: {}
+    formula: 3 - 2*3
+    expected: '-3'
+    shown: ['$\kappa^2 = 3\Omega^2 - 6\Omega^2 = -3\Omega^2$']
+    source: {cite: mit, at: 'Question 1(C) (our own check)'}
+    origin: page-own
+
+  - id: q1-lamj
+    answer: q1-lamj
+    where: 'Question 1(D), answer box: lambda_J = (pi/8) sigma^2/(G Sigma) for sigma = 8 km/s, in pc'
+    inputs: {Sigma: 10, s: 8 km/s}
+    formula: pi/8 * s**2 / (G*Sigma*M_sun/parsec**2) / parsec
+    expected: '584'
+    shown: ['$\lambda_J = (\pi/8) \times 64/0.043009$ pc $= 584$ pc']
+    source: {cite: reading6, at: 'eq. (212), p. 47 (our own numbers)'}
+    origin: page-own
+
+  - id: q1-sigcrit
+    where: 'Question 1(D), check: sigma_crit = (4/sqrt 3) G Sigma/Omega'
+    inputs: {Sigma: 10, Omega: 27.2 km/s/kpc}
+    formula: 4/sqrt(3) * G*Sigma*M_sun/parsec**2 / Omega / (kilometer/second)
+    expected: '3.65'
+    shown: ['$\sigma_\text{crit} = \frac{4}{\sqrt3}\,G\Sigma/\Omega = 4 \times 0.043009/(1.7321 \times 0.0272)$ km/s $= 3.65$ km/s']
+    source: {cite: reading6, at: 'eq. (212), p. 47 (our own numbers)'}
+    origin: page-own
+
+  - id: q1-q
+    where: 'Question 1(D), check: sigma/sigma_crit for sigma = 8 km/s'
+    inputs: {Sigma: 10, Omega: 27.2 km/s/kpc, s: 8 km/s}
+    formula: s / (4/sqrt(3) * G*Sigma*M_sun/parsec**2 / Omega)
+    expected: '2.2'
+    shown: ['$\sigma/\sigma_\text{crit} = 2.2 > 1$']
+    source: {cite: mit, at: 'Question 1(D) (our own check)'}
+    origin: page-own
+
+  - id: q1-ratio
+    where: 'Question 1(D), check: lambda_J/R_min'
+    inputs: {Sigma: 10, Omega: 27.2 km/s/kpc, s: 8 km/s}
+    formula: (pi/8 * s**2 / (G*Sigma*M_sun/parsec**2)) / (2*pi*G*Sigma*M_sun/parsec**2 / (3*Omega**2))
+    expected: '4.8'
+    shown: ['$\lambda_J/R_\text{min} = (\sigma/\sigma_\text{crit})^2 = 4.8$']
+    source: {cite: mit, at: 'Question 1(D) (our own check)'}
+    origin: page-own
+
+  - id: q1-ratio-identity
+    kind: identity
+    where: 'Question 1(D), check: lambda_J/R_min = (sigma/sigma_crit)^2'
+    formula: (pi/8 * s**2/(G*Sigma)) / (2*pi*G*Sigma/(3*Omega**2))
+    equals: (s / (4/sqrt(3)*G*Sigma/Omega))**2
+    samples:
+      s: [1, 8, 3.3]
+      G: [0.5, 2, 1.3]
+      Sigma: [0.5, 2, 1.1]
+      Omega: [1.2, 3, 2.2]
+    tolerance: 1e-9
+    shown: ['$\lambda_J/R_\text{min} = (\sigma/\sigma_\text{crit})^2']
+    source: {cite: reading6, at: 'eq. (212), p. 47 (our own check)'}
+    origin: page-own
+
+  # ---- Question 2
+
+  - id: q2-dist-by-derivative
+    kind: identity
+    answer: q2-dist
+    where: 'Question 2(B), answer box and formula "Differential metallicity distribution": Z times the derivative of the cumulative fraction of part (A)'
+    formula: (Z/y)*exp(-Z/y)/(1 - exp(-Z0/y))
+    equals: Z * deriv('(1 - exp(-x/y))/(1 - exp(-Z0/y))', 'x', Z)
+    samples:
+      Z: [0.002, 0.02, 0.011, 0.0057]
+      y: [0.005, 0.02, 0.013, 0.008]
+      Z0: [0.025, 0.05, 0.031, 0.044]
+    tolerance: 1e-6
+    shown: ['\frac{dM_s}{d\ln Z} = Z\,\frac{dM_s}{dZ} = \frac{(Z/y)\,e^{-Z/y}}{1 - e^{-Z_0/y}}']
+    source: {cite: mit, at: 'Question 2(B), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: q2-peak-by-solve
+    kind: identity
+    answer: q2-peak
+    where: 'Question 2(B), answer box: the peak of (Z/y) e^(−Z/y) is at Z = y (root of the derivative)'
+    formula: y
+    equals: solve('exp(-x/y)*(1 - x/y)/y', 'x', 0.3*y, 3*y)
+    samples:
+      y: [0.005, 0.02, 0.013, 0.008]
+    tolerance: 1e-6
+    shown: ['$Z_\text{peak} = y$']
+    source: {cite: mit, at: 'Question 2(B), p. 2 (our own solution)'}
+    origin: page-own
+
+  - id: q2-peak-ratio
+    answer: q2-peak-ratio
+    where: 'Question 2(B), answer box: y/Z0 = 1/ln(1/u0) for u0 = 0.1'
+    inputs: {u0: 0.1}
+    formula: 1/log(1/u0)
+    expected: '0.434'
+    shown: ['$Z_\text{peak}/Z_0 = y/Z_0 = 1/\ln 10 = 0.434$', 'Z = y = 0.434 Z₀']
+    source: {cite: mit, at: 'Question 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: q2-peak-height
+    where: 'Question 2(B), plot caption: peak height of dM_s/d(log10 Z) for u0 = 0.1'
+    inputs: {u0: 0.1}
+    formula: log(10) * exp(-1) / (1 - u0)
+    expected: '0.94'
+    shown: ['ln 10 × e⁻¹/0.9 = 0.94']
+    source: {cite: mit, at: 'Question 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: q2-normalisation
+    where: 'Question 2(B), check: area under dM_s/dln Z up to Z0 is 1 (y = 0.01, Z0 = 0.023)'
+    inputs: {y: 0.01, Z0: 0.023}
+    formula: integrate('exp(-x/y)/(y*(1 - exp(-Z0/y)))', 'x', 0, Z0)
+    expected: '1'
+    tolerance: 1e-9
+    shown: ['is $M_s(<Z_0) = 1$, as it must be']
+    source: {cite: mit, at: 'Question 2(B) (our own check)'}
+    origin: page-own
+
+  # ---- Question 3
+
+  - id: q3-ratio
+    answer: q3-ratio
+    where: 'Question 3(A), answer box: (N_c/ln N_c)/(N_*/ln N_*) in units of 1e-6'
+    inputs: {Ns: 1e11, Nc: 1e5}
+    formula: (Nc/log(Nc))/(Ns/log(Ns)) / 1e-6
+    expected: '2.20'
+    shown: ['= 10^{-6} \times \frac{11}{5} = 2.2\times10^{-6}']
+    source: {cite: reading2, at: 'eq. (74), p. 19 (our own numbers)'}
+    origin: page-own
+
+  - id: q3-faster
+    where: 'Question 3(A), solution: how many times faster the cluster galaxy relaxes'
+    inputs: {Ns: 1e11, Nc: 1e5}
+    formula: (Ns/log(Ns))/(Nc/log(Nc))
+    expected: '4.5e5'
+    shown: ['about $4.5 \times 10^5$ times faster']
+    source: {cite: mit, at: 'Question 3 (our own numbers)'}
+    origin: page-own
+
+  - id: q3-lnnc
+    where: 'Question 3(A), solution: 6 ln 1e5'
+    inputs: {Nc: 1e5}
+    formula: 6*log(Nc)
+    expected: '69.1'
+    shown: ['$10^5/(6\ln 10^5) = 10^5/69.1 = 1448$']
+    source: {cite: mit, at: 'Question 3 (our own numbers)'}
+    origin: page-own
+
+  - id: q3-ncross
+    answer: q3-ncross
+    where: 'Question 3(A), answer box: N_c/(6 ln N_c) crossing times'
+    inputs: {Nc: 1e5}
+    formula: Nc/(6*log(Nc))
+    expected: '1448'
+    shown: ['= 1448$ crossing times']
+    source: {cite: reading2, at: 'eq. (74), p. 19 (our own numbers)'}
+    origin: page-own
+
+  - id: q3-nstars
+    where: 'Question 3(A), solution: N_*/(6 ln N_*) for the star galaxy'
+    inputs: {Ns: 1e11}
+    formula: Ns/(6*log(Ns))
+    expected: '6.6e8'
+    shown: ['against $6.6 \times 10^8$ for the stars']
+    source: {cite: reading2, at: 'eq. (74), p. 19 (our own numbers)'}
+    origin: page-own
+
+  - id: q3-tcross
+    where: 'Question 3(A), check: crossing time R/v for R = 10 kpc, v = sqrt(GM/R), M = 1e11 M_sun'
+    inputs: {R: 10 kpc}
+    formula: R / sqrt(G*1e11*M_sun/R) / (1e6*yr)
+    expected: '47'
+    shown: ['$t_\text{cross} = 47$ Myr']
+    source: {cite: mit, at: 'Question 3 (our own check)'}
+    origin: page-own
+
+  - id: q3-trelax-clusters
+    where: 'Question 3(A), check: relaxation time of the cluster galaxy in billions of years'
+    inputs: {R: 10 kpc, Nc: 1e5}
+    formula: Nc/(6*log(Nc)) * R / sqrt(G*1e11*M_sun/R) / (1e9*yr)
+    expected: '68'
+    shown: ['relaxes in about 68 billion years']
+    source: {cite: mit, at: 'Question 3 (our own check)'}
+    origin: page-own
+
+  - id: q3-trelax-stars
+    where: 'Question 3(A), check: relaxation time of the star galaxy in years'
+    inputs: {R: 10 kpc, Ns: 1e11}
+    formula: Ns/(6*log(Ns)) * R / sqrt(G*1e11*M_sun/R) / yr
+    expected: '3e16'
+    shown: ['the star galaxy in $3 \times 10^{16}$ years']
+    source: {cite: mit, at: 'Question 3 (our own check)'}
+    origin: page-own
+
+  - id: q3-logs
+    where: 'Question 3(B), check: ln N for the clusters'
+    inputs: {Ns: 1e11, Nc: 1e5}
+    formula: log(Nc)
+    expected: '11.5'
+    shown: ['(11.5 against 25.3)']
+    source: {cite: mit, at: 'Question 3 (our own check)'}
+    origin: page-own
+
+  - id: q3-logs-stars
+    where: 'Question 3(B), check: ln N for the stars'
+    inputs: {Ns: 1e11}
+    formula: log(Ns)
+    expected: '25.3'
+    shown: ['(11.5 against 25.3)']
+    source: {cite: mit, at: 'Question 3 (our own check)'}
+    origin: page-own
+
+  # ---- Question 4
+
+  - id: q4-v-from-virial
+    kind: identity
+    answer: q4-v
+    where: 'Question 4(A), answer box and formula "Typical speed of the stars": the root of 2T + U = 0 with T = M v^2/2, U = −G M^2/R'
+    formula: sqrt(G*M/R)
+    equals: solve('M*x**2 - G*M**2/R', 'x', 1e-6, 1e3)
+    samples:
+      G: [0.5, 2, 1.3, 0.77]
+      M: [1, 3, 2.2, 1.4]
+      R: [1, 3, 1.7, 2.5]
+    tolerance: 1e-6
+    shown: ['v = \sqrt{\frac{GM}{R}}']
+    source: {cite: reading1, at: 'eq. (52), p. 15'}
+    origin: mit
+
+  - id: q4-vnum
+    answer: q4-vnum
+    where: 'Question 4(B), answer box: v = sqrt(GM/R) for M = 1e11 M_sun, R = 10 kpc, in km/s'
+    inputs: {R: 10 kpc}
+    formula: sqrt(G*1e11*M_sun/R) / (kilometer/second)
+    expected: '207'
+    shown: ['$= \sqrt{4.30 \times 10^4}$ km/s $= 207$ km/s', 'with the speed of Question 4, $v = 207$ km/s']
+    source: {cite: reading1, at: 'eq. (53), p. 15 (our own numbers)'}
+    origin: page-own
+
+  - id: q4-sphere-factor
+    where: 'Question 4(A), check: sqrt(3/5)'
+    inputs: {}
+    formula: sqrt(3/5)
+    expected: '0.77'
+    shown: ['a factor $\sqrt{3/5} = 0.77$']
+    source: {cite: mit, at: 'Question 4 (our own check)'}
+    origin: page-own
+
+  - id: q4-sphere-speed
+    where: 'Question 4(B), check: uniform sphere speed'
+    inputs: {R: 10 kpc}
+    formula: sqrt(3/5*G*1e11*M_sun/R) / (kilometer/second)
+    expected: '161'
+    shown: ['$v = 0.77 \times 207 = 161$ km/s']
+    source: {cite: mit, at: 'Question 4 (our own check)'}
+    origin: page-own
+
+  # ---- Short answers
+
+  - id: sa-slope
+    answer: sa-slope
+    where: 'Short answer A, answer box: d ln rho/d ln r of the NFW profile at r = a'
+    inputs: {}
+    formula: deriv('log(1/(exp(t)*(1 + exp(t))**2))', 't', 0)
+    expected: '-2'
+    tolerance: 1e-6
+    shown: ['and $-4/2 = -2$ at $r = a$']
+    source: {cite: reading3, at: 'eq. (99), p. 25 (our own solution)'}
+    origin: page-own
+
+  - id: sd-b
+    answer: sd-b
+    where: 'Short answer D, answer box: b_strong = 2R/N for R = 10 kpc, N = 1e11, in AU'
+    inputs: {R: 10 kpc, N: 1e11}
+    formula: 2*R/N / au
+    expected: '0.0413'
+    shown: ['$= 6.17 \times 10^9$ m $= 0.0413$ AU']
+    source: {cite: reading2, at: 'eqs. (62)–(64), p. 17 (our own numbers)'}
+    origin: page-own
+
+  - id: sd-b-metres
+    where: 'Short answer D, solution: b_strong in metres'
+    inputs: {R: 10 kpc, N: 1e11}
+    formula: 2*R/N / meter
+    expected: '6.17e9'
+    shown: ['= 2 \times 10^{-7}$ pc $= 6.17 \times 10^9$ m']
+    source: {cite: reading2, at: 'eqs. (62)–(64), p. 17 (our own numbers)'}
+    origin: page-own
+
+  - id: sd-b-check
+    where: 'Short answer D, check: 2 G m/v^2 with v = sqrt(G M/R)'
+    inputs: {R: 10 kpc}
+    formula: 2*G*M_sun / (G*1e11*M_sun/R) / meter
+    expected: '6.17e9'
+    shown: ['also gives $6.17 \times 10^9$ m']
+    source: {cite: reading2, at: 'eq. (62), p. 17 (our own check)'}
+    origin: page-own
+
+  - id: sd-solar-radii
+    where: 'Short answer D, solution: b_strong in solar radii (nominal R_sun = 6.957e8 m)'
+    inputs: {R: 10 kpc, N: 1e11, Rsun: 6.957e8 meter}
+    formula: 2*R/N / Rsun
+    expected: '9'
+    shown: ['about nine solar radii']
+    source: {cite: iau2015, at: 'abstract: nominal solar radius 6.957e8 m'}
+    origin: page-own
+
+  - id: sd-tcross
+    where: 'Short answer D, solution: crossing time R/v in Myr'
+    inputs: {R: 10 kpc}
+    formula: R / sqrt(G*1e11*M_sun/R) / (1e6*yr)
+    expected: '47.1'
+    shown: ['$= 47.1$ Myr']
+    source: {cite: mit, at: 'Short answer D (our own numbers)'}
+    origin: page-own
+
+  - id: sd-crossings
+    where: 'Short answer D, solution: crossings in 10 Gyr'
+    inputs: {R: 10 kpc}
+    formula: 1e10*yr / (R / sqrt(G*1e11*M_sun/R))
+    expected: '212'
+    shown: ['10 billion years hold 212 crossings']
+    source: {cite: mit, at: 'Short answer D (our own numbers)'}
+    origin: page-own
+
+  - id: sd-number
+    answer: sd-number
+    where: 'Short answer D, answer box: (3/N) times the crossings in 10 Gyr, in units of 1e-9'
+    inputs: {R: 10 kpc, N: 1e11}
+    formula: 3/N * 1e10*yr / (R / sqrt(G*1e11*M_sun/R)) / 1e-9
+    expected: '6.36'
+    shown: ['$212 \times 3 \times 10^{-11} = 6.36 \times 10^{-9}$']
+    source: {cite: reading2, at: 'eq. (66), p. 17 (our own numbers)'}
+    origin: page-own
+
+  - id: sd-per-crossing
+    where: 'Short answer D, solution: 3/N for N = 1e11'
+    inputs: {N: 1e11}
+    formula: 3/N
+    expected: '3e-11'
+    shown: ['$p = n\,\pi b_\text{strong}^2\,R = 3/N = 3 \times 10^{-11}$']
+    source: {cite: reading2, at: 'eq. (66), p. 17'}
+    origin: mit
+
+  - id: sa-nfw-vpeak
+    where: 'Short answer A, solution: the NFW rotation curve peaks at about 2.16 a (root of d(v^2)/dx = 0, x = r/a)'
+    inputs: {}
+    formula: solve('deriv("(log(1+y) - y/(1+y))/y", "y", x)', 'x', 1.5, 3)
+    expected: '2.16'
+    shown: ['at about $2.16\,a$']
+    source: {cite: reading3, at: 'eq. 99, p. 25 (our own check)'}
+    origin: page-own
+
+  - id: sa-nfw-v-at-a
+    where: 'Short answer A, solution: at r = a the circular speed is about 5.5 per cent below its peak'
+    inputs: {}
+    formula: 100*(1 - sqrt((log(2) - 0.5) / ((log(1 + 2.1626) - 2.1626/3.1626)/2.1626)))
+    expected: '5.5'
+    shown: ['only about 5.5 per cent below that peak']
+    source: {cite: reading3, at: 'eq. 99, p. 25 (our own check)'}
+    origin: page-own

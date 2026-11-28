@@ -367,8 +367,9 @@ for (const w of valueCheck.warnings) warn(w.file, w.message);
 // Problem sets: ids, solutions, points and every answer box (lib/exercise-check.ts).
 const exercisesChecked = Promise.all(
   site.pages.map(async (page) => {
-    const { errors, exercises } = await checkExercises(page);
+    const { errors, warnings, exercises } = await checkExercises(page);
     for (const m of errors) err(page.file, m);
+    for (const m of warnings) warn(page.file, m);
     if (page.kind !== "lesson" && exercises === 0) err(page.file, `a "${page.kind}" page needs at least one <Exercise>`);
   }),
 );

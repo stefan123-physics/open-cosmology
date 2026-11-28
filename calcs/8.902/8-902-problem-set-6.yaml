@@ -1,0 +1,403 @@
+# Calculations on content/year-5/8.902/8-902-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set. Problem 1: Einstein–de Sitter background with MIT's H0 = 71 km/s/Mpc,
+# turnaround at z = 8, xi = (3 pi/4)^2, R_vir = R_ta/2, fully ionised hydrogen (mu = 1/2), f_b = 0.05,
+# Lambda = 1e-23 erg cm^3/s, cooling rate n_H^2 Lambda. Each answer is recomputed here from the inputs with
+# full-precision constants; the free-fall time is also checked by the independent route t_ff = t_ta (age at z = 8),
+# and the temperature by the virial-theorem route.
+# Constants: G, k_B, M_sun from calcs/constants.yaml; m_p (CODATA 2018) as an input.
+
+page: content/year-5/8.902/8-902-problem-set-6.mdx
+calcs:
+  # ---- Problem 1(A)
+
+  - id: p1-xi
+    where: 'Problem 1, statement: the notes'' overdensity at turnaround'
+    inputs: {}
+    formula: (3 * pi / 4)**2
+    expected: '5.55'
+    shown: ['\left(\frac{3\pi}{4}\right)^2 \approx 5.55']
+    source: {cite: reading1, at: 'eq. (436), p. 94'}
+    origin: mit
+
+  - id: p1-h0
+    where: 'Problem 1(A), solution: H0 = 71 km/s/Mpc in s^-1'
+    inputs: {H0: 71 km/s/Mpc}
+    formula: H0
+    expected: 2.301e-18 1/s
+    shown: ['$= 2.301 \times 10^{-18}$ s⁻¹']
+    source: {cite: mit, at: 'p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-rhoc
+    where: 'Problem 1(A), solution: critical density today'
+    inputs: {H0: 71 km/s/Mpc}
+    formula: 3*H0**2/(8*pi*G)
+    expected: 9.469e-27 kg/m**3
+    shown: ['$3H_0^2/8\pi G = 9.469 \times 10^{-27}$ kg/m³']
+    source: {cite: mit, at: 'Problem 1(A) (our own solution)'}
+    origin: page-own
+
+  - id: p1-rhobar
+    where: 'Problem 1(A), solution: background density at z = 8'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 3*H0**2*(1+z)**3/(8*pi*G)
+    expected: 6.903e-24 kg/m**3
+    shown: ['$\bar\rho = 6.903 \times 10^{-24}$ kg/m³']
+    source: {cite: mit, at: 'Problem 1(A) (our own solution)'}
+    origin: page-own
+
+  - id: p1-rhota
+    where: 'Problem 1(A), solution: density of the sphere at turnaround'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: (3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)
+    expected: 3.832e-23 kg/m**3
+    shown: ['$\rho_\text{ta} = 3.832 \times 10^{-23}$ kg/m³']
+    source: {cite: mit, at: 'Problem 1(A) (our own solution)'}
+    origin: page-own
+
+  - id: p1-tff
+    answer: p1-tff
+    where: 'Problem 1(A), answer box: t_ff = sqrt(3 pi/(32 G rho_ta)), in Myr'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: sqrt(3*pi/(32*G*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G))) / (1e6*yr)
+    expected: '340'
+    shown: ['id="p1-tff"', '$= 1.073 \times 10^{16}$ s $= 340$ Myr']
+    source: {cite: mit, at: 'Problem 1(A) (our own solution)'}
+    origin: page-own
+
+  - id: p1-tff-seconds
+    where: 'Problem 1(A), solution: t_ff in seconds'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: sqrt(3*pi/(32*G*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))
+    expected: 1.073e16 s
+    shown: ['$= 1.073 \times 10^{16}$ s']
+    source: {cite: mit, at: 'Problem 1(A) (our own solution)'}
+    origin: page-own
+
+  # Independent route: the free fall from turnaround lasts as long as the age at turnaround,
+  # because xi H_ta^2 = 8 pi G rho_ta / 3 with xi = (3 pi/4)^2 (any H).
+  - id: p1-tff-equals-tta
+    kind: identity
+    where: 'Problem 1(A), solution check: sqrt(3 pi/(32 G rho_ta)) equals 2/(3 H_ta) when rho_ta = xi 3 H_ta^2/(8 pi G)'
+    formula: sqrt(3*pi/(32*G*(3*pi/4)**2*3*H**2/(8*pi*G)))
+    equals: 2/(3*H)
+    samples:
+      G: [6.6743e-11, 1, 3.7, 0.02]
+      H: [2.3e-18, 1, 0.37, 55]
+    tolerance: 1e-9
+    shown: ['$t_\text{ta} = 2/[3H_0(1+z)^{3/2}] = 2/(3 \times 2.301 \times 10^{-18} \times 27)$ s $= 340$ Myr']
+    source: {cite: reading1, at: 'eqs. (427), (435)–(437), pp. 93–94 (our own check)'}
+    origin: page-own
+
+  - id: p1-tta
+    where: 'Problem 1(A), check: age of the Einstein–de Sitter universe at z = 8'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 2/(3*H0*(1+z)**1.5) / (1e6*yr)
+    expected: '340'
+    shown: ['$ s $= 340$ Myr. The two routes agree']
+    source: {cite: mit, at: 'Problem 1(A) (our own check)'}
+    origin: page-own
+
+  - id: p1-tcoll
+    where: 'Problem 1(A), check: collapse at twice the turnaround time'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 2*2/(3*H0*(1+z)**1.5) / (1e6*yr)
+    expected: '680'
+    shown: ['$2t_\text{ta} = 680$ Myr']
+    source: {cite: mit, at: 'Problem 1(A) (our own check)'}
+    origin: page-own
+
+  - id: p1-zcoll
+    where: 'Problem 1(A), check: 1 + z at collapse'
+    inputs: {z: 8}
+    formula: (1+z)/4**(1/3)
+    expected: '5.67'
+    shown: ['$1 + z = 9/4^{1/3} = 5.67$']
+    source: {cite: reading1, at: 'eq. (437), p. 94 (our own check)'}
+    origin: page-own
+
+  - id: p1-tcrude
+    where: 'Problem 1(A), check: 1/sqrt(G rho_ta)'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 1/sqrt(G*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)) / (1e6*yr)
+    expected: '627'
+    shown: ['$1/\sqrt{G\rho_\text{ta}} = 627$ Myr']
+    source: {cite: mit, at: 'Problem 1(A) (our own check)'}
+    origin: page-own
+
+  - id: p1-tcrude-ratio
+    where: 'Problem 1(A), check: ratio of 1/sqrt(G rho) to sqrt(3 pi/(32 G rho))'
+    inputs: {}
+    formula: sqrt(32/(3*pi))
+    expected: '1.84'
+    shown: ['is 1.84 times longer']
+    source: {cite: mit, at: 'Problem 1(A) (our own check)'}
+    origin: page-own
+
+  - id: p1-lcdm-time
+    where: 'Problem 1(A), remark: 2/(3 H(z)) at z = 8 in the flat model with Omega_M = 0.3'
+    inputs: {H0: 71 km/s/Mpc, z: 8, Om: 0.3, OL: 0.7}
+    formula: 2/(3*H0*sqrt(Om*(1+z)**3 + OL)) / (1e6*yr)
+    expected: '620'
+    shown: ['is then 620 Myr']
+    source: {cite: mit, at: 'p. 1, MIT''s default cosmology (our own remark)'}
+    origin: page-own
+
+  - id: p1-lcdm-ratio
+    where: 'Problem 1(A), remark: ratio of the two times'
+    inputs: {z: 8, Om: 0.3, OL: 0.7}
+    formula: (1+z)**1.5/sqrt(Om*(1+z)**3 + OL)
+    expected: '1.82'
+    shown: ['1.82 times longer']
+    source: {cite: mit, at: 'p. 1 (our own remark)'}
+    origin: page-own
+
+  # ---- Problem 1(B)
+
+  - id: p1-msun-kg
+    where: 'Problem 1(B), solution: 1e12 solar masses in kg'
+    inputs: {}
+    formula: 1e12*M_sun
+    expected: 1.988e42 kg
+    shown: ['$M = 10^{12}M_\odot = 1.988 \times 10^{42}$ kg']
+    source: {cite: iau2015, at: 'Resolution B3, nominal GM divided by G'}
+    origin: page-own
+
+  - id: p1-rta
+    where: 'Problem 1(B), solution: turnaround radius of a 1e12 M_sun sphere'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: (3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)
+    expected: 2.314e21 m
+    shown: ['$R_\text{ta} = 2.314 \times 10^{21}$ m']
+    source: {cite: mit, at: 'Problem 1(B) (our own solution)'}
+    origin: page-own
+
+  - id: p1-rta-kpc
+    where: 'Problem 1(B), solution: R_ta in kpc'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: (3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)
+    expected: 75.0 kpc
+    shown: ['m $= 75.0$ kpc']
+    source: {cite: mit, at: 'Problem 1(B) (our own solution)'}
+    origin: page-own
+
+  - id: p1-rvir-kpc
+    where: 'Problem 1(B), solution: R_vir = R_ta/2 in kpc'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 0.5*(3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)
+    expected: 37.5 kpc
+    shown: ['$R_\text{vir} = 37.5$ kpc']
+    source: {cite: mit, at: 'Problem 1(B) (our own solution)'}
+    origin: page-own
+
+  - id: p1-t12
+    answer: p1-t12
+    where: 'Problem 1(B), answer box: k_B T = (2/5) G M mu m_p / R_ta, mu = 1/2, M = 1e12 M_sun, in 1e6 K'
+    inputs: {H0: 71 km/s/Mpc, z: 8, mu: 0.5, m_p: 1.67262192369e-27 kg}
+    formula: 0.4*G*1e12*M_sun*mu*m_p/(k_B*(3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)) / (1e6*kelvin)
+    expected: '1.39'
+    shown: ['id="p1-t12"', 'so $T = 1.39 \times 10^6$ K', 'T \approx 1.39\times10^{6}\ \text{K}']
+    source: {cite: mit, at: 'Problem 1(B) (our own solution)'}
+    origin: page-own
+
+  # Independent route: thermal energy (3/2) N k_B T = half of |V_vir| = (1/2)(3/5) G M^2 / R_vir (virial theorem).
+  - id: p1-t12-virial
+    answer: p1-t12
+    where: 'Problem 1(B), check: the virial-theorem route, K = |V_vir|/2 with R_vir = R_ta/2, N = M/(mu m_p)'
+    inputs: {H0: 71 km/s/Mpc, z: 8, mu: 0.5, m_p: 1.67262192369e-27 kg}
+    formula: (0.5*0.6*G*(1e12*M_sun)**2/(0.5*(3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3))) / (1.5*(1e12*M_sun/(mu*m_p))*k_B) / (1e6*kelvin)
+    expected: '1.39'
+    shown: ['The virial theorem gives the same']
+    source: {cite: reading1, at: 'eq. (446), p. 96 (our own check)'}
+    origin: page-own
+
+  - id: p1-p
+    answer: p1-p
+    where: 'Problem 1(B), answer box: exponent of M in T, from T ∝ M / R_ta and R_ta ∝ M^(1/3)'
+    inputs: {}
+    formula: 1 - 1/3
+    expected: '0.667'
+    shown: ['id="p1-p"', 'so $p = 2/3 = 0.667$']
+    source: {cite: mit, at: 'Problem 1(B) (our own solution)'}
+    origin: page-own
+
+  # Independent check of the exponent: log-slope of T(M) computed at two masses.
+  - id: p1-p-numeric
+    answer: p1-p
+    where: 'Problem 1(B): exponent from T at 1e11 and 1e13 M_sun'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: log10((1e13*M_sun/(1e13*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)) / (1e11*M_sun/(1e11*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3))) / 2
+    expected: '0.667'
+    shown: ['$T \propto M/M^{1/3} = M^{2/3}$']
+    source: {cite: mit, at: 'Problem 1(B) (our own check)'}
+    origin: page-own
+
+  - id: p1-t-literal
+    where: 'Problem 1(B), check: twice T if all of |V_vir| became heat'
+    inputs: {H0: 71 km/s/Mpc, z: 8, mu: 0.5, m_p: 1.67262192369e-27 kg}
+    formula: 2*0.4*G*1e12*M_sun*mu*m_p/(k_B*(3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)) / (1e6*kelvin)
+    expected: '2.78'
+    shown: ['$2.78 \times 10^6$ K']
+    source: {cite: mit, at: 'Problem 1(B) (our own check)'}
+    origin: page-own
+
+  - id: p1-t-mu06
+    where: 'Problem 1(B), check: T with mu = 0.6'
+    inputs: {H0: 71 km/s/Mpc, z: 8, mu: 0.6, m_p: 1.67262192369e-27 kg}
+    formula: 0.4*G*1e12*M_sun*mu*m_p/(k_B*(3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)) / (1e6*kelvin)
+    expected: '1.67'
+    shown: ['$1.67 \times 10^6$ K']
+    source: {cite: mit, at: 'Problem 1(B) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 1(C)
+
+  - id: p1-rhovir
+    where: 'Problem 1(C), solution: rho_vir = 8 rho_ta'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 8*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)
+    expected: 3.066e-22 kg/m**3
+    shown: ['$\rho_\text{vir} = 8\rho_\text{ta} = 3.066 \times 10^{-22}$ kg/m³']
+    source: {cite: mit, at: 'Problem 1(C) (our own solution)'}
+    origin: page-own
+
+  - id: p1-rhovir-18pi2
+    where: 'Problem 1(C), check: 18 pi^2 times the background at collapse, which is rho_bar(z=8)/4'
+    inputs: {H0: 71 km/s/Mpc, z: 8}
+    formula: 18*pi**2*3*H0**2*(1+z)**3/(8*pi*G)/4
+    expected: 3.066e-22 kg/m**3
+    shown: ['$178 \times 6.903 \times 10^{-24}/4 = 3.066 \times 10^{-22}$ kg/m³']
+    source: {cite: reading1, at: 'eq. (447), p. 96 (our own check)'}
+    origin: page-own
+
+  - id: p1-rhogas
+    where: 'Problem 1(C), solution: gas density f_b rho_vir'
+    inputs: {H0: 71 km/s/Mpc, z: 8, f_b: 0.05}
+    formula: f_b*8*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)
+    expected: 1.533e-23 kg/m**3
+    shown: ['$f_b\rho_\text{vir} = 1.533 \times 10^{-23}$ kg/m³']
+    source: {cite: mit, at: 'Problem 1(C) (our own solution)'}
+    origin: page-own
+
+  - id: p1-nh
+    answer: p1-nh
+    where: 'Problem 1(C), answer box: n_H = f_b rho_vir / m_p, in 1e-3 cm^-3'
+    inputs: {H0: 71 km/s/Mpc, z: 8, f_b: 0.05, m_p: 1.67262192369e-27 kg}
+    formula: f_b*8*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)/m_p / (1e-3/centimeter**3)
+    expected: '9.16'
+    shown: ['id="p1-nh"', 'm⁻³ $= 9.16 \times 10^3$ m⁻³ $= 9.16 \times 10^{-3}$ cm⁻³']
+    source: {cite: mit, at: 'Problem 1(C) (our own solution)'}
+    origin: page-own
+
+  - id: p1-tcool
+    answer: p1-tcool
+    where: 'Problem 1(C), answer box: t_cool = 3 k_B T/(n_H Lambda), M = 1e12 M_sun, in Myr'
+    inputs: {H0: 71 km/s/Mpc, z: 8, f_b: 0.05, mu: 0.5, m_p: 1.67262192369e-27 kg, Lam: 1e-23 erg*cm**3/s}
+    formula: 3*0.4*G*1e12*M_sun*mu*m_p/((3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)) / (f_b*8*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)/m_p * Lam) / (1e6*yr)
+    expected: '199'
+    shown: ['id="p1-tcool"', '$ s $= 199$ Myr']
+    source: {cite: mit, at: 'Problem 1(C) (our own solution)'}
+    origin: page-own
+
+  # Independent route: thermal energy density (3/2)(n_H + n_e) k_B T over the cooling rate n_H n_e Lambda, in cgs.
+  - id: p1-tcool-seconds
+    where: 'Problem 1(C), solution: t_cool in seconds, from the energy density over the rate with the page''s rounded T and n_H'
+    inputs: {T: 1.3897e6 K, nH: 9.1644e-3 cm**-3, Lam: 1e-23 erg*cm**3/s}
+    formula: 1.5*(nH + nH)*k_B*T/(nH*nH*Lam)
+    expected: 6.28e15 s
+    shown: ['$ s $= 6.28 \times 10^{15}$ s']
+    source: {cite: mit, at: 'Problem 1(C) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 1(D)
+
+  - id: p1-mmax
+    answer: p1-mmax
+    where: 'Problem 1(D), answer box: M_max = 1e12 M_sun (t_ff/t_cool(1e12))^(3/2), in 1e12 M_sun'
+    inputs: {H0: 71 km/s/Mpc, z: 8, f_b: 0.05, mu: 0.5, m_p: 1.67262192369e-27 kg, Lam: 1e-23 erg*cm**3/s}
+    formula: (sqrt(3*pi/(32*G*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G))) / (3*0.4*G*1e12*M_sun*mu*m_p/((3*1e12*M_sun/(4*pi*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)))**(1/3)) / (f_b*8*(3*pi/4)**2*3*H0**2*(1+z)**3/(8*pi*G)/m_p * Lam)))**1.5
+    expected: '2.23'
+    shown: ['id="p1-mmax"', '\left(\frac{340}{199}\right)^{3/2} \approx 2.2\times10^{12}\,M_\odot']
+    source: {cite: mit, at: 'Problem 1(D) (our own solution)'}
+    origin: page-own
+
+  # Independent route: solve t_cool(M) = t_ff for M numerically (t_cool = 199.034 Myr (M/1e12)^(2/3)).
+  - id: p1-mmax-solve
+    answer: p1-mmax
+    where: 'Problem 1(D): root of 199.034 m^(2/3) = 340.0425 (m in 1e12 M_sun)'
+    inputs: {}
+    formula: solve('199.034*m**(2/3) - 340.0425', 'm', 0.1, 10)
+    expected: '2.23'
+    shown: ['id="p1-mmax"']
+    source: {cite: mit, at: 'Problem 1(D) (our own check)'}
+    origin: page-own
+
+  - id: p1-t-at-mmax
+    where: 'Problem 1(D), check: T at M_max'
+    inputs: {}
+    formula: 1.3897*2.2331**(2/3)
+    expected: '2.37'
+    shown: ['$1.39 \times 10^6\ \text{K} \times 2.23^{2/3} = 2.37 \times 10^6$ K']
+    source: {cite: mit, at: 'Problem 1(D) (our own check)'}
+    origin: page-own
+
+  - id: p1-tcool-at-mmax
+    where: 'Problem 1(D), check: t_cool at M_max'
+    inputs: {}
+    formula: 199.034*2.2331**(2/3)
+    expected: '340'
+    shown: ['$t_\text{cool} = 199 \times 2.23^{2/3}$ Myr $= 340$ Myr']
+    source: {cite: mit, at: 'Problem 1(D) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2
+
+  - id: p2-mstar
+    answer: p2-mstar
+    where: 'Problem 2(A), answer box: (1/2) erfc(1/sqrt 2), plain Press–Schechter fraction above M_*'
+    inputs: {}
+    formula: 0.5*erfc(1/sqrt(2))
+    expected: '0.159'
+    shown: ['id="p2-mstar"', '$F = \frac12\text{erfc}(1/\sqrt2) = 0.159$']
+    source: {cite: reading1, at: 'eq. (452), p. 97 (our own addition)'}
+    origin: page-own
+
+  # Independent route: the Gaussian tail beyond one standard deviation by numerical integration.
+  - id: p2-mstar-integral
+    answer: p2-mstar
+    where: 'Problem 2(A): integral of the unit Gaussian from 1 to 8'
+    inputs: {}
+    formula: integrate('exp(-x**2/2)/sqrt(2*pi)', 'x', 1, 8)
+    expected: '0.159'
+    shown: ['the Gaussian tail beyond one standard deviation']
+    source: {cite: mit, at: 'Problem 2(A) (our own check)'}
+    origin: page-own
+
+  - id: p2-mstar-es
+    where: 'Problem 2(A), check: with the factor 2'
+    inputs: {}
+    formula: erfc(1/sqrt(2))
+    expected: '0.317'
+    shown: ['becomes 0.317']
+    source: {cite: reading1, at: 'eq. (458), p. 97 (our own check)'}
+    origin: page-own
+
+  # Normalisation: sigma ∝ M^(-a); |dF/d ln M| = a u exp(-u^2)/sqrt(pi) with u = delta_c M^a / sqrt 2; integral over ln M = 1/2.
+  - id: p2-half-a025
+    where: 'Problem 2(A), check: integral of |dF/d ln M| over ln M with sigma ∝ M^(-1/4)'
+    inputs: {a: 0.25, dc: 1.686}
+    formula: integrate('a*(dc*exp(a*x)/sqrt(2))*exp(-(dc*exp(a*x)/sqrt(2))**2)/sqrt(pi)', 'x', -150, 40)
+    expected: '0.5000'
+    shown: ['gives 0.5000 (our calculation)']
+    source: {cite: mit, at: 'Problem 2(A) (our own check)'}
+    origin: page-own
+
+  - id: p2-half-a05
+    where: 'Problem 2(A), check: the same with sigma ∝ M^(-1/2)'
+    inputs: {a: 0.5, dc: 1.686}
+    formula: integrate('a*(dc*exp(a*x)/sqrt(2))*exp(-(dc*exp(a*x)/sqrt(2))**2)/sqrt(pi)', 'x', -80, 20)
+    expected: '0.5000'
+    shown: ['$M^{-1/2}$, integrating']
+    source: {cite: mit, at: 'Problem 2(A) (our own check)'}
+    origin: page-own

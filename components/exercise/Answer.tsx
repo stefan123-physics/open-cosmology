@@ -28,6 +28,8 @@ export type AnswerProps = {
   vars?: Ranges;
   names?: Record<string, string>;
   mistakes?: { expr: string; hint: string }[];
+  /** Second valid readings, also correct, shown with their note: [{ value, tolerance?, note }] or [{ expr, note }]. */
+  alsoAccept?: { value?: string; tolerance?: string; expr?: string; note?: string }[];
   // choice
   choices?: string[];
   answer?: number;
@@ -43,7 +45,7 @@ let libs: Promise<[Lib, typeof import("katex"), typeof import("@/lib/speech")]> 
 const loadLibs = () => (libs ??= Promise.all([import("@/lib/answers"), import("katex"), import("@/lib/speech")]));
 
 export function Answer(props: AnswerProps & Rendered) {
-  const { id, expr, vars, names, mistakes, value, unit, tolerance, choices, answer } = props;
+  const { id, expr, vars, names, mistakes, value, unit, tolerance, choices, answer, alsoAccept } = props;
   const type = expr !== undefined ? "formula" : choices ? "choice" : "number";
   const uid = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -95,7 +97,19 @@ export function Answer(props: AnswerProps & Rendered) {
       else v = picked === answer ? { status: "correct" } : { status: "wrong" };
     } else {
       const [lib] = await loadLibs();
-      v = type === "formula" ? lib.checkFormula(text, { expr: expr!, vars: vars ?? {}, mistakes }) : lib.checkNumber(text, { value: value!, tolerance });
+      v =
+        type === "formula"
+          ? lib.checkFormula(text, {
+              expr: expr!,
+              vars: vars ?? {},
+              mistakes,
+              alsoAccept: (alsoAccept ?? []).filter((a) => a.expr).map((a) => ({ expr: a.expr!, note: a.note })),
+            })
+          : lib.checkNumber(text, {
+              value: value!,
+              tolerance,
+              alsoAccept: (alsoAccept ?? []).filter((a) => a.value).map((a) => ({ value: a.value!, tolerance: a.tolerance, note: a.note })),
+            });
     }
     setVerdict(v);
     if (v.status !== "invalid") recordAnswer(slug, id, v.status === "correct");
@@ -210,6 +224,7 @@ export function Answer(props: AnswerProps & Rendered) {
           {verdict?.status === "correct" && (
             <p>
               <span className="answer-icon" aria-hidden="true">✓</span> <strong>Correct.</strong>
+              {verdict.note && ` ${verdict.note}`}
               {saved?.revealed && " The solution was opened first, so this answer earns no points."}
             </p>
           )}

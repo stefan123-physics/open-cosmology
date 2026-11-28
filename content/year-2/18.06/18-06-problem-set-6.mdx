@@ -1,0 +1,1045 @@
+---
+title: "Problem Set 6: projections, least squares and Gram–Schmidt"
+slug: 18-06-problem-set-6
+course: "18.06"
+kind: problems
+set: 6
+lecture: 17
+order: 90
+covers: [15, 16, 17]
+solutions: own
+summary: "Six problems of our own on Lectures 15, 16 and 17: projecting onto a line and onto a plane, the projection matrix and its two properties, the closest point, fitting a straight line by least squares and the effect of an outlier, the projection onto the perpendicular space, reflections, when AᵀA is invertible, Gram–Schmidt and A = QR, projections with orthonormal vectors, and orthogonal matrices."
+prerequisites: [projections-onto-subspaces, projection-matrices-least-squares, orthogonal-matrices-gram-schmidt]
+source:
+  title: "MIT 18.06 Lecture 17: Orthogonal matrices and Gram-Schmidt"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-17-orthogonal-matrices-and-gram-schmidt/
+  readings:
+    - title: "18.06 Lecture 15 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/96a31504ec5d489d84113320b593eb0d_Y_Ac6KiQ1t0.pdf
+    - title: "18.06 Lecture 16 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/b05d83bbdd6bcc995f2f8002093010c6_osh80YCg_GM.pdf
+    - title: "18.06 Lecture 17 transcript (Prof. Strang)"
+      url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/e87f2914b2eb2f53e38688040c04b9b1_0MtwqhIwdrI.pdf
+license: CC BY-NC-SA 4.0
+references: {}
+status: reviewed
+---
+
+This set practises three lessons: [projections onto subspaces](/courses/18-06/projections-onto-subspaces) (Lecture 15), [projection matrices and least squares](/courses/18-06/projection-matrices-least-squares) (Lecture 16) and [orthogonal matrices and Gram–Schmidt](/courses/18-06/orthogonal-matrices-gram-schmidt) (Lecture 17). Orthogonal subspaces and complements (Lecture 14) belong to Problem Set 5, and determinants start in Problem Set 7, so nothing here uses a determinant.
+
+MIT's 18.06 problem sets assign exercises from a textbook that is not openly licensed, so this set is made of our own problems on the same lectures, in MIT's lecture order. No MIT or textbook problem is used: every matrix and every number below is ours, and so are the hints and the solutions. The formulas come from the lessons and from the lecture transcripts they cite.
+
+## How to answer
+
+Work each problem on paper first. Then type or choose your result in the answer box and press Check.
+
+A number box wants a decimal number, not a fraction or a root: write $0.25$, not $1/4$. Every number box accepts any value within $0.01$ of the exact one, so give at least two decimal places when the answer is not a whole number. A matrix or a vector cannot be typed: a box asks for one of its entries, a length or a single number, or you choose from a list. Entries are numbered by row, then column, starting from 1: "row 1, column 2" is the entry in the first row and the second column. A vector is written as a list, $(1, 2, 2)$, and its "second entry" is the second number in that list.
+
+A formula box takes plain typing, for example `(5 + beta^2)/3`, and accepts every correct way of writing the answer. Type $\beta$ as `beta`.
+
+Some parts ask you to show something. They have no answer box: write your argument, then open the solution and mark yourself. MIT gives no points for these problems: the points here (100 in all) and their split between the parts are ours. If you are stuck, open the hints one at a time. Each part ends with its full solution. Try before you open it: an answer given after its solution was opened earns no points. Your score is kept in this browser only.
+
+## What you need from the lessons
+
+**Projecting onto a line** (Lecture 15). The point $p = \hat xa$ on the line through $a$ closest to $b$ leaves an error $e = b - p$ perpendicular to $a$. That right angle gives $\hat x$, and $p$ is a matrix $P$ times $b$:
+
+<Formula label="Projection onto a line" tex="a^T(b - \hat xa) = 0, \qquad \hat x = \frac{a^Tb}{a^Ta}, \qquad p = Pb, \qquad P = \frac{aa^T}{a^Ta}" cite="reading1" at="pp. 2–5" />
+
+**Projecting onto a subspace** (Lecture 15). Put a basis of the subspace in the columns of $A$. The error must be perpendicular to every column, which gives the **normal equations** and three answers:
+
+<Formula label="Projection onto the column space" tex="A^T(b - A\hat x) = 0, \qquad A^TA\hat x = A^Tb, \qquad p = A\hat x, \qquad P = A(A^TA)^{-1}A^T" cite="reading1" at="pp. 13–17" />
+
+Every projection matrix has the two properties
+
+<Formula label="The two properties" tex="P^T = P, \qquad P^2 = P" cite="reading1" at="pp. 7, 18–19" />
+
+**The two projections** (Lecture 16). $Pb = b$ for $b$ in the column space and $Pb = 0$ for $b$ in $N(A^T)$, the space perpendicular to it. Every $b$ splits into the two parts, and $I - P$ is the projection onto the perpendicular space:
+
+<Formula label="b = p + e" tex="b = Pb + (I - P)b = p + e" cite="reading2" at="pp. 3–4" />
+
+**Least squares** (Lecture 16). To fit points $(t, b)$ by a line $C + Dt$, write the equations $C + Dt = b$ for all the points as $Ax = b$ with $x = (C, D)$; the first column of $A$ is all ones and the second holds the times $t$. The best line makes $\|Ax - b\|^2 = \|e\|^2$, the sum of the squared vertical errors, as small as possible. It solves the normal equations $A^TA\hat x = A^Tb$ (pp. 5–11 of the transcript). $A^TA$ is invertible when the columns of $A$ are independent, because
+
+<Formula label="Why AᵀA is invertible" tex="A^TAx = 0 \;\Rightarrow\; x^TA^TAx = \|Ax\|^2 = 0 \;\Rightarrow\; Ax = 0 \;\Rightarrow\; x = 0" cite="reading2" at="pp. 15–17" />
+
+**Orthonormal vectors** (Lecture 17). Orthonormal columns $q_1, \dots, q_n$ of $Q$ give $Q^TQ = I$. A square $Q$ with orthonormal columns is an **orthogonal matrix**, and then $Q^T = Q^{-1}$ (pp. 2–4). With orthonormal columns the projection needs no inverse, and each component is a dot product:
+
+<Formula label="Projection with orthonormal columns" tex="P = QQ^T, \qquad \hat x = Q^Tb, \qquad \hat x_i = q_i^Tb" cite="reading3" at="pp. 9–11" />
+
+**Gram–Schmidt** (Lecture 17). From independent $a, b, c$, keep $A = a$ and subtract from each later vector its components along the earlier directions; then divide each by its length:
+
+<Formula label="Gram–Schmidt" tex="B = b - \frac{A^Tb}{A^TA}A, \qquad C = c - \frac{A^Tc}{A^TA}A - \frac{B^Tc}{B^TB}B, \qquad q_1 = \frac{A}{\|A\|}, \; q_2 = \frac{B}{\|B\|}, \; q_3 = \frac{C}{\|C\|}" cite="reading3" at="pp. 13–18" />
+
+In matrix language the original matrix is $QR$, with $R$ upper triangular; the entry of $R$ in row $i$ and column $j$ is $q_i^T$ times column $j$ (pp. 22–24).
+
+## Problem 1
+
+<Exercise id="p1" title="Projecting onto a line" points={14}>
+
+Take $a = (1, 2, 2)$ and $b = (4, 1, 6)$ in $\mathrm{R}^3$.
+
+<Part label="a" points={5}>
+
+Project $b$ onto the line through $a$: find $\hat x$, the projection $p$ and the error $e = b - p$. Give $\hat x$ and the second entry of $e$.
+
+<Hint>
+
+Two dot products give $\hat x$: one of $a$ with $b$, one of $a$ with itself.
+
+</Hint>
+
+<Hint>
+
+Then $p$ is $\hat x$ times $a$, and $e$ is what is left of $b$. Check that $e$ is perpendicular to $a$.
+
+</Hint>
+
+<Answer id="p1-a-x" label="$\hat x =$" value="2" tolerance="0.01" calc="p1-a-x" />
+
+<Answer id="p1-a-e2" label="The second entry of $e$ is" value="-3" tolerance="0.01" calc="p1-a-e2" />
+
+<Solution>
+
+**The idea.** The error must be perpendicular to the line, and that one condition fixes $\hat x$.
+
+<Step title="The number x̂">
+
+$a^Tb = 4 + 2 + 12 = 18$ and $a^Ta = 1 + 4 + 4 = 9$, so
+
+<Formula label="x̂ for the line" tex="\hat x = \frac{a^Tb}{a^Ta} = \frac{18}{9} = 2, \qquad p = 2a = (2, 4, 4), \qquad e = b - p = (2, -3, 2)" cite="reading1" at="pp. 2–3 (the method; the numbers are our own)" />
+
+</Step>
+
+<Step title="Check">
+
+$a^Te = 2 - 6 + 4 = 0$: the error is perpendicular to $a$. And $\|p\|^2 + \|e\|^2 = 36 + 17 = 53 = \|b\|^2$, the right triangle of the lecture's picture.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+Write the projection matrix $P$ onto the line through $a$. Give its entry in row 2, column 3 and its entry in row 1, column 1. Then find $Pw$ for $w = (2, -1, 0)$.
+
+<Hint>
+
+$aa^T$ is a column times a row: its entry in row $i$, column $j$ is the $i$-th entry of $a$ times the $j$-th. Do not forget the division.
+
+</Hint>
+
+<Hint>
+
+For $Pw$, look at $a^Tw$ before multiplying out.
+
+</Hint>
+
+<Answer id="p1-b-23" label="Row 2, column 3 of $P$:" value="0.4444" tolerance="0.01" calc="p1-b-23" />
+
+<Answer id="p1-b-11" label="Row 1, column 1 of $P$:" value="0.1111" tolerance="0.01" calc="p1-b-11" />
+
+<Answer id="p1-b-pw" label="$Pw$ is"
+  choices={["the vector $(1, 2, 2)$", "the vector $(0, 0, 0)$", "the vector $(2, -1, 0)$", "the vector $(4, -2, 0)$"]} answer={1} />
+
+<Solution>
+
+**The idea.** $P = aa^T/a^Ta$ is a rank-one matrix, and it sends every vector to a multiple of $a$.
+
+<Step title="The matrix">
+
+<Formula label="P for the line through a" tex="P = \frac{aa^T}{a^Ta} = \frac19\begin{pmatrix} 1 & 2 & 2 \\ 2 & 4 & 4 \\ 2 & 4 & 4 \end{pmatrix}" cite="reading1" at="pp. 4–5 (the method; the numbers are our own)" />
+
+Row 2, column 3 is $4/9 \approx 0.4444$, and row 1, column 1 is $1/9 \approx 0.1111$.
+
+</Step>
+
+<Step title="Pw">
+
+$a^Tw = 2 - 2 + 0 = 0$, so $Pw = a\,(a^Tw)/a^Ta = 0$: $w$ is perpendicular to the line, and its projection is the zero vector.
+
+</Step>
+
+<Step title="Check">
+
+$Pb = a\,(a^Tb)/9 = 2a = (2, 4, 4)$, the $p$ of part (a). $P$ is symmetric, every column is a multiple of $a$ (rank one), and the diagonal adds to $(1 + 4 + 4)/9 = 1$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Show, without multiplying out the $3 \times 3$ matrices, that $P^2 = P$ for the $P$ of part (b). Show also that the line through $-3a$ has the same projection matrix.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+In $P^2 = \frac{aa^T}{a^Ta}\frac{aa^T}{a^Ta}$, group the middle $a^Ta$ together: it is a number.
+
+</Hint>
+
+<Solution>
+
+**The idea.** A row times a column in the middle of a product is a number, and it cancels.
+
+<Step title="P squared">
+
+<Formula label="P² = P for a line" tex="P^2 = \frac{a\,(a^Ta)\,a^T}{(a^Ta)^2} = \frac{aa^T}{a^Ta} = P" cite="reading1" at="p. 7 (the property; the grouping is our own solution)" />
+
+Projecting a second time leaves $p$ where it is: $p$ is already on the line.
+
+</Step>
+
+<Step title="The line through −3a">
+
+With $-3a$ in place of $a$, the top becomes $(-3a)(-3a)^T = 9aa^T$ and the bottom $(-3a)^T(-3a) = 9a^Ta$. The $9$ cancels, so the matrix is the same $P$: the line has not changed (Lecture 15 transcript, pp. 3–4).
+
+</Step>
+
+<Step title="Check">
+
+Numerically: $P^2$ has row 1, column 1 equal to $(1 \cdot 1 + 2 \cdot 2 + 2 \cdot 2)/81 = 9/81 = 1/9$, the same entry as $P$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 2
+
+<Exercise id="p2" title="Projecting onto a plane" points={18}>
+
+The columns $a_1 = (1, 0, 1)$ and $a_2 = (0, 1, 2)$ of $A = \begin{pmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 2 \end{pmatrix}$ span a plane in $\mathrm{R}^3$. Take $b = (0, -5, 2)$.
+
+<Part label="a" points={7}>
+
+Solve the normal equations for $\hat x$, then find $p = A\hat x$ and the error $e = b - p$. Give both entries of $\hat x$ and the length squared $\|e\|^2$.
+
+<Hint>
+
+The entries of $A^TA$ are the dot products of the columns with each other; the entries of $A^Tb$ are the dot products of the columns with $b$.
+
+</Hint>
+
+<Hint>
+
+The two normal equations form a $2 \times 2$ system: eliminate one unknown.
+
+</Hint>
+
+<Answer id="p2-a-x1" label="The first entry of $\hat x$ is" value="2" tolerance="0.01" calc="p2-a-x1" />
+
+<Answer id="p2-a-x2" label="The second entry of $\hat x$ is" value="-1" tolerance="0.01" calc="p2-a-x2" />
+
+<Answer id="p2-a-e" label="$\|e\|^2 =$" value="24" tolerance="0.01" calc="p2-a-e" />
+
+<Solution>
+
+**The idea.** The error is perpendicular to both columns, $A^T(b - A\hat x) = 0$, and that is a square system for $\hat x$.
+
+<Step title="The normal equations">
+
+<Formula label="The normal equations for the plane" tex="A^TA = \begin{pmatrix} 2 & 2 \\ 2 & 5 \end{pmatrix}, \quad A^Tb = \begin{pmatrix} 2 \\ -1 \end{pmatrix}: \qquad 2\hat x_1 + 2\hat x_2 = 2, \quad 2\hat x_1 + 5\hat x_2 = -1" cite="reading1" at="pp. 15–16 (the method; the numbers are our own)" />
+
+Subtracting the first equation from the second leaves $3\hat x_2 = -3$, so $\hat x_2 = -1$, and then $\hat x_1 = 1 - \hat x_2 = 2$.
+
+</Step>
+
+<Step title="Projection and error">
+
+$p = 2a_1 - a_2 = (2, -1, 0)$ and $e = b - p = (-2, -4, 2)$, so $\|e\|^2 = 4 + 16 + 4 = 24$.
+
+</Step>
+
+<Step title="Check">
+
+$a_1^Te = -2 + 0 + 2 = 0$ and $a_2^Te = 0 - 4 + 4 = 0$: $e$ is perpendicular to the plane, so it lies in $N(A^T)$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={7}>
+
+Find the projection matrix $P$ onto the plane. Do it the short way: find a nonzero vector $n$ perpendicular to both columns, write the projection onto the line through $n$, and use that the projection onto the plane is $I$ minus that one. Give the entry of $P$ in row 1, column 1 and the entry in row 1, column 2.
+
+<Hint>
+
+$n$ solves $A^Tn = 0$: two equations in three unknowns. Choose its last entry and solve for the other two.
+
+</Hint>
+
+<Hint>
+
+The projection onto the line through $n$ is $nn^T/n^Tn$. The plane and that line are perpendicular, so the two projections add up to $I$.
+
+</Hint>
+
+<Answer id="p2-b-11" label="Row 1, column 1 of $P$:" value="0.8333" tolerance="0.01" calc="p2-b-11" />
+
+<Answer id="p2-b-12" label="Row 1, column 2 of $P$:" value="-0.3333" tolerance="0.01" calc="p2-b-12" />
+
+<Solution>
+
+**The idea.** In $\mathrm{R}^3$ the space perpendicular to a plane is a line, and $b = Pb + (I - P)b$ splits $b$ between the two.
+
+<Step title="The perpendicular line">
+
+$A^Tn = 0$ says $n_1 + n_3 = 0$ and $n_2 + 2n_3 = 0$. With $n_3 = 1$: $n = (-1, -2, 1)$, and $n^Tn = 6$.
+
+</Step>
+
+<Step title="The matrix">
+
+<Formula label="P from the perpendicular line" tex="P = I - \frac{nn^T}{n^Tn} = I - \frac16\begin{pmatrix} 1 & 2 & -1 \\ 2 & 4 & -2 \\ -1 & -2 & 1 \end{pmatrix} = \frac16\begin{pmatrix} 5 & -2 & 1 \\ -2 & 2 & 2 \\ 1 & 2 & 5 \end{pmatrix}" cite="reading2" at="pp. 3–4 (I − P; the numbers are our own)" />
+
+Row 1, column 1 is $5/6 \approx 0.8333$ and row 1, column 2 is $-2/6 \approx -0.3333$.
+
+</Step>
+
+<Step title="Check">
+
+The long way gives the same matrix: elimination gives $(A^TA)^{-1} = \frac16\begin{pmatrix} 5 & -2 \\ -2 & 2 \end{pmatrix}$ (multiply back: $\begin{pmatrix} 2 & 2 \\ 2 & 5 \end{pmatrix}$ times it is $I$), and $A(A^TA)^{-1}A^T$ has row 1, column 1 equal to $5/6$. Also $Pb = \frac16(0 + 10 + 2, 0 - 10 + 4, 0 - 10 + 10) = (2, -1, 0) = p$, and $Pa_1 = a_1$, $Pn = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={4}>
+
+Show that $p$ really is the point of the plane closest to $b$: for every $x$,
+
+<Formula label="The closest point" tex="\|b - Ax\|^2 = \|b - A\hat x\|^2 + \|A(\hat x - x)\|^2" cite="reading1" at="p. 1 (the closest point; the identity is our own solution)" />
+
+so no $Ax$ is closer to $b$ than $p = A\hat x$.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Write $b - Ax = (b - A\hat x) + A(\hat x - x)$ and expand the length squared of a sum.
+
+</Hint>
+
+<Hint>
+
+The cross term contains $(A(\hat x - x))^Te$. What do the normal equations say about $A^Te$?
+
+</Hint>
+
+<Solution>
+
+**The idea.** The error is perpendicular to the whole column space, so Pythagoras applies.
+
+<Step title="Expand">
+
+With $e = b - A\hat x$ and $v = A(\hat x - x)$, $\|e + v\|^2 = \|e\|^2 + 2v^Te + \|v\|^2$. And $v^Te = (\hat x - x)^TA^Te = 0$, because the normal equations say $A^T(b - A\hat x) = 0$ (Lecture 15 transcript, p. 13).
+
+</Step>
+
+<Step title="Conclude">
+
+So $\|b - Ax\|^2 = \|e\|^2 + \|v\|^2 \ge \|e\|^2$, with equality only when $A(\hat x - x) = 0$, that is (the columns being independent) only for $x = \hat x$.
+
+</Step>
+
+<Step title="Check">
+
+For $x = (0, 0)$: $\|b\|^2 = 0 + 25 + 4 = 29$, and $\|e\|^2 + \|p\|^2 = 24 + 5 = 29$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 3
+
+<Exercise id="p3" title="The best straight line" points={20}>
+
+Four measurements $(t, b)$ are $(-1, 0)$, $(0, 1)$, $(1, 3)$ and $(2, 2)$. Fit them by a straight line $b = C + Dt$ in the least-squares sense.
+
+<Part label="a" points={7}>
+
+Write the four equations as $Ax = b$ with $x = (C, D)$. Compute $A^TA$ and $A^Tb$, and solve the normal equations. Give the entry of $A^TA$ in row 2, column 2, the second entry of $A^Tb$, and the best $C$ and $D$.
+
+<Hint>
+
+$A$ has a column of ones and a column of times. So $A^TA$ holds the number of points, the sum of the times and the sum of their squares; $A^Tb$ holds the sum of the $b$'s and the sum of the products $tb$.
+
+</Hint>
+
+<Hint>
+
+Eliminate $C$ from the two normal equations to find $D$ first.
+
+</Hint>
+
+<Answer id="p3-a-ata" label="Row 2, column 2 of $A^TA$:" value="6" tolerance="0.01" calc="p3-a-ata" />
+
+<Answer id="p3-a-atb" label="The second entry of $A^Tb$ is" value="7" tolerance="0.01" calc="p3-a-atb" />
+
+<Answer id="p3-a-c" label="$C =$" value="1.1" tolerance="0.01" calc="p3-a-c" />
+
+<Answer id="p3-a-d" label="$D =$" value="0.8" tolerance="0.01" calc="p3-a-d" />
+
+<Solution>
+
+**The idea.** Four equations in two unknowns have no solution; the normal equations $A^TA\hat x = A^Tb$ give the best one.
+
+<Step title="The matrices">
+
+<Formula label="The four equations and their normal equations" tex="A = \begin{pmatrix} 1 & -1 \\ 1 & 0 \\ 1 & 1 \\ 1 & 2 \end{pmatrix}, \quad b = \begin{pmatrix} 0 \\ 1 \\ 3 \\ 2 \end{pmatrix}, \qquad A^TA = \begin{pmatrix} 4 & 2 \\ 2 & 6 \end{pmatrix}, \quad A^Tb = \begin{pmatrix} 6 \\ 7 \end{pmatrix}" cite="reading2" at="pp. 4–5, 9–10 (the method; the numbers are our own)" />
+
+The sum of the squared times is $1 + 0 + 1 + 4 = 6$, and the sum of the products $tb$ is $0 + 0 + 3 + 4 = 7$.
+
+</Step>
+
+<Step title="Solve">
+
+The normal equations are $4C + 2D = 6$ and $2C + 6D = 7$. Twice the second minus the first gives $10D = 8$, so $D = 0.8$, and then $4C = 6 - 1.6 = 4.4$, so $C = 1.1$. The best line is $b = 1.1 + 0.8t$.
+
+</Step>
+
+<Step title="Check">
+
+Put the numbers back: $4(1.1) + 2(0.8) = 6$ and $2(1.1) + 6(0.8) = 7$. Part (b) checks that the errors are perpendicular to both columns.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Find the heights $p$ of the best line at the four times and the errors $e = b - p$. Give the error at $t = 2$ and the total squared error $\|e\|^2$.
+
+<Hint>
+
+$p = A\hat x$: put each time into $C + Dt$ with the $C$ and $D$ of part (a).
+
+</Hint>
+
+<Answer id="p3-b-e4" label="The error at $t = 2$ is" value="-0.7" tolerance="0.01" calc="p3-b-e4" />
+
+<Answer id="p3-b-ee" label="$\|e\|^2 =$" value="1.8" tolerance="0.01" calc="p3-b-ee" />
+
+<Solution>
+
+**The idea.** $b = p + e$ with $p$ in the column space and $e$ perpendicular to it.
+
+<Step title="Heights and errors">
+
+<Formula label="Projection and error for the four points" tex="p = A\hat x = \begin{pmatrix} 0.3 \\ 1.1 \\ 1.9 \\ 2.7 \end{pmatrix}, \qquad e = b - p = \begin{pmatrix} -0.3 \\ -0.1 \\ 1.1 \\ -0.7 \end{pmatrix}" cite="reading2" at="pp. 12–13 (the method; the numbers are our own)" />
+
+The error at $t = 2$ is $2 - 2.7 = -0.7$, and $\|e\|^2 = 0.09 + 0.01 + 1.21 + 0.49 = 1.8$.
+
+</Step>
+
+<Step title="Check">
+
+$e$ is perpendicular to the column of ones, $-0.3 - 0.1 + 1.1 - 0.7 = 0$, and to the column of times, $0.3 + 0 + 1.1 - 1.4 = 0$, as in the lecture's example (Lecture 16 transcript, pp. 13–14).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={5}>
+
+Now suppose the last measurement had been $\beta$ instead of $2$, with the other three unchanged. Find the best slope $D$ as a formula in $\beta$. Then take the outlier $\beta = 12$ and give the error of the new best line at $t = 2$.
+
+<Hint>
+
+Only $A^Tb$ changes: its entries become the sum of the $b$'s and the sum of the products $tb$, now with $\beta$ in them. $A^TA$ is the same as in part (a).
+
+</Hint>
+
+<Hint>
+
+Solve the same way as in part (a). For the error at $t = 2$, you also need $C$ for $\beta = 12$.
+
+</Hint>
+
+<Answer id="p3-c-d" label="$D =$" expr="(2 + 3*beta)/10"
+  vars={{ beta: [4, 20] }} names={{ beta: "\\beta" }}
+  mistakes={[
+    { expr: "(9 + beta)/10", hint: "That is the intercept C. The slope D is the other unknown of the normal equations." },
+    { expr: "(2 + 3*beta)/2", hint: "Row 2, column 2 of AᵀA is the sum of the squares of the times, not the sum of the times." }
+  ]} />
+
+<Answer id="p3-c-e4" label="For $\beta = 12$, the error at $t = 2$ is" value="2.3" tolerance="0.01" calc="p3-c-e4" />
+
+<Solution>
+
+**The idea.** A change in $b$ changes only the right-hand side of the normal equations; the matrix $A^TA$ stays.
+
+<Step title="The new normal equations">
+
+Now $A^Tb = (0 + 1 + 3 + \beta,\; 0 + 0 + 3 + 2\beta) = (4 + \beta, 3 + 2\beta)$:
+
+<Formula label="Normal equations with an outlier" tex="4C + 2D = 4 + \beta, \qquad 2C + 6D = 3 + 2\beta" cite="reading2" at="pp. 9–11 (the method; the numbers are our own)" />
+
+Twice the second minus the first: $10D = 2 + 3\beta$, so $D = (2 + 3\beta)/10$; then $C = (4 + \beta - 2D)/4 = (9 + \beta)/10$.
+
+</Step>
+
+<Step title="The outlier">
+
+For $\beta = 12$: $D = 3.8$ and $C = 2.1$. The line gives $2.1 + 2(3.8) = 9.7$ at $t = 2$, so the error there is $12 - 9.7 = 2.3$. The point moved up by $10$, but its error grew only from $-0.7$ to $2.3$: the line itself tilted to follow the outlier, the slope going from $0.8$ to $3.8$. This is the worry about outliers in the lecture (Lecture 16 transcript, pp. 7–8).
+
+</Step>
+
+<Step title="Check">
+
+At $\beta = 2$ the formulas give $D = 0.8$ and $C = 1.1$, the line of part (a). For $\beta = 12$ the line $2.1 + 3.8t$ gives the heights $(-1.7, 2.1, 5.9, 9.7)$ and the errors $(1.7, -1.1, -2.9, 2.3)$: they add to zero, and so do the errors times the times, $-1.7 + 0 - 2.9 + 4.6 = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Show that for every least-squares line $C + Dt$, through any number of points, the errors add up to zero, and so do the errors each multiplied by its time $t$.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+What do the normal equations $A^T(b - A\hat x) = 0$ say, one row of $A^T$ at a time?
+
+</Hint>
+
+<Solution>
+
+**The idea.** The normal equations say that $e$ is perpendicular to each column of $A$.
+
+<Step title="Row by row">
+
+The rows of $A^T$ are the columns of $A$: all ones, and the times. So $A^Te = 0$ says
+
+<Formula label="The errors are perpendicular to the columns" tex="(1, 1, \dots, 1)\,e = 0, \qquad (t_1, t_2, \dots, t_m)\,e = 0" cite="reading2" at="pp. 13–14 (the perpendicular error; the general form is our own solution)" />
+
+The first is the sum of the errors, the second the sum of the errors times their times.
+
+</Step>
+
+<Step title="Check">
+
+Part (b) found both sums zero for the four points.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 4
+
+<Exercise id="p4" title="The other projection and a reflection" points={16}>
+
+Let $P$ be the projection matrix onto the line through $a = (3, 4)$ in $\mathrm{R}^2$.
+
+<Part label="a" points={4}>
+
+Find $I - P$. Which line does $I - P$ project onto? Give the entry of $I - P$ in row 1, column 2.
+
+<Hint>
+
+$a^Ta = 25$. $I - P$ keeps the part of a vector that $P$ removes, the part perpendicular to $a$.
+
+</Hint>
+
+<Answer id="p4-a-line" label="$I - P$ projects onto"
+  choices={["the line through $(3, 4)$", "the line through $(4, 3)$", "the line through $(-4, 3)$", "the line through $(4, 4)$"]} answer={2} />
+
+<Answer id="p4-a-12" label="Row 1, column 2 of $I - P$:" value="-0.48" tolerance="0.01" calc="p4-a-12" />
+
+<Solution>
+
+**The idea.** $b = Pb + (I - P)b$: the second part is the error, perpendicular to $a$.
+
+<Step title="The matrices">
+
+<Formula label="P and I − P for the line through (3, 4)" tex="P = \frac{1}{25}\begin{pmatrix} 9 & 12 \\ 12 & 16 \end{pmatrix}, \qquad I - P = \frac{1}{25}\begin{pmatrix} 16 & -12 \\ -12 & 9 \end{pmatrix}" cite="reading2" at="pp. 3–4 (I − P; the numbers are our own)" />
+
+Row 1, column 2 of $I - P$ is $-12/25 = -0.48$.
+
+</Step>
+
+<Step title="The line">
+
+$I - P$ is $nn^T/n^Tn$ for $n = (-4, 3)$: $nn^T = \begin{pmatrix} 16 & -12 \\ -12 & 9 \end{pmatrix}$ and $n^Tn = 25$. And $a^Tn = -12 + 12 = 0$, so it is the line perpendicular to $a$.
+
+</Step>
+
+<Step title="Check">
+
+$(I - P)a = \frac1{25}(48 - 48, -36 + 36) = 0$ and $(I - P)n = n$. The line through $(4, 3)$ is not perpendicular to $a$: $12 + 12 \neq 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={6}>
+
+The matrix $R = 2P - I$ reflects every vector across the line through $a$. Give its entry in row 1, column 2, and the second entry of $Rw$ for $w = (1, 2)$. Then take the line through $(1, m)$ instead, for a number $m > 0$, and give the entry of its $R = 2P - I$ in row 1, column 2 as a formula in $m$.
+
+<Hint>
+
+Write $w = Pw + (I - P)w$. Then $Rw = 2Pw - w$ keeps the part along the line and reverses the other part.
+
+</Hint>
+
+<Hint>
+
+For the line through $(1, m)$, the dot product of the vector with itself is $1 + m^2$. The $-I$ in $R$ changes only the diagonal.
+
+</Hint>
+
+<Answer id="p4-b-12" label="Row 1, column 2 of $R$:" value="0.96" tolerance="0.01" calc="p4-b-12" />
+
+<Answer id="p4-b-rw" label="The second entry of $Rw$ is" value="1.52" tolerance="0.01" calc="p4-b-rw" />
+
+<Answer id="p4-b-m" label="For the line through $(1, m)$, row 1, column 2 of $R$ is" expr="2*m/(1 + m^2)"
+  vars={{ m: [0.1, 5] }} names={{ m: "m" }}
+  mistakes={[
+    { expr: "m/(1 + m^2)", hint: "That is the entry of P. The reflection 2P − I doubles the entries off the diagonal." },
+    { expr: "2*m/(1 + m^2) - 1", hint: "The −I in 2P − I changes only the diagonal entries; row 1, column 2 is off the diagonal." }
+  ]} />
+
+<Solution>
+
+**The idea.** $R = P - (I - P)$: keep the projection, reverse the error.
+
+<Step title="The reflection">
+
+<Formula label="The reflection across the line through (3, 4)" tex="R = 2P - I = \frac{1}{25}\begin{pmatrix} 18 - 25 & 24 \\ 24 & 32 - 25 \end{pmatrix} = \frac{1}{25}\begin{pmatrix} -7 & 24 \\ 24 & 7 \end{pmatrix}" cite="reading2" at="pp. 3–4 (b = p + e; the reflection is our own solution)" />
+
+Row 1, column 2 is $24/25 = 0.96$, and $Rw = \frac1{25}(-7 + 48, 24 + 14) = (1.64, 1.52)$.
+
+</Step>
+
+<Step title="A general line">
+
+With $a = (1, m)$, $P = \frac{1}{1 + m^2}\begin{pmatrix} 1 & m \\ m & m^2 \end{pmatrix}$, so row 1, column 2 of $R = 2P - I$ is $2m/(1 + m^2)$.
+
+</Step>
+
+<Step title="Check">
+
+The line through $(3, 4)$ is the line through $(1, 4/3)$, and $2(4/3)/(1 + 16/9) = (8/3)/(25/9) = 24/25$. Lengths stay: $\|Rw\|^2 = 1.64^2 + 1.52^2 = 2.6896 + 2.3104 = 5 = \|w\|^2$. And $Ra = 2a - a = a$: the line itself does not move.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Show that for every projection matrix $P$ the matrix $R = 2P - I$ satisfies $R^T = R$ and $R^2 = I$, and conclude that $R$ is an orthogonal matrix.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Use only $P^T = P$ and $P^2 = P$. Expand $(2P - I)(2P - I)$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** The two properties of a projection are all that is needed.
+
+<Step title="Symmetric">
+
+$R^T = 2P^T - I = 2P - I = R$.
+
+</Step>
+
+<Step title="Its square">
+
+<Formula label="Reflecting twice" tex="R^2 = 4P^2 - 4P + I = 4P - 4P + I = I" cite="reading1" at="p. 7 (P² = P; the reflection is our own solution)" />
+
+</Step>
+
+<Step title="Orthogonal">
+
+So $R^TR = R^2 = I$: the columns of $R$ are orthonormal and $R$ is square, which makes it an orthogonal matrix with $R^{-1} = R^T = R$ (Lecture 17 transcript, pp. 3–4). Reflecting twice brings every vector back.
+
+</Step>
+
+<Step title="Check">
+
+For part (b), the columns $(-7, 24)/25$ and $(24, 7)/25$ have length $\sqrt{49 + 576}/25 = 1$ and dot product $(-168 + 168)/625 = 0$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Let $A$ be the $3 \times 2$ matrix with columns $(1, 1, 1)$ and $(1, c, c^2)$, for a number $c$. For which $c$ is $A^TA$ invertible?
+
+<Hint>
+
+$A^TA$ is invertible exactly when the columns of $A$ are independent. When is the second column a multiple of the first?
+
+</Hint>
+
+<Answer id="p4-d" label="$A^TA$ is invertible"
+  choices={["for every number $c$", "for every $c$ except $c = 0$ and $c = 1$", "for every $c$ except $c = 1$", "for every $c$ except $c = -1$ and $c = 1$"]} answer={2} />
+
+<Solution>
+
+**The idea.** Independent columns make $A^TA$ invertible, and dependent columns make it singular.
+
+<Step title="Independence">
+
+Two nonzero columns are dependent only when one is a multiple of the other. $(1, c, c^2)$ is a multiple of $(1, 1, 1)$ only if its three entries are equal: $c = 1$ and $c^2 = 1$, so $c = 1$. For every other $c$ the columns are independent and $A^TA$ is invertible (Lecture 16 transcript, pp. 15–17).
+
+</Step>
+
+<Step title="The case c = 1">
+
+Then $x = (1, -1)$ gives $Ax = 0$ and so $A^TAx = 0$ with $x \neq 0$: $A^TA$ is not invertible.
+
+</Step>
+
+<Step title="Check">
+
+For $c = 0$ the columns $(1, 1, 1)$ and $(1, 0, 0)$ are independent; for $c = -1$ the columns $(1, 1, 1)$ and $(1, -1, 1)$ are too. At $c = 1$, $A^TA = \begin{pmatrix} 3 & 3 \\ 3 & 3 \end{pmatrix}$, whose second row is the first again.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 5
+
+<Exercise id="p5" title="Gram–Schmidt and A = QR" points={18}>
+
+Apply Gram–Schmidt to the columns $a = (1, 1, 1, 1)$, $b = (1, 3, 1, 3)$ and $c = (2, 2, 0, 4)$ of the $4 \times 3$ matrix $M$. As in the lecture, $A$, $B$ and $C$ are the orthogonal vectors before they are divided by their lengths. (The matrix is called $M$ here because the letter $A$ is taken by the first of those vectors.)
+
+<Part label="a" points={7}>
+
+Find $A$, $B$ and $C$, and the orthonormal vectors $q_1, q_2, q_3$. Give the first entry of $B$, the fourth entry of $C$, and the length $\|C\|$.
+
+<Hint>
+
+$A = a$. For $B$, subtract from $b$ its projection onto $A$. For $C$, subtract from $c$ its projections onto $A$ and onto $B$, using the $B$ you found.
+
+</Hint>
+
+<Hint>
+
+Check each new vector by its dot products with the earlier ones: they must be zero.
+
+</Hint>
+
+<Answer id="p5-a-b1" label="The first entry of $B$ is" value="-1" tolerance="0.01" calc="p5-a-b1" />
+
+<Answer id="p5-a-c4" label="The fourth entry of $C$ is" value="1" tolerance="0.01" calc="p5-a-c4" />
+
+<Answer id="p5-a-cl" label="$\|C\|=$" value="2" tolerance="0.01" calc="p5-a-cl" />
+
+<Solution>
+
+**The idea.** Each new vector loses its components along the directions already chosen; what is left is perpendicular to them.
+
+<Step title="A and B">
+
+$A = (1, 1, 1, 1)$ and $A^TA = 4$. $A^Tb = 8$, so
+
+<Formula label="The second orthogonal vector" tex="B = b - \frac{A^Tb}{A^TA}A = (1, 3, 1, 3) - 2(1, 1, 1, 1) = (-1, 1, -1, 1)" cite="reading3" at="pp. 15–16 (the method; the numbers are our own)" />
+
+</Step>
+
+<Step title="C">
+
+$A^Tc = 8$, so the coefficient of $A$ is $8/4 = 2$; $B^Tc = -2 + 2 - 0 + 4 = 4$ and $B^TB = 4$, so the coefficient of $B$ is $1$:
+
+<Formula label="The third orthogonal vector" tex="C = c - \frac{A^Tc}{A^TA}A - \frac{B^Tc}{B^TB}B = (2, 2, 0, 4) - (2, 2, 2, 2) - (-1, 1, -1, 1) = (1, -1, -1, 1)" cite="reading3" at="pp. 17–18 (the method; the numbers are our own)" />
+
+</Step>
+
+<Step title="Normalize">
+
+All three vectors have length $\sqrt4 = 2$, so $q_1 = \frac12(1, 1, 1, 1)$, $q_2 = \frac12(-1, 1, -1, 1)$, $q_3 = \frac12(1, -1, -1, 1)$.
+
+</Step>
+
+<Step title="Check">
+
+$A^TC = 1 - 1 - 1 + 1 = 0$ and $B^TC = -1 - 1 + 1 + 1 = 0$. $C \neq 0$, as it must be for independent $a, b, c$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={5}>
+
+Write $M = QR$ with $Q = [\,q_1\;\;q_2\;\;q_3\,]$ and $R$ upper triangular. Give the entry of $R$ in row 1, column 2 and the entry in row 2, column 3.
+
+<Hint>
+
+Since $Q^TQ = I$, multiplying $M = QR$ on the left by $Q^T$ gives $R = Q^TM$: each entry is a dot product of a $q$ with a column of $M$.
+
+</Hint>
+
+<Answer id="p5-b-12" label="Row 1, column 2 of $R$:" value="4" tolerance="0.01" calc="p5-b-12" />
+
+<Answer id="p5-b-23" label="Row 2, column 3 of $R$:" value="2" tolerance="0.01" calc="p5-b-23" />
+
+<Solution>
+
+**The idea.** Column $j$ of $M$ is a combination of $q_1, \dots, q_j$ only, and the coefficients are the dot products.
+
+<Step title="The entries">
+
+<Formula label="R for this matrix" tex="R = Q^TM = \begin{pmatrix} q_1^Ta & q_1^Tb & q_1^Tc \\ 0 & q_2^Tb & q_2^Tc \\ 0 & 0 & q_3^Tc \end{pmatrix} = \begin{pmatrix} 2 & 4 & 4 \\ 0 & 2 & 2 \\ 0 & 0 & 2 \end{pmatrix}" cite="reading3" at="pp. 23–24 (the method; the numbers are our own)" />
+
+For instance $q_1^Tb = \frac12(1 + 3 + 1 + 3) = 4$ and $q_2^Tc = \frac12(-2 + 2 - 0 + 4) = 2$. The zeros below the diagonal are there because $a$ is along $q_1$ and $b$ is a combination of $q_1$ and $q_2$, both perpendicular to the later $q$'s.
+
+</Step>
+
+<Step title="Check">
+
+Column 3 of $QR$ is $4q_1 + 2q_2 + 2q_3 = (2, 2, 2, 2) + (-1, 1, -1, 1) + (1, -1, -1, 1) = (2, 2, 0, 4) = c$. Column 2 is $4q_1 + 2q_2 = (2, 2, 2, 2) + (-1, 1, -1, 1) = (1, 3, 1, 3) = b$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={6}>
+
+Project $d = (1, 2, 3, 4)$ onto the column space of $M$, using $q_1, q_2, q_3$: the coefficients are $\hat x_i = q_i^Td$. Give $q_2^Td$, the fourth entry of the projection $p$, and $\|d - p\|^2$.
+
+<Hint>
+
+$p = (q_1^Td)\,q_1 + (q_2^Td)\,q_2 + (q_3^Td)\,q_3$. No system needs to be solved.
+
+</Hint>
+
+<Answer id="p5-c-x2" label="$q_2^Td =$" value="1" tolerance="0.01" calc="p5-c-x2" />
+
+<Answer id="p5-c-p4" label="The fourth entry of $p$ is" value="3" tolerance="0.01" calc="p5-c-p4" />
+
+<Answer id="p5-c-err" label="$\|d - p\|^2 =$" value="4" tolerance="0.01" calc="p5-c-err" />
+
+<Solution>
+
+**The idea.** With orthonormal columns, $Q^TQ = I$ and the normal equations become $\hat x = Q^Td$.
+
+<Step title="The coefficients">
+
+<Formula label="Components by dot products" tex="\hat x = Q^Td = \tfrac12\begin{pmatrix} 1 + 2 + 3 + 4 \\ -1 + 2 - 3 + 4 \\ 1 - 2 - 3 + 4 \end{pmatrix} = \begin{pmatrix} 5 \\ 1 \\ 0 \end{pmatrix}" cite="reading3" at="p. 11 (the method; the numbers are our own)" />
+
+</Step>
+
+<Step title="The projection">
+
+$p = 5q_1 + q_2 + 0\,q_3 = (2.5, 2.5, 2.5, 2.5) + (-0.5, 0.5, -0.5, 0.5) = (2, 3, 2, 3)$. Then $d - p = (-1, -1, 1, 1)$ and $\|d - p\|^2 = 4$.
+
+</Step>
+
+<Step title="Check">
+
+$d - p$ is perpendicular to all three $q$'s: $-1 - 1 + 1 + 1 = 0$, $1 - 1 - 1 + 1 = 0$ and $-1 + 1 - 1 + 1 = 0$ (times $\frac12$). The same $p$ comes from $P = QQ^T$ applied to $d$, without any inverse (Lecture 17 transcript, p. 9).
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>
+
+## Problem 6
+
+<Exercise id="p6" title="An orthogonal matrix" points={14}>
+
+Take $Q = \frac17\begin{pmatrix} 2 & 6 & 3 \\ 3 & 2 & -6 \\ 6 & -3 & 2 \end{pmatrix}$.
+
+<Part label="a" points={4}>
+
+Check that the columns of $Q$ are orthonormal (this check has no box). Then give the entry of $Q^{-1}$ in row 1, column 2.
+
+<Hint>
+
+Each column has entries that are sevenths: add their squares. For the dot products, multiply two columns entry by entry.
+
+</Hint>
+
+<Hint>
+
+For a square matrix with orthonormal columns, the inverse needs no elimination.
+
+</Hint>
+
+<Answer id="p6-a" label="Row 1, column 2 of $Q^{-1}$:" value="0.4286" tolerance="0.01" calc="p6-a" />
+
+<Solution>
+
+**The idea.** $Q^TQ = I$ collects all the dot products of the columns; for a square $Q$ it makes $Q^T$ the inverse.
+
+<Step title="Orthonormal">
+
+Each column has $4 + 9 + 36 = 49$ as the sum of the squares of its entries, before the factor $1/49$: length $1$. The dot products: columns 1 and 2, $12 + 6 - 18 = 0$; columns 1 and 3, $6 - 18 + 12 = 0$; columns 2 and 3, $18 - 12 - 6 = 0$.
+
+</Step>
+
+<Step title="The inverse">
+
+<Formula label="The inverse of an orthogonal matrix" tex="Q^{-1} = Q^T = \frac17\begin{pmatrix} 2 & 3 & 6 \\ 6 & 2 & -3 \\ 3 & -6 & 2 \end{pmatrix}" cite="reading3" at="p. 4 (the rule; the numbers are our own)" />
+
+Row 1, column 2 of $Q^{-1}$ is row 2, column 1 of $Q$: $3/7 \approx 0.4286$.
+
+</Step>
+
+<Step title="Check">
+
+Row 1 of $Q^T$ times column 2 of $Q$ is $\frac1{49}(2 \cdot 6 + 3 \cdot 2 + 6 \cdot (-3)) = 0$, and row 1 times column 1 is $49/49 = 1$, as $Q^TQ = I$ needs. Row 1, column 2 of $Q$ itself, $6/7$, is a different number: $Q$ is not symmetric.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="b" points={4}>
+
+Solve $Qx = (0, 7, 0)$. Give the third entry of $x$.
+
+<Hint>
+
+Multiply both sides by $Q^{-1}$, which you found in part (a) without any work.
+
+</Hint>
+
+<Answer id="p6-b" label="The third entry of $x$ is" value="-6" tolerance="0.01" calc="p6-b" />
+
+<Solution>
+
+**The idea.** $x = Q^Tb$: one matrix times a vector, no elimination.
+
+<Step title="Solve">
+
+$x = Q^T(0, 7, 0)$ is $7$ times column 2 of $Q^T$, which is $7$ times row 2 of $Q$: $x = (3, 2, -6)$.
+
+</Step>
+
+<Step title="Check">
+
+$Qx = \frac17(6 + 12 - 18, 9 + 4 + 36, 18 - 6 - 12) = (0, 7, 0)$. And $\|x\|^2 = 9 + 4 + 36 = 49 = \|(0, 7, 0)\|^2$: part (c) explains why the lengths agree.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="c" points={3}>
+
+Show that every orthogonal matrix keeps lengths: $\|Qx\| = \|x\|$ for every vector $x$.
+
+This part has no answer box. Write your argument, then open the solution and mark yourself.
+
+<Hint>
+
+Write the length squared as a vector's transpose times the vector, and use $(Qx)^T = x^TQ^T$.
+
+</Hint>
+
+<Solution>
+
+**The idea.** $Q^TQ = I$ sits in the middle of $\|Qx\|^2$.
+
+<Step title="The length">
+
+<Formula label="Orthogonal matrices keep lengths" tex="\|Qx\|^2 = (Qx)^T(Qx) = x^TQ^TQx = x^Tx = \|x\|^2" cite="reading3" at="pp. 2–3 (QᵀQ = I; the length rule is our own solution)" />
+
+Both lengths are positive or zero, so $\|Qx\| = \|x\|$. Only $Q^TQ = I$ was used, so this holds for orthonormal columns in a rectangular $Q$ too.
+
+</Step>
+
+<Step title="Check">
+
+With $y = (1, 1, 1)$: $Qy = \frac17(11, -1, 5)$ and $\|Qy\|^2 = (121 + 1 + 25)/49 = 147/49 = 3 = \|y\|^2$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+<Part label="d" points={3}>
+
+Which of these are orthogonal matrices?
+
+<Formula label="Three candidates" tex="M_1 = \begin{pmatrix} 0.6 & 0.8 \\ 0.8 & -0.6 \end{pmatrix}, \qquad M_2 = \frac12\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}, \qquad M_3 = \frac13\begin{pmatrix} 2 & 1 \\ 1 & 2 \\ 2 & -2 \end{pmatrix}" cite="reading3" at="pp. 3–5 (the definition; the matrices are our own)" />
+
+<Hint>
+
+An orthogonal matrix is square and has orthonormal columns. Compute $M^TM$ for each.
+
+</Hint>
+
+<Answer id="p6-d-1" label="$M_1$ is an orthogonal matrix:" choices={["Yes", "No"]} answer={0} />
+
+<Answer id="p6-d-2" label="$M_2$ is an orthogonal matrix:" choices={["Yes", "No"]} answer={1} />
+
+<Answer id="p6-d-3" label="$M_3$ is an orthogonal matrix:" choices={["Yes", "No"]} answer={1} />
+
+<Solution>
+
+**The idea.** Check the two conditions: square, and $M^TM = I$.
+
+<Step title="Each matrix">
+
+$M_1$: columns of length $\sqrt{0.36 + 0.64} = 1$ and dot product $0.48 - 0.48 = 0$, and it is square: orthogonal. $M_2$: the columns are perpendicular but of length $\sqrt{1/4 + 1/4} = 1/\sqrt2$, so $M_2^TM_2 = \frac12I$: not orthogonal (it would need the factor $1/\sqrt2$, Lecture 17 transcript, p. 5). $M_3$: the columns have length $\sqrt{4 + 1 + 4}/3 = 1$ and dot product $(2 + 2 - 4)/9 = 0$, so $M_3^TM_3 = I$, but it is $3 \times 2$, not square: it has orthonormal columns, and $M_3M_3^T$ is a projection onto a plane, not $I$.
+
+</Step>
+
+<Step title="Check">
+
+$M_1$ is a reflection like the $R$ of Problem 4: it is symmetric with $M_1^2 = I$.
+
+</Step>
+
+</Solution>
+
+</Part>
+
+</Exercise>

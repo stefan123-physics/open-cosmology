@@ -70,6 +70,19 @@ Statement of the part.
 
 - `<Exercise>`: `id` (unique on the page), `title`, `points`, `mit` (MIT's own number), `optional` (MIT's extra credit). Points of the parts must add up to the exercise's points.
 - `<Answer>`: a number (`value`, `unit`, `tolerance`, `calc` = the id of a calcs entry), a formula (`expr` in plain typing, `vars` = a range for every name, `names` = how each name is shown, `mistakes`), or a choice (`choices`, `answer`). Formulas are compared by value, so every equivalent form is accepted.
+- **Second valid readings** (docs/ANSWER-BOX-FIX-PLAN.md Step 4): when the solution itself names a second correct answer (a factor ½ for identical particles, another valid convention the statement allows), add `alsoAccept={[{ value: "1.035", tolerance: "2%", calc: "…", note: "…" }]}` to a number box or `alsoAccept={[{ expr: "…", note: "…" }]}` to a formula box. It counts as correct and shows its note. Each number needs its own calcs entry; a formula reading must differ from the answer and from every listed mistake (`content:check`). Not for a reading the statement rules out.
+- **Number-box tolerances** (owner decision 2026-11-28, agreed with Account B; every number box states its `tolerance`, and `content:check` warns about one that does not):
+
+  | Kind of answer | Tolerance |
+  |---|---|
+  | Computed result (the usual case) | **2%**: always accepts a correct answer to 3 significant figures, also with rounded intermediate steps |
+  | Computed result with a listed mistake or an obvious slip within 2% | tighter (1% or less), and the box asks for 4 significant figures |
+  | Read off a graph, an estimate, or "about" in the question | 5–10% |
+  | Counts and whole numbers | exact, an absolute 0.4: never the neighbouring number |
+  | Answer 0 | an absolute width, stated in the box, that rejects the obvious slips |
+  | Logarithms, exponents, orders of magnitude | an absolute width (for example ±0.05 in log₁₀) |
+
+  On every set, "How to answer" says: give 3 significant figures and keep 4 in intermediate steps; an answer with only 2 significant figures may or may not be accepted. No listed mistake and no obvious slip (a sign, ×2, ×10, ×½, ×π) may fall inside the accepted interval. A box that asks for the factor in front of a power of ten says so in its label, with an example ("type 5.0, not 5.0e-11"); a reader who types the full number gets the power-of-ten message.
 - A part with no `<Answer>` ("show that …") is self-marked by the reader after opening the solution.
 - Every exercise needs a `<Solution>` (in each part, or one for the whole exercise): the idea first, then `<Step>`s with cited `<Formula>`s, then a check (units, a limit, a number). Formulas of our own solution are cited `cite="mit" at="Problem 2(a) (our own solution)"`.
 - Calcs: every answer has an entry with `answer: <id>`. For a formula answer it is an `identity` against an independent route (a limit, a special case, a numerical integration).

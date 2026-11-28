@@ -43,9 +43,11 @@ export function numberTolerance(value: string, tolerance?: string): number {
   return pct ? (Math.abs(v) * Number(pct[1])) / 100 : (parseNumber(tolerance) ?? NaN);
 }
 
-export type NumberSpec = { value: string; tolerance?: string };
+/** A second valid reading of a box (docs/ANSWER-BOX-FIX-PLAN.md Step 4), shown with its note when it is typed. */
+export type AlsoNumber = { value: string; tolerance?: string; note?: string };
+export type NumberSpec = { value: string; tolerance?: string; alsoAccept?: AlsoNumber[] };
 export type Verdict =
-  | { status: "correct" }
+  | { status: "correct"; note?: string }
   | { status: "wrong"; hint?: string }
   /** The entry could not be read; it does not count as a try. */
   | { status: "invalid"; message: string };
@@ -55,8 +57,29 @@ export function checkNumber(input: string, spec: NumberSpec): Verdict {
   if (typed === null) return { status: "invalid", message: "That is not a number I can read. Type it like 9.7 or 1.2e5." };
   const value = parseNumber(spec.value) ?? NaN;
   // A hair of slack so a value exactly on the edge is not lost to rounding.
-  return Math.abs(typed - value) <= numberTolerance(spec.value, spec.tolerance) * (1 + 1e-9) ? { status: "correct" } : { status: "wrong" };
+  const within = (v: number, t: number) => Math.abs(typed - v) <= t * (1 + 1e-9);
+  if (within(value, numberTolerance(spec.value, spec.tolerance))) return { status: "correct" };
+  for (const a of spec.alsoAccept ?? []) {
+    const v = parseNumber(a.value);
+    if (v !== null && within(v, numberTolerance(a.value, a.tolerance))) return { status: "correct", note: a.note };
+  }
+  // The right digits with the wrong power of ten (5.54e-11 typed in a box "in units of 10⁻¹¹"): say so, but it is
+  // not correct. Only for a factor of 100 or more, so a slip of one decimal place is not mistaken for it.
+  if (value !== 0 && typed !== 0) {
+    const k = Math.round(Math.log10(Math.abs(typed / value)));
+    const t = numberTolerance(spec.value, spec.tolerance);
+    if (Math.abs(k) >= 2 && Math.sign(typed) === Math.sign(value) && Math.abs(typed / 10 ** k - value) <= t * (1 + 1e-9))
+      return { status: "wrong", hint: powerOfTenHint(k) };
+  }
+  return { status: "wrong" };
 }
+
+/** What to say when the typed number is the answer times 10^k. */
+export function powerOfTenHint(k: number): string {
+  return `The digits are right, but your number is 10${sup(Math.abs(k))} times too ${k > 0 ? "large" : "small"}. Check the power of ten: if the box asks for the value "in units of" a power of ten, type only the number in front of it.`;
+}
+const SUPER: Record<string, string> = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "-": "⁻" };
+const sup = (n: number) => String(n).replace(/./g, (c) => SUPER[c] ?? c);
 
 // ---------------------------------------------------------------- formulas
 
@@ -113,6 +136,54 @@ function normalise(text: string): string {
     .replace(/π/g, "pi");
 }
 
+/**
+ * Takes off braces that group nothing in mathjs's TeX ({v}^{2}, {x_0}, {\Delta x}): KaTeX draws the same either way,
+ * but read-aloud (lib/speech.ts) reads a fraction only once its parts hold no bare braces, so with them it lost
+ * "over" ("v squared (2 times d )"). A brace pair is bare when it is not the argument of a command (\frac{…},
+ * \sqrt{…}), of ^ or _, or the second argument after another group (\frac{a}{b}). Its content is kept apart from
+ * what follows by a space when that content ends in a command name.
+ */
+export function bareBraces(tex: string): string {
+  let out = tex;
+  for (let pass = 0; pass < 8; pass++) {
+    let changed = false;
+    let result = "";
+    let i = 0;
+    while (i < out.length) {
+      const ch = out[i];
+      if (ch === "{") {
+        // Find the matching brace.
+        let depth = 0, j = i;
+        for (; j < out.length; j++) {
+          if (out[j] === "{") depth++;
+          else if (out[j] === "}" && --depth === 0) break;
+        }
+        const before = result.replace(/\s+$/, "");
+        const prev = before.slice(-1);
+        const isArgument = /[A-Za-z^_}]/.test(prev) && !/\\(?:cdot|times|div|pm|mp|left|right)$/.test(before);
+        const inner = out.slice(i + 1, j);
+        const next = out.slice(j + 1).replace(/^\s+/, "")[0] ?? "";
+        // A base that has its own script before another one needs its braces: {v^\theta}^{2}, not v^\theta^{2}.
+        // Only a script at the group's own level counts, not one inside a bracket or a nested group.
+        const topLevel = inner.replace(/\\left[\s\S]*\\right./g, "").replace(/\{[^{}]*\}/g, "");
+        // Only the same kind of script clashes: v_0^{2} is fine, v^\theta^{2} is not.
+        const scriptedBase = (next === "^" || next === "_") && topLevel.includes(next);
+        if (!isArgument && j < out.length && !scriptedBase) {
+          result += /\\[A-Za-z]+$/.test(inner) && /[A-Za-z]/.test(next) ? inner + " " : inner;
+          i = j + 1;
+          changed = true;
+          continue;
+        }
+      }
+      result += ch;
+      i++;
+    }
+    out = result;
+    if (!changed) break;
+  }
+  return out;
+}
+
 /** Reads a typed formula that may use only the symbols in `allowed`. Never throws. */
 export function parseFormula(text: string, allowed: string[]): Parsed {
   const source = normalise(text).trim();
@@ -166,19 +237,32 @@ export function parseFormula(text: string, allowed: string[]): Parsed {
         }
       },
       tex: (names = {}) =>
-        root
-          .toTex({
-            parenthesis: "keep",
-            implicit: "hide",
-            handler: (node: any) => (node.type === "SymbolNode" && names[node.name] ? names[node.name] : undefined),
-          })
-          .replace(/\\mathrm\{ln\}/g, "\\ln"),
+        bareBraces(
+          root
+            .toTex({
+              parenthesis: "keep",
+              implicit: "hide",
+              // Braces, so a name such as a_0 can never run into the TeX before it (\cdot{a_0}, not \cdota_0);
+              // bareBraces takes them off again where nothing can run into the name.
+              handler: (node: any) => (node.type === "SymbolNode" && names[node.name] ? `{${names[node.name]}}` : undefined),
+            })
+            // mathjs writes its operators with no space after them ("2\cdotm"), which KaTeX reads as one unknown
+            // command: put a space after every operator command that a letter, digit or brace follows.
+            .replace(/\\(cdot|times|div|pm|mp)(?=[A-Za-z0-9{])/g, "\\$1 ")
+            .replace(/\\mathrm\{ln\}/g, "\\ln"),
+        ),
     },
   };
 }
 
 export type Ranges = Record<string, [number, number]>;
-export type FormulaSpec = { expr: string; vars: Ranges; mistakes?: { expr: string; hint: string }[] };
+export type FormulaSpec = {
+  expr: string;
+  vars: Ranges;
+  mistakes?: { expr: string; hint: string }[];
+  /** Second valid readings (docs/ANSWER-BOX-FIX-PLAN.md Step 4): correct too, with their note. */
+  alsoAccept?: { expr: string; note?: string }[];
+};
 
 /** A small seeded generator (mulberry32), so content:check samples the same points on every run. */
 export function seeded(seed: number): () => number {
@@ -215,6 +299,10 @@ export function checkFormula(input: string, spec: FormulaSpec, random: () => num
   if (!answer.ok) return { status: "invalid", message: "This answer cannot be checked. Please report the mistake." };
   const points = samplePoints(spec.vars, n, random);
   if (sameFormula(typed.formula, answer.formula, points)) return { status: "correct" };
+  for (const a of spec.alsoAccept ?? []) {
+    const other = parseFormula(a.expr, allowed);
+    if (other.ok && sameFormula(typed.formula, other.formula, points)) return { status: "correct", note: a.note };
+  }
   for (const m of spec.mistakes ?? []) {
     const wrong = parseFormula(m.expr, allowed);
     if (wrong.ok && sameFormula(typed.formula, wrong.formula, points)) return { status: "wrong", hint: m.hint };
@@ -247,6 +335,18 @@ export function auditFormula(spec: FormulaSpec, n = 20): string[] {
     if (!wrong.ok) out.push(`mistakes[${i}] "${m.expr}": ${wrong.message}`);
     else if (!points.some((p) => !agree(wrong.formula.at(p), answer.formula.at(p)))) out.push(`mistakes[${i}] "${m.expr}" equals the answer itself`);
     if (!m.hint?.trim()) out.push(`mistakes[${i}] needs a hint`);
+  });
+  (spec.alsoAccept ?? []).forEach((a, i) => {
+    const other = parseFormula(a.expr, allowed);
+    if (!other.ok) return void out.push(`alsoAccept[${i}] "${a.expr}": ${other.message}`);
+    if (points.some((p) => !Number.isFinite(other.formula.at(p)))) out.push(`alsoAccept[${i}] "${a.expr}" is not finite in the ranges of vars`);
+    if (!points.some((p) => !agree(other.formula.at(p), answer.formula.at(p)))) out.push(`alsoAccept[${i}] "${a.expr}" equals the answer itself`);
+    (spec.mistakes ?? []).forEach((m, j) => {
+      const wrong = parseFormula(m.expr, allowed);
+      if (wrong.ok && !points.some((p) => !agree(wrong.formula.at(p), other.formula.at(p))))
+        out.push(`alsoAccept[${i}] "${a.expr}" equals mistakes[${j}]: a box cannot accept and reject the same formula`);
+    });
+    if (!a.note?.trim()) out.push(`alsoAccept[${i}] needs a note, shown when the reader types it`);
   });
   return out;
 }

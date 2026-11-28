@@ -4,6 +4,8 @@
  */
 import { auditFormula, checkFormula, checkNumber, parseFormula, parseNumber, seeded, type FormulaSpec } from "../lib/answers";
 import { scoreSet } from "../lib/progress";
+import { speechGaps, texToSpeech } from "../lib/speech";
+import katex from "katex";
 
 let failed = 0;
 let count = 0;
@@ -110,6 +112,59 @@ test("audit: a range that nothing uses is reported", auditFormula({ expr: "vs/u"
 test("audit: a constant answer may list the names its mistakes use", auditFormula({ expr: "0", vars: { v: [1, 2], u: [3, 4] }, mistakes: [{ expr: "v/u", hint: "x" }] }).length === 0);
 test("audit: a mistake equal to the answer is reported", auditFormula({ ...spec, mistakes: [{ expr: "(vo + vs)/(u - vo)", hint: "x" }] }).length > 0);
 test("audit: an answer that is not finite in its ranges is reported", auditFormula({ expr: "sqrt(b - 2)", vars: { b: [0, 1] } }).length > 0);
+
+// The "You typed" preview (docs/ANSWER-BOX-FIX-PLAN.md): the owner's two formulas from Ferreras Set 5 and plain
+// products, which once came out as \cdota_0 and \cdotm (red in KaTeX) and lost "over" in "In words".
+{
+  const preview = (expr: string, vars: string[], names: Record<string, string> = {}) => {
+    const p = parseFormula(expr, vars);
+    return p.ok ? p.formula.tex(names) : "";
+  };
+  const cases: [string, string[], Record<string, string>, string[]][] = [
+    ["2*pi*(G*M*a)^(1/2)/c^2", ["G", "M", "a", "c"], { a: "a_0" }, ["a nought", "over"]],
+    ["4*m*v^2*M/(m+M)^2", ["m", "v", "M"], { M: "m_N" }, ["m sub N", "over"]],
+    ["2*m1*m2*g/(m1 + m2)", ["m1", "m2", "g"], { m1: "m_1", m2: "m_2" }, ["m one times m two times g", "over"]],
+    ["v^2/(2*d)", ["v", "d"], {}, ["v squared over", "2 times d"]],
+    ["(x - x0)/t", ["x", "x0", "t"], { x0: "x_0" }, ["x nought", "over t"]],
+    ["-(vth^2 + vph^2)/r", ["vth", "vph", "r"], { vth: "v^\\theta", vph: "v^\\phi" }, ["over r"]],
+  ];
+  for (const [expr, vars, names, words] of cases) {
+    const tex = preview(expr, vars, names);
+    let renders = true;
+    try {
+      katex.renderToString(tex, { throwOnError: true });
+    } catch {
+      renders = false;
+    }
+    test(`preview of ${expr} renders`, renders && !/\\(?:cdot|times)[A-Za-z0-9]/.test(tex), tex);
+    const spoken = texToSpeech(tex);
+    for (const w of words) test(`"In words" for ${expr} says "${w}"`, spoken.includes(w), spoken);
+    test(`"In words" for ${expr} has no gaps`, speechGaps(tex).length === 0, speechGaps(tex));
+  }
+}
+
+// Second valid readings and the power-of-ten message (docs/ANSWER-BOX-FIX-PLAN.md Step 4).
+{
+  const half = { value: "2.07", tolerance: "2%", alsoAccept: [{ value: "1.04", tolerance: "2%", note: "That is the rate with the factor ½ for identical particles." }] };
+  test("alsoAccept: the main answer", checkNumber("2.07", half).status === "correct");
+  const v = checkNumber("1.04", half);
+  test("alsoAccept: the second reading is correct, with its note", v.status === "correct" && v.note?.includes("½") === true, v);
+  test("alsoAccept: something else is still wrong", checkNumber("1.5", half).status === "wrong");
+  const units = { value: "5.54", tolerance: "2%" };
+  const p = checkNumber("5.54e-11", units);
+  test("power of ten: right digits, wrong power, says so", p.status === "wrong" && /power of ten/.test(p.hint ?? ""), p);
+  const big = checkNumber("554", units);
+  test("power of ten: too large by 10² says so", big.status === "wrong" && /too large/.test(big.hint ?? ""), big);
+  const tenfold = checkNumber("55.4", units);
+  test("power of ten: one decimal place off is a plain wrong answer", tenfold.status === "wrong" && !tenfold.hint, tenfold);
+  test("power of ten: the opposite sign is a plain wrong answer", !checkNumber("-5.54e-11", units).hasOwnProperty("hint") || !(checkNumber("-5.54e-11", units) as { hint?: string }).hint);
+  const f = { expr: "x^2/2", vars: { x: [1, 3] as [number, number] }, alsoAccept: [{ expr: "x^2", note: "That is the value without the factor ½." }] };
+  const fv = checkFormula("x*x", f, seeded(1));
+  test("alsoAccept: a second formula is correct, with its note", fv.status === "correct" && fv.note?.includes("½") === true, fv);
+  test("audit: alsoAccept equal to the answer is reported", auditFormula({ ...f, alsoAccept: [{ expr: "x*x/2", note: "n" }] }).length > 0);
+  test("audit: alsoAccept equal to a mistake is reported", auditFormula({ ...f, mistakes: [{ expr: "x*x", hint: "h" }] }).length > 0);
+  test("audit: alsoAccept without a note is reported", auditFormula({ ...f, alsoAccept: [{ expr: "x^2" }] }).length > 0);
+}
 
 // Scores (lib/progress.ts): revealed answers earn nothing, "Partly" earns half, optional problems only add.
 {

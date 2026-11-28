@@ -1,0 +1,774 @@
+# Calculations on content/year-5/8.902/8-902-problem-set-5.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# MIT publishes no solutions for this set. Problem 1: every number from the cycloid, with eta found by solve() here
+# and checked independently with scipy (brentq) by the author; the two formulas of parts (a) and (b) are checked as
+# identities. Problem 2: every distance by numerical integration here; the matter-only closed forms (Mattig) are checked
+# against the integral as identities; the author's script (scipy quad) gave the same values.
+#
+# Problem 2's table is our own, generated in place of MIT's data file (the SNLS 3-year catalogue of Guy et al. 2010,
+# which is not used): numpy.random.default_rng(2); z = 0.02, 0.03, 0.04, 0.05, 0.07, 0.10, 0.15, 0.22, 0.30, 0.37,
+# 0.40, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79, 0.86, 0.93, 1.00; true s ~ N(0, 0.12), true c ~ N(0, 0.10) (drawn in
+# that order); errors sigma_m = sigma_c = 0.02 + 0.04 z and sigma_s = 0.02 + 0.05 z (rounded to 0.001);
+# m* = mu(z; flat, Omega_M = 0.30, H0 = 71) + M - alpha s + beta c + N(0, 0.10), with alpha = 1.50, beta = 3.10,
+# M = -19.30; then measurement noise N(0, sigma) added to m*, s and c; m* rounded to 0.01, s and c to 0.001.
+# The fit (MIT's algorithm, sigma_int = 0.10 mag) was done by an iterated weighted linear least squares in (alpha, beta, M)
+# with a bounded 1-D search in Omega_M, and checked by a Nelder-Mead minimisation over all four at the final weights
+# (same values to 1e-5). The harness cannot read a table or fit, so the fit and grid results are kind: fact.
+# Unrounded: alpha 1.4986, beta 2.7419, M -19.3107, Omega_M 0.2938, chi2 22.382; Delta chi2 = 1 range 0.2129-0.3866;
+# with sigma_int^2 = 0.10: alpha 1.469, beta 2.707, M -19.303, Omega_M 0.307, chi2 4.900.
+# Curved grid (step 0.01, Omega_M 0-1.5, Omega_Lambda -0.5-2.0, models without a big bang below z = 1 left out):
+# minimum (0.41, 0.86), chi2 22.269 (refined (0.4109, 0.8644), 22.2685); flat best Delta chi2 = 0.114;
+# (0.3, 0) Delta chi2 = 21.31; (1, 0) 77.71; Delta chi2 < 2.3 region: Omega_M 0-0.87, Omega_Lambda 0.20-1.49;
+# Hessian at the minimum: smallest-curvature direction (0.591, 0.807), slope 1.364.
+
+page: content/year-5/8.902/8-902-problem-set-5.mdx
+calcs:
+  # ---- MIT's numbers
+
+  - id: mit-cosmology
+    kind: fact
+    where: 'Introduction: the parameters MIT''s sheet assumes'
+    shown: ['$\Omega_M = 0.3$, $\Omega_\Lambda = 0.7$, $\Omega_k = \Omega_r = 0$ and $H_0 = 71$ km/s/Mpc']
+    source: {cite: mit, at: 'p. 1'}
+    origin: mit
+
+  - id: mit-velocity
+    kind: fact
+    where: 'Problem 1, statement: the relative velocity of M31'
+    shown: ['so the relative velocity is $v = -121$ km/s']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: mit-distance
+    kind: fact
+    where: 'Problem 1, statement: the distance to M31'
+    shown: ['Cepheid variables put M31 at a distance of about 700 kpc']
+    source: {cite: mit, at: 'Problem 1, p. 1'}
+    origin: mit
+
+  - id: mit-age
+    kind: fact
+    where: 'Problem 1(c): the age of the universe'
+    shown: ['$t = 13.7 \times 10^9$ years (MIT''s value)']
+    source: {cite: mit, at: 'Problem 1(C), p. 1'}
+    origin: mit
+
+  - id: mit-luminosity
+    kind: fact
+    where: 'Problem 1(d): the luminosity of the pair'
+    shown: ['about $3 \times 10^{10}\,L_\odot$ (MIT''s value)']
+    source: {cite: mit, at: 'Problem 1(D), p. 1'}
+    origin: mit
+
+  - id: our-vc
+    kind: fact
+    where: 'Problem 1(e): the circular speed (our value; MIT asks for a reasonable value)'
+    shown: ['Take a circular speed $v_c = 220$ km/s (our value)']
+    source: {cite: mit, at: 'Problem 1(E), p. 2 (our value)'}
+    origin: page-own
+
+  - id: mit-nobel
+    kind: fact
+    where: 'Problem 2, statement: the year of the Nobel Prize'
+    shown: ['The 2011 Nobel Prize in Physics']
+    source: {cite: mit, at: 'Problem 2, p. 2'}
+    origin: mit
+
+  - id: mit-start-values
+    kind: fact
+    where: 'Problem 2(b2): the starting values of MIT''s algorithm'
+    shown: ['Start from $\alpha = 1$, $\beta = 1$, $M = -20$']
+    source: {cite: mit, at: 'Problem 2(B), p. 3'}
+    origin: mit
+
+  - id: mit-sigma-int
+    kind: fact
+    where: 'Problem 2(b1): the intrinsic scatter (MIT gives 0.10 for sigma_int squared; our reading is sigma_int = 0.10 mag)'
+    shown: ['MIT''s sheet attaches the value 0.10 to $\sigma_\text{int}^2$; we read it as $\sigma_\text{int} = 0.10$ magnitudes']
+    source: {cite: mit, at: 'Problem 2(B), p. 3'}
+    origin: mit
+
+  - id: mit-contours
+    kind: fact
+    where: 'Problem 2(d): the contour levels'
+    shown: ['exceeds its minimum by 2.3, 6.2 and 11.8']
+    source: {cite: mit, at: 'Problem 2(D), p. 4'}
+    origin: mit
+
+  # ---- Problem 1: the timing argument
+
+  - id: p1-velocity-identity
+    kind: identity
+    where: 'Problem 1(a): v = (dr/deta)/(dt/deta) equals MIT''s expression in r, t and eta'
+    formula: (A*(1 - cos(x)))/(B*(x - sin(x)))*sin(x)*(x - sin(x))/(1 - cos(x))**2
+    equals: deriv('A*(1 - cos(y))', 'y', x)/deriv('B*(y - sin(y))', 'y', x)
+    samples:
+      A: [1, 2.5, 498.8, 0.7]
+      B: [1, 0.3, 2.628, 4]
+      x: [0.5, 2.0, 4.297, 5.9]
+    shown: ['tex="v = \frac{r}{t}\,\frac{\sin\eta\,(\eta - \sin\eta)}{(1 - \cos\eta)^2}"']
+    source: {cite: mit, at: 'Problem 1(A), p. 1'}
+    origin: mit
+
+  - id: p1-energy-constant
+    kind: identity
+    where: 'Problem 1(b): with GM_T = A^3/B^2, the energy (1/2) rdot^2 - GM_T/r on the cycloid is the constant -A^2/(2B^2)'
+    formula: 0.5*(A/B)**2*sin(x)**2/(1 - cos(x))**2 - (A**3/B**2)/(A*(1 - cos(x)))
+    equals: -A**2/(2*B**2)
+    samples:
+      A: [1, 2.5, 498.8, 0.7]
+      B: [1, 0.3, 2.628, 4]
+      x: [0.5, 2.0, 4.297, 5.9]
+    shown: ['The energy is $E = -A^2/(2B^2) < 0$']
+    source: {cite: mit, at: 'Problem 1(B), p. 1 (our own solution)'}
+    origin: page-own
+
+  - id: p1-small-eta
+    kind: limit
+    where: 'Problem 1(a), check: near the start v t/r tends to 2/3'
+    inputs: {}
+    formula: sin(x)*(x - sin(x))/(1 - cos(x))**2
+    limit: 2/3
+    vary: {x: [0.3, 0.1, 0.03, 0.01]}
+    tolerance: 1e-4
+    shown: ['$v \approx \frac{r}{t}\cdot\frac{\eta^4/6}{\eta^4/4} = \frac{2}{3}\frac{r}{t}$']
+    source: {cite: mit, at: 'Problem 1(A) (our own check)'}
+    origin: page-own
+
+  - id: p1-time-seconds
+    where: 'Problem 1(c): t in seconds'
+    inputs: {t: 13.7 Gyr}
+    formula: t
+    expected: '4.32e17 s'
+    shown: ['$t = 13.7 \times 3.156 \times 10^{16}$ s $= 4.32 \times 10^{17}$ s']
+    source: {cite: mit, at: 'Problem 1(C) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-distance-km
+    where: 'Problem 1(c): r in km'
+    inputs: {r: 700 kpc}
+    formula: r
+    expected: '2.16e19 km'
+    shown: ['$r = 700 \times 3.086 \times 10^{16}$ km $= 2.16 \times 10^{19}$ km']
+    source: {cite: mit, at: 'Problem 1(C) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-ratio
+    where: 'Problem 1(c): the observed ratio v t / r'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: v*t/r
+    expected: '-2.422'
+    shown: ['/2.16 \times 10^{19} = -2.422$']
+    source: {cite: mit, at: 'Problem 1(C) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-eta
+    answer: p1-eta
+    where: 'Problem 1(c), answer box: the root of sin(eta)(eta - sin eta)/(1 - cos eta)^2 = v t/r between pi and 2 pi'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)
+    expected: '4.297'
+    shown: ['at $\eta = 4.297$ (246°)']
+    source: {cite: mit, at: 'Problem 1(C) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-eta-degrees
+    where: 'Problem 1(c): eta in degrees'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: 180/pi*solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)
+    expected: '246'
+    shown: ['(246°)']
+    source: {cite: mit, at: 'Problem 1(C) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-sin-eta
+    where: 'Problem 1(c), check: sin(eta)'
+    inputs: {x: 4.297242}
+    formula: sin(x)
+    expected: '-0.9151'
+    shown: ['$\sin\eta = -0.9151$']
+    source: {cite: mit, at: 'Problem 1(C) (our own check)'}
+    origin: page-own
+
+  - id: p1-eta-minus-sin
+    where: 'Problem 1(c) check and 1(d): eta - sin(eta)'
+    inputs: {x: 4.297242}
+    formula: x - sin(x)
+    expected: '5.212'
+    shown: ['$\eta - \sin\eta = 5.212$']
+    source: {cite: mit, at: 'Problem 1(C) (our own check)'}
+    origin: page-own
+
+  - id: p1-one-minus-cos
+    where: 'Problem 1(c) check and 1(d): 1 - cos(eta)'
+    inputs: {x: 4.297242}
+    formula: 1 - cos(x)
+    expected: '1.403'
+    shown: ['$1 - \cos\eta = 1.403$']
+    source: {cite: mit, at: 'Problem 1(C) (our own check)'}
+    origin: page-own
+
+  - id: p1-check-back
+    where: 'Problem 1(c), check: the function at eta = 4.297'
+    inputs: {x: 4.297242}
+    formula: sin(x)*(x - sin(x))/(1 - cos(x))**2
+    expected: '-2.42'
+    shown: ['$-0.9151 \times 5.212/1.403^2 = -2.42$']
+    source: {cite: mit, at: 'Problem 1(C) (our own check)'}
+    origin: page-own
+
+  - id: p1-A
+    where: 'Problem 1(d): A = r/(1 - cos eta)'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: r/(1 - cos(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)))
+    expected: '498.8 kpc'
+    shown: ['$A = r/(1 - \cos\eta) = 700/1.403 = 498.8$ kpc']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-B
+    where: 'Problem 1(d): B = t/(eta - sin eta)'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)))
+    expected: '2.628 Gyr'
+    shown: ['13.7/5.212 = 2.628$ Gyr']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-A-metres
+    where: 'Problem 1(d): A in metres'
+    inputs: {A: 498.8 kpc}
+    formula: A
+    expected: '1.539e22 m'
+    shown: ['(1.539 \times 10^{22}\ \text{m})^3']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-B-seconds
+    where: 'Problem 1(d): B in seconds, with the page''s 1 Gyr = 3.156e16 s'
+    inputs: {B: 2.628, Gyr_s: 3.156e16 s}
+    formula: B * Gyr_s
+    expected: '8.294e16 s'
+    shown: ['(8.294 \times 10^{16}\ \text{s})^2']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-GM
+    where: 'Problem 1(d): G M_T = A^3/B^2'
+    inputs: {A: 498.8 kpc, B: 2.628 Gyr}
+    formula: A**3/B**2
+    expected: '5.30e32 m**3/s**2'
+    shown: ['= 5.30 \times 10^{32}$ m³/s²']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-GMsun
+    where: 'Problem 1(d): G M_sun'
+    inputs: {}
+    formula: G*M_sun
+    expected: '1.327e20 m**3/s**2'
+    shown: ['$GM_\odot = 1.327 \times 10^{20}$ m³/s²']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-mass
+    answer: p1-mass
+    where: 'Problem 1(d), answer box: M_T = A^3/(G B^2) in 1e12 solar masses, eta solved afresh'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: (r/(1 - cos(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))))**3/(t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))))**2/(G*M_sun)/1e12
+    expected: '3.99'
+    shown: ['gives $M_T = 3.99 \times 10^{12}\,M_\odot$']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-ml
+    answer: p1-ml
+    where: 'Problem 1(d), answer box: M_T / L with L = 3e10 L_sun'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: (r/(1 - cos(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))))**3/(t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))))**2/(G*M_sun)/3e10
+    expected: '133'
+    shown: ['$M_T/L = 3.99 \times 10^{12}/3 \times 10^{10} = 133\,M_\odot/L_\odot$']
+    source: {cite: mit, at: 'Problem 1(D) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-G-kpc
+    where: 'Problem 1(e): G in kpc (km/s)^2 per solar mass'
+    inputs: {}
+    formula: G*M_sun/(kpc*(km/second)**2)
+    expected: '4.301e-6'
+    shown: ['$G = 4.301 \times 10^{-6}$ kpc (km/s)²']
+    source: {cite: mit, at: 'Problem 1(E) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-half-mass
+    where: 'Problem 1(e): half of M_T'
+    inputs: {M: 3.9936e12}
+    formula: M/2
+    expected: '1.997e12'
+    shown: ['With $M = 1.997 \times 10^{12}\,M_\odot$']
+    source: {cite: mit, at: 'Problem 1(E) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-halo
+    answer: p1-halo
+    where: 'Problem 1(e), answer box: R = G (M_T/2) / v_c^2 with v_c = 220 km/s (our value), M_T recomputed'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc, w: 220 km/s}
+    formula: (r/(1 - cos(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))))**3/(t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))))**2/2/w**2
+    expected: '177 kpc'
+    shown: ['/220^2 = 177$ kpc']
+    source: {cite: reading3, at: 'eq. (22), p. 10 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-two-halos
+    where: 'Problem 1(e): two halos side by side'
+    inputs: {R: 177.4 kpc}
+    formula: 2*R
+    expected: '355 kpc'
+    shown: ['Two halos of 177 kpc each reach 355 kpc together']
+    source: {cite: mit, at: 'Problem 1(E) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-halo-sheet
+    where: 'Problem 1(e), check: the radius with the sheet''s M = v_c^2 R/(2G)'
+    inputs: {R: 177.4 kpc}
+    formula: 2*R
+    expected: '355 kpc'
+    shown: ['With the sheet''s formula the radius doubles, to 355 kpc']
+    source: {cite: mit, at: 'Problem 1(E), p. 2 (our own numbers)'}
+    origin: page-own
+
+  - id: p1-rmax
+    answer: p1-rmax
+    where: 'Problem 1(f), answer box: r_max = 2A'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: 2*r/(1 - cos(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)))
+    expected: '998 kpc'
+    shown: ['$r_\text{max} = 2A = 998$ kpc']
+    source: {cite: mit, at: 'Problem 1(F) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-tmax
+    answer: p1-tmax
+    where: 'Problem 1(f), answer box: t at turnaround = pi B'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: pi*t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)))
+    expected: '8.26 Gyr'
+    shown: ['at $t = \pi B = 8.26$ Gyr']
+    source: {cite: mit, at: 'Problem 1(F) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-tend
+    where: 'Problem 1(f): the time of the collision, 2 pi B'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: 2*pi*t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2)))
+    expected: '16.51 Gyr'
+    shown: ['$t = 2\pi B = 16.51$ Gyr']
+    source: {cite: mit, at: 'Problem 1(F) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-tcoll
+    answer: p1-tcoll
+    where: 'Problem 1(f), answer box: time from now to the collision, 2 pi B - t'
+    inputs: {v: -121 km/s, t: 13.7 Gyr, r: 700 kpc}
+    formula: 2*pi*t/(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2) - sin(solve('sin(x)*(x - sin(x))/(1 - cos(x))**2 - v*t/r', 'x', 3.2, 6.2))) - t
+    expected: '2.81 Gyr'
+    shown: ['that is $16.51 - 13.7 = 2.81$ Gyr from now']
+    source: {cite: mit, at: 'Problem 1(F) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-plot-close
+    where: 'Problem 1(f), plot caption: the collision at 16.5 Gyr'
+    inputs: {B: 2.628 Gyr}
+    formula: 2*pi*B
+    expected: '16.5 Gyr'
+    shown: ['it closes at 16.5 Gyr']
+    source: {cite: mit, at: 'Problem 1(F) (our own numbers)'}
+    origin: page-own
+
+  - id: p1-two-pi
+    where: 'Problem 1(f), check: 2 pi'
+    inputs: {}
+    formula: 2*pi
+    expected: '6.283'
+    shown: ['of $2\pi = 6.283$']
+    source: {cite: mit, at: 'Problem 1(F) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(a): luminosity distances
+
+  - id: p2-hubble-length
+    where: 'Problem 2(a): c/H0 in Mpc'
+    inputs: {H: 71 km/s/Mpc}
+    formula: c/H
+    expected: '4222 Mpc'
+    shown: ['$c/H_0 = 299\,792/71 = 4222$ Mpc']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-I1-flat
+    where: 'Problem 2(a): I(1) for (0.3, 0.7)'
+    inputs: {}
+    formula: integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 1)
+    expected: '0.7714'
+    shown: ['Flat $(0.3, 0.7)$: $I(1) = 0.7714$']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dl-flat
+    answer: p2-dl-flat
+    where: 'Problem 2(a), answer box: D_L(z = 1) for (0.3, 0.7)'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 2*(c/H)*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 1)
+    expected: '6515 Mpc'
+    shown: ['$D_L = 2 \times 0.7714 \times 4222 = 6515$ Mpc']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-I1-closed
+    where: 'Problem 2(a): I(1) for (1.2, 0)'
+    inputs: {}
+    formula: integrate('1/sqrt(1.2*(1 + y)**3 - 0.2*(1 + y)**2)', 'y', 0, 1)
+    expected: '0.5711'
+    shown: ['$I(1) = 0.5711$ and']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-sin-closed
+    where: 'Problem 2(a): sin(sqrt(0.2) I)/sqrt(0.2) for (1.2, 0)'
+    inputs: {}
+    formula: sin(sqrt(0.2)*integrate('1/sqrt(1.2*(1 + y)**3 - 0.2*(1 + y)**2)', 'y', 0, 1))/sqrt(0.2)
+    expected: '0.5649'
+    shown: ['\times 0.5711)/\sqrt{0.2} = 0.5649$', '$D_L = 2 \times 0.5649 \times 4222 = 4770$ Mpc']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dl-closed
+    answer: p2-dl-closed
+    where: 'Problem 2(a), answer box: D_L(z = 1) for (1.2, 0)'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 2*(c/H)*sin(sqrt(0.2)*integrate('1/sqrt(1.2*(1 + y)**3 - 0.2*(1 + y)**2)', 'y', 0, 1))/sqrt(0.2)
+    expected: '4770 Mpc'
+    shown: ['= 4770$ Mpc']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-I1-open
+    where: 'Problem 2(a): I(1) for (0.3, 0)'
+    inputs: {}
+    formula: integrate('1/sqrt(0.3*(1 + y)**3 + 0.7*(1 + y)**2)', 'y', 0, 1)
+    expected: '0.6527'
+    shown: ['$I(1) = 0.6527$ and']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-sinh-open
+    where: 'Problem 2(a): sinh(sqrt(0.7) I)/sqrt(0.7) for (0.3, 0)'
+    inputs: {}
+    formula: sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7*(1 + y)**2)', 'y', 0, 1))/sqrt(0.7)
+    expected: '0.6856'
+    shown: ['/\sqrt{0.7} = 0.6856$']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dl-open
+    answer: p2-dl-open
+    where: 'Problem 2(a), answer box: D_L(z = 1) for (0.3, 0)'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 2*(c/H)*sinh(sqrt(0.7)*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7*(1 + y)**2)', 'y', 0, 1))/sqrt(0.7)
+    expected: '5790 Mpc'
+    shown: ['$D_L = 2 \times 0.6856 \times 4222 = 5790$ Mpc']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-mattig-open
+    kind: identity
+    where: 'Problem 2(a), plot caption: the matter-only closed form against the integral, open models'
+    formula: 2*(Om*z + (Om - 2)*(sqrt(1 + Om*z) - 1))/Om**2
+    equals: (1 + z)*sinh(sqrt(1 - Om)*integrate('1/sqrt(Om*(1 + y)**3 + (1 - Om)*(1 + y)**2)', 'y', 0, z))/sqrt(1 - Om)
+    samples:
+      Om: [0.3, 0.3, 0.1, 0.6]
+      z: [1, 5, 0.5, 2]
+    shown: ['D_L = (2c/H₀Ω_M²)[Ω_M z + (Ω_M − 2)(√(1 + Ω_M z) − 1)]', '"2*(0.3*x - 1.7*(sqrt(1 + 0.3*x) - 1))/0.09"']
+    source: {cite: mit, at: 'Problem 2(A) (our own check)'}
+    origin: page-own
+
+  - id: p2-mattig-closed
+    kind: identity
+    where: 'Problem 2(a), plot caption: the matter-only closed form against the integral, closed models'
+    formula: 2*(Om*z + (Om - 2)*(sqrt(1 + Om*z) - 1))/Om**2
+    equals: (1 + z)*sin(sqrt(Om - 1)*integrate('1/sqrt(Om*(1 + y)**3 + (1 - Om)*(1 + y)**2)', 'y', 0, z))/sqrt(Om - 1)
+    samples:
+      Om: [1.2, 1.2, 1.5, 2]
+      z: [1, 5, 0.5, 2]
+    shown: ['"2*(1.2*x - 0.8*(sqrt(1 + 1.2*x) - 1))/1.44"']
+    source: {cite: mit, at: 'Problem 2(A) (our own check)'}
+    origin: page-own
+
+  - id: p2-closed-z5
+    where: 'Problem 2(a), plot caption: D_L(5) for (1.2, 0) in units of c/H0'
+    inputs: {}
+    formula: 6*sin(sqrt(0.2)*integrate('1/sqrt(1.2*(1 + y)**3 - 0.2*(1 + y)**2)', 'y', 0, 5))/sqrt(0.2)
+    expected: '6.5'
+    shown: ['from 6.5 c/H₀ (closed)']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-lambda-z5
+    where: 'Problem 2(a), plot caption: D_L(5) for (0, 1) in units of c/H0'
+    inputs: {}
+    formula: 6*integrate('1', 'y', 0, 5)
+    expected: '30'
+    shown: ['to 30 c/H₀ (Λ only)']
+    source: {cite: mit, at: 'Problem 2(A) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2(b1)
+
+  - id: p2-I05
+    where: 'Problem 2(b1): I(0.5) for (0.3, 0.7)'
+    inputs: {}
+    formula: integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 0.5)
+    expected: '0.4410'
+    shown: ['$I(0.5) = 0.4410$']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dl05
+    where: 'Problem 2(b1): D_L(0.5) for (0.3, 0.7)'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 1.5*(c/H)*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 0.5)
+    expected: '2793 Mpc'
+    shown: ['$D_L = 1.5 \times 0.4410 \times 4222 = 2793$ Mpc']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-mu
+    answer: p2-mu
+    where: 'Problem 2(b1), answer box: mu_cosmo(0.5) = 5 log10(D_L / 10 pc)'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 5*log10(1.5*(c/H)*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 0.5)/(10*parsec))
+    expected: '42.23'
+    tolerance: '0.005'
+    shown: ['$\mu_\text{cosmo} = 5\log_{10}(2793) + 25 = 42.23$']
+    source: {cite: reading3, at: 'eq. (14), p. 7 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-sig
+    answer: p2-sig
+    where: 'Problem 2(b1), answer box: sigma of supernova 20 at alpha = beta = 1, no covariances'
+    inputs: {}
+    formula: sqrt(0.060**2 + 0.070**2 + 0.060**2)
+    expected: '0.110'
+    shown: ['= 0.0121$, so $\sigma_{20} = 0.110$']
+    source: {cite: mit, at: 'Problem 2(B), p. 3 (our own numbers)'}
+    origin: page-own
+
+  - id: p2-hubble-05
+    where: 'Problem 2(b1), check: Hubble''s law at z = 0.5'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 0.5*c/H
+    expected: '2111 Mpc'
+    shown: ['$D = 2111$ Mpc']
+    source: {cite: mit, at: 'Problem 2(B) (our own check)'}
+    origin: page-own
+
+  - id: p2-hubble-05-mu
+    where: 'Problem 2(b1), check: mu from Hubble''s law at z = 0.5'
+    inputs: {H: 71 km/s/Mpc}
+    formula: 5*log10(0.5*c/H/(10*parsec))
+    expected: '41.62'
+    shown: ['$\mu = 41.62$']
+    source: {cite: mit, at: 'Problem 2(B) (our own check)'}
+    origin: page-own
+
+  - id: p2-hubble-05-diff
+    where: 'Problem 2(b1), check: the difference of the two distance moduli'
+    inputs: {}
+    formula: 5*log10(1.5*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 0.5)/0.5)
+    expected: '0.6'
+    shown: ['add 0.6 magnitudes']
+    source: {cite: mit, at: 'Problem 2(B) (our own check)'}
+    origin: page-own
+
+  # ---- Problem 2(b2): our table and the fit (computed by the author's script, see the header)
+
+  - id: p2-table
+    kind: fact
+    where: 'Problem 2(b1): the table of 20 supernovae, generated by us (method and seed in the header of this file)'
+    shown: ['| 20 | 1.00 | 24.75 | −0.165 | −0.039 | 0.060 | 0.070 | 0.060 |', 'NumPy''s `default_rng(2)`']
+    source: {cite: mit, at: 'Problem 2(B) (our own data, in place of MIT''s data file)'}
+    origin: page-own
+
+  - id: p2-model-inputs
+    kind: fact
+    where: 'Problem 2(b2): the model behind the table'
+    shown: ['$\alpha = 1.50$, $\beta = 3.10$ and $M = -19.30$; true stretches and colours drawn with standard deviations 0.12 and 0.10']
+    source: {cite: mit, at: 'Problem 2(B) (our own data)'}
+    origin: page-own
+
+  - id: p2-fit
+    kind: fact
+    where: 'Problem 2(b2): the fit (unrounded values in the header)'
+    shown: ['$\alpha = 1.50$, $\beta = 2.74$, $M = -19.31$, $\Omega_M = 0.29$,', 'with $\chi^2 = 22.4$ for 20 supernovae']
+    source: {cite: mit, at: 'Problem 2(B) (our own fit)'}
+    origin: page-own
+
+  - id: p2-fit-range
+    kind: fact
+    where: 'Problem 2(b2): the Delta chi2 = 1 range of Omega_M'
+    shown: ['$0.21 < \Omega_M < 0.39$']
+    source: {cite: mit, at: 'Problem 2(B) (our own fit)'}
+    origin: page-own
+
+  - id: p2-fit-iterations
+    kind: fact
+    where: 'Problem 2(b2): the number of rounds of the iteration'
+    shown: ['settles after four rounds']
+    source: {cite: mit, at: 'Problem 2(B) (our own fit)'}
+    origin: page-own
+
+  - id: p2-chi2-per-dof
+    where: 'Problem 2(b2), check: chi2 per degree of freedom'
+    inputs: {}
+    formula: 22.382/16
+    expected: '1.4'
+    shown: ['$22.4/16 = 1.4$']
+    source: {cite: mit, at: 'Problem 2(B) (our own fit)'}
+    origin: page-own
+
+  - id: p2-literal-sigma-int
+    where: 'Problem 2(b2), check: sigma_int if sigma_int^2 = 0.10'
+    inputs: {}
+    formula: sqrt(0.10)
+    expected: '0.32'
+    shown: ['$\sigma_\text{int} = 0.32$ magnitudes']
+    source: {cite: mit, at: 'Problem 2(B) (our own check)'}
+    origin: page-own
+
+  - id: p2-literal-chi2
+    kind: fact
+    where: 'Problem 2(b2), check: chi2 of the fit with sigma_int^2 = 0.10 (header)'
+    shown: ['$\chi^2 = 4.9$, far below 16']
+    source: {cite: mit, at: 'Problem 2(B) (our own fit)'}
+    origin: page-own
+
+  - id: p2-plot-plus
+    where: 'Problem 2(b2), plot caption: mu(Omega_M = 0.09) - mu(0.29) at z = 1, flat'
+    inputs: {}
+    formula: 5*log10(integrate('1/sqrt(0.09*(1 + y)**3 + 0.91)', 'y', 0, 1)/integrate('1/sqrt(0.29*(1 + y)**3 + 0.71)', 'y', 0, 1))
+    expected: '0.33'
+    shown: ['lie 0.33 magnitudes above']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-plot-minus
+    where: 'Problem 2(b2), plot caption: mu(0.29) - mu(Omega_M = 0.49) at z = 1, flat'
+    inputs: {}
+    formula: 5*log10(integrate('1/sqrt(0.29*(1 + y)**3 + 0.71)', 'y', 0, 1)/integrate('1/sqrt(0.49*(1 + y)**3 + 0.51)', 'y', 0, 1))
+    expected: '0.22'
+    shown: ['and 0.22 below the best fit']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-sigma-low
+    where: 'Problem 2(b2), plot caption: final sigma of supernova 1 (alpha = 1.50, beta = 2.74)'
+    inputs: {}
+    formula: sqrt(0.021**2 + (1.50*0.021)**2 + (2.74*0.021)**2)
+    expected: '0.07'
+    shown: ['run from 0.07 magnitudes at low z']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-sigma-high
+    where: 'Problem 2(b2), plot caption: final sigma of supernova 20 (alpha = 1.50, beta = 2.74)'
+    inputs: {}
+    formula: sqrt(0.060**2 + (1.50*0.070)**2 + (2.74*0.060)**2)
+    expected: '0.20'
+    shown: ['to 0.20 at z = 1, and']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  # ---- Problem 2(b3)
+
+  - id: p2-I1-05
+    where: 'Problem 2(b3): I(1) for flat Omega_M = 0.5'
+    inputs: {}
+    formula: integrate('1/sqrt(0.5*(1 + y)**3 + 0.5)', 'y', 0, 1)
+    expected: '0.6966'
+    shown: ['and $0.6966$ for $\Omega_M = 0.5$']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dmu
+    answer: p2-dmu
+    where: 'Problem 2(b3), answer box: mu_cosmo(0.3) - mu_cosmo(0.5) at z = 1, flat'
+    inputs: {}
+    formula: 5*log10(integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 1)/integrate('1/sqrt(0.5*(1 + y)**3 + 0.5)', 'y', 0, 1))
+    expected: '0.222'
+    shown: ['= 0.222$ magnitudes']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-dmu-low
+    where: 'Problem 2(b3): the same difference at z = 0.03'
+    inputs: {}
+    formula: 5*log10(1.03*integrate('1/sqrt(0.3*(1 + y)**3 + 0.7)', 'y', 0, 0.03)/(1.03*integrate('1/sqrt(0.5*(1 + y)**3 + 0.5)', 'y', 0, 0.03)))
+    expected: '0.01'
+    shown: ['it is 0.01 magnitudes at $z = 0.03$']
+    source: {cite: mit, at: 'Problem 2(B) (our own numbers)'}
+    origin: page-own
+
+  - id: p2-om-error
+    where: 'Problem 2(b3): half the Delta chi2 = 1 range of Omega_M (header: 0.2129 to 0.3866)'
+    inputs: {}
+    formula: (0.3866 - 0.2129)/2
+    expected: '0.09'
+    shown: ['$\Omega_M$ only to about $\pm 0.09$']
+    source: {cite: mit, at: 'Problem 2(B) (our own fit)'}
+    origin: page-own
+
+  # ---- Problem 2(d): the curved grid (author's script, see the header)
+
+  - id: p2-grid-min
+    kind: fact
+    where: 'Problem 2(d): the grid minimum and its chi2'
+    shown: ['the minimum lies at $(\Omega_M, \Omega_\Lambda) = (0.41, 0.86)$, slightly closed, with $\chi^2 = 22.27$']
+    source: {cite: mit, at: 'Problem 2(D) (our own fit)'}
+    origin: page-own
+
+  - id: p2-grid-flat
+    kind: fact
+    where: 'Problem 2(d): Delta chi2 of the best flat model'
+    shown: ['has $\chi^2$ only 0.11 higher']
+    source: {cite: mit, at: 'Problem 2(D) (our own fit)'}
+    origin: page-own
+
+  - id: p2-grid-region
+    kind: fact
+    where: 'Problem 2(d): extent of the Delta chi2 < 2.3 region on the grid'
+    shown: ['stretches from $\Omega_M = 0$ to 0.87, with $\Omega_\Lambda$ between 0.20 and 1.49']
+    source: {cite: mit, at: 'Problem 2(D) (our own fit)'}
+    origin: page-own
+
+  - id: p2-grid-others
+    kind: fact
+    where: 'Problem 2(d): Delta chi2 of the two matter-only models'
+    shown: ['The open matter-only model $(0.3, 0)$ is 21.3 above the minimum', 'the flat matter-only model $(1, 0)$ is 78 above it']
+    source: {cite: mit, at: 'Problem 2(D) (our own fit)'}
+    origin: page-own
+
+  - id: p2-grid-slope
+    kind: fact
+    where: 'Problem 2(d): the direction of least curvature of chi2 at the minimum (Hessian, header)'
+    shown: ['rises by 1.36 for each unit of $\Omega_M$']
+    source: {cite: mit, at: 'Problem 2(D) (our own fit)'}
+    origin: page-own
+
+  - id: p1-halos-sheet-sum
+    where: 'Problem 1(e), check: two halos of 355 kpc with the sheet''s formula'
+    inputs: {R: 354.9 kpc}
+    formula: 2*R
+    expected: '710 kpc'
+    shown: ['(710 kpc against 700)']
+    source: {cite: mit, at: 'Problem 1(E), p. 2 (our own numbers)'}
+    origin: page-own
