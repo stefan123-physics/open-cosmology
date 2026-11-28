@@ -1,0 +1,678 @@
+# Calculations on content/year-2/18.06/18-06-problem-set-6.mdx (format: see calcs/8.286/age-of-the-universe.yaml).
+# `answer:` ties an entry to an <Answer id="…"> box on the page (docs/PROBLEM-SETS-DESIGN.md §8).
+# Every problem on this page is our own (MIT's 18.06 problem sets are textbook exercise numbers), so every answer is
+# checked here by a route independent of the page's solution: x̂ as the root of the perpendicularity condition (solve),
+# entries of P through P² = P or through A(AᵀA)⁻¹Aᵀ when the page uses I − nnᵀ/nᵀn, projections and error lengths
+# through the perpendicular vector n when the page uses the normal equations, the best line through the centred
+# regression formulas (slope = Σ(t − t̄)(b − b̄)/Σ(t − t̄)²) when the page solves the normal equations, reflections
+# through I − 2nnᵀ/nᵀn and the angle sin(2 atan m), Gram–Schmidt through the normal equations of c against a and b,
+# R through M = QR read back entry by entry, and orthogonality by every dot product of columns.
+# All values were also recomputed with NumPy when the page was written (numpy.linalg.lstsq and numpy.polyfit for the
+# fits, numpy.linalg.qr for R, P² = P, Pᵀ = P, QᵀQ = I and RᵀR = I checked with numpy.allclose).
+
+page: content/year-2/18.06/18-06-problem-set-6.mdx
+calcs:
+  - id: intro-points
+    where: 'How to answer: the points of the six problems (14 + 18 + 20 + 16 + 18 + 14)'
+    inputs: {}
+    formula: 14 + 18 + 20 + 16 + 18 + 14
+    expected: '100'
+    shown: ['the points here (100 in all)']
+    source: {cite: mit, at: 'our own points'}
+    origin: page-own
+
+  # ---- Problem 1: a = (1, 2, 2), b = (4, 1, 6)
+
+  - id: p1-a-x
+    answer: p1-a-x
+    where: 'Problem 1(a), answer box: x̂ as the root of aᵀ(b − x̂a) = 0, written out entry by entry'
+    inputs: {}
+    formula: solve('1*(4 - xh*1) + 2*(1 - xh*2) + 2*(6 - xh*2)', 'xh', -10, 10)
+    expected: '2'
+    tolerance: '1e-9'
+    shown: ['\hat x = \frac{a^Tb}{a^Ta} = \frac{18}{9} = 2']
+    source: {cite: reading1, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p1-a-e2
+    answer: p1-a-e2
+    where: 'Problem 1(a), answer box: second entry of e = b − x̂a, with x̂ from the root above'
+    inputs: {}
+    formula: 1 - solve('1*(4 - xh*1) + 2*(1 - xh*2) + 2*(6 - xh*2)', 'xh', -10, 10)*2
+    expected: '-3'
+    tolerance: '1e-9'
+    shown: ['e = b - p = (2, -3, 2)']
+    source: {cite: reading1, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p1-a-perp
+    where: 'Problem 1(a), check: aᵀe = 0 for e = (2, −3, 2)'
+    inputs: {}
+    formula: 1*2 + 2*(-3) + 2*2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$a^Te = 2 - 6 + 4 = 0$']
+    source: {cite: reading1, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p1-a-pyth
+    where: 'Problem 1(a), check: ‖p‖² + ‖e‖² = ‖b‖², with p = (2, 4, 4), e = (2, −3, 2), b = (4, 1, 6)'
+    inputs: {}
+    formula: (2**2 + 4**2 + 4**2) + (2**2 + 3**2 + 2**2) - (4**2 + 1**2 + 6**2)
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\|p\|^2 + \|e\|^2 = 36 + 17 = 53 = \|b\|^2$']
+    source: {cite: reading1, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p1-b-23
+    answer: p1-b-23
+    where: 'Problem 1(b), answer box: row 2, column 3 of P, computed as row 2, column 3 of P² (Σₖ P₂ₖPₖ₃ with Pᵢⱼ = aᵢaⱼ/9), which must equal P'
+    inputs: {}
+    formula: ((2*1)*(1*2) + (2*2)*(2*2) + (2*2)*(2*2))/81
+    expected: '0.4444'
+    tolerance: '0.0001'
+    shown: ['Row 2, column 3 is $4/9 \approx 0.4444$']
+    source: {cite: reading1, at: 'pp. 4–5'}
+    origin: page-own
+
+  - id: p1-b-11
+    answer: p1-b-11
+    where: 'Problem 1(b), answer box: row 1, column 1 of P, as row 1, column 1 of P² = (1·1 + 2·2 + 2·2)/81'
+    inputs: {}
+    formula: (1*1 + 2*2 + 2*2)/81
+    expected: '0.1111'
+    tolerance: '0.0001'
+    shown: ['$P^2$ has row 1, column 1 equal to $(1 \cdot 1 + 2 \cdot 2 + 2 \cdot 2)/81 = 9/81 = 1/9$']
+    source: {cite: reading1, at: 'p. 7'}
+    origin: page-own
+
+  - id: p1-b-pw
+    where: 'Problem 1(b), choice box (the zero vector): aᵀw for w = (2, −1, 0)'
+    inputs: {}
+    formula: 1*2 + 2*(-1) + 2*0
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$a^Tw = 2 - 2 + 0 = 0$']
+    source: {cite: reading1, at: 'pp. 4–5'}
+    origin: page-own
+
+  - id: p1-b-trace
+    where: 'Problem 1(b), check: the diagonal of P adds to aᵀa/aᵀa = 1'
+    inputs: {}
+    formula: (1 + 4 + 4)/9
+    expected: '1'
+    tolerance: '1e-12'
+    shown: ['the diagonal adds to $(1 + 4 + 4)/9 = 1$']
+    source: {cite: reading1, at: 'p. 6'}
+    origin: page-own
+
+  # ---- Problem 2: a1 = (1, 0, 1), a2 = (0, 1, 2), b = (0, −5, 2); n = (−1, −2, 1) is perpendicular to both
+
+  - id: p2-a-x1
+    answer: p2-a-x1
+    where: 'Problem 2(a), answer box: p = b − (nᵀb/nᵀn)n with n = (−1, −2, 1); x̂₁ is the first entry of p, since a1 = (1, 0, 1) and a2 = (0, 1, 2)'
+    inputs: {}
+    formula: 0 - ((-1)*0 + (-2)*(-5) + 1*2)/6*(-1)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['so $\hat x_2 = -1$, and then $\hat x_1 = 1 - \hat x_2 = 2$']
+    source: {cite: reading1, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p2-a-x2
+    answer: p2-a-x2
+    where: 'Problem 2(a), answer box: x̂₂ is the second entry of p = b − (nᵀb/nᵀn)n'
+    inputs: {}
+    formula: -5 - ((-1)*0 + (-2)*(-5) + 1*2)/6*(-2)
+    expected: '-1'
+    tolerance: '1e-12'
+    shown: ['Subtracting the first equation from the second leaves $3\hat x_2 = -3$']
+    source: {cite: reading1, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p2-a-third
+    where: 'Problem 2(a), check: the third entry of p = b − (nᵀb/nᵀn)n equals x̂₁ + 2x̂₂ = 0'
+    inputs: {}
+    formula: 2 - ((-1)*0 + (-2)*(-5) + 1*2)/6*1 - (2 + 2*(-1))
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$p = 2a_1 - a_2 = (2, -1, 0)$']
+    source: {cite: reading1, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p2-a-e
+    answer: p2-a-e
+    where: 'Problem 2(a), answer box: ‖e‖² = (nᵀb)²/nᵀn, the length squared of the projection of b onto the perpendicular line'
+    inputs: {}
+    formula: ((-1)*0 + (-2)*(-5) + 1*2)**2/((-1)**2 + (-2)**2 + 1**2)
+    expected: '24'
+    tolerance: '1e-9'
+    shown: ['so $\|e\|^2 = 4 + 16 + 4 = 24$']
+    source: {cite: reading2, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: p2-a-perp
+    where: 'Problem 2(a), check: a1ᵀe and a2ᵀe for e = (−2, −4, 2), squared and added'
+    inputs: {}
+    formula: (1*(-2) + 0*(-4) + 1*2)**2 + (0*(-2) + 1*(-4) + 2*2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$a_1^Te = -2 + 0 + 2 = 0$ and $a_2^Te = 0 - 4 + 4 = 0$']
+    source: {cite: reading1, at: 'p. 13'}
+    origin: page-own
+
+  - id: p2-b-11
+    answer: p2-b-11
+    where: 'Problem 2(b), answer box: row 1, column 1 of A(AᵀA)⁻¹Aᵀ; row 1 of A is (1, 0), so it is row 1, column 1 of (AᵀA)⁻¹ for AᵀA = [[2, 2], [2, 5]]'
+    inputs: {}
+    formula: 5/(2*5 - 2*2)
+    expected: '0.8333'
+    tolerance: '0.0001'
+    shown: ['Row 1, column 1 is $5/6 \approx 0.8333$']
+    source: {cite: reading1, at: 'pp. 15–17'}
+    origin: page-own
+
+  - id: p2-b-12
+    answer: p2-b-12
+    where: 'Problem 2(b), answer box: row 1, column 2 of A(AᵀA)⁻¹Aᵀ; rows 1 and 2 of A are (1, 0) and (0, 1), so it is row 1, column 2 of (AᵀA)⁻¹'
+    inputs: {}
+    formula: -2/(2*5 - 2*2)
+    expected: '-0.3333'
+    tolerance: '0.0001'
+    shown: ['row 1, column 2 is $-2/6 \approx -0.3333$']
+    source: {cite: reading1, at: 'pp. 15–17'}
+    origin: page-own
+
+  - id: p2-b-inv
+    where: 'Problem 2(b), check: [[2, 2], [2, 5]] times (1/6)[[5, −2], [−2, 2]]: row 1 times column 1, and row 1 times column 2'
+    inputs: {}
+    formula: ((2*5 + 2*(-2))/6 - 1)**2 + ((2*(-2) + 2*2)/6)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['elimination gives $(A^TA)^{-1} = \frac16\begin{pmatrix} 5 & -2 \\ -2 & 2 \end{pmatrix}$']
+    source: {cite: reading1, at: 'pp. 15–17'}
+    origin: page-own
+
+  - id: p2-b-p2
+    where: 'Problem 2(b), check: row 1, column 1 of P² for P = (1/6)[[5, −2, 1], [−2, 2, 2], [1, 2, 5]] equals 5/6'
+    inputs: {}
+    formula: (5*5 + (-2)*(-2) + 1*1)/36
+    expected: '0.8333'
+    tolerance: '0.0001'
+    shown: ['= \frac16\begin{pmatrix} 5 & -2 & 1 \\ -2 & 2 & 2 \\ 1 & 2 & 5 \end{pmatrix}']
+    source: {cite: reading1, at: 'p. 19'}
+    origin: page-own
+
+  - id: p2-b-pb
+    where: 'Problem 2(b), check: the first entry of Pb, (5·0 + (−2)(−5) + 1·2)/6'
+    inputs: {}
+    formula: (5*0 + (-2)*(-5) + 1*2)/6
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['$Pb = \frac16(0 + 10 + 2, 0 - 10 + 4, 0 - 10 + 10) = (2, -1, 0) = p$']
+    source: {cite: reading2, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p2-c-check
+    where: 'Problem 2(c), check: for x = 0, ‖b‖² = ‖e‖² + ‖p‖² with p = (2, −1, 0)'
+    inputs: {}
+    formula: (0**2 + 5**2 + 2**2) - (24 + (2**2 + 1**2 + 0**2))
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$\|e\|^2 + \|p\|^2 = 24 + 5 = 29$']
+    source: {cite: mit, at: 'Problem 2(c) (our own solution)'}
+    origin: page-own
+
+  # ---- Problem 3: (t, b) = (−1, 0), (0, 1), (1, 3), (2, 2); t̄ = 0.5, b̄ = 1.5
+
+  - id: p3-a-ata
+    answer: p3-a-ata
+    where: 'Problem 3(a), answer box: row 2, column 2 of AᵀA, the sum of the squared times'
+    inputs: {}
+    formula: (-1)**2 + 0**2 + 1**2 + 2**2
+    expected: '6'
+    tolerance: '1e-12'
+    shown: ['The sum of the squared times is $1 + 0 + 1 + 4 = 6$']
+    source: {cite: reading2, at: 'pp. 9–10'}
+    origin: page-own
+
+  - id: p3-a-atb
+    answer: p3-a-atb
+    where: 'Problem 3(a), answer box: second entry of Aᵀb, the sum of the products tb'
+    inputs: {}
+    formula: (-1)*0 + 0*1 + 1*3 + 2*2
+    expected: '7'
+    tolerance: '1e-12'
+    shown: ['the sum of the products $tb$ is $0 + 0 + 3 + 4 = 7$']
+    source: {cite: reading2, at: 'pp. 9–10'}
+    origin: page-own
+
+  - id: p3-a-d
+    answer: p3-a-d
+    where: 'Problem 3(a), answer box: the slope by the centred regression formula Σ(t − t̄)(b − b̄)/Σ(t − t̄)², t̄ = 0.5, b̄ = 1.5 (not the normal equations the page solves)'
+    inputs: {}
+    formula: ((-1.5)*(0 - 1.5) + (-0.5)*(1 - 1.5) + 0.5*(3 - 1.5) + 1.5*(2 - 1.5))/(1.5**2 + 0.5**2 + 0.5**2 + 1.5**2)
+    expected: '0.8'
+    tolerance: '1e-12'
+    shown: ['so $D = 0.8$, and then']
+    source: {cite: reading2, at: 'pp. 9–11'}
+    origin: page-own
+
+  - id: p3-a-c
+    answer: p3-a-c
+    where: 'Problem 3(a), answer box: the intercept b̄ − D t̄ of the regression line, with D from the centred formula'
+    inputs: {}
+    formula: 1.5 - 0.5*((-1.5)*(0 - 1.5) + (-0.5)*(1 - 1.5) + 0.5*(3 - 1.5) + 1.5*(2 - 1.5))/(1.5**2 + 0.5**2 + 0.5**2 + 1.5**2)
+    expected: '1.1'
+    tolerance: '1e-12'
+    shown: ['$4C = 6 - 1.6 = 4.4$, so $C = 1.1$']
+    source: {cite: reading2, at: 'pp. 9–11'}
+    origin: page-own
+
+  - id: p3-a-back
+    where: 'Problem 3(a), check: C = 1.1, D = 0.8 put back into 4C + 2D = 6 and 2C + 6D = 7, residuals squared and added'
+    inputs: {}
+    formula: (4*1.1 + 2*0.8 - 6)**2 + (2*1.1 + 6*0.8 - 7)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['Put the numbers back: $4(1.1) + 2(0.8) = 6$ and $2(1.1) + 6(0.8) = 7$']
+    source: {cite: reading2, at: 'pp. 9–10'}
+    origin: page-own
+
+  - id: p3-b-e4
+    answer: p3-b-e4
+    where: 'Problem 3(b), answer box: error at t = 2, b − (b̄ + D(t − t̄)) with D = 0.8 from the centred formula'
+    inputs: {}
+    formula: 2 - (1.5 + 0.8*(2 - 0.5))
+    expected: '-0.7'
+    tolerance: '1e-12'
+    shown: ['The error at $t = 2$ is $2 - 2.7 = -0.7$']
+    source: {cite: reading2, at: 'pp. 12–13'}
+    origin: page-own
+
+  - id: p3-b-ee
+    answer: p3-b-ee
+    where: 'Problem 3(b), answer box: Σ(b − b̄ − D(t − t̄))² over the four points, D = 0.8; equals Σ(b − b̄)² − D²Σ(t − t̄)² = 5 − 0.64·5'
+    inputs: {}
+    formula: (0 - 1.5 - 0.8*(-1.5))**2 + (1 - 1.5 - 0.8*(-0.5))**2 + (3 - 1.5 - 0.8*0.5)**2 + (2 - 1.5 - 0.8*1.5)**2
+    expected: '1.8'
+    tolerance: '1e-12'
+    shown: ['$\|e\|^2 = 0.09 + 0.01 + 1.21 + 0.49 = 1.8$']
+    source: {cite: reading2, at: 'pp. 5–7'}
+    origin: page-own
+
+  - id: p3-b-ee2
+    where: 'Problem 3(b), check: the same total by Σ(b − b̄)² − D²Σ(t − t̄)²'
+    inputs: {}
+    formula: (1.5**2 + 0.5**2 + 1.5**2 + 0.5**2) - 0.8**2*(1.5**2 + 0.5**2 + 0.5**2 + 1.5**2)
+    expected: '1.8'
+    tolerance: '1e-12'
+    shown: ['e = b - p = \begin{pmatrix} -0.3 \\ -0.1 \\ 1.1 \\ -0.7 \end{pmatrix}']
+    source: {cite: reading2, at: 'pp. 5–7'}
+    origin: page-own
+
+  - id: p3-b-perp
+    where: 'Problem 3(b), check: e = (−0.3, −0.1, 1.1, −0.7) against the column of ones and the column of times, squared and added'
+    inputs: {}
+    formula: (-0.3 - 0.1 + 1.1 - 0.7)**2 + ((-1)*(-0.3) + 0*(-0.1) + 1*1.1 + 2*(-0.7))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$-0.3 - 0.1 + 1.1 - 0.7 = 0$']
+    source: {cite: reading2, at: 'pp. 13–14'}
+    origin: page-own
+
+  - id: p3-c-d
+    kind: identity
+    answer: p3-c-d
+    where: 'Problem 3(c), answer box: the slope against the centred regression formula with the last value β, b̄ = (4 + β)/4'
+    formula: (2 + 3*beta)/10
+    equals: ((-1.5)*(0 - (4 + beta)/4) + (-0.5)*(1 - (4 + beta)/4) + 0.5*(3 - (4 + beta)/4) + 1.5*(beta - (4 + beta)/4))/5
+    samples: {beta: [2, 4, 7.5, 12, 20]}
+    tolerance: 1e-9
+    shown: ['so $D = (2 + 3\beta)/10$']
+    source: {cite: reading2, at: 'pp. 9–11'}
+    origin: page-own
+
+  - id: p3-c-c
+    kind: identity
+    where: 'Problem 3(c): the intercept (9 + β)/10 against b̄ − D t̄ with the regression slope'
+    formula: (9 + beta)/10
+    equals: (4 + beta)/4 - 0.5*((-1.5)*(0 - (4 + beta)/4) + (-0.5)*(1 - (4 + beta)/4) + 0.5*(3 - (4 + beta)/4) + 1.5*(beta - (4 + beta)/4))/5
+    samples: {beta: [2, 4, 7.5, 12, 20]}
+    tolerance: 1e-9
+    shown: ['then $C = (4 + \beta - 2D)/4 = (9 + \beta)/10$']
+    source: {cite: reading2, at: 'pp. 9–11'}
+    origin: page-own
+
+  - id: p3-c-e4
+    answer: p3-c-e4
+    where: 'Problem 3(c), answer box: for β = 12, the error 12 − (b̄ + D(2 − t̄)) with b̄ = 4 and D from the centred formula'
+    inputs: {}
+    formula: 12 - ((4 + 12)/4 + (2 - 0.5)*((-1.5)*(0 - 4) + (-0.5)*(1 - 4) + 0.5*(3 - 4) + 1.5*(12 - 4))/5)
+    expected: '2.3'
+    tolerance: '1e-12'
+    shown: ['so the error there is $12 - 9.7 = 2.3$']
+    source: {cite: reading2, at: 'pp. 12–13'}
+    origin: page-own
+
+  - id: p3-c-errs
+    where: 'Problem 3(c), check: the errors (1.7, −1.1, −2.9, 2.3) of the line 2.1 + 3.8t add to zero, and so do the errors times the times (squared and added)'
+    inputs: {}
+    formula: ((0 - (2.1 - 3.8)) + (1 - 2.1) + (3 - (2.1 + 3.8)) + (12 - (2.1 + 7.6)))**2 + ((-1)*(0 - (2.1 - 3.8)) + 0 + 1*(3 - (2.1 + 3.8)) + 2*(12 - (2.1 + 7.6)))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$-1.7 + 0 - 2.9 + 4.6 = 0$']
+    source: {cite: reading2, at: 'pp. 13–14'}
+    origin: page-own
+
+  # ---- Problem 4: a = (3, 4), n = (−4, 3)
+
+  - id: p4-a-12
+    answer: p4-a-12
+    where: 'Problem 4(a), answer box: row 1, column 2 of I − P = nnᵀ/nᵀn with n = (−4, 3) (the page subtracts P from I)'
+    inputs: {}
+    formula: (-4)*3/((-4)**2 + 3**2)
+    expected: '-0.48'
+    tolerance: '1e-12'
+    shown: ['Row 1, column 2 of $I - P$ is $-12/25 = -0.48$']
+    source: {cite: reading2, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: p4-a-line
+    where: 'Problem 4(a), choice box (the line through (−4, 3)): aᵀn = 0'
+    inputs: {}
+    formula: 3*(-4) + 4*3
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$a^Tn = -12 + 12 = 0$']
+    source: {cite: reading2, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: p4-b-12
+    answer: p4-b-12
+    where: 'Problem 4(b), answer box: row 1, column 2 of R = I − 2nnᵀ/nᵀn, n = (−4, 3) (the page uses 2P − I)'
+    inputs: {}
+    formula: -2*(-4)*3/25
+    expected: '0.96'
+    tolerance: '1e-12'
+    shown: ['Row 1, column 2 is $24/25 = 0.96$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-rw
+    answer: p4-b-rw
+    where: 'Problem 4(b), answer box: second entry of Rw = w − 2(nᵀw/nᵀn)n, w = (1, 2), n = (−4, 3)'
+    inputs: {}
+    formula: 2 - 2*((-4)*1 + 3*2)/25*3
+    expected: '1.52'
+    tolerance: '1e-12'
+    shown: ['$Rw = \frac1{25}(-7 + 48, 24 + 14) = (1.64, 1.52)$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-len
+    where: 'Problem 4(b), check: ‖Rw‖² = 1.64² + 1.52² equals ‖w‖² = 5'
+    inputs: {}
+    formula: 1.64**2 + 1.52**2
+    expected: '5'
+    tolerance: '1e-12'
+    shown: ['$\|Rw\|^2 = 1.64^2 + 1.52^2 = 2.6896 + 2.3104 = 5 = \|w\|^2$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-m
+    kind: identity
+    answer: p4-b-m
+    where: 'Problem 4(b), answer box: the reflection across a line at angle θ = atan m has sin 2θ in row 1, column 2'
+    formula: 2*m/(1 + m**2)
+    equals: sin(2*atan(m))
+    samples: {m: [0.1, 0.5, 1.3333333333, 2, 5]}
+    tolerance: 1e-9
+    shown: ['so row 1, column 2 of $R = 2P - I$ is $2m/(1 + m^2)$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-b-m-check
+    where: 'Problem 4(b), check: the formula at m = 4/3 gives 24/25'
+    inputs: {}
+    formula: 2*(4/3)/(1 + 16/9)
+    expected: '0.96'
+    tolerance: '1e-12'
+    shown: ['$2(4/3)/(1 + 16/9) = (8/3)/(25/9) = 24/25$']
+    source: {cite: mit, at: 'Problem 4(b) (our own solution)'}
+    origin: page-own
+
+  - id: p4-c-cols
+    where: 'Problem 4(c), check: the columns (−7, 24)/25 and (24, 7)/25: length squared minus 1, and dot product, squared and added'
+    inputs: {}
+    formula: ((49 + 576)/625 - 1)**2 + ((-7*24 + 24*7)/625)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['have length $\sqrt{49 + 576}/25 = 1$']
+    source: {cite: reading3, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p4-d
+    where: 'Problem 4(d), choice box (every c except c = 1): at c = 1, x = (1, −1) gives Ax = 0 in all three rows (1 − c, 1 − c, 1 − c²), squared and added'
+    inputs: {}
+    formula: (1 - 1)**2 + (1 - 1)**2 + (1 - 1**2)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['Then $x = (1, -1)$ gives $Ax = 0$']
+    source: {cite: reading2, at: 'pp. 15–17'}
+    origin: page-own
+
+  # ---- Problem 5: a = (1, 1, 1, 1), b = (1, 3, 1, 3), c = (2, 2, 0, 4); d = (1, 2, 3, 4)
+
+  - id: p5-a-b1
+    answer: p5-a-b1
+    where: 'Problem 5(a), answer box: the projection onto (1, 1, 1, 1) is the mean, so B₁ = b₁ − mean(b)'
+    inputs: {}
+    formula: 1 - (1 + 3 + 1 + 3)/4
+    expected: '-1'
+    tolerance: '1e-12'
+    shown: ['= (1, 3, 1, 3) - 2(1, 1, 1, 1) = (-1, 1, -1, 1)']
+    source: {cite: reading3, at: 'pp. 15–16'}
+    origin: page-own
+
+  - id: p5-a-c4
+    answer: p5-a-c4
+    where: 'Problem 5(a), answer box: C = c − αa − βb with α, β from the normal equations [[aᵀa, aᵀb], [aᵀb, bᵀb]] = [[4, 8], [8, 20]] against (aᵀc, bᵀc) = (8, 20): β = (20 − 2·8)/(20 − 2·8) = 1, α = (8 − 8β)/4 = 0; C₄ = 4 − 1α − 3β'
+    inputs: {}
+    formula: 4 - 1*((8 - 8*((20 - 2*8)/(20 - 2*8)))/4) - 3*((20 - 2*8)/(20 - 2*8))
+    expected: '1'
+    tolerance: '1e-12'
+    shown: ['= (2, 2, 0, 4) - (2, 2, 2, 2) - (-1, 1, -1, 1) = (1, -1, -1, 1)']
+    source: {cite: reading3, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p5-a-cl
+    answer: p5-a-cl
+    where: 'Problem 5(a), answer box: ‖C‖ with C = c − 0·a − 1·b = (1, −1, −1, 1) from the normal-equation route'
+    inputs: {}
+    formula: sqrt((2 - 1)**2 + (2 - 3)**2 + (0 - 1)**2 + (4 - 3)**2)
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['All three vectors have length $\sqrt4 = 2$']
+    source: {cite: reading3, at: 'p. 18'}
+    origin: page-own
+
+  - id: p5-a-perp
+    where: 'Problem 5(a), check: AᵀC and BᵀC, squared and added'
+    inputs: {}
+    formula: (1 - 1 - 1 + 1)**2 + (-1 - 1 + 1 + 1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$A^TC = 1 - 1 - 1 + 1 = 0$ and $B^TC = -1 - 1 + 1 + 1 = 0$']
+    source: {cite: reading3, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p5-a-btc
+    where: 'Problem 5(a): Bᵀc for B = (−1, 1, −1, 1), c = (2, 2, 0, 4)'
+    inputs: {}
+    formula: (-1)*2 + 1*2 + (-1)*0 + 1*4
+    expected: '4'
+    tolerance: '1e-12'
+    shown: ['$B^Tc = -2 + 2 - 0 + 4 = 4$']
+    source: {cite: reading3, at: 'pp. 17–18'}
+    origin: page-own
+
+  - id: p5-b-12
+    answer: p5-b-12
+    where: 'Problem 5(b), answer box: column 2 of M = QR reads b = r₁₂q₁ + r₂₂q₂, so b₁ = (r₁₂ − r₂₂)/2 and b₂ = (r₁₂ + r₂₂)/2; r₁₂ = b₁ + b₂'
+    inputs: {}
+    formula: 1 + 3
+    expected: '4'
+    tolerance: '1e-12'
+    shown: ['For instance $q_1^Tb = \frac12(1 + 3 + 1 + 3) = 4$']
+    source: {cite: reading3, at: 'pp. 23–24'}
+    origin: page-own
+
+  - id: p5-b-23
+    answer: p5-b-23
+    where: 'Problem 5(b), answer box: column 3 of M = QR reads c = r₁₃q₁ + r₂₃q₂ + r₃₃q₃; entries 2 and 3 give c₂ − c₃ = r₂₃'
+    inputs: {}
+    formula: 2 - 0
+    expected: '2'
+    tolerance: '1e-12'
+    shown: ['$q_2^Tc = \frac12(-2 + 2 - 0 + 4) = 2$']
+    source: {cite: reading3, at: 'pp. 23–24'}
+    origin: page-own
+
+  - id: p5-b-col3
+    where: 'Problem 5(b), check: column 3 of QR, 4q₁ + 2q₂ + 2q₃ against c = (2, 2, 0, 4), differences squared and added'
+    inputs: {}
+    formula: (2 - 1 + 1 - 2)**2 + (2 + 1 - 1 - 2)**2 + (2 - 1 - 1 - 0)**2 + (2 + 1 + 1 - 4)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['= (2, 2, 0, 4) = c$']
+    source: {cite: reading3, at: 'pp. 22–24'}
+    origin: page-own
+
+  - id: p5-c-x2
+    answer: p5-c-x2
+    where: 'Problem 5(c), answer box: q₂ᵀd = ((d₂ + d₄) − (d₁ + d₃))/2 for d = (1, 2, 3, 4)'
+    inputs: {}
+    formula: ((2 + 4) - (1 + 3))/2
+    expected: '1'
+    tolerance: '1e-12'
+    shown: ['= \begin{pmatrix} 5 \\ 1 \\ 0 \end{pmatrix}']
+    source: {cite: reading3, at: 'p. 11'}
+    origin: page-own
+
+  - id: p5-c-p4
+    answer: p5-c-p4
+    where: 'Problem 5(c), answer box: n = (1, 1, −1, −1) is perpendicular to q₁, q₂, q₃, so p = d − (nᵀd/nᵀn)n; fourth entry'
+    inputs: {}
+    formula: 4 - (1 + 2 - 3 - 4)/4*(-1)
+    expected: '3'
+    tolerance: '1e-12'
+    shown: ['= (2, 3, 2, 3)$. Then']
+    source: {cite: reading3, at: 'pp. 9–11'}
+    origin: page-own
+
+  - id: p5-c-err
+    answer: p5-c-err
+    where: 'Problem 5(c), answer box: ‖d − p‖² = (nᵀd)²/nᵀn with n = (1, 1, −1, −1)'
+    inputs: {}
+    formula: (1 + 2 - 3 - 4)**2/4
+    expected: '4'
+    tolerance: '1e-12'
+    shown: ['$\|d - p\|^2 = 4$']
+    source: {cite: reading2, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: p5-c-n
+    where: 'Problem 5(c), check: n = (1, 1, −1, −1) is perpendicular to (1, 1, 1, 1), (−1, 1, −1, 1) and (1, −1, −1, 1), squared and added'
+    inputs: {}
+    formula: (1 + 1 - 1 - 1)**2 + (-1 + 1 + 1 - 1)**2 + (1 - 1 + 1 - 1)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$-1 - 1 + 1 + 1 = 0$, $1 - 1 - 1 + 1 = 0$ and $-1 + 1 - 1 + 1 = 0$']
+    source: {cite: reading3, at: 'pp. 9–11'}
+    origin: page-own
+
+  # ---- Problem 6: Q = (1/7)[[2, 6, 3], [3, 2, −6], [6, −3, 2]]
+
+  - id: p6-cols
+    where: 'Problem 6(a), check: the three dot products of the columns (2, 3, 6), (6, 2, −3), (3, −6, 2), squared and added, plus each length squared minus 49'
+    inputs: {}
+    formula: (12 + 6 - 18)**2 + (6 - 18 + 12)**2 + (18 - 12 - 6)**2 + (4 + 9 + 36 - 49)**2 + (36 + 4 + 9 - 49)**2 + (9 + 36 + 4 - 49)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['columns 1 and 2, $12 + 6 - 18 = 0$']
+    source: {cite: reading3, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p6-a
+    answer: p6-a
+    where: 'Problem 6(a), answer box: row 1, column 2 of Q⁻¹ by the cofactor formula (not the rule Q⁻¹ = Qᵀ the page uses): cofactor C₂₁ = −(Q₁₂Q₃₃ − Q₁₃Q₃₂) divided by det Q (det Q = −1; determinants appear only here, not on the page)'
+    inputs: {}
+    formula: (-(6*2 - 3*(-3))/49)/((2*(2*2 - (-6)*(-3)) - 6*(3*2 - (-6)*6) + 3*(3*(-3) - 2*6))/343)
+    expected: '0.4286'
+    tolerance: '0.0001'
+    shown: ['$3/7 \approx 0.4286$']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: p6-b
+    answer: p6-b
+    where: 'Problem 6(b), answer box: x₃ = 7·(Q⁻¹)₃₂ with (Q⁻¹)₃₂ = cofactor C₂₃/det Q = −(Q₁₁Q₃₂ − Q₁₂Q₃₁)/det Q (not the page route x = Qᵀb)'
+    inputs: {}
+    formula: 7*(-(2*(-3) - 6*6)/49)/((2*(2*2 - (-6)*(-3)) - 6*(3*2 - (-6)*6) + 3*(3*(-3) - 2*6))/343)
+    expected: '-6'
+    tolerance: '1e-12'
+    shown: ['$x = (3, 2, -6)$']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: p6-b-back
+    where: 'Problem 6(b), check: Q(3, 2, −6) against (0, 7, 0), differences squared and added (rows of Q times x, divided by 7)'
+    inputs: {}
+    formula: ((2*3 + 6*2 + 3*(-6))/7)**2 + ((3*3 + 2*2 - 6*(-6))/7 - 7)**2 + ((6*3 - 3*2 + 2*(-6))/7)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$Qx = \frac17(6 + 12 - 18, 9 + 4 + 36, 18 - 6 - 12) = (0, 7, 0)$']
+    source: {cite: reading3, at: 'p. 4'}
+    origin: page-own
+
+  - id: p6-c
+    where: 'Problem 6(c), check: ‖Qy‖² for y = (1, 1, 1), Qy = (11, −1, 5)/7'
+    inputs: {}
+    formula: ((2 + 6 + 3)**2 + (3 + 2 - 6)**2 + (6 - 3 + 2)**2)/49
+    expected: '3'
+    tolerance: '1e-12'
+    shown: ['$\|Qy\|^2 = (121 + 1 + 25)/49 = 147/49 = 3 = \|y\|^2$']
+    source: {cite: reading3, at: 'pp. 2–3'}
+    origin: page-own
+
+  - id: p6-d-1
+    where: 'Problem 6(d), choice box M1 (yes): column length squared minus 1, and the dot product, squared and added'
+    inputs: {}
+    formula: (0.6**2 + 0.8**2 - 1)**2 + (0.6*0.8 + 0.8*(-0.6))**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['$M_1$: columns of length $\sqrt{0.36 + 0.64} = 1$']
+    source: {cite: reading3, at: 'pp. 3–4'}
+    origin: page-own
+
+  - id: p6-d-2
+    where: 'Problem 6(d), choice box M2 (no): the columns have length squared 1/4 + 1/4'
+    inputs: {}
+    formula: 0.5**2 + 0.5**2
+    expected: '0.5'
+    tolerance: '1e-12'
+    shown: ['of length $\sqrt{1/4 + 1/4} = 1/\sqrt2$']
+    source: {cite: reading3, at: 'p. 5'}
+    origin: page-own
+
+  - id: p6-d-3
+    where: 'Problem 6(d), choice box M3 (no, it is 3 × 2): columns (2, 1, 2)/3 and (1, 2, −2)/3 are orthonormal; lengths squared minus 1 and the dot product, squared and added'
+    inputs: {}
+    formula: ((4 + 1 + 4)/9 - 1)**2 + ((1 + 4 + 4)/9 - 1)**2 + ((2 + 2 - 4)/9)**2
+    expected: '0'
+    tolerance: '1e-12'
+    shown: ['dot product $(2 + 2 - 4)/9 = 0$']
+    source: {cite: reading3, at: 'pp. 3–4'}
+    origin: page-own
